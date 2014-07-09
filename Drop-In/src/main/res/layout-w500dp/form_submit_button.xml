@@ -1,0 +1,12 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- phone+portrait version included in layout/ dir -->
+    <Button
+        style="@style/submit_button"
+        android:layout_marginTop="@dimen/form_padding"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/card_form_complete_button"
+        android:enabled="false" />
+
+</merge>
+

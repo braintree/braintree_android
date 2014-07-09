@@ -1,0 +1,11 @@
+<resources>
+    <style name="base_bt_textview">
+        <item name="android:textSize">@dimen/default_text_size</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="base_bt_textview_bold">
+        <item name="android:textSize">@dimen/default_text_size</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+    </style>
+</resources>

@@ -1,0 +1,11 @@
+{
+    "error": {
+        "message": "Authorization fingerprint is invalid"
+    },
+    "fieldErrors": [
+        {
+            "field": "authorizationFingerprint",
+            "message": "Authorization fingerprint signature did not match"
+        }
+    ]
+}

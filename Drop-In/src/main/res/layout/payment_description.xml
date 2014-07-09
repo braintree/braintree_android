@@ -1,0 +1,51 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/description_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <RelativeLayout
+        android:layout_width="@dimen/full_width"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/form_padding"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            style="@style/base_bt_textview_bold"
+            android:id="@+id/primary_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/description_amount"
+            android:textColor="@color/bt_black"
+            android:maxLines="1" />
+
+        <TextView
+            style="@style/base_bt_textview"
+            android:id="@+id/secondary_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/primary_description"
+            android:layout_alignLeft="@id/primary_description"
+            android:maxLines="1"
+            android:textColor="@color/bt_light_gray"
+            android:textSize="@dimen/default_small_text_size" />
+
+        <TextView
+            style="@style/base_bt_textview_bold"
+            android:id="@id/description_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:maxLines="1"
+            android:textColor="@color/bt_black" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/bt_very_light_gray" />
+</LinearLayout>

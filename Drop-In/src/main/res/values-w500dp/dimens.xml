@@ -1,0 +1,4 @@
+<resources>
+    <!-- These overwrite values specified in values/styles.xml -->
+    <dimen name="full_width">@dimen/landscape_max_width</dimen>
+</resources>

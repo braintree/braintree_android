@@ -1,0 +1,109 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "19.1.0"
+
+    defaultConfig {
+        minSdkVersion 8
+        targetSdkVersion 19
+        versionCode 3
+        versionName "1.0.0"
+    }
+}
+
+dependencies {
+    compile 'com.google.code.gson:gson:[2.2.4,3.0)'
+    compile 'com.squareup.okhttp:okhttp:[1.5,2.0)'
+    compile 'com.braintreepayments.api:data:1.0.0'
+    compile files('libs/PayPalAndroidSDK.jar')
+
+    androidTestCompile project(':TestUtils')
+}
+
+task runAllTests {
+    /*
+     * Empty task to run via command line Rakefile or ci.sh to indicate that tests that depend on
+     * setting up external services (like the test invalid https server) are set up correctly.
+     * Otherwise, these tests will be skipped
+     */
+}
+
+gradle.taskGraph.whenReady { taskGraph ->
+    def RUN_ALL_TESTS = taskGraph.hasTask(':BraintreeApi:runAllTests')
+    android.buildTypes.debug.buildConfigField("boolean", "RUN_ALL_TESTS", "" + RUN_ALL_TESTS)
+}
+
+/* maven deploy + signing */
+task javadocs(type: Javadoc) {
+    source = android.sourceSets.main.java
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocsJar(type: Jar, dependsOn: javadocs) {
+    classifier = 'javadoc'
+    from javadocs.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java
+}
+
+artifacts {
+    archives javadocsJar
+    archives sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+def sonatypeUsername = System.properties.containsKey("sonatypeUsername") ? System.properties["sonatypeUsername"] : ''
+def sonatypePassword = System.properties.containsKey("sonatypePassword") ? System.properties["sonatypePassword"] : ''
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.setArtifactId 'braintree-api'
+
+            pom.project {
+                name 'braintree-api'
+                groupId = "com.braintreepayments.api"
+                version = "${android.defaultConfig.versionName}"
+                packaging 'aar'
+                description "This is Braintree's v.zero SDK for Android. Integrate this library to accept payments in your Android app."
+                url 'https://github.com/braintree/braintree_android'
+
+                scm {
+                    url 'scm:git@github.com:braintree/braintree_android.git'
+                    connection 'scm:git@github.com:braintree/braintree_android.git'
+                    developerConnection 'scm:git@github.com:braintree/braintree_android.git'
+                }
+
+                developers {
+                    developer {
+                        id 'devs'
+                        name 'Braintree Payments'
+                    }
+                }
+
+                licenses {
+                    license {
+                        name 'MIT'
+                        url 'http://opensource.org/licenses/MIT'
+                        distribution 'repo'
+                    }
+                }
+            }
+        }
+    }
+}

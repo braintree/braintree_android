@@ -1,0 +1,11 @@
+{
+    "type": "PayPalAccount",
+    "nonce": "aaaaaa-bbbbbbb-109934023-1",
+    "description": "with email paypalaccount@example.com",
+    "isDefault": false,
+    "isLocked": false,
+    "securityQuestions": [],
+    "details": {
+        "email": "paypalaccount@example.com"
+    }
+}

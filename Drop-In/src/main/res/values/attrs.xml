@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SecureLoadingSpinner">
+        <attr name="imageSize" format="dimension" />
+    </declare-styleable>
+</resources>

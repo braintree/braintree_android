@@ -1,0 +1,91 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "19.1.0"
+
+    defaultConfig {
+        minSdkVersion 8
+        targetSdkVersion 19
+        versionCode 1
+        versionName "1.0.0"
+    }
+}
+
+dependencies {
+    compile files('libs/devicecollector-sdk-2.5.jar')
+}
+
+/* maven deploy + signing */
+task javadocs(type: Javadoc) {
+    source = android.sourceSets.main.java
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocsJar(type: Jar, dependsOn: javadocs) {
+    classifier = 'javadoc'
+    from javadocs.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java
+}
+
+artifacts {
+    archives javadocsJar
+    archives sourcesJar
+}
+signing {
+    sign configurations.archives
+}
+
+def sonatypeUsername = System.properties.containsKey("sonatypeUsername") ? System.properties["sonatypeUsername"] : ''
+def sonatypePassword = System.properties.containsKey("sonatypePassword") ? System.properties["sonatypePassword"] : ''
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.setArtifactId 'data'
+
+            pom.project {
+                name 'data'
+                groupId = "com.braintreepayments.api"
+                version = "${android.defaultConfig.versionName}"
+                packaging 'aar'
+                description "Fraud tools for Braintree integrations on Android."
+                url 'https://github.com/braintree/braintree_android'
+
+                scm {
+                    url 'scm:git@github.com:braintree/braintree_android.git'
+                    connection 'scm:git@github.com:braintree/braintree_android.git'
+                    developerConnection 'scm:git@github.com:braintree/braintree_android.git'
+                }
+
+                developers {
+                    developer {
+                        id 'devs'
+                        name 'Braintree Payments'
+                    }
+                }
+
+                licenses {
+                    license {
+                        name 'MIT'
+                        url 'http://opensource.org/licenses/MIT'
+                        distribution 'repo'
+                    }
+                }
+            }
+        }
+    }
+}
+

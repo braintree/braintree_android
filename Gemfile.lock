@@ -1,0 +1,12 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    rake (10.1.1)
+    rake_commit (0.11.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rake
+  rake_commit (= 0.11.0)

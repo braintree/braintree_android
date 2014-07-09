@@ -1,0 +1,26 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- tablet version included in layout-w500dp/ dir -->
+
+    <com.braintreepayments.api.dropin.view.CardEditText
+        style="@style/form_edittext"
+        android:id="@+id/card_form_card_number"
+        android:imeOptions="actionNext"
+        android:hint="@string/form_hint_card_number" />
+
+    <com.braintreepayments.api.dropin.view.MonthYearEditText
+        style="@style/form_edittext"
+        android:id="@+id/card_form_expiration"
+        android:hint="@string/form_hint_expiration" />
+
+    <com.braintreepayments.api.dropin.view.CvvEditText
+        style="@style/form_edittext"
+        android:id="@+id/card_form_cvv"
+        android:hint="@string/form_hint_cvv" />
+
+    <com.braintreepayments.api.dropin.view.PostalCodeEditText
+        style="@style/form_edittext"
+        android:id="@+id/card_form_postal_code"
+        android:hint="@string/form_hint_postal_code" />
+
+</merge>

@@ -1,0 +1,59 @@
+<resources>
+
+    <style name="base_bt_textview">
+        <item name="android:textSize">@dimen/default_text_size</item>
+    </style>
+
+    <style name="base_bt_textview_bold">
+        <item name="android:textSize">@dimen/default_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="base_bt_edittext" parent="base_bt_textview">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/bt_edittext_selector</item>
+        <item name="android:layout_marginLeft">-4dp</item>
+        <item name="android:layout_marginRight">-4dp</item>
+        <item name="android:textColor">@color/bt_black</item>
+    </style>
+
+    <style name="form_edittext" parent="base_bt_edittext">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/form_field_height</item>
+        <item name="android:paddingTop">@dimen/form_padding</item>
+        <item name="android:layout_marginLeft">@dimen/form_padding_edittext</item>
+        <item name="android:layout_marginRight">@dimen/form_padding_edittext</item>
+    </style>
+
+    <style name="form_edittext_land" parent="form_edittext">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="form_appswitch_button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/form_appswitch_button_size</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="submit_button" parent="@style/base_bt_textview">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/default_item_height</item>
+        <item name="android:background">@drawable/blue_button_selector</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="horizontal_gray_line">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/bt_light_gray</item>
+    </style>
+
+    <style name="main_view_controller_container">
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_width">@dimen/full_width</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+</resources>

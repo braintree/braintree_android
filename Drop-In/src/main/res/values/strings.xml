@@ -1,0 +1,28 @@
+<resources>
+    <string name="form_pay_with_card_header">Pay With A Card</string>
+    <string name="form_hint_card_number">Card Number</string>
+    <string name="form_hint_expiration">Expiration</string>
+    <string name="form_hint_cvv">CVV</string>
+    <string name="form_hint_postal_code">Postal Code</string>
+    <string name="form_appswitch_paypal_button_description">Pay with PayPal</string>
+    <string name="payment_methods_loading">Loading...</string>
+    <string name="choose_payment_method">Choose Payment Method</string>
+    <string name="change_payment_method">Change Payment Method</string>
+    <string name="add_new_payment_method">Add New Payment Method</string>
+    <string name="add_payment_method">Add Payment Method</string>
+    <string name="paypal_button_pay_with_prefix">Pay With</string>
+    <string name="paypal_button_pay_with_suffix">PayPal</string>
+    <string name="default_submit_button_text">Purchase</string>
+    <string name="default_action_bar_text">Purchase</string>
+    <string name="invalid_card">Card information is invalid</string>
+
+    <string name="descriptor_visa">Visa</string>
+    <string name="descriptor_mastercard">MasterCard</string>
+    <string name="descriptor_amex">AMEX</string>
+    <string name="descriptor_jcb">JCB</string>
+    <string name="descriptor_discover">Discover</string>
+    <string name="descriptor_diners">Diners</string>
+    <string name="descriptor_maestro">Maestro</string>
+    <string name="descriptor_paypal">PayPal</string>
+    <string name="descriptor_unknown">Card</string>
+</resources>

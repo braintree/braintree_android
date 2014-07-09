@@ -1,0 +1,109 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "19.1.0"
+
+    defaultConfig {
+        minSdkVersion 8
+        targetSdkVersion 19
+        versionCode 3
+        versionName "1.0.0"
+        testInstrumentationRunner "com.braintreepayments.api.utils.CustomInstrumentationTestRunner"
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+    }
+}
+
+dependencies {
+    compile 'com.braintreepayments.api:braintree-api:1.0.0'
+
+    androidTestCompile project(':TestUtils')
+    androidTestCompile 'com.jakewharton.espresso:espresso:1.1-r3'
+}
+
+task grantAnimationPermission(type: Exec, dependsOn: 'installDebugTest') {
+    commandLine "adb shell pm grant com.braintreepayments.api.dropin.test android.permission.SET_ANIMATION_SCALE".split(' ')
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name.startsWith('connectedAndroidTest')) {
+        task.dependsOn grantAnimationPermission
+    }
+}
+
+/* maven deploy + signing */
+task javadocs(type: Javadoc) {
+    source = android.sourceSets.main.java
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocsJar(type: Jar, dependsOn: javadocs) {
+    classifier = 'javadoc'
+    from javadocs.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java
+}
+
+artifacts {
+    archives javadocsJar
+    archives sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+def sonatypeUsername = System.properties.containsKey("sonatypeUsername") ? System.properties["sonatypeUsername"] : ''
+def sonatypePassword = System.properties.containsKey("sonatypePassword") ? System.properties["sonatypePassword"] : ''
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.setArtifactId 'braintree'
+
+            pom.project {
+                name 'braintree'
+                groupId = "com.braintreepayments.api"
+                version = "${android.defaultConfig.versionName}"
+                packaging 'aar'
+                description "Drop-in payment form for Braintree's v.zero SDK. Integrate this library to add a readymade UI for your payments."
+                url 'https://github.com/braintree/braintree_android'
+
+                scm {
+                    url 'scm:git@github.com:braintree/braintree_android.git'
+                    connection 'scm:git@github.com:braintree/braintree_android.git'
+                    developerConnection 'scm:git@github.com:braintree/braintree_android.git'
+                }
+
+                developers {
+                    developer {
+                        id 'devs'
+                        name 'Braintree Payments'
+                    }
+                }
+
+                licenses {
+                    license {
+                        name 'MIT'
+                        url 'http://opensource.org/licenses/MIT'
+                        distribution 'repo'
+                    }
+                }
+            }
+        }
+    }
+}

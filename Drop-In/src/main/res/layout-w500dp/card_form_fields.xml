@@ -1,0 +1,39 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- phone+portrait version included in layout/ dir -->
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.braintreepayments.api.dropin.view.CardEditText
+            style="@style/form_edittext_land"
+            android:id="@+id/card_form_card_number"
+            android:hint="@string/form_hint_card_number" />
+
+        <com.braintreepayments.api.dropin.view.MonthYearEditText
+            style="@style/form_edittext_land"
+            android:id="@+id/card_form_expiration"
+            android:hint="@string/form_hint_expiration" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.braintreepayments.api.dropin.view.CvvEditText
+            style="@style/form_edittext_land"
+            android:id="@+id/card_form_cvv"
+            android:hint="@string/form_hint_cvv" />
+
+        <com.braintreepayments.api.dropin.view.PostalCodeEditText
+            style="@style/form_edittext_land"
+            android:id="@+id/card_form_postal_code"
+            android:hint="@string/form_hint_postal_code" />
+
+    </LinearLayout>
+
+</merge>

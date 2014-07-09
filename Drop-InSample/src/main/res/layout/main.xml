@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#019cde"
+    android:gravity="center_vertical"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="40dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PayPal User: bt_buyer_us@paypal.com"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PayPal Password: 11111111"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fake Card Number: 4111111111111111"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fake Card Exp. Date: 10/20"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/new_customer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Custom Integration"
+        android:layout_marginBottom="10dp"
+        android:onClick="customOnClick" />
+
+    <Button
+        android:id="@+id/existing_customer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PayPal Button"
+        android:layout_marginBottom="10dp"
+        android:onClick="paypalOnClick" />
+
+    <Button
+        android:id="@+id/no_customer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Drop-In"
+        android:onClick="dropinOnClick" />
+
+</LinearLayout>

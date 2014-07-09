@@ -1,0 +1,27 @@
+apply plugin: 'com.android.library'
+
+def LOCALHOST_IP = System.properties.containsKey("LOCALHOST_IP") ? System.properties["LOCALHOST_IP"] : '"10.0.2.2"';
+def GATEWAY_PORT = System.properties.containsKey("GATEWAY_PORT") ? System.properties["GATEWAY_PORT"] : '"3000"';
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "19.1.0"
+
+    defaultConfig {
+        minSdkVersion 8
+        targetSdkVersion 19
+        versionCode 1
+        versionName "1.0"
+    }
+}
+
+dependencies {
+    compile 'org.mockito:mockito-core:1.9.5'
+    compile 'com.google.dexmaker:dexmaker:1.1'
+    compile 'com.google.dexmaker:dexmaker-mockito:1.1'
+}
+
+android.buildTypes.each { type ->
+    type.buildConfigField "String", "LOCALHOST_IP", LOCALHOST_IP
+    type.buildConfigField "String", "GATEWAY_PORT", GATEWAY_PORT
+}

@@ -1,0 +1,16 @@
+{
+    "error": {
+        "message": "Expiration date is invalid"
+    },
+    "fieldErrors": [
+        {
+            "field": "creditCard",
+            "fieldErrors": [
+                {
+                    "field": "expirationYear",
+                    "message": "Expiration year is invalid"
+                }
+            ]
+        }
+    ]
+}

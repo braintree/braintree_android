@@ -1,0 +1,6 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.braintreepayments.api.dropin">
+    <application>
+        <activity android:name="com.braintreepayments.api.dropin.BraintreePaymentActivity" />
+    </application>
+</manifest>

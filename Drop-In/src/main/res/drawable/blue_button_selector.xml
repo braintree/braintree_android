@@ -1,0 +1,8 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android" android:exitFadeDuration="@android:integer/config_shortAnimTime">
+    <!-- Even though these two point to the same resource, have two states so the drawable will invalidate itself when coming out of pressed state. -->
+    <item android:drawable="@color/bt_button_disabled_color" android:state_enabled="false" android:state_pressed="true" />
+    <item android:drawable="@color/bt_button_disabled_color" android:state_enabled="false" />
+    <item android:drawable="@color/bt_blue_hover" android:state_pressed="true" />
+    <item android:drawable="@color/bt_blue_hover" android:state_focused="true" />
+    <item android:drawable="@color/bt_blue" />
+</selector>

@@ -1,0 +1,11 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- phone+portrait version included in layout/ dir -->
+    <Button
+        style="@style/submit_button"
+        android:layout_marginTop="@dimen/form_padding"
+        android:layout_below="@+id/change_payment_method_link"
+        android:id="@+id/select_payment_method_button" />
+
+</merge>
+
