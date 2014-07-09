@@ -9,7 +9,6 @@ import com.braintreepayments.api.Braintree.ListenerCallback;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodNonceListener;
 import com.braintreepayments.api.Braintree.PaymentMethodsUpdatedListener;
-import com.braintree.api.ClientToken;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;

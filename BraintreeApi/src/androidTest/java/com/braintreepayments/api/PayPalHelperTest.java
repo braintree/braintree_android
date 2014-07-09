@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.content.Intent;
 import android.test.AndroidTestCase;
 
-import com.braintree.api.ClientToken;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.paypal.android.sdk.payments.PayPalConfiguration;

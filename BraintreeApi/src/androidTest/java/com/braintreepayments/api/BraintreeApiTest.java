@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.test.AndroidTestCase;
 
-import com.braintree.api.ClientToken;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.BraintreeException;
