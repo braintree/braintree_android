@@ -38,7 +38,7 @@ tasks.whenTaskAdded { task ->
 
 /* maven deploy + signing */
 task javadocs(type: Javadoc) {
-    source = android.sourceSets.main.java
+    source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
 
@@ -49,7 +49,7 @@ task javadocsJar(type: Jar, dependsOn: javadocs) {
 
 task sourcesJar(type: Jar) {
     classifier = 'sources'
-    from android.sourceSets.main.java
+    from android.sourceSets.main.java.srcDirs
 }
 
 artifacts {
