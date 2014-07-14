@@ -224,7 +224,7 @@ public class BraintreeApiTest extends AndroidTestCase {
     public void testAnalyticsEventsAreSentToServer() {
         final AtomicInteger requestCount = new AtomicInteger(0);
         final AtomicInteger responseCode = new AtomicInteger(0);
-        HttpRequestFactory requestFactory = new HttpRequestFactory(getContext()) {
+        HttpRequestFactory requestFactory = new HttpRequestFactory() {
             @Override
             public HttpRequest getRequest(HttpMethod method, String url) {
                 return new HttpRequest(new OkHttpClient(), method, url) {

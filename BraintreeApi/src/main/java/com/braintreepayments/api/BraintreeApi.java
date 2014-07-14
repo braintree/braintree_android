@@ -59,7 +59,7 @@ public class BraintreeApi {
     }
 
     protected BraintreeApi(Context context, ClientToken token) {
-        this(context, token, new HttpRequestFactory(context));
+        this(context, token, new HttpRequestFactory());
     }
 
     protected BraintreeApi(Context context, ClientToken token,

@@ -26,7 +26,7 @@ public class TestUtils {
 
     public static BraintreeApi unexpectedExceptionThrowingApi(final Context context,
             ClientToken clientToken) {
-        HttpRequestFactory requestFactory = new HttpRequestFactory(context) {
+        HttpRequestFactory requestFactory = new HttpRequestFactory() {
             @Override
             public HttpRequest getRequest(HttpMethod method, String url) {
                 return new HttpRequest(new OkHttpClient(), method, url) {
@@ -43,7 +43,7 @@ public class TestUtils {
 
     public static BraintreeApi apiWithExpectedResponse(Context context,
             ClientToken clientToken, final String response, final int statusCode) {
-        HttpRequestFactory requestFactory = new HttpRequestFactory(context) {
+        HttpRequestFactory requestFactory = new HttpRequestFactory() {
             @Override
             public HttpRequest getRequest(HttpMethod method, String url) {
                 return new HttpRequest(new OkHttpClient(), method, url) {

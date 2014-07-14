@@ -55,6 +55,6 @@ public class HttpRequestFactoryTest extends InstrumentationTestCase {
     }
 
     private HttpRequestFactory getHttpRequestFactory() {
-        return new HttpRequestFactory(getInstrumentation().getContext());
+        return new HttpRequestFactory();
     }
 }

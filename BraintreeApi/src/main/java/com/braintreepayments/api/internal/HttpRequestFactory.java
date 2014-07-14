@@ -1,8 +1,5 @@
 package com.braintreepayments.api.internal;
 
-import android.content.Context;
-
-import com.braintree.api.R;
 import com.braintreepayments.api.internal.HttpRequest.HttpMethod;
 import com.squareup.okhttp.OkHttpClient;
 
@@ -24,17 +21,17 @@ public class HttpRequestFactory {
 
     private OkHttpClient mOkHttpClient;
 
-    public HttpRequestFactory(Context context) {
-        mOkHttpClient = getAndConfigureHttpClient(context);
+    public HttpRequestFactory() {
+        mOkHttpClient = getAndConfigureHttpClient();
     }
 
     public HttpRequest getRequest(HttpMethod method, String url) {
         return new HttpRequest(mOkHttpClient, method, url);
     }
 
-    private OkHttpClient getAndConfigureHttpClient(Context context) {
+    private OkHttpClient getAndConfigureHttpClient() {
         OkHttpClient httpClient = new OkHttpClient();
-        httpClient.setSslSocketFactory(getSslSocketFactory(context));
+        httpClient.setSslSocketFactory(getSslSocketFactory());
 
         return httpClient;
     }
@@ -46,15 +43,14 @@ public class HttpRequestFactory {
      * @see <a href="https://github.com/braintree/braintree_java/blob/95b96c356324d1532714f849402f830251ce8b81/src/main/java/com/braintreegateway/util/Http.java#L100">Braintree
      * Java Client Library</a>
      */
-    private SSLSocketFactory getSslSocketFactory(Context context) throws BraintreeSslException {
+    private SSLSocketFactory getSslSocketFactory() throws BraintreeSslException {
         PRNGFixes.apply();
         try {
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, null);
 
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            InputStream certStream = context.getResources().openRawResource(
-                    R.raw.api_braintreegateway_com);
+            InputStream certStream = BraintreeGatewayCertificate.getCertInputStream();
 
             Collection<? extends Certificate> certificates = cf.generateCertificates(certStream);
             for (Certificate cert : certificates) {
