@@ -2,7 +2,7 @@ package com.braintreepayments.api;
 
 import android.text.TextUtils;
 
-import com.braintree.api.testutils.BuildConfig;
+import com.braintreepayments.api.testutils.BuildConfig;
 
 public class EnvironmentHelper {
 

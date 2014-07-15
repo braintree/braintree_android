@@ -1,6 +1,6 @@
 package com.braintreepayments.api.internal;
 
-import com.braintree.api.test.BuildConfig;
+import com.braintreepayments.api.test.BuildConfig;
 
 import junit.framework.TestCase;
 

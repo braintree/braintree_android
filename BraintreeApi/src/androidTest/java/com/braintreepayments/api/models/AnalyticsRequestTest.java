@@ -3,7 +3,7 @@ package com.braintreepayments.api.models;
 import android.os.Build.VERSION;
 import android.test.AndroidTestCase;
 
-import com.braintree.api.BuildConfig;
+import com.braintreepayments.api.BuildConfig;
 
 import org.json.JSONException;
 import org.json.JSONObject;

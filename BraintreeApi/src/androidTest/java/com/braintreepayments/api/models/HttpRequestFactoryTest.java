@@ -2,7 +2,7 @@ package com.braintreepayments.api.models;
 
 import android.test.InstrumentationTestCase;
 
-import com.braintree.api.BuildConfig;
+import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.EnvironmentHelper;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.internal.HttpRequest.HttpMethod;

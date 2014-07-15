@@ -2,7 +2,7 @@ package com.braintreepayments.api.internal;
 
 import android.util.Log;
 
-import com.braintree.api.BuildConfig;
+import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.squareup.okhttp.OkHttpClient;
 

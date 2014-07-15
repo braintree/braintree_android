@@ -11,7 +11,7 @@ import android.os.Build;
 import android.os.Build.VERSION;
 import android.provider.Settings.Secure;
 
-import com.braintree.api.BuildConfig;
+import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.Utils;
 
 import java.io.BufferedReader;
