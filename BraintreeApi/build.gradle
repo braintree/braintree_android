@@ -17,7 +17,7 @@ android {
 dependencies {
     compile 'com.google.code.gson:gson:[2.2.4,3.0)'
     compile 'com.squareup.okhttp:okhttp:[1.5,2.0)'
-    compile 'com.braintreepayments.api:data:1.+'
+    compile 'com.braintreepayments.api:data:[1.0,)'
     compile files('libs/PayPalAndroidSDK.jar')
 
     androidTestCompile project(':TestUtils')
@@ -52,9 +52,15 @@ task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
 }
 
+task releaseJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompile) {
+    from projectDir.path + "/build/intermediates/classes/release/"
+    exclude { details -> details.file.name.endsWith('.xml') }
+}
+
 artifacts {
     archives javadocsJar
     archives sourcesJar
+    archives releaseJar
 }
 
 signing {
@@ -79,7 +85,7 @@ uploadArchives {
                 name 'braintree-api'
                 groupId = "com.braintreepayments.api"
                 version = "${android.defaultConfig.versionName}"
-                packaging 'aar'
+                packaging 'jar'
                 description "This is Braintree's v.zero SDK for Android. Integrate this library to accept payments in your Android app."
                 url 'https://github.com/braintree/braintree_android'
 
