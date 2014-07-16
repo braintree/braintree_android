@@ -54,6 +54,13 @@ task sourcesJar(type: Jar) {
 
 task releaseJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompile) {
     from projectDir.path + "/build/intermediates/classes/release/"
+    from {
+        configurations.compile.findAll {
+            it.getName() == 'PayPalAndroidSDK.jar'
+        }.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
     exclude { details -> details.file.name.endsWith('.xml') }
 }
 
