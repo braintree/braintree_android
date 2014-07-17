@@ -101,13 +101,20 @@ public class BraintreeApi {
         PayPalHelper.launchPayPal(activity, requestCode);
     }
 
-    protected PayPalAccountBuilder handlePayPalResponse(int resultCode, Intent data)
+    protected PayPalAccountBuilder handlePayPalResponse(Activity activity, int resultCode, Intent data)
             throws ConfigurationException {
         PayPalHelper.stopPaypalService(mContext);
-        return PayPalHelper.getBuilderFromActivity(resultCode, data);
+        return PayPalHelper.getBuilderFromActivity(activity, resultCode, data);
     }
 
     /**
+     * @deprecated
+     *
+     * This method should *not* be used, it does not include a Application Correlation ID.
+     * PayPal uses the Application Correlation ID to verify that the payment is originating from
+     * a valid, user-consented device+application. This helps reduce fraud and decrease declines.
+     * PayPal does not provide any loss protection for transactions that do not correctly supply
+     * an Application Correlation ID.
      *
      * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
@@ -120,7 +127,28 @@ public class BraintreeApi {
      */
     public PayPalAccount finishPayWithPayPal(int resultCode, Intent data)
             throws BraintreeException, ErrorWithResponse {
-        PayPalAccountBuilder payPalAccountBuilder = handlePayPalResponse(resultCode, data);
+        PayPalAccountBuilder payPalAccountBuilder = handlePayPalResponse(null, resultCode, data);
+        if (payPalAccountBuilder != null) {
+            return create(payPalAccountBuilder);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @param activity The calling activity
+     * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @return The {@link com.braintreepayments.api.models.PaymentMethod} created from a PayPal account
+     * @throws ErrorWithResponse If creation fails validation
+     * @throws BraintreeException If an error not due to validation (server error, network issue, etc.) occurs
+     * @throws ConfigurationException If PayPal credentials from the Braintree control panel are incorrect
+     *
+     * @see BraintreeApi#create(com.braintreepayments.api.models.PaymentMethod.Builder)
+     */
+    public PayPalAccount finishPayWithPayPal(Activity activity, int resultCode, Intent data)
+            throws BraintreeException, ErrorWithResponse {
+        PayPalAccountBuilder payPalAccountBuilder = handlePayPalResponse(activity, resultCode, data);
         if (payPalAccountBuilder != null) {
             return create(payPalAccountBuilder);
         } else {

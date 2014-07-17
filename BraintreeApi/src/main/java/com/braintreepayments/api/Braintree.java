@@ -230,6 +230,14 @@ public class Braintree {
     }
 
     /**
+     * @deprecated
+     *
+     * This method should *not* be used, it does not include a Application Correlation ID.
+     * PayPal uses the Application Correlation ID to verify that the payment is originating from
+     * a valid, user-consented device+application. This helps reduce fraud and decrease declines.
+     * PayPal does not provide any loss protection for transactions that do not correctly supply
+     * an Application Correlation ID.
+     *
      * Method to finish Pay With PayPal flow. Create a {@link com.braintreepayments.api.models.PayPalAccount}.
      *
      * The {@link com.braintreepayments.api.models.PayPalAccount} will be sent to
@@ -246,7 +254,35 @@ public class Braintree {
      */
     public synchronized void finishPayWithPayPal(int resultCode, Intent data) {
         try {
-            PayPalAccountBuilder payPalAccountBuilder = mBraintreeApi.handlePayPalResponse(resultCode, data);
+            PayPalAccountBuilder payPalAccountBuilder = mBraintreeApi.handlePayPalResponse(null, resultCode, data);
+            if (payPalAccountBuilder != null) {
+                create(payPalAccountBuilder);
+            }
+        } catch (ConfigurationException e) {
+            postUnrecoverableErrorToListeners(e);
+        }
+    }
+
+    /**
+     *
+     * Method to finish Pay With PayPal flow. Create a {@link com.braintreepayments.api.models.PayPalAccount}.
+     *
+     * The {@link com.braintreepayments.api.models.PayPalAccount} will be sent to
+     * {@link Braintree.PaymentMethodCreatedListener#onPaymentMethodCreated(com.braintreepayments.api.models.PaymentMethod)}
+     * and the nonce will be sent to
+     * {@link Braintree.PaymentMethodNonceListener#onPaymentMethodNonce(String)}.
+     *
+     * If an error occurs, the exception that occurred will be sent to
+     * {@link Braintree.ErrorListener#onRecoverableError(com.braintreepayments.api.exceptions.ErrorWithResponse)} or
+     * {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)} as appropriate.
+     *
+     * @param resultCode Result code from the Pay With PayPal flow.
+     * @param data Intent returned from Pay With PayPal flow.
+     */
+    public synchronized void finishPayWithPayPal(Activity activity, int resultCode, Intent data) {
+        try {
+            PayPalAccountBuilder payPalAccountBuilder = mBraintreeApi.handlePayPalResponse(activity,
+                    resultCode, data);
             if (payPalAccountBuilder != null) {
                 create(payPalAccountBuilder);
             }

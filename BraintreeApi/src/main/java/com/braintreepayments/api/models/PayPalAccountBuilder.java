@@ -12,6 +12,7 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
 
     private String email;
     private String authorizationCode;
+    private String correlationId;
     private PaymentMethodOptions options;
 
     /**
@@ -34,10 +35,23 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
         return this;
     }
 
+    /**
+     * Used by PayPal wrappers to construct a {@link com.braintreepayments.api.models.PayPalAccount}.
+     * @param correlationId Application correlation ID created by
+     * {@link com.paypal.android.sdk.payments.PayPalConfiguration#getApplicationCorrelationId(android.app.Activity)}
+     * to verify the payment.
+     * @return {@link com.braintreepayments.api.models.PayPalAccountBuilder}
+     */
+    public PayPalAccountBuilder correlationId(String correlationId) {
+        this.correlationId = correlationId;
+        return this;
+    }
+
     @Override
     public PayPalAccount build() {
         PayPalAccount payPalAccount = new PayPalAccount();
         payPalAccount.setConsentCode(authorizationCode);
+        payPalAccount.setCorrelationId(correlationId);
         payPalAccount.setOptions(options);
 
         return payPalAccount;

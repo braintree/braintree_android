@@ -12,6 +12,7 @@ public class PayPalAccountBuilderTest extends TestCase {
     public void testBuildsAPayPalAccountCorrectly() throws JSONException {
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
                 .email("test_email")
+                .correlationId("correlation_id")
                 .authorizationCode("test_auth_code");
 
         PayPalAccount paypalAccount = paypalAccountBuilder.build();
@@ -19,6 +20,7 @@ public class PayPalAccountBuilderTest extends TestCase {
 
         assertNull(builtAccount.opt("details"));
         assertEquals("test_auth_code", builtAccount.getString("consentCode"));
+        assertEquals("correlation_id", builtAccount.getString("correlationId"));
     }
 
     public void testIncludesValidateOptionWhenSet() throws JSONException {

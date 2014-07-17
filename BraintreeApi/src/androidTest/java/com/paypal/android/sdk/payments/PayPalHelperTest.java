@@ -17,7 +17,7 @@ public class PayPalHelperTest extends AndroidTestCase {
         PayPalAuthorization successfulAuthorization = new PayPalAuthorization(PayPalConfiguration.ENVIRONMENT_NO_NETWORK, "fake_paypal_authorization_code", "");
         successfulPaypal.putExtra(PayPalFuturePaymentActivity.EXTRA_RESULT_AUTHORIZATION, successfulAuthorization);
 
-        PayPalAccountBuilder accountBuilder = PayPalHelper.getBuilderFromActivity(
+        PayPalAccountBuilder accountBuilder = PayPalHelper.getBuilderFromActivity(null,
                 Activity.RESULT_OK, successfulPaypal);
         String json = Utils.getGson().toJson(accountBuilder.build());
         assertTrue(json.contains("fake_paypal_authorization_code"));
@@ -29,7 +29,7 @@ public class PayPalHelperTest extends AndroidTestCase {
         PayPalAuthorization successfulAuthorization = new PayPalAuthorization(PayPalConfiguration.ENVIRONMENT_NO_NETWORK, "fake_paypal_authorization_code", "");
         successfulPaypal.putExtra(PayPalFuturePaymentActivity.EXTRA_RESULT_AUTHORIZATION, successfulAuthorization);
 
-        PayPalAccountBuilder accountBuilder = PayPalHelper.getBuilderFromActivity(
+        PayPalAccountBuilder accountBuilder = PayPalHelper.getBuilderFromActivity(null,
                 Activity.RESULT_OK, successfulPaypal);
         PayPalAccount account = accountBuilder.build();
         assertEquals("", account.getEmail() );

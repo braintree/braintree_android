@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.SystemClock;
 import android.test.AndroidTestCase;
@@ -22,8 +23,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -177,8 +179,8 @@ public class BraintreeTest extends AndroidTestCase {
             throws BraintreeException, InterruptedException, ErrorWithResponse {
         Intent intent = new Intent();
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        doThrow(new ConfigurationException()).when(braintreeApi)
-                .handlePayPalResponse(PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID, intent);
+        when(braintreeApi.handlePayPalResponse(any(Activity.class), eq(PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID), eq(intent)))
+                .thenThrow(new ConfigurationException());
 
         Braintree braintree = new Braintree(braintreeApi);
 
@@ -200,7 +202,7 @@ public class BraintreeTest extends AndroidTestCase {
     public void testFinishPayWithPayPalDoesNothingOnNullBuilder() throws ConfigurationException {
         Intent intent = new Intent();
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        when(braintreeApi.handlePayPalResponse(PayPalFuturePaymentActivity.RESULT_CANCELED, intent)).
+        when(braintreeApi.handlePayPalResponse(any(Activity.class), eq(PayPalFuturePaymentActivity.RESULT_CANCELED), eq(intent))).
                 thenReturn(null);
 
         Braintree braintree = new Braintree(braintreeApi);

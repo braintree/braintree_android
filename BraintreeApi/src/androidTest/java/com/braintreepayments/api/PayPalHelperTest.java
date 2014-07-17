@@ -70,8 +70,8 @@ public class PayPalHelperTest extends AndroidTestCase {
     public void testThrowsConfigurationExceptionWhenResultExtrasInvalidResultCodeReturned() {
         boolean exceptionHappened = false;
         try {
-            PayPalHelper.getBuilderFromActivity(PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID,
-                    new Intent());
+            PayPalHelper.getBuilderFromActivity(null,
+                    PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID, new Intent());
             fail("Configuration exception was not thrown");
         } catch (ConfigurationException e) {
             exceptionHappened = true;
@@ -81,7 +81,8 @@ public class PayPalHelperTest extends AndroidTestCase {
     }
 
     public void testReturnsNullWhenResultCodeIsNotExpected() throws ConfigurationException {
-        PayPalAccountBuilder payPalAccountBuilder = PayPalHelper.getBuilderFromActivity(Integer.MAX_VALUE, new Intent());
+        PayPalAccountBuilder payPalAccountBuilder = PayPalHelper.getBuilderFromActivity(null,
+                Integer.MAX_VALUE, new Intent());
         assertNull(payPalAccountBuilder);
     }
 }

@@ -16,6 +16,7 @@ import com.paypal.android.sdk.payments.PayPalService;
 import org.json.JSONException;
 
 public class PayPalHelper {
+
     private PayPalHelper() {
         throw new IllegalStateException("Non-instantiable class.");
     }
@@ -33,12 +34,16 @@ public class PayPalHelper {
         context.stopService(new Intent(context, PayPalService.class));
     }
 
-    public static PayPalAccountBuilder getBuilderFromActivity(int resultCode, Intent data) throws ConfigurationException {
+    public static PayPalAccountBuilder getBuilderFromActivity(Activity activity, int resultCode, Intent data) throws ConfigurationException {
         if (resultCode == Activity.RESULT_OK) {
             PayPalAuthorization authorization = data.getParcelableExtra(
                     PayPalFuturePaymentActivity.EXTRA_RESULT_AUTHORIZATION);
             PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder()
                     .authorizationCode(authorization.getAuthorizationCode());
+
+            if (activity != null) {
+                payPalAccountBuilder.correlationId(PayPalConfiguration.getApplicationCorrelationId(activity));
+            }
 
             try {
                 String email = authorization.toJSONObject()

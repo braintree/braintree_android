@@ -16,6 +16,7 @@ public class PayPalAccount extends PaymentMethod implements Serializable {
     protected static final String PAYMENT_METHOD_TYPE = "PayPalAccount";
 
     private String consentCode;
+    private String correlationId;
     private PayPalDetails details;
 
     protected void setEmail(String email) {
@@ -25,6 +26,10 @@ public class PayPalAccount extends PaymentMethod implements Serializable {
 
     protected void setConsentCode(String consentCode) {
         this.consentCode = consentCode;
+    }
+
+    protected void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
     }
 
     /**
