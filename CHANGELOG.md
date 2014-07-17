@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 1.0.2
+
+* Fixes
+  * Improved packaging for non-Gradle uses of SDK
+
 ## 1.0.1
 
 * Fixes
