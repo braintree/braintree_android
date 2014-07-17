@@ -79,7 +79,7 @@ public class TestUtils {
 
     public static Braintree injectCountPaymentMethodListBraintree(final Context context, String clientToken, final
             AtomicInteger count) {
-        HttpRequestFactory requestFactory = new HttpRequestFactory(context) {
+        HttpRequestFactory requestFactory = new HttpRequestFactory() {
             @Override
             public HttpRequest getRequest(HttpMethod method, final String url) {
                 return new HttpRequest(new OkHttpClient(), method, url) {
@@ -104,7 +104,7 @@ public class TestUtils {
 
     public static Braintree injectUnexpectedExceptionThrowingBraintree(final Context context,
             String clientToken) {
-        HttpRequestFactory requestFactory = new HttpRequestFactory(context) {
+        HttpRequestFactory requestFactory = new HttpRequestFactory() {
             @Override
             public HttpRequest getRequest(HttpMethod method, String url) {
                 return new HttpRequest(new OkHttpClient(), method, url) {
@@ -122,7 +122,7 @@ public class TestUtils {
 
     public static Braintree injectGeneric422ErrorOnCardCreateBraintree(final Context context,
             String clientToken) {
-        HttpRequestFactory requestFactory = new HttpRequestFactory(context) {
+        HttpRequestFactory requestFactory = new HttpRequestFactory() {
             @Override
             public HttpRequest getRequest(HttpMethod method, final String url) {
                 return new HttpRequest(new OkHttpClient(), method, url) {
@@ -153,7 +153,7 @@ public class TestUtils {
     }
 
     public static Braintree injectSlowBraintree(Context context, String clientToken, final long delay) {
-        HttpRequestFactory requestFactory = new HttpRequestFactory(context) {
+        HttpRequestFactory requestFactory = new HttpRequestFactory() {
             @Override
             public HttpRequest getRequest(HttpMethod method, String url) {
                 return new HttpRequest(new OkHttpClient(), method, url) {
