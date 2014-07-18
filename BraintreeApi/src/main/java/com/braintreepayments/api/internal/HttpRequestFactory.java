@@ -1,5 +1,6 @@
 package com.braintreepayments.api.internal;
 
+import com.braintreepayments.api.exceptions.BraintreeSslException;
 import com.braintreepayments.api.internal.HttpRequest.HttpMethod;
 import com.squareup.okhttp.OkHttpClient;
 
@@ -77,12 +78,6 @@ public class HttpRequestFactory {
             return sslContext.getSocketFactory();
         } catch (Exception e) {
             throw new BraintreeSslException(e);
-        }
-    }
-
-    public static class BraintreeSslException extends RuntimeException {
-        BraintreeSslException(Exception e) {
-            super(e);
         }
     }
 
