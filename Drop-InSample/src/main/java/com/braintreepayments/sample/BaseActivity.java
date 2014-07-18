@@ -26,6 +26,7 @@ public abstract class BaseActivity extends Activity {
 
     public abstract void ready(String clientToken);
 
+    @SuppressWarnings("deprecation")
     protected void postNonceToServer(String nonce) {
         RequestParams params = new RequestParams();
         params.put("nonce", nonce);
@@ -38,6 +39,7 @@ public abstract class BaseActivity extends Activity {
                 });
     }
 
+    @SuppressWarnings("deprecation")
     private void getClientToken() {
         mHttpClient.get(BASE_SERVER_URL + "/client_token", new AsyncHttpResponseHandler() {
             @Override

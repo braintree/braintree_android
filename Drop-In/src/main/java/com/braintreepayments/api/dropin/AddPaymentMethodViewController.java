@@ -229,7 +229,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
     public void onPayPalResult(int resultCode, Intent data) {
         mIsSubmitting = true;
-        getBraintree().finishPayWithPayPal(resultCode, data);
+        getBraintree().finishPayWithPayPal(getActivity(), resultCode, data);
     }
 
     @Override
@@ -291,7 +291,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
                 focusSet = setError(mCvvView, focusSet);
             }
             if(cardErrors.errorFor("billingAddress") != null) {
-                focusSet = setError(mPostalCode, focusSet);
+                setError(mPostalCode, focusSet);
             }
         } else {
             getActivity().onUnrecoverableError(new UnexpectedException(error.getMessage()));

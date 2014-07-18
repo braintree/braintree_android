@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
@@ -149,10 +150,11 @@ public abstract class FloatingLabelEditText extends BraintreeEditText implements
         }
     }
 
+    @TargetApi(VERSION_CODES.ICE_CREAM_SANDWICH)
     @Override
     public void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
         super.onTextChanged(text, start, lengthBefore, lengthAfter);
-        if (VERSION.SDK_INT >= HONEYCOMB) {
+        if (VERSION.SDK_INT >= VERSION_CODES.ICE_CREAM_SANDWICH) {
             if (mPreviousTextLength == 0 && text.length() > 0 && !mHintAnimator.isStarted()) {
                 mHintAnimator.start();
                 mFocusColorAnimator.start();
@@ -162,6 +164,7 @@ public abstract class FloatingLabelEditText extends BraintreeEditText implements
         mPreviousTextLength = text.length();
     }
 
+    @TargetApi(VERSION_CODES.HONEYCOMB)
     protected void handleTextColorOnFocus(boolean hasFocus) {
         if (VERSION.SDK_INT >= HONEYCOMB) {
             if (hasFocus) {

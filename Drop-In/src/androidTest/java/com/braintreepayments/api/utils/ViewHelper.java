@@ -93,7 +93,7 @@ public class ViewHelper {
     }
 
     public static Matcher<View> addPaymentFormHeader() {
-        return withText("Pay With A Card");
+        return withText(R.string.form_pay_with_card_header);
     }
 
     public static ViewInteraction onCardField() {

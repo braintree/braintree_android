@@ -60,7 +60,7 @@ public class LoadingHeader extends RelativeLayout {
         mStatusIcon.setVisibility(GONE);
         mHeaderMessage.setVisibility(GONE);
 
-        setBackgroundResource(R.color.bt_white);
+        setBackgroundColor(getResources().getColor(R.color.bt_white));
         mLoadingSpinner.setVisibility(VISIBLE);
 
         setVisibility(VISIBLE);
@@ -72,7 +72,7 @@ public class LoadingHeader extends RelativeLayout {
         mLoadingSpinner.setVisibility(GONE);
         mHeaderMessage.setVisibility(GONE);
 
-        setBackgroundResource(R.color.bt_blue);
+        setBackgroundColor(getResources().getColor(R.color.bt_blue));
         mStatusIcon.setImageResource(R.drawable.ic_loading_success);
         mStatusIcon.setVisibility(VISIBLE);
 
@@ -87,7 +87,7 @@ public class LoadingHeader extends RelativeLayout {
         mHeaderMessage.setVisibility(GONE);
         mHeaderMessage.setText(errorMessage);
 
-        setBackgroundResource(R.color.bt_red);
+        setBackgroundColor(getResources().getColor(R.color.bt_red));
         mStatusIcon.setImageResource(R.drawable.ic_loading_failure);
         mStatusIcon.setVisibility(VISIBLE);
 

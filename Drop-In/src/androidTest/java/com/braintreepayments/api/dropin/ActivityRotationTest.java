@@ -204,7 +204,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         injectSlowBraintree(getContext(), clientToken, timeout);
         TestUtils.setUpActivityTest(this, clientToken);
 
-        BraintreePaymentActivity activity = getActivity();
+        getActivity();
         waitForAddPaymentFormHeader(timeout * 4); // give it extra time
         onCardField().perform(typeText("378282246310005"), closeSoftKeyboard(),
                 waitForKeyboardToClose());

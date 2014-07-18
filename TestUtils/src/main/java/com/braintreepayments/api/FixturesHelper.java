@@ -21,7 +21,7 @@ public class FixturesHelper {
             try {
                 String line;
 
-                StringBuffer data = new StringBuffer();
+                StringBuilder data = new StringBuilder();
                 while ((line = reader.readLine()) != null) {
                     data.append(line);
                 }

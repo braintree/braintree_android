@@ -1,5 +1,7 @@
 package com.braintreepayments.api.dropin;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
@@ -283,6 +285,7 @@ public class BraintreePaymentActivity extends Activity implements
         }
     }
 
+    @TargetApi(VERSION_CODES.HONEYCOMB)
     private void setActionBarUpEnabled(boolean enabled) {
         if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
             ActionBar actionBar = getActionBar();
@@ -305,6 +308,7 @@ public class BraintreePaymentActivity extends Activity implements
         return clientToken;
     }
 
+    @SuppressLint("NewApi")
     private void customizeActionBar() {
         if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
             ActionBar actionBar = getActionBar();
@@ -315,10 +319,13 @@ public class BraintreePaymentActivity extends Activity implements
                     actionBar.setTitle(mCustomization.getActionBarTitle());
                 }
 
-                if (mCustomization.getActionBarLogo() == 0) {
-                    actionBar.setLogo(new ColorDrawable(getResources().getColor(android.R.color.transparent)));
-                } else {
-                    actionBar.setLogo(mCustomization.getActionBarLogo());
+                if (VERSION.SDK_INT >= VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    if (mCustomization.getActionBarLogo() == 0) {
+                        actionBar.setLogo(new ColorDrawable(
+                                getResources().getColor(android.R.color.transparent)));
+                    } else {
+                        actionBar.setLogo(mCustomization.getActionBarLogo());
+                    }
                 }
             }
         }
@@ -396,6 +403,8 @@ public class BraintreePaymentActivity extends Activity implements
          * @param activity hosting activity for the views. Should always be {@code this}.
          * @return the displayed {@link View}.
          */
+        @SuppressLint("NewApi")
+        @SuppressWarnings("unchecked")
         <T extends View> T show(BraintreePaymentActivity activity) {
             for (StubbedView value : values()) {
                 if (this != value) {

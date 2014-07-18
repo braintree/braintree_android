@@ -193,7 +193,7 @@ public class BraintreeTest extends AndroidTestCase {
             }
         });
 
-        braintree.finishPayWithPayPal(PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID, intent);
+        braintree.finishPayWithPayPal(null, PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID, intent);
         SystemClock.sleep(50);
 
         assertTrue(wasCalled.get());
@@ -235,7 +235,7 @@ public class BraintreeTest extends AndroidTestCase {
             }
         });
 
-        braintree.finishPayWithPayPal(PayPalFuturePaymentActivity.RESULT_CANCELED, intent);
+        braintree.finishPayWithPayPal(null, PayPalFuturePaymentActivity.RESULT_CANCELED, intent);
         SystemClock.sleep(50);
 
         assertFalse("Expected no listeners to fire but one did fire", listenerWasCalled.get());

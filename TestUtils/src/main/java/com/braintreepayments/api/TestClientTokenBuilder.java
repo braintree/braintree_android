@@ -142,7 +142,7 @@ public class TestClientTokenBuilder {
             out.close();
 
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line = "";
+            String line;
             StringBuilder response = new StringBuilder();
             while ((line = in.readLine()) != null) {
                 response.append(line);

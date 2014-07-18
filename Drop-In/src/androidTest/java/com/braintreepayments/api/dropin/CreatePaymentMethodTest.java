@@ -67,7 +67,7 @@ import static org.mockito.Mockito.when;
 
 public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
-    private void assertCardFormCreatesAPaymentMethod() throws InterruptedException {
+    private void assertCardFormCreatesAPaymentMethod() {
         BraintreePaymentActivity activity = getActivity();
 
         waitForAddPaymentFormHeader();

@@ -37,7 +37,7 @@ public class PayPal extends BaseActivity implements PaymentMethodNonceListener {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PAYPAL_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                mBraintree.finishPayWithPayPal(resultCode, data);
+                mBraintree.finishPayWithPayPal(this, resultCode, data);
                 return;
             }
         }

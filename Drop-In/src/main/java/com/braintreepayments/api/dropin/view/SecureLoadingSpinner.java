@@ -16,9 +16,6 @@ import com.braintreepayments.api.dropin.utils.LoadingSpinnerInterpolator;
  */
 public class SecureLoadingSpinner extends RelativeLayout {
 
-    private ProgressBar mLoadingSpinner;
-    private ImageView mLockView;
-
     public SecureLoadingSpinner(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
@@ -32,13 +29,14 @@ public class SecureLoadingSpinner extends RelativeLayout {
     private void init(Context context, AttributeSet attrs) {
         RelativeLayout.LayoutParams fillParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         fillParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-        mLoadingSpinner = (ProgressBar) inflate(context, R.layout.secure_loading_spinner, null);
-        mLoadingSpinner.setIndeterminate(true);
-        mLoadingSpinner.setIndeterminateDrawable(
+        ProgressBar loadingSpinner =
+                (ProgressBar) inflate(context, R.layout.secure_loading_spinner, null);
+        loadingSpinner.setIndeterminate(true);
+        loadingSpinner.setIndeterminateDrawable(
                 context.getResources().getDrawable(R.drawable.loading_animation));
-        mLoadingSpinner.setInterpolator(new LoadingSpinnerInterpolator());
-        mLoadingSpinner.setLayoutParams(fillParams);
-        addView(mLoadingSpinner);
+        loadingSpinner.setInterpolator(new LoadingSpinnerInterpolator());
+        loadingSpinner.setLayoutParams(fillParams);
+        addView(loadingSpinner);
 
         TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.SecureLoadingSpinner, 0, 0);
@@ -47,10 +45,10 @@ public class SecureLoadingSpinner extends RelativeLayout {
 
         RelativeLayout.LayoutParams imageParams = new LayoutParams(size, size);
         imageParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-        mLockView = new ImageView(context);
-        mLockView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_lock));
-        mLockView.setLayoutParams(imageParams);
-        mLockView.setPadding(0,0,0,4);
-        addView(mLockView);
+        ImageView lockView = new ImageView(context);
+        lockView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_lock));
+        lockView.setLayoutParams(imageParams);
+        lockView.setPadding(0, 0, 0, 4);
+        addView(lockView);
     }
 }

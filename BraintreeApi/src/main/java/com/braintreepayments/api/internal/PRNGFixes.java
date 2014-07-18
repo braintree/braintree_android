@@ -10,6 +10,9 @@ package com.braintreepayments.api.internal;
  * freely, as long as the origin is not misrepresented.
  */
 
+import android.os.Build;
+import android.os.Process;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -24,9 +27,6 @@ import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.SecureRandomSpi;
 import java.security.Security;
-
-import android.os.Build;
-import android.os.Process;
 
 /**
  * Fixes for the output of the default PRNG having low entropy.
@@ -43,7 +43,7 @@ import android.os.Process;
  * <p/>
  * Local functional changes: None.
  */
-public final class PRNGFixes {
+/* package */ final class PRNGFixes {
 
     private static final int VERSION_CODE_JELLY_BEAN = 16;
     private static final int VERSION_CODE_JELLY_BEAN_MR2 = 18;

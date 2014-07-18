@@ -76,8 +76,11 @@ public class MonthYearEditTextTest extends AndroidTestCase {
 
     public void testSlashHasPadding() {
         setText("12/18");
+
         Spanned spanned = view.getText();
 
+        PaddingSpan[] paddingSpan = spanned.getSpans(0, view.getText().toString().length(), PaddingSpan.class);
+        assertEquals(1, paddingSpan.length);
     }
 
     private MonthYearEditTextTest type(char... chars) {

@@ -29,9 +29,7 @@ public class HttpRequest {
 
     public static enum HttpMethod {
         GET(false),
-        POST(true),
-        PUT(true),
-        DELETE(false);
+        POST(true);
 
         private final boolean encodeParams;
 
@@ -88,6 +86,7 @@ public class HttpRequest {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public HttpRequest execute() throws UnexpectedException {
         try {
             HttpURLConnection connection;

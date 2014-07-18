@@ -10,6 +10,5 @@
     <color name="bt_button_disabled_color">#99999A</color>
     <color name="paypal_button_background">#009BDE</color>
     <color name="paypal_button_background_hover">#0C8DC4</color>
-    <color name="bt_dialog_background">#FFF3F3F3</color>
     <color name="border_color">#99999A</color>
 </resources>

@@ -8,7 +8,6 @@ import com.google.android.apps.common.testing.ui.espresso.matcher.BoundedMatcher
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.hamcrest.Matchers.is;
 
@@ -17,7 +16,7 @@ public class Matchers {
 
     public static Matcher<View> withHint(String hintText) {
         // use preconditions to fail fast when a test is creating an invalid matcher.
-        checkArgument(!(hintText.equals(null)));
+        checkNotNull(hintText);
         return withHint(is(hintText));
     }
 

@@ -46,7 +46,7 @@ import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
  */
 public class BraintreeApi {
 
-    private static String PAYMENT_METHOD_ENDPOINT = "payment_methods";
+    private static final String PAYMENT_METHOD_ENDPOINT = "payment_methods";
 
     private Context mContext;
     private ClientToken mClientToken;
@@ -281,7 +281,7 @@ public class BraintreeApi {
     }
 
     private String jsonForType(String response, String type) throws ServerException {
-        JSONObject responseJson = null;
+        JSONObject responseJson;
         try {
             responseJson = new JSONObject(response);
             return responseJson.getJSONArray(type)

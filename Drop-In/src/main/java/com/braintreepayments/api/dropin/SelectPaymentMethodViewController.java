@@ -29,7 +29,6 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
      */
     private PaymentMethodView mPaymentMethodView;
     private TextView mChangeMethodView;
-    private PaymentMethodListAdapter mPaymentMethodListAdapter;
     private Button mSubmitButton;
 
     public SelectPaymentMethodViewController(BraintreePaymentActivity activity,
@@ -90,8 +89,11 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
         }
     }
 
+    @SuppressWarnings("NewApi")
     private void showPaymentMethodListDialog() {
-        mPaymentMethodListAdapter = new PaymentMethodListAdapter(getActivity(), this, getBraintree().getCachedPaymentMethods());
+        PaymentMethodListAdapter paymentMethodListAdapter =
+                new PaymentMethodListAdapter(getActivity(), this,
+                        getBraintree().getCachedPaymentMethods());
 
         ContextThemeWrapper contextThemeWrapper;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -103,7 +105,7 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
 
         new AlertDialog.Builder(contextThemeWrapper)
             .setTitle(R.string.choose_payment_method)
-            .setAdapter(mPaymentMethodListAdapter, mPaymentMethodListAdapter)
+            .setAdapter(paymentMethodListAdapter, paymentMethodListAdapter)
             .setPositiveButton(R.string.add_new_payment_method, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {

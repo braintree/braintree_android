@@ -7,7 +7,7 @@ public enum BraintreeEnvironment {
 
     private static final String BRAINTREE_MERCHANT_ID = "600000";
 
-    private String mUrl;
+    private final String mUrl;
 
     private BraintreeEnvironment(String url) {
         mUrl = url;

@@ -38,7 +38,7 @@ public class HttpRequestFactory {
     }
 
     /**
-     * @return
+     * @return {@link javax.net.ssl.SSLSocketFactory}
      * @see <a href="http://developer.android.com/training/articles/security-ssl.html#UnknownCa">Android
      * Documentation</a>
      * @see <a href="https://github.com/braintree/braintree_java/blob/95b96c356324d1532714f849402f830251ce8b81/src/main/java/com/braintreegateway/util/Http.java#L100">Braintree

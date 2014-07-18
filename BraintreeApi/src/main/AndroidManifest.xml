@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
-    <application>
+    <application android:allowBackup="false">
         <activity android:name="com.paypal.android.sdk.payments.PayPalFuturePaymentActivity" />
         <activity android:name="com.paypal.android.sdk.payments.FuturePaymentConsentActivity" />
         <activity android:name="com.paypal.android.sdk.payments.FuturePaymentInfoActivity" />

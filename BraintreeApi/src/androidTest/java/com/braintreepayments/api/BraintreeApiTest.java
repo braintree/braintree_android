@@ -174,7 +174,7 @@ public class BraintreeApiTest extends AndroidTestCase {
         boolean exceptionHappened = false;
 
         try {
-            braintreeApi.finishPayWithPayPal(PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID,
+            braintreeApi.finishPayWithPayPal(null, PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID,
                     new Intent());
             fail("Configuration exception not thrown");
         } catch (ConfigurationException e) {

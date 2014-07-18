@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_form_root"
     android:layout_height="wrap_content"
     android:layout_width="match_parent">
@@ -12,6 +13,7 @@
         android:visibility="gone" />
 
     <ScrollView
+        tools:ignore="UnusedAttribute"
         android:id="@+id/form_scroll_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,7 +46,6 @@
                 android:layout_marginRight="@dimen/form_padding"
                 android:text="@string/form_pay_with_card_header"
                 android:textColor="@color/bt_black"
-                android:textAllCaps="true"
                 android:layout_marginBottom="4dp" />
 
             <View

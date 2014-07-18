@@ -4,14 +4,14 @@ def LOCALHOST_IP = System.properties.containsKey("LOCALHOST_IP") ? System.proper
 def GATEWAY_PORT = System.properties.containsKey("GATEWAY_PORT") ? System.properties["GATEWAY_PORT"] : '"3000"';
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "19.1.0"
+    compileSdkVersion 20
+    buildToolsVersion "20"
 
     defaultConfig {
         minSdkVersion 8
-        targetSdkVersion 19
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 20
+        versionCode 4
+        versionName "1.0.3"
     }
 }
 
