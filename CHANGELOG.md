@@ -1,6 +1,11 @@
 # Braintree Android SDK Release Notes
 
-## 1.0.2
+## 1.0.3
+
+* Fixes
+  * Fix crash on Android SDK < 19
+
+## 1.0.2 - crash on Android SDK < 19, do not use
 
 * Fixes
   * Improved packaging for non-Gradle uses of SDK
