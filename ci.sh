@@ -102,7 +102,8 @@ wait_for_emulator
 
 ruby script/httpsd.rb /tmp/httpsd.pid
 
-$android_path/gradlew --info --no-color clean runAllTests connectedAndroidTest
+$android_path/gradlew --info --no-color clean lint
+$android_path/gradlew --info --no-color runAllTests connectedAndroidTest
 test_return_code=$?
 
 download_screenshots
