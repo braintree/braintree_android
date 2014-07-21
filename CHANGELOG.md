@@ -4,6 +4,7 @@
 
 * Fixes
   * Fix crash on Android SDK < 19
+* Add PayPal `correlationId` to PayPal account creation
 
 ## 1.0.2 - crash on Android SDK < 19, do not use
 
