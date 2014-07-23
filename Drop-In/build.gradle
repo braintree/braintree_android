@@ -52,9 +52,16 @@ task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
 }
 
+task fullProjectZip(type: Zip) {
+    from android.sourceSets.main.java
+}
+
+println relativePath(fullProjectZip.archivePath)
+
 artifacts {
     archives javadocsJar
     archives sourcesJar
+    archives fullProjectZip
 }
 
 signing {
