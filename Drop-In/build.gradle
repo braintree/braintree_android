@@ -54,13 +54,22 @@ task sourcesJar(type: Jar) {
 
 task fullProjectZip(type: Zip, dependsOn: android.libraryVariants.release.javaCompile) {
     from fileTree(dir: 'src/main').exclude('java')
-    into('libs') {
-        from rootProject.fullApiJarPath
-    }
+
+    // Android Studio 0.8.x appears to be incapable of handling interdependent subprojects.
+    // Run all upload tasks from command line ONLY.
+    try {
+        into('libs') {
+            from rootProject.childProjects.BraintreeApi.fullJar.archivePath
+        }
+    } catch(e) { null }
     into('src') {
         from android.sourceSets.main.java.srcDirs
     }
 }
+
+try {
+    fullProjectZip.dependsOn(rootProject.childProjects.BraintreeApi.fullJar)
+} catch(e) { null }
 
 artifacts {
     archives javadocsJar
