@@ -52,11 +52,15 @@ task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
 }
 
-task fullProjectZip(type: Zip) {
-    from android.sourceSets.main.java
+task fullProjectZip(type: Zip, dependsOn: android.libraryVariants.release.javaCompile) {
+    from fileTree(dir: 'src/main').exclude('java')
+    into('libs') {
+        from rootProject.fullApiJarPath
+    }
+    into('src') {
+        from android.sourceSets.main.java.srcDirs
+    }
 }
-
-println relativePath(fullProjectZip.archivePath)
 
 artifacts {
     archives javadocsJar

@@ -64,10 +64,24 @@ task releaseJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompil
     exclude { details -> details.file.name.endsWith('.xml') }
 }
 
+task fullJar(type: Jar, dependsOn: releaseJar) {
+    classifier = 'full'
+    from zipTree(releaseJar.archivePath)
+    from {
+        configurations.compile.findAll {
+            it.getName() != 'PayPalAndroidSDK.jar'
+        }.collect {
+            it.isDirectory() ? null : zipTree(it)
+        }
+    }
+    rootProject.fullApiJarPath = archivePath
+}
+
 artifacts {
     archives javadocsJar
     archives sourcesJar
     archives releaseJar
+    archives fullJar
 }
 
 signing {
