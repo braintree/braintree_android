@@ -19,6 +19,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import static java.net.HttpURLConnection.HTTP_OK;
 
@@ -54,8 +55,14 @@ public class HttpRequest {
         mMethod = method;
         mUrl = url;
         mParams = new LinkedList<NameValuePair>();
+
         mHeaders = new LinkedList<NameValuePair>();
-        header("User-Agent", getUserAgent());
+        header("User-Agent", "braintree/android/" + BuildConfig.VERSION_NAME);
+        header("Accept-Language", Locale.getDefault().getLanguage());
+    }
+
+    protected List<NameValuePair> getHeaders() {
+        return mHeaders;
     }
 
     public HttpRequest header(String name, String value) {
@@ -164,10 +171,6 @@ public class HttpRequest {
         }
 
         return URLEncodedUtils.format(mParams, HTTP.UTF_8);
-    }
-
-    protected String getUserAgent() {
-        return "braintree/android/" + BuildConfig.VERSION_NAME;
     }
 
     /**
