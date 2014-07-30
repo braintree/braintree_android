@@ -2,6 +2,8 @@ package com.braintreepayments.api.dropin.view;
 
 import android.content.Context;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.InputFilter.LengthFilter;
 import android.text.InputType;
 import android.text.Spanned;
 import android.text.TextWatcher;
@@ -76,6 +78,11 @@ public class CardEditText extends FloatingLabelEditText implements TextWatcher {
         CardType type = CardType.forCardNumber(getText().toString());
         if (mCardType != type) {
             mCardType = type;
+
+            InputFilter[] filters = {new LengthFilter(mCardType.getMaxCardLength())};
+            setFilters(filters);
+            invalidate();
+
             if (mOnCardTypeChangedListener != null) {
                 mOnCardTypeChangedListener.onCardTypeChanged(mCardType);
             }

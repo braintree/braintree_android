@@ -21,6 +21,7 @@
     <com.braintreepayments.api.dropin.view.PostalCodeEditText
         style="@style/form_edittext"
         android:id="@+id/card_form_postal_code"
-        android:hint="@string/form_hint_postal_code" />
+        android:hint="@string/form_hint_postal_code"
+        android:maxLength="16"/>
 
 </merge>
