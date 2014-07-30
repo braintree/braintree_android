@@ -54,6 +54,7 @@
                 android:layout_height="1dp"
                 android:layout_marginLeft="@dimen/form_padding"
                 android:layout_marginRight="@dimen/form_padding"
+                android:layout_marginBottom="8dp"
                 android:background="@color/bt_black" />
 
             <include layout="@layout/card_form_fields" />
