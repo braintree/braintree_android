@@ -73,7 +73,7 @@ public class LoadingHeader extends RelativeLayout {
         mHeaderMessage.setVisibility(GONE);
 
         setBackgroundColor(getResources().getColor(R.color.bt_blue));
-        mStatusIcon.setImageResource(R.drawable.ic_loading_success);
+        mStatusIcon.setImageResource(R.drawable.ic_success);
         mStatusIcon.setVisibility(VISIBLE);
 
         setVisibility(VISIBLE);
@@ -88,7 +88,7 @@ public class LoadingHeader extends RelativeLayout {
         mHeaderMessage.setText(errorMessage);
 
         setBackgroundColor(getResources().getColor(R.color.bt_red));
-        mStatusIcon.setImageResource(R.drawable.ic_loading_failure);
+        mStatusIcon.setImageResource(R.drawable.ic_error);
         mStatusIcon.setVisibility(VISIBLE);
 
         Animation fadeIn = new AlphaAnimation(0, 1);

@@ -110,7 +110,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         Bitmap actual = ((BitmapDrawable) iv.getDrawable()).getBitmap();
 
         Bitmap expected = ((BitmapDrawable) getActivity().getResources()
-                .getDrawable(R.drawable.ic_visa_small)).getBitmap();
+                .getDrawable(R.drawable.ic_visa)).getBitmap();
 
         assertTrue(expected.sameAs(actual));
     }
@@ -172,7 +172,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         Bitmap actual = ((BitmapDrawable) iv.getDrawable()).getBitmap();
 
         Bitmap expected = ((BitmapDrawable) getActivity().getResources()
-                .getDrawable(R.drawable.ic_amex_small)).getBitmap();
+                .getDrawable(R.drawable.ic_amex)).getBitmap();
 
         assertTrue(expected.sameAs(actual));
     }

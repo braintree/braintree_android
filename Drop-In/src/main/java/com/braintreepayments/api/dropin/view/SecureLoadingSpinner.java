@@ -1,7 +1,6 @@
 package com.braintreepayments.api.dropin.view;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -18,15 +17,15 @@ public class SecureLoadingSpinner extends RelativeLayout {
 
     public SecureLoadingSpinner(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context, attrs);
+        init(context);
     }
 
     public SecureLoadingSpinner(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init(context, attrs);
+        init(context);
     }
 
-    private void init(Context context, AttributeSet attrs) {
+    private void init(Context context) {
         RelativeLayout.LayoutParams fillParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         fillParams.addRule(RelativeLayout.CENTER_IN_PARENT);
         ProgressBar loadingSpinner =
@@ -38,15 +37,10 @@ public class SecureLoadingSpinner extends RelativeLayout {
         loadingSpinner.setLayoutParams(fillParams);
         addView(loadingSpinner);
 
-        TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(attrs,
-                R.styleable.SecureLoadingSpinner, 0, 0);
-        int size = styledAttributes.getLayoutDimension(R.styleable.SecureLoadingSpinner_imageSize, 0);
-        styledAttributes.recycle();
-
-        RelativeLayout.LayoutParams imageParams = new LayoutParams(size, size);
+        RelativeLayout.LayoutParams imageParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         imageParams.addRule(RelativeLayout.CENTER_IN_PARENT);
         ImageView lockView = new ImageView(context);
-        lockView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_lock));
+        lockView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_secure));
         lockView.setLayoutParams(imageParams);
         lockView.setPadding(0, 0, 0, 4);
         addView(lockView);

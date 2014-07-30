@@ -18,14 +18,14 @@ public class PaymentMethodView extends RelativeLayout {
     private static final int UNKNOWN_IMAGE_ID = -1;
 
     public static enum PaymentType {
-        VISA(R.drawable.ic_visa_small, R.string.descriptor_visa, "Visa"),
-        MASTERCARD(R.drawable.ic_mastercard_small, R.string.descriptor_mastercard, "MasterCard"),
-        DISCOVER(R.drawable.ic_discover_small, R.string.descriptor_discover, "Discover"),
-        AMEX(R.drawable.ic_amex_small, R.string.descriptor_amex, "American Express"),
-        JCB(R.drawable.ic_jcb_small, R.string.descriptor_jcb, "JCB"),
-        DINERS(R.drawable.ic_diners_small, R.string.descriptor_diners, "Diners"),
-        MAESTRO(R.drawable.ic_maestro_small, R.string.descriptor_maestro, "Maestro"),
-        PAYPAL(R.drawable.ic_paypal_small, R.string.descriptor_paypal, "PayPal"),
+        VISA(R.drawable.ic_visa, R.string.descriptor_visa, "Visa"),
+        MASTERCARD(R.drawable.ic_mastercard, R.string.descriptor_mastercard, "MasterCard"),
+        DISCOVER(R.drawable.ic_discover, R.string.descriptor_discover, "Discover"),
+        AMEX(R.drawable.ic_amex, R.string.descriptor_amex, "American Express"),
+        JCB(R.drawable.ic_jcb, R.string.descriptor_jcb, "JCB"),
+        DINERS(R.drawable.ic_diners, R.string.descriptor_diners, "Diners"),
+        MAESTRO(R.drawable.ic_maestro, R.string.descriptor_maestro, "Maestro"),
+        PAYPAL(R.drawable.ic_paypal, R.string.descriptor_paypal, "PayPal"),
         UNKNOWN(UNKNOWN_IMAGE_ID, R.string.descriptor_unknown, "unknown");
 
         private final int mPictureResId;

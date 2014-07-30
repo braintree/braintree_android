@@ -396,19 +396,19 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForView(withHint("Card Number"))
-                .check(theIconHintIs(R.drawable.ic_card_number_highlighted))
-                .perform(typeText("4")).check(theIconHintIs(R.drawable.ic_visa_small))
+                .check(theIconHintIs(R.drawable.ic_card_highlighted))
+                .perform(typeText("4")).check(theIconHintIs(R.drawable.ic_visa))
                 .perform(clearText())
-                .perform(typeText("51")).check(theIconHintIs(R.drawable.ic_mastercard_small))
+                .perform(typeText("51")).check(theIconHintIs(R.drawable.ic_mastercard))
                 .perform(clearText())
-                .perform(typeText("37")).check(theIconHintIs(R.drawable.ic_amex_small))
+                .perform(typeText("37")).check(theIconHintIs(R.drawable.ic_amex))
                 .perform(clearText())
-                .perform(typeText("35")).check(theIconHintIs(R.drawable.ic_jcb_small))
+                .perform(typeText("35")).check(theIconHintIs(R.drawable.ic_jcb))
                 .perform(clearText())
-                .perform(typeText("5018")).check(theIconHintIs(R.drawable.ic_maestro_small))
+                .perform(typeText("5018")).check(theIconHintIs(R.drawable.ic_maestro))
                 .perform(clearText())
                 .perform(typeText("1234"))
-                .check(theIconHintIs(R.drawable.ic_card_number_highlighted));
+                .check(theIconHintIs(R.drawable.ic_card_highlighted));
     }
 
     public void testDisplaysAnErrorWhenCardNumberFailsOnServer()

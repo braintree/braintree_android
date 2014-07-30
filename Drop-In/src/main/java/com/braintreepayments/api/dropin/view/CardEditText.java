@@ -40,7 +40,7 @@ public class CardEditText extends FloatingLabelEditText implements TextWatcher {
     private void init() {
         setInputType(InputType.TYPE_CLASS_NUMBER);
         addTextChangedListener(this);
-        setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_card_number_highlighted, 0);
+        setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_card_highlighted, 0);
     }
 
     public CardType getCardType() {

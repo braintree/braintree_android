@@ -29,6 +29,6 @@ public class PayPalButton extends ImageButton {
 
     private void init() {
         setBackgroundResource(R.drawable.paypal_button_selector);
-        setImageResource(R.drawable.ic_paypal_full_white_small);
+        setImageResource(R.drawable.ic_paypal_button);
     }
 }

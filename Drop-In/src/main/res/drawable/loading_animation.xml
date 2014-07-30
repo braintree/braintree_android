@@ -2,8 +2,8 @@
 <rotate xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
-    android:drawable="@drawable/spinner"
+    android:drawable="@drawable/ic_loading"
     android:pivotX="50%"
     android:pivotY="50%"
-    android:fromDegrees="-45"
-    android:toDegrees="315" />
+    android:fromDegrees="0"
+    android:toDegrees="360" />
