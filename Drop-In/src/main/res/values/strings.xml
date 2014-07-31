@@ -15,6 +15,7 @@
     <string name="default_submit_button_text">Purchase</string>
     <string name="default_action_bar_text">Purchase</string>
 
+    <!-- Note: %s is a place holder and should be left in translated strings -->
     <string name="card_descriptor">ends in %s</string>
 
     <string name="descriptor_visa">Visa</string>
