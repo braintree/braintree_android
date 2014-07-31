@@ -9,6 +9,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.braintreepayments.api.dropin.R;
+import com.braintreepayments.api.models.Card;
+import com.braintreepayments.api.models.PaymentMethod;
 
 /**
  * Layout that includes an image and text representation of a PaymentMethod
@@ -81,9 +83,14 @@ public class PaymentMethodView extends RelativeLayout {
         refresh();
     }
 
-    public void setPaymentMethodDetails(String paymentMethodType, String paymentMethodDescription) {
-        mType = PaymentType.forType(paymentMethodType);
-        mDescription = paymentMethodDescription;
+    public void setPaymentMethodDetails(PaymentMethod paymentMethod) {
+        mType = PaymentType.forType(paymentMethod.getTypeLabel());
+        if (paymentMethod instanceof Card) {
+            mDescription = String.format(getResources().getString(R.string.card_descriptor),
+                    ((Card) paymentMethod).getLastTwo());
+        } else {
+            mDescription = paymentMethod.getDescription();
+        }
         refresh();
     }
 

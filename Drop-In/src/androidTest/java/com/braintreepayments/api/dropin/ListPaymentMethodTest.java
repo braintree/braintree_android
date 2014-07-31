@@ -26,6 +26,7 @@ import com.google.android.apps.common.testing.ui.espresso.NoMatchingViewExceptio
 import java.io.IOException;
 import java.util.Map;
 
+import static com.braintreepayments.api.TestUtils.assertSelectedPaymentMethodIs;
 import static com.braintreepayments.api.TestUtils.injectSlowBraintree;
 import static com.braintreepayments.api.TestUtils.injectUnexpectedExceptionThrowingBraintree;
 import static com.braintreepayments.api.TestUtils.setUpActivityTest;
@@ -103,8 +104,8 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
 
         waitForPaymentMethodList();
 
-        onView(withId(R.id.payment_method_type)).check(matches(withText("Visa")));
-        onView(withId(R.id.payment_method_description)).check(matches(withText("ending in 11")));
+        assertSelectedPaymentMethodIs(R.string.descriptor_visa);
+        onView(withId(R.id.payment_method_description)).check(matches(withText("ends in 11")));
 
         ImageView iv = ((ImageView) getActivity().findViewById(R.id.payment_method_icon));
         Bitmap actual = ((BitmapDrawable) iv.getDrawable()).getBitmap();
@@ -165,8 +166,8 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
 
         waitForPaymentMethodList();
 
-        onView(withId(R.id.payment_method_type)).check(matches(withText("AMEX")));
-        onView(withId(R.id.payment_method_description)).check(matches(withText("ending in 05")));
+        assertSelectedPaymentMethodIs(R.string.descriptor_amex);
+        onView(withId(R.id.payment_method_description)).check(matches(withText("ends in 05")));
 
         ImageView iv = ((ImageView) getActivity().findViewById(R.id.payment_method_icon));
         Bitmap actual = ((BitmapDrawable) iv.getDrawable()).getBitmap();
@@ -195,14 +196,14 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
 
         waitForPaymentMethodList();
 
-        onView(withId(R.id.payment_method_type)).check(matches(withText("PayPal")));
+        assertSelectedPaymentMethodIs(R.string.descriptor_paypal);
         onView(withId(R.id.selected_payment_method_view)).perform(click());
 
-        onView(withText("Visa")).check(matches(
-                allOf(hasSibling(withText("ending in 11")), isDisplayed())));
-        onView(withText("AMEX")).check(
-                matches(allOf(hasSibling(withText("ending in 05")), isDisplayed())));
-        onView(withText("PayPal")).check(
+        onView(withText(R.string.descriptor_visa)).check(matches(
+                allOf(hasSibling(withText("ends in 11")), isDisplayed())));
+        onView(withText(R.string.descriptor_amex)).check(
+                matches(allOf(hasSibling(withText("ends in 05")), isDisplayed())));
+        onView(withText(R.string.descriptor_paypal)).check(
                 matches(allOf(hasSibling(withText("jane.doe@example.com")), isDisplayed())));
     }
 
@@ -212,13 +213,13 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForPaymentMethodList();
-        onView(withId(R.id.payment_method_type)).check(matches(withText("AMEX")));
+        assertSelectedPaymentMethodIs(R.string.descriptor_amex);
         onView(withId(R.id.selected_payment_method_view)).perform(click());
 
-        onView(withText("Visa")).perform(click());
+        onView(withText(R.string.descriptor_visa)).perform(click());
 
         onView(withText("Choose Payment Method")).check(doesNotExist());
-        onView(withId(R.id.payment_method_type)).check(matches(withText("Visa")));
+        assertSelectedPaymentMethodIs(R.string.descriptor_visa);
     }
 
     public void testSelectingFromListSetsActivePaymentForSubmit()
@@ -231,10 +232,10 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreePaymentActivity activity = getActivity();
 
         waitForPaymentMethodList();
-        onView(withId(R.id.payment_method_type)).check(matches(withText("Visa")));
+        assertSelectedPaymentMethodIs(R.string.descriptor_visa);
         onView(withId(R.id.selected_payment_method_view)).perform(click());
 
-        onView(withText("AMEX")).perform(click());
+        onView(withText(R.string.descriptor_amex)).perform(click());
 
         onView(withText("Choose Payment Method")).check(doesNotExist());
         onView(withId(R.id.select_payment_method_button)).perform(click());
@@ -310,4 +311,5 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         Button submitButton = (Button) activity.findViewById(R.id.select_payment_method_button);
         assertFalse(submitButton.isEnabled());
     }
+
 }

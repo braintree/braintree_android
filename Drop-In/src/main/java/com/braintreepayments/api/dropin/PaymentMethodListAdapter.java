@@ -46,8 +46,7 @@ public class PaymentMethodListAdapter extends BaseAdapter implements
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         PaymentMethodView paymentMethodView = new PaymentMethodView(mContext);
-        PaymentMethod paymentMethod = mPaymentMethods.get(position);
-        paymentMethodView.setPaymentMethodDetails(paymentMethod.getTypeLabel(), paymentMethod.getDescription());
+        paymentMethodView.setPaymentMethodDetails(mPaymentMethods.get(position));
         return paymentMethodView;
     }
 

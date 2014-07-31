@@ -18,6 +18,7 @@ import com.braintreepayments.api.utils.ViewHelper;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.braintreepayments.api.TestUtils.assertSelectedPaymentMethodIs;
 import static com.braintreepayments.api.TestUtils.injectCountPaymentMethodListBraintree;
 import static com.braintreepayments.api.TestUtils.injectSlowBraintree;
 import static com.braintreepayments.api.utils.ViewHelper.onCardField;
@@ -32,7 +33,6 @@ import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.closeSoftKeyboard;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.typeText;
-import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.doesNotExist;
 import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDisplayed;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isEnabled;
@@ -98,14 +98,15 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForPaymentMethodList();
-        onView(withId(R.id.payment_method_type)).check(matches(withText("AMEX")));
+        onView(withId(R.id.payment_method_type)).check(matches(withText(R.string.descriptor_amex)));
 
-        setSelectedPaymentMethodTo("Visa");
-        assertSelectedMethodIs("Visa");
+        onView(withId(R.id.selected_payment_method_view)).perform(click());
+        onView(withText(R.string.descriptor_visa)).perform(click());
+        assertSelectedPaymentMethodIs(R.string.descriptor_visa);
 
         rotateToLandscape(this);
         waitForPaymentMethodList();
-        assertSelectedMethodIs("Visa");
+        assertSelectedPaymentMethodIs(R.string.descriptor_visa);
     }
 
     public void testDoesntReloadPaymentMethodsOnRotate() {
@@ -227,16 +228,6 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
 
     private Context getContext() {
         return getInstrumentation().getContext();
-    }
-
-    public static void setSelectedPaymentMethodTo(String name) {
-        onView(withId(R.id.selected_payment_method_view)).perform(click());
-        onView(withText(name)).perform(click());
-    }
-
-    public static void assertSelectedMethodIs(String name) {
-        onView(withText("Choose Payment Method")).check(doesNotExist());
-        onView(withId(R.id.payment_method_type)).check(matches(withText(name)));
     }
 
     @TargetApi(VERSION_CODES.JELLY_BEAN_MR2)

@@ -33,6 +33,7 @@ import com.google.common.base.Optional;
 import java.util.Map;
 
 import static com.braintreepayments.api.TestUtils.assertBitmapsEqual;
+import static com.braintreepayments.api.TestUtils.assertSelectedPaymentMethodIs;
 import static com.braintreepayments.api.TestUtils.injectBraintree;
 import static com.braintreepayments.api.TestUtils.injectBraintreeApi;
 import static com.braintreepayments.api.TestUtils.injectGeneric422ErrorOnCardCreateBraintree;
@@ -216,7 +217,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withText("Agree")).perform(click());
 
         waitForPaymentMethodList(TEN_SECONDS);
-        onView(withId(R.id.payment_method_type)).check(matches(withText("PayPal")));
+        assertSelectedPaymentMethodIs(R.string.descriptor_paypal);
     }
 
     public void testDisplaysLoadingViewWhileCreatingAPayPalAccount() {

@@ -15,9 +15,11 @@
     <string name="default_submit_button_text">Purchase</string>
     <string name="default_action_bar_text">Purchase</string>
 
+    <string name="card_descriptor">ends in %s</string>
+
     <string name="descriptor_visa">Visa</string>
     <string name="descriptor_mastercard">MasterCard</string>
-    <string name="descriptor_amex">AMEX</string>
+    <string name="descriptor_amex">Amex</string>
     <string name="descriptor_jcb">JCB</string>
     <string name="descriptor_discover">Discover</string>
     <string name="descriptor_diners">Diners</string>

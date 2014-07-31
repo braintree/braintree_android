@@ -12,6 +12,7 @@ import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
+import com.braintreepayments.api.dropin.R;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.internal.HttpRequest;
@@ -24,7 +25,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
+import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.doesNotExist;
+import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.assertThat;
+import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withId;
+import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.is;
@@ -211,6 +217,11 @@ public class TestUtils {
                 }
             }
         }
+    }
+
+    public static void assertSelectedPaymentMethodIs(int string) {
+        onView(withText("Choose Payment Method")).check(doesNotExist());
+        onView(withId(R.id.payment_method_type)).check(matches(withText(string)));
     }
 
 }

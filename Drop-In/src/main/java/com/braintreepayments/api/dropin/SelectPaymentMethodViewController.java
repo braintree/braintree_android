@@ -79,7 +79,7 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
     }
 
     private void setupPaymentMethod(PaymentMethod method) {
-        mPaymentMethodView.setPaymentMethodDetails(method.getTypeLabel(), method.getDescription());
+        mPaymentMethodView.setPaymentMethodDetails(method);
 
         TextView link = findView(R.id.change_payment_method_link);
         if(getBraintree().getCachedPaymentMethods().size() == 1) {
@@ -121,7 +121,6 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
 
     protected void onPaymentMethodSelected(PaymentMethod paymentMethod) {
         getActivity().setActivePaymentMethod(paymentMethod);
-        mPaymentMethodView.setPaymentMethodDetails(paymentMethod.getTypeLabel(),
-                paymentMethod.getDescription());
+        mPaymentMethodView.setPaymentMethodDetails(paymentMethod);
     }
 }
