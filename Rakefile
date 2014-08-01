@@ -74,13 +74,13 @@ task :release do
   puts "Done. Commits and tags have been created. If everything appears to be in order, hit ENTER to push."
   $stdin.gets
 
-  sh "git push origin/master"
+  sh "git push origin master"
   sh "git push --tags"
 
   puts "Pushed to GHE! Press ENTER to push to public Github."
   $stdin.gets
 
-  sh "git push github/master"
+  sh "git push github master"
   sh "git push github --tags"
 end
 
