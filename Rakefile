@@ -19,5 +19,85 @@ task :tests => :lint do
     puts "Please connect a device or start an emulator and try again"
     exit 1
   end
+end
 
+task :release => :tests do
+  braintree_data_build_file = "BraintreeData/build.gradle"
+  braintree_api_build_file = "BraintreeApi/build.gradle"
+  braintree_drop_in_build_file = "Drop-In/build.gradle"
+  braintree_demo_build_file = "Demo/build.gradle"
+  braintree_test_utils_build_file = "TestUtils/build.gradle"
+
+  puts "What version are you releasing? (x.x.x format)"
+  version = $stdin.gets.chomp
+
+  increment_version_code(braintree_data_build_file)
+  update_version(braintree_data_build_file, version)
+  sh "./gradlew clean :BraintreeData:uploadArchives"
+  puts "BraintreeData was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
+  $stdin.gets
+
+  increment_version_code(braintree_api_build_file)
+  update_version(braintree_api_build_file, version)
+  replace_string(braintree_api_build_file, "compile project(':BraintreeData')", "compile 'com.braintreepayments.api:data:#{version}'")
+  sh "./gradlew clean :BraintreeApi:uploadArchives"
+  puts "BraintreeApi was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
+  $stdin.gets
+
+  increment_version_code(braintree_drop_in_build_file)
+  update_version(braintree_drop_in_build_file, version)
+  replace_string(braintree_drop_in_build_file, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree-api:#{version}'")
+  sh "./gradlew clean :Drop-In:uploadArchives"
+  puts "Drop-In was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
+  $stdin.gets
+
+  increment_version_code(braintree_demo_build_file)
+  update_version(braintree_demo_build_file, version)
+
+  increment_version_code(braintree_test_utils_build_file)
+  update_version(braintree_test_utils_build_file, version)
+
+  puts "Archives are uploaded! Commiting and tagging #{version} and preparing for the next development iteration"
+  sh "git commit -am 'Release #{version}'"
+  sh "git tag #{version} -am '#{version}'"
+
+  replace_string(braintree_api_build_file, "compile 'com.braintreepayments.api:data:#{version}'", "compile project(':BraintreeData')")
+  replace_string(braintree_drop_in_build_file, "compile 'com.braintreepayments.api:braintree-api:#{version}'", "compile project(':BraintreeApi')")
+  sh "git commit -am 'Prepare for development'"
+
+  puts "Done. Commits and tags have been created. If everything appears to be in order, hit ENTER to push."
+  $stdin.gets
+
+  sh "git push origin/master"
+  sh "git push --tags"
+
+  puts "Pushed to GHE! Press ENTER to push to public Github."
+  $stdin.gets
+
+  sh "git push github/master"
+  sh "git push github --tags"
+end
+
+def increment_version_code(filepath)
+  new_build_file = ""
+  File.foreach(filepath) do |line|
+    if line.match(/versionCode (\d+)/)
+      new_build_file += line.gsub(/versionCode \d+/, "versionCode #{$1.to_i + 1}")
+    else
+      new_build_file += line
+    end
+  end
+  IO.write(filepath, new_build_file)
+end
+
+def update_version(filepath, version)
+  replace_string(filepath, /versionName '\d+\.\d+\.\d+'/, "versionName '#{version}'")
+end
+
+def replace_string(filepath, string_to_replace, new_string)
+  IO.write(filepath,
+    File.open(filepath) do |file|
+      file.read.gsub(string_to_replace, new_string)
+    end
+  )
 end
