@@ -1,17 +1,17 @@
 apply plugin: 'com.android.library'
 
-def LOCALHOST_IP = System.properties.containsKey("LOCALHOST_IP") ? System.properties["LOCALHOST_IP"] : '"10.0.2.2"';
-def GATEWAY_PORT = System.properties.containsKey("GATEWAY_PORT") ? System.properties["GATEWAY_PORT"] : '"3000"';
+def LOCALHOST_IP = System.properties.containsKey('LOCALHOST_IP') ? System.properties['LOCALHOST_IP'] : '"10.0.2.2"';
+def GATEWAY_PORT = System.properties.containsKey('GATEWAY_PORT') ? System.properties['GATEWAY_PORT'] : '"3000"';
 
 android {
     compileSdkVersion 20
-    buildToolsVersion "20"
+    buildToolsVersion '20'
 
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 20
         versionCode 4
-        versionName "1.0.3"
+        versionName '1.0.3'
     }
 }
 
@@ -22,6 +22,6 @@ dependencies {
 }
 
 android.buildTypes.each { type ->
-    type.buildConfigField "String", "LOCALHOST_IP", LOCALHOST_IP
-    type.buildConfigField "String", "GATEWAY_PORT", GATEWAY_PORT
+    type.buildConfigField 'String', 'LOCALHOST_IP', LOCALHOST_IP
+    type.buildConfigField 'String', 'GATEWAY_PORT', GATEWAY_PORT
 }

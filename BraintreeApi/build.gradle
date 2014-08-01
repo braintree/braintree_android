@@ -4,13 +4,13 @@ apply plugin: 'signing'
 
 android {
     compileSdkVersion 20
-    buildToolsVersion "20"
+    buildToolsVersion '20'
 
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 20
         versionCode 4
-        versionName "1.0.3"
+        versionName '1.0.3'
     }
 }
 
@@ -33,7 +33,7 @@ task runAllTests {
 
 gradle.taskGraph.whenReady { taskGraph ->
     def RUN_ALL_TESTS = taskGraph.hasTask(':BraintreeApi:runAllTests')
-    android.buildTypes.debug.buildConfigField("boolean", "RUN_ALL_TESTS", "" + RUN_ALL_TESTS)
+    android.buildTypes.debug.buildConfigField('boolean', 'RUN_ALL_TESTS', '' + RUN_ALL_TESTS)
 }
 
 /* maven deploy + signing */
@@ -53,7 +53,7 @@ task sourcesJar(type: Jar) {
 }
 
 task releaseJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompile) {
-    from projectDir.path + "/build/intermediates/classes/release/"
+    from projectDir.path + '/build/intermediates/classes/release/'
     from {
         configurations.compile.findAll {
             it.getName() == 'PayPalAndroidSDK.jar'
@@ -87,8 +87,8 @@ signing {
     sign configurations.archives
 }
 
-def sonatypeUsername = System.properties.containsKey("sonatypeUsername") ? System.properties["sonatypeUsername"] : ''
-def sonatypePassword = System.properties.containsKey("sonatypePassword") ? System.properties["sonatypePassword"] : ''
+def sonatypeUsername = System.properties.containsKey('sonatypeUsername') ? System.properties['sonatypeUsername'] : ''
+def sonatypePassword = System.properties.containsKey('sonatypePassword') ? System.properties['sonatypePassword'] : ''
 
 uploadArchives {
     repositories {
@@ -103,10 +103,10 @@ uploadArchives {
 
             pom.project {
                 name 'braintree-api'
-                groupId = "com.braintreepayments.api"
+                groupId = 'com.braintreepayments.api'
                 version = "${android.defaultConfig.versionName}"
                 packaging 'jar'
-                description "This is Braintree's v.zero SDK for Android. Integrate this library to accept payments in your Android app."
+                description 'This is Braintree\'s v.zero SDK for Android. Integrate this library to accept payments in your Android app.'
                 url 'https://github.com/braintree/braintree_android'
 
                 scm {

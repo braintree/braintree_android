@@ -4,14 +4,14 @@ apply plugin: 'signing'
 
 android {
     compileSdkVersion 20
-    buildToolsVersion "20"
+    buildToolsVersion '20'
 
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 20
         versionCode 4
-        versionName "1.0.3"
-        testInstrumentationRunner "com.braintreepayments.api.utils.CustomInstrumentationTestRunner"
+        versionName '1.0.3'
+        testInstrumentationRunner 'com.braintreepayments.api.utils.CustomInstrumentationTestRunner'
     }
 
     packagingOptions {
@@ -27,7 +27,7 @@ dependencies {
 }
 
 task grantAnimationPermission(type: Exec, dependsOn: 'installDebugTest') {
-    commandLine "adb shell pm grant com.braintreepayments.api.dropin.test android.permission.SET_ANIMATION_SCALE".split(' ')
+    commandLine 'adb shell pm grant com.braintreepayments.api.dropin.test android.permission.SET_ANIMATION_SCALE'.split(' ')
 }
 
 tasks.whenTaskAdded { task ->
@@ -81,8 +81,8 @@ signing {
     sign configurations.archives
 }
 
-def sonatypeUsername = System.properties.containsKey("sonatypeUsername") ? System.properties["sonatypeUsername"] : ''
-def sonatypePassword = System.properties.containsKey("sonatypePassword") ? System.properties["sonatypePassword"] : ''
+def sonatypeUsername = System.properties.containsKey('sonatypeUsername') ? System.properties['sonatypeUsername'] : ''
+def sonatypePassword = System.properties.containsKey('sonatypePassword') ? System.properties['sonatypePassword'] : ''
 
 uploadArchives {
     repositories {
@@ -97,10 +97,10 @@ uploadArchives {
 
             pom.project {
                 name 'braintree'
-                groupId = "com.braintreepayments.api"
+                groupId = 'com.braintreepayments.api'
                 version = "${android.defaultConfig.versionName}"
                 packaging 'aar'
-                description "Drop-in payment form for Braintree's v.zero SDK. Integrate this library to add a readymade UI for your payments."
+                description 'Drop-in payment form for Braintree\'s v.zero SDK. Integrate this library to add a readymade UI for your payments.'
                 url 'https://github.com/braintree/braintree_android'
 
                 scm {

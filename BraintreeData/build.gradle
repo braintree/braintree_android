@@ -4,13 +4,13 @@ apply plugin: 'signing'
 
 android {
     compileSdkVersion 20
-    buildToolsVersion "20"
+    buildToolsVersion '20'
 
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 20
         versionCode 4
-        versionName "1.0.3"
+        versionName '1.0.3'
     }
 }
 
@@ -35,7 +35,7 @@ task sourcesJar(type: Jar) {
 }
 
 task releaseJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompile) {
-    from projectDir.path + "/build/intermediates/classes/release/"
+    from projectDir.path + '/build/intermediates/classes/release/'
     exclude { details -> details.file.name.endsWith('.xml') }
 
     from {
@@ -56,8 +56,8 @@ signing {
     sign configurations.archives
 }
 
-def sonatypeUsername = System.properties.containsKey("sonatypeUsername") ? System.properties["sonatypeUsername"] : ''
-def sonatypePassword = System.properties.containsKey("sonatypePassword") ? System.properties["sonatypePassword"] : ''
+def sonatypeUsername = System.properties.containsKey('sonatypeUsername') ? System.properties['sonatypeUsername'] : ''
+def sonatypePassword = System.properties.containsKey('sonatypePassword') ? System.properties['sonatypePassword'] : ''
 
 uploadArchives {
     repositories {
@@ -72,10 +72,10 @@ uploadArchives {
 
             pom.project {
                 name 'data'
-                groupId = "com.braintreepayments.api"
+                groupId = 'com.braintreepayments.api'
                 version = "${android.defaultConfig.versionName}"
                 packaging 'jar'
-                description "Fraud tools for Braintree integrations on Android."
+                description 'Fraud tools for Braintree integrations on Android.'
                 url 'https://github.com/braintree/braintree_android'
 
                 scm {
