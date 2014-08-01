@@ -28,6 +28,12 @@ task :release => :tests do
   braintree_demo_build_file = "Demo/build.gradle"
   braintree_test_utils_build_file = "TestUtils/build.gradle"
 
+  last_version = sh "git tag | tail -1"
+  puts "Changes since #{last_version}:"
+  sh "git log --pretty=format:\"%h %ad%x20%s%x20%x28%an%x29\" --date=short #{last_version}.."
+  puts "Please update your CHANGELOG.md. Press ENTER when you are done"
+  $stdin.gets
+
   puts "What version are you releasing? (x.x.x format)"
   version = $stdin.gets.chomp
 
