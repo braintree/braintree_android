@@ -1,4 +1,4 @@
-package com.braintreepayments.sample;
+package com.braintreepayments.demo;
 
 import android.os.Bundle;
 import android.view.View;

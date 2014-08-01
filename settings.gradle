@@ -1,1 +1,1 @@
-include ':BraintreeApi', ':BraintreeData', 'Drop-In', ':TestUtils', 'Drop-InSample'
+include ':BraintreeApi', ':BraintreeData', ':Drop-In', ':TestUtils', ':Demo'
