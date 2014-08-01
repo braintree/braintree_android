@@ -1,5 +1,16 @@
 # Braintree Android SDK Release Notes
 
+## 1.0.4
+
+* Improvements
+  * Added assets for a wider range of resolutions
+  * Enforce maximum length for card and postal code fields
+  * Added README for fraud tools
+* Packaging
+  * Improvements for usage in environments other than Maven or Gradle
+* Fixes
+  * Fixed lint errors
+
 ## 1.0.3
 
 * Fixes
