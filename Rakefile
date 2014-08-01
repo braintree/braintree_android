@@ -21,7 +21,7 @@ task :tests => :lint do
   end
 end
 
-task :release => :tests do
+task :release => :lint do
   braintree_data_build_file = "BraintreeData/build.gradle"
   braintree_api_build_file = "BraintreeApi/build.gradle"
   braintree_drop_in_build_file = "Drop-In/build.gradle"
