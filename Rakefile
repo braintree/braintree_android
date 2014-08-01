@@ -21,14 +21,14 @@ task :tests => :lint do
   end
 end
 
-task :release => :lint do
+task :release do
   braintree_data_build_file = "BraintreeData/build.gradle"
   braintree_api_build_file = "BraintreeApi/build.gradle"
   braintree_drop_in_build_file = "Drop-In/build.gradle"
   braintree_demo_build_file = "Demo/build.gradle"
   braintree_test_utils_build_file = "TestUtils/build.gradle"
 
-  last_version = sh "git tag | tail -1"
+  last_version = `git tag | tail -1`.chomp
   puts "Changes since #{last_version}:"
   sh "git log --pretty=format:\"%h %ad%x20%s%x20%x28%an%x29\" --date=short #{last_version}.."
   puts "Please update your CHANGELOG.md. Press ENTER when you are done"
