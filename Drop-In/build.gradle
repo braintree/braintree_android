@@ -53,6 +53,7 @@ task sourcesJar(type: Jar) {
 }
 
 task fullProjectZip(type: Zip, dependsOn: android.libraryVariants.release.javaCompile) {
+    classifier = 'project'
     from fileTree(dir: 'src/main').exclude('java')
 
     // Android Studio 0.8.x appears to be incapable of handling interdependent subprojects.
