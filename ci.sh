@@ -1,8 +1,8 @@
 #!/bin/bash
 
 android_path="$PWD"
-if [ -z "${ANDROID_HOME}" ] && [ -d "/usr/local/android/android-sdk-linux" ]; then
-  export ANDROID_HOME=/usr/local/android/android-sdk-linux
+if [ -z "${ANDROID_HOME}" ]; then
+  export ANDROID_HOME=$HOME/.android-sdk
 fi
 android_adb=$ANDROID_HOME/platform-tools/adb
 export PATH=$ANDROID_HOME/platform-tools:$PATH
@@ -88,6 +88,14 @@ download_screenshots() {
   $android_adb pull /sdcard/BraintreeUITestScreenshots $test_screenshots_directory && $android_adb shell rm -r /sdcard/BraintreeUITestScreenshots
 }
 
+mvn install:install-file -Dfile=$android_path/libs/0.12.1-SNAPSHOT/gradle-plugin-0.12.1-SNAPSHOT.jar -DpomFile=$android_path/libs/0.12.1-SNAPSHOT/gradle-plugin-0.12.1-SNAPSHOT.pom
+
+$android_path/gradlew --info --no-color clean lint
+lint_return_code=$?
+if [$lint_return_code != 0]; then
+  exit $lint_return_code
+fi
+
 cd_android
 start_adb
 start_emulator
@@ -101,8 +109,6 @@ cd_android
 wait_for_emulator
 
 ruby script/httpsd.rb /tmp/httpsd.pid
-
-$android_path/gradlew --info --no-color clean lint
 $android_path/gradlew --info --no-color runAllTests connectedAndroidTest
 test_return_code=$?
 

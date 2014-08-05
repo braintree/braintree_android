@@ -3,9 +3,11 @@
 buildscript {
     repositories {
         mavenCentral()
+        mavenLocal()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.12.+'
+        classpath group: 'com.jakewharton.sdkmanager', name: 'gradle-plugin', version: '0.12.1-SNAPSHOT'
     }
 }
 
