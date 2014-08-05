@@ -97,8 +97,8 @@ mvn install:install-file -Dfile=$android_path/libs/0.12.1-SNAPSHOT/gradle-plugin
 $android_path/gradlew --info --no-color clean assembleDebug
 $android_path/gradlew --info --no-color clean lint
 lint_return_code=$?
-if [$lint_return_code -ne 0]; then
-  exit $lint_return_code
+if [ $lint_return_code -ne 0 ]; then
+  exit 1
 fi
 
 cd_android
