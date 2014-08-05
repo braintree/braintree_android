@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 1.0.5
+
+* Packaging
+  * Set Braintree package to default to AAR instead of ZIP
+
 ## 1.0.4
 
 * Improvements
