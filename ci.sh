@@ -64,6 +64,8 @@ start_adb() {
 }
 
 start_emulator() {
+  echo "Creating emulator"
+  echo no | $ANDROID_HOME/tools/android create avd --force -n android19 -t android-19 --abi armeabi-v7a
   echo "Starting emulator"
   $ANDROID_HOME/tools/emulator -avd android19 -no-boot-anim -wipe-data -no-audio -no-window &
 }
