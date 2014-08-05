@@ -92,6 +92,9 @@ download_screenshots() {
 
 mvn install:install-file -Dfile=$android_path/libs/0.12.1-SNAPSHOT/gradle-plugin-0.12.1-SNAPSHOT.jar -DpomFile=$android_path/libs/0.12.1-SNAPSHOT/gradle-plugin-0.12.1-SNAPSHOT.pom
 
+# Build twice, the first build will resolve dependencies via sdk-manager-plugin and then fail
+# https://github.com/JakeWharton/sdk-manager-plugin/issues/10
+$android_path/gradlew --info --no-color clean assembleDebug
 $android_path/gradlew --info --no-color clean lint
 lint_return_code=$?
 if [$lint_return_code -ne 0]; then
