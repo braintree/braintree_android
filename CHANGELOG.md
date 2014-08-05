@@ -5,7 +5,7 @@
 * Packaging
   * Set Braintree package to default to AAR instead of ZIP
 
-## 1.0.4
+## 1.0.4 - Gradle and Maven will incorrectly download the ZIP instead of AAR, use 1.0.5+
 
 * Improvements
   * Added assets for a wider range of resolutions
