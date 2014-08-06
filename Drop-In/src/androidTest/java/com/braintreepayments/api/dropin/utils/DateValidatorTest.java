@@ -12,7 +12,7 @@ public class DateValidatorTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        // Tests assume the date is May 7th, 2014, unless otherwise stated.
+        // Tests assume the current date is May 7th, 2014, unless otherwise stated.
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, 2014);
         calendar.set(Calendar.MONTH, Calendar.MAY);
@@ -95,4 +95,5 @@ public class DateValidatorTest extends TestCase {
     private void assertInvalid(String str) {
         assertFalse(mValidator.isValidHelper(str));
     }
+
 }
