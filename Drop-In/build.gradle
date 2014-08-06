@@ -1,4 +1,3 @@
-apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'signing'
@@ -18,10 +17,6 @@ android {
     packagingOptions {
         exclude 'LICENSE.txt'
     }
-}
-
-sdkManager {
-    emulatorVersion 'android-19'
 }
 
 dependencies {

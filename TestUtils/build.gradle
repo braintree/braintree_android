@@ -1,4 +1,3 @@
-apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.library'
 
 def LOCALHOST_IP = System.properties.containsKey('LOCALHOST_IP') ? System.properties['LOCALHOST_IP'] : '"10.0.2.2"';
