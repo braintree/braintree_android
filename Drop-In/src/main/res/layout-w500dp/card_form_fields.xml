@@ -10,6 +10,7 @@
         <com.braintreepayments.api.dropin.view.CardEditText
             style="@style/form_edittext_land"
             android:id="@+id/card_form_card_number"
+            android:imeOptions="actionNext"
             android:hint="@string/form_hint_card_number" />
 
         <com.braintreepayments.api.dropin.view.MonthYearEditText
