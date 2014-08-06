@@ -8,6 +8,8 @@ import android.util.AttributeSet;
 
 import com.braintreepayments.api.dropin.utils.DateValidator;
 
+import java.util.regex.Pattern;
+
 import static android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
 
 /**
@@ -15,6 +17,8 @@ import static android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
  * Will automatically format input as it is entered.
  */
 public class MonthYearEditText extends FloatingLabelEditText {
+
+    private static final Pattern ILLEGAL_CHARACTERS = Pattern.compile("[^\\d/]");
 
     public MonthYearEditText(Context context) {
         super(context);
@@ -92,16 +96,20 @@ public class MonthYearEditText extends FloatingLabelEditText {
 
         @Override
         public void afterTextChanged(Editable editable) {
-            if (mChangeWasAddition && editable.length() == 1 &&
-                    Character.getNumericValue(editable.charAt(0)) >= 2) {
-                prependLeadingZero(editable);
-            }
-
-            if (mChangeWasAddition && editable.length() == 2 && !containsSlash(editable)) {
-                editable.append('/');
-            }
-
             if (mChangeWasAddition) {
+                if (ILLEGAL_CHARACTERS.matcher(editable.toString()).find()) {
+                    editable.replace(0, editable.length(),
+                            ILLEGAL_CHARACTERS.matcher(editable.toString()).replaceAll(""));
+                }
+
+                if (editable.length() == 1 && Character.getNumericValue(editable.charAt(0)) >= 2) {
+                    prependLeadingZero(editable);
+                }
+
+                if (editable.length() == 2 && !containsSlash(editable)) {
+                    editable.append('/');
+                }
+
                 removeDoubleSlashes(editable);
             }
 

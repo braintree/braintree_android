@@ -74,6 +74,14 @@ public class MonthYearEditTextTest extends AndroidTestCase {
         assertTextIs("12/18");
     }
 
+    public void testCanOnlyTypeNumericOrSlash() {
+        type('-');
+        assertTextIs("");
+
+        type('5', ':', '/', '-', 'h');
+        assertTextIs("05/");
+    }
+
     public void testSlashHasPadding() {
         setText("12/18");
 
