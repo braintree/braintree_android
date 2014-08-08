@@ -1,5 +1,13 @@
 # Braintree Android SDK Release Notes
 
+## 1.0.6
+
+* Fixes
+  * Fixed disabled submit button in landscape
+  * Fixed next field button in landscape
+  * Add max length to expiration date and prevent user from typing illegal characters
+* Move to sdk-manager-plugin for CI dependencies
+
 ## 1.0.5
 
 * Packaging

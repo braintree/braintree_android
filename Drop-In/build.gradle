@@ -9,8 +9,8 @@ android {
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 19
-        versionCode 6
-        versionName '1.0.5'
+        versionCode 7
+        versionName '1.0.6'
         testInstrumentationRunner 'com.braintreepayments.api.utils.CustomInstrumentationTestRunner'
     }
 
@@ -20,7 +20,7 @@ android {
 }
 
 dependencies {
-    compile project(':BraintreeApi')
+    compile 'com.braintreepayments.api:braintree-api:1.0.6'
 
     androidTestCompile project(':TestUtils')
     androidTestCompile 'com.jakewharton.espresso:espresso:1.1-r3'
