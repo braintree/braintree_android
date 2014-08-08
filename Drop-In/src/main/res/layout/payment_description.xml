@@ -12,7 +12,7 @@
     <RelativeLayout
         android:layout_width="@dimen/full_width"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/form_padding"
+        android:padding="@dimen/form_padding"
         android:layout_gravity="center_horizontal">
 
         <TextView
