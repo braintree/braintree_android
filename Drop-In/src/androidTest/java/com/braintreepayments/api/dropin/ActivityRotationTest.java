@@ -20,6 +20,7 @@ import static com.braintreepayments.api.TestUtils.injectCountPaymentMethodListBr
 import static com.braintreepayments.api.TestUtils.injectSlowBraintree;
 import static com.braintreepayments.api.TestUtils.rotateToLandscape;
 import static com.braintreepayments.api.TestUtils.rotateToPortrait;
+import static com.braintreepayments.api.utils.Matchers.hasBackgroundColor;
 import static com.braintreepayments.api.utils.ViewHelper.onCardField;
 import static com.braintreepayments.api.utils.ViewHelper.onCvvField;
 import static com.braintreepayments.api.utils.ViewHelper.onExpirationField;
@@ -230,6 +231,30 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
 
         onView(withId(R.id.card_form_complete_button)).check(matches(not(isEnabled())));
         onView(withId(R.id.header_loading_spinner)).check(matches(isDisplayed()));
+    }
+
+    public void testSubmitButtonIsBlueAfterRotationIfFieldsAreValid() {
+        if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
+            return;
+        }
+
+        TestUtils.setUpActivityTest(this);
+        getActivity();
+        waitForAddPaymentFormHeader();
+        onCardField().perform(typeText("378282246310005"), closeSoftKeyboard(),
+                waitForKeyboardToClose());
+        onExpirationField().perform(typeText("12/18"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onCvvField().perform(typeText("1234"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onPostalCodeField().perform(typeText("12345"), closeSoftKeyboard(),
+                waitForKeyboardToClose());
+
+
+        onView(withId(R.id.card_form_complete_button)).check(
+                matches(hasBackgroundColor(R.color.bt_blue)));
+        rotateToLandscape(this);
+        waitForAddPaymentFormHeader();
+        onView(withId(R.id.card_form_complete_button)).check(
+                matches(hasBackgroundColor(R.color.bt_blue)));
     }
 
     private Context getContext() {

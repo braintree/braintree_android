@@ -156,6 +156,11 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         if (savedInstanceState.containsKey(EXTRA_SUBMIT_BUTTON_ENABLED)) {
             mSubmitButton.setEnabled(savedInstanceState.getBoolean(EXTRA_SUBMIT_BUTTON_ENABLED));
         }
+
+        if (areFieldsValid()) {
+            mSubmitButton.setBackgroundColor(
+                    getActivity().getResources().getColor(R.color.bt_blue));
+        }
     }
 
     private void restoreText(Bundle savedInstanceState, TextView view, String extra) {

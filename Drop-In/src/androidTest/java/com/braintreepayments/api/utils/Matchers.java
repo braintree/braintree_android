@@ -1,5 +1,7 @@
 package com.braintreepayments.api.utils;
 
+import android.annotation.SuppressLint;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.widget.EditText;
 
@@ -17,21 +19,33 @@ public class Matchers {
     public static Matcher<View> withHint(String hintText) {
         // use preconditions to fail fast when a test is creating an invalid matcher.
         checkNotNull(hintText);
-        return withHint(is(hintText));
-    }
 
-    public static Matcher<View> withHint(final Matcher<String> matcherText) {
-        // use preconditions to fail fast when a test is creating an invalid matcher.
-        checkNotNull(matcherText);
+        final Matcher<String> matcher = is(hintText);
         return new BoundedMatcher<View, EditText>(EditText.class) {
             @Override
             public void describeTo(Description description) {
-                description.appendText("with hint: " + matcherText);
+                description.appendText("with hint: " + matcher);
             }
 
             @Override
             protected boolean matchesSafely(EditText editTextField) {
-                return matcherText.matches(editTextField.getHint().toString());
+                return matcher.matches(editTextField.getHint().toString());
+            }
+        };
+    }
+
+    @SuppressLint("NewApi")
+    public static Matcher<View> hasBackgroundColor(final int color) {
+        return new BoundedMatcher<View, View>(View.class) {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with color: " + color);
+            }
+
+            @Override
+            protected boolean matchesSafely(View view) {
+                return is(view.getContext().getResources().getColor(color))
+                        .matches(((ColorDrawable) view.getBackground()).getColor());
             }
         };
     }
