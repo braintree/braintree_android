@@ -5,6 +5,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.view.KeyEvent;
 import android.view.View;
@@ -38,6 +39,8 @@ import static com.braintreepayments.api.TestUtils.injectBraintree;
 import static com.braintreepayments.api.TestUtils.injectBraintreeApi;
 import static com.braintreepayments.api.TestUtils.injectGeneric422ErrorOnCardCreateBraintree;
 import static com.braintreepayments.api.TestUtils.injectSlowBraintree;
+import static com.braintreepayments.api.TestUtils.rotateToLandscape;
+import static com.braintreepayments.api.TestUtils.rotateToPortrait;
 import static com.braintreepayments.api.TestUtils.setUpActivityTest;
 import static com.braintreepayments.api.utils.FormHelpers.fillInPayPal;
 import static com.braintreepayments.api.utils.Matchers.withHint;
@@ -68,20 +71,26 @@ import static org.mockito.Mockito.when;
 
 public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN_MR2) {
+            rotateToPortrait(this);
+        }
+    }
+
     private void assertCardFormCreatesAPaymentMethod() {
         BraintreePaymentActivity activity = getActivity();
 
         waitForAddPaymentFormHeader();
-        onView(withHint("Card Number")).perform(typeText("4111111111111111"));
-        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onView(withHint("Card Number")).perform(typeText("4111111111111111"), closeSoftKeyboard(),
+                waitForKeyboardToClose());
+        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard(),
+                waitForKeyboardToClose());
         onView(withHint("CVV"))
-                .check(thereIsNoIconHint())
-                .perform(click())
-                .check(theIconHintIs(R.drawable.ic_cvv_highlighted))
                 .perform(typeText("123"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withHint("Postal Code")).perform(typeText("12345"));
-        onView(withHint("CVV"))
-                .check(thereIsNoIconHint()); // check that the hint is gone after defocusing
+        onView(withHint("Postal Code")).perform(typeText("12345"), closeSoftKeyboard(),
+                waitForKeyboardToClose());
         onView(withId(R.id.card_form_complete_button)).perform(click());
 
         waitForView(withId(R.id.header_status_icon));
@@ -110,6 +119,12 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
     public void testCardFormCreatesAPaymentMethodWithACustomer() throws InterruptedException {
         TestUtils.setUpActivityTest(this);
+        assertCardFormCreatesAPaymentMethod();
+    }
+
+    public void testCardFormCreatesAPaymentMethodInLandscape() {
+        TestUtils.setUpActivityTest(this);
+        rotateToLandscape(this);
         assertCardFormCreatesAPaymentMethod();
     }
 
@@ -142,14 +157,11 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         assertEquals("11", ((Card) response).getLastTwo());
     }
 
-    public void testDropInReturnsANonce() throws InterruptedException {
+    public void testCvvHintsShowAndDisappearOnClick() throws InterruptedException {
         TestUtils.setUpActivityTest(this);
         final BraintreePaymentActivity activity = getActivity();
 
         waitForAddPaymentFormHeader();
-        onView(withHint("Card Number")).perform(typeText("4111111111111111"));
-        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
         onView(withHint("CVV"))
                 .check(thereIsNoIconHint())
                 .perform(click())
@@ -158,16 +170,6 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withHint("Postal Code")).perform(typeText("12345"));
         onView(withHint("CVV"))
                 .check(thereIsNoIconHint()); // check that the hint is gone after defocusing
-        onView(withId(R.id.card_form_complete_button)).perform(click());
-
-        waitForActivity(activity);
-
-        Map<String, Object> result = TestUtils.getActivityResult(activity);
-        String nonce = ((Intent) result.get("resultData")).getStringExtra(
-                BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE);
-
-        assertEquals(Activity.RESULT_OK, result.get("resultCode"));
-        assertNotNull(nonce);
     }
 
     private void assertCreatePaymentMethodFromPayPal() {

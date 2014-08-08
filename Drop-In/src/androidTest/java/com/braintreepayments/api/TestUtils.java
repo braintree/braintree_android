@@ -1,6 +1,8 @@
 package com.braintreepayments.api;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.UiAutomation;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -222,6 +224,25 @@ public class TestUtils {
     public static void assertSelectedPaymentMethodIs(int string) {
         onView(withText("Choose Payment Method")).check(doesNotExist());
         onView(withId(R.id.payment_method_type)).check(matches(withText(string)));
+    }
+
+    @TargetApi(VERSION_CODES.JELLY_BEAN_MR2)
+    public static void rotateToLandscape(ActivityInstrumentationTestCase2<?> testCase) {
+        rotateTo(UiAutomation.ROTATION_FREEZE_90, testCase);
+    }
+
+    @TargetApi(VERSION_CODES.JELLY_BEAN_MR2)
+    public static void rotateToPortrait(ActivityInstrumentationTestCase2<?> testCase) {
+        rotateTo(UiAutomation.ROTATION_FREEZE_0, testCase);
+    }
+
+    @TargetApi(VERSION_CODES.JELLY_BEAN_MR2)
+    public static void rotateTo(int direction, ActivityInstrumentationTestCase2<?> testCase) {
+        UiAutomation automation = testCase.getInstrumentation().getUiAutomation();
+        automation.setRotation(UiAutomation.ROTATION_UNFREEZE);
+        automation.setRotation(direction);
+
+        SystemClock.sleep(200); // There is currently no way to wait for the rotation to complete
     }
 
 }

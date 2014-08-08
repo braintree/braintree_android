@@ -1,12 +1,9 @@
 package com.braintreepayments.api.dropin;
 
-import android.annotation.TargetApi;
-import android.app.UiAutomation;
 import android.content.Context;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
-import android.test.ActivityInstrumentationTestCase2;
 
 import com.braintreepayments.api.BraintreeApi;
 import com.braintreepayments.api.TestClientTokenBuilder;
@@ -21,6 +18,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.braintreepayments.api.TestUtils.assertSelectedPaymentMethodIs;
 import static com.braintreepayments.api.TestUtils.injectCountPaymentMethodListBraintree;
 import static com.braintreepayments.api.TestUtils.injectSlowBraintree;
+import static com.braintreepayments.api.TestUtils.rotateToLandscape;
+import static com.braintreepayments.api.TestUtils.rotateToPortrait;
 import static com.braintreepayments.api.utils.ViewHelper.onCardField;
 import static com.braintreepayments.api.utils.ViewHelper.onCvvField;
 import static com.braintreepayments.api.utils.ViewHelper.onExpirationField;
@@ -45,13 +44,17 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        rotateToPortrait(this);
+        if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN_MR2) {
+            rotateToPortrait(this);
+        }
     }
 
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
-        rotateToPortrait(this);
+        if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN_MR2) {
+            rotateToPortrait(this);
+        }
     }
 
     public void testAddPaymentViewIsRestoredOnRotation() {
@@ -81,6 +84,9 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
 
     public void testSelectPaymentViewIsRestoredOnRotation()
             throws InterruptedException, ErrorWithResponse, BraintreeException {
+        if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
+            return;
+        }
         String clientToken = TestUtils.setUpActivityTest(this);
         BraintreeApi api = new BraintreeApi(getContext(), clientToken);
         api.create(new CardBuilder()
@@ -228,25 +234,6 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
 
     private Context getContext() {
         return getInstrumentation().getContext();
-    }
-
-    @TargetApi(VERSION_CODES.JELLY_BEAN_MR2)
-    private void rotateToLandscape(ActivityInstrumentationTestCase2<?> testCase) {
-        rotateTo(UiAutomation.ROTATION_FREEZE_90, testCase);
-    }
-
-    @TargetApi(VERSION_CODES.JELLY_BEAN_MR2)
-    private void rotateToPortrait(ActivityInstrumentationTestCase2<?> testCase) {
-        rotateTo(UiAutomation.ROTATION_FREEZE_0, testCase);
-    }
-
-    @TargetApi(VERSION_CODES.JELLY_BEAN_MR2)
-    private void rotateTo(int direction, ActivityInstrumentationTestCase2<?> testCase) {
-        UiAutomation automation = testCase.getInstrumentation().getUiAutomation();
-        automation.setRotation(UiAutomation.ROTATION_UNFREEZE);
-        automation.setRotation(direction);
-
-        SystemClock.sleep(200); // There is currently no way to wait for the rotation to complete
     }
 
 }

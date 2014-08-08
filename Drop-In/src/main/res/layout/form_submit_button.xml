@@ -2,9 +2,9 @@
 
     <!-- tablet version included in layout-w500dp/ dir -->
     <Button
+        android:id="@+id/card_form_complete_button"
         style="@style/submit_button"
         android:layout_alignParentBottom="true"
-        android:id="@+id/card_form_complete_button"
         android:background="@color/bt_button_disabled_color" />
 
 </merge>
