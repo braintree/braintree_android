@@ -16,7 +16,8 @@ android {
 
 dependencies {
     compile 'com.google.code.gson:gson:[2.2.4,3.0)'
-    compile 'com.squareup.okhttp:okhttp:[1.5,2.0)'
+    compile 'com.squareup.okhttp:okhttp:2.0.0'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
     compile project(':BraintreeData')
     compile files('libs/PayPalAndroidSDK.jar')
 
