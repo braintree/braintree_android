@@ -1,0 +1,30 @@
+<resources>
+    <string name="form_pay_with_card_header">Mit Kreditkarte bezahlen</string>
+    <string name="form_hint_card_number">Kartennummer</string>
+    <string name="form_hint_expiration">Gültig bis</string>
+    <string name="form_hint_cvv">Kartenprüfnr.</string>
+    <string name="form_hint_postal_code">PLZ</string>
+
+    <string name="invalid_card">Kreditkartendaten sind ungültig.</string>
+
+    <string name="choose_payment_method">Zahlungsmethode wählen</string>
+    <string name="change_payment_method">Zahlungsmethode ändern</string>
+    <string name="add_new_payment_method">Neue Zahlungsmethode hinzufügen</string>
+    <string name="add_payment_method">Zahlungsmethode hinzufügen</string>
+
+    <string name="default_submit_button_text">Einkaufen</string>
+    <string name="default_action_bar_text">Einkaufen</string>
+
+    <!-- Note: %s is a place holder and should be left in translated strings -->
+    <string name="card_descriptor">mit Endziffern %s</string>
+
+    <string name="descriptor_visa">Visa</string>
+    <string name="descriptor_mastercard">MasterCard</string>
+    <string name="descriptor_amex">AMEX</string>
+    <string name="descriptor_jcb">JCB</string>
+    <string name="descriptor_discover">Discover</string>
+    <string name="descriptor_diners">Diners</string>
+    <string name="descriptor_maestro">Maestro</string>
+    <string name="descriptor_paypal">PayPal</string>
+    <string name="descriptor_unknown">Kreditkarte</string>
+</resources>
