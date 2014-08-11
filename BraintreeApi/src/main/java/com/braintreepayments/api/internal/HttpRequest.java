@@ -5,6 +5,7 @@ import android.util.Log;
 import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.OkUrlFactory;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -42,7 +43,7 @@ public class HttpRequest {
     private static final int STATUS_CODE_UNKNOWN = -1;
     private int mStatusCode = STATUS_CODE_UNKNOWN;
 
-    private OkHttpClient mClient;
+    private OkUrlFactory mOkUrlFactory;
     private String mUrl;
     private HttpMethod mMethod;
     private List<NameValuePair> mParams;
@@ -51,7 +52,7 @@ public class HttpRequest {
     private String mResponseBody;
 
     public HttpRequest(OkHttpClient client, HttpMethod method, String url) {
-        mClient = client;
+        mOkUrlFactory = new OkUrlFactory(client);
         mMethod = method;
         mUrl = url;
         mParams = new LinkedList<NameValuePair>();
@@ -99,9 +100,9 @@ public class HttpRequest {
             HttpURLConnection connection;
 
             if (mMethod.encodeParams) {
-                connection = mClient.open(new URL(mUrl));
+                connection = mOkUrlFactory.open(new URL(mUrl));
             } else {
-                connection = mClient.open(new URL(urlWithQuery(mUrl, mParams)));
+                connection = mOkUrlFactory.open(new URL(urlWithQuery(mUrl, mParams)));
             }
 
             try {
