@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 1.0.7
+* Improvements
+  * BraintreeApi no longer depends on OkHttp
+  * Added localizations for more locales (UK, FR, DE, IT)
+
 ## 1.0.6
 
 * Fixes

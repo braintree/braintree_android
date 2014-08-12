@@ -9,14 +9,14 @@ android {
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 19
-        versionCode 7
-        versionName '1.0.6'
+        versionCode 8
+        versionName '1.0.7'
     }
 }
 
 dependencies {
     compile 'com.google.code.gson:gson:[2.2.4,3.0)'
-    compile project(':BraintreeData')
+    compile 'com.braintreepayments.api:data:1.0.7'
     compile files('libs/PayPalAndroidSDK.jar')
 
     androidTestCompile project(':TestUtils')
