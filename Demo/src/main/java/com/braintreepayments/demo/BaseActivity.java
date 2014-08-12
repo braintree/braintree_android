@@ -9,6 +9,9 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public abstract class BaseActivity extends Activity {
 
     protected static final String BASE_SERVER_URL = "https://braintree-sample-merchant.herokuapp.com";
@@ -44,7 +47,12 @@ public abstract class BaseActivity extends Activity {
         mHttpClient.get(BASE_SERVER_URL + "/client_token", new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(String response) {
-                ready(response);
+                try {
+                    JSONObject json = new JSONObject(response);
+                    ready(json.getString("client_token"));
+                } catch (JSONException e) {
+                    showDialog("Unable to fetch a client token!");
+                }
             }
 
             @Override
