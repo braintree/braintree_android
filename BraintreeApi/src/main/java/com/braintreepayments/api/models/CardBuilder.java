@@ -1,5 +1,6 @@
 package com.braintreepayments.api.models;
 
+import com.braintreepayments.api.Utils;
 import com.braintreepayments.api.models.Card.BillingAddress;
 import com.google.gson.annotations.SerializedName;
 
@@ -94,6 +95,11 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("creditCard", build());
         return params;
+    }
+
+    @Override
+    public String toJsonString() {
+        return Utils.getGson().toJson(toJson());
     }
 
     @Override

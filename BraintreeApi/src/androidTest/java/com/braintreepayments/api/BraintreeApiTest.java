@@ -14,25 +14,21 @@ import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.internal.HttpRequest;
-import com.braintreepayments.api.internal.HttpRequest.HttpMethod;
-import com.braintreepayments.api.internal.HttpRequestFactory;
+import com.braintreepayments.api.internal.HttpResponse;
 import com.braintreepayments.api.models.CardBuilder;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
-import com.squareup.okhttp.OkHttpClient;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.contains;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class BraintreeApiTest extends AndroidTestCase {
 
@@ -70,7 +66,7 @@ public class BraintreeApiTest extends AndroidTestCase {
         private String exceptionMatcher;
 
         private ApiTest(String mockedResponse, int mockedResponseCode,
-                Class<? extends Exception> exceptionType) {
+                Class<? extends Exception> exceptionType) throws UnexpectedException {
             api = TestUtils.apiWithExpectedResponse(mContext,
                     TestUtils.clientTokenFromFixture(mContext, "client_tokens/client_token.json"),
                     mockedResponse, mockedResponseCode);
@@ -107,46 +103,48 @@ public class BraintreeApiTest extends AndroidTestCase {
         }
     }
 
-    public void testThrowsUnexpectedExceptionWhenHttpRequestBlowsUp() {
+    public void testThrowsUnexpectedExceptionWhenHttpRequestBlowsUp() throws UnexpectedException {
         BraintreeApi exceptionalClient = TestUtils.unexpectedExceptionThrowingApi(mContext,
                 TestUtils.clientTokenFromFixture(mContext, "client_tokens/client_token.json"));
         new ApiTest(exceptionalClient, UnexpectedException.class).execute();
     }
 
-    public void testThrowsServerErrorWhenServerReturns500() {
+    public void testThrowsServerErrorWhenServerReturns500() throws UnexpectedException {
         new ApiTest("", 500, ServerException.class).execute();
     }
 
-    public void testThrowsServerErrorWhenServerReturnsMalformedResponse() {
+    public void testThrowsServerErrorWhenServerReturnsMalformedResponse()
+            throws UnexpectedException {
         new ApiTest("(╯°□°）╯︵ ┻━┻", 201, ServerException.class)
                 .exceptionMessageShouldContain("Parsing server response")
                 .execute();
     }
 
-    public void testThrowsServerErrorWhenServerReturnsWellFormedButIncorrectResponse() {
+    public void testThrowsServerErrorWhenServerReturnsWellFormedButIncorrectResponse()
+            throws UnexpectedException {
         String mockedResponse = FixturesHelper.stringFromFixture(mContext, "random_json.json");
         new ApiTest(mockedResponse, 201, ServerException.class)
                 .exceptionMessageShouldContain("Parsing server response failed")
                 .execute();
     }
 
-    public void testThrowsDownForMaintenanceWhenServerIsDown() {
+    public void testThrowsDownForMaintenanceWhenServerIsDown() throws UnexpectedException {
         new ApiTest("", 503, DownForMaintenanceException.class).execute();
     }
 
-    public void testThrowsUpgradeRequiredExceptionOn426() {
+    public void testThrowsUpgradeRequiredExceptionOn426() throws UnexpectedException {
         new ApiTest("", 426, UpgradeRequiredException.class).execute();
     }
 
-    public void testThrowsAuthenticationExceptionOn401() {
+    public void testThrowsAuthenticationExceptionOn401() throws UnexpectedException {
         new ApiTest("", 401, AuthenticationException.class).execute();
     }
 
-    public void testThrowsAuthorizationExceptionOn403() {
+    public void testThrowsAuthorizationExceptionOn403() throws UnexpectedException {
         new ApiTest("", 403, AuthorizationException.class).execute();
     }
 
-    public void testThrowsErrorWithResponseOn422() {
+    public void testThrowsErrorWithResponseOn422() throws UnexpectedException {
         String mockedResponse = FixturesHelper.stringFromFixture(mContext,
                 "errors/error_response.json");
         new ApiTest(mockedResponse, 422, ErrorWithResponse.class)
@@ -154,14 +152,14 @@ public class BraintreeApiTest extends AndroidTestCase {
                 .execute();
     }
 
-    public void testThrowsUnexpectedExceptionWhenBuildingErrorFails() {
+    public void testThrowsUnexpectedExceptionWhenBuildingErrorFails() throws UnexpectedException {
         String mockedResponse = FixturesHelper.stringFromFixture(mContext, "random_json.json");
         new ApiTest(mockedResponse, 422, UnexpectedException.class)
                 .exceptionMessageShouldContain("Parsing error response failed")
                 .execute();
     }
 
-    public void testThrowsUnknownExceptionOnUnrecognizedStatusCode() {
+    public void testThrowsUnknownExceptionOnUnrecognizedStatusCode() throws UnexpectedException {
         String mockedResponse = FixturesHelper.stringFromFixture(mContext,
                 "errors/error_response.json");
         new ApiTest(mockedResponse, 418, UnexpectedException.class).execute();
@@ -191,55 +189,43 @@ public class BraintreeApiTest extends AndroidTestCase {
     }
 
     public void testSendAnalyticsEventSendsAnalyticsIfEnabled() throws UnexpectedException {
-        HttpRequestFactory httpRequestFactory = mock(HttpRequestFactory.class);
         HttpRequest httpRequest = mock(HttpRequest.class);
-        when(httpRequest.header("Content-Type", "application/json")).thenReturn(httpRequest);
-        when(httpRequest.rawBody(anyString())).thenReturn(httpRequest);
-        when(httpRequestFactory.getRequest(eq(HttpMethod.POST), anyString())).thenReturn(
-                httpRequest);
 
         BraintreeApi braintreeApi = new BraintreeApi(getContext(),
                 TestUtils.clientTokenFromFixture(mContext, "client_tokens/client_token_analytics.json"),
-                httpRequestFactory);
+                httpRequest);
 
         braintreeApi.sendAnalyticsEvent("very.important.analytics-payload", "TEST");
 
-        verify(httpRequestFactory, times(1)).getRequest(HttpMethod.POST,
-                "analytics_url");
-        verify(httpRequest, times(1)).rawBody(contains("very.important.analytics-payload"));
-        verify(httpRequest, times(1)).execute();
+        verify(httpRequest, times(1)).post(matches("analytics_url"),
+                contains("very.important.analytics-payload"));
     }
 
-    public void testSendAnalyticsEventNoopsIfDisabled() {
-        HttpRequestFactory httpRequestFactory = mock(HttpRequestFactory.class);
+    public void testSendAnalyticsEventNoopsIfDisabled() throws UnexpectedException {
+        HttpRequest httpRequest = mock(HttpRequest.class);
         BraintreeApi braintreeApi = new BraintreeApi(getContext(),
                 TestUtils.clientTokenFromFixture(mContext, "client_tokens/client_token.json"),
-                httpRequestFactory);
+                httpRequest);
 
         braintreeApi.sendAnalyticsEvent("event", "TEST");
 
-        verify(httpRequestFactory, never()).getRequest(any(HttpMethod.class), anyString());
+        verify(httpRequest, never()).post(anyString(), anyString());
     }
 
     public void testAnalyticsEventsAreSentToServer() {
         final AtomicInteger requestCount = new AtomicInteger(0);
         final AtomicInteger responseCode = new AtomicInteger(0);
-        HttpRequestFactory requestFactory = new HttpRequestFactory() {
+        ClientToken token = ClientToken.getClientToken(new TestClientTokenBuilder().withAnalytics().build());
+        HttpRequest request = new HttpRequest(token.getAuthorizationFingerprint()) {
             @Override
-            public HttpRequest getRequest(HttpMethod method, String url) {
-                return new HttpRequest(new OkHttpClient(), method, url) {
-                    @Override
-                    public HttpRequest execute() throws UnexpectedException {
-                        HttpRequest request = super.execute();
-                        requestCount.incrementAndGet();
-                        responseCode.set(request.statusCode());
-                        return request;
-                    }
-                };
+            public HttpResponse post (String url, String params) throws UnexpectedException {
+                requestCount.incrementAndGet();
+                HttpResponse response = super.post(url, params);
+                responseCode.set(response.getResponseCode());
+                return response;
             }
         };
-        ClientToken token = ClientToken.getClientToken(new TestClientTokenBuilder().withAnalytics().build());
-        BraintreeApi braintreeApi = new BraintreeApi(getContext(), token, requestFactory);
+        BraintreeApi braintreeApi = new BraintreeApi(getContext(), token, request);
 
         braintreeApi.sendAnalyticsEvent("event", "TEST");
         assertEquals(1, requestCount.get());

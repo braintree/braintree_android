@@ -13,8 +13,7 @@ public class AddCardTest extends AndroidTestCase {
 
     public void setUp() {
         TestUtils.setUp(getContext());
-        mBraintreeApi = new BraintreeApi(getContext(),
-                new TestClientTokenBuilder().build());
+        mBraintreeApi = new BraintreeApi(getContext(), new TestClientTokenBuilder().build());
     }
 
     public void testCanAddCard() throws ErrorWithResponse, BraintreeException {

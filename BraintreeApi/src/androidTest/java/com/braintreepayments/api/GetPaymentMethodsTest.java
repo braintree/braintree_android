@@ -5,6 +5,7 @@ import android.test.AndroidTestCase;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
@@ -64,7 +65,8 @@ public class GetPaymentMethodsTest extends AndroidTestCase {
         assertEquals("11", ((Card) paymentMethods.get(2)).getLastTwo());
     }
 
-    public void testGetPaymentMethodsReturnsAnError() throws ErrorWithResponse {
+    public void testGetPaymentMethodsReturnsAnError() throws ErrorWithResponse,
+            UnexpectedException {
         ClientToken clientToken = TestUtils.clientTokenFromFixture(getContext(),
                 "client_tokens/client_token.json");
         BraintreeApi braintreeApi = TestUtils.unexpectedExceptionThrowingApi(getContext(),

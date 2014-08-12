@@ -6,11 +6,13 @@ import android.os.Looper;
 
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.internal.HttpRequest;
-import com.braintreepayments.api.internal.HttpRequest.HttpMethod;
-import com.braintreepayments.api.internal.HttpRequestFactory;
-import com.squareup.okhttp.OkHttpClient;
+import com.braintreepayments.api.internal.HttpResponse;
 
 import java.util.concurrent.CountDownLatch;
+
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TestUtils {
     public static void setUp(Context context) {
@@ -25,47 +27,22 @@ public class TestUtils {
     }
 
     public static BraintreeApi unexpectedExceptionThrowingApi(final Context context,
-            ClientToken clientToken) {
-        HttpRequestFactory requestFactory = new HttpRequestFactory() {
-            @Override
-            public HttpRequest getRequest(HttpMethod method, String url) {
-                return new HttpRequest(new OkHttpClient(), method, url) {
-                    @Override
-                    public HttpRequest execute() throws UnexpectedException {
-                        throw new UnexpectedException("Mocked HTTP request");
-                    }
-                };
-            }
-        };
+            ClientToken clientToken) throws UnexpectedException {
+        HttpRequest mockRequest = mock(HttpRequest.class);
+        when(mockRequest.get(anyString())).thenThrow(new UnexpectedException("Mocked HTTP request"));
+        when(mockRequest.post(anyString(), anyString())).thenThrow(new UnexpectedException("Mocked HTTP request"));
 
-        return new BraintreeApi(context, clientToken, requestFactory);
+        return new BraintreeApi(context, clientToken, mockRequest);
     }
 
     public static BraintreeApi apiWithExpectedResponse(Context context,
-            ClientToken clientToken, final String response, final int statusCode) {
-        HttpRequestFactory requestFactory = new HttpRequestFactory() {
-            @Override
-            public HttpRequest getRequest(HttpMethod method, String url) {
-                return new HttpRequest(new OkHttpClient(), method, url) {
-                    @Override
-                    public HttpRequest execute() {
-                        return this;
-                    }
+            ClientToken clientToken, final String response, final int statusCode)
+            throws UnexpectedException {
+        HttpRequest mockRequest = mock(HttpRequest.class);
+        when(mockRequest.get(anyString())).thenReturn(new HttpResponse(statusCode, response));
+        when(mockRequest.post(anyString(), anyString())).thenReturn(new HttpResponse(statusCode, response));
 
-                    @Override
-                    public String response() {
-                        return response;
-                    }
-
-                    @Override
-                    public int statusCode() {
-                        return statusCode;
-                    }
-                };
-            }
-        };
-
-        return new BraintreeApi(context, clientToken, requestFactory);
+        return new BraintreeApi(context, clientToken, mockRequest);
     }
 
     public static void waitForMainThreadToFinish() throws InterruptedException {

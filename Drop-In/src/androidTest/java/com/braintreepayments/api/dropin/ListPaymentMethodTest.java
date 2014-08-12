@@ -16,6 +16,8 @@ import com.braintreepayments.api.BraintreeApi;
 import com.braintreepayments.api.TestClientTokenBuilder;
 import com.braintreepayments.api.TestUtils;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.exceptions.UnexpectedException;
+import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
@@ -28,7 +30,6 @@ import java.util.Map;
 
 import static com.braintreepayments.api.TestUtils.assertSelectedPaymentMethodIs;
 import static com.braintreepayments.api.TestUtils.injectSlowBraintree;
-import static com.braintreepayments.api.TestUtils.injectUnexpectedExceptionThrowingBraintree;
 import static com.braintreepayments.api.TestUtils.setUpActivityTest;
 import static com.braintreepayments.api.utils.TestHelper.waitForActivity;
 import static com.braintreepayments.api.utils.ViewHelper.onAddPaymentFormHeader;
@@ -42,6 +43,9 @@ import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMat
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withId;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SuppressLint("NewApi")
 public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
@@ -87,9 +91,14 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         ViewHelper.waitForAddPaymentFormHeader(10500).check(matches(isDisplayed()));
     }
 
-    public void testFallsBackToAddPaymentMethodFormIfLoadingPaymentMethodsBlowsUp() {
+    public void testFallsBackToAddPaymentMethodFormIfLoadingPaymentMethodsBlowsUp()
+            throws UnexpectedException {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
-        injectUnexpectedExceptionThrowingBraintree(getInstrumentation().getContext(), clientToken);
+        HttpRequest mockRequest = mock(HttpRequest.class);
+        when(mockRequest.get(anyString())).thenThrow(new UnexpectedException("Mocked HTTP request"));
+        when(mockRequest.post(anyString(), anyString())).thenThrow(new UnexpectedException("Mocked HTTP request"));
+        TestUtils.injectBraintree(getInstrumentation().getContext(), clientToken, mockRequest);
+
         setUpActivityTest(this, clientToken);
         long testStartTime = System.currentTimeMillis();
         getActivity();

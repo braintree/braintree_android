@@ -16,8 +16,7 @@ import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.internal.HttpRequest;
-import com.braintreepayments.api.internal.HttpRequest.HttpMethod;
-import com.braintreepayments.api.internal.HttpRequestFactory;
+import com.braintreepayments.api.internal.HttpResponse;
 import com.braintreepayments.api.models.AnalyticsRequest;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
@@ -26,9 +25,7 @@ import com.braintreepayments.api.models.PaymentMethod;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static java.net.HttpURLConnection.HTTP_ACCEPTED;
 import static java.net.HttpURLConnection.HTTP_CREATED;
@@ -50,7 +47,7 @@ public class BraintreeApi {
 
     private Context mContext;
     private ClientToken mClientToken;
-    private HttpRequestFactory mHttpRequestFactory;
+    private HttpRequest mHttpRequest;
 
     private BraintreeData mBraintreeData;
 
@@ -59,14 +56,13 @@ public class BraintreeApi {
     }
 
     protected BraintreeApi(Context context, ClientToken token) {
-        this(context, token, new HttpRequestFactory());
+        this(context, token, new HttpRequest(token.getAuthorizationFingerprint()));
     }
 
-    protected BraintreeApi(Context context, ClientToken token,
-            HttpRequestFactory requestFactory) {
+    protected BraintreeApi(Context context, ClientToken token, HttpRequest requestor) {
         mContext = context;
         mClientToken = token;
-        mHttpRequestFactory = requestFactory;
+        mHttpRequest = requestor;
     }
 
     /**
@@ -170,18 +166,13 @@ public class BraintreeApi {
      */
     public <T extends PaymentMethod> T create(PaymentMethod.Builder<T> paymentMethodBuilder)
             throws ErrorWithResponse, BraintreeException {
-        Map<String, Object> params = Utils.newHashMap();
-        params.putAll(getDefaultParameters());
-        params.putAll(paymentMethodBuilder.toJson());
+        HttpResponse response = mHttpRequest.post(
+                versionedUrl(PAYMENT_METHOD_ENDPOINT + "/" + paymentMethodBuilder.getApiPath()),
+                paymentMethodBuilder.toJsonString());
 
-        HttpRequest request = POST(pathForPaymentMethodCreate(paymentMethodBuilder))
-                .rawBody(Utils.getGson().toJson(params))
-                .execute();
-
-        checkAndThrowErrors(request);
-
-        return paymentMethodBuilder
-                .fromJson(jsonForType(request.response(), paymentMethodBuilder.getApiResource()));
+        checkAndThrowErrors(response);
+        return paymentMethodBuilder.fromJson(jsonForType(response.getResponseBody(),
+                        paymentMethodBuilder.getApiResource()));
     }
 
     /**
@@ -211,10 +202,10 @@ public class BraintreeApi {
      * @throws BraintreeException When a non-recoverable error (authentication, server error, network, etc.) occurs.
      */
     public List<PaymentMethod> getPaymentMethods() throws ErrorWithResponse, BraintreeException {
-        HttpRequest builder = GET(PAYMENT_METHOD_ENDPOINT).execute();
+        HttpResponse response = mHttpRequest.get(versionedUrl(PAYMENT_METHOD_ENDPOINT));
 
-        checkAndThrowErrors(builder);
-        return PaymentMethod.parsePaymentMethods(builder.response());
+        checkAndThrowErrors(response);
+        return PaymentMethod.parsePaymentMethods(response.getResponseBody());
     }
 
     /**
@@ -230,15 +221,7 @@ public class BraintreeApi {
             AnalyticsRequest analyticsRequest = new AnalyticsRequest(mContext, event, integrationType);
 
             try {
-                JSONObject json = new JSONObject(analyticsRequest.toJson());
-                json.put("authorizationFingerprint", mClientToken.getAuthorizationFingerprint());
-
-                mHttpRequestFactory.getRequest(HttpMethod.POST, mClientToken.getAnalytics().getUrl())
-                        .header("Content-Type", "application/json")
-                        .rawBody(json.toString())
-                        .execute();
-            } catch (JSONException e) {
-                // Analytics failures should not interrupt normal application activity
+                mHttpRequest.post(mClientToken.getAnalytics().getUrl(), analyticsRequest.toJson());
             } catch (UnexpectedException e) {
                 // Analytics failures should not interrupt normal application activity
             }
@@ -254,7 +237,8 @@ public class BraintreeApi {
      * @see com.braintreepayments.api.data.BraintreeData
      */
     public String collectDeviceData(Activity activity, BraintreeEnvironment environment) {
-        return collectDeviceData(activity, environment.getMerchantId(), environment.getCollectorUrl());
+        return collectDeviceData(activity, environment.getMerchantId(),
+                environment.getCollectorUrl());
     }
 
     /**
@@ -272,12 +256,8 @@ public class BraintreeApi {
         return mBraintreeData.collectDeviceData();
     }
 
-    private String url(String path) {
+    private String versionedUrl(String path) {
         return mClientToken.getClientApiUrl() + "/v1/" + path;
-    }
-
-    private String pathForPaymentMethodCreate(PaymentMethod.Builder builder) {
-        return PAYMENT_METHOD_ENDPOINT + "/" + builder.getApiPath();
     }
 
     private String jsonForType(String response, String type) throws ServerException {
@@ -291,32 +271,9 @@ public class BraintreeApi {
         }
     }
 
-    private Map<String, String> getDefaultParameters() {
-        Map<String, String> defaults = new HashMap<String, String>();
-
-        defaults.put("authorizationFingerprint", mClientToken.getAuthorizationFingerprint());
-
-        return defaults;
-    }
-
-    private HttpRequest GET(String path) {
-        HttpRequest requestWrapper = mHttpRequestFactory.getRequest(HttpMethod.GET, url(path));
-
-        for (Map.Entry<String, String> entry : getDefaultParameters().entrySet()) {
-            requestWrapper.param(entry.getKey(), entry.getValue());
-        }
-
-        return requestWrapper;
-    }
-
-    private HttpRequest POST(String path) {
-        return mHttpRequestFactory.getRequest(HttpMethod.POST, url(path))
-                .header("Content-Type", "application/json");
-    }
-
-    private void checkAndThrowErrors(HttpRequest builder)
+    private void checkAndThrowErrors(HttpResponse response)
             throws ErrorWithResponse, BraintreeException {
-        switch(builder.statusCode()) {
+        switch(response.getResponseCode()) {
             case HTTP_OK: case HTTP_CREATED: case HTTP_ACCEPTED:
                 return;
             case HTTP_UNAUTHORIZED:
@@ -324,7 +281,7 @@ public class BraintreeApi {
             case HTTP_FORBIDDEN:
                 throw new AuthorizationException();
             case 422: // HTTP_UNPROCESSABLE_ENTITY
-                throw new ErrorWithResponse(builder.statusCode(), builder.response());
+                throw new ErrorWithResponse(response.getResponseCode(), response.getResponseBody());
             case 426: // HTTP_UPGRADE_REQUIRED
                 throw new UpgradeRequiredException();
             case HTTP_INTERNAL_ERROR:
@@ -335,4 +292,5 @@ public class BraintreeApi {
                 throw new UnexpectedException();
         }
     }
+
 }

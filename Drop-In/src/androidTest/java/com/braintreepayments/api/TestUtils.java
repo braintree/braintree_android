@@ -18,9 +18,7 @@ import com.braintreepayments.api.dropin.R;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.internal.HttpRequest;
-import com.braintreepayments.api.internal.HttpRequest.HttpMethod;
-import com.braintreepayments.api.internal.HttpRequestFactory;
-import com.squareup.okhttp.OkHttpClient;
+import com.braintreepayments.api.internal.HttpResponse;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -85,111 +83,70 @@ public class TestUtils {
         braintree.postUnrecoverableErrorToListeners(exception);
     }
 
-    public static Braintree injectCountPaymentMethodListBraintree(final Context context, String clientToken, final
+    public static Braintree injectCountPaymentMethodListBraintree(final Context context, String token, final
             AtomicInteger count) {
-        HttpRequestFactory requestFactory = new HttpRequestFactory() {
+        ClientToken clientToken = ClientToken.getClientToken(token);
+        HttpRequest request = new HttpRequest(clientToken.getAuthorizationFingerprint()) {
             @Override
-            public HttpRequest getRequest(HttpMethod method, final String url) {
-                return new HttpRequest(new OkHttpClient(), method, url) {
-                    @Override
-                    public HttpRequest execute() throws UnexpectedException {
-                        HttpRequest response = super.execute();
-
-                        if (url.contains("payment_methods")) {
-                            count.incrementAndGet();
-                        }
-
-                        return response;
-                    }
-                };
+            public HttpResponse get(String url) throws UnexpectedException {
+                if (url.contains("payment_methods")) {
+                    count.incrementAndGet();
+                }
+                return super.get(url);
             }
         };
 
-        Braintree braintree = new Braintree(new BraintreeApi(context, ClientToken
-                .getClientToken(clientToken), requestFactory));
-        return injectBraintree(clientToken, braintree);
-    }
-
-    public static Braintree injectUnexpectedExceptionThrowingBraintree(final Context context,
-            String clientToken) {
-        HttpRequestFactory requestFactory = new HttpRequestFactory() {
-            @Override
-            public HttpRequest getRequest(HttpMethod method, String url) {
-                return new HttpRequest(new OkHttpClient(), method, url) {
-                    @Override
-                    public HttpRequest execute() throws UnexpectedException {
-                        throw new UnexpectedException("Mocked HTTP request");
-                    }
-                };
-            }
-        };
-
-        Braintree braintree = new Braintree(new BraintreeApi(context, ClientToken.getClientToken(clientToken), requestFactory));
-        return injectBraintree(clientToken, braintree);
+        Braintree braintree = new Braintree(new BraintreeApi(context, clientToken, request));
+        return injectBraintree(token, braintree);
     }
 
     public static Braintree injectGeneric422ErrorOnCardCreateBraintree(final Context context,
-            String clientToken) {
-        HttpRequestFactory requestFactory = new HttpRequestFactory() {
+            String token) {
+        ClientToken clientToken = ClientToken.getClientToken(token);
+        HttpRequest request = new HttpRequest(clientToken.getAuthorizationFingerprint()) {
             @Override
-            public HttpRequest getRequest(HttpMethod method, final String url) {
-                return new HttpRequest(new OkHttpClient(), method, url) {
-                    @Override
-                    public String response() {
-                        if(url.contains("credit_cards")) {
-                            return FixturesHelper
-                                    .stringFromFixture(context, "errors/error_response.json");
-                        } else {
-                            return super.response();
-                        }
-                    }
-
-                    @Override
-                    public int statusCode() {
-                        if(url.contains("credit_cards")) {
-                            return 422;
-                        } else {
-                            return super.statusCode();
-                        }
-                    }
-                };
+            public HttpResponse post(String url, String params) throws UnexpectedException {
+                if(url.contains("credit_cards")) {
+                    return new HttpResponse(422,
+                            FixturesHelper .stringFromFixture(context, "errors/error_response.json"));
+                } else {
+                    return super.post(url, params);
+                }
             }
         };
 
-        Braintree braintree = new Braintree(new BraintreeApi(context, ClientToken.getClientToken(clientToken), requestFactory));
-        return injectBraintree(clientToken, braintree);
+        Braintree braintree = new Braintree(new BraintreeApi(context, clientToken, request));
+        return injectBraintree(token, braintree);
     }
 
-    public static Braintree injectSlowBraintree(Context context, String clientToken, final long delay) {
-        HttpRequestFactory requestFactory = new HttpRequestFactory() {
+    public static Braintree injectSlowBraintree(Context context, String token, final long delay) {
+        ClientToken clientToken = ClientToken.getClientToken(token);
+        HttpRequest request = new HttpRequest(clientToken.getAuthorizationFingerprint()) {
             @Override
-            public HttpRequest getRequest(HttpMethod method, String url) {
-                return new HttpRequest(new OkHttpClient(), method, url) {
-                    @Override
-                    public HttpRequest execute() throws UnexpectedException {
-                        SystemClock.sleep(delay);
-                        return super.execute();
-                    }
+            public HttpResponse get(String url) throws UnexpectedException {
+                SystemClock.sleep(delay);
+                return super.get(url);
+            }
 
-                    @Override
-                    public String response() {
-                        return super.response();
-                    }
-
-                    @Override
-                    public int statusCode() {
-                        return super.statusCode();
-                    }
-                };
+            @Override
+            public HttpResponse post(String url, String params) throws UnexpectedException {
+                SystemClock.sleep(delay);
+                return super.post(url, params);
             }
         };
 
-        Braintree braintree = new Braintree(new BraintreeApi(context, ClientToken.getClientToken(clientToken), requestFactory));
-        return injectBraintree(clientToken, braintree);
+        Braintree braintree = new Braintree(new BraintreeApi(context, clientToken, request));
+        return injectBraintree(token, braintree);
     }
 
     public static Braintree injectBraintree(Context context, String clientToken) {
         return injectBraintree(clientToken, new Braintree(context, clientToken));
+    }
+
+    public static Braintree injectBraintree(Context context, String clientToken,
+            HttpRequest httpRequest) {
+        return injectBraintreeApi(clientToken,
+                new BraintreeApi(context, ClientToken.getClientToken(clientToken), httpRequest));
     }
 
     public static Braintree injectBraintree(String clientToken, Braintree braintree) {
@@ -197,8 +154,10 @@ public class TestUtils {
         return braintree;
     }
 
-    public static void injectBraintreeApi(String clientToken, BraintreeApi braintreeApi) {
-        Braintree.sInstances.put(clientToken, new Braintree(braintreeApi));
+    public static Braintree injectBraintreeApi(String clientToken, BraintreeApi braintreeApi) {
+        Braintree braintree = new Braintree(braintreeApi);
+        Braintree.sInstances.put(clientToken, braintree);
+        return braintree;
     }
 
     public static void assertBitmapsEqual(Drawable d1, Drawable d2) {

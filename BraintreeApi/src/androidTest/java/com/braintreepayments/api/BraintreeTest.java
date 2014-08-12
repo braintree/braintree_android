@@ -13,6 +13,7 @@ import com.braintreepayments.api.Braintree.PaymentMethodsUpdatedListener;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
@@ -45,8 +46,8 @@ public class BraintreeTest extends AndroidTestCase {
         mBraintree = new Braintree(mBraintreeApi);
     }
 
-    public void testCreateAsync() throws ExecutionException, InterruptedException,
-            ErrorWithResponse, BraintreeException {
+    public void testCreateAsync()
+            throws BraintreeException, ExecutionException, InterruptedException, ErrorWithResponse {
         createCardSync(mBraintree);
 
         assertEquals(1, mBraintreeApi.getPaymentMethods().size());
@@ -117,7 +118,7 @@ public class BraintreeTest extends AndroidTestCase {
     }
 
     public void testOnUnrecoverableErrorsPostsToListeners()
-            throws ExecutionException, InterruptedException {
+            throws ExecutionException, InterruptedException, UnexpectedException {
         BraintreeApi braintreeApi = TestUtils.unexpectedExceptionThrowingApi(getContext(),
                 TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token.json"));
         Braintree braintree = new Braintree(braintreeApi);
@@ -144,7 +145,7 @@ public class BraintreeTest extends AndroidTestCase {
     }
 
     public void testOnRecoverableErrorsPostsToListeners()
-            throws ExecutionException, InterruptedException {
+            throws ExecutionException, InterruptedException, UnexpectedException {
         ClientToken clientToken =
                 TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token.json");
         String response = FixturesHelper.stringFromFixture(getContext(),
@@ -316,7 +317,7 @@ public class BraintreeTest extends AndroidTestCase {
     }
 
     public void testRemovedErrorListenerIsNotPostedTo()
-            throws ExecutionException, InterruptedException {
+            throws ExecutionException, InterruptedException, UnexpectedException {
         BraintreeApi braintreeApi = TestUtils.unexpectedExceptionThrowingApi(getContext(),
                 TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token.json"));
         Braintree braintree = new Braintree(braintreeApi);

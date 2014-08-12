@@ -96,8 +96,16 @@ public abstract class PaymentMethod implements Serializable {
         /**
          * Required for and handled by {@link com.braintreepayments.api.Braintree}. Not intended for general consumption.
          * @return Serialized representation of {@link com.braintreepayments.api.models.PaymentMethod} for API use.
+         * @deprecated Replaced by {@link #toJsonString()} in 1.0.7.
          */
+        @Deprecated
         public Map<String, Object> toJson();
+
+        /**
+         * Required for and handled by {@link com.braintreepayments.api.Braintree}. Not intended for general consumption.
+         * @return String representation of {@link com.braintreepayments.api.models.PaymentMethod} for API use.
+         */
+        public String toJsonString();
 
         /**
          * @param validate Flag to denote when the associated {@link com.braintreepayments.api.models.PaymentMethod}

@@ -1,11 +1,13 @@
 package com.braintreepayments.api.internal;
 
 import com.braintreepayments.api.BuildConfig;
+import com.braintreepayments.api.EnvironmentHelper;
+import com.braintreepayments.api.exceptions.UnexpectedException;
 
 import junit.framework.TestCase;
 
-import org.apache.http.message.BasicNameValuePair;
-
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.Locale;
 
 public class HttpRequestTest extends TestCase {
@@ -14,18 +16,73 @@ public class HttpRequestTest extends TestCase {
 
     @Override
     public void setUp() {
-        mHttpRequest = new HttpRequest(null, null, null);
+        HttpRequest.DEBUG = true;
+        mHttpRequest = new HttpRequest("myAuthorizationToken");
     }
 
-    public void testSendsUserAgent() {
-        assertTrue(hasHeader("User-Agent", "braintree/android/" + BuildConfig.VERSION_NAME));
+    public void testSendsUserAgent() throws IOException {
+        HttpURLConnection connection = mHttpRequest.init("http://example.com");
+        assertEquals("braintree/android/" + BuildConfig.VERSION_NAME,
+                connection.getRequestProperty("User-Agent"));
     }
 
-    public void testSendsAcceptLanguageHeader() {
-        assertTrue(hasHeader("Accept-Language", Locale.getDefault().getLanguage()));
+    public void testSendsAcceptLanguageHeader() throws IOException {
+        HttpURLConnection connection = mHttpRequest.init("http://example.com");
+        assertEquals(Locale.getDefault().getLanguage(),
+                connection.getRequestProperty("Accept-Language"));
     }
 
-    private boolean hasHeader(String headerKey, String headerValue) {
-        return mHttpRequest.getHeaders().contains(new BasicNameValuePair(headerKey, headerValue));
+    public void testSendsContentType() throws IOException {
+        HttpURLConnection connection = mHttpRequest.init("http://example.com");
+        assertEquals("application/json", connection.getRequestProperty("Content-Type"));
+    }
+
+    public void testSetsAuthorizationTokenOnGet() throws UnexpectedException {
+        assertEquals(EnvironmentHelper.getGatewayPath() + "/v1/payment_methods?authorizationFingerprint=myAuthorizationToken",
+                mHttpRequest.get(EnvironmentHelper.getGatewayPath() + "/v1/payment_methods").getUrl());
+    }
+
+    public void testSetsAuthorizationTokenOnPost() throws UnexpectedException {
+        assertTrue(mHttpRequest.post(EnvironmentHelper.getGatewayPath(), "{}").getData()
+                .contains("myAuthorizationToken"));
+    }
+
+    public void testGetRequestSslCertificateSuccessfulInSandbox() throws UnexpectedException {
+        int statusCode = mHttpRequest
+                .get("https://api.sandbox.braintreegateway.com")
+                .getResponseCode();
+
+        assertEquals(200, statusCode);
+    }
+
+    public void testGetRequestSslCertificateSuccessfulInProduction() throws UnexpectedException {
+        int statusCode = mHttpRequest
+                .get("https://api.braintreegateway.com")
+                .getResponseCode();
+
+        assertEquals(200, statusCode);
+    }
+
+    public void testHostnameVerificationFailsForIncorrectHostName() {
+        try {
+            mHttpRequest.get("https://204.109.13.121:443");
+            fail();
+        } catch (Exception e) {
+            assertEquals("Hostname '204.109.13.121' was not verified", e.getMessage());
+        }
+    }
+
+    public void testGetRequestBadCertificateCheck() {
+        if (!BuildConfig.RUN_ALL_TESTS) {
+            return;
+        }
+        try {
+            mHttpRequest.get("https://" + EnvironmentHelper.getLocalhostIp() + ":9443");
+            fail();
+        } catch (Exception e) {
+            // @formatter:off
+            assertEquals("java.security.cert.CertPathValidatorException: Trust anchor for certification path not found.", e.getMessage());
+            // @formatter:on
+        }
     }
 }

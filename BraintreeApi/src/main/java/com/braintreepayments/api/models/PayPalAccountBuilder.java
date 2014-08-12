@@ -1,5 +1,7 @@
 package com.braintreepayments.api.models;
 
+import com.braintreepayments.api.Utils;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,6 +71,11 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("paypalAccount", build());
         return params;
+    }
+
+    @Override
+    public String toJsonString() {
+        return Utils.getGson().toJson(toJson());
     }
 
     @Override
