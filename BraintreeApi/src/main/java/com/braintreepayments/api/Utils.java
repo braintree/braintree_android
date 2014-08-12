@@ -6,11 +6,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class Utils {
@@ -51,10 +49,6 @@ public class Utils {
         }
 
         return gson;
-    }
-
-    protected static <K, V> Map<K, V> newHashMap() {
-        return new HashMap<K, V>();
     }
 
     protected static <T> Set<T> newHashSet() {
