@@ -1,6 +1,14 @@
 # Braintree Android SDK Release Notes
 
+## 1.0.8
+
+* Improvements
+  * CardBuilder now accepts billing address fields other than postal code (credit: @chiuki)
+* Packaging
+  * Fixed an issue building Drop-In in Eclipse
+
 ## 1.0.7
+
 * Improvements
   * BraintreeApi no longer depends on OkHttp
   * Added localizations for more locales (UK, FR, DE, IT)
