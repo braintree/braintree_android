@@ -14,7 +14,11 @@ public class CardBuilderTest extends TestCase {
                 .cvv("123")
                 .expirationMonth("01")
                 .expirationYear("2015")
-                .postalCode("12345");
+                .streetAddress("1 Main St")
+                .locality("Some Town")
+                .postalCode("12345")
+                .region("Some Region")
+                .countryName("Some Country");
 
         Card card = cardBuilder.build();
         JSONObject builtCard = new JSONObject(Utils.getGson().toJson(card));
@@ -23,7 +27,13 @@ public class CardBuilderTest extends TestCase {
         assertEquals("123", builtCard.getString("cvv"));
         assertEquals("01", builtCard.getString("expirationMonth"));
         assertEquals("2015", builtCard.getString("expirationYear"));
+        assertEquals("1 Main St",
+                builtCard.getJSONObject("billingAddress").getString("streetAddress"));
+        assertEquals("Some Town", builtCard.getJSONObject("billingAddress").getString("locality"));
         assertEquals("12345", builtCard.getJSONObject("billingAddress").getString("postalCode"));
+        assertEquals("Some Region", builtCard.getJSONObject("billingAddress").getString("region"));
+        assertEquals("Some Country",
+                builtCard.getJSONObject("billingAddress").getString("countryName"));
     }
 
     public void testBuildsWithAnExpirationDateCorrectly() throws JSONException {
@@ -48,7 +58,11 @@ public class CardBuilderTest extends TestCase {
         Card card = cardBuilder.build();
         JSONObject builtCard = new JSONObject(Utils.getGson().toJson(card));
 
+        assertFalse(builtCard.getJSONObject("billingAddress").has("streetAddress"));
+        assertFalse(builtCard.getJSONObject("billingAddress").has("locality"));
         assertEquals("60606", builtCard.getJSONObject("billingAddress").getString("postalCode"));
+        assertFalse(builtCard.getJSONObject("billingAddress").has("region"));
+        assertFalse(builtCard.getJSONObject("billingAddress").has("countryName"));
     }
 
     public void testIncludesValidateOptionWhenSet() throws JSONException {
