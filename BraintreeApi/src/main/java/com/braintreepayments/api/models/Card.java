@@ -79,14 +79,14 @@ public class Card extends PaymentMethod implements Serializable {
     }
 
     protected static class BillingAddress implements Serializable {
-        private String streetAddress;
+        private String countryName;
         private String locality;
         private String postalCode;
         private String region;
-        private String countryName;
+        private String streetAddress;
 
-        protected void setStreetAddress(String streetAddress) {
-            this.streetAddress = streetAddress;
+        protected void setCountryName(String countryName) {
+            this.countryName = countryName;
         }
 
         protected void setLocality(String locality) {
@@ -101,8 +101,8 @@ public class Card extends PaymentMethod implements Serializable {
             this.region = region;
         }
 
-        protected void setCountryName(String countryName) {
-            this.countryName = countryName;
+        protected void setStreetAddress(String streetAddress) {
+            this.streetAddress = streetAddress;
         }
     }
 }

@@ -92,7 +92,7 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
         TestUtils.setUpActivityTest(this);
         BraintreePaymentActivity activity = getActivity();
 
-        waitForView(withId(R.id.card_form_expiration)).perform(typeText("1"));
+        waitForView(withId(R.id.card_form_expiration)).perform(typeText("1"), closeSoftKeyboard(), waitForKeyboardToClose());
         BraintreeEditText expirationEditText = (BraintreeEditText) activity.findViewById(R.id.card_form_expiration);
         assertTrue(expirationEditText.isFocused());
         assertFalse(expirationEditText.isError());
@@ -106,7 +106,7 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
         TestUtils.setUpActivityTest(this);
         BraintreePaymentActivity activity = getActivity();
 
-        waitForView(withId(R.id.card_form_cvv)).perform(typeText("1"), closeSoftKeyboard());
+        waitForView(withId(R.id.card_form_cvv)).perform(typeText("1"), closeSoftKeyboard(), waitForKeyboardToClose());
         BraintreeEditText cvvEditText = (BraintreeEditText) activity.findViewById(R.id.card_form_cvv);
         assertTrue(cvvEditText.isFocused());
         assertFalse(cvvEditText.isError());

@@ -67,16 +67,20 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
         return this;
     }
 
-    /**
-     * @param streetAddress Street address of the card.
-     * @return {@link com.braintreepayments.api.models.CardBuilder}
-     */
-    public CardBuilder streetAddress(String streetAddress) {
+    private BillingAddress getBillingAddress() {
         if (mBillingAddress == null) {
             mBillingAddress = new BillingAddress();
             mCard.setBillingAddress(mBillingAddress);
         }
-        mBillingAddress.setStreetAddress(streetAddress);
+        return mBillingAddress;
+    }
+
+    /**
+     * @param countryName Country name of the card.
+     * @return {@link com.braintreepayments.api.models.CardBuilder}
+     */
+    public CardBuilder countryName(String countryName) {
+        getBillingAddress().setCountryName(countryName);
         return this;
     }
 
@@ -85,11 +89,7 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
      * @return {@link com.braintreepayments.api.models.CardBuilder}
      */
     public CardBuilder locality(String locality) {
-        if (mBillingAddress == null) {
-            mBillingAddress = new BillingAddress();
-            mCard.setBillingAddress(mBillingAddress);
-        }
-        mBillingAddress.setLocality(locality);
+        getBillingAddress().setLocality(locality);
         return this;
     }
 
@@ -98,11 +98,7 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
      * @return {@link com.braintreepayments.api.models.CardBuilder}
      */
     public CardBuilder postalCode(String postalCode) {
-        if (mBillingAddress == null) {
-            mBillingAddress = new BillingAddress();
-            mCard.setBillingAddress(mBillingAddress);
-        }
-        mBillingAddress.setPostalCode(postalCode);
+        getBillingAddress().setPostalCode(postalCode);
         return this;
     }
 
@@ -111,24 +107,16 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
      * @return {@link com.braintreepayments.api.models.CardBuilder}
      */
     public CardBuilder region(String region) {
-        if (mBillingAddress == null) {
-            mBillingAddress = new BillingAddress();
-            mCard.setBillingAddress(mBillingAddress);
-        }
-        mBillingAddress.setRegion(region);
+        getBillingAddress().setRegion(region);
         return this;
     }
 
     /**
-     * @param countryName Country name of the card.
+     * @param streetAddress Street address of the card.
      * @return {@link com.braintreepayments.api.models.CardBuilder}
      */
-    public CardBuilder countryName(String countryName) {
-        if (mBillingAddress == null) {
-            mBillingAddress = new BillingAddress();
-            mCard.setBillingAddress(mBillingAddress);
-        }
-        mBillingAddress.setCountryName(countryName);
+    public CardBuilder streetAddress(String streetAddress) {
+        getBillingAddress().setStreetAddress(streetAddress);
         return this;
     }
 
