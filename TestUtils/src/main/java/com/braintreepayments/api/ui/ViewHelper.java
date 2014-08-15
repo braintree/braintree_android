@@ -1,22 +1,18 @@
-package com.braintreepayments.api.utils;
+package com.braintreepayments.api.ui;
 
 import android.os.SystemClock;
 import android.view.View;
 
-import com.braintreepayments.api.dropin.R;
 import com.google.android.apps.common.testing.ui.espresso.UiController;
 import com.google.android.apps.common.testing.ui.espresso.ViewAction;
 import com.google.android.apps.common.testing.ui.espresso.ViewInteraction;
 
 import org.hamcrest.Matcher;
 
-import static com.braintreepayments.api.utils.Matchers.withHint;
 import static com.google.android.apps.common.testing.testrunner.util.Checks.checkNotNull;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDisplayed;
-import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withId;
-import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.anything;
 
 /* http://stackoverflow.com/a/22563297 */
@@ -70,46 +66,6 @@ public class ViewHelper {
 
     public static ViewInteraction waitForView(final Matcher<View> viewMatcher) {
         return waitForView(viewMatcher, FOUR_SECONDS);
-    }
-
-    public static ViewInteraction waitForPaymentMethodList() {
-        return waitForView(withId(R.id.change_payment_method_link), TEN_SECONDS);
-    }
-
-    public static ViewInteraction waitForPaymentMethodList(int timeout) {
-        return waitForView(withId(R.id.change_payment_method_link), timeout);
-    }
-
-    public static ViewInteraction waitForAddPaymentFormHeader() {
-        return waitForView(addPaymentFormHeader(), TEN_SECONDS);
-    }
-
-    public static ViewInteraction waitForAddPaymentFormHeader(long timeout) {
-        return waitForView(addPaymentFormHeader(), timeout);
-    }
-
-    public static ViewInteraction onAddPaymentFormHeader() {
-        return onView(addPaymentFormHeader());
-    }
-
-    public static Matcher<View> addPaymentFormHeader() {
-        return withText(R.string.form_pay_with_card_header);
-    }
-
-    public static ViewInteraction onCardField() {
-        return onView(withHint("Card Number"));
-    }
-
-    public static ViewInteraction onExpirationField() {
-        return onView(withHint("Expiration"));
-    }
-
-    public static ViewInteraction onCvvField() {
-        return onView(withHint("CVV"));
-    }
-
-    public static ViewInteraction onPostalCodeField() {
-        return onView(withHint("Postal Code"));
     }
 
     public static ViewAction waitForKeyboardToClose() {

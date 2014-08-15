@@ -9,10 +9,17 @@ android {
         targetSdkVersion 19
         versionCode 9
         versionName '1.0.8'
+        testInstrumentationRunner 'com.braintreepayments.api.uitest.WithoutAnimationsInstrumentationTestRunner'
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
     }
 }
 
 dependencies {
     compile 'com.loopj.android:android-async-http:1.4.4'
     compile project(':Drop-In')
+
+    androidTestCompile project(':TestUtils')
 }

@@ -1,4 +1,4 @@
-package com.braintreepayments.api.utils;
+package com.braintreepayments.api.ui;
 
 import android.content.Context;
 import android.content.pm.PackageManager;

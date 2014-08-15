@@ -1,11 +1,11 @@
-package com.braintreepayments.api.utils;
+package com.braintreepayments.api.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
 
 import com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner;
 
-public class CustomInstrumentationTestRunner extends GoogleInstrumentationTestRunner {
+public class NoAnimationsInstrumentationTestRunner extends GoogleInstrumentationTestRunner {
 
     private SystemAnimations systemAnimations;
 

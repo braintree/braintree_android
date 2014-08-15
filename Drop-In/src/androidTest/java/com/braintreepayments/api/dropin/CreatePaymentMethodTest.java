@@ -15,9 +15,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.braintreepayments.api.BraintreeApi;
+import com.braintreepayments.api.BraintreeTestUtils;
 import com.braintreepayments.api.FixturesHelper;
 import com.braintreepayments.api.TestClientTokenBuilder;
-import com.braintreepayments.api.TestUtils;
 import com.braintreepayments.api.dropin.view.BraintreeEditText;
 import com.braintreepayments.api.dropin.view.LoadingHeader;
 import com.braintreepayments.api.dropin.view.LoadingHeader.HeaderState;
@@ -33,24 +33,24 @@ import com.google.common.base.Optional;
 
 import java.util.Map;
 
-import static com.braintreepayments.api.TestUtils.assertBitmapsEqual;
-import static com.braintreepayments.api.TestUtils.assertSelectedPaymentMethodIs;
-import static com.braintreepayments.api.TestUtils.injectBraintree;
-import static com.braintreepayments.api.TestUtils.injectBraintreeApi;
-import static com.braintreepayments.api.TestUtils.injectGeneric422ErrorOnCardCreateBraintree;
-import static com.braintreepayments.api.TestUtils.injectSlowBraintree;
-import static com.braintreepayments.api.TestUtils.rotateToLandscape;
-import static com.braintreepayments.api.TestUtils.rotateToPortrait;
-import static com.braintreepayments.api.TestUtils.setUpActivityTest;
-import static com.braintreepayments.api.utils.FormHelpers.fillInPayPal;
-import static com.braintreepayments.api.utils.Matchers.withHint;
-import static com.braintreepayments.api.utils.TestHelper.waitForActivity;
-import static com.braintreepayments.api.utils.ViewHelper.TEN_SECONDS;
-import static com.braintreepayments.api.utils.ViewHelper.onAddPaymentFormHeader;
-import static com.braintreepayments.api.utils.ViewHelper.waitForAddPaymentFormHeader;
-import static com.braintreepayments.api.utils.ViewHelper.waitForKeyboardToClose;
-import static com.braintreepayments.api.utils.ViewHelper.waitForPaymentMethodList;
-import static com.braintreepayments.api.utils.ViewHelper.waitForView;
+import static com.braintreepayments.api.BraintreeTestUtils.assertBitmapsEqual;
+import static com.braintreepayments.api.BraintreeTestUtils.assertSelectedPaymentMethodIs;
+import static com.braintreepayments.api.BraintreeTestUtils.injectBraintree;
+import static com.braintreepayments.api.BraintreeTestUtils.injectBraintreeApi;
+import static com.braintreepayments.api.BraintreeTestUtils.injectGeneric422ErrorOnCardCreateBraintree;
+import static com.braintreepayments.api.BraintreeTestUtils.injectSlowBraintree;
+import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
+import static com.braintreepayments.api.ui.Matchers.withHint;
+import static com.braintreepayments.api.ui.ViewHelper.TEN_SECONDS;
+import static com.braintreepayments.api.ui.ViewHelper.waitForKeyboardToClose;
+import static com.braintreepayments.api.ui.ViewHelper.waitForView;
+import static com.braintreepayments.api.ui.WaitForActivityHelper.waitForActivity;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInPayPal;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.onAddPaymentFormHeader;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodList;
+import static com.braintreepayments.api.ui.RotationHelper.rotateToLandscape;
+import static com.braintreepayments.api.ui.RotationHelper.rotateToPortrait;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.clearText;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
@@ -101,7 +101,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
         waitForActivity(activity);
 
-        Map<String, Object> result = TestUtils.getActivityResult(activity);
+        Map<String, Object> result = BraintreeTestUtils.getActivityResult(activity);
         PaymentMethod response =
                 (PaymentMethod) ((Intent) result.get("resultData")).getSerializableExtra(
                         BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
@@ -112,18 +112,18 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testCardFormCreatesAPaymentMethodWithoutACustomer() throws InterruptedException {
-        TestUtils.setUpActivityTest(this,
+        BraintreeTestUtils.setUpActivityTest(this,
                 new TestClientTokenBuilder().withoutCustomer().withPayPal().build());
         assertCardFormCreatesAPaymentMethod();
     }
 
     public void testCardFormCreatesAPaymentMethodWithACustomer() throws InterruptedException {
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
         assertCardFormCreatesAPaymentMethod();
     }
 
     public void testCardFormCreatesAPaymentMethodInLandscape() {
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
         rotateToLandscape(this);
         assertCardFormCreatesAPaymentMethod();
     }
@@ -134,7 +134,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
                 .withoutPostalCodeChallenge()
                 .build();
         injectBraintree(getInstrumentation().getContext(), clientToken);
-        TestUtils.setUpActivityTest(this, clientToken);
+        BraintreeTestUtils.setUpActivityTest(this, clientToken);
 
         BraintreePaymentActivity activity = getActivity();
 
@@ -147,7 +147,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
         waitForActivity(activity);
 
-        Map<String, Object> result = TestUtils.getActivityResult(activity);
+        Map<String, Object> result = BraintreeTestUtils.getActivityResult(activity);
         PaymentMethod response =
                 (PaymentMethod) ((Intent) result.get("resultData")).getSerializableExtra(
                         BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
@@ -158,7 +158,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testCvvHintsShowAndDisappearOnClick() throws InterruptedException {
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
         final BraintreePaymentActivity activity = getActivity();
 
         waitForAddPaymentFormHeader();
@@ -184,7 +184,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
         waitForActivity(activity);
 
-        Map<String, Object> result = TestUtils.getActivityResult(activity);
+        Map<String, Object> result = BraintreeTestUtils.getActivityResult(activity);
         PaymentMethod paymentMethod =
                 (PaymentMethod) ((Intent) result.get("resultData")).getSerializableExtra(
                         BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
@@ -194,18 +194,18 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testPayPalCreatesAPaymentMethodWithACustomer() {
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
         assertCreatePaymentMethodFromPayPal();
     }
 
     public void testPayPalCreatesAPaymentMethodWithoutACustomer() {
-        TestUtils.setUpActivityTest(this,
+        BraintreeTestUtils.setUpActivityTest(this,
                 new TestClientTokenBuilder().withoutCustomer().withPayPal().build());
         assertCreatePaymentMethodFromPayPal();
     }
 
     public void testReturnsToSelectPaymentMethodViewAfterAddingAPayPalAccount() {
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
         getActivity();
 
         waitForView(withId(R.id.paypal_appswitch_button)).perform(click());
@@ -225,7 +225,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     public void testDisplaysLoadingViewWhileCreatingAPayPalAccount() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         injectSlowBraintree(getInstrumentation().getContext(), clientToken, 2000);
-        TestUtils.setUpActivityTest(this, clientToken);
+        BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();
 
         waitForView(withId(R.id.paypal_appswitch_button), 8000).perform(click());
@@ -248,7 +248,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     public void testDisablesSubmitButtonWhileCreatingPaymentMethod() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         injectSlowBraintree(getInstrumentation().getContext(), clientToken, 200);
-        TestUtils.setUpActivityTest(this, clientToken);
+        BraintreeTestUtils.setUpActivityTest(this, clientToken);
         BraintreePaymentActivity activity = getActivity();
 
         waitForAddPaymentFormHeader();
@@ -267,7 +267,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
         waitForActivity(activity);
 
-        Map<String, Object> result = TestUtils.getActivityResult(activity);
+        Map<String, Object> result = BraintreeTestUtils.getActivityResult(activity);
         PaymentMethod response =
                 (PaymentMethod) ((Intent) result.get("resultData")).getSerializableExtra(
                         BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
@@ -280,7 +280,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     public void testReEnablesSubmitButtonIfThereAreValidationErrorsForThePaymentMethod() {
         String clientToken = new TestClientTokenBuilder().withoutPostalCodeChallenge().withCvvVerification().build();
         injectSlowBraintree(getInstrumentation().getContext(), clientToken, 1000);
-        TestUtils.setUpActivityTest(this, clientToken);
+        BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();
 
         waitForAddPaymentFormHeader();
@@ -296,7 +296,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testPayPalButtonIsNotShownIfPayPalIsNotSupported() {
-        TestUtils.setUpActivityTest(this, new TestClientTokenBuilder().build());
+        BraintreeTestUtils.setUpActivityTest(this, new TestClientTokenBuilder().build());
         getActivity();
 
         waitForAddPaymentFormHeader();
@@ -305,7 +305,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testBackButtonExitsTheActivityIfThereAreNoPaymentMethodsToSelectFrom() {
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
         Activity activity = getActivity();
 
         waitForAddPaymentFormHeader();
@@ -316,7 +316,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testBackButtonInPayPalTakesYouBackToAddPaymentMethodView() {
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
         getActivity();
 
         waitForAddPaymentFormHeader();
@@ -331,7 +331,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     public void testBackButtonDuringCreditCardAddDoesNothing() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         injectSlowBraintree(getInstrumentation().getContext(), clientToken, 2000);
-        TestUtils.setUpActivityTest(this, clientToken);
+        BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();
 
         waitForAddPaymentFormHeader();
@@ -350,7 +350,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     public void testBackButtonDuringPayPalAddDoesNothing() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         injectSlowBraintree(getInstrumentation().getContext(), clientToken, 2000);
-        TestUtils.setUpActivityTest(this, clientToken);
+        BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();
 
         waitForAddPaymentFormHeader();
@@ -373,7 +373,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testUpButtonIsNotShownIfThereAreNoPaymentMethods() {
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
         BraintreePaymentActivity activity = getActivity();
 
         waitForAddPaymentFormHeader();
@@ -382,7 +382,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testUpButtonIsShownAfterYouAddAPaymentMethod() {
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
         BraintreePaymentActivity activity = getActivity();
 
         waitForAddPaymentFormHeader();
@@ -395,7 +395,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testCorrectCardHintsAreDisplayed() {
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
         getActivity();
 
         waitForView(withHint("Card Number"))
@@ -422,7 +422,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
                 FixturesHelper.stringFromFixture(getInstrumentation().getContext(), "errors/card_number_error_response.json")));
         injectBraintreeApi(clientToken, expirationFailBraintreeApi);
 
-        TestUtils.setUpActivityTest(this, clientToken);
+        BraintreeTestUtils.setUpActivityTest(this, clientToken);
         BraintreePaymentActivity activity = getActivity();
 
         waitForAddPaymentFormHeader();
@@ -450,7 +450,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
                 FixturesHelper.stringFromFixture(getInstrumentation().getContext(), "errors/expiration_date_error_response.json")));
         injectBraintreeApi(clientToken, expirationFailBraintreeApi);
 
-        TestUtils.setUpActivityTest(this, clientToken);
+        BraintreeTestUtils.setUpActivityTest(this, clientToken);
         BraintreePaymentActivity activity = getActivity();
 
         waitForView(withId(R.id.card_form_card_number)).perform(typeText("4111111111111111"));
@@ -469,7 +469,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testDisplaysAnErrorWhenPostalCodeFailsOnServer() {
-        TestUtils.setUpActivityTest(this, new TestClientTokenBuilder().withPostalCodeVerification().build());
+        BraintreeTestUtils.setUpActivityTest(this,
+                new TestClientTokenBuilder().withPostalCodeVerification().build());
         BraintreePaymentActivity activity = getActivity();
 
         waitForView(withId(R.id.card_form_card_number)).perform(typeText("4111111111111111"));
@@ -503,13 +504,13 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withId(R.id.card_form_complete_button)).perform(click());
         waitForActivity(activity);
 
-        Map<String, Object> result = TestUtils.getActivityResult(activity);
+        Map<String, Object> result = BraintreeTestUtils.getActivityResult(activity);
         assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_ERROR,
                 result.get("resultCode"));
     }
 
     public void testSubmitButtonIsEnabledWhenCardFormIsEntered() {
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
         getActivity();
         waitForAddPaymentFormHeader();
 
@@ -523,7 +524,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
                 .withoutPostalCodeChallenge()
                 .build();
         injectBraintree(getInstrumentation().getContext(), clientToken);
-        TestUtils.setUpActivityTest(this, clientToken);
+        BraintreeTestUtils.setUpActivityTest(this, clientToken);
 
         getActivity();
         waitForAddPaymentFormHeader();
@@ -534,7 +535,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
     public void testCvvAndPostalCodeFieldsAreShownIfChallengesArePresent() {
         String clientToken = new TestClientTokenBuilder().build();
-        TestUtils.setUpActivityTest(this, clientToken);
+        BraintreeTestUtils.setUpActivityTest(this, clientToken);
 
         getActivity();
         waitForAddPaymentFormHeader();
@@ -544,7 +545,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testErrorIsShownWhenCvvDoesNotMatchForCvvVerificationMerchants() {
-        TestUtils.setUpActivityTest(this, new TestClientTokenBuilder().withCvvVerification().build());
+        BraintreeTestUtils
+                .setUpActivityTest(this, new TestClientTokenBuilder().withCvvVerification().build());
 
         BraintreePaymentActivity activity = getActivity();
         waitForAddPaymentFormHeader();
@@ -567,7 +569,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testErrorIsShownWhenPostalCodeDoesNotMatchForPostalCodeVerificationMerchants() {
-        TestUtils.setUpActivityTest(this, new TestClientTokenBuilder().withPostalCodeVerification().build());
+        BraintreeTestUtils.setUpActivityTest(this,
+                new TestClientTokenBuilder().withPostalCodeVerification().build());
 
         BraintreePaymentActivity activity = getActivity();
         waitForAddPaymentFormHeader();
@@ -590,7 +593,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testErrorIsShownWhenCvvAndPostalCodeDoesNotMatchForCvvAndPostalCodeVerificationMerchants() {
-        TestUtils.setUpActivityTest(this, new TestClientTokenBuilder().withCvvAndPostalCodeVerification().build());
+        BraintreeTestUtils.setUpActivityTest(this,
+                new TestClientTokenBuilder().withCvvAndPostalCodeVerification().build());
 
         BraintreePaymentActivity activity = getActivity();
         waitForAddPaymentFormHeader();
@@ -619,13 +623,15 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
     public void testIsSuccessfulWhenCvvAndPostalCodeMatchForCvvAndPostalCodeVerificationMerchants()
             throws InterruptedException {
-        TestUtils.setUpActivityTest(this, new TestClientTokenBuilder().withCvvAndPostalCodeVerification().build());
+        BraintreeTestUtils.setUpActivityTest(this,
+                new TestClientTokenBuilder().withCvvAndPostalCodeVerification().build());
         assertCardFormCreatesAPaymentMethod();
     }
 
     public void testSetsIMEActionAsGoForExpirationIfCvvAndPostalAreNotPresent() {
-        TestUtils.setUpActivityTest(this, new TestClientTokenBuilder().withoutCvvChallenge()
-                .withoutPostalCodeChallenge().build());
+        BraintreeTestUtils
+                .setUpActivityTest(this, new TestClientTokenBuilder().withoutCvvChallenge()
+                        .withoutPostalCodeChallenge().build());
         Activity activity = getActivity();
 
         waitForAddPaymentFormHeader();
@@ -635,7 +641,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testSetsIMEActionAsGoForCvvIfCvvIsPresentAndPostalIsNot() {
-        TestUtils.setUpActivityTest(this, new TestClientTokenBuilder()
+        BraintreeTestUtils.setUpActivityTest(this, new TestClientTokenBuilder()
                 .withoutPostalCodeChallenge().build());
         Activity activity = getActivity();
 
@@ -648,7 +654,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testSetsIMEActionAsGoForPostalAndNextForExpirationIfCvvIsNotPresent() {
-        TestUtils.setUpActivityTest(this, new TestClientTokenBuilder()
+        BraintreeTestUtils.setUpActivityTest(this, new TestClientTokenBuilder()
                 .withoutCvvChallenge().build());
         Activity activity = getActivity();
 
@@ -661,7 +667,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testSetsIMEActionAsGoForPostalCodeIfCvvAndPostalArePresent() {
-        TestUtils.setUpActivityTest(this, new TestClientTokenBuilder().build());
+        BraintreeTestUtils.setUpActivityTest(this, new TestClientTokenBuilder().build());
         Activity activity = getActivity();
 
         waitForAddPaymentFormHeader();

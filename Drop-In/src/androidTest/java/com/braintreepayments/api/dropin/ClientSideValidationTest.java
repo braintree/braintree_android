@@ -4,18 +4,18 @@ import android.app.Activity;
 import android.os.SystemClock;
 
 import com.braintreepayments.api.BraintreeApi;
+import com.braintreepayments.api.BraintreeTestUtils;
 import com.braintreepayments.api.TestClientTokenBuilder;
-import com.braintreepayments.api.TestUtils;
 import com.braintreepayments.api.dropin.view.BraintreeEditText;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.PaymentMethod;
 
-import static com.braintreepayments.api.TestUtils.injectBraintreeApi;
-import static com.braintreepayments.api.utils.Matchers.withHint;
-import static com.braintreepayments.api.utils.ViewHelper.waitForAddPaymentFormHeader;
-import static com.braintreepayments.api.utils.ViewHelper.waitForKeyboardToClose;
-import static com.braintreepayments.api.utils.ViewHelper.waitForView;
+import static com.braintreepayments.api.BraintreeTestUtils.injectBraintreeApi;
+import static com.braintreepayments.api.ui.Matchers.withHint;
+import static com.braintreepayments.api.ui.ViewHelper.waitForKeyboardToClose;
+import static com.braintreepayments.api.ui.ViewHelper.waitForView;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.closeSoftKeyboard;
@@ -34,7 +34,7 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         BraintreeApi api = spy(new BraintreeApi(getInstrumentation().getContext(), clientToken));
         injectBraintreeApi(clientToken, api);
-        TestUtils.setUpActivityTest(this, clientToken);
+        BraintreeTestUtils.setUpActivityTest(this, clientToken);
         Activity activity = getActivity();
 
         waitForAddPaymentFormHeader();
@@ -59,7 +59,7 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         BraintreeApi api = spy(new BraintreeApi(getInstrumentation().getContext(), clientToken));
         injectBraintreeApi(clientToken, api);
-        TestUtils.setUpActivityTest(this, clientToken);
+        BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();
 
         waitForAddPaymentFormHeader();
@@ -74,7 +74,7 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testMarksCardNumberAsErrorWhenFocusChangesAndCardNumberFailsClientValidation() {
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
         BraintreePaymentActivity activity = getActivity();
 
         waitForView(withId(R.id.card_form_card_number)).perform(typeText("4"));
@@ -89,7 +89,7 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testMarksExpirationAsErrorWhenFocusChangesAndExpirationFailsClientValidation() {
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
         BraintreePaymentActivity activity = getActivity();
 
         waitForView(withId(R.id.card_form_expiration)).perform(typeText("1"), closeSoftKeyboard(), waitForKeyboardToClose());
@@ -103,7 +103,7 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testMarksCvvAsErrorWhenFocusChangesAndCvvNotProperLength() {
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
         BraintreePaymentActivity activity = getActivity();
 
         waitForView(withId(R.id.card_form_cvv)).perform(typeText("1"), closeSoftKeyboard(), waitForKeyboardToClose());
@@ -118,7 +118,7 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testMarksCvvAsErrorWhenCardChangesToAmex() {
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
         BraintreePaymentActivity activity = getActivity();
 
         waitForView(withId(R.id.card_form_cvv)).perform(typeText("111"), closeSoftKeyboard(), waitForKeyboardToClose());
@@ -135,7 +135,7 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testMarksPostalCodeWhenFocusChangesAndPostalCodeBlank() {
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
         BraintreePaymentActivity activity = getActivity();
 
         waitForView(withId(R.id.card_form_postal_code)).perform(click());

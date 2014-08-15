@@ -8,7 +8,7 @@ import android.view.View;
 
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.internal.HttpRequest;
-import com.braintreepayments.api.utils.ViewHelper;
+import com.braintreepayments.api.ui.ViewHelper;
 import com.google.android.apps.common.testing.ui.espresso.FailureHandler;
 import com.google.android.apps.common.testing.ui.espresso.base.DefaultFailureHandler;
 

@@ -1,11 +1,11 @@
-package com.braintreepayments.api.utils;
+package com.braintreepayments.api.ui;
 
 import android.app.Activity;
 
-public class TestHelper {
+public class WaitForActivityHelper {
 
     public static void waitForActivity(Activity activity) {
-        TestHelper.waitForActivityWithTimeout(activity, 5000);
+        WaitForActivityHelper.waitForActivityWithTimeout(activity, 5000);
     }
 
     public static void waitForActivityWithTimeout(Activity activity, long timeout) {

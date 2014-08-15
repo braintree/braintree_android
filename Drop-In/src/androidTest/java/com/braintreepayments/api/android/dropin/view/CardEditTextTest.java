@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.braintreepayments.api.TestUtils.assertBitmapsEqual;
+import static com.braintreepayments.api.BraintreeTestUtils.assertBitmapsEqual;
 import static com.braintreepayments.api.dropin.R.drawable.ic_amex;
 import static com.braintreepayments.api.dropin.R.drawable.ic_card_highlighted;
 import static com.braintreepayments.api.dropin.R.drawable.ic_diners;

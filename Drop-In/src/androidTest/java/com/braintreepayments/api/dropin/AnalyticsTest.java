@@ -3,20 +3,20 @@ package com.braintreepayments.api.dropin;
 import android.view.KeyEvent;
 
 import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.BraintreeTestUtils;
 import com.braintreepayments.api.TestClientTokenBuilder;
-import com.braintreepayments.api.TestUtils;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
 import com.braintreepayments.api.exceptions.ServerException;
 
-import static com.braintreepayments.api.TestUtils.injectBraintree;
-import static com.braintreepayments.api.TestUtils.setUpActivityTest;
-import static com.braintreepayments.api.utils.FormHelpers.fillInPayPal;
-import static com.braintreepayments.api.utils.Matchers.withHint;
-import static com.braintreepayments.api.utils.TestHelper.waitForActivity;
-import static com.braintreepayments.api.utils.ViewHelper.waitForAddPaymentFormHeader;
-import static com.braintreepayments.api.utils.ViewHelper.waitForKeyboardToClose;
-import static com.braintreepayments.api.utils.ViewHelper.waitForView;
+import static com.braintreepayments.api.BraintreeTestUtils.injectBraintree;
+import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
+import static com.braintreepayments.api.ui.Matchers.withHint;
+import static com.braintreepayments.api.ui.WaitForActivityHelper.waitForActivity;
+import static com.braintreepayments.api.ui.ViewHelper.waitForKeyboardToClose;
+import static com.braintreepayments.api.ui.ViewHelper.waitForView;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInPayPal;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.closeSoftKeyboard;
@@ -124,7 +124,8 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     public void testAddsEventOnSDKExitWithDeveloperError() {
         setupActivity();
-        TestUtils.postUnrecoverableErrorFromBraintree(mBraintree, new AuthenticationException());
+        BraintreeTestUtils
+                .postUnrecoverableErrorFromBraintree(mBraintree, new AuthenticationException());
         waitForActivity(mActivity);
 
         verify(mBraintree, times(1)).sendAnalyticsEvent("dropin.android.sdk.exit.developer-error",
@@ -133,7 +134,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     public void testAddsEventOnSDKExitWithServerError() {
         setupActivity();
-        TestUtils.postUnrecoverableErrorFromBraintree(mBraintree, new ServerException());
+        BraintreeTestUtils.postUnrecoverableErrorFromBraintree(mBraintree, new ServerException());
         waitForActivity(mActivity);
 
         verify(mBraintree, times(1)).sendAnalyticsEvent("dropin.android.sdk.exit.server-error",
@@ -142,7 +143,8 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     public void testAddsEventOnSDKExitWithServerUnavailableError() {
         setupActivity();
-        TestUtils.postUnrecoverableErrorFromBraintree(mBraintree, new DownForMaintenanceException());
+        BraintreeTestUtils
+                .postUnrecoverableErrorFromBraintree(mBraintree, new DownForMaintenanceException());
         waitForActivity(mActivity);
 
         verify(mBraintree, times(1)).sendAnalyticsEvent(

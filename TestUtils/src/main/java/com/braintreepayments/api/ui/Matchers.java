@@ -1,4 +1,4 @@
-package com.braintreepayments.api.utils;
+package com.braintreepayments.api.ui;
 
 import android.annotation.SuppressLint;
 import android.graphics.drawable.ColorDrawable;

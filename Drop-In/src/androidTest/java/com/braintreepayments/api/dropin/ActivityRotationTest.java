@@ -6,29 +6,31 @@ import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 
 import com.braintreepayments.api.BraintreeApi;
+import com.braintreepayments.api.BraintreeTestUtils;
 import com.braintreepayments.api.TestClientTokenBuilder;
-import com.braintreepayments.api.TestUtils;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.CardBuilder;
-import com.braintreepayments.api.utils.ViewHelper;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.braintreepayments.api.TestUtils.assertSelectedPaymentMethodIs;
-import static com.braintreepayments.api.TestUtils.injectCountPaymentMethodListBraintree;
-import static com.braintreepayments.api.TestUtils.injectSlowBraintree;
-import static com.braintreepayments.api.TestUtils.rotateToLandscape;
-import static com.braintreepayments.api.TestUtils.rotateToPortrait;
-import static com.braintreepayments.api.utils.Matchers.hasBackgroundColor;
-import static com.braintreepayments.api.utils.ViewHelper.onCardField;
-import static com.braintreepayments.api.utils.ViewHelper.onCvvField;
-import static com.braintreepayments.api.utils.ViewHelper.onExpirationField;
-import static com.braintreepayments.api.utils.ViewHelper.onPostalCodeField;
-import static com.braintreepayments.api.utils.ViewHelper.waitForAddPaymentFormHeader;
-import static com.braintreepayments.api.utils.ViewHelper.waitForKeyboardToClose;
-import static com.braintreepayments.api.utils.ViewHelper.waitForPaymentMethodList;
-import static com.braintreepayments.api.utils.ViewHelper.waitForView;
+import static com.braintreepayments.api.BraintreeTestUtils.assertSelectedPaymentMethodIs;
+import static com.braintreepayments.api.BraintreeTestUtils.injectCountPaymentMethodListBraintree;
+import static com.braintreepayments.api.BraintreeTestUtils.injectSlowBraintree;
+import static com.braintreepayments.api.ui.Matchers.hasBackgroundColor;
+import static com.braintreepayments.api.ui.RotationHelper.rotateToLandscape;
+import static com.braintreepayments.api.ui.RotationHelper.rotateToPortrait;
+import static com.braintreepayments.api.ui.ViewHelper.FOUR_SECONDS;
+import static com.braintreepayments.api.ui.ViewHelper.ONE_SECOND;
+import static com.braintreepayments.api.ui.ViewHelper.TWO_SECONDS;
+import static com.braintreepayments.api.ui.ViewHelper.waitForKeyboardToClose;
+import static com.braintreepayments.api.ui.ViewHelper.waitForView;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.onCardField;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.onCvvField;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.onExpirationField;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.onPostalCodeField;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodList;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.closeSoftKeyboard;
@@ -63,7 +65,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
             return;
         }
 
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
 
         getActivity();
         waitForAddPaymentFormHeader();
@@ -88,7 +90,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
             return;
         }
-        String clientToken = TestUtils.setUpActivityTest(this);
+        String clientToken = BraintreeTestUtils.setUpActivityTest(this);
         BraintreeApi api = new BraintreeApi(getContext(), clientToken);
         api.create(new CardBuilder()
                 .cardNumber("4111111111111111")
@@ -124,7 +126,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         final AtomicInteger listPaymentMethodsCount = new AtomicInteger(0);
         String clientToken = new TestClientTokenBuilder().build();
         injectCountPaymentMethodListBraintree(getContext(), clientToken, listPaymentMethodsCount);
-        TestUtils.setUpActivityTest(this, clientToken);
+        BraintreeTestUtils.setUpActivityTest(this, clientToken);
 
         getActivity();
         waitForAddPaymentFormHeader();
@@ -142,14 +144,14 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
             return;
         }
 
-        int timeout = 5000;
+        int timeout = TWO_SECONDS;
         String clientToken = new TestClientTokenBuilder().build();
         injectSlowBraintree(getContext(), clientToken, timeout);
-        TestUtils.setUpActivityTest(this, clientToken);
+        BraintreeTestUtils.setUpActivityTest(this, clientToken);
 
         getActivity();
         rotateToLandscape(this);
-        ViewHelper.waitForAddPaymentFormHeader(timeout * 2);
+        waitForAddPaymentFormHeader(timeout * 4);
     }
 
     public void testCardFieldsStillDisabledDuringSubmitOnRotation() {
@@ -157,10 +159,10 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
             return;
         }
 
-        int timeout = 4000;
+        int timeout = FOUR_SECONDS;
         String clientToken = new TestClientTokenBuilder().build();
         injectSlowBraintree(getContext(), clientToken, timeout);
-        TestUtils.setUpActivityTest(this, clientToken);
+        BraintreeTestUtils.setUpActivityTest(this, clientToken);
 
         getActivity();
 
@@ -182,9 +184,9 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         }
 
         String clientToken = new TestClientTokenBuilder().build();
-        int timeout = 2000;
+        int timeout = TWO_SECONDS;
         injectSlowBraintree(getContext(), clientToken, timeout);
-        TestUtils.setUpActivityTest(this, clientToken);
+        BraintreeTestUtils.setUpActivityTest(this, clientToken);
 
         getActivity();
         waitForAddPaymentFormHeader(timeout * 4); // give it extra time
@@ -198,7 +200,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         onView(withId(R.id.card_form_complete_button)).perform(click());
         rotateToPortrait(this);
 
-        waitForAddPaymentFormHeader(1000);
+        waitForAddPaymentFormHeader(ONE_SECOND);
         onView(withId(R.id.card_form_complete_button)).check(matches(not(isEnabled())));
     }
 
@@ -208,9 +210,9 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         }
 
         String clientToken = new TestClientTokenBuilder().build();
-        int timeout = 2000;
+        int timeout = TWO_SECONDS;
         injectSlowBraintree(getContext(), clientToken, timeout);
-        TestUtils.setUpActivityTest(this, clientToken);
+        BraintreeTestUtils.setUpActivityTest(this, clientToken);
 
         getActivity();
         waitForAddPaymentFormHeader(timeout * 4); // give it extra time
@@ -227,7 +229,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         onView(withId(R.id.header_loading_spinner)).check(matches(isDisplayed()));
 
         rotateToLandscape(this);
-        waitForAddPaymentFormHeader(1000);
+        waitForAddPaymentFormHeader(ONE_SECOND);
 
         onView(withId(R.id.card_form_complete_button)).check(matches(not(isEnabled())));
         onView(withId(R.id.header_loading_spinner)).check(matches(isDisplayed()));
@@ -238,7 +240,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
             return;
         }
 
-        TestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this);
         getActivity();
         waitForAddPaymentFormHeader();
         onCardField().perform(typeText("378282246310005"), closeSoftKeyboard(),

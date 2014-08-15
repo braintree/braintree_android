@@ -13,11 +13,11 @@ import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.CardBuilder;
-import com.braintreepayments.api.utils.ViewHelper;
 
-import static com.braintreepayments.api.TestUtils.assertBitmapsEqual;
-import static com.braintreepayments.api.utils.ViewHelper.waitForPaymentMethodList;
-import static com.braintreepayments.api.utils.ViewHelper.waitForView;
+import static com.braintreepayments.api.BraintreeTestUtils.assertBitmapsEqual;
+import static com.braintreepayments.api.ui.ViewHelper.waitForView;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodList;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDisplayed;
@@ -35,7 +35,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         setActivityIntent(intent);
         getActivity();
 
-        ViewHelper.waitForAddPaymentFormHeader();
+        waitForAddPaymentFormHeader();
         onView(withId(R.id.primary_description)).check(matches(not(isDisplayed())));
     }
 
@@ -45,7 +45,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         setActivityIntent(intent);
         getActivity();
 
-        ViewHelper.waitForAddPaymentFormHeader();
+        waitForAddPaymentFormHeader();
         onView(withId(R.id.card_form_complete_button)).check(matches(withText(R.string.default_submit_button_text)));
     }
 
@@ -60,7 +60,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         setActivityIntent(intent);
         getActivity();
 
-        ViewHelper.waitForAddPaymentFormHeader();
+        waitForAddPaymentFormHeader();
         onView(withId(R.id.card_form_complete_button)).check(matches(withText("Subscribe - $19")));
     }
 
@@ -117,7 +117,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         setActivityIntent(intent);
         getActivity();
 
-        ViewHelper.waitForAddPaymentFormHeader();
+        waitForAddPaymentFormHeader();
         onView(withId(R.id.card_form_complete_button)).check(matches(withText("Purchase - $19")));
     }
 
