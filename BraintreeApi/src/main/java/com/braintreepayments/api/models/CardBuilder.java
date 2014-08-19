@@ -16,6 +16,7 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
 
     @SerializedName("creditCard") private Card mCard;
     private BillingAddress mBillingAddress = null;
+    private String mIntegration = "custom";
 
     public CardBuilder() {
         mCard = new Card();
@@ -129,6 +130,12 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
     }
 
     @Override
+    public CardBuilder integration(String integration) {
+        mIntegration = integration;
+        return this;
+    }
+
+    @Override
     public Card build() {
         return mCard;
     }
@@ -137,6 +144,7 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
     public Map<String, Object> toJson() {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("creditCard", build());
+        params.put(PaymentMethod.Builder.METADATA_KEY, new Metadata(mIntegration, "form"));
         return params;
     }
 

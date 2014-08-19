@@ -1,6 +1,7 @@
 package com.braintreepayments.api.models;
 
 import com.braintreepayments.api.Utils;
+import com.braintreepayments.api.models.PaymentMethod.Builder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,7 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
     private String authorizationCode;
     private String correlationId;
     private PaymentMethodOptions options;
+    private String mIntegration = "custom";
 
     /**
      * Used by PayPal wrappers to construct a {@link com.braintreepayments.api.models.PayPalAccount}.
@@ -50,6 +52,19 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
     }
 
     @Override
+    public PayPalAccountBuilder validate(boolean validate) {
+        options = new PaymentMethodOptions();
+        options.setValidate(validate);
+        return this;
+    }
+
+    @Override
+    public PayPalAccountBuilder integration(String integration) {
+        mIntegration = integration;
+        return this;
+    }
+
+    @Override
     public PayPalAccount build() {
         PayPalAccount payPalAccount = new PayPalAccount();
         payPalAccount.setConsentCode(authorizationCode);
@@ -60,16 +75,10 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
     }
 
     @Override
-    public PayPalAccountBuilder validate(boolean validate) {
-        options = new PaymentMethodOptions();
-        options.setValidate(validate);
-        return this;
-    }
-
-    @Override
     public Map<String, Object> toJson() {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("paypalAccount", build());
+        params.put(Builder.METADATA_KEY, new Metadata(mIntegration, "paypal-sdk"));
         return params;
     }
 

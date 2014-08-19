@@ -196,7 +196,11 @@ public class BraintreeTest extends AndroidTestCase {
 
         braintree.finishPayWithPayPal(null, PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID, intent);
         SystemClock.sleep(50);
+        assertTrue(wasCalled.get());
 
+        wasCalled.set(false);
+        braintree.handlePayPalResponse(null, PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID, intent);
+        SystemClock.sleep(50);
         assertTrue(wasCalled.get());
     }
 

@@ -29,6 +29,7 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.ErrorWithResponse.BraintreeError;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.PayPalAccountBuilder;
 
 /**
  * {@link com.braintreepayments.api.dropin.BraintreeViewController} for coordinating the Add Payment Method form.
@@ -46,6 +47,8 @@ public class AddPaymentMethodViewController extends BraintreeViewController
     private static final String EXTRA_FORM_IS_SUBMITTING = "com.braintreepayments.api.dropin.EXTRA_FORM_IS_SUBMITTING";
     private static final String EXTRA_SUBMIT_BUTTON_ENABLED = "com.braintreepayments.api.dropin.EXTRA_SUBMIT_BUTTON_ENABLED";
     // @formatter:on
+
+    private static final String INTEGRATION_METHOD = "dropin";
 
     /**
      * When adding new views, make sure to update {@link #onSaveInstanceState}, {@link #restoreState(Bundle)}
@@ -220,7 +223,8 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(mCardNumber.getText().toString())
                 .expirationMonth(mExpirationView.getMonth())
-                .expirationYear(mExpirationView.getYear());
+                .expirationYear(mExpirationView.getYear())
+                .integration(INTEGRATION_METHOD);
 
         if (getBraintree().isCvvChallenegePresent()) {
             cardBuilder.cvv(mCvvView.getText().toString());
@@ -234,7 +238,13 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
     public void onPayPalResult(int resultCode, Intent data) {
         mIsSubmitting = true;
-        getBraintree().finishPayWithPayPal(getActivity(), resultCode, data);
+        PayPalAccountBuilder payPalAccountBuilder =
+                getBraintree().handlePayPalResponse(getActivity(), resultCode, data);
+
+        if (payPalAccountBuilder != null) {
+            payPalAccountBuilder.integration(INTEGRATION_METHOD);
+            getBraintree().create(payPalAccountBuilder);
+        }
     }
 
     @Override

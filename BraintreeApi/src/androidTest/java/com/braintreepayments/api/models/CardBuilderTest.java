@@ -1,6 +1,6 @@
 package com.braintreepayments.api.models;
 
-import com.braintreepayments.api.Utils;
+import com.braintreepayments.api.models.PaymentMethod.Builder;
 
 import junit.framework.TestCase;
 
@@ -8,6 +8,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class CardBuilderTest extends TestCase {
+
+    private static final String CREDIT_CARD_KEY = "creditCard";
 
     public void testBuildsACardCorrectly() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder().cardNumber("41111111111111111")
@@ -20,20 +22,23 @@ public class CardBuilderTest extends TestCase {
                 .region("Some Region")
                 .countryName("Some Country");
 
-        Card card = cardBuilder.build();
-        JSONObject builtCard = new JSONObject(Utils.getGson().toJson(card));
+        JSONObject json = new JSONObject(cardBuilder.toJsonString());
+        JSONObject jsonCard = json.getJSONObject(CREDIT_CARD_KEY);
+        JSONObject jsonMetadata = json.getJSONObject(Builder.METADATA_KEY);
 
-        assertEquals("41111111111111111", builtCard.getString("number"));
-        assertEquals("123", builtCard.getString("cvv"));
-        assertEquals("01", builtCard.getString("expirationMonth"));
-        assertEquals("2015", builtCard.getString("expirationYear"));
+        assertEquals("41111111111111111", jsonCard.getString("number"));
+        assertEquals("123", jsonCard.getString("cvv"));
+        assertEquals("01", jsonCard.getString("expirationMonth"));
+        assertEquals("2015", jsonCard.getString("expirationYear"));
         assertEquals("1 Main St",
-                builtCard.getJSONObject("billingAddress").getString("streetAddress"));
-        assertEquals("Some Town", builtCard.getJSONObject("billingAddress").getString("locality"));
-        assertEquals("12345", builtCard.getJSONObject("billingAddress").getString("postalCode"));
-        assertEquals("Some Region", builtCard.getJSONObject("billingAddress").getString("region"));
+                jsonCard.getJSONObject("billingAddress").getString("streetAddress"));
+        assertEquals("Some Town", jsonCard.getJSONObject("billingAddress").getString("locality"));
+        assertEquals("12345", jsonCard.getJSONObject("billingAddress").getString("postalCode"));
+        assertEquals("Some Region", jsonCard.getJSONObject("billingAddress").getString("region"));
         assertEquals("Some Country",
-                builtCard.getJSONObject("billingAddress").getString("countryName"));
+                jsonCard.getJSONObject("billingAddress").getString("countryName"));
+        assertEquals("custom", jsonMetadata.getString("integration"));
+        assertEquals("form", jsonMetadata.getString("source"));
     }
 
     public void testBuildsWithAnExpirationDateCorrectly() throws JSONException {
@@ -42,43 +47,59 @@ public class CardBuilderTest extends TestCase {
                 .expirationDate("01/15")
                 .postalCode("12345");
 
-        Card card = cardBuilder.build();
-        JSONObject builtCard = new JSONObject(Utils.getGson().toJson(card));
+        JSONObject jsonCard = new JSONObject(cardBuilder.toJsonString()).getJSONObject(CREDIT_CARD_KEY);
 
-        assertEquals("41111111111111111", builtCard.getString("number"));
-        assertEquals("123", builtCard.getString("cvv"));
-        assertEquals("01/15", builtCard.getString("expirationDate"));
-        assertEquals("12345", builtCard.getJSONObject("billingAddress").getString("postalCode"));
+        assertEquals("41111111111111111", jsonCard.getString("number"));
+        assertEquals("123", jsonCard.getString("cvv"));
+        assertEquals("01/15", jsonCard.getString("expirationDate"));
+        assertEquals("12345", jsonCard.getJSONObject("billingAddress").getString("postalCode"));
     }
 
     public void testBuildsNestedAddressCorrectly() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder()
                 .postalCode("60606");
 
-        Card card = cardBuilder.build();
-        JSONObject builtCard = new JSONObject(Utils.getGson().toJson(card));
+        JSONObject jsonCard = new JSONObject(cardBuilder.toJsonString()).getJSONObject(CREDIT_CARD_KEY);
 
-        assertFalse(builtCard.getJSONObject("billingAddress").has("streetAddress"));
-        assertFalse(builtCard.getJSONObject("billingAddress").has("locality"));
-        assertEquals("60606", builtCard.getJSONObject("billingAddress").getString("postalCode"));
-        assertFalse(builtCard.getJSONObject("billingAddress").has("region"));
-        assertFalse(builtCard.getJSONObject("billingAddress").has("countryName"));
+        assertFalse(jsonCard.getJSONObject("billingAddress").has("streetAddress"));
+        assertFalse(jsonCard.getJSONObject("billingAddress").has("locality"));
+        assertEquals("60606", jsonCard.getJSONObject("billingAddress").getString("postalCode"));
+        assertFalse(jsonCard.getJSONObject("billingAddress").has("region"));
+        assertFalse(jsonCard.getJSONObject("billingAddress").has("countryName"));
+    }
+
+    public void testUsesDefaultInfoForMetadata() throws JSONException {
+        CardBuilder cardBuilder = new CardBuilder();
+
+        JSONObject metadata = new JSONObject(cardBuilder.toJsonString()).getJSONObject(Builder.METADATA_KEY);
+
+        assertEquals("custom", metadata.getString("integration"));
+        assertEquals("form", metadata.getString("source"));
+    }
+
+    public void testSetsIntegrationMethod() throws JSONException {
+        CardBuilder cardBuilder = new CardBuilder().integration("test-integration");
+
+        JSONObject metadata = new JSONObject(cardBuilder.toJsonString()).getJSONObject(Builder.METADATA_KEY);
+
+        assertEquals("test-integration", metadata.getString("integration"));
     }
 
     public void testIncludesValidateOptionWhenSet() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder()
                 .validate(true);
 
-        JSONObject jsonCard = new JSONObject(Utils.getGson().toJson(cardBuilder.build()));
+        JSONObject builtCard = new JSONObject(cardBuilder.toJsonString()).getJSONObject(CREDIT_CARD_KEY);
 
-        assertEquals(true, jsonCard.getJSONObject("options").getBoolean("validate"));
+        assertEquals(true, builtCard.getJSONObject("options").getBoolean("validate"));
     }
 
-    public void testDoesNotIncludeEmptyObjectsWhenSerializing() throws JSONException {
+    public void testDoesNotIncludeEmptyCreditCardWhenSerializing() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder();
 
-        JSONObject jsonCard = new JSONObject(Utils.getGson().toJson(cardBuilder.build()));
+        JSONObject builtCard = new JSONObject(cardBuilder.toJsonString()).getJSONObject(CREDIT_CARD_KEY);
 
-        assertFalse(jsonCard.keys().hasNext());
+        assertFalse(builtCard.keys().hasNext());
     }
+
 }

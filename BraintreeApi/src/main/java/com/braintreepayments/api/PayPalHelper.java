@@ -34,6 +34,17 @@ public class PayPalHelper {
         context.stopService(new Intent(context, PayPalService.class));
     }
 
+    /**
+     * Used to create a {@link com.braintreepayments.api.models.PayPalAccountBuilder} from an activity
+     * response. Not necessary to use, {@link com.braintreepayments.api.Braintree#finishPayWithPayPal(android.app.Activity, int, android.content.Intent)}
+     * does this for you.
+     * @param activity Activity that received the result.
+     * @param resultCode Result code returned in result.
+     * @param data {@link Intent} returned in result.
+     * @return {@link com.braintreepayments.api.models.PayPalAccountBuilder} or null if
+     * resultCode is not {@link android.app.Activity#RESULT_OK} or {@link com.paypal.android.sdk.payments.PayPalFuturePaymentActivity#RESULT_EXTRAS_INVALID}
+     * @throws ConfigurationException if resultCode is {@link com.paypal.android.sdk.payments.PayPalFuturePaymentActivity#RESULT_EXTRAS_INVALID}
+     */
     public static PayPalAccountBuilder getBuilderFromActivity(Activity activity, int resultCode, Intent data) throws ConfigurationException {
         if (resultCode == Activity.RESULT_OK) {
             PayPalAuthorization authorization = data.getParcelableExtra(

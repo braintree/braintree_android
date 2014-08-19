@@ -88,6 +88,20 @@ public abstract class PaymentMethod implements Serializable {
     public static interface Builder<T extends PaymentMethod> {
 
         /**
+         * The parameter key for sending metadata attached to a
+         * {@link com.braintreepayments.api.models.PaymentMethod}
+         */
+        public static final String METADATA_KEY = "_meta";
+
+        /**
+         * Sets the integration method associated with the
+         * {@link com.braintreepayments.api.Braintree#create(com.braintreepayments.api.models.PaymentMethod.Builder)}
+         * call for analytics use. Defaults to custom and does not need to ever be set.
+         * @param integration
+         */
+        public Builder<T> integration(String integration);
+
+        /**
          * Required for and handled by {@link com.braintreepayments.api.Braintree}. Not intended for general consumption.
          * @return A built {@link com.braintreepayments.api.models.PaymentMethod} appropriate to the builder's type.
          */

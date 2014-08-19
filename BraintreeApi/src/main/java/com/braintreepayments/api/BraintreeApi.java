@@ -97,7 +97,18 @@ public class BraintreeApi {
         PayPalHelper.launchPayPal(activity, requestCode);
     }
 
-    protected PayPalAccountBuilder handlePayPalResponse(Activity activity, int resultCode, Intent data)
+    /**
+     * Handles response from PayPal and returns a PayPalAccountBuilder which must be then passed to
+     * {@link #create(com.braintreepayments.api.models.PaymentMethod.Builder)}. {@link #finishPayWithPayPal(android.app.Activity, int, android.content.Intent)}
+     * will call this and {@link #create(com.braintreepayments.api.models.PaymentMethod.Builder)} for you
+     * and may be a better option.
+     * @param activity The activity that received the result.
+     * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @return {@link com.braintreepayments.api.models.PayPalAccountBuilder} ready to be sent to {@link #create(com.braintreepayments.api.models.PaymentMethod.Builder)}
+     * @throws ConfigurationException If PayPal credentials from the Braintree control panel are incorrect.
+     */
+    public PayPalAccountBuilder handlePayPalResponse(Activity activity, int resultCode, Intent data)
             throws ConfigurationException {
         PayPalHelper.stopPaypalService(mContext);
         return PayPalHelper.getBuilderFromActivity(activity, resultCode, data);
@@ -117,7 +128,7 @@ public class BraintreeApi {
      * @return The {@link com.braintreepayments.api.models.PaymentMethod} created from a PayPal account
      * @throws ErrorWithResponse If creation fails validation
      * @throws BraintreeException If an error not due to validation (server error, network issue, etc.) occurs
-     * @throws ConfigurationException If PayPal credentials from the Braintree control panel are incorrect
+     * @throws ConfigurationException If PayPal credentials from the Braintree control panel are incorrect.
      *
      * @see BraintreeApi#create(com.braintreepayments.api.models.PaymentMethod.Builder)
      */
@@ -209,12 +220,10 @@ public class BraintreeApi {
     }
 
     /**
-     * Enqueues analytics events to send to the Braintree analytics service. Used internally and by Drop-In.
-     * Analytics events are batched to minimize network requests.
+     * Sends analytics event to send to the Braintree analytics service. Used internally and by Drop-In.
      * @param event Name of event to be sent.
      * @param integrationType The type of integration used. Should be "custom" for those directly
-     * using {@link Braintree} of {@link BraintreeApi} without
-     * Drop-In
+     * using {@link Braintree} or {@link BraintreeApi} without Drop-In
      */
     public void sendAnalyticsEvent(String event, String integrationType) {
         if (mClientToken.isAnalyticsEnabled()) {
