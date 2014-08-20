@@ -3,7 +3,9 @@ package com.braintreepayments.api.dropin;
 import android.app.Instrumentation;
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
+import android.util.Log;
 import android.view.View;
 
 import com.braintreepayments.api.Braintree;
@@ -13,9 +15,6 @@ import com.google.android.apps.common.testing.ui.espresso.FailureHandler;
 import com.google.android.apps.common.testing.ui.espresso.base.DefaultFailureHandler;
 
 import org.hamcrest.Matcher;
-
-import java.io.DataOutputStream;
-import java.io.IOException;
 
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.setFailureHandler;
 
@@ -57,23 +56,12 @@ public class BraintreePaymentActivityTestCase extends
         @Override
         public void handle(Throwable error, Matcher<View> viewMatcher) {
             if (!ViewHelper.sWaitingForView) {
-                String path = "/sdcard/BraintreeUITestScreenshots";
-                String testName = mTestCase.getClass().getSimpleName() + "#" + mTestCase.getName() + "-" +
-                        System.currentTimeMillis();
-
-                try {
-                    Process rootProcess = Runtime.getRuntime().exec(new String[]{"su", "-c", "system/bin/sh"});
-                    DataOutputStream stdin = new DataOutputStream(rootProcess.getOutputStream());
-                    stdin.writeBytes("mkdir " + path + "\n");
-                    stdin.flush();
-                    stdin.writeBytes("screencap -p " + path + "/" + testName + ".png\n");
-                    stdin.flush();
-                    stdin.close();
-                } catch (IOException e) {
-                    // noop
-                }
+                Log.d("request_screenshot", mTestCase.getClass().getSimpleName() + "#"
+                        + mTestCase.getName() + "-" + System.currentTimeMillis());
+                SystemClock.sleep(500);
             }
             mDelegate.handle(error, viewMatcher);
         }
     }
+
 }

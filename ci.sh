@@ -6,7 +6,6 @@ if [ -z "${ANDROID_HOME}" ]; then
 fi
 android_adb=$ANDROID_HOME/platform-tools/adb
 export PATH=$ANDROID_HOME/platform-tools:$PATH
-test_screenshots_directory=$android_path/test_screenshots
 
 export rvm_trust_rvmrcs_flag=1
 gateway_path="$PWD/../$JOB_NAME-gateway"
@@ -84,12 +83,6 @@ wait_for_emulator() {
   echo "Emulator fully armed and operational, starting tests"
 }
 
-download_screenshots() {
-  rm -rf $test_screenshots_directory
-  mkdir $test_screenshots_directory
-  $android_adb pull /sdcard/BraintreeUITestScreenshots $test_screenshots_directory && $android_adb shell rm -r /sdcard/BraintreeUITestScreenshots
-}
-
 mvn install:install-file -Dfile=$android_path/libs/0.12.1-SNAPSHOT/gradle-plugin-0.12.1-SNAPSHOT.jar -DpomFile=$android_path/libs/0.12.1-SNAPSHOT/gradle-plugin-0.12.1-SNAPSHOT.pom
 
 # Build twice, the first build will resolve dependencies via sdk-manager-plugin and then fail
@@ -114,10 +107,10 @@ cd_android
 wait_for_emulator
 
 ruby script/httpsd.rb /tmp/httpsd.pid
+ruby screenshot_listener.rb
 $android_path/gradlew --info --no-color runAllTests connectedAndroidTest
 test_return_code=$?
 
-download_screenshots
 build_cleanup
 
 exit $test_return_code;
