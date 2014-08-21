@@ -1,3 +1,4 @@
+apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.application'
 
 android {
@@ -15,6 +16,10 @@ android {
     packagingOptions {
         exclude 'LICENSE.txt'
     }
+}
+
+sdkManager {
+    emulatorVersion 'android-19'
 }
 
 dependencies {

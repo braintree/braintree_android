@@ -20,7 +20,3 @@ allprojects {
     }
 }
 
-apply plugin: 'android-sdk-manager'
-sdkManager {
-    emulatorVersion 'android-19'
-}
