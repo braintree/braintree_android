@@ -1,5 +1,12 @@
 # Braintree Android SDK Release Notes
 
+## 1.1.0
+
+* Breaking Change
+  * BraintreeData returns `deviceData` instead of `deviceSessionId` on `collectDeviceData`
+* Improvements
+  * References `sdk-manager-plugin` from vendor to simplify build process
+
 ## 1.0.8
 
 * Improvements
