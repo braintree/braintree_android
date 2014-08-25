@@ -7,7 +7,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.12.+'
-        classpath group: 'com.jakewharton.sdkmanager', name: 'gradle-plugin', version: '0.12.1-SNAPSHOT'
+        classpath files('libs/0.12.1-SNAPSHOT/gradle-plugin-0.12.1-SNAPSHOT.jar')
     }
 }
 
