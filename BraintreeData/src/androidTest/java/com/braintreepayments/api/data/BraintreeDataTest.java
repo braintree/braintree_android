@@ -2,10 +2,9 @@ package com.braintreepayments.api.data;
 
 import android.app.Activity;
 import android.test.AndroidTestCase;
-import android.text.TextUtils;
 
-import com.braintreepayments.api.data.BraintreeData;
-import com.braintreepayments.api.data.BraintreeEnvironment;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class BraintreeDataTest extends AndroidTestCase {
 
@@ -19,8 +18,12 @@ public class BraintreeDataTest extends AndroidTestCase {
         assertNotNull(braintreeData);
     }
 
-    public void testCollectDeviceDataReturnsSessionId() {
+    public void testCollectDeviceData() throws JSONException {
         BraintreeData braintreeData = new BraintreeData(new Activity(), BraintreeEnvironment.QA);
-        assertFalse(TextUtils.isEmpty(braintreeData.collectDeviceData()));
+
+        JSONObject json = new JSONObject(braintreeData.collectDeviceData());
+
+        assertNotNull(json.get("device_session_id"));
+        assertEquals(BraintreeEnvironment.QA.getMerchantId(), json.get("fraud_merchant_id"));
     }
 }

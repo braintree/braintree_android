@@ -11,7 +11,8 @@ import java.util.UUID;
  */
 public final class BraintreeData {
 
-    private final String sessionId;
+    private String mMerchantId;
+    private String mDeviceSessionId;
     private DeviceCollector deviceCollector;
 
     /**
@@ -33,20 +34,25 @@ public final class BraintreeData {
      * @param collectorUrl The fraud collector url from Braintree.
      */
     public BraintreeData(Activity activity, String merchantId, String collectorUrl) {
-        sessionId = UUID.randomUUID().toString().replace("-", "");
+        mMerchantId = merchantId;
 
         deviceCollector = new DeviceCollector(activity);
-        deviceCollector.setMerchantId(merchantId);
+        deviceCollector.setMerchantId(mMerchantId);
         deviceCollector.setCollectorUrl(collectorUrl);
     }
 
     /**
-     * Call to get a device_id to send to Braintree
-     * @return device_id String
+     * Call to get device_data to send to Braintree
+     * @return String device_data JSON-encoded String of device data.
      */
     public String collectDeviceData() {
-        deviceCollector.collect(sessionId);
-        return sessionId;
+        if(mDeviceSessionId == null) {
+            mDeviceSessionId = UUID.randomUUID().toString().replace("-", "");
+            deviceCollector.collect(mDeviceSessionId);
+        }
+
+        return "{\"device_session_id\": \"" + mDeviceSessionId
+                + "\", \"fraud_merchant_id\": \"" + mMerchantId + "\"}";
     }
 
 }
