@@ -11,7 +11,7 @@ import java.util.UUID;
  */
 public final class BraintreeData {
 
-    private String mMerchantId;
+    private String mFraudMerchantId;
     private String mDeviceSessionId;
     private DeviceCollector deviceCollector;
 
@@ -30,14 +30,14 @@ public final class BraintreeData {
      * with a non-aggregate fraud id.
      *
      * @param activity The currently visible activity.
-     * @param merchantId The fraud merchant id from Braintree.
+     * @param fraudMerchantId The fraud merchant id from Braintree.
      * @param collectorUrl The fraud collector url from Braintree.
      */
-    public BraintreeData(Activity activity, String merchantId, String collectorUrl) {
-        mMerchantId = merchantId;
+    public BraintreeData(Activity activity, String fraudMerchantId, String collectorUrl) {
+        mFraudMerchantId = fraudMerchantId;
 
         deviceCollector = new DeviceCollector(activity);
-        deviceCollector.setMerchantId(mMerchantId);
+        deviceCollector.setMerchantId(mFraudMerchantId);
         deviceCollector.setCollectorUrl(collectorUrl);
     }
 
@@ -52,7 +52,7 @@ public final class BraintreeData {
         }
 
         return "{\"device_session_id\": \"" + mDeviceSessionId
-                + "\", \"fraud_merchant_id\": \"" + mMerchantId + "\"}";
+                + "\", \"fraud_merchant_id\": \"" + mFraudMerchantId + "\"}";
     }
 
 }
