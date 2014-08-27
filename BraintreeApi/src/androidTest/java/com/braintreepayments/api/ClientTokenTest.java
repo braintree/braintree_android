@@ -79,6 +79,12 @@ public class ClientTokenTest extends AndroidTestCase {
         assertEquals("analytics_url", token.getAnalytics().getUrl());
     }
 
+    public void testExposesPayPalTouchKillSwitch() {
+        ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token_paypal_touch_killswitch.json");
+
+        assertTrue(token.getPayPal().getTouchDisabled());
+    }
+
     public void testReportsAnalyticsDisabledWhenNoAnalyticsPresent() {
         ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token.json");
 

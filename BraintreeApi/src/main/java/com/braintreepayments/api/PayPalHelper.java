@@ -11,11 +11,24 @@ import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.paypal.android.sdk.payments.PayPalAuthorization;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
+import com.paypal.android.sdk.payments.PayPalOAuthScopes;
 import com.paypal.android.sdk.payments.PayPalService;
+import com.paypal.android.sdk.payments.PayPalTouch;
+import com.paypal.android.sdk.payments.PayPalTouchActivity;
+import com.paypal.android.sdk.payments.PayPalTouchConfirmation;
 
 import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class PayPalHelper {
+
+    private static final String OFFLINE = "offline";
+
+    protected static boolean sEnableSignatureVerification = true;
 
     private PayPalHelper() {
         throw new IllegalStateException("Non-instantiable class.");
@@ -25,9 +38,24 @@ public class PayPalHelper {
         context.startService(buildPayPalServiceIntent(context, clientToken));
     }
 
-    protected static void launchPayPal(Activity activity, int requestCode) {
-        activity.startActivityForResult(new Intent(activity, PayPalFuturePaymentActivity.class),
-                requestCode);
+    protected static void launchPayPal(Activity activity, int requestCode, ClientToken clientToken) {
+        Class klass;
+        if (PayPalTouch.available(activity.getBaseContext(), sEnableSignatureVerification) &&
+                !clientToken.getPayPal().equals(OFFLINE) && !clientToken.getPayPal().getTouchDisabled()) {
+            klass = PayPalTouchActivity.class;
+        } else {
+            klass = PayPalFuturePaymentActivity.class;
+        }
+
+        Intent intent = new Intent(activity, klass);
+        Set<String> scopes = new HashSet<String>(
+                Arrays.asList(
+                    PayPalOAuthScopes.PAYPAL_SCOPE_EMAIL,
+                    PayPalOAuthScopes.PAYPAL_SCOPE_PROFILE,
+                    PayPalOAuthScopes.PAYPAL_SCOPE_FUTURE_PAYMENTS)
+        );
+        intent.putExtra(PayPalTouchActivity.EXTRA_REQUESTED_SCOPES, new PayPalOAuthScopes(scopes));
+        activity.startActivityForResult(intent, requestCode);
     }
 
     protected static void stopPaypalService(Context context) {
@@ -47,25 +75,34 @@ public class PayPalHelper {
      */
     public static PayPalAccountBuilder getBuilderFromActivity(Activity activity, int resultCode, Intent data) throws ConfigurationException {
         if (resultCode == Activity.RESULT_OK) {
-            PayPalAuthorization authorization = data.getParcelableExtra(
-                    PayPalFuturePaymentActivity.EXTRA_RESULT_AUTHORIZATION);
-            PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder()
-                    .authorizationCode(authorization.getAuthorizationCode());
-
+            PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder();
             if (activity != null) {
-                payPalAccountBuilder.correlationId(PayPalConfiguration.getApplicationCorrelationId(activity));
+                paypalAccountBuilder.correlationId(PayPalConfiguration.getApplicationCorrelationId(activity));
             }
 
-            try {
-                String email = authorization.toJSONObject()
-                        .getJSONObject("user")
-                        .getString("display_string");
-                payPalAccountBuilder.email(email);
-            } catch (JSONException e) {
-                // If email was not included, don't set it
+            PayPalTouchConfirmation paypalTouchConfirmation = data.getParcelableExtra(
+                    PayPalTouchActivity.EXTRA_LOGIN_CONFIRMATION);
+            if (paypalTouchConfirmation != null) {
+                JSONObject paypalTouchResponse = paypalTouchConfirmation
+                        .getPayPalTouchResponseBundle().toJSONObject();
+                paypalAccountBuilder.authorizationCode(paypalTouchResponse.optString(
+                        "authorization_code"));
+                paypalAccountBuilder.email(paypalTouchResponse.optString("email"));
+            } else {
+                PayPalAuthorization authorization = data.getParcelableExtra(
+                        PayPalFuturePaymentActivity.EXTRA_RESULT_AUTHORIZATION);
+                paypalAccountBuilder.authorizationCode(authorization.getAuthorizationCode());
+                try {
+                    String email = authorization.toJSONObject()
+                            .getJSONObject("user")
+                            .getString("display_string");
+                    paypalAccountBuilder.email(email);
+                } catch (JSONException e) {
+                    // If email was not included, don't set it
+                }
             }
 
-            return payPalAccountBuilder;
+            return paypalAccountBuilder;
         } else if (resultCode == PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID) {
             throw new ConfigurationException();
         }
@@ -97,6 +134,7 @@ public class PayPalHelper {
         Intent intent = new Intent(context, PayPalService.class);
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, buildPayPalConfiguration(
                 clientToken));
+        intent.putExtra("com.paypal.android.sdk.enableAuthenticatorSecurity", sEnableSignatureVerification);
 
         if(clientToken.getPayPal().getEnvironment().equals("custom")) {
             intent.putExtra("com.paypal.android.sdk.baseEnvironmentUrl",

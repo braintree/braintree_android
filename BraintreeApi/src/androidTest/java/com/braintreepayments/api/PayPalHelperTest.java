@@ -17,7 +17,7 @@ public class PayPalHelperTest extends AndroidTestCase {
 
         PayPalConfiguration configuration = PayPalHelper.buildPayPalConfiguration(token);
 
-        assertEquals("PayPalConfig: {environment:mock: languageOrLocale:null}", configuration.toString());
+        assertTrue(configuration.toString().contains("environment:mock"));
     }
 
     public void testBuildsLivePayPalConfiguration() {
@@ -25,7 +25,7 @@ public class PayPalHelperTest extends AndroidTestCase {
 
         PayPalConfiguration configuration = PayPalHelper.buildPayPalConfiguration(token);
 
-        assertEquals("PayPalConfig: {environment:live: languageOrLocale:null}", configuration.toString());
+        assertTrue(configuration.toString().contains("environment:live"));
     }
 
     public void testBuildsCustomPayPalConfiguration() {
@@ -33,7 +33,7 @@ public class PayPalHelperTest extends AndroidTestCase {
 
         PayPalConfiguration configuration = PayPalHelper.buildPayPalConfiguration(token);
 
-        assertEquals("PayPalConfig: {environment:custom: languageOrLocale:null}", configuration.toString());
+        assertTrue(configuration.toString().contains("environment:custom"));
     }
 
     public void testBuildsPayPalServiceIntentWithCustomStageUrlAndSslVerificationOffForCustomEnvironment() {

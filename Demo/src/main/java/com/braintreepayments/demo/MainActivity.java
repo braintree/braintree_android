@@ -4,24 +4,45 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.RadioGroup;
+
+import com.braintreepayments.api.SignatureVerification;
 
 public class MainActivity extends Activity {
+
+    public static final String EXTRA_ENVIRONMENT = "com.braintreepayments.demo.environment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        SignatureVerification.disableAppSwitchSignatureVerification();
     }
 
     public void customOnClick(View v) {
-        startActivity(new Intent(this, Custom.class));
+        startActivity(getIntentForClass(Custom.class));
     }
 
     public void paypalOnClick(View v) {
-        startActivity(new Intent(this, PayPal.class));
+        startActivity(getIntentForClass(PayPal.class));
     }
 
     public void dropinOnClick(View v) {
-        startActivity(new Intent(this, DropIn.class));
+        startActivity(getIntentForClass(DropIn.class));
+    }
+
+    protected Intent getIntentForClass(Class klass) {
+        return new Intent(this, klass)
+                .putExtra(EXTRA_ENVIRONMENT, getEnvironment());
+    }
+
+    protected String getEnvironment() {
+        switch (((RadioGroup) findViewById(R.id.environment_selector)).getCheckedRadioButtonId()) {
+            case R.id.environment_production:
+                return "production";
+            case R.id.environment_sandbox:
+            default:
+                return "sandbox";
+        }
     }
 }

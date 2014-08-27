@@ -29,6 +29,7 @@ public class TestClientTokenBuilder {
     private boolean mAnalytics = false;
     private ArrayList<String> mChallenges = new ArrayList<String>() {{ add("cvv"); add("postal_code"); }};
     private boolean mRevoked = false;
+    private boolean mTouchEnabled = false;
 
     public TestClientTokenBuilder withoutCustomer() {
         mWithCustomer = false;
@@ -77,6 +78,11 @@ public class TestClientTokenBuilder {
 
     public TestClientTokenBuilder withRevokedClientToken() {
         mRevoked = true;
+        return this;
+    }
+
+    public TestClientTokenBuilder withTouchEnabled() {
+        mTouchEnabled = true;
         return this;
     }
 
@@ -132,6 +138,10 @@ public class TestClientTokenBuilder {
             }
             if (mAnalytics) {
                 json.put("analytics", "true");
+            }
+
+            if (!mTouchEnabled) {
+                overrides.put("paypal", new JSONObject().put("touchDisabled", "true"));
             }
 
             json.put("overrides", overrides);

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#019cde"
-    android:gravity="center_vertical"
+    android:gravity="center"
     android:padding="10dp">
 
     <LinearLayout
@@ -17,13 +17,13 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="PayPal User: bt_buyer_us@paypal.com"
+            android:text="PayPal Sandbox User: bt_buyer_us@paypal.com"
             android:textColor="#FFFFFF" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="PayPal Password: 11111111"
+            android:text="PayPal Sandbox Password: 11111111"
             android:textColor="#FFFFFF" />
 
         <TextView
@@ -39,6 +39,25 @@
             android:textColor="#FFFFFF" />
 
     </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/environment_selector"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:checkedButton="@+id/environment_production"
+        android:paddingBottom="20dp">
+        <RadioButton
+            android:id="@+id/environment_production"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Production" />
+        <RadioButton
+            android:id="@+id/environment_sandbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sandbox (PayPal mock)" />
+    </RadioGroup>
 
     <Button
         android:id="@+id/new_customer"

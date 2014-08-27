@@ -94,7 +94,7 @@ public class BraintreeApi {
      */
     public void startPayWithPayPal(Activity activity, int requestCode) {
         PayPalHelper.startPaypal(activity.getApplicationContext(), mClientToken);
-        PayPalHelper.launchPayPal(activity, requestCode);
+        PayPalHelper.launchPayPal(activity, requestCode, mClientToken);
     }
 
     /**

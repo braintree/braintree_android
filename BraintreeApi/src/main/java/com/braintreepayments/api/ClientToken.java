@@ -76,6 +76,7 @@ import java.util.regex.Pattern;
         private String directBaseUrl;
         private boolean allowHttp;
         private String environment;
+        private boolean touchDisabled;
 
         protected String getDisplayName() {
             return displayName;
@@ -103,6 +104,10 @@ import java.util.regex.Pattern;
 
         protected String getEnvironment() {
             return environment;
+        }
+
+        protected boolean getTouchDisabled() {
+            return touchDisabled;
         }
     }
 
