@@ -41,6 +41,7 @@ import static com.braintreepayments.api.BraintreeTestUtils.injectGeneric422Error
 import static com.braintreepayments.api.BraintreeTestUtils.injectSlowBraintree;
 import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
 import static com.braintreepayments.api.ui.Matchers.withHint;
+import static com.braintreepayments.api.ui.Matchers.withId;
 import static com.braintreepayments.api.ui.ViewHelper.TEN_SECONDS;
 import static com.braintreepayments.api.ui.ViewHelper.waitForKeyboardToClose;
 import static com.braintreepayments.api.ui.ViewHelper.waitForView;
@@ -61,7 +62,6 @@ import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMat
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDisplayed;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isEnabled;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withEffectiveVisibility;
-import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withId;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.not;
@@ -159,7 +159,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
     public void testCvvHintsShowAndDisappearOnClick() throws InterruptedException {
         BraintreeTestUtils.setUpActivityTest(this);
-        final BraintreePaymentActivity activity = getActivity();
+        getActivity();
 
         waitForAddPaymentFormHeader();
         onView(withHint("CVV"))
