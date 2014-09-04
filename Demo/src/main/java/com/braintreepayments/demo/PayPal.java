@@ -29,11 +29,6 @@ public class PayPal extends BaseActivity implements PaymentMethodNonceListener {
     }
 
     @Override
-    public void onPaymentMethodNonce(String nonce) {
-        postNonceToServer(nonce);
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PAYPAL_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {

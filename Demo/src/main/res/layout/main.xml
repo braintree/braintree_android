@@ -4,7 +4,6 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#019cde"
     android:gravity="center"
     android:padding="10dp">
 
@@ -60,7 +59,6 @@
     </RadioGroup>
 
     <Button
-        android:id="@+id/new_customer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Custom Integration"
@@ -68,7 +66,6 @@
         android:onClick="customOnClick" />
 
     <Button
-        android:id="@+id/existing_customer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="PayPal Button"
@@ -76,7 +73,13 @@
         android:onClick="paypalOnClick" />
 
     <Button
-        android:id="@+id/no_customer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Venmo Button (Production only)"
+        android:layout_marginBottom="10dp"
+        android:onClick="venmoOnClick" />
+
+    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Drop-In"

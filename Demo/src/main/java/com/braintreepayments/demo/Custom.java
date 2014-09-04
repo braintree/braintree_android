@@ -40,8 +40,4 @@ public class Custom extends BaseActivity implements PaymentMethodNonceListener {
         mBraintree.tokenize(cardBuilder);
     }
 
-    @Override
-    public void onPaymentMethodNonce(String nonce) {
-        postNonceToServer(nonce);
-    }
 }

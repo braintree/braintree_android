@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.braintreepayments.demo" >
+    package="com.braintreepayments.fake.wallet">
 
     <application
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name">
+        android:label="Fake Wallet"
+        android:icon="@drawable/ic_launcher">
+
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:label="Fake Wallet" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Custom" />
-        <activity android:name=".PayPal" />
-        <activity android:name=".Venmo" />
-        <activity android:name=".DropIn" />
+
+        <activity
+            android:name=".AppSwitchActivity"
+            android:label="Fake Wallet App Switch"
+            android:exported="true" />
+
     </application>
 </manifest>

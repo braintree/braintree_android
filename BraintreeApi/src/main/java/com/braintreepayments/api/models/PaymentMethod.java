@@ -55,6 +55,12 @@ public abstract class PaymentMethod implements Serializable {
      */
     public abstract String getTypeLabel();
 
+    /**
+     * Parses a response from the Braintree gateway for a list of payment methods
+     * @param paymentMethodsString Json-formatted String containing a list of {@link com.braintreepayments.api.models.PaymentMethod}s
+     * @return List of {@link com.braintreepayments.api.models.PaymentMethod}s contained in paymentMethodsString
+     * @throws ServerException if parsing JSON fails
+     */
     public static List<PaymentMethod> parsePaymentMethods(String paymentMethodsString) throws ServerException {
         try {
             JSONArray paymentMethods = new JSONObject(paymentMethodsString).getJSONArray(PAYMENT_METHOD_COLLECTION_KEY);
@@ -64,10 +70,10 @@ public abstract class PaymentMethod implements Serializable {
             }
 
             List<PaymentMethod> paymentMethodsList = new ArrayList<PaymentMethod>();
+            JSONObject paymentMethod;
             for(int i = 0; i < paymentMethods.length(); i++) {
-                JSONObject paymentMethod = paymentMethods.getJSONObject(i);
+                paymentMethod = paymentMethods.getJSONObject(i);
                 String type = paymentMethod.getString(PAYMENT_METHOD_TYPE_KEY);
-
                 if (type.equals(Card.PAYMENT_METHOD_TYPE)) {
                     paymentMethodsList.add(Utils.getGson().fromJson(paymentMethod.toString(), Card.class));
                 } else if (type.equals(PayPalAccount.PAYMENT_METHOD_TYPE)) {

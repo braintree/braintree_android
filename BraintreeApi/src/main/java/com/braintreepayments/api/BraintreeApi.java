@@ -6,6 +6,7 @@ import android.content.Intent;
 
 import com.braintreepayments.api.data.BraintreeData;
 import com.braintreepayments.api.data.BraintreeEnvironment;
+import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.BraintreeException;
@@ -49,6 +50,7 @@ public class BraintreeApi {
     private ClientToken mClientToken;
     private HttpRequest mHttpRequest;
 
+    private VenmoAppSwitch mVenmoAppSwitch;
     private BraintreeData mBraintreeData;
 
     public BraintreeApi(Context context, String clientToken) {
@@ -63,6 +65,8 @@ public class BraintreeApi {
         mContext = context;
         mClientToken = token;
         mHttpRequest = requestor;
+
+        mVenmoAppSwitch = new VenmoAppSwitch(context, token);
     }
 
     /**
@@ -70,6 +74,13 @@ public class BraintreeApi {
      */
     public boolean isPayPalEnabled() {
         return mClientToken.isPayPalEnabled();
+    }
+
+    /**
+     * @return If Venmo app switch is supported and enabled in the current environment
+     */
+    public boolean isVenmoEnabled() {
+        return mVenmoAppSwitch.isAvailable();
     }
 
     /**
@@ -89,12 +100,27 @@ public class BraintreeApi {
     /**
      * Start the Pay With PayPal flow. This will launch a new activity for the PayPal mobile SDK.
      * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     *   when payWithPayPal finishes
-     * @param requestCode The request code associated with this start request. Will be returned in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     *   when {@link #startPayWithPayPal(android.app.Activity, int)} finishes.
+     * @param requestCode The request code associated with this start request. Will be returned in
+     * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      */
     public void startPayWithPayPal(Activity activity, int requestCode) {
         PayPalHelper.startPaypal(activity.getApplicationContext(), mClientToken);
         PayPalHelper.launchPayPal(activity, requestCode, mClientToken);
+    }
+
+    /**
+     * Start the Pay With Venmo flow. This will app switch to the Venmo app.
+     * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * when {@link #startPayWithVenmo(android.app.Activity, int)} finishes.
+     * @param requestCode The request code associated with this start request. Will be returned in
+     * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @throws com.braintreepayments.api.exceptions.AppSwitchNotAvailableException If the Venmo app is
+     * not available.
+     */
+    public void startPayWithVenmo(Activity activity, int requestCode)
+            throws AppSwitchNotAvailableException {
+        mVenmoAppSwitch.launch(activity, requestCode);
     }
 
     /**
@@ -164,6 +190,16 @@ public class BraintreeApi {
     }
 
     /**
+     * Handles response from Venmo app after One Touch app switch.
+     * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @return The nonce representing the Venmo payment method.
+     */
+    public String finishPayWithVenmo(int resultCode, Intent data) {
+        return mVenmoAppSwitch.handleAppSwitchResponse(resultCode, data);
+    }
+
+    /**
      * Create a {@link com.braintreepayments.api.models.PaymentMethod} in the Braintree Gateway.
      *
      * @param paymentMethodBuilder {@link com.braintreepayments.api.models.PaymentMethod.Builder} for the
@@ -217,6 +253,21 @@ public class BraintreeApi {
 
         checkAndThrowErrors(response);
         return PaymentMethod.parsePaymentMethods(response.getResponseBody());
+    }
+
+    protected PaymentMethod getPaymentMethod(String nonce)
+            throws ErrorWithResponse, BraintreeException, JSONException {
+        HttpResponse response = mHttpRequest.get(versionedUrl(PAYMENT_METHOD_ENDPOINT + "/" + nonce));
+
+        checkAndThrowErrors(response);
+        List<PaymentMethod> paymentMethodsList = PaymentMethod.parsePaymentMethods(response.getResponseBody());
+        if (paymentMethodsList.size() == 1) {
+            return paymentMethodsList.get(0);
+        } else if (paymentMethodsList.size() > 1) {
+            throw new ServerException("Expected one payment method, got multiple payment methods");
+        } else {
+            throw new ServerException("No payment methods were found for nonce");
+        }
     }
 
     /**

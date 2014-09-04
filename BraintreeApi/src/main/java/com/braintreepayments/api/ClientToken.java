@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
     private PayPal paypal;
     private boolean paypalEnabled;
     private Analytics analytics;
+    private String merchantId;
 
     protected static ClientToken getClientToken(String clientToken) {
         Pattern pattern = Pattern.compile("([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)");
@@ -65,6 +66,10 @@ import java.util.regex.Pattern;
         }
 
         return false;
+    }
+
+    protected String getMerchantId() {
+        return merchantId;
     }
 
     class PayPal {

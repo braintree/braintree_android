@@ -5,13 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 
 import com.braintreepayments.api.data.BraintreeEnvironment;
+import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
+
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -123,6 +127,13 @@ public class Braintree {
     }
 
     /**
+     * @return If Venmo app switch is supported and enabled in the current environment
+     */
+    public boolean isVenmoEnabled() {
+        return mBraintreeApi.isVenmoEnabled();
+    }
+
+    /**
      * Checks if cvv is required when add a new card
      * @return {@code true} if cvv is required to add a new card, {@code false} otherwise.
      */
@@ -147,6 +158,21 @@ public class Braintree {
      */
     public void startPayWithPayPal(Activity activity, int requestCode) {
         mBraintreeApi.startPayWithPayPal(activity, requestCode);
+    }
+
+    /**
+     * Start the Pay With Venmo flow. This will app switch to the Venmo app.
+     * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * when {@link #startPayWithVenmo(android.app.Activity, int)} finishes.
+     * @param requestCode The request code associated with this start request. Will be returned in
+     * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     */
+    public void startPayWithVenmo(Activity activity, int requestCode) {
+        try {
+            mBraintreeApi.startPayWithVenmo(activity, requestCode);
+        } catch (AppSwitchNotAvailableException e) {
+            postUnrecoverableErrorToListeners(e);
+        }
     }
 
     /**
@@ -291,7 +317,6 @@ public class Braintree {
     }
 
     /**
-     *
      * Method to finish Pay With PayPal flow. Create a {@link com.braintreepayments.api.models.PayPalAccount}.
      *
      * The {@link com.braintreepayments.api.models.PayPalAccount} will be sent to
@@ -315,6 +340,42 @@ public class Braintree {
             }
         } catch (ConfigurationException e) {
             postUnrecoverableErrorToListeners(e);
+        }
+    }
+
+    /**
+     * Method to finish Pay With Venmo flow. Create a {@link com.braintreepayments.api.models.PaymentMethod}.
+     *
+     * The {@link com.braintreepayments.api.models.PaymentMethod} will be sent to
+     * {@link Braintree.PaymentMethodCreatedListener#onPaymentMethodCreated(com.braintreepayments.api.models.PaymentMethod)}
+     * and the nonce will be sent to
+     * {@link Braintree.PaymentMethodNonceListener#onPaymentMethodNonce(String)}.
+     *
+     * If an error occurs, the exception that occurred will be sent to
+     * {@link Braintree.ErrorListener#onRecoverableError(com.braintreepayments.api.exceptions.ErrorWithResponse)} or
+     * {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)} as appropriate.
+     *
+     * @param resultCode Result code from the Pay With Venmo flow.
+     * @param data Intent returned from Pay With Venmo flow.
+     */
+    public synchronized void finishPayWithVenmo(int resultCode, Intent data) {
+        final String nonce = mBraintreeApi.finishPayWithVenmo(resultCode, data);
+        if (!TextUtils.isEmpty(nonce)) {
+            mExecutorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        postCreatedMethodToListeners(mBraintreeApi.getPaymentMethod(nonce));
+                        postCreatedNonceToListeners(nonce);
+                    } catch (BraintreeException e) {
+                        postUnrecoverableErrorToListeners(e);
+                    } catch (JSONException e) {
+                        postUnrecoverableErrorToListeners(e);
+                    } catch (ErrorWithResponse errorWithResponse) {
+                        postRecoverableErrorToListeners(errorWithResponse);
+                    }
+                }
+            });
         }
     }
 

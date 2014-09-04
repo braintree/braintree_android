@@ -54,7 +54,7 @@ build_cleanup() {
   $android_adb emu kill
   $android_adb kill-server
   kill -9 `cat /tmp/httpsd.pid`
-  kill -9 $screenshot_listener_pid
+  kill -9 $log_listener_pid
 }
 
 start_adb() {
@@ -106,8 +106,8 @@ cd_android
 wait_for_emulator
 
 ruby script/httpsd.rb /tmp/httpsd.pid
-ruby screenshot_listener.rb &
-screenshot_listener_pid=$!
+ruby log_listener.rb &
+log_listener_pid=$!
 
 $android_path/gradlew --info --no-color runAllTests connectedAndroidTest
 test_return_code=$?

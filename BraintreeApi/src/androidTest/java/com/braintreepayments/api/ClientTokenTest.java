@@ -38,6 +38,12 @@ public class ClientTokenTest extends AndroidTestCase {
         assertTrue(token.isPostalCodeChallengePresent());
     }
 
+    public void testParsesMerchantIdFromToken() {
+        ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token.json");
+
+        assertEquals("integration_merchant_id", token.getMerchantId());
+    }
+
     public void testParsesAuthorizationFingerprintFromToken() {
         ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token.json");
 

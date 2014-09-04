@@ -44,8 +44,7 @@ public class DropIn extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == DROP_IN_REQUEST) {
             if (resultCode == RESULT_OK) {
-                String paymentMethodNonce = data.getStringExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE);
-                postNonceToServer(paymentMethodNonce);
+                onPaymentMethodNonce(data.getStringExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE));
                 return;
             }
         }

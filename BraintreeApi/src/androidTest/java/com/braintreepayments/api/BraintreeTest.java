@@ -19,6 +19,8 @@ import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 
+import org.json.JSONException;
+
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -246,6 +248,83 @@ public class BraintreeTest extends AndroidTestCase {
         assertFalse("Expected no listeners to fire but one did fire", listenerWasCalled.get());
     }
 
+    public void testFinishPayWithVenmoPostsNonceAndPaymentMethodOnSuccess()
+            throws JSONException, BraintreeException, ErrorWithResponse {
+        final PaymentMethod paymentMethod = new PaymentMethod() {
+            @Override
+            public String getTypeLabel() {
+                return "I am a payment method";
+            }
+        };
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        when(braintreeApi.finishPayWithVenmo(eq(Activity.RESULT_OK), any(Intent.class))).thenReturn(
+                "nonce");
+        when(braintreeApi.getPaymentMethod("nonce")).thenReturn(paymentMethod);
+
+        Braintree braintree = new Braintree(braintreeApi);
+        final AtomicBoolean nonceListenerCalled = new AtomicBoolean(false);
+        final AtomicBoolean paymentMethodListenerCalled = new AtomicBoolean(false);
+        braintree.addListener(new SimpleListener() {
+            @Override
+            public void onPaymentMethodCreated(PaymentMethod method) {
+                paymentMethodListenerCalled.set(true);
+                assertEquals(paymentMethod, method);
+            }
+
+            @Override
+            public void onPaymentMethodNonce(String paymentMethodNonce) {
+                nonceListenerCalled.set(true);
+                assertEquals("nonce", paymentMethodNonce);
+            }
+        });
+
+        braintree.finishPayWithVenmo(Activity.RESULT_OK, new Intent());
+        SystemClock.sleep(50);
+        assertTrue(nonceListenerCalled.get());
+        assertTrue(paymentMethodListenerCalled.get());
+    }
+
+    public void testFinishPayWithVenmoDoesNothingOnNullBuilder() throws ConfigurationException {
+        Intent intent = new Intent();
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        when(braintreeApi.finishPayWithVenmo(eq(Activity.RESULT_CANCELED), eq(intent))).
+                thenReturn(null);
+
+        Braintree braintree = new Braintree(braintreeApi);
+
+        final AtomicBoolean listenerWasCalled = new AtomicBoolean(false);
+        braintree.addListener(new SimpleListener() {
+            @Override
+            public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
+                listenerWasCalled.set(true);
+            }
+
+            @Override
+            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+                listenerWasCalled.set(true);
+            }
+
+            @Override
+            public void onPaymentMethodNonce(String paymentMethodNonce) {
+                listenerWasCalled.set(true);
+            }
+
+            @Override
+            public void onUnrecoverableError(Throwable throwable) {
+                listenerWasCalled.set(true);
+            }
+
+            @Override
+            public void onRecoverableError(ErrorWithResponse error) {
+                listenerWasCalled.set(true);
+            }
+        });
+
+        braintree.finishPayWithVenmo(Activity.RESULT_CANCELED, intent);
+        SystemClock.sleep(50);
+
+        assertFalse("Expected no listeners to fire but one did fire", listenerWasCalled.get());
+    }
     public void testRemovedListenerIsNotPostedTo() throws ExecutionException, InterruptedException {
         createCardSync(mBraintree);
 

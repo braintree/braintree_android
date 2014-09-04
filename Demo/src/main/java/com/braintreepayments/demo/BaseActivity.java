@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 
 import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.Braintree.PaymentMethodNonceListener;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -12,7 +13,7 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public abstract class BaseActivity extends Activity {
+public abstract class BaseActivity extends Activity implements PaymentMethodNonceListener {
 
     protected static final String SANDBOX_BASE_SERVER_URL = "https://braintree-sample-merchant.herokuapp.com";
     protected static final String PRODUCTION_BASE_SERVER_URL = "https://executive-sample-merchant.herokuapp.com";
@@ -31,8 +32,8 @@ public abstract class BaseActivity extends Activity {
 
     public abstract void ready(String clientToken);
 
-    @SuppressWarnings("deprecation")
-    protected void postNonceToServer(String nonce) {
+    @Override
+    public void onPaymentMethodNonce(String nonce) {
         RequestParams params = new RequestParams();
         params.put("nonce", nonce);
         mHttpClient.post(getBaseUrl() + "/nonce/transaction", params,

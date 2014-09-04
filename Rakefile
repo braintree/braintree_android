@@ -11,9 +11,12 @@ task :tests => :lint do
   if output.match(/device$/)
     begin
       sh "ruby script/httpsd.rb /tmp/httpsd.pid"
+      sh "ruby log_listener.rb &"
+      log_listener_pid = $?.pid
       sh "./gradlew --info runAllTests connectedAndroidTest"
     ensure
       `kill -9 \`cat /tmp/httpsd.pid\``
+      `kill -9 #{log_listener_pid}`
     end
   else
     puts "Please connect a device or start an emulator and try again"

@@ -4,9 +4,9 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#d3d3d3"
-    android:gravity="center"
-    android:padding="10dp">
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="40dp">
 
     <EditText
         android:id="@+id/card_number"
@@ -26,6 +26,7 @@
         android:id="@+id/purchase_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="Purchase"
         android:onClick="onPurchase"
         android:enabled="false" />

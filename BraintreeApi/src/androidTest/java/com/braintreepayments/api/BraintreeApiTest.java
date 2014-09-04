@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.test.AndroidTestCase;
@@ -15,8 +16,11 @@ import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
+import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
+
+import org.json.JSONException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -167,7 +171,7 @@ public class BraintreeApiTest extends AndroidTestCase {
 
     public void testThrowsConfigurationExceptionOnBadPayPalConfiguration()
             throws ErrorWithResponse, BraintreeException {
-        BraintreeApi braintreeApi = new BraintreeApi(getContext(),
+        BraintreeApi braintreeApi = new BraintreeApi(mContext,
                 TestUtils.clientTokenFromFixture(mContext, "client_tokens/client_token.json"));
         boolean exceptionHappened = false;
 
@@ -183,7 +187,7 @@ public class BraintreeApiTest extends AndroidTestCase {
     }
 
     public void testThrowsAuthorizationExceptionForARevokedClientToken() {
-        BraintreeApi braintreeApi = new BraintreeApi(getContext(),
+        BraintreeApi braintreeApi = new BraintreeApi(mContext,
                 new TestClientTokenBuilder().withRevokedClientToken().build());
         new ApiTest(braintreeApi, AuthorizationException.class).execute();
     }
@@ -191,7 +195,7 @@ public class BraintreeApiTest extends AndroidTestCase {
     public void testSendAnalyticsEventSendsAnalyticsIfEnabled() throws UnexpectedException {
         HttpRequest httpRequest = mock(HttpRequest.class);
 
-        BraintreeApi braintreeApi = new BraintreeApi(getContext(),
+        BraintreeApi braintreeApi = new BraintreeApi(mContext,
                 TestUtils.clientTokenFromFixture(mContext, "client_tokens/client_token_analytics.json"),
                 httpRequest);
 
@@ -201,9 +205,34 @@ public class BraintreeApiTest extends AndroidTestCase {
                 contains("very.important.analytics-payload"));
     }
 
+    public void testFinishPayWithVenmoReturnsANonce() {
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, new TestClientTokenBuilder().build());
+        Intent intent = new Intent().putExtra(AppSwitch.EXTRA_PAYMENT_METHOD_NONCE, "payment method nonce");
+
+        assertEquals("payment method nonce", braintreeApi.finishPayWithVenmo(Activity.RESULT_OK, intent));
+    }
+
+    public void testPayWithVenmoReturnsNullIfResultCodeNotOK() {
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, new TestClientTokenBuilder().build());
+
+        assertNull(braintreeApi.finishPayWithVenmo(Activity.RESULT_CANCELED, new Intent()));
+    }
+
+    public void testGetPaymentMethodReturnsPaymentMethodFromNonce()
+            throws ErrorWithResponse, BraintreeException, JSONException {
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, new TestClientTokenBuilder().build());
+        Card card = braintreeApi.create(
+                new CardBuilder().cardNumber("4111111111111111").expirationDate("06/20"));
+
+        Card cardFromShowNonce = (Card) braintreeApi.getPaymentMethod(card.getNonce());
+
+        assertEquals(card.getLastTwo(), cardFromShowNonce.getLastTwo());
+        assertEquals(card.getTypeLabel(), cardFromShowNonce.getTypeLabel());
+    }
+
     public void testSendAnalyticsEventNoopsIfDisabled() throws UnexpectedException {
         HttpRequest httpRequest = mock(HttpRequest.class);
-        BraintreeApi braintreeApi = new BraintreeApi(getContext(),
+        BraintreeApi braintreeApi = new BraintreeApi(mContext,
                 TestUtils.clientTokenFromFixture(mContext, "client_tokens/client_token.json"),
                 httpRequest);
 
@@ -225,7 +254,7 @@ public class BraintreeApiTest extends AndroidTestCase {
                 return response;
             }
         };
-        BraintreeApi braintreeApi = new BraintreeApi(getContext(), token, request);
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, token, request);
 
         braintreeApi.sendAnalyticsEvent("event", "TEST");
         assertEquals(1, requestCount.get());
