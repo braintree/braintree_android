@@ -23,7 +23,7 @@ public abstract class AppSwitch {
     public static final String EXTRA_MERCHANT_ID = "com.braintreepayments.api.MERCHANT_ID";
     public static final String EXTRA_PAYMENT_METHOD_NONCE = "com.braintreepayments.api.EXTRA_PAYMENT_METHOD_NONCE";
 
-    protected static boolean sDisableSignatureVerification = false;
+    protected static boolean sEnableSignatureVerification = true;
 
     protected Context mContext;
     protected ClientToken mClientToken;
@@ -49,7 +49,7 @@ public abstract class AppSwitch {
      * @return true is signature is valid
      */
     private boolean isSignatureValid() {
-        if (sDisableSignatureVerification) {
+        if (!sEnableSignatureVerification) {
             return true;
         }
 

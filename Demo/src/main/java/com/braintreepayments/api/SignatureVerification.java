@@ -4,6 +4,6 @@ public class SignatureVerification {
 
     public static void disableAppSwitchSignatureVerification() {
         PayPalHelper.sEnableSignatureVerification = false;
-        AppSwitch.sDisableSignatureVerification = true;
+        AppSwitch.sEnableSignatureVerification = false;
     }
 }
