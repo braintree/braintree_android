@@ -85,13 +85,15 @@ public class PayPalHelper {
             if (paypalTouchConfirmation != null) {
                 JSONObject paypalTouchResponse = paypalTouchConfirmation
                         .getPayPalTouchResponseBundle().toJSONObject();
-                paypalAccountBuilder.authorizationCode(paypalTouchResponse.optString(
-                        "authorization_code"));
+                paypalAccountBuilder
+                        .authorizationCode(paypalTouchResponse.optString("authorization_code"))
+                        .source("paypal-app");
                 paypalAccountBuilder.email(paypalTouchResponse.optString("email"));
             } else {
                 PayPalAuthorization authorization = data.getParcelableExtra(
                         PayPalFuturePaymentActivity.EXTRA_RESULT_AUTHORIZATION);
-                paypalAccountBuilder.authorizationCode(authorization.getAuthorizationCode());
+                paypalAccountBuilder.authorizationCode(authorization.getAuthorizationCode())
+                        .source("paypal-sdk");
                 try {
                     String email = authorization.toJSONObject()
                             .getJSONObject("user")

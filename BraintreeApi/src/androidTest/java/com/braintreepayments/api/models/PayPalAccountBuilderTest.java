@@ -15,7 +15,8 @@ public class PayPalAccountBuilderTest extends TestCase {
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
                 .email("test_email")
                 .correlationId("correlation_id")
-                .authorizationCode("test_auth_code");
+                .authorizationCode("test_auth_code")
+                .source("paypal-sdk");
 
         JSONObject json = new JSONObject(paypalAccountBuilder.toJsonString());
         JSONObject jsonAccount = json.getJSONObject(PAYPAL_KEY);
@@ -28,14 +29,15 @@ public class PayPalAccountBuilderTest extends TestCase {
         assertEquals("paypal-sdk", jsonMetadata.getString("source"));
     }
 
-    public void testUsesDefaultInfoForMetadata() throws JSONException {
-        PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder();
+    public void testUsesCorrectInfoForMetadata() throws JSONException {
+        PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder()
+                .source("paypal-app");
 
         JSONObject metadata = new JSONObject(payPalAccountBuilder.toJsonString()).getJSONObject(
                 Builder.METADATA_KEY);
 
         assertEquals("custom", metadata.getString("integration"));
-        assertEquals("paypal-sdk", metadata.getString("source"));
+        assertEquals("paypal-app", metadata.getString("source"));
     }
 
     public void testSetsIntegrationMethod() throws JSONException {

@@ -18,6 +18,7 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
     private String correlationId;
     private PaymentMethodOptions options;
     private String mIntegration = "custom";
+    private String mSource;
 
     /**
      * Used by PayPal wrappers to construct a {@link com.braintreepayments.api.models.PayPalAccount}.
@@ -65,6 +66,12 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
     }
 
     @Override
+    public PayPalAccountBuilder source(String source) {
+        mSource = source;
+        return this;
+    }
+
+    @Override
     public PayPalAccount build() {
         PayPalAccount payPalAccount = new PayPalAccount();
         payPalAccount.setConsentCode(authorizationCode);
@@ -78,7 +85,7 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
     public Map<String, Object> toJson() {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("paypalAccount", build());
-        params.put(Builder.METADATA_KEY, new Metadata(mIntegration, "paypal-sdk"));
+        params.put(Builder.METADATA_KEY, new Metadata(mIntegration, mSource));
         return params;
     }
 

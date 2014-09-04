@@ -108,6 +108,14 @@ public abstract class PaymentMethod implements Serializable {
         public Builder<T> integration(String integration);
 
         /**
+         * Sets the source associated with the
+         * {@link com.braintreepayments.api.Braintree#create(com.braintreepayments.api.models.PaymentMethod.Builder)}
+         * call for analytics use. Set automatically
+         * @param source
+         */
+        public Builder<T> source(String source);
+
+        /**
          * Required for and handled by {@link com.braintreepayments.api.Braintree}. Not intended for general consumption.
          * @return A built {@link com.braintreepayments.api.models.PaymentMethod} appropriate to the builder's type.
          */
