@@ -14,8 +14,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".Custom" />
-        <activity android:name=".PayPal" />
-        <activity android:name=".Venmo" />
         <activity android:name=".DropIn" />
     </application>
 </manifest>

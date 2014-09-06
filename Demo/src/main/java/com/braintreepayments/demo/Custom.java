@@ -1,5 +1,6 @@
 package com.braintreepayments.demo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -7,10 +8,12 @@ import android.widget.EditText;
 
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.Braintree.PaymentMethodNonceListener;
+import com.braintreepayments.api.dropin.view.PaymentButton;
 import com.braintreepayments.api.models.CardBuilder;
 
 public class Custom extends BaseActivity implements PaymentMethodNonceListener {
 
+    private PaymentButton mPaymentButton;
     private EditText mCardNumber;
     private EditText mExpirationDate;
     private Button mPurchaseButton;
@@ -19,6 +22,7 @@ public class Custom extends BaseActivity implements PaymentMethodNonceListener {
         super.onCreate(onSaveInstanceState);
         setContentView(R.layout.custom);
 
+        mPaymentButton = (PaymentButton) findViewById(R.id.payment_button);
         mCardNumber = (EditText) findViewById(R.id.card_number);
         mExpirationDate = (EditText) findViewById(R.id.card_expiration_date);
         mPurchaseButton = (Button) findViewById(R.id.purchase_button);
@@ -28,7 +32,7 @@ public class Custom extends BaseActivity implements PaymentMethodNonceListener {
     public void ready(String clientToken) {
         mBraintree = Braintree.getInstance(this, clientToken);
         mBraintree.addListener(this);
-
+        mPaymentButton.initialize(this, mBraintree);
         mPurchaseButton.setEnabled(true);
     }
 
@@ -38,6 +42,13 @@ public class Custom extends BaseActivity implements PaymentMethodNonceListener {
             .expirationDate(mExpirationDate.getText().toString());
 
         mBraintree.tokenize(cardBuilder);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int responseCode, Intent data) {
+        if (requestCode == PaymentButton.REQUEST_CODE) {
+            mPaymentButton.onActivityResult(requestCode, responseCode, data);
+        }
     }
 
 }

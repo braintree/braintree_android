@@ -77,6 +77,18 @@ public class ClientTokenTest extends AndroidTestCase {
         assertFalse(token.isPayPalEnabled());
     }
 
+    public void testReturnsOffIfVenmoIsNull() {
+        ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token_venmo_missing.json");
+
+        assertEquals("off", token.getVenmoState());
+    }
+
+    public void testReturnsVenmoStatus() {
+        ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token_venmo_offline.json");
+
+        assertEquals("offline", token.getVenmoState());
+    }
+
     public void testParsesAnalyticConfigurationFromToken() {
         ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token_analytics.json");
 

@@ -18,6 +18,9 @@
     <!-- Note: %s is a place holder and should be left in translated strings -->
     <string name="card_descriptor">ends in %s</string>
 
+    <string name="pay_with_paypal">Pay with PayPal</string>
+    <string name="pay_with_venmo">Pay with Venmo</string>
+
     <string name="descriptor_visa">Visa</string>
     <string name="descriptor_mastercard">MasterCard</string>
     <string name="descriptor_amex">Amex</string>

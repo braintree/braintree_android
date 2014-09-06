@@ -23,13 +23,12 @@ import com.braintreepayments.api.dropin.view.CardEditText.OnCardTypeChangedListe
 import com.braintreepayments.api.dropin.view.CvvEditText;
 import com.braintreepayments.api.dropin.view.LoadingHeader;
 import com.braintreepayments.api.dropin.view.MonthYearEditText;
-import com.braintreepayments.api.dropin.view.PayPalButton;
+import com.braintreepayments.api.dropin.view.PaymentButton;
 import com.braintreepayments.api.dropin.view.PostalCodeEditText;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.ErrorWithResponse.BraintreeError;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.models.CardBuilder;
-import com.braintreepayments.api.models.PayPalAccountBuilder;
 
 /**
  * {@link com.braintreepayments.api.dropin.BraintreeViewController} for coordinating the Add Payment Method form.
@@ -54,8 +53,8 @@ public class AddPaymentMethodViewController extends BraintreeViewController
      * When adding new views, make sure to update {@link #onSaveInstanceState}, {@link #restoreState(Bundle)}
      * and the proper tests.
      */
+    private PaymentButton mPaymentButton;
     private View mDescription;
-    private PayPalButton mPayPalButton;
     private CardEditText mCardNumber;
     private MonthYearEditText mExpirationView;
     private CvvEditText mCvvView;
@@ -67,12 +66,9 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
     private boolean mIsSubmitting;
 
-    private final int mPayPalRequestCode;
-
     public AddPaymentMethodViewController(BraintreePaymentActivity activity,
-            Bundle savedInstanceState, View root, Braintree braintree, Customization customization, int payPalRequestCode) {
+            Bundle savedInstanceState, View root, Braintree braintree, Customization customization) {
         super(activity, root, braintree, customization);
-        mPayPalRequestCode = payPalRequestCode;
         mIsSubmitting = false;
 
         initViews();
@@ -83,23 +79,20 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         mLoadingHeader = findView(R.id.header_container);
         mScrollView = findView(R.id.form_scroll_container);
         mDescription = findView(R.id.description_container);
-        mPayPalButton = findView(R.id.paypal_appswitch_button);
+        mPaymentButton = findView(R.id.payment_button);
         mCardNumber = findView(R.id.card_form_card_number);
         mExpirationView = findView(R.id.card_form_expiration);
         mCvvView = findView(R.id.card_form_cvv);
         mPostalCode = findView(R.id.card_form_postal_code);
         mSubmitButton = findView(R.id.card_form_complete_button);
 
-        if (!getBraintree().isPayPalEnabled()) {
-            mPayPalButton.setVisibility(View.GONE);
-        }
+        mPaymentButton.initialize(getActivity(), getBraintree());
 
         mCardNumber.setFocusChangeListener(this);
         mExpirationView.setFocusChangeListener(this);
         mCvvView.setFocusChangeListener(this);
         mPostalCode.setFocusChangeListener(this);
 
-        mPayPalButton.setOnClickListener(this);
         mCardNumber.setOnClickListener(this);
         mExpirationView.setOnClickListener(this);
         mCvvView.setOnClickListener(this);
@@ -184,11 +177,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
     @Override
     public void onClick(View v) {
-        if (v == mPayPalButton) {
-            getBraintree().sendAnalyticsEvent(BraintreePaymentActivity.ANALYTICS_PREFIX + ".add-paypal.start",
-                    BraintreePaymentActivity.INTEGRATION_METHOD);
-            getBraintree().startPayWithPayPal(getActivity(), mPayPalRequestCode);
-        } else if (v == mSubmitButton) {
+        if (v == mSubmitButton) {
             if (areFieldsValid()) {
                 startSubmit();
                 getBraintree().create(getCardBuilder());
@@ -236,15 +225,9 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         return cardBuilder;
     }
 
-    public void onPayPalResult(int resultCode, Intent data) {
+    public void onPaymentResult(int requestCode, int resultCode, Intent data) {
         mIsSubmitting = true;
-        PayPalAccountBuilder payPalAccountBuilder =
-                getBraintree().handlePayPalResponse(getActivity(), resultCode, data);
-
-        if (payPalAccountBuilder != null) {
-            payPalAccountBuilder.integration(INTEGRATION_METHOD);
-            getBraintree().create(payPalAccountBuilder);
-        }
+        mPaymentButton.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.braintreepayments.demo;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -22,20 +21,6 @@ public class MainActivity extends Activity {
 
     public void customOnClick(View v) {
         startActivity(getIntentForClass(Custom.class));
-    }
-
-    public void paypalOnClick(View v) {
-        startActivity(getIntentForClass(PayPal.class));
-    }
-
-    public void venmoOnClick(View v) {
-        if (getEnvironment() == "production") {
-            startActivity(getIntentForClass(Venmo.class));
-        } else {
-            new AlertDialog.Builder(this)
-                    .setMessage("Enable production before testing Venmo")
-                    .show();
-        }
     }
 
     public void dropinOnClick(View v) {

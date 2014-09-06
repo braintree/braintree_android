@@ -68,20 +68,6 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="PayPal Button"
-        android:layout_marginBottom="10dp"
-        android:onClick="paypalOnClick" />
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Venmo Button (Production only)"
-        android:layout_marginBottom="10dp"
-        android:onClick="venmoOnClick" />
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:text="Drop-In"
         android:onClick="dropinOnClick" />
 

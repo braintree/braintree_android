@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
     private String authorizationFingerprint;
     private PayPal paypal;
     private boolean paypalEnabled;
+    private String venmo;
     private Analytics analytics;
     private String merchantId;
 
@@ -46,6 +47,14 @@ import java.util.regex.Pattern;
 
     protected boolean isPayPalEnabled() {
         return (paypalEnabled && paypal != null);
+    }
+
+    protected String getVenmoState() {
+        if (venmo == null) {
+            return "off";
+        } else {
+            return venmo;
+        }
     }
 
     protected Analytics getAnalytics() {

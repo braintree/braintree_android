@@ -30,6 +30,7 @@ public class TestClientTokenBuilder {
     private ArrayList<String> mChallenges = new ArrayList<String>() {{ add("cvv"); add("postal_code"); }};
     private boolean mRevoked = false;
     private boolean mTouchEnabled = false;
+    private String mVenmoEnvironment = null;
 
     public TestClientTokenBuilder withoutCustomer() {
         mWithCustomer = false;
@@ -83,6 +84,16 @@ public class TestClientTokenBuilder {
 
     public TestClientTokenBuilder withTouchEnabled() {
         mTouchEnabled = true;
+        return this;
+    }
+
+    public TestClientTokenBuilder withOfflineVenmo() {
+        mVenmoEnvironment = "offline";
+        return this;
+    }
+
+    public TestClientTokenBuilder withLiveVenmo() {
+        mVenmoEnvironment = "live";
         return this;
     }
 
@@ -144,6 +155,10 @@ public class TestClientTokenBuilder {
                 overrides.put("paypal", new JSONObject().put("touchDisabled", "true"));
             }
 
+            if (mVenmoEnvironment != null) {
+                overrides.put("venmo", mVenmoEnvironment);
+            }
+
             json.put("overrides", overrides);
 
             DataOutputStream out = new DataOutputStream(connection.getOutputStream());
@@ -162,6 +177,9 @@ public class TestClientTokenBuilder {
             String encodedToken = new JSONObject(response.toString()).getString("clientToken");
             String clientToken = new String(Base64.decode(encodedToken, Base64.DEFAULT));
             clientToken = clientToken.replaceAll("localhost", EnvironmentHelper.getGatewayIp());
+            if (mVenmoEnvironment == null) {
+                clientToken = new JSONObject(clientToken).put("venmo", "off").toString();
+            }
             return Base64.encodeToString(clientToken.getBytes(), Base64.NO_WRAP);
         } catch (MalformedURLException e) {
             throw new RuntimeException("The url to your Gateway was invalid");

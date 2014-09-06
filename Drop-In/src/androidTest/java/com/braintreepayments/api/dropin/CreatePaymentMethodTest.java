@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -28,7 +29,6 @@ import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.PaymentMethod.Builder;
 import com.google.android.apps.common.testing.ui.espresso.NoMatchingViewException;
 import com.google.android.apps.common.testing.ui.espresso.ViewAssertion;
-import com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.Visibility;
 import com.google.common.base.Optional;
 
 import java.util.Map;
@@ -42,6 +42,8 @@ import static com.braintreepayments.api.BraintreeTestUtils.injectSlowBraintree;
 import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
 import static com.braintreepayments.api.ui.Matchers.withHint;
 import static com.braintreepayments.api.ui.Matchers.withId;
+import static com.braintreepayments.api.ui.RotationHelper.rotateToLandscape;
+import static com.braintreepayments.api.ui.RotationHelper.rotateToPortrait;
 import static com.braintreepayments.api.ui.ViewHelper.TEN_SECONDS;
 import static com.braintreepayments.api.ui.ViewHelper.waitForKeyboardToClose;
 import static com.braintreepayments.api.ui.ViewHelper.waitForView;
@@ -50,8 +52,6 @@ import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInPayPal;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.onAddPaymentFormHeader;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodList;
-import static com.braintreepayments.api.ui.RotationHelper.rotateToLandscape;
-import static com.braintreepayments.api.ui.RotationHelper.rotateToPortrait;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.clearText;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
@@ -61,7 +61,6 @@ import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewA
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDisplayed;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isEnabled;
-import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.not;
@@ -208,7 +207,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreeTestUtils.setUpActivityTest(this);
         getActivity();
 
-        waitForView(withId(R.id.paypal_appswitch_button)).perform(click());
+        waitForView(withId(R.id.paypal_button)).perform(click());
 
         waitForView(withHint("Email"));
         onView(withHint("Email")).perform(typeText("bt_buyer_us@paypal.com"));
@@ -228,7 +227,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();
 
-        waitForView(withId(R.id.paypal_appswitch_button), 8000).perform(click());
+        waitForView(withId(R.id.paypal_button), 8000).perform(click());
 
         waitForView(withHint("Email"));
         onView(withHint("Email")).perform(typeText("bt_buyer_us@paypal.com"));
@@ -300,8 +299,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForAddPaymentFormHeader();
-        onView(withId(R.id.paypal_appswitch_button))
-                .check(matches(withEffectiveVisibility(Visibility.GONE)));
+        SystemClock.sleep(50);
+        onView(withId(R.id.paypal_button)).check(matches(not(isDisplayed())));
     }
 
     public void testBackButtonExitsTheActivityIfThereAreNoPaymentMethodsToSelectFrom() {
@@ -319,8 +318,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreeTestUtils.setUpActivityTest(this);
         getActivity();
 
-        waitForAddPaymentFormHeader();
-        onView(withId(R.id.paypal_appswitch_button)).perform(click());
+        waitForView(withId(R.id.paypal_button)).perform(click());
         waitForView(withHint("Email")).check(matches(isDisplayed())).perform(closeSoftKeyboard(),
                 waitForKeyboardToClose());
         sendKeys(KeyEvent.KEYCODE_BACK);
@@ -353,8 +351,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();
 
-        waitForAddPaymentFormHeader();
-        onView(withId(R.id.paypal_appswitch_button)).perform(click());
+        waitForView(withId(R.id.paypal_button), TEN_SECONDS).perform(click());
 
         waitForView(withHint("Email"));
         onView(withHint("Email")).perform(typeText("bt_buyer_us@paypal.com"));

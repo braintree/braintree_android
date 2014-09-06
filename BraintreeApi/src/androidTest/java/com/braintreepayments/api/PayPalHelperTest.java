@@ -1,6 +1,8 @@
 package com.braintreepayments.api;
 
 import android.content.Intent;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.test.AndroidTestCase;
 
 import com.braintreepayments.api.exceptions.ConfigurationException;
@@ -8,6 +10,7 @@ import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 import com.paypal.android.sdk.payments.PayPalService;
+import com.paypal.android.sdk.payments.PayPalTouchActivity;
 
 public class PayPalHelperTest extends AndroidTestCase {
 
@@ -84,5 +87,37 @@ public class PayPalHelperTest extends AndroidTestCase {
         PayPalAccountBuilder payPalAccountBuilder = PayPalHelper.getBuilderFromActivity(null,
                 Integer.MAX_VALUE, new Intent());
         assertNull(payPalAccountBuilder);
+    }
+
+    public void testIsPayPalIntentReturnsTrueForPayPalTouchIntent() {
+        Intent intent = new Intent().putExtra(PayPalTouchActivity.EXTRA_LOGIN_CONFIRMATION, newParcelable());
+        assertTrue(PayPalHelper.isPayPalIntent(intent));
+    }
+
+    public void testIsPayPalIntentReturnsTrueForPayPalSDKIntent() {
+        Intent intent = new Intent().putExtra(PayPalFuturePaymentActivity.EXTRA_RESULT_AUTHORIZATION, newParcelable());
+        assertTrue(PayPalHelper.isPayPalIntent(intent));
+    }
+
+    public void testIsPayPalIntentReturnsFalseForNonEmptyIntent() {
+        Intent intent = new Intent().putExtra(AppSwitch.EXTRA_PAYMENT_METHOD_NONCE, "nonce");
+        assertFalse(PayPalHelper.isPayPalIntent(intent));
+    }
+
+    public void testIsPayPalIntentReturnsFalseForEmptyIntent() {
+        assertFalse(PayPalHelper.isPayPalIntent(new Intent()));
+    }
+
+    private Parcelable newParcelable() {
+        return new Parcelable() {
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(Parcel dest, int flags) {
+            }
+        };
     }
 }

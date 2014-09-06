@@ -20,6 +20,7 @@ import com.braintreepayments.api.Braintree.ErrorListener;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodsUpdatedListener;
 import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
+import com.braintreepayments.api.dropin.view.PaymentButton;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
@@ -43,7 +44,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class BraintreePaymentActivity extends Activity implements
         PaymentMethodsUpdatedListener, PaymentMethodCreatedListener, ErrorListener {
 
-    private static final int PAYPAL_REQUEST_CODE = 458468;
     protected static final String INTEGRATION_METHOD = "Drop-In";
     protected static final String ANALYTICS_PREFIX = "dropin.android";
 
@@ -131,14 +131,14 @@ public class BraintreePaymentActivity extends Activity implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PAYPAL_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK) {
+            if (requestCode == PaymentButton.REQUEST_CODE) {
                 StubbedView.LOADING_VIEW.show(this);
-                mAddPaymentMethodViewController.onPayPalResult(resultCode, data);
-            } else if (resultCode == RESULT_CANCELED) {
-                mBraintree.sendAnalyticsEvent(ANALYTICS_PREFIX + ".add-paypal.user-canceled",
-                        INTEGRATION_METHOD);
+                mAddPaymentMethodViewController.onPaymentResult(requestCode, resultCode, data);
             }
+        } else if (resultCode == RESULT_CANCELED) {
+            mBraintree.sendAnalyticsEvent(ANALYTICS_PREFIX + ".add-paypal.user-canceled",
+                    INTEGRATION_METHOD);
         }
     }
 
@@ -277,7 +277,7 @@ public class BraintreePaymentActivity extends Activity implements
 
         if (mAddPaymentMethodViewController == null) {
             mAddPaymentMethodViewController = new AddPaymentMethodViewController(this,
-                    mSavedInstanceState, paymentMethodView, mBraintree, mCustomization, PAYPAL_REQUEST_CODE);
+                    mSavedInstanceState, paymentMethodView, mBraintree, mCustomization);
         }
 
         if (mBraintree.getCachedPaymentMethods().size() > 0) {

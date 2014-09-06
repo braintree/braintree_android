@@ -30,10 +30,10 @@
 
             <include layout="@layout/payment_description" />
 
-            <com.braintreepayments.api.dropin.view.PayPalButton
-                android:id="@+id/paypal_appswitch_button"
+            <com.braintreepayments.api.dropin.view.PaymentButton
+                android:id="@+id/payment_button"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/default_item_height"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/form_padding" />
 
             <TextView

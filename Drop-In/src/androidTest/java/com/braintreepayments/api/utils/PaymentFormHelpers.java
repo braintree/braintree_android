@@ -8,18 +8,18 @@ import com.google.android.apps.common.testing.ui.espresso.ViewInteraction;
 import org.hamcrest.Matcher;
 
 import static com.braintreepayments.api.ui.Matchers.withHint;
+import static com.braintreepayments.api.ui.Matchers.withId;
 import static com.braintreepayments.api.ui.ViewHelper.TEN_SECONDS;
 import static com.braintreepayments.api.ui.ViewHelper.waitForView;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.typeText;
-import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withId;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withText;
 
 public class PaymentFormHelpers {
 
     public static void fillInPayPal() {
-        onView(withId(R.id.paypal_appswitch_button)).perform(click());
+        waitForView(withId(R.id.paypal_button)).perform(click());
 
         waitForView(withHint("Email"));
         onView(withHint("Email")).perform(typeText("bt_buyer_us@paypal.com"));

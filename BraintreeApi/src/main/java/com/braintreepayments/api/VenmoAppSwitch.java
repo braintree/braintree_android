@@ -12,6 +12,11 @@ public class VenmoAppSwitch extends AppSwitch {
     }
 
     @Override
+    protected boolean isAvailable() {
+        return super.isAvailable() && !mClientToken.getVenmoState().equals("off");
+    }
+
+    @Override
     protected String getPackage() {
         return "com.venmo";
     }
@@ -38,8 +43,13 @@ public class VenmoAppSwitch extends AppSwitch {
 
     @Override
     protected Intent getLaunchIntent() {
-        return super.getLaunchIntent()
-                .putExtra(EXTRA_MERCHANT_ID, mClientToken.getMerchantId());
+        Intent intent = super.getLaunchIntent().putExtra(EXTRA_MERCHANT_ID, mClientToken.getMerchantId());
+        if (mClientToken.getVenmoState().equals("offline")) {
+            intent.putExtra(EXTRA_OFFLINE, true);
+        } else if (mClientToken.getVenmoState().equals("live")) {
+            intent.putExtra(EXTRA_OFFLINE, false);
+        }
+        return intent;
     }
 
     @Override

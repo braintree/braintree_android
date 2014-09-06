@@ -22,6 +22,7 @@ public abstract class AppSwitch {
 
     public static final String EXTRA_MERCHANT_ID = "com.braintreepayments.api.MERCHANT_ID";
     public static final String EXTRA_PAYMENT_METHOD_NONCE = "com.braintreepayments.api.EXTRA_PAYMENT_METHOD_NONCE";
+    public static final String EXTRA_OFFLINE = "com.braintreepayments.api.OFFLINE";
 
     protected static boolean sEnableSignatureVerification = true;
 

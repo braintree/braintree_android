@@ -44,6 +44,27 @@ public class VenmoAppSwitchTest extends AndroidTestCase {
         assertEquals("integration2_merchant_id", intent.getStringExtra(VenmoAppSwitch.EXTRA_MERCHANT_ID));
     }
 
+    public void testIntentIncludesVenmoEnvironment() {
+        ClientToken token = ClientToken.getClientToken(new TestClientTokenBuilder().withOfflineVenmo().build());
+        VenmoAppSwitch venmoAppSwitch = new VenmoAppSwitch(getContext(), token);
+        Intent intent = venmoAppSwitch.getLaunchIntent();
+
+        assertTrue(intent.getBooleanExtra(AppSwitch.EXTRA_OFFLINE, false));
+    }
+
+    public void testIntentIncludesLiveVenmoEnvironment() {
+        ClientToken token = ClientToken.getClientToken(new TestClientTokenBuilder().withLiveVenmo().build());
+        VenmoAppSwitch venmoAppSwitch = new VenmoAppSwitch(getContext(), token);
+        Intent intent = venmoAppSwitch.getLaunchIntent();
+
+        assertFalse(intent.getBooleanExtra(AppSwitch.EXTRA_OFFLINE, true));
+    }
+
+    public void testIsUnavailableWhenVenmoIsOff() {
+        assertFalse(mVenmoAppSwitch.isAvailable());
+        assertFalse(mVenmoAppSwitch.getLaunchIntent().hasExtra(AppSwitch.EXTRA_OFFLINE));
+    }
+
     public void testCanParseResponse() {
         Intent intent = new Intent().putExtra(AppSwitch.EXTRA_PAYMENT_METHOD_NONCE, "payment method nonce");
         assertEquals("payment method nonce",
@@ -53,5 +74,4 @@ public class VenmoAppSwitchTest extends AndroidTestCase {
     public void testHandleResponseReturnsNullOnUnsuccessfulResultCode() {
         assertNull(mVenmoAppSwitch.handleAppSwitchResponse(Activity.RESULT_CANCELED, new Intent()));
     }
-
 }

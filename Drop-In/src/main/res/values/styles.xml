@@ -57,4 +57,13 @@
         <item name="android:layout_weight">1</item>
     </style>
 
+    <style name="bt_payment_method_app_switch_button">
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:padding">@dimen/bt_payment_method_button_type_padding</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
 </resources>

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.SignatureVerification;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.ui.ViewHelper;
 import com.google.android.apps.common.testing.ui.espresso.FailureHandler;
@@ -29,6 +30,7 @@ public class BraintreePaymentActivityTestCase extends
     @Override
     public void setUp() throws Exception {
         HttpRequest.DEBUG = true;
+        SignatureVerification.disableAppSwitchSignatureVerification();
         setFailureHandler(new ScreenshotFailureHandler(getInstrumentation(), this));
 
         KeyguardManager keyguardManager = (KeyguardManager)
