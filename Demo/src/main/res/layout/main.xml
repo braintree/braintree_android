@@ -44,7 +44,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:checkedButton="@+id/environment_production"
+        android:checkedButton="@+id/environment_sandbox"
         android:paddingBottom="20dp">
         <RadioButton
             android:id="@+id/environment_production"
