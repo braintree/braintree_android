@@ -105,7 +105,8 @@ public class BraintreePaymentActivity extends Activity implements
         customizeActionBar();
 
         mBraintree = Braintree.getInstance(this, getClientToken());
-        mBraintree.sendAnalyticsEvent(ANALYTICS_PREFIX + ".sdk.initialized", INTEGRATION_METHOD);
+        mBraintree.setIntegrationDropin();
+        mBraintree.sendAnalyticsEvent("sdk.initialized");
 
         if (mBraintree.hasCachedCards()) {
             onPaymentMethodsUpdated(mBraintree.getCachedPaymentMethods());

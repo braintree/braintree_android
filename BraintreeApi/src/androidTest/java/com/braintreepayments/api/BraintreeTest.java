@@ -10,6 +10,7 @@ import com.braintreepayments.api.Braintree.ListenerCallback;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodNonceListener;
 import com.braintreepayments.api.Braintree.PaymentMethodsUpdatedListener;
+import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
@@ -27,8 +28,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -206,6 +209,15 @@ public class BraintreeTest extends AndroidTestCase {
         assertTrue(wasCalled.get());
     }
 
+    public void testStartPayWithPayPalSendsAnalyticsEvent() {
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+
+        Braintree braintree = new Braintree(braintreeApi);
+        braintree.startPayWithPayPal(null, 1);
+        SystemClock.sleep(50);
+        verify(braintreeApi).sendAnalyticsEvent("custom.android.add-paypal.start", "custom");
+    }
+
     public void testFinishPayWithPayPalDoesNothingOnNullBuilder() throws ConfigurationException {
         Intent intent = new Intent();
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
@@ -246,6 +258,36 @@ public class BraintreeTest extends AndroidTestCase {
         SystemClock.sleep(50);
 
         assertFalse("Expected no listeners to fire but one did fire", listenerWasCalled.get());
+    }
+
+    public void testStartPayWithVenmoSendsAnalyticsEvent() {
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+
+        Braintree braintree = new Braintree(braintreeApi);
+        braintree.startPayWithVenmo(null, 1);
+        SystemClock.sleep(50);
+        verify(braintreeApi).sendAnalyticsEvent("custom.android.add-venmo.start", "custom");
+    }
+
+    public void testStartPayWithVenmoSendsAnalyticsEventForDropin() {
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+
+        Braintree braintree = new Braintree(braintreeApi);
+        braintree.setIntegrationDropin();
+        braintree.startPayWithVenmo(null, 1);
+        SystemClock.sleep(50);
+        verify(braintreeApi).sendAnalyticsEvent("dropin.android.add-venmo.start", "Drop-In");
+    }
+
+    public void testStartPayWithVenmoSendsAnalyticsEventWhenUnavailable()
+            throws AppSwitchNotAvailableException {
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        doThrow(new AppSwitchNotAvailableException()).when(braintreeApi).startPayWithVenmo(any(Activity.class), anyInt());
+
+        Braintree braintree = new Braintree(braintreeApi);
+        braintree.startPayWithVenmo(null, 1);
+        SystemClock.sleep(50);
+        verify(braintreeApi).sendAnalyticsEvent("custom.android.add-venmo.unavailable", "custom");
     }
 
     public void testFinishPayWithVenmoPostsNonceAndPaymentMethodOnSuccess()

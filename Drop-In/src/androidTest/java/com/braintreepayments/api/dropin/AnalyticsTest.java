@@ -43,8 +43,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     public void testAddsEventOnSDKInitialized() {
         setupActivity();
-        verify(mBraintree, times(1)).sendAnalyticsEvent("dropin.android.sdk.initialized",
-                BraintreePaymentActivity.INTEGRATION_METHOD);
+        verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.initialized");
     }
 
     public void testAddsEventOnAddCardStarted() {
