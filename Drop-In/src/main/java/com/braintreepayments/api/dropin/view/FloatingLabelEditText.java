@@ -9,7 +9,9 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.text.Editable;
 import android.text.TextPaint;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
@@ -21,11 +23,17 @@ import static android.os.Build.VERSION_CODES.HONEYCOMB;
 /**
  * Parent {@link android.widget.EditText} for displaying floating hints when text has been entered.
  */
-public abstract class FloatingLabelEditText extends BraintreeEditText implements OnFocusChangeListener {
+public abstract class FloatingLabelEditText extends BraintreeEditText implements
+        OnFocusChangeListener, TextWatcher {
 
     private static final int ANIMATION_DURATION_MILLIS = 300;
 
+    public interface OnTextChangedListener {
+        public void onTextChanged(Editable editable);
+    }
+
     private OnFocusChangeListener mOnFocusChangeListener;
+    private OnTextChangedListener mOnTextChangedListener;
 
     private TextPaint mHintPaint = new TextPaint();
     private ValueAnimator mHintAnimator;
@@ -57,6 +65,7 @@ public abstract class FloatingLabelEditText extends BraintreeEditText implements
 
     @TargetApi(HONEYCOMB)
     private void init() {
+        addTextChangedListener(this);
         mPreviousTextLength = getText().length();
         if (VERSION.SDK_INT >= HONEYCOMB) {
             Resources res = getResources();
@@ -106,6 +115,14 @@ public abstract class FloatingLabelEditText extends BraintreeEditText implements
         }
     }
 
+    public void setFocusChangeListener(OnFocusChangeListener listener) {
+        mOnFocusChangeListener = listener;
+    }
+
+    public void setTextChangedListener(OnTextChangedListener listener) {
+        mOnTextChangedListener = listener;
+    }
+
     @Override
     public void onFocusChange(View v, boolean hasFocus){
         handleTextColorOnFocus(hasFocus);
@@ -132,10 +149,6 @@ public abstract class FloatingLabelEditText extends BraintreeEditText implements
         }
     }
 
-    public void setFocusChangeListener(OnFocusChangeListener listener) {
-        mOnFocusChangeListener = listener;
-    }
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -147,6 +160,16 @@ public abstract class FloatingLabelEditText extends BraintreeEditText implements
 
             String hint = getHint().toString();
             canvas.drawText(hint, mHorizontalTextOffset, mAnimatedHintHeight, mHintPaint);
+        }
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+    @Override
+    public void afterTextChanged(Editable editable) {
+        if (mOnTextChangedListener != null) {
+            mOnTextChangedListener.onTextChanged(editable);
         }
     }
 

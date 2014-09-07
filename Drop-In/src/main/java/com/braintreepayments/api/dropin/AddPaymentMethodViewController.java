@@ -3,11 +3,11 @@ package com.braintreepayments.api.dropin;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.view.View.OnKeyListener;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -21,6 +21,7 @@ import com.braintreepayments.api.dropin.view.BraintreeEditText;
 import com.braintreepayments.api.dropin.view.CardEditText;
 import com.braintreepayments.api.dropin.view.CardEditText.OnCardTypeChangedListener;
 import com.braintreepayments.api.dropin.view.CvvEditText;
+import com.braintreepayments.api.dropin.view.FloatingLabelEditText.OnTextChangedListener;
 import com.braintreepayments.api.dropin.view.LoadingHeader;
 import com.braintreepayments.api.dropin.view.MonthYearEditText;
 import com.braintreepayments.api.dropin.view.PaymentButton;
@@ -35,8 +36,8 @@ import com.braintreepayments.api.models.CardBuilder;
  * Responsible for managing views and form element bindings associated with adding a payment method.
  */
 public class AddPaymentMethodViewController extends BraintreeViewController
-        implements OnClickListener, OnCardTypeChangedListener, OnKeyListener, OnFocusChangeListener,
-        OnEditorActionListener {
+        implements OnClickListener, OnCardTypeChangedListener, OnFocusChangeListener,
+        OnEditorActionListener, OnTextChangedListener {
 
     // @formatter:off
     private static final String EXTRA_CARD_NUMBER_TEXT = "com.braintreepayments.api.dropin.EXTRA_CARD_NUMBER_TEXT";
@@ -96,11 +97,11 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         mCardNumber.setOnClickListener(this);
         mExpirationView.setOnClickListener(this);
         mCvvView.setOnClickListener(this);
-        mExpirationView.setOnClickListener(this);
+        mPostalCode.setOnClickListener(this);
         mSubmitButton.setOnClickListener(this);
 
-        mCardNumber.setOnKeyListener(this);
-        mExpirationView.setOnKeyListener(this);
+        mCardNumber.setTextChangedListener(this);
+        mExpirationView.setTextChangedListener(this);
 
         if (getBraintree().isCvvChallenegePresent() || getBraintree().isPostalCodeChallengePresent()) {
             mExpirationView.setImeOptions(EditorInfo.IME_ACTION_NEXT);
@@ -111,7 +112,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         }
 
         if (getBraintree().isCvvChallenegePresent()) {
-            mCvvView.setOnKeyListener(this);
+            mCvvView.setTextChangedListener(this);
             if (getBraintree().isPostalCodeChallengePresent()) {
                 mCvvView.setImeOptions(EditorInfo.IME_ACTION_NEXT);
             } else {
@@ -124,7 +125,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         }
 
         if (getBraintree().isPostalCodeChallengePresent()) {
-            mPostalCode.setOnKeyListener(this);
+            mPostalCode.setTextChangedListener(this);
             mPostalCode.setImeOptions(EditorInfo.IME_ACTION_GO);
             mPostalCode.setImeActionLabel(getCustomizedCallToAction(), EditorInfo.IME_ACTION_GO);
             mPostalCode.setOnEditorActionListener(this);
@@ -197,15 +198,13 @@ public class AddPaymentMethodViewController extends BraintreeViewController
     }
 
     @Override
-    public boolean onKey(View v, int keyCode, KeyEvent event) {
+    public void onTextChanged(Editable editable) {
         if (!mIsSubmitting) {
             if(areFieldsValid()) {
                 mSubmitButton.setBackgroundColor(
                         getActivity().getResources().getColor(R.color.bt_blue));
             }
         }
-
-        return false;
     }
 
     private CardBuilder getCardBuilder() {
@@ -363,4 +362,5 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         }
         return false;
     }
+
 }

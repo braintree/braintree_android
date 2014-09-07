@@ -6,7 +6,6 @@ import android.text.InputFilter;
 import android.text.InputFilter.LengthFilter;
 import android.text.InputType;
 import android.text.Spanned;
-import android.text.TextWatcher;
 import android.util.AttributeSet;
 
 import com.braintreepayments.api.dropin.R;
@@ -15,7 +14,7 @@ import com.braintreepayments.api.dropin.utils.CardType;
 /**
  * An {@link android.widget.EditText} that displays Card icons based on the number entered.
  */
-public class CardEditText extends FloatingLabelEditText implements TextWatcher {
+public class CardEditText extends FloatingLabelEditText {
 
     public static interface OnCardTypeChangedListener {
         void onCardTypeChanged(CardType cardType);
@@ -41,7 +40,6 @@ public class CardEditText extends FloatingLabelEditText implements TextWatcher {
 
     private void init() {
         setInputType(InputType.TYPE_CLASS_NUMBER);
-        addTextChangedListener(this);
         setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_card_highlighted, 0);
     }
 
@@ -54,9 +52,6 @@ public class CardEditText extends FloatingLabelEditText implements TextWatcher {
     }
 
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-    @Override
     public void afterTextChanged(Editable editable) {
         Object[] paddingSpans = editable.getSpans(0, editable.length(), PaddingSpan.class);
         for (Object span : paddingSpans) {
@@ -67,6 +62,8 @@ public class CardEditText extends FloatingLabelEditText implements TextWatcher {
 
         addSpans(editable, mCardType.getSpaceIndices());
         setCompoundDrawablesWithIntrinsicBounds(0, 0, mCardType.getFrontResource(), 0);
+
+        super.afterTextChanged(editable);
     }
 
     @Override
