@@ -326,6 +326,25 @@ public class BraintreeTest extends AndroidTestCase {
         assertTrue(paymentMethodListenerCalled.get());
     }
 
+    public void testFinishPayWithVenmoSendsAnalyticsEventOnSuccess() {
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        Braintree braintree = new Braintree(braintreeApi);
+        when(braintreeApi.finishPayWithVenmo(eq(Activity.RESULT_OK), any(Intent.class))).thenReturn("nonce");
+
+        braintree.finishPayWithVenmo(Activity.RESULT_OK, new Intent());
+        SystemClock.sleep(50);
+        verify(braintreeApi).sendAnalyticsEvent("custom.android.venmo-app.success", "custom");
+    }
+
+    public void testFinishPayWithVenmoSendsAnalyticsEventOnFailure() {
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        Braintree braintree = new Braintree(braintreeApi);
+
+        braintree.finishPayWithVenmo(Activity.RESULT_OK, new Intent());
+        SystemClock.sleep(50);
+        verify(braintreeApi).sendAnalyticsEvent("custom.android.venmo-app.fail", "custom");
+    }
+
     public void testFinishPayWithVenmoDoesNothingOnNullBuilder() throws ConfigurationException {
         Intent intent = new Intent();
         BraintreeApi braintreeApi = mock(BraintreeApi.class);

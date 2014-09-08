@@ -389,6 +389,7 @@ public class Braintree {
                     try {
                         postCreatedMethodToListeners(mBraintreeApi.getPaymentMethod(nonce));
                         postCreatedNonceToListeners(nonce);
+                        sendAnalyticsEvent("venmo-app.success");
                     } catch (BraintreeException e) {
                         postUnrecoverableErrorToListeners(e);
                     } catch (JSONException e) {
@@ -398,6 +399,8 @@ public class Braintree {
                     }
                 }
             });
+        } else {
+            sendAnalyticsEvent("venmo-app.fail");
         }
     }
 
