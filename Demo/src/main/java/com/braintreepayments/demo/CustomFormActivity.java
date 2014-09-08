@@ -1,22 +1,23 @@
 package com.braintreepayments.demo;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.Braintree.PaymentMethodNonceListener;
+import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.view.PaymentButton;
 import com.braintreepayments.api.models.CardBuilder;
 
-public class Custom extends BaseActivity implements PaymentMethodNonceListener {
+public class CustomFormActivity extends Activity implements PaymentMethodNonceListener {
 
+    private Braintree mBraintree;
     private PaymentButton mPaymentButton;
     private EditText mCardNumber;
     private EditText mExpirationDate;
-    private Button mPurchaseButton;
 
     protected void onCreate(Bundle onSaveInstanceState) {
         super.onCreate(onSaveInstanceState);
@@ -25,15 +26,11 @@ public class Custom extends BaseActivity implements PaymentMethodNonceListener {
         mPaymentButton = (PaymentButton) findViewById(R.id.payment_button);
         mCardNumber = (EditText) findViewById(R.id.card_number);
         mExpirationDate = (EditText) findViewById(R.id.card_expiration_date);
-        mPurchaseButton = (Button) findViewById(R.id.purchase_button);
-    }
 
-    @Override
-    public void ready(String clientToken) {
-        mBraintree = Braintree.getInstance(this, clientToken);
+        mBraintree = Braintree.getInstance(this,
+                getIntent().getStringExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN));
         mBraintree.addListener(this);
         mPaymentButton.initialize(this, mBraintree);
-        mPurchaseButton.setEnabled(true);
     }
 
     public void onPurchase(View v) {
@@ -42,6 +39,13 @@ public class Custom extends BaseActivity implements PaymentMethodNonceListener {
             .expirationDate(mExpirationDate.getText().toString());
 
         mBraintree.tokenize(cardBuilder);
+    }
+
+    @Override
+    public void onPaymentMethodNonce(String paymentMethodNonce) {
+        setResult(RESULT_OK, new Intent()
+                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce));
+        finish();
     }
 
     @Override

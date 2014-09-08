@@ -34,7 +34,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Purchase"
-        android:onClick="onPurchase"
-        android:enabled="false" />
+        android:onClick="onPurchase" />
 
 </LinearLayout>

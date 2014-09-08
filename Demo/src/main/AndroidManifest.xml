@@ -2,9 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.braintreepayments.demo" >
 
-    <application
+    <application android:allowBackup="false"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name">
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Holo.Light">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
@@ -13,7 +14,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Custom" />
-        <activity android:name=".DropIn" />
+        <activity android:name=".OptionsActivity" android:label="Options" />
+        <activity android:name=".CustomFormActivity" android:label="Buy" />
+        <activity android:name=".FinishedActivity" android:label="Purchase Complete" />
     </application>
 </manifest>
