@@ -43,15 +43,13 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     public void testAddsEventOnSDKInitialized() {
         setupActivity();
-        verify(mBraintree, times(1)).sendAnalyticsEvent("dropin.android.sdk.initialized",
-                BraintreePaymentActivity.INTEGRATION_METHOD);
+        verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.initialized");
     }
 
     public void testAddsEventOnAddCardStarted() {
         setupActivity();
         onView(withId(R.id.form_header)).check(matches(isDisplayed()));
-        verify(mBraintree, times(1)).sendAnalyticsEvent("dropin.android.add-card.start",
-                BraintreePaymentActivity.INTEGRATION_METHOD);
+        verify(mBraintree, times(1)).sendAnalyticsEvent("add-card.start");
     }
 
     public void testAddsEventOnAddCardSucceeded() {
@@ -59,8 +57,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
         fillInCreditCard();
         waitForActivity(mActivity);
 
-        verify(mBraintree, times(1)).sendAnalyticsEvent("dropin.android.add-card.success",
-                BraintreePaymentActivity.INTEGRATION_METHOD);
+        verify(mBraintree, times(1)).sendAnalyticsEvent("add-card.success");
     }
 
     public void testAddsEventOnAddCardFailed() {
@@ -82,8 +79,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
         waitForView(withId(R.id.card_form_complete_button), isEnabled());
 
-        verify(mBraintree, times(1)).sendAnalyticsEvent("dropin.android.add-card.failed",
-                BraintreePaymentActivity.INTEGRATION_METHOD);
+        verify(mBraintree, times(1)).sendAnalyticsEvent("add-card.failed");
     }
 
     public void pendingAddsEventOnAddPayPalStarted() {
@@ -92,16 +88,14 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
         waitForView(withHint("Email"));
         sendKeys(KeyEvent.KEYCODE_BACK);
 
-        verify(mBraintree, times(1)).sendAnalyticsEvent("dropin.android.add-paypal.start",
-                BraintreePaymentActivity.INTEGRATION_METHOD);
+        verify(mBraintree, times(1)).sendAnalyticsEvent("add-paypal.start");
     }
 
     public void testAddsEventOnAddPayPalSucceeded() {
         setupActivity();
         fillInPayPal();
 
-        verify(mBraintree, times(1)).sendAnalyticsEvent("dropin.android.add-paypal.success",
-                BraintreePaymentActivity.INTEGRATION_METHOD);
+        verify(mBraintree, times(1)).sendAnalyticsEvent("add-paypal.success");
     }
 
     public void testAddsEventOnSDKExitWithSuccess() {
@@ -109,8 +103,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
         fillInCreditCard();
         waitForActivity(mActivity);
 
-        verify(mBraintree, times(1)).sendAnalyticsEvent("dropin.android.sdk.exit.success",
-                BraintreePaymentActivity.INTEGRATION_METHOD);
+        verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.exit.success");
     }
 
     public void testAddsEventOnSDKExitWithUserCanceled() {
@@ -118,8 +111,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
         sendKeys(KeyEvent.KEYCODE_BACK);
         waitForActivity(mActivity);
 
-        verify(mBraintree, times(1)).sendAnalyticsEvent("dropin.android.sdk.exit.user-canceled",
-                BraintreePaymentActivity.INTEGRATION_METHOD);
+        verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.exit.user-canceled");
     }
 
     public void testAddsEventOnSDKExitWithDeveloperError() {
@@ -128,8 +120,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
                 .postUnrecoverableErrorFromBraintree(mBraintree, new AuthenticationException());
         waitForActivity(mActivity);
 
-        verify(mBraintree, times(1)).sendAnalyticsEvent("dropin.android.sdk.exit.developer-error",
-                BraintreePaymentActivity.INTEGRATION_METHOD);
+        verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.exit.developer-error");
     }
 
     public void testAddsEventOnSDKExitWithServerError() {
@@ -137,8 +128,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
         BraintreeTestUtils.postUnrecoverableErrorFromBraintree(mBraintree, new ServerException());
         waitForActivity(mActivity);
 
-        verify(mBraintree, times(1)).sendAnalyticsEvent("dropin.android.sdk.exit.server-error",
-                BraintreePaymentActivity.INTEGRATION_METHOD);
+        verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.exit.server-error");
     }
 
     public void testAddsEventOnSDKExitWithServerUnavailableError() {
@@ -147,9 +137,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
                 .postUnrecoverableErrorFromBraintree(mBraintree, new DownForMaintenanceException());
         waitForActivity(mActivity);
 
-        verify(mBraintree, times(1)).sendAnalyticsEvent(
-                "dropin.android.sdk.exit.server-unavailable",
-                BraintreePaymentActivity.INTEGRATION_METHOD);
+        verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.exit.server-unavailable");
     }
 
     private void setupActivity() {

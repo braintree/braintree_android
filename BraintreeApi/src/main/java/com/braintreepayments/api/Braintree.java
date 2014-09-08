@@ -30,6 +30,7 @@ import java.util.concurrent.Future;
 public class Braintree {
 
     protected static final Map<String, Braintree> sInstances = new HashMap<String, Braintree>();
+    protected static final String INTEGRATION_DROPIN = "dropin";
 
     /**
      * onPaymentMethodsUpdate will be called with a list of {@link com.braintreepayments.api.models.PaymentMethod}s
@@ -70,6 +71,7 @@ public class Braintree {
 
     private final ExecutorService mExecutorService;
     private final BraintreeApi mBraintreeApi;
+    private String mIntegrationType;
 
     /**
      * {@link Handler} to deliver events to listeners; events are always delivered on the main thread.
@@ -107,6 +109,23 @@ public class Braintree {
     protected Braintree(BraintreeApi braintreeApi) {
         mBraintreeApi = braintreeApi;
         mExecutorService = Executors.newSingleThreadExecutor();
+        mIntegrationType = "custom";
+    }
+
+    protected String analyticsPrefix() {
+        return mIntegrationType + ".android";
+    }
+
+    protected String getIntegrationType() {
+        return mIntegrationType;
+    }
+
+    /**
+     * Sets integration method to Drop-In.
+     * Used internally, not necessary to call directly.
+     */
+    public void setIntegrationDropin() {
+        mIntegrationType = INTEGRATION_DROPIN;
     }
 
     /**
@@ -157,6 +176,7 @@ public class Braintree {
      * in {@code onActivityResult}.
      */
     public void startPayWithPayPal(Activity activity, int requestCode) {
+        sendAnalyticsEvent("add-paypal.start");
         mBraintreeApi.startPayWithPayPal(activity, requestCode);
     }
 
@@ -170,7 +190,9 @@ public class Braintree {
     public void startPayWithVenmo(Activity activity, int requestCode) {
         try {
             mBraintreeApi.startPayWithVenmo(activity, requestCode);
+            sendAnalyticsEvent("add-venmo.start");
         } catch (AppSwitchNotAvailableException e) {
+            sendAnalyticsEvent("add-venmo.unavailable");
             postUnrecoverableErrorToListeners(e);
         }
     }
@@ -473,6 +495,7 @@ public class Braintree {
     }
 
     /**
+     * @deprecated Use {@link #sendAnalyticsEvent(String)} instead.
      * Sends analytics event to send to the Braintree analytics service. Used internally and by Drop-In.
      * @param event Name of event to be sent.
      * @param integrationType The type of integration used. Should be "custom" for those directly
@@ -480,6 +503,10 @@ public class Braintree {
      */
     public synchronized void sendAnalyticsEvent(String event, String integrationType) {
         sendAnalyticsEventHelper(event, integrationType);
+    }
+
+    public synchronized void sendAnalyticsEvent(String eventFragment) {
+        sendAnalyticsEventHelper(analyticsPrefix() + "." + eventFragment, getIntegrationType());
     }
 
     /**

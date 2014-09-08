@@ -44,9 +44,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class BraintreePaymentActivity extends Activity implements
         PaymentMethodsUpdatedListener, PaymentMethodCreatedListener, ErrorListener {
 
-    protected static final String INTEGRATION_METHOD = "Drop-In";
-    protected static final String ANALYTICS_PREFIX = "dropin.android";
-
     /**
      * The payment method flow halted due to a resolvable error (authentication, authorization, SDK upgrade required).
      * The reason for the error will be returned in a future release.
@@ -105,7 +102,8 @@ public class BraintreePaymentActivity extends Activity implements
         customizeActionBar();
 
         mBraintree = Braintree.getInstance(this, getClientToken());
-        mBraintree.sendAnalyticsEvent(ANALYTICS_PREFIX + ".sdk.initialized", INTEGRATION_METHOD);
+        mBraintree.setIntegrationDropin();
+        mBraintree.sendAnalyticsEvent("sdk.initialized");
 
         if (mBraintree.hasCachedCards()) {
             onPaymentMethodsUpdated(mBraintree.getCachedPaymentMethods());
@@ -137,8 +135,7 @@ public class BraintreePaymentActivity extends Activity implements
                 mAddPaymentMethodViewController.onPaymentResult(requestCode, resultCode, data);
             }
         } else if (resultCode == RESULT_CANCELED) {
-            mBraintree.sendAnalyticsEvent(ANALYTICS_PREFIX + ".add-paypal.user-canceled",
-                    INTEGRATION_METHOD);
+            mBraintree.sendAnalyticsEvent("add-paypal.user-canceled");
         }
     }
 
@@ -167,8 +164,7 @@ public class BraintreePaymentActivity extends Activity implements
         mActivePaymentMethod = paymentMethod;
 
         if (paymentMethod instanceof Card) {
-            mBraintree.sendAnalyticsEvent(ANALYTICS_PREFIX + ".add-card.success",
-                    INTEGRATION_METHOD);
+            mBraintree.sendAnalyticsEvent("add-card.success");
             mAddPaymentMethodViewController.showSuccess();
 
             Executors.newScheduledThreadPool(1).schedule(new Runnable() {
@@ -183,8 +179,7 @@ public class BraintreePaymentActivity extends Activity implements
                 }
             }, 1, TimeUnit.SECONDS);
         } else if (paymentMethod instanceof PayPalAccount) {
-            mBraintree.sendAnalyticsEvent(ANALYTICS_PREFIX + ".add-paypal.success",
-                    INTEGRATION_METHOD);
+            mBraintree.sendAnalyticsEvent("add-paypal.success");
             mAddPaymentMethodViewController.endSubmit();
             initSelectPaymentMethodView();
         }
@@ -201,16 +196,13 @@ public class BraintreePaymentActivity extends Activity implements
                     throwable instanceof AuthorizationException ||
                     throwable instanceof UpgradeRequiredException ||
                     throwable instanceof ConfigurationException) {
-                mBraintree.sendAnalyticsEvent(ANALYTICS_PREFIX + ".sdk.exit.developer-error",
-                        INTEGRATION_METHOD);
+                mBraintree.sendAnalyticsEvent("sdk.exit.developer-error");
                 setResult(BRAINTREE_RESULT_DEVELOPER_ERROR);
             } else if(throwable instanceof ServerException || throwable instanceof UnexpectedException) {
-                mBraintree.sendAnalyticsEvent(ANALYTICS_PREFIX + ".sdk.exit.server-error",
-                        INTEGRATION_METHOD);
+                mBraintree.sendAnalyticsEvent("sdk.exit.server-error");
                 setResult(BRAINTREE_RESULT_SERVER_ERROR);
             } else if(throwable instanceof DownForMaintenanceException) {
-                mBraintree.sendAnalyticsEvent(ANALYTICS_PREFIX + ".sdk.exit.server-unavailable",
-                        INTEGRATION_METHOD);
+                mBraintree.sendAnalyticsEvent("sdk.exit.server-unavailable");
                 setResult(BRAINTREE_RESULT_SERVER_UNAVAILABLE);
             }
 
@@ -224,7 +216,7 @@ public class BraintreePaymentActivity extends Activity implements
     }
 
     protected void finalizeSelection() {
-        mBraintree.sendAnalyticsEvent(ANALYTICS_PREFIX + ".sdk.exit.success", INTEGRATION_METHOD);
+        mBraintree.sendAnalyticsEvent("sdk.exit.success");
 
         Intent resultIntent = new Intent();
         resultIntent.putExtra(EXTRA_PAYMENT_METHOD, mActivePaymentMethod);
@@ -271,7 +263,7 @@ public class BraintreePaymentActivity extends Activity implements
     }
 
     protected void initAddPaymentMethodView() {
-        mBraintree.sendAnalyticsEvent(ANALYTICS_PREFIX + ".add-card.start", INTEGRATION_METHOD);
+        mBraintree.sendAnalyticsEvent("add-card.start");
 
         View paymentMethodView = StubbedView.CARD_FORM.show(this);
 
@@ -357,8 +349,7 @@ public class BraintreePaymentActivity extends Activity implements
                 mAddPaymentMethodViewController.isSubmitting()) {
             // noop
         } else {
-            mBraintree.sendAnalyticsEvent(ANALYTICS_PREFIX + ".sdk.exit.user-canceled",
-                    INTEGRATION_METHOD);
+            mBraintree.sendAnalyticsEvent("sdk.exit.user-canceled");
             setResult(RESULT_CANCELED);
             finish();
         }
