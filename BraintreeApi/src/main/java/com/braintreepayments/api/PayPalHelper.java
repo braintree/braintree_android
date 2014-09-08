@@ -35,13 +35,15 @@ public class PayPalHelper {
     }
 
     protected static void startPaypal(Context context, ClientToken clientToken) {
+        stopPaypalService(context);
         context.startService(buildPayPalServiceIntent(context, clientToken));
     }
 
     protected static void launchPayPal(Activity activity, int requestCode, ClientToken clientToken) {
         Class klass;
         if (PayPalTouch.available(activity.getBaseContext(), sEnableSignatureVerification) &&
-                !clientToken.getPayPal().equals(OFFLINE) && !clientToken.getPayPal().getTouchDisabled()) {
+                !clientToken.getPayPal().getEnvironment().equals(OFFLINE) &&
+                !clientToken.getPayPal().getTouchDisabled()) {
             klass = PayPalTouchActivity.class;
         } else {
             klass = PayPalFuturePaymentActivity.class;
