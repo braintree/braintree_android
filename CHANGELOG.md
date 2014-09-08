@@ -1,5 +1,17 @@
 # Braintree Android SDK Release Notes
 
+## 1.2.0
+
+* Features
+  * App switch based payments for PayPal and Venmo (One Touch)
+    * No changes for existing Pay With PayPal integrations
+    * See [the docs](https://developers.braintreepayments.com/android/guides/one-touch) for more information
+  * Unified payment button (`PaymentButton`) for PayPal and/or Venmo payments
+* Improvements
+  * Minor bugfixes and internal tweaks
+* Deprecations
+  * `PayPalButton` is deprecated in favor of `PaymentButton`
+
 ## 1.1.0
 
 * Breaking Change
