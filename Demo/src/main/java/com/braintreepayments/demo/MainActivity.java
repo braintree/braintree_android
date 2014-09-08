@@ -93,7 +93,7 @@ public class MainActivity extends Activity {
             Customization customization = new CustomizationBuilder()
                     .primaryDescription("Cart")
                     .secondaryDescription("3 Items")
-                    .amount("$35")
+                    .amount("$1")
                     .submitButtonText("Buy")
                     .build();
 
