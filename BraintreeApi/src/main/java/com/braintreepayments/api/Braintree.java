@@ -117,11 +117,7 @@ public class Braintree {
     }
 
     protected String getIntegrationType() {
-        if (mIntegrationType.equals(INTEGRATION_DROPIN)) {
-            return "Drop-In";
-        } else {
-            return "custom";
-        }
+        return mIntegrationType;
     }
 
     /**

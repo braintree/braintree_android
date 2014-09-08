@@ -276,7 +276,7 @@ public class BraintreeTest extends AndroidTestCase {
         braintree.setIntegrationDropin();
         braintree.startPayWithVenmo(null, 1);
         SystemClock.sleep(50);
-        verify(braintreeApi).sendAnalyticsEvent("dropin.android.add-venmo.start", "Drop-In");
+        verify(braintreeApi).sendAnalyticsEvent("dropin.android.add-venmo.start", "dropin");
     }
 
     public void testStartPayWithVenmoSendsAnalyticsEventWhenUnavailable()
