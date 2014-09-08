@@ -495,6 +495,7 @@ public class Braintree {
     }
 
     /**
+     * @deprecated Use {@link #sendAnalyticsEvent(String)} instead.
      * Sends analytics event to send to the Braintree analytics service. Used internally and by Drop-In.
      * @param event Name of event to be sent.
      * @param integrationType The type of integration used. Should be "custom" for those directly

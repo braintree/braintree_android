@@ -271,9 +271,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
         boolean focusSet = false;
         if(error.errorFor("creditCard") != null) {
-            getBraintree().sendAnalyticsEvent(
-                    BraintreePaymentActivity.ANALYTICS_PREFIX + ".add-card.failed",
-                    BraintreePaymentActivity.INTEGRATION_METHOD);
+            getBraintree().sendAnalyticsEvent("add-card.failed");
 
             BraintreeError cardErrors = error.errorFor("creditCard");
             if(cardErrors.errorFor("number") != null) {
