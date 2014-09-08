@@ -25,7 +25,7 @@ sdkManager {
 
 dependencies {
     compile 'com.google.code.gson:gson:[2.2.4,3.0)'
-    compile 'com.braintreepayments.api:data:1.2.0'
+    compile project(':BraintreeData')
     compile files('libs/PayPalAndroidSDK-2.5.1.jar')
 
     androidTestCompile project(':TestUtils')
