@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.braintreepayments.api.BraintreeTestUtils.assertSelectedPaymentMethodIs;
 import static com.braintreepayments.api.BraintreeTestUtils.injectCountPaymentMethodListBraintree;
 import static com.braintreepayments.api.BraintreeTestUtils.injectSlowBraintree;
-import static com.braintreepayments.api.ui.Matchers.hasBackgroundColor;
+import static com.braintreepayments.api.ui.Matchers.hasBackgroundResource;
 import static com.braintreepayments.api.ui.Matchers.withId;
 import static com.braintreepayments.api.ui.RotationHelper.rotateToLandscape;
 import static com.braintreepayments.api.ui.RotationHelper.rotateToPortrait;
@@ -252,11 +252,11 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
 
 
         onView(withId(R.id.card_form_complete_button)).check(
-                matches(hasBackgroundColor(R.color.bt_blue)));
+                matches(hasBackgroundResource(getContext(), R.drawable.blue_button_selector)));
         rotateToLandscape(this);
         waitForAddPaymentFormHeader();
         onView(withId(R.id.card_form_complete_button)).check(
-                matches(hasBackgroundColor(R.color.bt_blue)));
+                matches(hasBackgroundResource(getContext(), R.drawable.blue_button_selector)));
     }
 
     private Context getContext() {

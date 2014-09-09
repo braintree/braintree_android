@@ -63,7 +63,7 @@
         <item name="android:layout_centerVertical">true</item>
         <item name="android:visibility">gone</item>
         <item name="android:padding">@dimen/bt_payment_method_button_type_padding</item>
-        <item name="android:background">@android:color/transparent</item>
+        <item name="android:background">@drawable/payment_button_selector</item>
     </style>
 
 </resources>

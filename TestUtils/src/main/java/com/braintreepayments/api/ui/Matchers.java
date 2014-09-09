@@ -1,7 +1,10 @@
 package com.braintreepayments.api.ui;
 
-import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.widget.EditText;
 
@@ -61,18 +64,21 @@ public class Matchers {
         };
     }
 
-    @SuppressLint("NewApi")
-    public static Matcher<View> hasBackgroundColor(final int color) {
+    @TargetApi(VERSION_CODES.HONEYCOMB)
+    public static Matcher<View> hasBackgroundResource(final Context context, final int resource) {
+        final Drawable expectedDrawable = context.getResources().getDrawable(resource);
+
         return new BoundedMatcher<View, View>(View.class) {
             @Override
             public void describeTo(Description description) {
-                description.appendText("with color: " + color);
+                description.appendText(
+                        "with resource: " + context.getResources().getResourceName(resource));
             }
 
             @Override
             protected boolean matchesSafely(View view) {
-                return is(view.getContext().getResources().getColor(color))
-                        .matches(((ColorDrawable) view.getBackground()).getColor());
+                return is(((ColorDrawable) expectedDrawable.getCurrent())
+                        .getColor()).matches(((ColorDrawable) view.getBackground().getCurrent()).getColor());
             }
         };
     }

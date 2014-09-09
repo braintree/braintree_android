@@ -155,8 +155,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         }
 
         if (areFieldsValid()) {
-            mSubmitButton.setBackgroundColor(
-                    getActivity().getResources().getColor(R.color.bt_blue));
+            setEnabledSubmitButtonStyle();
         }
     }
 
@@ -201,8 +200,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
     public void onTextChanged(Editable editable) {
         if (!mIsSubmitting) {
             if(areFieldsValid()) {
-                mSubmitButton.setBackgroundColor(
-                        getActivity().getResources().getColor(R.color.bt_blue));
+                setEnabledSubmitButtonStyle();
             }
         }
     }
@@ -261,7 +259,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
             mPostalCode.validate();
         }
 
-        mSubmitButton.setBackgroundColor(getActivity().getResources().getColor(R.color.bt_button_disabled_color));
+        setDisabledSubmitButtonStyle();
     }
 
     public void setErrors(ErrorWithResponse error) {
@@ -302,7 +300,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
     }
 
     protected void endSubmit() {
-        mSubmitButton.setBackgroundColor(getActivity().getResources().getColor(R.color.bt_button_disabled_color));
+        setDisabledSubmitButtonStyle();
         mCardNumber.setEnabled(true);
         mExpirationView.setEnabled(true);
         mCvvView.setEnabled(true);
@@ -350,6 +348,14 @@ public class AddPaymentMethodViewController extends BraintreeViewController
                 mScrollView.smoothScrollTo(0, v.getTop());
             }
         }, 100);
+    }
+
+    private void setEnabledSubmitButtonStyle() {
+        mSubmitButton.setBackgroundResource(R.drawable.blue_button_selector);
+    }
+
+    private void setDisabledSubmitButtonStyle() {
+        mSubmitButton.setBackgroundResource(R.color.bt_button_disabled_color);
     }
 
     @Override

@@ -3,6 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedAttribute"
     android:exitFadeDuration="@android:integer/config_shortAnimTime" >
-    <item android:drawable="@color/bt_blue_pressed" android:state_pressed="true" />
-    <item android:drawable="@color/bt_blue" />
+    <item android:drawable="@color/bt_white_pressed" android:state_pressed="true" />
+    <item android:drawable="@color/bt_white" />
 </selector>
