@@ -39,7 +39,7 @@ public abstract class BraintreeViewController {
         String submitText = getCustomizedCallToAction();
 
         if(!TextUtils.isEmpty(mCustomization.getAmount())) {
-            submitText += " - " + mCustomization.getAmount();
+            submitText = mCustomization.getAmount() + " - " + submitText;
         }
 
         return submitText;
