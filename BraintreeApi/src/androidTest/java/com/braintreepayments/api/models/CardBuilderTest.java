@@ -1,5 +1,6 @@
 package com.braintreepayments.api.models;
 
+import com.braintreepayments.api.VenmoAppSwitch;
 import com.braintreepayments.api.models.PaymentMethod.Builder;
 
 import junit.framework.TestCase;
@@ -75,6 +76,18 @@ public class CardBuilderTest extends TestCase {
 
         assertEquals("custom", metadata.getString("integration"));
         assertEquals("form", metadata.getString("source"));
+    }
+
+    public void testSetsDefaultCardSource() {
+        Card card = new CardBuilder().build();
+
+        assertEquals("form", card.getSource());
+    }
+
+    public void testSetsCardSource() {
+        Card card = new CardBuilder().source(VenmoAppSwitch.VENMO_SOURCE).build();
+
+        assertEquals(VenmoAppSwitch.VENMO_SOURCE, card.getSource());
     }
 
     public void testSetsIntegrationMethod() throws JSONException {

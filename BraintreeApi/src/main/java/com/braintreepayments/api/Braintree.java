@@ -387,7 +387,10 @@ public class Braintree {
                 @Override
                 public void run() {
                     try {
-                        postCreatedMethodToListeners(mBraintreeApi.getPaymentMethod(nonce));
+                        PaymentMethod paymentMethod = mBraintreeApi.getPaymentMethod(nonce);
+                        paymentMethod.setSource(VenmoAppSwitch.VENMO_SOURCE);
+                        addPaymentMethodToCache(paymentMethod);
+                        postCreatedMethodToListeners(paymentMethod);
                         postCreatedNonceToListeners(nonce);
                         sendAnalyticsEvent("venmo-app.success");
                     } catch (BraintreeException e) {
@@ -439,10 +442,7 @@ public class Braintree {
             public void run() {
                 try {
                     PaymentMethod createdPaymentMethod = mBraintreeApi.create(paymentMethodBuilder);
-                    if (mCachedPaymentMethods == null) {
-                        mCachedPaymentMethods = new ArrayList<PaymentMethod>();
-                    }
-                    mCachedPaymentMethods.add(0, createdPaymentMethod);
+                    addPaymentMethodToCache(createdPaymentMethod);
 
                     postCreatedMethodToListeners(createdPaymentMethod);
                     postCreatedNonceToListeners(createdPaymentMethod.getNonce());
@@ -548,6 +548,13 @@ public class Braintree {
      */
     public String collectDeviceData(Activity activity, String merchantId, String collectorUrl) {
         return mBraintreeApi.collectDeviceData(activity, merchantId, collectorUrl);
+    }
+
+    private void addPaymentMethodToCache(PaymentMethod paymentMethod) {
+        if (mCachedPaymentMethods == null) {
+            mCachedPaymentMethods = new ArrayList<PaymentMethod>();
+        }
+        mCachedPaymentMethods.add(0, paymentMethod);
     }
 
     private synchronized void postPaymentMethodsToListeners(List<PaymentMethod> paymentMethods) {

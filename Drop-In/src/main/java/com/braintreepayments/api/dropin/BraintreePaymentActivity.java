@@ -19,6 +19,7 @@ import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.Braintree.ErrorListener;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodsUpdatedListener;
+import com.braintreepayments.api.VenmoAppSwitch;
 import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
 import com.braintreepayments.api.dropin.view.PaymentButton;
 import com.braintreepayments.api.exceptions.AuthenticationException;
@@ -87,7 +88,7 @@ public class BraintreePaymentActivity extends Activity implements
     private SelectPaymentMethodViewController mSelectPaymentMethodViewController;
     private AtomicBoolean mHasDataBeenReceived = new AtomicBoolean(false);
     private boolean mUnableToGetPaymentMethods = false;
-    private PaymentMethod mActivePaymentMethod;
+    protected PaymentMethod mActivePaymentMethod;
     private Bundle mSavedInstanceState;
     private Customization mCustomization;
 
@@ -143,8 +144,11 @@ public class BraintreePaymentActivity extends Activity implements
         return mActivePaymentMethod;
     }
 
-    protected void setActivePaymentMethod(PaymentMethod paymentMethod) {
+    private void addActivePaymentMethod(PaymentMethod paymentMethod) {
         mActivePaymentMethod = paymentMethod;
+        mAddPaymentMethodViewController.endSubmit();
+        initSelectPaymentMethodView();
+        mSelectPaymentMethodViewController.setupPaymentMethod(paymentMethod);
     }
 
     @Override
@@ -164,24 +168,28 @@ public class BraintreePaymentActivity extends Activity implements
         mActivePaymentMethod = paymentMethod;
 
         if (paymentMethod instanceof Card) {
-            mBraintree.sendAnalyticsEvent("add-card.success");
-            mAddPaymentMethodViewController.showSuccess();
+            if(paymentMethod.getSource() != null &&
+                    paymentMethod.getSource().equals(VenmoAppSwitch.VENMO_SOURCE)) {
+                addActivePaymentMethod(paymentMethod);
+            } else {
+                mBraintree.sendAnalyticsEvent("add-card.success");
 
-            Executors.newScheduledThreadPool(1).schedule(new Runnable() {
-                @Override
-                public void run() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            finalizeSelection();
-                        }
-                    });
-                }
-            }, 1, TimeUnit.SECONDS);
+                mAddPaymentMethodViewController.showSuccess();
+                Executors.newScheduledThreadPool(1).schedule(new Runnable() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                finalizeSelection();
+                            }
+                        });
+                    }
+                }, 1, TimeUnit.SECONDS);
+            }
         } else if (paymentMethod instanceof PayPalAccount) {
             mBraintree.sendAnalyticsEvent("add-paypal.success");
-            mAddPaymentMethodViewController.endSubmit();
-            initSelectPaymentMethodView();
+            addActivePaymentMethod(paymentMethod);
         }
     }
 

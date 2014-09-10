@@ -28,6 +28,7 @@ public abstract class PaymentMethod implements Serializable {
     protected String nonce;
     protected String description;
     protected PaymentMethodOptions options;
+    protected transient String mSource;
 
     protected void setOptions(PaymentMethodOptions options) {
         this.options = options;
@@ -47,6 +48,22 @@ public abstract class PaymentMethod implements Serializable {
      */
     public String getDescription() {
         return description;
+    }
+
+    /**
+     * @return the source of the PaymentMethod
+     */
+    public String getSource() {
+        return mSource;
+    }
+
+    /**
+     * Sets source of {@link com.braintreepayments.api.models.PaymentMethod} for analytics.
+     * This is set automatically and should not need to be used outside of the SDK.
+     * @param source Source of the PaymentMethod.
+     */
+    public void setSource(String source) {
+        mSource = source;
     }
 
     /**

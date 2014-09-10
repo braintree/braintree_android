@@ -7,6 +7,8 @@ import static android.app.Activity.RESULT_OK;
 
 public class VenmoAppSwitch extends AppSwitch {
 
+    public static final String VENMO_SOURCE = "venmo-app";
+
     public VenmoAppSwitch(Context context, ClientToken clientToken) {
         super(context, clientToken);
     }

@@ -326,10 +326,12 @@ public class BraintreeTest extends AndroidTestCase {
         assertTrue(paymentMethodListenerCalled.get());
     }
 
-    public void testFinishPayWithVenmoSendsAnalyticsEventOnSuccess() {
+    public void testFinishPayWithVenmoSendsAnalyticsEventOnSuccess()
+            throws JSONException, BraintreeException, ErrorWithResponse {
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
         Braintree braintree = new Braintree(braintreeApi);
         when(braintreeApi.finishPayWithVenmo(eq(Activity.RESULT_OK), any(Intent.class))).thenReturn("nonce");
+        when(braintreeApi.getPaymentMethod("nonce")).thenReturn(new Card());
 
         braintree.finishPayWithVenmo(Activity.RESULT_OK, new Intent());
         SystemClock.sleep(50);

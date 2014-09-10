@@ -1,10 +1,6 @@
 package com.braintreepayments.api;
 
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.Expose;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -20,32 +16,7 @@ public class Utils {
 
     public static Gson getGson() {
         if (gson == null) {
-            gson = new GsonBuilder()
-                    .addSerializationExclusionStrategy(new ExclusionStrategy() {
-                        @Override
-                        public boolean shouldSkipField(FieldAttributes fieldAttributes) {
-                            final Expose expose = fieldAttributes.getAnnotation(Expose.class);
-                            return expose != null && !expose.serialize();
-                        }
-
-                        @Override
-                        public boolean shouldSkipClass(Class<?> aClass) {
-                            return false;
-                        }
-                    })
-                    .addDeserializationExclusionStrategy(new ExclusionStrategy() {
-                        @Override
-                        public boolean shouldSkipField(FieldAttributes fieldAttributes) {
-                            final Expose expose = fieldAttributes.getAnnotation(Expose.class);
-                            return expose != null && !expose.deserialize();
-                        }
-
-                        @Override
-                        public boolean shouldSkipClass(Class<?> aClass) {
-                            return false;
-                        }
-                    })
-                    .create();
+            gson = new Gson();
         }
 
         return gson;

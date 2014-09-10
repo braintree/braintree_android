@@ -77,6 +77,7 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
         payPalAccount.setConsentCode(authorizationCode);
         payPalAccount.setCorrelationId(correlationId);
         payPalAccount.setOptions(options);
+        payPalAccount.setSource(mSource);
 
         return payPalAccount;
     }

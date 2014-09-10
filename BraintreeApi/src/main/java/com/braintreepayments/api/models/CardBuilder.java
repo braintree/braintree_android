@@ -21,6 +21,7 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
 
     public CardBuilder() {
         mCard = new Card();
+        mCard.setSource(mSource);
     }
 
     /**
@@ -139,6 +140,7 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
     @Override
     public CardBuilder source(String source) {
         mSource = source;
+        mCard.setSource(mSource);
         return this;
     }
 
