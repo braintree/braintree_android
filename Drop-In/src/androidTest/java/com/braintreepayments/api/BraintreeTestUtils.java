@@ -180,7 +180,7 @@ public class BraintreeTestUtils {
 
     public static void assertSelectedPaymentMethodIs(int string) {
         onView(withText("Choose Payment Method")).check(doesNotExist());
-        onView(withId(R.id.payment_method_type)).check(matches(withText(string)));
+        onView(withId(R.id.bt_payment_method_type)).check(matches(withText(string)));
     }
 
 }

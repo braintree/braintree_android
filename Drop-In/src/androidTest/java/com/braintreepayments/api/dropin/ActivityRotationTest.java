@@ -82,7 +82,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         onExpirationField().check(matches(withText("12/18")));
         onCvvField().check(matches(withText("1234")));
         onPostalCodeField().check(matches(withText("12345")));
-        onView(withId(R.id.card_form_complete_button)).check(matches(isEnabled()));
+        onView(withId(R.id.bt_card_form_submit_button)).check(matches(isEnabled()));
     }
 
     public void testSelectPaymentViewIsRestoredOnRotation()
@@ -107,15 +107,15 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForPaymentMethodList();
-        onView(withId(R.id.payment_method_type)).check(matches(withText(R.string.descriptor_amex)));
+        onView(withId(R.id.bt_payment_method_type)).check(matches(withText(R.string.bt_descriptor_amex)));
 
-        onView(withId(R.id.selected_payment_method_view)).perform(click());
-        onView(withText(R.string.descriptor_visa)).perform(click());
-        assertSelectedPaymentMethodIs(R.string.descriptor_visa);
+        onView(withId(R.id.bt_selected_payment_method_view)).perform(click());
+        onView(withText(R.string.bt_descriptor_visa)).perform(click());
+        assertSelectedPaymentMethodIs(R.string.bt_descriptor_visa);
 
         rotateToLandscape(this);
         waitForPaymentMethodList();
-        assertSelectedPaymentMethodIs(R.string.descriptor_visa);
+        assertSelectedPaymentMethodIs(R.string.bt_descriptor_visa);
     }
 
     public void testDoesntReloadPaymentMethodsOnRotate() {
@@ -167,15 +167,15 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForAddPaymentFormHeader(timeout * 4);
-        onView(withId(R.id.card_form_card_number)).perform(typeText("4111111111111111"));
-        onView(withId(R.id.card_form_expiration)).perform(typeText("0119"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withId(R.id.card_form_cvv)).perform(typeText("123"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withId(R.id.card_form_postal_code)).perform(typeText("12345"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withId(R.id.card_form_complete_button)).perform(click());
+        onView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"));
+        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("0119"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onView(withId(R.id.bt_card_form_cvv)).perform(typeText("123"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onView(withId(R.id.bt_card_form_postal_code)).perform(typeText("12345"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
-        onView(withId(R.id.card_form_card_number)).check(matches(not(isEnabled())));
+        onView(withId(R.id.bt_card_form_card_number)).check(matches(not(isEnabled())));
         rotateToLandscape(this);
-        onView(withId(R.id.card_form_card_number)).check(matches(not(isEnabled())));
+        onView(withId(R.id.bt_card_form_card_number)).check(matches(not(isEnabled())));
     }
 
     public void testSubmitButtonIsDisabledDuringSubmitOnRotate() {
@@ -197,11 +197,11 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         onCvvField().perform(typeText("1234"), closeSoftKeyboard(), waitForKeyboardToClose());
         onPostalCodeField().perform(typeText("12345"), closeSoftKeyboard(),
                 waitForKeyboardToClose());
-        onView(withId(R.id.card_form_complete_button)).perform(click());
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
         rotateToPortrait(this);
 
         waitForAddPaymentFormHeader(ONE_SECOND);
-        onView(withId(R.id.card_form_complete_button)).check(matches(not(isEnabled())));
+        onView(withId(R.id.bt_card_form_submit_button)).check(matches(not(isEnabled())));
     }
 
     public void testSubmittingStateIsPersistedAcrossRotations() {
@@ -222,17 +222,17 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         onCvvField().perform(typeText("1234"), closeSoftKeyboard(), waitForKeyboardToClose());
         onPostalCodeField().perform(typeText("12345"), closeSoftKeyboard(),
                 waitForKeyboardToClose());
-        onView(withId(R.id.card_form_complete_button)).perform(click());
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
-        waitForView(withId(R.id.header_container));
+        waitForView(withId(R.id.bt_header_container));
 
-        onView(withId(R.id.header_loading_spinner)).check(matches(isDisplayed()));
+        onView(withId(R.id.bt_header_loading_spinner)).check(matches(isDisplayed()));
 
         rotateToLandscape(this);
         waitForAddPaymentFormHeader(ONE_SECOND);
 
-        onView(withId(R.id.card_form_complete_button)).check(matches(not(isEnabled())));
-        onView(withId(R.id.header_loading_spinner)).check(matches(isDisplayed()));
+        onView(withId(R.id.bt_card_form_submit_button)).check(matches(not(isEnabled())));
+        onView(withId(R.id.bt_header_loading_spinner)).check(matches(isDisplayed()));
     }
 
     public void testSubmitButtonIsBlueAfterRotationIfFieldsAreValid() {
@@ -251,12 +251,12 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
                 waitForKeyboardToClose());
 
 
-        onView(withId(R.id.card_form_complete_button)).check(
-                matches(hasBackgroundResource(getContext(), R.drawable.blue_button_selector)));
+        onView(withId(R.id.bt_card_form_submit_button)).check(
+                matches(hasBackgroundResource(getContext(), R.drawable.bt_submit_button_background)));
         rotateToLandscape(this);
         waitForAddPaymentFormHeader();
-        onView(withId(R.id.card_form_complete_button)).check(
-                matches(hasBackgroundResource(getContext(), R.drawable.blue_button_selector)));
+        onView(withId(R.id.bt_card_form_submit_button)).check(
+                matches(hasBackgroundResource(getContext(), R.drawable.bt_submit_button_background)));
     }
 
     private Context getContext() {

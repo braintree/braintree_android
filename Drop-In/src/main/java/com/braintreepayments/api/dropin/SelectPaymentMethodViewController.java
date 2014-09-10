@@ -34,13 +34,13 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
     public SelectPaymentMethodViewController(BraintreePaymentActivity activity,
             Bundle savedInstanceState, View root, Braintree braintree, Customization customization) {
         super(activity, root, braintree, customization);
-        mPaymentMethodView = findView(R.id.selected_payment_method_view);
+        mPaymentMethodView = findView(R.id.bt_selected_payment_method_view);
         mPaymentMethodView.setOnClickListener(this);
 
-        mChangeMethodView = findView(R.id.change_payment_method_link);
+        mChangeMethodView = findView(R.id.bt_change_payment_method_link);
         mChangeMethodView.setOnClickListener(this);
 
-        mSubmitButton = findView(R.id.select_payment_method_button);
+        mSubmitButton = findView(R.id.bt_select_payment_method_submit_button);
         mSubmitButton.setOnClickListener(this);
         mSubmitButton.setText(getSubmitButtonText());
 
@@ -81,11 +81,11 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
     protected void setupPaymentMethod(PaymentMethod method) {
         mPaymentMethodView.setPaymentMethodDetails(method);
 
-        TextView link = findView(R.id.change_payment_method_link);
+        TextView link = findView(R.id.bt_change_payment_method_link);
         if(getBraintree().getCachedPaymentMethods().size() == 1) {
-            link.setText(R.string.add_payment_method);
+            link.setText(R.string.bt_add_payment_method);
         } else {
-            link.setText(R.string.change_payment_method);
+            link.setText(R.string.bt_change_payment_method);
         }
     }
 
@@ -104,9 +104,9 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
         }
 
         new AlertDialog.Builder(contextThemeWrapper)
-            .setTitle(R.string.choose_payment_method)
+            .setTitle(R.string.bt_choose_payment_method)
             .setAdapter(paymentMethodListAdapter, paymentMethodListAdapter)
-            .setPositiveButton(R.string.add_new_payment_method, new DialogInterface.OnClickListener() {
+            .setPositiveButton(R.string.bt_add_new_payment_method, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     launchFormView();

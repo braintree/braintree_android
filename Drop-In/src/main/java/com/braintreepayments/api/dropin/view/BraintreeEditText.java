@@ -40,12 +40,12 @@ public class BraintreeEditText extends EditText {
 
     public void setError() {
         mError = true;
-        setBackground(R.drawable.edittext_error_selector);
+        setBackground(R.drawable.bt_field_error_selector);
     }
 
     public void clearError() {
         mError = false;
-        setBackground(R.drawable.edittext_selector);
+        setBackground(R.drawable.bt_field_selector);
     }
 
     private void setBackground(int backgroundResourceId) {

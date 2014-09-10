@@ -77,15 +77,15 @@ public class AddPaymentMethodViewController extends BraintreeViewController
     }
 
     private void initViews() {
-        mLoadingHeader = findView(R.id.header_container);
-        mScrollView = findView(R.id.form_scroll_container);
-        mDescription = findView(R.id.description_container);
-        mPaymentButton = findView(R.id.payment_button);
-        mCardNumber = findView(R.id.card_form_card_number);
-        mExpirationView = findView(R.id.card_form_expiration);
-        mCvvView = findView(R.id.card_form_cvv);
-        mPostalCode = findView(R.id.card_form_postal_code);
-        mSubmitButton = findView(R.id.card_form_complete_button);
+        mLoadingHeader = findView(R.id.bt_header_container);
+        mScrollView = findView(R.id.bt_form_scroll_container);
+        mDescription = findView(R.id.bt_description_container);
+        mPaymentButton = findView(R.id.bt_payment_button);
+        mCardNumber = findView(R.id.bt_card_form_card_number);
+        mExpirationView = findView(R.id.bt_card_form_expiration);
+        mCvvView = findView(R.id.bt_card_form_cvv);
+        mPostalCode = findView(R.id.bt_card_form_postal_code);
+        mSubmitButton = findView(R.id.bt_card_form_submit_button);
 
         mPaymentButton.initialize(getActivity(), getBraintree());
 
@@ -292,7 +292,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
     }
 
     private void showErrorUI() {
-        mLoadingHeader.setError(getActivity().getString(R.string.invalid_card));
+        mLoadingHeader.setError(getActivity().getString(R.string.bt_invalid_card));
     }
 
     protected boolean isSubmitting() {
@@ -351,7 +351,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
     }
 
     private void setEnabledSubmitButtonStyle() {
-        mSubmitButton.setBackgroundResource(R.drawable.blue_button_selector);
+        mSubmitButton.setBackgroundResource(R.drawable.bt_submit_button_background);
     }
 
     private void setDisabledSubmitButtonStyle() {

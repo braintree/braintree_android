@@ -69,7 +69,7 @@ public abstract class FloatingLabelEditText extends BraintreeEditText implements
         mPreviousTextLength = getText().length();
         if (VERSION.SDK_INT >= HONEYCOMB) {
             Resources res = getResources();
-            mHorizontalTextOffset = res.getDimension(R.dimen.floating_edit_text_horizontal_offset);
+            mHorizontalTextOffset = res.getDimension(R.dimen.bt_floating_edit_text_horizontal_offset);
 
             final float textSize = getTextSize();
             mHintAnimator = ValueAnimator.ofFloat(textSize * 1.75f, textSize);

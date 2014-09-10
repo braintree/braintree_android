@@ -19,7 +19,7 @@ import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMat
 public class PaymentFormHelpers {
 
     public static void fillInPayPal() {
-        waitForView(withId(R.id.paypal_button)).perform(click());
+        waitForView(withId(R.id.bt_paypal_button)).perform(click());
 
         waitForView(withHint("Email"));
         onView(withHint("Email")).perform(typeText("bt_buyer_us@paypal.com"));
@@ -33,11 +33,11 @@ public class PaymentFormHelpers {
     }
 
     public static ViewInteraction waitForPaymentMethodList() {
-        return waitForView(withId(R.id.change_payment_method_link), TEN_SECONDS);
+        return waitForView(withId(R.id.bt_change_payment_method_link), TEN_SECONDS);
     }
 
     public static ViewInteraction waitForPaymentMethodList(int timeout) {
-        return waitForView(withId(R.id.change_payment_method_link), timeout);
+        return waitForView(withId(R.id.bt_change_payment_method_link), timeout);
     }
 
     public static ViewInteraction waitForAddPaymentFormHeader() {
@@ -53,7 +53,7 @@ public class PaymentFormHelpers {
     }
 
     public static Matcher<View> addPaymentFormHeader() {
-        return withText(R.string.form_pay_with_card_header);
+        return withText(R.string.bt_form_pay_with_card_header);
     }
 
     public static ViewInteraction onCardField() {

@@ -1,0 +1,29 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/bt_payment_description" />
+
+    <com.braintreepayments.api.dropin.view.PaymentMethodView
+        android:id="@+id/bt_selected_payment_method_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/bt_form_padding"
+        android:layout_marginLeft="@dimen/bt_form_padding"
+        android:layout_marginRight="@dimen/bt_form_padding"
+        android:background="@drawable/bt_white_with_border_background"
+        android:layout_below="@id/bt_description_container" />
+
+    <TextView
+        style="@style/bt_base_textview"
+        android:id="@+id/bt_change_payment_method_link"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bt_default_item_height"
+        android:gravity="center"
+        android:textColor="@color/bt_blue"
+        android:layout_below="@id/bt_selected_payment_method_view" />
+
+    <include layout="@layout/bt_list_submit_button" />
+
+</RelativeLayout>

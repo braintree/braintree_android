@@ -21,7 +21,7 @@ public class LoadingHeader extends RelativeLayout {
         LOADING, SUCCESS, ERROR
     }
 
-    private SecureLoadingSpinner mLoadingSpinner;
+    private SecureLoadingProgressBar mLoadingSpinner;
     private ImageView mStatusIcon;
     private TextView mHeaderMessage;
 
@@ -43,11 +43,11 @@ public class LoadingHeader extends RelativeLayout {
     }
 
     private void init(Context context) {
-        inflate(context, R.layout.loading_header, this);
+        inflate(context, R.layout.bt_loading_header, this);
 
-        mLoadingSpinner = findView(R.id.header_loading_spinner);
-        mStatusIcon = findView(R.id.header_status_icon);
-        mHeaderMessage = findView(R.id.header_message);
+        mLoadingSpinner = findView(R.id.bt_header_loading_spinner);
+        mStatusIcon = findView(R.id.bt_header_status_icon);
+        mHeaderMessage = findView(R.id.bt_header_message);
     }
 
     public HeaderState getCurrentState() {
@@ -73,7 +73,7 @@ public class LoadingHeader extends RelativeLayout {
         mHeaderMessage.setVisibility(GONE);
 
         setBackgroundColor(getResources().getColor(R.color.bt_blue));
-        mStatusIcon.setImageResource(R.drawable.ic_success);
+        mStatusIcon.setImageResource(R.drawable.bt_success);
         mStatusIcon.setVisibility(VISIBLE);
 
         setVisibility(VISIBLE);
@@ -88,7 +88,7 @@ public class LoadingHeader extends RelativeLayout {
         mHeaderMessage.setText(errorMessage);
 
         setBackgroundColor(getResources().getColor(R.color.bt_red));
-        mStatusIcon.setImageResource(R.drawable.ic_error);
+        mStatusIcon.setImageResource(R.drawable.bt_error);
         mStatusIcon.setVisibility(VISIBLE);
 
         Animation fadeIn = new AlphaAnimation(0, 1);

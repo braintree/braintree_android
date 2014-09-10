@@ -8,15 +8,15 @@
         android:layout_height="wrap_content">
 
         <com.braintreepayments.api.dropin.view.CardEditText
-            style="@style/form_edittext_land"
-            android:id="@+id/card_form_card_number"
+            style="@style/bt_form_field_landscape"
+            android:id="@+id/bt_card_form_card_number"
             android:imeOptions="actionNext"
-            android:hint="@string/form_hint_card_number" />
+            android:hint="@string/bt_form_hint_card_number" />
 
         <com.braintreepayments.api.dropin.view.MonthYearEditText
-            style="@style/form_edittext_land"
-            android:id="@+id/card_form_expiration"
-            android:hint="@string/form_hint_expiration" />
+            style="@style/bt_form_field_landscape"
+            android:id="@+id/bt_card_form_expiration"
+            android:hint="@string/bt_form_hint_expiration" />
 
     </LinearLayout>
 
@@ -26,14 +26,14 @@
         android:layout_height="wrap_content">
 
         <com.braintreepayments.api.dropin.view.CvvEditText
-            style="@style/form_edittext_land"
-            android:id="@+id/card_form_cvv"
-            android:hint="@string/form_hint_cvv" />
+            style="@style/bt_form_field_landscape"
+            android:id="@+id/bt_card_form_cvv"
+            android:hint="@string/bt_form_hint_cvv" />
 
         <com.braintreepayments.api.dropin.view.PostalCodeEditText
-            style="@style/form_edittext_land"
-            android:id="@+id/card_form_postal_code"
-            android:hint="@string/form_hint_postal_code" />
+            style="@style/bt_form_field_landscape"
+            android:id="@+id/bt_card_form_postal_code"
+            android:hint="@string/bt_form_hint_postal_code" />
 
     </LinearLayout>
 

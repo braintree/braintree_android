@@ -48,7 +48,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     public void testAddsEventOnAddCardStarted() {
         setupActivity();
-        onView(withId(R.id.form_header)).check(matches(isDisplayed()));
+        onView(withId(R.id.bt_card_form_header)).check(matches(isDisplayed()));
         verify(mBraintree, times(1)).sendAnalyticsEvent("add-card.start");
     }
 
@@ -75,16 +75,16 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
         onView(withHint("CVV")).perform(typeText("200"), closeSoftKeyboard(),
                 waitForKeyboardToClose());
         onView(withHint("Postal Code")).perform(typeText("12345"));
-        onView(withId(R.id.card_form_complete_button)).perform(click());
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
-        waitForView(withId(R.id.card_form_complete_button), isEnabled());
+        waitForView(withId(R.id.bt_card_form_submit_button), isEnabled());
 
         verify(mBraintree, times(1)).sendAnalyticsEvent("add-card.failed");
     }
 
     public void pendingAddsEventOnAddPayPalStarted() {
         setupActivity();
-        onView(withId(R.id.paypal_button)).perform(click());
+        onView(withId(R.id.bt_paypal_button)).perform(click());
         waitForView(withHint("Email"));
         sendKeys(KeyEvent.KEYCODE_BACK);
 
@@ -156,6 +156,6 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
         onView(withHint("CVV")).perform(typeText("123"), closeSoftKeyboard(),
                 waitForKeyboardToClose());
         onView(withHint("Postal Code")).perform(typeText("12345"));
-        onView(withId(R.id.card_form_complete_button)).perform(click());
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
     }
 }

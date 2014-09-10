@@ -40,7 +40,7 @@ public class CardEditText extends FloatingLabelEditText {
 
     private void init() {
         setInputType(InputType.TYPE_CLASS_NUMBER);
-        setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_card_highlighted, 0);
+        setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.bt_card_highlighted, 0);
     }
 
     public CardType getCardType() {

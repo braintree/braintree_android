@@ -2,8 +2,10 @@
 
     <!-- tablet version included in layout-w500dp/ dir -->
     <Button
-        style="@style/submit_button"
+        android:id="@+id/bt_card_form_submit_button"
+        style="@style/bt_submit_button"
         android:layout_alignParentBottom="true"
-        android:id="@+id/select_payment_method_button" />
+        android:background="@color/bt_button_disabled_color" />
 
 </merge>
+

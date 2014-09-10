@@ -5,25 +5,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.braintreepayments.api.dropin.view.SecureLoadingSpinner
-        android:id="@+id/header_loading_spinner"
+    <com.braintreepayments.api.dropin.view.SecureLoadingProgressBar
+        android:id="@+id/bt_header_loading_spinner"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_centerInParent="true" />
 
     <ImageView
         tools:ignore="ContentDescription"
-        android:id="@+id/header_status_icon"
+        android:id="@+id/bt_header_status_icon"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_centerInParent="true"
         android:visibility="gone" />
 
     <TextView
-        android:id="@+id/header_message"
+        android:id="@+id/bt_header_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/base_bt_textview"
+        style="@style/bt_base_textview"
         android:textColor="@color/bt_white"
         android:layout_centerInParent="true"
         android:visibility="gone" />

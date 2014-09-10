@@ -6,10 +6,10 @@
     android:background="@color/bt_white" >
 
     <View
-        android:id="@+id/payment_button_divider"
+        android:id="@+id/bt_payment_button_divider"
         android:layout_height="@dimen/bt_payment_method_button_divider_height"
         android:layout_width="@dimen/bt_payment_method_button_divider_width"
-        android:background="@color/border_color"
+        android:background="@color/bt_border_color"
         android:layout_centerInParent="true"
         android:layout_marginLeft="@dimen/bt_payment_method_button_divider_padding"
         android:layout_marginRight="@dimen/bt_payment_method_button_divider_padding"
@@ -17,16 +17,16 @@
 
     <ImageButton
         style="@style/bt_payment_method_app_switch_button"
-        android:id="@+id/paypal_button"
-        android:src="@drawable/ic_bt_logo_paypal"
-        android:contentDescription="@string/pay_with_paypal"
-        android:layout_toLeftOf="@id/payment_button_divider" />
+        android:id="@+id/bt_paypal_button"
+        android:src="@drawable/bt_logo_paypal"
+        android:contentDescription="@string/bt_pay_with_paypal"
+        android:layout_toLeftOf="@id/bt_payment_button_divider" />
 
     <ImageButton
         style="@style/bt_payment_method_app_switch_button"
-        android:id="@+id/venmo_button"
-        android:src="@drawable/ic_bt_logo_venmo"
-        android:contentDescription="@string/pay_with_venmo"
-        android:layout_toRightOf="@id/payment_button_divider" />
+        android:id="@+id/bt_venmo_button"
+        android:src="@drawable/bt_logo_venmo"
+        android:contentDescription="@string/bt_pay_with_venmo"
+        android:layout_toRightOf="@id/bt_payment_button_divider" />
 
 </RelativeLayout>

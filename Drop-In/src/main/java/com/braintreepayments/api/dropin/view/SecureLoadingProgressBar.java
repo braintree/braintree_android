@@ -13,14 +13,14 @@ import com.braintreepayments.api.dropin.utils.LoadingSpinnerInterpolator;
  * A custom {@link android.widget.ProgressBar} with extra graphics for waiting states.
  * Designed to give customers an extra sense of security while dealing with sensitive data.
  */
-public class SecureLoadingSpinner extends RelativeLayout {
+public class SecureLoadingProgressBar extends RelativeLayout {
 
-    public SecureLoadingSpinner(Context context, AttributeSet attrs) {
+    public SecureLoadingProgressBar(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public SecureLoadingSpinner(Context context, AttributeSet attrs, int defStyle) {
+    public SecureLoadingProgressBar(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context);
     }
@@ -29,10 +29,10 @@ public class SecureLoadingSpinner extends RelativeLayout {
         RelativeLayout.LayoutParams fillParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         fillParams.addRule(RelativeLayout.CENTER_IN_PARENT);
         ProgressBar loadingSpinner =
-                (ProgressBar) inflate(context, R.layout.secure_loading_spinner, null);
+                (ProgressBar) inflate(context, R.layout.bt_secure_loading_progress_bar, null);
         loadingSpinner.setIndeterminate(true);
         loadingSpinner.setIndeterminateDrawable(
-                context.getResources().getDrawable(R.drawable.loading_animation));
+                context.getResources().getDrawable(R.drawable.bt_loading_animation));
         loadingSpinner.setInterpolator(new LoadingSpinnerInterpolator());
         loadingSpinner.setLayoutParams(fillParams);
         addView(loadingSpinner);
@@ -40,7 +40,7 @@ public class SecureLoadingSpinner extends RelativeLayout {
         RelativeLayout.LayoutParams imageParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         imageParams.addRule(RelativeLayout.CENTER_IN_PARENT);
         ImageView lockView = new ImageView(context);
-        lockView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_secure));
+        lockView.setImageDrawable(context.getResources().getDrawable(R.drawable.bt_secure));
         lockView.setLayoutParams(imageParams);
         lockView.setPadding(0, 0, 0, 4);
         addView(lockView);

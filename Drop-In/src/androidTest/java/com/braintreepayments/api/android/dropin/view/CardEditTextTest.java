@@ -11,14 +11,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.braintreepayments.api.BraintreeTestUtils.assertBitmapsEqual;
-import static com.braintreepayments.api.dropin.R.drawable.ic_amex;
-import static com.braintreepayments.api.dropin.R.drawable.ic_card_highlighted;
-import static com.braintreepayments.api.dropin.R.drawable.ic_diners;
-import static com.braintreepayments.api.dropin.R.drawable.ic_discover;
-import static com.braintreepayments.api.dropin.R.drawable.ic_jcb;
-import static com.braintreepayments.api.dropin.R.drawable.ic_maestro;
-import static com.braintreepayments.api.dropin.R.drawable.ic_mastercard;
-import static com.braintreepayments.api.dropin.R.drawable.ic_visa;
+import static com.braintreepayments.api.dropin.R.drawable.bt_amex;
+import static com.braintreepayments.api.dropin.R.drawable.bt_card_highlighted;
+import static com.braintreepayments.api.dropin.R.drawable.bt_diners;
+import static com.braintreepayments.api.dropin.R.drawable.bt_discover;
+import static com.braintreepayments.api.dropin.R.drawable.bt_jcb;
+import static com.braintreepayments.api.dropin.R.drawable.bt_maestro;
+import static com.braintreepayments.api.dropin.R.drawable.bt_mastercard;
+import static com.braintreepayments.api.dropin.R.drawable.bt_visa;
 
 public class CardEditTextTest extends AndroidTestCase {
 
@@ -30,39 +30,39 @@ public class CardEditTextTest extends AndroidTestCase {
     }
 
     public void testVisa() {
-        helper("4", "111 1111 1111 1111", ic_visa, 4, 8, 12);
+        helper("4", "111 1111 1111 1111", bt_visa, 4, 8, 12);
     }
 
     public void testMasterCard() {
-        helper("55", "55 5555 5555 4444", ic_mastercard, 4, 8, 12);
+        helper("55", "55 5555 5555 4444", bt_mastercard, 4, 8, 12);
     }
 
     public void testDiscover() {
-        helper("6011", "1111 1111 1117", ic_discover, 4, 8, 12);
+        helper("6011", "1111 1111 1117", bt_discover, 4, 8, 12);
     }
 
     public void testAmex() {
-        helper("37", "82 822463 10005", ic_amex, 4, 10);
+        helper("37", "82 822463 10005", bt_amex, 4, 10);
     }
 
     public void testJcb() {
-        helper("35", "30 1113 3330 0000", ic_jcb, 4, 8, 12);
+        helper("35", "30 1113 3330 0000", bt_jcb, 4, 8, 12);
     }
 
     public void testDiners() {
-        helper("3000", "0000 0000 04", ic_diners, 4, 8, 12);
+        helper("3000", "0000 0000 04", bt_diners, 4, 8, 12);
     }
 
     public void testMaestro() {
-        helper("5018", "0000 0000 0009", ic_maestro, 4, 8, 12);
+        helper("5018", "0000 0000 0009", bt_maestro, 4, 8, 12);
     }
 
     public void testUnionPay() {
-        helper("62", "40 8888 8888 8885", ic_card_highlighted, 4, 8, 12);
+        helper("62", "40 8888 8888 8885", bt_card_highlighted, 4, 8, 12);
     }
 
     private void helper(String start, String end, int drawable, int... spans) {
-        assertHintIs(ic_card_highlighted);
+        assertHintIs(bt_card_highlighted);
         type(start).assertHintIs(drawable);
         type(end).assertSpansAt(spans);
     }

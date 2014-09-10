@@ -49,7 +49,7 @@ public abstract class BraintreeViewController {
         String actionText = mCustomization.getSubmitButtonText();
 
         if (TextUtils.isEmpty(actionText)) {
-            actionText = getActivity().getString(R.string.default_submit_button_text);
+            actionText = getActivity().getString(R.string.bt_default_submit_button_text);
         }
 
         return actionText;
@@ -57,11 +57,11 @@ public abstract class BraintreeViewController {
 
     private void initDescriptionView() {
         if (!TextUtils.isEmpty(mCustomization.getPrimaryDescription())) {
-            initDescriptionSubview(R.id.primary_description, mCustomization.getPrimaryDescription());
-            initDescriptionSubview(R.id.secondary_description, mCustomization.getSecondaryDescription());
-            initDescriptionSubview(R.id.description_amount, mCustomization.getAmount());
+            initDescriptionSubview(R.id.bt_primary_description, mCustomization.getPrimaryDescription());
+            initDescriptionSubview(R.id.bt_secondary_description, mCustomization.getSecondaryDescription());
+            initDescriptionSubview(R.id.bt_description_amount, mCustomization.getAmount());
 
-            findView(R.id.description_container).setVisibility(View.VISIBLE);
+            findView(R.id.bt_description_container).setVisibility(View.VISIBLE);
         }
     }
 

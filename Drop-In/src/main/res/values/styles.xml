@@ -1,58 +1,58 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="base_bt_textview">
-        <item name="android:textSize">@dimen/default_text_size</item>
+    <style name="bt_base_textview">
+        <item name="android:textSize">@dimen/bt_default_text_size</item>
     </style>
 
-    <style name="base_bt_textview_bold">
-        <item name="android:textSize">@dimen/default_text_size</item>
+    <style name="bt_base_textview_bold">
+        <item name="android:textSize">@dimen/bt_default_text_size</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="base_bt_edittext" parent="base_bt_textview">
+    <style name="bt_base_field" parent="bt_base_textview">
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@drawable/edittext_selector</item>
+        <item name="android:background">@drawable/bt_field_selector</item>
         <item name="android:layout_marginLeft">-4dp</item>
         <item name="android:layout_marginRight">-4dp</item>
         <item name="android:textColor">@color/bt_black</item>
     </style>
 
-    <style name="form_edittext" parent="base_bt_edittext">
+    <style name="bt_form_field" parent="bt_base_field">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/form_field_height</item>
-        <item name="android:paddingTop">@dimen/form_padding</item>
-        <item name="android:layout_marginLeft">@dimen/form_padding_edittext</item>
-        <item name="android:layout_marginRight">@dimen/form_padding_edittext</item>
+        <item name="android:layout_height">@dimen/bt_form_field_height</item>
+        <item name="android:paddingTop">@dimen/bt_form_padding</item>
+        <item name="android:layout_marginLeft">@dimen/bt_form_field_padding</item>
+        <item name="android:layout_marginRight">@dimen/bt_form_field_padding</item>
         <item name="android:textCursorDrawable" tools:ignore="NewApi">@null</item>
     </style>
 
-    <style name="form_edittext_land" parent="form_edittext">
+    <style name="bt_form_field_landscape" parent="bt_form_field">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">1</item>
     </style>
 
-    <style name="form_appswitch_button">
+    <style name="bt_form_appswitch_button">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">@dimen/form_appswitch_button_size</item>
+        <item name="android:layout_height">@dimen/bt_form_appswitch_button_size</item>
         <item name="android:layout_weight">1</item>
     </style>
 
-    <style name="submit_button" parent="@style/base_bt_textview">
+    <style name="bt_submit_button" parent="@bt_base_textview">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/default_item_height</item>
-        <item name="android:background">@drawable/blue_button_selector</item>
+        <item name="android:layout_height">@dimen/bt_default_item_height</item>
+        <item name="android:background">@drawable/bt_submit_button_background</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
 
-    <style name="horizontal_gray_line">
+    <style name="bt_horizontal_gray_line">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
         <item name="android:background">@color/bt_light_gray</item>
     </style>
 
-    <style name="main_view_controller_container">
+    <style name="bt_main_view_controller_container">
         <item name="android:layout_gravity">center_horizontal</item>
-        <item name="android:layout_width">@dimen/full_width</item>
+        <item name="android:layout_width">@dimen/bt_full_width</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:layout_weight">1</item>
     </style>
@@ -63,7 +63,7 @@
         <item name="android:layout_centerVertical">true</item>
         <item name="android:visibility">gone</item>
         <item name="android:padding">@dimen/bt_payment_method_button_type_padding</item>
-        <item name="android:background">@drawable/payment_button_selector</item>
+        <item name="android:background">@drawable/bt_payment_button_background</item>
     </style>
 
 </resources>

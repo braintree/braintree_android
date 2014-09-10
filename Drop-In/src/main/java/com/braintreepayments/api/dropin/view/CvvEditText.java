@@ -71,7 +71,7 @@ public class CvvEditText extends FloatingLabelEditText {
         int cvvResource = 0;
         if (hasFocus || mAlwaysDisplayHint) {
             if (mCardType == null) {
-                cvvResource = R.drawable.ic_cvv_highlighted;
+                cvvResource = R.drawable.bt_cvv_highlighted;
             } else {
                 cvvResource = mCardType.getSecurityCodeResource();
             }

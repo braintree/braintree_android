@@ -20,15 +20,15 @@ public class PaymentMethodView extends RelativeLayout {
     private static final int UNKNOWN_IMAGE_ID = -1;
 
     public static enum PaymentType {
-        VISA(R.drawable.ic_visa, R.string.descriptor_visa, "Visa"),
-        MASTERCARD(R.drawable.ic_mastercard, R.string.descriptor_mastercard, "MasterCard"),
-        DISCOVER(R.drawable.ic_discover, R.string.descriptor_discover, "Discover"),
-        AMEX(R.drawable.ic_amex, R.string.descriptor_amex, "American Express"),
-        JCB(R.drawable.ic_jcb, R.string.descriptor_jcb, "JCB"),
-        DINERS(R.drawable.ic_diners, R.string.descriptor_diners, "Diners"),
-        MAESTRO(R.drawable.ic_maestro, R.string.descriptor_maestro, "Maestro"),
-        PAYPAL(R.drawable.ic_paypal, R.string.descriptor_paypal, "PayPal"),
-        UNKNOWN(UNKNOWN_IMAGE_ID, R.string.descriptor_unknown, "unknown");
+        VISA(R.drawable.bt_visa, R.string.bt_descriptor_visa, "Visa"),
+        MASTERCARD(R.drawable.bt_mastercard, R.string.bt_descriptor_mastercard, "MasterCard"),
+        DISCOVER(R.drawable.bt_discover, R.string.bt_descriptor_discover, "Discover"),
+        AMEX(R.drawable.bt_amex, R.string.bt_descriptor_amex, "American Express"),
+        JCB(R.drawable.bt_jcb, R.string.bt_descriptor_jcb, "JCB"),
+        DINERS(R.drawable.bt_diners, R.string.bt_descriptor_diners, "Diners"),
+        MAESTRO(R.drawable.bt_maestro, R.string.bt_descriptor_maestro, "Maestro"),
+        PAYPAL(R.drawable.bt_paypal, R.string.bt_descriptor_paypal, "PayPal"),
+        UNKNOWN(UNKNOWN_IMAGE_ID, R.string.bt_descriptor_unknown, "unknown");
 
         private final int mPictureResId;
 
@@ -76,17 +76,17 @@ public class PaymentMethodView extends RelativeLayout {
     }
 
     private void init(Context context) {
-        LayoutInflater.from(context).inflate(R.layout.payment_method, this);
-        mIconView = findView(R.id.payment_method_icon);
-        mDescriptorView = findView(R.id.payment_method_type);
-        mDescriptionView = findView(R.id.payment_method_description);
+        LayoutInflater.from(context).inflate(R.layout.bt_payment_method, this);
+        mIconView = findView(R.id.bt_payment_method_icon);
+        mDescriptorView = findView(R.id.bt_payment_method_type);
+        mDescriptionView = findView(R.id.bt_payment_method_description);
         refresh();
     }
 
     public void setPaymentMethodDetails(PaymentMethod paymentMethod) {
         mType = PaymentType.forType(paymentMethod.getTypeLabel());
         if (paymentMethod instanceof Card) {
-            mDescription = String.format(getResources().getString(R.string.card_descriptor),
+            mDescription = String.format(getResources().getString(R.string.bt_card_descriptor),
                     ((Card) paymentMethod).getLastTwo());
         } else {
             mDescription = paymentMethod.getDescription();

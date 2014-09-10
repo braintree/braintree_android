@@ -23,7 +23,7 @@ public class CustomFormActivity extends Activity implements PaymentMethodNonceLi
         super.onCreate(onSaveInstanceState);
         setContentView(R.layout.custom);
 
-        mPaymentButton = (PaymentButton) findViewById(R.id.payment_button);
+        mPaymentButton = (PaymentButton) findViewById(R.id.bt_payment_button);
         mCardNumber = (EditText) findViewById(R.id.card_number);
         mExpirationDate = (EditText) findViewById(R.id.card_expiration_date);
 

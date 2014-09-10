@@ -1,7 +1,7 @@
 <resources>
     <color name="bt_white">#FFFFFF</color>
     <color name="bt_white_pressed">#F2F2F2</color>
-    <color name="base_background">#F3F4F6</color>
+    <color name="bt_base_background">#F3F4F6</color>
     <color name="bt_black">#001129</color>
     <color name="bt_red">#DD5555</color>
     <color name="bt_blue">#009BDE</color>
@@ -9,7 +9,7 @@
     <color name="bt_light_gray">#8E8E8E</color>
     <color name="bt_very_light_gray">#E2E2E3</color>
     <color name="bt_button_disabled_color">#99999A</color>
-    <color name="paypal_button_background">#009BDE</color>
-    <color name="paypal_button_background_hover">#0C8DC4</color>
-    <color name="border_color">#99999A</color>
+    <color name="bt_paypal_button_background">#009BDE</color>
+    <color name="bt_paypal_button_background_pressed">#0C8DC4</color>
+    <color name="bt_border_color">#99999A</color>
 </resources>

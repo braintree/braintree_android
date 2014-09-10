@@ -1,0 +1,28 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="Overdraw"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bt_base_background"
+    android:layout_gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <ViewStub
+        style="@style/bt_main_view_controller_container"
+        android:id="@+id/bt_stub_loading_view"
+        android:inflatedId="@+id/bt_inflated_loading_view"
+        android:layout="@layout/bt_loading_view" />
+
+    <ViewStub
+        style="@style/bt_main_view_controller_container"
+        android:id="@+id/bt_stub_payment_methods_list"
+        android:inflatedId="@+id/bt_inflated_payment_methods_list"
+        android:layout="@layout/bt_payment_methods_list" />
+
+    <ViewStub
+        style="@style/bt_main_view_controller_container"
+        android:id="@+id/bt_stub_payment_method_form"
+        android:inflatedId="@+id/bt_inflated_payment_method_form"
+        android:layout="@layout/bt_payment_method_form" />
+
+</LinearLayout>

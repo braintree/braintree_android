@@ -30,7 +30,7 @@ public class PaymentButtonTest extends AndroidTestCase {
 
     public void testNotInflatedByDefault() {
         PaymentButton button = new PaymentButton(getContext());
-        assertNull(button.findViewById(R.id.paypal_button));
+        assertNull(button.findViewById(R.id.bt_paypal_button));
     }
 
     public void testNotVisibleWhenNoMethodsAreEnabled() {
@@ -49,9 +49,9 @@ public class PaymentButtonTest extends AndroidTestCase {
 
         button.initialize(mActivity, mBraintree);
         assertEquals(View.VISIBLE, button.getVisibility());
-        assertEquals(View.VISIBLE, button.findViewById(R.id.paypal_button).getVisibility());
-        assertEquals(View.GONE, button.findViewById(R.id.venmo_button).getVisibility());
-        assertEquals(View.GONE, button.findViewById(R.id.payment_button_divider).getVisibility());
+        assertEquals(View.VISIBLE, button.findViewById(R.id.bt_paypal_button).getVisibility());
+        assertEquals(View.GONE, button.findViewById(R.id.bt_venmo_button).getVisibility());
+        assertEquals(View.GONE, button.findViewById(R.id.bt_payment_button_divider).getVisibility());
     }
 
     public void testOnlyShowsVenmo() {
@@ -61,9 +61,9 @@ public class PaymentButtonTest extends AndroidTestCase {
 
         button.initialize(mActivity, mBraintree);
         assertEquals(View.VISIBLE, button.getVisibility());
-        assertEquals(View.VISIBLE, button.findViewById(R.id.venmo_button).getVisibility());
-        assertEquals(View.GONE, button.findViewById(R.id.paypal_button).getVisibility());
-        assertEquals(View.GONE, button.findViewById(R.id.payment_button_divider).getVisibility());
+        assertEquals(View.VISIBLE, button.findViewById(R.id.bt_venmo_button).getVisibility());
+        assertEquals(View.GONE, button.findViewById(R.id.bt_paypal_button).getVisibility());
+        assertEquals(View.GONE, button.findViewById(R.id.bt_payment_button_divider).getVisibility());
     }
 
     public void testShowsAllMethodsAndDivider() {
@@ -73,9 +73,9 @@ public class PaymentButtonTest extends AndroidTestCase {
 
         button.initialize(mActivity, mBraintree);
         assertEquals(View.VISIBLE, button.getVisibility());
-        assertEquals(View.VISIBLE, button.findViewById(R.id.venmo_button).getVisibility());
-        assertEquals(View.VISIBLE, button.findViewById(R.id.paypal_button).getVisibility());
-        assertEquals(View.VISIBLE, button.findViewById(R.id.payment_button_divider).getVisibility());
+        assertEquals(View.VISIBLE, button.findViewById(R.id.bt_venmo_button).getVisibility());
+        assertEquals(View.VISIBLE, button.findViewById(R.id.bt_paypal_button).getVisibility());
+        assertEquals(View.VISIBLE, button.findViewById(R.id.bt_payment_button_divider).getVisibility());
     }
 
     public void testStartsPayWithPayPal() {
@@ -84,7 +84,7 @@ public class PaymentButtonTest extends AndroidTestCase {
         PaymentButton button = new PaymentButton(getContext());
 
         button.initialize(mActivity, mBraintree);
-        button.findViewById(R.id.paypal_button).performClick();
+        button.findViewById(R.id.bt_paypal_button).performClick();
         verify(mBraintree).startPayWithPayPal(mActivity, PaymentButton.REQUEST_CODE);
     }
 
@@ -94,7 +94,7 @@ public class PaymentButtonTest extends AndroidTestCase {
         PaymentButton button = new PaymentButton(getContext());
 
         button.initialize(mActivity, mBraintree);
-        button.findViewById(R.id.venmo_button).performClick();
+        button.findViewById(R.id.bt_venmo_button).performClick();
         verify(mBraintree).startPayWithVenmo(mActivity, PaymentButton.REQUEST_CODE);
     }
 

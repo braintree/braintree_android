@@ -97,7 +97,7 @@ public class BraintreePaymentActivity extends Activity implements
         super.onCreate(savedInstanceState);
         mSavedInstanceState = (savedInstanceState != null) ? savedInstanceState : new Bundle();
 
-        setContentView(R.layout.dropin_ui_host);
+        setContentView(R.layout.bt_drop_in_ui);
 
         mCustomization = getCustomization();
         customizeActionBar();
@@ -314,7 +314,7 @@ public class BraintreePaymentActivity extends Activity implements
             ActionBar actionBar = getActionBar();
             if (actionBar != null) {
                 if (TextUtils.isEmpty(mCustomization.getActionBarTitle())) {
-                    actionBar.setTitle(getString(R.string.default_action_bar_text));
+                    actionBar.setTitle(getString(R.string.bt_default_action_bar_text));
                 } else {
                     actionBar.setTitle(mCustomization.getActionBarTitle());
                 }
@@ -382,9 +382,9 @@ public class BraintreePaymentActivity extends Activity implements
      * is not included here since it is included with all views if it is specified.
      */
     private enum StubbedView {
-        LOADING_VIEW(R.id.stub_loading_view, R.id.inflated_loading_view),
-        SELECT_VIEW(R.id.stub_payment_methods_list, R.id.inflated_payment_methods_list),
-        CARD_FORM(R.id.stub_payment_method_form, R.id.inflated_payment_method_form);
+        LOADING_VIEW(R.id.bt_stub_loading_view, R.id.bt_inflated_loading_view),
+        SELECT_VIEW(R.id.bt_stub_payment_methods_list, R.id.bt_inflated_payment_methods_list),
+        CARD_FORM(R.id.bt_stub_payment_method_form, R.id.bt_inflated_payment_method_form);
 
         private final int mStubbedViewId;
         private final int mInflatedViewId;

@@ -1,30 +1,30 @@
 <resources>
-    <string name="form_pay_with_card_header">Paga con una carta</string>
-    <string name="form_hint_card_number">Numero di carta</string>
-    <string name="form_hint_expiration">Scadenza</string>
-    <string name="form_hint_cvv">CVV</string>
-    <string name="form_hint_postal_code">Codice postale</string>
+    <string name="bt_form_pay_with_card_header">Paga con una carta</string>
+    <string name="bt_form_hint_card_number">Numero di carta</string>
+    <string name="bt_form_hint_expiration">Scadenza</string>
+    <string name="bt_form_hint_cvv">CVV</string>
+    <string name="bt_form_hint_postal_code">Codice postale</string>
 
-    <string name="invalid_card">I dati della carta non sono validi</string>
+    <string name="bt_invalid_card">I dati della carta non sono validi</string>
 
-    <string name="choose_payment_method">Seleziona metodo di pagamento</string>
-    <string name="change_payment_method">Modifica metodo di pagamento</string>
-    <string name="add_new_payment_method">Aggiungi nuovo metodo di pagamento</string>
-    <string name="add_payment_method">Aggiungi metodo di pagamento</string>
+    <string name="bt_choose_payment_method">Seleziona metodo di pagamento</string>
+    <string name="bt_change_payment_method">Modifica metodo di pagamento</string>
+    <string name="bt_add_new_payment_method">Aggiungi nuovo metodo di pagamento</string>
+    <string name="bt_add_payment_method">Aggiungi metodo di pagamento</string>
 
-    <string name="default_submit_button_text">Acquisto</string>
-    <string name="default_action_bar_text">Acquisto</string>
+    <string name="bt_default_submit_button_text">Acquisto</string>
+    <string name="bt_default_action_bar_text">Acquisto</string>
 
     <!-- Note: %s is a place holder and should be left in translated strings -->
-    <string name="card_descriptor">le cui ultime cifre sono %s</string>
+    <string name="bt_card_descriptor">le cui ultime cifre sono %s</string>
 
-    <string name="descriptor_visa">Visa</string>
-    <string name="descriptor_mastercard">MasterCard</string>
-    <string name="descriptor_amex">Amex (American Express)</string>
-    <string name="descriptor_jcb">JCB</string>
-    <string name="descriptor_discover">Discover</string>
-    <string name="descriptor_diners">Diners</string>
-    <string name="descriptor_maestro">Maestro</string>
-    <string name="descriptor_paypal">PayPal</string>
-    <string name="descriptor_unknown">Carta</string>
+    <string name="bt_descriptor_visa">Visa</string>
+    <string name="bt_descriptor_mastercard">MasterCard</string>
+    <string name="bt_descriptor_amex">Amex (American Express)</string>
+    <string name="bt_descriptor_jcb">JCB</string>
+    <string name="bt_descriptor_discover">Discover</string>
+    <string name="bt_descriptor_diners">Diners</string>
+    <string name="bt_descriptor_maestro">Maestro</string>
+    <string name="bt_descriptor_paypal">PayPal</string>
+    <string name="bt_descriptor_unknown">Carta</string>
 </resources>

@@ -90,13 +90,13 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
                 .perform(typeText("123"), closeSoftKeyboard(), waitForKeyboardToClose());
         onView(withHint("Postal Code")).perform(typeText("12345"), closeSoftKeyboard(),
                 waitForKeyboardToClose());
-        onView(withId(R.id.card_form_complete_button)).perform(click());
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
-        waitForView(withId(R.id.header_status_icon));
+        waitForView(withId(R.id.bt_header_status_icon));
 
-        LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(R.id.header_container);
+        LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(R.id.bt_header_container);
         assertEquals(HeaderState.SUCCESS, loadingHeader.getCurrentState());
-        onView(withId(R.id.header_container)).check(matches(isDisplayed()));
+        onView(withId(R.id.bt_header_container)).check(matches(isDisplayed()));
 
         waitForActivity(activity);
 
@@ -140,9 +140,9 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForAddPaymentFormHeader();
         onView(withHint("Card Number")).perform(typeText("4111111111111111"));
         onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withId(R.id.card_form_cvv)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.card_form_postal_code)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.card_form_complete_button)).perform(click());
+        onView(withId(R.id.bt_card_form_cvv)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bt_card_form_postal_code)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
         waitForActivity(activity);
 
@@ -164,7 +164,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withHint("CVV"))
                 .check(thereIsNoIconHint())
                 .perform(click())
-                .check(theIconHintIs(R.drawable.ic_cvv_highlighted))
+                .check(theIconHintIs(R.drawable.bt_cvv_highlighted))
                 .perform(typeText("123"), closeSoftKeyboard(), waitForKeyboardToClose());
         onView(withHint("Postal Code")).perform(typeText("12345"));
         onView(withHint("CVV"))
@@ -177,9 +177,9 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForAddPaymentFormHeader();
         fillInPayPal();
 
-        onView(withId(R.id.payment_method_description)).check(
+        onView(withId(R.id.bt_payment_method_description)).check(
                 matches(withText("bt_buyer_us@paypal.com")));
-        onView(withId(R.id.select_payment_method_button)).perform(click());
+        onView(withId(R.id.bt_select_payment_method_submit_button)).perform(click());
 
         waitForActivity(activity);
 
@@ -207,7 +207,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreeTestUtils.setUpActivityTest(this);
         getActivity();
 
-        waitForView(withId(R.id.paypal_button)).perform(click());
+        waitForView(withId(R.id.bt_paypal_button)).perform(click());
 
         waitForView(withHint("Email"));
         onView(withHint("Email")).perform(typeText("bt_buyer_us@paypal.com"));
@@ -218,7 +218,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withText("Agree")).perform(click());
 
         waitForPaymentMethodList(TEN_SECONDS);
-        assertSelectedPaymentMethodIs(R.string.descriptor_paypal);
+        assertSelectedPaymentMethodIs(R.string.bt_descriptor_paypal);
     }
 
     public void testDisplaysLoadingViewWhileCreatingAPayPalAccount() {
@@ -227,7 +227,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();
 
-        waitForView(withId(R.id.paypal_button), 8000).perform(click());
+        waitForView(withId(R.id.bt_paypal_button), 8000).perform(click());
 
         waitForView(withHint("Email"));
         onView(withHint("Email")).perform(typeText("bt_buyer_us@paypal.com"));
@@ -237,9 +237,9 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForView(withText("Agree"));
         onView(withText("Agree")).perform(click());
 
-        waitForView(allOf(withId(R.id.loading_spinner), isDescendantOfA(withId(R.id.inflated_loading_view))))
+        waitForView(allOf(withId(R.id.bt_loading_progress_bar), isDescendantOfA(withId(R.id.bt_inflated_loading_view))))
                 .check(matches(isDisplayed()));
-        onView(withId(R.id.form_header)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bt_card_form_header)).check(matches(not(isDisplayed())));
 
         waitForPaymentMethodList().check(matches(isDisplayed()));
     }
@@ -256,12 +256,12 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withHint("CVV")).perform(typeText("123"), closeSoftKeyboard(),
                 waitForKeyboardToClose());
         onView(withHint("Postal Code")).perform(typeText("12345"));
-        onView(withId(R.id.card_form_complete_button)).perform(click());
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
-        Button submitButton = (Button) activity.findViewById(R.id.card_form_complete_button);
+        Button submitButton = (Button) activity.findViewById(R.id.bt_card_form_submit_button);
         assertFalse(submitButton.isEnabled());
 
-        onView(withId(R.id.card_form_card_number)).perform(click());
+        onView(withId(R.id.bt_card_form_card_number)).perform(click());
         assertFalse(submitButton.isEnabled());
 
         waitForActivity(activity);
@@ -284,14 +284,14 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
         waitForAddPaymentFormHeader();
 
-        onView(withId(R.id.card_form_card_number)).perform(typeText("4111111111111111"));
-        onView(withId(R.id.card_form_expiration)).perform(typeText("12/19"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withId(R.id.card_form_cvv)).perform(typeText("200"));
-        onView(withId(R.id.card_form_complete_button)).perform(click());
+        onView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"));
+        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("12/19"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onView(withId(R.id.bt_card_form_cvv)).perform(typeText("200"));
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
-        onView(withId(R.id.card_form_complete_button)).check(matches(not(isEnabled())));
-        waitForView(withId(R.id.card_form_complete_button), isEnabled());
-        onView(withId(R.id.card_form_complete_button)).check(matches(isEnabled()));
+        onView(withId(R.id.bt_card_form_submit_button)).check(matches(not(isEnabled())));
+        waitForView(withId(R.id.bt_card_form_submit_button), isEnabled());
+        onView(withId(R.id.bt_card_form_submit_button)).check(matches(isEnabled()));
     }
 
     public void testPayPalButtonIsNotShownIfPayPalIsNotSupported() {
@@ -300,7 +300,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
         waitForAddPaymentFormHeader();
         SystemClock.sleep(50);
-        onView(withId(R.id.paypal_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bt_paypal_button)).check(matches(not(isDisplayed())));
     }
 
     public void testBackButtonExitsTheActivityIfThereAreNoPaymentMethodsToSelectFrom() {
@@ -318,7 +318,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreeTestUtils.setUpActivityTest(this);
         getActivity();
 
-        waitForView(withId(R.id.paypal_button)).perform(click());
+        waitForView(withId(R.id.bt_paypal_button)).perform(click());
         waitForView(withHint("Email")).check(matches(isDisplayed())).perform(closeSoftKeyboard(),
                 waitForKeyboardToClose());
         sendKeys(KeyEvent.KEYCODE_BACK);
@@ -338,11 +338,11 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withHint("CVV")).perform(typeText("123"), closeSoftKeyboard(),
                 waitForKeyboardToClose());
         onView(withHint("Postal Code")).perform(typeText("12345"));
-        onView(withId(R.id.card_form_complete_button)).perform(click());
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
-        onView(withId(R.id.header_container)).check(matches(isDisplayed()));
+        onView(withId(R.id.bt_header_container)).check(matches(isDisplayed()));
         sendKeys(KeyEvent.KEYCODE_BACK);
-        onView(withId(R.id.header_container)).check(matches(isDisplayed()));
+        onView(withId(R.id.bt_header_container)).check(matches(isDisplayed()));
     }
 
     public void testBackButtonDuringPayPalAddDoesNothing() {
@@ -351,7 +351,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();
 
-        waitForView(withId(R.id.paypal_button), TEN_SECONDS).perform(click());
+        waitForView(withId(R.id.bt_paypal_button), TEN_SECONDS).perform(click());
 
         waitForView(withHint("Email"));
         onView(withHint("Email")).perform(typeText("bt_buyer_us@paypal.com"));
@@ -360,12 +360,12 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForView(withText("Agree"));
         onView(withText("Agree")).perform(click());
 
-        waitForView(allOf(withId(R.id.loading_spinner),
-                isDescendantOfA(withId(R.id.inflated_loading_view))))
+        waitForView(allOf(withId(R.id.bt_loading_progress_bar),
+                isDescendantOfA(withId(R.id.bt_inflated_loading_view))))
                 .check(matches(isDisplayed()));
         sendKeys(KeyEvent.KEYCODE_BACK);
-        onView(allOf(withId(R.id.loading_spinner),
-                isDescendantOfA(withId(R.id.inflated_loading_view))))
+        onView(allOf(withId(R.id.bt_loading_progress_bar),
+                isDescendantOfA(withId(R.id.bt_inflated_loading_view))))
                 .check(matches(isDisplayed()));
     }
 
@@ -386,7 +386,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         fillInPayPal();
 
         assertFalse("Expected up not to be present on action bar", checkHomeAsUpEnabled(activity));
-        onView(withId(R.id.change_payment_method_link)).perform(click());
+        onView(withId(R.id.bt_change_payment_method_link)).perform(click());
 
         assertTrue("Expected up to be present on action bar", checkHomeAsUpEnabled(activity));
     }
@@ -396,19 +396,19 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForView(withHint("Card Number"))
-                .check(theIconHintIs(R.drawable.ic_card_highlighted))
-                .perform(typeText("4")).check(theIconHintIs(R.drawable.ic_visa))
+                .check(theIconHintIs(R.drawable.bt_card_highlighted))
+                .perform(typeText("4")).check(theIconHintIs(R.drawable.bt_visa))
                 .perform(clearText())
-                .perform(typeText("51")).check(theIconHintIs(R.drawable.ic_mastercard))
+                .perform(typeText("51")).check(theIconHintIs(R.drawable.bt_mastercard))
                 .perform(clearText())
-                .perform(typeText("37")).check(theIconHintIs(R.drawable.ic_amex))
+                .perform(typeText("37")).check(theIconHintIs(R.drawable.bt_amex))
                 .perform(clearText())
-                .perform(typeText("35")).check(theIconHintIs(R.drawable.ic_jcb))
+                .perform(typeText("35")).check(theIconHintIs(R.drawable.bt_jcb))
                 .perform(clearText())
-                .perform(typeText("5018")).check(theIconHintIs(R.drawable.ic_maestro))
+                .perform(typeText("5018")).check(theIconHintIs(R.drawable.bt_maestro))
                 .perform(clearText())
                 .perform(typeText("1234"))
-                .check(theIconHintIs(R.drawable.ic_card_highlighted));
+                .check(theIconHintIs(R.drawable.bt_card_highlighted));
     }
 
     public void testDisplaysAnErrorWhenCardNumberFailsOnServer()
@@ -423,20 +423,20 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreePaymentActivity activity = getActivity();
 
         waitForAddPaymentFormHeader();
-        onView(withId(R.id.card_form_card_number)).perform(typeText("4111111111111111"));
-        onView(withId(R.id.card_form_expiration)).perform(typeText("0719"));
+        onView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"));
+        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("0719"));
 
-        onView(withId(R.id.card_form_complete_button)).perform(click());
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
-        waitForView(withId(R.id.card_form_complete_button), isEnabled());
+        waitForView(withId(R.id.bt_card_form_submit_button), isEnabled());
 
-        BraintreeEditText editText = (BraintreeEditText) activity.findViewById(R.id.card_form_card_number);
+        BraintreeEditText editText = (BraintreeEditText) activity.findViewById(R.id.bt_card_form_card_number);
         assertTrue(editText.isError());
         assertTrue(editText.isFocused());
 
-        LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(R.id.header_container);
+        LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(R.id.bt_header_container);
         assertEquals(HeaderState.ERROR, loadingHeader.getCurrentState());
-        onView(withId(R.id.header_container)).check(matches(isDisplayed()));
+        onView(withId(R.id.bt_header_container)).check(matches(isDisplayed()));
     }
 
     public void testDisplaysAnErrorWhenExpirationFailsOnServer()
@@ -450,19 +450,19 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         BraintreePaymentActivity activity = getActivity();
 
-        waitForView(withId(R.id.card_form_card_number)).perform(typeText("4111111111111111"));
-        onView(withId(R.id.card_form_expiration)).perform(typeText("08/15"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withId(R.id.card_form_complete_button)).perform(click());
+        waitForView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"));
+        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("08/15"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
-        waitForView(withId(R.id.card_form_complete_button), isEnabled());
+        waitForView(withId(R.id.bt_card_form_submit_button), isEnabled());
 
-        BraintreeEditText editText = (BraintreeEditText) activity.findViewById(R.id.card_form_expiration);
+        BraintreeEditText editText = (BraintreeEditText) activity.findViewById(R.id.bt_card_form_expiration);
         assertTrue(editText.isError());
         assertTrue(editText.isFocused());
 
-        LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(R.id.header_container);
+        LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(R.id.bt_header_container);
         assertEquals(HeaderState.ERROR, loadingHeader.getCurrentState());
-        onView(withId(R.id.header_container)).check(matches(isDisplayed()));
+        onView(withId(R.id.bt_header_container)).check(matches(isDisplayed()));
     }
 
     public void testDisplaysAnErrorWhenPostalCodeFailsOnServer() {
@@ -470,21 +470,21 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
                 new TestClientTokenBuilder().withPostalCodeVerification().build());
         BraintreePaymentActivity activity = getActivity();
 
-        waitForView(withId(R.id.card_form_card_number)).perform(typeText("4111111111111111"));
-        onView(withId(R.id.card_form_expiration)).perform(typeText("08/15"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withId(R.id.card_form_cvv)).perform(typeText("123"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withId(R.id.card_form_postal_code)).perform(typeText("20000"));
-        onView(withId(R.id.card_form_complete_button)).perform(click());
+        waitForView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"));
+        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("08/15"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onView(withId(R.id.bt_card_form_cvv)).perform(typeText("123"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onView(withId(R.id.bt_card_form_postal_code)).perform(typeText("20000"));
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
-        waitForView(withId(R.id.card_form_complete_button), isEnabled());
+        waitForView(withId(R.id.bt_card_form_submit_button), isEnabled());
 
-        BraintreeEditText editText = (BraintreeEditText) activity.findViewById(R.id.card_form_postal_code);
+        BraintreeEditText editText = (BraintreeEditText) activity.findViewById(R.id.bt_card_form_postal_code);
         assertTrue(editText.isError());
         assertTrue(editText.isFocused());
 
-        LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(R.id.header_container);
+        LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(R.id.bt_header_container);
         assertEquals(HeaderState.ERROR, loadingHeader.getCurrentState());
-        onView(withId(R.id.header_container)).check(matches(isDisplayed()));
+        onView(withId(R.id.bt_header_container)).check(matches(isDisplayed()));
     }
 
     public void testReturnsUnexpectedErrorWhenServerReturnsNonCreditCardError() {
@@ -493,12 +493,12 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         setUpActivityTest(this, clientToken);
         BraintreePaymentActivity activity = getActivity();
 
-        waitForView(withId(R.id.card_form_card_number)).perform(typeText("4111111111111111"));
+        waitForView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"));
         onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard(), waitForKeyboardToClose());
         onView(withHint("CVV")) .perform(typeText("123"), closeSoftKeyboard(), waitForKeyboardToClose());
         onView(withHint("Postal Code")).perform(typeText("12345"));
 
-        onView(withId(R.id.card_form_complete_button)).perform(click());
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
         waitForActivity(activity);
 
         Map<String, Object> result = BraintreeTestUtils.getActivityResult(activity);
@@ -511,8 +511,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         getActivity();
         waitForAddPaymentFormHeader();
 
-        onView(withId(R.id.card_form_card_number)).perform(typeText("1"));
-        onView(withId(R.id.card_form_complete_button)).check(matches(isEnabled()));
+        onView(withId(R.id.bt_card_form_card_number)).perform(typeText("1"));
+        onView(withId(R.id.bt_card_form_submit_button)).check(matches(isEnabled()));
     }
 
     public void testCvvAndPostalCodeFieldsAreNotShownIfChallengesAreNotPresent() {
@@ -526,8 +526,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         getActivity();
         waitForAddPaymentFormHeader();
 
-        onView(withId(R.id.card_form_cvv)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.card_form_postal_code)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bt_card_form_cvv)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bt_card_form_postal_code)).check(matches(not(isDisplayed())));
     }
 
     public void testCvvAndPostalCodeFieldsAreShownIfChallengesArePresent() {
@@ -537,8 +537,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         getActivity();
         waitForAddPaymentFormHeader();
 
-        onView(withId(R.id.card_form_cvv)).check(matches(isDisplayed()));
-        onView(withId(R.id.card_form_postal_code)).check(matches(isDisplayed()));
+        onView(withId(R.id.bt_card_form_cvv)).check(matches(isDisplayed()));
+        onView(withId(R.id.bt_card_form_postal_code)).check(matches(isDisplayed()));
     }
 
     public void testErrorIsShownWhenCvvDoesNotMatchForCvvVerificationMerchants() {
@@ -553,16 +553,16 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withHint("CVV")) .perform(typeText("200"), closeSoftKeyboard(), waitForKeyboardToClose());
         onView(withHint("Postal Code")).perform(typeText("20000"));
 
-        onView(withId(R.id.card_form_complete_button)).perform(click());
-        waitForView(withId(R.id.header_message));
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
+        waitForView(withId(R.id.bt_header_message));
 
-        BraintreeEditText editText = (BraintreeEditText) activity.findViewById(R.id.card_form_cvv);
+        BraintreeEditText editText = (BraintreeEditText) activity.findViewById(R.id.bt_card_form_cvv);
         assertTrue(editText.isError());
         assertTrue(editText.isFocused());
 
-        LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(R.id.header_container);
+        LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(R.id.bt_header_container);
         assertEquals(HeaderState.ERROR, loadingHeader.getCurrentState());
-        onView(withId(R.id.header_container)).check(matches(isDisplayed()));
+        onView(withId(R.id.bt_header_container)).check(matches(isDisplayed()));
     }
 
     public void testErrorIsShownWhenPostalCodeDoesNotMatchForPostalCodeVerificationMerchants() {
@@ -577,16 +577,16 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withHint("CVV")) .perform(typeText("200"), closeSoftKeyboard(), waitForKeyboardToClose());
         onView(withHint("Postal Code")).perform(typeText("20000"));
 
-        onView(withId(R.id.card_form_complete_button)).perform(click());
-        waitForView(withId(R.id.header_message));
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
+        waitForView(withId(R.id.bt_header_message));
 
-        BraintreeEditText editText = (BraintreeEditText) activity.findViewById(R.id.card_form_postal_code);
+        BraintreeEditText editText = (BraintreeEditText) activity.findViewById(R.id.bt_card_form_postal_code);
         assertTrue(editText.isError());
         assertTrue(editText.isFocused());
 
-        LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(R.id.header_container);
+        LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(R.id.bt_header_container);
         assertEquals(HeaderState.ERROR, loadingHeader.getCurrentState());
-        onView(withId(R.id.header_container)).check(matches(isDisplayed()));
+        onView(withId(R.id.bt_header_container)).check(matches(isDisplayed()));
     }
 
     public void testErrorIsShownWhenCvvAndPostalCodeDoesNotMatchForCvvAndPostalCodeVerificationMerchants() {
@@ -603,19 +603,19 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
                 waitForKeyboardToClose());
         onView(withHint("Postal Code")).perform(typeText("20000"));
 
-        onView(withId(R.id.card_form_complete_button)).perform(click());
-        waitForView(withId(R.id.header_message));
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
+        waitForView(withId(R.id.bt_header_message));
 
-        BraintreeEditText cvvCode = (BraintreeEditText) activity.findViewById(R.id.card_form_cvv);
-        BraintreeEditText postalCode = (BraintreeEditText) activity.findViewById(R.id.card_form_postal_code);
+        BraintreeEditText cvvCode = (BraintreeEditText) activity.findViewById(R.id.bt_card_form_cvv);
+        BraintreeEditText postalCode = (BraintreeEditText) activity.findViewById(R.id.bt_card_form_postal_code);
 
         assertTrue(cvvCode.isError());
         assertTrue(postalCode.isError());
         assertTrue(cvvCode.isFocused());
 
-        LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(R.id.header_container);
+        LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(R.id.bt_header_container);
         assertEquals(HeaderState.ERROR, loadingHeader.getCurrentState());
-        onView(withId(R.id.header_container)).check(matches(isDisplayed()));
+        onView(withId(R.id.bt_header_container)).check(matches(isDisplayed()));
     }
 
     public void testIsSuccessfulWhenCvvAndPostalCodeMatchForCvvAndPostalCodeVerificationMerchants()
@@ -634,7 +634,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForAddPaymentFormHeader();
 
         assertEquals(EditorInfo.IME_ACTION_GO,
-                ((TextView) activity.findViewById(R.id.card_form_expiration)).getImeOptions());
+                ((TextView) activity.findViewById(R.id.bt_card_form_expiration)).getImeOptions());
     }
 
     public void testSetsIMEActionAsGoForCvvIfCvvIsPresentAndPostalIsNot() {
@@ -645,9 +645,9 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForAddPaymentFormHeader();
 
         assertEquals(EditorInfo.IME_ACTION_NEXT,
-                ((TextView) activity.findViewById(R.id.card_form_expiration)).getImeOptions());
+                ((TextView) activity.findViewById(R.id.bt_card_form_expiration)).getImeOptions());
         assertEquals(EditorInfo.IME_ACTION_GO,
-                ((TextView) activity.findViewById(R.id.card_form_cvv)).getImeOptions());
+                ((TextView) activity.findViewById(R.id.bt_card_form_cvv)).getImeOptions());
     }
 
     public void testSetsIMEActionAsGoForPostalAndNextForExpirationIfCvvIsNotPresent() {
@@ -658,9 +658,9 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForAddPaymentFormHeader();
 
         assertEquals(EditorInfo.IME_ACTION_NEXT,
-                ((TextView) activity.findViewById(R.id.card_form_expiration)).getImeOptions());
+                ((TextView) activity.findViewById(R.id.bt_card_form_expiration)).getImeOptions());
         assertEquals(EditorInfo.IME_ACTION_GO,
-                ((TextView) activity.findViewById(R.id.card_form_postal_code)).getImeOptions());
+                ((TextView) activity.findViewById(R.id.bt_card_form_postal_code)).getImeOptions());
     }
 
     public void testSetsIMEActionAsGoForPostalCodeIfCvvAndPostalArePresent() {
@@ -670,11 +670,11 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForAddPaymentFormHeader();
 
         assertEquals(EditorInfo.IME_ACTION_NEXT,
-                ((TextView) activity.findViewById(R.id.card_form_expiration)).getImeOptions());
+                ((TextView) activity.findViewById(R.id.bt_card_form_expiration)).getImeOptions());
         assertEquals(EditorInfo.IME_ACTION_NEXT,
-                ((TextView) activity.findViewById(R.id.card_form_cvv)).getImeOptions());
+                ((TextView) activity.findViewById(R.id.bt_card_form_cvv)).getImeOptions());
         assertEquals(EditorInfo.IME_ACTION_GO,
-                ((TextView) activity.findViewById(R.id.card_form_postal_code)).getImeOptions());
+                ((TextView) activity.findViewById(R.id.bt_card_form_postal_code)).getImeOptions());
     }
 
     private ViewAssertion thereIsNoIconHint() {

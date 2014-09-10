@@ -82,7 +82,7 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
         mBraintree = braintree;
         mRequestCode = requestCode;
 
-        inflate(getContext(), R.layout.payment_button, this);
+        inflate(getContext(), R.layout.bt_payment_button, this);
 
         boolean isPayPalEnabled = mBraintree.isPayPalEnabled();
         boolean isVenmoEnabled = mBraintree.isVenmoEnabled();
@@ -91,28 +91,28 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
             setVisibility(GONE);
         } else {
             if (isPayPalEnabled) {
-                ImageButton paypalButton = (ImageButton) findViewById(R.id.paypal_button);
+                ImageButton paypalButton = (ImageButton) findViewById(R.id.bt_paypal_button);
                 paypalButton.setVisibility(VISIBLE);
                 paypalButton.setOnClickListener(this);
             }
 
             if (isVenmoEnabled) {
-                ImageButton venmoButton = (ImageButton) findViewById(R.id.venmo_button);
+                ImageButton venmoButton = (ImageButton) findViewById(R.id.bt_venmo_button);
                 venmoButton.setVisibility(VISIBLE);
                 venmoButton.setOnClickListener(this);
             }
 
             if (isPayPalEnabled && isVenmoEnabled) {
-                findViewById(R.id.payment_button_divider).setVisibility(VISIBLE);
+                findViewById(R.id.bt_payment_button_divider).setVisibility(VISIBLE);
             }
         }
     }
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.paypal_button) {
+        if (v.getId() == R.id.bt_paypal_button) {
             mBraintree.startPayWithPayPal(mActivity, mRequestCode);
-        } else if (v.getId() == R.id.venmo_button) {
+        } else if (v.getId() == R.id.bt_venmo_button) {
             mBraintree.startPayWithVenmo(mActivity, mRequestCode);
         }
     }

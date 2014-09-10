@@ -36,7 +36,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForAddPaymentFormHeader();
-        onView(withId(R.id.primary_description)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bt_primary_description)).check(matches(not(isDisplayed())));
     }
 
     public void testSubmitButtonUsesDefaultTextIfNoCustomizationProvided() {
@@ -46,7 +46,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForAddPaymentFormHeader();
-        onView(withId(R.id.card_form_complete_button)).check(matches(withText(R.string.default_submit_button_text)));
+        onView(withId(R.id.bt_card_form_submit_button)).check(matches(withText(R.string.bt_default_submit_button_text)));
     }
 
     public void testSubmitButtonUsesCustomizationForCardFormIfIncludedAsAnExtra() {
@@ -61,7 +61,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForAddPaymentFormHeader();
-        onView(withId(R.id.card_form_complete_button)).check(matches(withText("Subscribe - $19")));
+        onView(withId(R.id.bt_card_form_submit_button)).check(matches(withText("Subscribe - $19")));
     }
 
     public void testSubmitButtonUsesCustomizationForSelectPaymentMethodIfIncludedAsAnExtra()
@@ -83,7 +83,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForPaymentMethodList();
-        onView(withId(R.id.select_payment_method_button)).check(matches(withText("Subscribe - $19")));
+        onView(withId(R.id.bt_select_payment_method_submit_button)).check(matches(withText("Subscribe - $19")));
     }
 
     public void testDescriptionsAreDisplayedIfIncludedAsAnExtra() {
@@ -99,10 +99,10 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         setActivityIntent(intent);
         getActivity();
 
-        waitForView(withId(R.id.primary_description)).check(matches(withText("Hello, World!")));
-        onView(withId(R.id.secondary_description)).check(matches(withText("Some stuffz")));
-        onView(withId(R.id.description_amount)).check(matches(withText("$1,000,000,000.00")));
-        onView(withId(R.id.card_form_complete_button)).check(matches(withText(
+        waitForView(withId(R.id.bt_primary_description)).check(matches(withText("Hello, World!")));
+        onView(withId(R.id.bt_secondary_description)).check(matches(withText("Some stuffz")));
+        onView(withId(R.id.bt_description_amount)).check(matches(withText("$1,000,000,000.00")));
+        onView(withId(R.id.bt_card_form_submit_button)).check(matches(withText(
                 endsWith("$1,000,000,000.00"))));
     }
 
@@ -118,7 +118,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForAddPaymentFormHeader();
-        onView(withId(R.id.card_form_complete_button)).check(matches(withText("Purchase - $19")));
+        onView(withId(R.id.bt_card_form_submit_button)).check(matches(withText("Purchase - $19")));
     }
 
     @TargetApi(VERSION_CODES.HONEYCOMB)

@@ -35,7 +35,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
         setUpActivityTest(this, clientToken);
         mActivity = getActivity();
 
-        waitForView(withId(R.id.form_header));
+        waitForView(withId(R.id.bt_card_form_header));
     }
 
     public void testReturnsDeveloperErrorOnAuthenticationException() {

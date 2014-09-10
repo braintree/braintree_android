@@ -6,20 +6,20 @@
     android:layout_width="match_parent">
 
     <com.braintreepayments.api.dropin.view.LoadingHeader
-        android:id="@+id/header_container"
+        android:id="@+id/bt_header_container"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/header_container_height"
+        android:layout_height="@dimen/bt_header_container_height"
         android:layout_alignParentTop="true"
         android:visibility="gone" />
 
     <ScrollView
         tools:ignore="UnusedAttribute"
-        android:id="@+id/form_scroll_container"
+        android:id="@+id/bt_form_scroll_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/header_container"
+        android:layout_below="@id/bt_header_container"
         android:layout_alignWithParentIfMissing="true"
-        android:layout_above="@id/card_form_complete_button"
+        android:layout_above="@id/bt_card_form_submit_button"
         android:fillViewport="true"
         android:overScrollMode="never">
 
@@ -28,36 +28,36 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <include layout="@layout/payment_description" />
+            <include layout="@layout/bt_payment_description" />
 
             <com.braintreepayments.api.dropin.view.PaymentButton
-                android:id="@+id/payment_button"
+                android:id="@+id/bt_payment_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/form_padding" />
+                android:layout_marginTop="@dimen/bt_form_padding" />
 
             <TextView
-                style="@style/base_bt_textview_bold"
-                android:id="@+id/form_header"
+                style="@style/bt_base_textview_bold"
+                android:id="@+id/bt_card_form_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/form_padding"
-                android:layout_marginLeft="@dimen/form_padding"
-                android:layout_marginRight="@dimen/form_padding"
-                android:text="@string/form_pay_with_card_header"
+                android:layout_marginTop="@dimen/bt_form_padding"
+                android:layout_marginLeft="@dimen/bt_form_padding"
+                android:layout_marginRight="@dimen/bt_form_padding"
+                android:text="@string/bt_form_pay_with_card_header"
                 android:textColor="@color/bt_black"
                 android:layout_marginBottom="4dp" />
 
             <View
-                android:id="@+id/form_header_bar"
+                android:id="@+id/bt_card_form_header_bar"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginLeft="@dimen/form_padding"
-                android:layout_marginRight="@dimen/form_padding"
+                android:layout_marginLeft="@dimen/bt_form_padding"
+                android:layout_marginRight="@dimen/bt_form_padding"
                 android:layout_marginBottom="8dp"
                 android:background="@color/bt_black" />
 
-            <include layout="@layout/card_form_fields" />
+            <include layout="@layout/bt_card_form_fields" />
 
             <View
                 android:layout_width="wrap_content"
@@ -66,6 +66,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <include layout="@layout/form_submit_button" />
+    <include layout="@layout/bt_form_submit_button" />
 
 </RelativeLayout>

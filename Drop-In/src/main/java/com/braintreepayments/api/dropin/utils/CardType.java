@@ -12,39 +12,39 @@ import java.util.regex.Pattern;
 public enum CardType {
 
     VISA("^4\\d*",
-            R.drawable.ic_visa,
+            R.drawable.bt_visa,
             16, 16,
             3),
     MASTERCARD("^5[1-5]\\d*",
-            R.drawable.ic_mastercard,
+            R.drawable.bt_mastercard,
             16, 16,
             3),
     DISCOVER("^(6011|65|64[4-9]|622)\\d*",
-            R.drawable.ic_discover,
+            R.drawable.bt_discover,
             16, 16,
             3),
     AMEX("^3[47]\\d*",
-            R.drawable.ic_amex,
+            R.drawable.bt_amex,
             15, 15,
             4),
     DINERS_CLUB("^(36|38|30[0-5])\\d*",
-            R.drawable.ic_diners,
+            R.drawable.bt_diners,
             14, 14,
             3),
     JCB("^35\\d*",
-            R.drawable.ic_jcb,
+            R.drawable.bt_jcb,
             16, 16,
             3),
     MAESTRO("^(5018|5020|5038|6304|6759|676[1-3])\\d*",
-            R.drawable.ic_maestro,
+            R.drawable.bt_maestro,
             12, 19,
             3),
     UNION_PAY("^62\\d*",
-            R.drawable.ic_card_highlighted,
+            R.drawable.bt_card_highlighted,
             16, 19,
             3),
     UNKNOWN("",
-            R.drawable.ic_card_highlighted,
+            R.drawable.bt_card_highlighted,
             12, 19,
             3);
 
@@ -85,9 +85,9 @@ public enum CardType {
      */
     public int getSecurityCodeResource() {
         if (this == AMEX) {
-            return R.drawable.ic_cid_highlighted;
+            return R.drawable.bt_cid_highlighted;
         } else {
-            return R.drawable.ic_cvv_highlighted;
+            return R.drawable.bt_cvv_highlighted;
         }
     }
 
