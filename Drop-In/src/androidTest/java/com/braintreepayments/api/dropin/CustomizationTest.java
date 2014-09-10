@@ -24,7 +24,7 @@ import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewA
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDisplayed;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.startsWith;
 
 public class CustomizationTest extends BraintreePaymentActivityTestCase {
 
@@ -61,7 +61,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForAddPaymentFormHeader();
-        onView(withId(R.id.bt_card_form_submit_button)).check(matches(withText("Subscribe - $19")));
+        onView(withId(R.id.bt_card_form_submit_button)).check(matches(withText("$19 - Subscribe")));
     }
 
     public void testSubmitButtonUsesCustomizationForSelectPaymentMethodIfIncludedAsAnExtra()
@@ -83,7 +83,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForPaymentMethodList();
-        onView(withId(R.id.bt_select_payment_method_submit_button)).check(matches(withText("Subscribe - $19")));
+        onView(withId(R.id.bt_select_payment_method_submit_button)).check(matches(withText("$19 - Subscribe")));
     }
 
     public void testDescriptionsAreDisplayedIfIncludedAsAnExtra() {
@@ -103,7 +103,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         onView(withId(R.id.bt_secondary_description)).check(matches(withText("Some stuffz")));
         onView(withId(R.id.bt_description_amount)).check(matches(withText("$1,000,000,000.00")));
         onView(withId(R.id.bt_card_form_submit_button)).check(matches(withText(
-                endsWith("$1,000,000,000.00"))));
+                startsWith("$1,000,000,000.00"))));
     }
 
     public void testDefaultButtonTextIsUsedWhenCustomizationIsPresentWithoutSpecifyingButtonText() {
@@ -118,7 +118,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForAddPaymentFormHeader();
-        onView(withId(R.id.bt_card_form_submit_button)).check(matches(withText("Purchase - $19")));
+        onView(withId(R.id.bt_card_form_submit_button)).check(matches(withText("$19 - Purchase")));
     }
 
     @TargetApi(VERSION_CODES.HONEYCOMB)
