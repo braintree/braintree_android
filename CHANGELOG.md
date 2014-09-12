@@ -1,5 +1,12 @@
 # Braintree Android SDK Release Notes
 
+## 1.2.1
+* Fixes
+  * BraintreeApi release now includes the PayPal SDK again. Sorry!
+* Improvements
+  * All assets are now namespaced to avoid any conflicts on import.
+  * Updated PayPal SDK
+
 ## 1.2.0
 
 * Features
