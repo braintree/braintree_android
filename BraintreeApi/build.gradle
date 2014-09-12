@@ -3,6 +3,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
+def paypalVersion = 'PayPalAndroidSDK-2.5.2.jar'
+
 android {
     compileSdkVersion 19
     buildToolsVersion '20.0.0'
@@ -26,7 +28,7 @@ sdkManager {
 dependencies {
     compile 'com.google.code.gson:gson:[2.2.4,3.0)'
     compile project(':BraintreeData')
-    compile files('libs/PayPalAndroidSDK-2.5.2.jar')
+    compile files('libs/' + paypalVersion)
 
     androidTestCompile project(':TestUtils')
 }
@@ -64,7 +66,7 @@ task releaseJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompil
     from projectDir.path + '/build/intermediates/classes/release/'
     from {
         configurations.compile.findAll {
-            it.getName() == 'PayPalAndroidSDK.jar'
+            it.getName() == paypalVersion
         }.collect {
             it.isDirectory() ? it : zipTree(it)
         }
@@ -77,7 +79,7 @@ task fullJar(type: Jar, dependsOn: releaseJar) {
     from zipTree(releaseJar.archivePath)
     from {
         configurations.compile.findAll {
-            it.getName() != 'PayPalAndroidSDK.jar'
+            it.getName() != paypalVersion
         }.collect {
             it.isDirectory() ? null : zipTree(it)
         }
