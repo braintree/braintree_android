@@ -46,7 +46,7 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
      * Can be overridden by using {@link com.braintreepayments.api.dropin.view.PaymentButton#initialize(android.app.Activity, com.braintreepayments.api.Braintree, int)}
      * instead of {@link com.braintreepayments.api.dropin.view.PaymentButton#initialize(android.app.Activity, com.braintreepayments.api.Braintree)}.
      */
-    public static final int REQUEST_CODE = 82372;
+    public static final int REQUEST_CODE = 11876;
 
     public PaymentButton(Context context) {
         super(context);
