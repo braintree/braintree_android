@@ -40,7 +40,7 @@ public class BraintreeTestUtils {
     /** Returns a {@link String} client token to allow setup to make Gateway calls. */
     public static String setUpActivityTest(
             ActivityInstrumentationTestCase2<BraintreePaymentActivity> testCase) {
-        return setUpActivityTest(testCase, new TestClientTokenBuilder().withPayPal().build());
+        return setUpActivityTest(testCase, new TestClientTokenBuilder().withFakePayPal().build());
     }
 
     public static String setUpActivityTest(

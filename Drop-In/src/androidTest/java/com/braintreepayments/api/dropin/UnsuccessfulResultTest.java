@@ -30,7 +30,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        String clientToken = new TestClientTokenBuilder().withPayPal().build();
+        String clientToken = new TestClientTokenBuilder().build();
         mBraintree = injectBraintree(getInstrumentation().getContext(), clientToken);
         setUpActivityTest(this, clientToken);
         mActivity = getActivity();
@@ -110,6 +110,6 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
         Map<String, Object> result = BraintreeTestUtils.getActivityResult(mActivity);
 
         assertEquals(Activity.RESULT_CANCELED, result.get("resultCode"));
-
     }
+
 }

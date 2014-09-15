@@ -42,9 +42,9 @@ public class ViewHelper {
                 ViewHelper.sWaitingForView = false;
                 return interaction;
             } catch (Exception e) {
-                // noop
+                SystemClock.sleep(20);
             } catch (Error e) {
-                // noop
+                SystemClock.sleep(20);
             }
         } while (System.currentTimeMillis() < endTime);
 

@@ -74,7 +74,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testDisplaysALoadingViewWhileGettingPaymentMethods() {
-        String clientToken = new TestClientTokenBuilder().withPayPal().build();
+        String clientToken = new TestClientTokenBuilder().build();
         injectSlowBraintree(getInstrumentation().getContext(), clientToken, 4000);
         setUpActivityTest(this, clientToken);
         Activity activity = getActivity();
@@ -83,7 +83,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testLoadingPaymentMethodsTimesOutAfterTenSecondsAndDropsToAddPaymentMethodForm() {
-        String clientToken = new TestClientTokenBuilder().withPayPal().build();
+        String clientToken = new TestClientTokenBuilder().build();
         injectSlowBraintree(getInstrumentation().getContext(), clientToken, 11000);
         setUpActivityTest(this, clientToken);
         getActivity();
@@ -93,7 +93,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
 
     public void testFallsBackToAddPaymentMethodFormIfLoadingPaymentMethodsBlowsUp()
             throws UnexpectedException {
-        String clientToken = new TestClientTokenBuilder().withPayPal().build();
+        String clientToken = new TestClientTokenBuilder().build();
         HttpRequest mockRequest = mock(HttpRequest.class);
         when(mockRequest.get(anyString())).thenThrow(new UnexpectedException("Mocked HTTP request"));
         when(mockRequest.post(anyString(), anyString())).thenThrow(new UnexpectedException("Mocked HTTP request"));

@@ -61,6 +61,8 @@ public class BraintreePaymentActivityTestCase extends
                 Log.d("request_screenshot", mTestCase.getClass().getSimpleName() + "#"
                         + mTestCase.getName() + "-" + System.currentTimeMillis());
                 SystemClock.sleep(500);
+            } else {
+                SystemClock.sleep(20);
             }
             mDelegate.handle(error, viewMatcher);
         }

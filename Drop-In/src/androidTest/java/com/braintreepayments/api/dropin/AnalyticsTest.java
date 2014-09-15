@@ -141,7 +141,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
     }
 
     private void setupActivity() {
-        String clientToken = new TestClientTokenBuilder().withPayPal().withAnalytics().build();
+        String clientToken = new TestClientTokenBuilder().withFakePayPal().withAnalytics().build();
         mBraintree = spy(Braintree.getInstance(getInstrumentation().getContext(),
                 clientToken));
         injectBraintree(clientToken, mBraintree);

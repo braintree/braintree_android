@@ -112,7 +112,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
     public void testCardFormCreatesAPaymentMethodWithoutACustomer() throws InterruptedException {
         BraintreeTestUtils.setUpActivityTest(this,
-                new TestClientTokenBuilder().withoutCustomer().withPayPal().build());
+                new TestClientTokenBuilder().withoutCustomer().build());
         assertCardFormCreatesAPaymentMethod();
     }
 
@@ -193,7 +193,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testPayPalCreatesAPaymentMethodWithACustomer() {
-        BraintreeTestUtils.setUpActivityTest(this);
+        BraintreeTestUtils.setUpActivityTest(this,
+                new TestClientTokenBuilder().withPayPal().build());
         assertCreatePaymentMethodFromPayPal();
     }
 
@@ -222,7 +223,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testDisplaysLoadingViewWhileCreatingAPayPalAccount() {
-        String clientToken = new TestClientTokenBuilder().withPayPal().build();
+        String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
         injectSlowBraintree(getInstrumentation().getContext(), clientToken, 2000);
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();
@@ -245,7 +246,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testDisablesSubmitButtonWhileCreatingPaymentMethod() {
-        String clientToken = new TestClientTokenBuilder().withPayPal().build();
+        String clientToken = new TestClientTokenBuilder().build();
         injectSlowBraintree(getInstrumentation().getContext(), clientToken, 200);
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         BraintreePaymentActivity activity = getActivity();
@@ -327,7 +328,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testBackButtonDuringCreditCardAddDoesNothing() {
-        String clientToken = new TestClientTokenBuilder().withPayPal().build();
+        String clientToken = new TestClientTokenBuilder().build();
         injectSlowBraintree(getInstrumentation().getContext(), clientToken, 2000);
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();
@@ -346,7 +347,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testBackButtonDuringPayPalAddDoesNothing() {
-        String clientToken = new TestClientTokenBuilder().withPayPal().build();
+        String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
         injectSlowBraintree(getInstrumentation().getContext(), clientToken, 2000);
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();

@@ -31,7 +31,7 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
 
     public void testMarksFieldsAsErrorWhenSubmitButtonIsClicked()
             throws ErrorWithResponse, BraintreeException {
-        String clientToken = new TestClientTokenBuilder().withPayPal().build();
+        String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
         BraintreeApi api = spy(new BraintreeApi(getInstrumentation().getContext(), clientToken));
         injectBraintreeApi(clientToken, api);
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
@@ -56,7 +56,7 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
 
     public void testSubmitsToServerWhenFieldsPassClientValidation()
             throws ErrorWithResponse, BraintreeException {
-        String clientToken = new TestClientTokenBuilder().withPayPal().build();
+        String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
         BraintreeApi api = spy(new BraintreeApi(getInstrumentation().getContext(), clientToken));
         injectBraintreeApi(clientToken, api);
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
