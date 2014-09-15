@@ -88,7 +88,6 @@ public class BraintreePaymentActivity extends Activity implements
     private SelectPaymentMethodViewController mSelectPaymentMethodViewController;
     private AtomicBoolean mHasDataBeenReceived = new AtomicBoolean(false);
     private boolean mUnableToGetPaymentMethods = false;
-    protected PaymentMethod mActivePaymentMethod;
     private Bundle mSavedInstanceState;
     private Customization mCustomization;
 
@@ -140,37 +139,25 @@ public class BraintreePaymentActivity extends Activity implements
         }
     }
 
-    protected PaymentMethod getActivePaymentMethod() {
-        return mActivePaymentMethod;
-    }
-
-    private void addActivePaymentMethod(PaymentMethod paymentMethod) {
-        mActivePaymentMethod = paymentMethod;
-        mAddPaymentMethodViewController.endSubmit();
-        initSelectPaymentMethodView();
-        mSelectPaymentMethodViewController.setupPaymentMethod(paymentMethod);
-    }
-
     @Override
     public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
         if (!mUnableToGetPaymentMethods) {
             mHasDataBeenReceived.set(true);
 
-            if (!paymentMethods.isEmpty()) {
-                mActivePaymentMethod = paymentMethods.get(0);
+            if (paymentMethods.size() == 0) {
+                initAddPaymentMethodView();
+            } else {
+                initSelectPaymentMethodView();
             }
-            showAppropriateView(paymentMethods);
         }
     }
 
     @Override
-    public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-        mActivePaymentMethod = paymentMethod;
-
+    public void onPaymentMethodCreated(final PaymentMethod paymentMethod) {
         if (paymentMethod instanceof Card) {
             if(paymentMethod.getSource() != null &&
                     paymentMethod.getSource().equals(VenmoAppSwitch.VENMO_SOURCE)) {
-                addActivePaymentMethod(paymentMethod);
+                finishCreate();
             } else {
                 mBraintree.sendAnalyticsEvent("add-card.success");
 
@@ -181,7 +168,7 @@ public class BraintreePaymentActivity extends Activity implements
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                finalizeSelection();
+                                finalizeSelection(paymentMethod);
                             }
                         });
                     }
@@ -189,8 +176,13 @@ public class BraintreePaymentActivity extends Activity implements
             }
         } else if (paymentMethod instanceof PayPalAccount) {
             mBraintree.sendAnalyticsEvent("add-paypal.success");
-            addActivePaymentMethod(paymentMethod);
+            finishCreate();
         }
+    }
+
+    private void finishCreate() {
+        mAddPaymentMethodViewController.endSubmit();
+        initSelectPaymentMethodView();
     }
 
     @Override
@@ -223,12 +215,12 @@ public class BraintreePaymentActivity extends Activity implements
         mAddPaymentMethodViewController.setErrors(error);
     }
 
-    protected void finalizeSelection() {
+    protected void finalizeSelection(PaymentMethod paymentMethod) {
         mBraintree.sendAnalyticsEvent("sdk.exit.success");
 
         Intent resultIntent = new Intent();
-        resultIntent.putExtra(EXTRA_PAYMENT_METHOD, mActivePaymentMethod);
-        resultIntent.putExtra(EXTRA_PAYMENT_METHOD_NONCE, mActivePaymentMethod.getNonce());
+        resultIntent.putExtra(EXTRA_PAYMENT_METHOD, paymentMethod);
+        resultIntent.putExtra(EXTRA_PAYMENT_METHOD_NONCE, paymentMethod.getNonce());
         setResult(RESULT_OK, resultIntent);
         finish();
     }
@@ -249,14 +241,6 @@ public class BraintreePaymentActivity extends Activity implements
             }
         }, 10, TimeUnit.SECONDS);
         StubbedView.LOADING_VIEW.show(this);
-    }
-
-    private void showAppropriateView(List<PaymentMethod> paymentMethods) {
-        if (paymentMethods.size() == 0) {
-            initAddPaymentMethodView();
-        } else {
-            initSelectPaymentMethodView();
-        }
     }
 
     private void initSelectPaymentMethodView() {

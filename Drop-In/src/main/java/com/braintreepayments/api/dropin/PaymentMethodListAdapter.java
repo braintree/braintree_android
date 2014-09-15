@@ -52,7 +52,6 @@ public class PaymentMethodListAdapter extends BaseAdapter implements
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        PaymentMethod paymentMethod = mPaymentMethods.get(which);
-        mViewController.onPaymentMethodSelected(paymentMethod);
+        mViewController.onPaymentMethodSelected(which);
     }
 }

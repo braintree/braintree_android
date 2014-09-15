@@ -31,6 +31,8 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
     private TextView mChangeMethodView;
     private Button mSubmitButton;
 
+    private int mActivePaymentMethod;
+
     public SelectPaymentMethodViewController(BraintreePaymentActivity activity,
             Bundle savedInstanceState, View root, Braintree braintree, Customization customization) {
         super(activity, root, braintree, customization);
@@ -44,45 +46,42 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
         mSubmitButton.setOnClickListener(this);
         mSubmitButton.setText(getSubmitButtonText());
 
-        PaymentMethod activePaymentMethod;
         if (savedInstanceState.containsKey(EXTRA_SELECTED_PAYMENT_METHOD)) {
-            activePaymentMethod = (PaymentMethod) savedInstanceState
-                    .getSerializable(EXTRA_SELECTED_PAYMENT_METHOD);
+            mActivePaymentMethod = savedInstanceState.getInt(EXTRA_SELECTED_PAYMENT_METHOD);
         } else {
-            activePaymentMethod = getActivity().getActivePaymentMethod();
+            mActivePaymentMethod = 0;
         }
-        setupPaymentMethod(activePaymentMethod);
+        setupPaymentMethod();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable(EXTRA_SELECTED_PAYMENT_METHOD,
-                getActivity().getActivePaymentMethod());
+        outState.putInt(EXTRA_SELECTED_PAYMENT_METHOD, mActivePaymentMethod);
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == mPaymentMethodView.getId()) {
-            if (getBraintree().getCachedPaymentMethods().size() > 1) {
+            if (mBraintree.getCachedPaymentMethods().size() > 1) {
                 showPaymentMethodListDialog();
             }
         } else if (v.getId() == mChangeMethodView.getId()) {
-            if (getBraintree().getCachedPaymentMethods().size() == 1) {
+            if (mBraintree.getCachedPaymentMethods().size() == 1) {
                 launchFormView();
             } else {
                 showPaymentMethodListDialog();
             }
         } else if (v.getId() == mSubmitButton.getId()) {
             mSubmitButton.setEnabled(false);
-            getActivity().finalizeSelection();
+            getActivity().finalizeSelection(getActivePaymentMethod());
         }
     }
 
-    protected void setupPaymentMethod(PaymentMethod method) {
-        mPaymentMethodView.setPaymentMethodDetails(method);
+    protected void setupPaymentMethod() {
+        mPaymentMethodView.setPaymentMethodDetails(getActivePaymentMethod());
 
         TextView link = findView(R.id.bt_change_payment_method_link);
-        if(getBraintree().getCachedPaymentMethods().size() == 1) {
+        if(mBraintree.getCachedPaymentMethods().size() == 1) {
             link.setText(R.string.bt_add_payment_method);
         } else {
             link.setText(R.string.bt_change_payment_method);
@@ -92,8 +91,7 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
     @SuppressWarnings("NewApi")
     private void showPaymentMethodListDialog() {
         PaymentMethodListAdapter paymentMethodListAdapter =
-                new PaymentMethodListAdapter(getActivity(), this,
-                        getBraintree().getCachedPaymentMethods());
+                new PaymentMethodListAdapter(getActivity(), this, mBraintree.getCachedPaymentMethods());
 
         ContextThemeWrapper contextThemeWrapper;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -119,8 +117,12 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
         getActivity().initAddPaymentMethodView();
     }
 
-    protected void onPaymentMethodSelected(PaymentMethod paymentMethod) {
-        getActivity().mActivePaymentMethod = paymentMethod;
-        setupPaymentMethod(paymentMethod);
+    protected void onPaymentMethodSelected(int paymentMethodIndex) {
+        mActivePaymentMethod = paymentMethodIndex;
+        setupPaymentMethod();
+    }
+
+    private PaymentMethod getActivePaymentMethod() {
+        return mBraintree.getCachedPaymentMethods().get(mActivePaymentMethod);
     }
 }

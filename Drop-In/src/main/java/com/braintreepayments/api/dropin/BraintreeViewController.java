@@ -7,23 +7,18 @@ import android.widget.TextView;
 
 import com.braintreepayments.api.Braintree;
 
-import java.lang.ref.WeakReference;
-
 /**
  * Parent class for view controllers.
  */
 public abstract class BraintreeViewController {
 
     private View mRootView;
-    /**
-     * Weak reference to the containing activity so as to not cause a memory leak.
-     */
-    private final WeakReference<BraintreePaymentActivity> mActivity;
-    private final Braintree mBraintree;
+    private BraintreePaymentActivity mActivity;
+    protected final Braintree mBraintree;
     private final Customization mCustomization;
 
     public BraintreeViewController(BraintreePaymentActivity activity, View root, Braintree braintree, Customization customization) {
-        mActivity = new WeakReference<BraintreePaymentActivity>(activity);
+        mActivity = activity;
         mRootView = root;
         mBraintree = braintree;
         mCustomization = customization;
@@ -72,12 +67,8 @@ public abstract class BraintreeViewController {
         }
     }
 
-    protected Braintree getBraintree() {
-        return mBraintree;
-    }
-
     protected BraintreePaymentActivity getActivity() {
-        return mActivity.get();
+        return mActivity;
     }
 
     /**

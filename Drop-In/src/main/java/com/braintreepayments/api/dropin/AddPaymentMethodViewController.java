@@ -87,7 +87,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         mPostalCode = findView(R.id.bt_card_form_postal_code);
         mSubmitButton = findView(R.id.bt_card_form_submit_button);
 
-        mPaymentButton.initialize(getActivity(), getBraintree());
+        mPaymentButton.initialize(getActivity(), mBraintree);
 
         mCardNumber.setFocusChangeListener(this);
         mExpirationView.setFocusChangeListener(this);
@@ -103,7 +103,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         mCardNumber.setTextChangedListener(this);
         mExpirationView.setTextChangedListener(this);
 
-        if (getBraintree().isCvvChallenegePresent() || getBraintree().isPostalCodeChallengePresent()) {
+        if (mBraintree.isCvvChallenegePresent() || mBraintree.isPostalCodeChallengePresent()) {
             mExpirationView.setImeOptions(EditorInfo.IME_ACTION_NEXT);
         } else {
             mExpirationView.setImeOptions(EditorInfo.IME_ACTION_GO);
@@ -111,9 +111,9 @@ public class AddPaymentMethodViewController extends BraintreeViewController
             mExpirationView.setOnEditorActionListener(this);
         }
 
-        if (getBraintree().isCvvChallenegePresent()) {
+        if (mBraintree.isCvvChallenegePresent()) {
             mCvvView.setTextChangedListener(this);
-            if (getBraintree().isPostalCodeChallengePresent()) {
+            if (mBraintree.isPostalCodeChallengePresent()) {
                 mCvvView.setImeOptions(EditorInfo.IME_ACTION_NEXT);
             } else {
                 mCvvView.setImeOptions(EditorInfo.IME_ACTION_GO);
@@ -124,7 +124,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
             mCvvView.setVisibility(View.GONE);
         }
 
-        if (getBraintree().isPostalCodeChallengePresent()) {
+        if (mBraintree.isPostalCodeChallengePresent()) {
             mPostalCode.setTextChangedListener(this);
             mPostalCode.setImeOptions(EditorInfo.IME_ACTION_GO);
             mPostalCode.setImeActionLabel(getCustomizedCallToAction(), EditorInfo.IME_ACTION_GO);
@@ -180,7 +180,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         if (v == mSubmitButton) {
             if (areFieldsValid()) {
                 startSubmit();
-                getBraintree().create(getCardBuilder());
+                mBraintree.create(getCardBuilder());
             } else {
                 showClientErrors();
             }
@@ -212,10 +212,10 @@ public class AddPaymentMethodViewController extends BraintreeViewController
                 .expirationYear(mExpirationView.getYear())
                 .integration(INTEGRATION_METHOD);
 
-        if (getBraintree().isCvvChallenegePresent()) {
+        if (mBraintree.isCvvChallenegePresent()) {
             cardBuilder.cvv(mCvvView.getText().toString());
         }
-        if (getBraintree().isPostalCodeChallengePresent()) {
+        if (mBraintree.isPostalCodeChallengePresent()) {
             cardBuilder.postalCode(mPostalCode.getText().toString());
         }
 
@@ -236,11 +236,11 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         boolean valid = mCardNumber.isValid();
         valid = valid && mExpirationView.isValid();
 
-        if (getBraintree().isCvvChallenegePresent()) {
+        if (mBraintree.isCvvChallenegePresent()) {
             valid = valid && mCvvView.isValid();
         }
 
-        if (getBraintree().isPostalCodeChallengePresent()) {
+        if (mBraintree.isPostalCodeChallengePresent()) {
             valid = valid && mPostalCode.isValid();
         }
 
@@ -251,11 +251,11 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         mCardNumber.validate();
         mExpirationView.validate();
 
-        if (getBraintree().isCvvChallenegePresent()) {
+        if (mBraintree.isCvvChallenegePresent()) {
             mCvvView.validate();
         }
 
-        if (getBraintree().isPostalCodeChallengePresent()) {
+        if (mBraintree.isPostalCodeChallengePresent()) {
             mPostalCode.validate();
         }
 
@@ -269,7 +269,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
         boolean focusSet = false;
         if(error.errorFor("creditCard") != null) {
-            getBraintree().sendAnalyticsEvent("add-card.failed");
+            mBraintree.sendAnalyticsEvent("add-card.failed");
 
             BraintreeError cardErrors = error.errorFor("creditCard");
             if(cardErrors.errorFor("number") != null) {

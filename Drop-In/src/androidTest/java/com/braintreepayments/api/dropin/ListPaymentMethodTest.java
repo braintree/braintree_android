@@ -232,7 +232,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         assertSelectedPaymentMethodIs(R.string.bt_descriptor_visa);
     }
 
-    public void testSelectingFromListSetsActivePaymentForSubmit()
+    public void testSelectingFromListReturnsSelectedPaymentMethod()
             throws IOException, ErrorWithResponse {
         String nonce = createAmex();
         mBraintreeApi.create(new CardBuilder()
@@ -250,7 +250,15 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withText("Choose Payment Method")).check(doesNotExist());
         onView(withId(R.id.bt_select_payment_method_submit_button)).perform(click());
 
-        assertEquals(nonce, activity.getActivePaymentMethod().getNonce());
+        waitForActivity(activity);
+
+        Map<String, Object> result = BraintreeTestUtils.getActivityResult(activity);
+        PaymentMethod response =
+                (PaymentMethod) ((Intent) result.get("resultData")).getSerializableExtra(
+                        BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
+
+        assertEquals(Activity.RESULT_OK, result.get("resultCode"));
+        assertEquals(nonce, response.getNonce());
     }
 
     public void testSubmittingSelectedPaymentMethodReturnsItToCallingActivity()
