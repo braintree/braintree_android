@@ -26,6 +26,7 @@ public class TestClientTokenBuilder {
 
     private boolean mWithCustomer = true;
     private int mMerchantType = MERCHANT_WITHOUT_PAYPAL;
+    private String mMerchantAccountId = null;
     private boolean mAnalytics = false;
     private ArrayList<String> mChallenges = new ArrayList<String>() {{ add("cvv"); add("postal_code"); }};
     private boolean mRevoked = false;
@@ -44,6 +45,7 @@ public class TestClientTokenBuilder {
 
     public TestClientTokenBuilder withFakePayPal() {
         mMerchantType = MERCHANT_WITH_FAKE_PAYPAL;
+        mMerchantAccountId = "altpay_merchant_paypal_merchant_account";
         return this;
     }
 
@@ -104,7 +106,7 @@ public class TestClientTokenBuilder {
             case MERCHANT_WITH_PAYPAL:
                 return getClientTokenFromGateway("altpay_merchant", "altpay_merchant_public_key");
             case MERCHANT_WITH_FAKE_PAYPAL:
-                return getClientTokenFromGateway("integration_merchant_id", "integration_public_key");
+                return getClientTokenFromGateway("altpay_merchant", "altpay_merchant_public_key");
             case MERCHANT_WITH_CVV_VERIFICATION:
                 return getClientTokenFromGateway("client_api_cvv_verification_merchant_id", "client_api_cvv_verification_public_key");
             case MERCHANT_WITH_POSTAL_CODE_VERIFICATION:
@@ -132,6 +134,10 @@ public class TestClientTokenBuilder {
             json.put("public_key", merchantPublicKey);
             json.put("customer", "true");
             json.put("token_version", "2");
+
+            if (mMerchantAccountId != null) {
+                json.put("merchant_account_id", mMerchantAccountId);
+            }
 
             JSONObject overrides = new JSONObject();
             JSONArray challenges = new JSONArray();
