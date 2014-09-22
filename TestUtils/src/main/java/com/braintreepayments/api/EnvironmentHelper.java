@@ -11,7 +11,7 @@ public class EnvironmentHelper {
     }
 
     public static String getGatewayIp() {
-        return getLocalhostIp();
+        return BuildConfig.GATEWAY_IP;
     }
 
     public static String getGatewayPath() {
