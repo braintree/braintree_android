@@ -5,7 +5,6 @@ The Braintree SDK uses code from the following libraries:
 
  * [PayPal Android SDK](https://github.com/paypal/paypal-android-sdk/)
  * Google [Gson](https://code.google.com/p/google-gson/)
- * Square [OkHttp](http://square.github.io/okhttp/)
  * [Mockito](https://github.com/mockito/mockito)
  * [Dexmaker](https://code.google.com/p/dexmaker/)
  * [Espresso](https://code.google.com/p/android-test-kit/)
@@ -42,21 +41,6 @@ PayPal Android SDK, BSD License
     either expressed or implied, of the FreeBSD Project.
 
 Google Gson, [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)
-
-Square OkHTTP, Apache 2.0 License
-    Copyright 2014 Square, Inc.
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
 
 Mockito, MIT License
     The MIT License
