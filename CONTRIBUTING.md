@@ -1,4 +1,4 @@
-# Contribute
+# Contributing
 
 Thanks for considering contributing to this project. Ways you can help:
 
@@ -14,7 +14,10 @@ Read our [development guidelines](DEVELOPMENT.md) to get a sense of how we think
 
 ## Environments
 
-The architecture of the Client API means that you'll need to develop against a merchant server when developing braintree-android. The merchant server uses a server side client library such as [`braintree_ruby`](https://github.com/braintree/braintree_ruby) to coordinate with a particular Braintree Gateway environment. The various Gateway environments, such as `development`, `sandbox` and `production`, in turn determine the specific behaviors around merchant accounts, credit cards, PayPal, etc.
+The architecture of the Client API means that you'll need to develop against a merchant server when developing braintree-android.
+The merchant server uses a server side client library such as [`braintree_ruby`](https://github.com/braintree/braintree_ruby) to
+coordinate with a particular Braintree Gateway environment. The various Gateway environments, such as `development`, `sandbox` and `production`,
+in turn determine the specific behaviors around merchant accounts, credit cards, PayPal, etc.
 
 ## Tests
 
