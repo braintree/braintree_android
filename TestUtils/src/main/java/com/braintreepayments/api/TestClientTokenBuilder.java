@@ -182,7 +182,15 @@ public class TestClientTokenBuilder {
 
             String encodedToken = new JSONObject(response.toString()).getString("clientToken");
             String clientToken = new String(Base64.decode(encodedToken, Base64.DEFAULT));
-            clientToken = clientToken.replaceAll("localhost", EnvironmentHelper.getGatewayIp());
+
+            String replacement;
+            if (EnvironmentHelper.getGatewayIp().startsWith("http")) {
+                replacement = "http://localhost";
+            } else {
+                replacement = "localhost";
+            }
+            clientToken = clientToken.replaceAll(replacement, EnvironmentHelper.getGatewayIp());
+
             if (mVenmoEnvironment == null) {
                 clientToken = new JSONObject(clientToken).put("venmo", "off").toString();
             }
