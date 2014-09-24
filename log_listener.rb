@@ -9,6 +9,7 @@ end
 def setup
   puts `mkdir failed_test_screenshots`
   puts `rm -rf failed_test_screenshots/*`
+  puts `adb logcat -c`
 end
 
 def handle_screenshot_request(screenshot_name)
