@@ -70,7 +70,7 @@ public class FakeWalletAppSwitchTest extends AndroidTestCase {
 
         @Override
         public int getPublicKeyHashCode() {
-            return -1525426004;
+            return 496242318;
         }
 
         @Override
