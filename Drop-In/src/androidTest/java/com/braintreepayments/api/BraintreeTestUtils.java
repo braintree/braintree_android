@@ -21,7 +21,6 @@ import com.braintreepayments.api.internal.HttpResponse;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.doesNotExist;
@@ -79,23 +78,6 @@ public class BraintreeTestUtils {
 
     public static void postUnrecoverableErrorFromBraintree(Braintree braintree, BraintreeException exception) {
         braintree.postUnrecoverableErrorToListeners(exception);
-    }
-
-    public static Braintree injectCountPaymentMethodListBraintree(final Context context, String token, final
-            AtomicInteger count) {
-        ClientToken clientToken = ClientToken.getClientToken(token);
-        HttpRequest request = new HttpRequest(clientToken.getAuthorizationFingerprint()) {
-            @Override
-            public HttpResponse get(String url) throws UnexpectedException {
-                if (url.contains("payment_methods")) {
-                    count.incrementAndGet();
-                }
-                return super.get(url);
-            }
-        };
-
-        Braintree braintree = new Braintree(new BraintreeApi(context, clientToken, request));
-        return injectBraintree(token, braintree);
     }
 
     public static Braintree injectGeneric422ErrorOnCardCreateBraintree(final Context context,

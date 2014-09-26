@@ -1,6 +1,5 @@
 package com.braintreepayments.api.ui;
 
-import android.os.SystemClock;
 import android.view.View;
 
 import com.google.android.apps.common.testing.ui.espresso.UiController;
@@ -25,6 +24,7 @@ public class ViewHelper {
     public static final int FOUR_SECONDS = 4000;
     public static final int FIVE_SECONDS = 5000;
     public static final int TEN_SECONDS = 10000;
+    public static final int FIFTEEN_SECONDS = 15000;
 
     public static boolean sWaitingForView;
 
@@ -42,9 +42,7 @@ public class ViewHelper {
                 ViewHelper.sWaitingForView = false;
                 return interaction;
             } catch (Exception e) {
-                SystemClock.sleep(20);
             } catch (Error e) {
-                SystemClock.sleep(20);
             }
         } while (System.currentTimeMillis() < endTime);
 
@@ -61,11 +59,11 @@ public class ViewHelper {
     }
 
     public static ViewInteraction waitForView(final Matcher<View> viewMatcher, Matcher<View> viewCondition) {
-        return waitForView(viewMatcher, viewCondition, FOUR_SECONDS);
+        return waitForView(viewMatcher, viewCondition, TEN_SECONDS);
     }
 
     public static ViewInteraction waitForView(final Matcher<View> viewMatcher) {
-        return waitForView(viewMatcher, FOUR_SECONDS);
+        return waitForView(viewMatcher, TEN_SECONDS);
     }
 
     public static ViewAction closeSoftKeyboard() {

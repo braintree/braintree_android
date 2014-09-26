@@ -9,6 +9,7 @@ import org.hamcrest.Matcher;
 
 import static com.braintreepayments.api.ui.Matchers.withHint;
 import static com.braintreepayments.api.ui.Matchers.withId;
+import static com.braintreepayments.api.ui.ViewHelper.FIFTEEN_SECONDS;
 import static com.braintreepayments.api.ui.ViewHelper.TEN_SECONDS;
 import static com.braintreepayments.api.ui.ViewHelper.waitForView;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
@@ -21,15 +22,16 @@ public class PaymentFormHelpers {
     public static void fillInPayPal() {
         waitForView(withId(R.id.bt_paypal_button)).perform(click());
 
-        waitForView(withHint("Email"));
-        onView(withHint("Email")).perform(typeText("bt_buyer_us@paypal.com"));
+        waitForView(withHint("Email"), FIFTEEN_SECONDS).perform(typeText("bt_buyer_us@paypal.com"));
         onView(withHint("Password")).perform(typeText("11111111"));
         onView(withText("Log In")).perform(click());
 
-        waitForView(withText("Agree"));
-        onView(withText("Agree")).perform(click());
+        waitForView(withText("Agree")).perform(click());
+    }
 
-        waitForPaymentMethodList(TEN_SECONDS);
+    public static void performPayPalAdd() {
+        fillInPayPal();
+        waitForPaymentMethodList();
     }
 
     public static ViewInteraction waitForPaymentMethodList() {

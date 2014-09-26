@@ -16,7 +16,7 @@ import static com.braintreepayments.api.ui.Matchers.withId;
 import static com.braintreepayments.api.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.api.ui.ViewHelper.waitForView;
 import static com.braintreepayments.api.ui.WaitForActivityHelper.waitForActivity;
-import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInPayPal;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
@@ -80,7 +80,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
         verify(mBraintree, times(1)).sendAnalyticsEvent("add-card.failed");
     }
 
-    public void pendingAddsEventOnAddPayPalStarted() {
+    public void testAddsEventOnAddPayPalStarted() {
         setupActivity();
         onView(withId(R.id.bt_paypal_button)).perform(click());
         waitForView(withHint("Email"));
@@ -91,7 +91,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     public void testAddsEventOnAddPayPalSucceeded() {
         setupActivity();
-        fillInPayPal();
+        performPayPalAdd();
 
         verify(mBraintree, times(1)).sendAnalyticsEvent("add-paypal.success");
     }
@@ -155,4 +155,5 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
         onView(withHint("Postal Code")).perform(typeText("12345"));
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
     }
+
 }

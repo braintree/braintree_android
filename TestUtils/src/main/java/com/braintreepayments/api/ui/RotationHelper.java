@@ -24,7 +24,7 @@ public class RotationHelper {
         automation.setRotation(UiAutomation.ROTATION_UNFREEZE);
         automation.setRotation(direction);
 
-        SystemClock.sleep(200); // There is currently no way to wait for the rotation to complete
+        SystemClock.sleep(1000); // There is currently no way to wait for the rotation to complete
     }
 
 }

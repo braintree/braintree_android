@@ -44,6 +44,7 @@ import static com.braintreepayments.api.ui.Matchers.withHint;
 import static com.braintreepayments.api.ui.Matchers.withId;
 import static com.braintreepayments.api.ui.RotationHelper.rotateToLandscape;
 import static com.braintreepayments.api.ui.RotationHelper.rotateToPortrait;
+import static com.braintreepayments.api.ui.ViewHelper.FIVE_SECONDS;
 import static com.braintreepayments.api.ui.ViewHelper.TEN_SECONDS;
 import static com.braintreepayments.api.ui.ViewHelper.THREE_SECONDS;
 import static com.braintreepayments.api.ui.ViewHelper.TWO_SECONDS;
@@ -52,6 +53,7 @@ import static com.braintreepayments.api.ui.ViewHelper.waitForView;
 import static com.braintreepayments.api.ui.WaitForActivityHelper.waitForActivity;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInPayPal;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.onAddPaymentFormHeader;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodList;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
@@ -59,11 +61,9 @@ import static com.google.android.apps.common.testing.ui.espresso.action.ViewActi
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.typeText;
 import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
-import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDisplayed;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isEnabled;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
@@ -173,7 +173,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreePaymentActivity activity = getActivity();
 
         waitForAddPaymentFormHeader();
-        fillInPayPal();
+        performPayPalAdd();
 
         onView(withId(R.id.bt_payment_method_description)).check(
                 matches(withText("bt_buyer_us@paypal.com")));
@@ -191,8 +191,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testPayPalCreatesAPaymentMethodWithACustomer() {
-        BraintreeTestUtils.setUpActivityTest(this,
-                new TestClientTokenBuilder().withPayPal().build());
+        BraintreeTestUtils.setUpActivityTest(this, new TestClientTokenBuilder().withPayPal().build());
         assertCreatePaymentMethodFromPayPal();
     }
 
@@ -222,24 +221,14 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
     public void testDisplaysLoadingViewWhileCreatingAPayPalAccount() {
         String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
-        injectSlowBraintree(getInstrumentation().getContext(), clientToken, 2000);
+        injectSlowBraintree(getInstrumentation().getContext(), clientToken, THREE_SECONDS);
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();
 
-        waitForView(withId(R.id.bt_paypal_button), 8000).perform(click());
+        fillInPayPal();
 
-        waitForView(withHint("Email"));
-        onView(withHint("Email")).perform(typeText("bt_buyer_us@paypal.com"));
-        onView(withHint("Password")).perform(typeText("11111111"));
-        onView(withText("Log In")).perform(click());
-
-        waitForView(withText("Agree"));
-        onView(withText("Agree")).perform(click());
-
-        waitForView(allOf(withId(R.id.bt_loading_progress_bar), isDescendantOfA(withId(R.id.bt_inflated_loading_view))))
-                .check(matches(isDisplayed()));
+        waitForView(withId(R.id.bt_inflated_loading_view)).check(matches(isDisplayed()));
         onView(withId(R.id.bt_card_form_header)).check(matches(not(isDisplayed())));
-
         waitForPaymentMethodList().check(matches(isDisplayed()));
     }
 
@@ -343,26 +332,15 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
     public void testBackButtonDuringPayPalAddDoesNothing() {
         String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
-        injectSlowBraintree(getInstrumentation().getContext(), clientToken, 2000);
+        injectSlowBraintree(getInstrumentation().getContext(), clientToken, FIVE_SECONDS);
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();
 
-        waitForView(withId(R.id.bt_paypal_button), TEN_SECONDS).perform(click());
+        fillInPayPal();
 
-        waitForView(withHint("Email"));
-        onView(withHint("Email")).perform(typeText("bt_buyer_us@paypal.com"));
-        onView(withHint("Password")).perform(typeText("11111111"));
-        onView(withText("Log In")).perform(click());
-        waitForView(withText("Agree"));
-        onView(withText("Agree")).perform(click());
-
-        waitForView(allOf(withId(R.id.bt_loading_progress_bar),
-                isDescendantOfA(withId(R.id.bt_inflated_loading_view))))
-                .check(matches(isDisplayed()));
+        waitForView(withId(R.id.bt_inflated_loading_view)).check(matches(isDisplayed()));
         sendKeys(KeyEvent.KEYCODE_BACK);
-        onView(allOf(withId(R.id.bt_loading_progress_bar),
-                isDescendantOfA(withId(R.id.bt_inflated_loading_view))))
-                .check(matches(isDisplayed()));
+        onView(withId(R.id.bt_inflated_loading_view)).check(matches(isDisplayed()));
     }
 
     public void testUpButtonIsNotShownIfThereAreNoPaymentMethods() {
@@ -379,7 +357,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreePaymentActivity activity = getActivity();
 
         waitForAddPaymentFormHeader();
-        fillInPayPal();
+        performPayPalAdd();
 
         assertFalse("Expected up not to be present on action bar", checkHomeAsUpEnabled(activity));
         onView(withId(R.id.bt_change_payment_method_link)).perform(click());
