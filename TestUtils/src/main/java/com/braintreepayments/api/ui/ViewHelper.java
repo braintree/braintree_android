@@ -6,6 +6,7 @@ import android.view.View;
 import com.google.android.apps.common.testing.ui.espresso.UiController;
 import com.google.android.apps.common.testing.ui.espresso.ViewAction;
 import com.google.android.apps.common.testing.ui.espresso.ViewInteraction;
+import com.google.android.apps.common.testing.ui.espresso.action.CloseKeyboardAction;
 
 import org.hamcrest.Matcher;
 
@@ -13,7 +14,6 @@ import static com.google.android.apps.common.testing.testrunner.util.Checks.chec
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDisplayed;
-import static org.hamcrest.Matchers.anything;
 
 /* http://stackoverflow.com/a/22563297 */
 public class ViewHelper {
@@ -68,22 +68,34 @@ public class ViewHelper {
         return waitForView(viewMatcher, FOUR_SECONDS);
     }
 
-    public static ViewAction waitForKeyboardToClose() {
+    public static ViewAction closeSoftKeyboard() {
         return new ViewAction() {
+            /**
+             * The delay time to allow the soft keyboard to dismiss.
+             */
+            private static final long KEYBOARD_DISMISSAL_DELAY_MILLIS = 500L;
+
+            /**
+             * The real {@link CloseKeyboardAction} instance.
+             */
+            private final ViewAction mCloseSoftKeyboard = new CloseKeyboardAction();
+
             @Override
             public Matcher<View> getConstraints() {
-                return anything();
+                return mCloseSoftKeyboard.getConstraints();
             }
 
             @Override
             public String getDescription() {
-                return "Waiting 150ms for soft keyboard to close";
+                return mCloseSoftKeyboard.getDescription();
             }
 
             @Override
-            public void perform(UiController uiController, View view) {
-                SystemClock.sleep(150);
+            public void perform(final UiController uiController, final View view) {
+                mCloseSoftKeyboard.perform(uiController, view);
+                uiController.loopMainThreadForAtLeast(KEYBOARD_DISMISSAL_DELAY_MILLIS);
             }
         };
     }
+
 }

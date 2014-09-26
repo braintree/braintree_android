@@ -13,14 +13,13 @@ import static com.braintreepayments.api.BraintreeTestUtils.injectBraintree;
 import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
 import static com.braintreepayments.api.ui.Matchers.withHint;
 import static com.braintreepayments.api.ui.Matchers.withId;
-import static com.braintreepayments.api.ui.ViewHelper.waitForKeyboardToClose;
+import static com.braintreepayments.api.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.api.ui.ViewHelper.waitForView;
 import static com.braintreepayments.api.ui.WaitForActivityHelper.waitForActivity;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInPayPal;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
-import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.closeSoftKeyboard;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.typeText;
 import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDisplayed;
@@ -71,9 +70,8 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
         waitForAddPaymentFormHeader();
 
         onView(withHint("Card Number")).perform(typeText("4111111111111111"));
-        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withHint("CVV")).perform(typeText("200"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
+        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
+        onView(withHint("CVV")).perform(typeText("200"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("12345"));
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
@@ -152,9 +150,8 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     private void fillInCreditCard() {
         onView(withHint("Card Number")).perform(typeText("4111111111111111"));
-        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withHint("CVV")).perform(typeText("123"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
+        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
+        onView(withHint("CVV")).perform(typeText("123"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("12345"));
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
     }

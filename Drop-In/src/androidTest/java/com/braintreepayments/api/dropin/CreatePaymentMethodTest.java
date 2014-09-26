@@ -45,7 +45,9 @@ import static com.braintreepayments.api.ui.Matchers.withId;
 import static com.braintreepayments.api.ui.RotationHelper.rotateToLandscape;
 import static com.braintreepayments.api.ui.RotationHelper.rotateToPortrait;
 import static com.braintreepayments.api.ui.ViewHelper.TEN_SECONDS;
-import static com.braintreepayments.api.ui.ViewHelper.waitForKeyboardToClose;
+import static com.braintreepayments.api.ui.ViewHelper.THREE_SECONDS;
+import static com.braintreepayments.api.ui.ViewHelper.TWO_SECONDS;
+import static com.braintreepayments.api.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.api.ui.ViewHelper.waitForView;
 import static com.braintreepayments.api.ui.WaitForActivityHelper.waitForActivity;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInPayPal;
@@ -55,7 +57,6 @@ import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentM
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.clearText;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
-import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.closeSoftKeyboard;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.typeText;
 import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDescendantOfA;
@@ -82,14 +83,11 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreePaymentActivity activity = getActivity();
 
         waitForAddPaymentFormHeader();
-        onView(withHint("Card Number")).perform(typeText("4111111111111111"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
-        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
+        onView(withHint("Card Number")).perform(typeText("4111111111111111"), closeSoftKeyboard());
+        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
         onView(withHint("CVV"))
-                .perform(typeText("123"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withHint("Postal Code")).perform(typeText("12345"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
+                .perform(typeText("123"), closeSoftKeyboard());
+        onView(withHint("Postal Code")).perform(typeText("12345"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
         waitForView(withId(R.id.bt_header_status_icon));
@@ -139,7 +137,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
         waitForAddPaymentFormHeader();
         onView(withHint("Card Number")).perform(typeText("4111111111111111"));
-        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_cvv)).check(matches(not(isDisplayed())));
         onView(withId(R.id.bt_card_form_postal_code)).check(matches(not(isDisplayed())));
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
@@ -165,7 +163,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
                 .check(thereIsNoIconHint())
                 .perform(click())
                 .check(theIconHintIs(R.drawable.bt_cvv_highlighted))
-                .perform(typeText("123"), closeSoftKeyboard(), waitForKeyboardToClose());
+                .perform(typeText("123"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("12345"));
         onView(withHint("CVV"))
                 .check(thereIsNoIconHint()); // check that the hint is gone after defocusing
@@ -253,9 +251,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
         waitForAddPaymentFormHeader();
         onView(withHint("Card Number")).perform(typeText("4111111111111111"));
-        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withHint("CVV")).perform(typeText("123"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
+        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
+        onView(withHint("CVV")).perform(typeText("123"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("12345"));
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
@@ -279,14 +276,14 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
     public void testReEnablesSubmitButtonIfThereAreValidationErrorsForThePaymentMethod() {
         String clientToken = new TestClientTokenBuilder().withoutPostalCodeChallenge().withCvvVerification().build();
-        injectSlowBraintree(getInstrumentation().getContext(), clientToken, 1000);
+        injectSlowBraintree(getInstrumentation().getContext(), clientToken, THREE_SECONDS);
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();
 
         waitForAddPaymentFormHeader();
 
         onView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"));
-        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("12/19"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("12/19"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_cvv)).perform(typeText("200"));
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
@@ -320,8 +317,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForView(withId(R.id.bt_paypal_button)).perform(click());
-        waitForView(withHint("Email")).check(matches(isDisplayed())).perform(closeSoftKeyboard(),
-                waitForKeyboardToClose());
+        waitForView(withHint("Email")).check(matches(isDisplayed())).perform(closeSoftKeyboard());
         sendKeys(KeyEvent.KEYCODE_BACK);
 
         waitForAddPaymentFormHeader().check(matches(isDisplayed()));
@@ -329,15 +325,14 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
     public void testBackButtonDuringCreditCardAddDoesNothing() {
         String clientToken = new TestClientTokenBuilder().build();
-        injectSlowBraintree(getInstrumentation().getContext(), clientToken, 2000);
+        injectSlowBraintree(getInstrumentation().getContext(), clientToken, TWO_SECONDS);
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();
 
         waitForAddPaymentFormHeader();
         onView(withHint("Card Number")).perform(typeText("4111111111111111"));
-        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withHint("CVV")).perform(typeText("123"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
+        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
+        onView(withHint("CVV")).perform(typeText("123"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("12345"));
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
@@ -452,7 +447,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreePaymentActivity activity = getActivity();
 
         waitForView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"));
-        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("08/15"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("08/15"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
         waitForView(withId(R.id.bt_card_form_submit_button), isEnabled());
@@ -472,8 +467,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreePaymentActivity activity = getActivity();
 
         waitForView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"));
-        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("08/15"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withId(R.id.bt_card_form_cvv)).perform(typeText("123"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("08/15"), closeSoftKeyboard());
+        onView(withId(R.id.bt_card_form_cvv)).perform(typeText("123"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_postal_code)).perform(typeText("20000"));
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
@@ -495,8 +490,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreePaymentActivity activity = getActivity();
 
         waitForView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"));
-        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withHint("CVV")) .perform(typeText("123"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
+        onView(withHint("CVV")) .perform(typeText("123"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("12345"));
 
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
@@ -550,8 +545,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForAddPaymentFormHeader();
 
         onView(withHint("Card Number")).perform(typeText("4111111111111111"));
-        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withHint("CVV")) .perform(typeText("200"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
+        onView(withHint("CVV")) .perform(typeText("200"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("20000"));
 
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
@@ -574,8 +569,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForAddPaymentFormHeader();
 
         onView(withHint("Card Number")).perform(typeText("4111111111111111"));
-        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withHint("CVV")) .perform(typeText("200"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
+        onView(withHint("CVV")) .perform(typeText("200"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("20000"));
 
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
@@ -598,10 +593,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForAddPaymentFormHeader();
 
         onView(withHint("Card Number")).perform(typeText("4111111111111111"));
-        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
-        onView(withHint("CVV")) .perform(typeText("200"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
+        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
+        onView(withHint("CVV")) .perform(typeText("200"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("20000"));
 
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());

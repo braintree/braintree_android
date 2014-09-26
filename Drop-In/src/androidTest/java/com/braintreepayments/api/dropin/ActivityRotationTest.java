@@ -24,7 +24,7 @@ import static com.braintreepayments.api.ui.RotationHelper.rotateToPortrait;
 import static com.braintreepayments.api.ui.ViewHelper.FOUR_SECONDS;
 import static com.braintreepayments.api.ui.ViewHelper.ONE_SECOND;
 import static com.braintreepayments.api.ui.ViewHelper.TWO_SECONDS;
-import static com.braintreepayments.api.ui.ViewHelper.waitForKeyboardToClose;
+import static com.braintreepayments.api.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.api.ui.ViewHelper.waitForView;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.onCardField;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.onCvvField;
@@ -34,7 +34,6 @@ import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPayme
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodList;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
-import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.closeSoftKeyboard;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.typeText;
 import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDisplayed;
@@ -70,11 +69,9 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         getActivity();
         waitForAddPaymentFormHeader();
         onCardField().perform(typeText("378282246310005"));
-        onExpirationField().perform(typeText("12/18"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
-        onCvvField().perform(typeText("1234"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onPostalCodeField().perform(typeText("12345"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
+        onExpirationField().perform(typeText("12/18"), closeSoftKeyboard());
+        onCvvField().perform(typeText("1234"), closeSoftKeyboard());
+        onPostalCodeField().perform(typeText("12345"), closeSoftKeyboard());
 
         rotateToLandscape(this);
         waitForAddPaymentFormHeader();
@@ -168,9 +165,9 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
 
         waitForAddPaymentFormHeader(timeout * 4);
         onView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"));
-        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("0119"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withId(R.id.bt_card_form_cvv)).perform(typeText("123"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onView(withId(R.id.bt_card_form_postal_code)).perform(typeText("12345"), closeSoftKeyboard(), waitForKeyboardToClose());
+        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("0119"), closeSoftKeyboard());
+        onView(withId(R.id.bt_card_form_cvv)).perform(typeText("123"), closeSoftKeyboard());
+        onView(withId(R.id.bt_card_form_postal_code)).perform(typeText("12345"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
         onView(withId(R.id.bt_card_form_card_number)).check(matches(not(isEnabled())));
@@ -191,12 +188,10 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         getActivity();
         waitForAddPaymentFormHeader(timeout * 4); // give it extra time
         rotateToLandscape(this);
-        onCardField().perform(typeText("378282246310005"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
-        onExpirationField().perform(typeText("12/18"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onCvvField().perform(typeText("1234"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onPostalCodeField().perform(typeText("12345"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
+        onCardField().perform(typeText("378282246310005"), closeSoftKeyboard());
+        onExpirationField().perform(typeText("12/18"), closeSoftKeyboard());
+        onCvvField().perform(typeText("1234"), closeSoftKeyboard());
+        onPostalCodeField().perform(typeText("12345"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
         rotateToPortrait(this);
 
@@ -216,12 +211,10 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
 
         getActivity();
         waitForAddPaymentFormHeader(timeout * 4); // give it extra time
-        onCardField().perform(typeText("378282246310005"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
-        onExpirationField().perform(typeText("12/18"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onCvvField().perform(typeText("1234"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onPostalCodeField().perform(typeText("12345"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
+        onCardField().perform(typeText("378282246310005"), closeSoftKeyboard());
+        onExpirationField().perform(typeText("12/18"), closeSoftKeyboard());
+        onCvvField().perform(typeText("1234"), closeSoftKeyboard());
+        onPostalCodeField().perform(typeText("12345"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
         waitForView(withId(R.id.bt_header_container));
@@ -243,12 +236,10 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         BraintreeTestUtils.setUpActivityTest(this);
         getActivity();
         waitForAddPaymentFormHeader();
-        onCardField().perform(typeText("378282246310005"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
-        onExpirationField().perform(typeText("12/18"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onCvvField().perform(typeText("1234"), closeSoftKeyboard(), waitForKeyboardToClose());
-        onPostalCodeField().perform(typeText("12345"), closeSoftKeyboard(),
-                waitForKeyboardToClose());
+        onCardField().perform(typeText("378282246310005"), closeSoftKeyboard());
+        onExpirationField().perform(typeText("12/18"), closeSoftKeyboard());
+        onCvvField().perform(typeText("1234"), closeSoftKeyboard());
+        onPostalCodeField().perform(typeText("12345"), closeSoftKeyboard());
 
 
         onView(withId(R.id.bt_card_form_submit_button)).check(
