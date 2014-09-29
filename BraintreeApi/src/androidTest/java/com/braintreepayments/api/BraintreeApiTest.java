@@ -258,11 +258,11 @@ public class BraintreeApiTest extends AndroidTestCase {
 
         braintreeApi.sendAnalyticsEvent("event", "TEST");
         assertEquals(1, requestCount.get());
-        assertEquals(201, responseCode.get());
+        assertEquals(200, responseCode.get());
 
         braintreeApi.sendAnalyticsEvent("another-event", "TEST");
         assertEquals(2, requestCount.get());
-        assertEquals(201, responseCode.get());
+        assertEquals(200, responseCode.get());
     }
 
 }
