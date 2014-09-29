@@ -26,4 +26,17 @@ public class BraintreeDataTest extends AndroidTestCase {
         assertNotNull(json.get("device_session_id"));
         assertEquals(BraintreeEnvironment.QA.getMerchantId(), json.get("fraud_merchant_id"));
     }
+
+    public void testDeviceDataDoesNotIncludePayPalCorrelationIdWhenPayPalClassNotPresent()
+            throws JSONException {
+        BraintreeData braintreeData = new BraintreeData(new Activity(), BraintreeEnvironment.QA);
+
+        String data = braintreeData.collectDeviceData();
+        JSONObject json = new JSONObject(data);
+
+        assertNotNull(json.get("device_session_id"));
+        assertEquals(BraintreeEnvironment.QA.getMerchantId(), json.get("fraud_merchant_id"));
+        assertFalse(data.contains("correlation_id"));
+    }
+
 }
