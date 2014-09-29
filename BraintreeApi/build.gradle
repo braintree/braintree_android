@@ -3,7 +3,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-def paypalVersion = 'PayPalAndroidSDK-2.5.2.jar'
+def paypalVersion = 'PayPalAndroidSDK-2.5.4.jar'
 
 android {
     compileSdkVersion 19
