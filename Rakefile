@@ -13,7 +13,7 @@ task :tests => :lint do
       sh "ruby script/httpsd.rb /tmp/httpsd.pid"
       sh "ruby log_listener.rb &"
       log_listener_pid = $?.pid
-      sh "./gradlew --info runAllTests connectedAndroidTest"
+      sh "./gradlew --info runAllTests :BraintreeData:connectedAndroidTest :BraintreeApi:connectedAndroidTest :Drop-In:connectedAndroidTest"
     ensure
       `kill -9 \`cat /tmp/httpsd.pid\``
       `kill -9 #{log_listener_pid}`
