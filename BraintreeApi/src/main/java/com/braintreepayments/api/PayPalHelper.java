@@ -10,8 +10,8 @@ import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.paypal.android.sdk.payments.PayPalAuthorization;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
-import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 import com.paypal.android.sdk.payments.PayPalOAuthScopes;
+import com.paypal.android.sdk.payments.PayPalProfileSharingActivity;
 import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PayPalTouch;
 import com.paypal.android.sdk.payments.PayPalTouchActivity;
@@ -46,7 +46,7 @@ public class PayPalHelper {
                 !clientToken.getPayPal().getTouchDisabled()) {
             klass = PayPalTouchActivity.class;
         } else {
-            klass = PayPalFuturePaymentActivity.class;
+            klass = PayPalProfileSharingActivity.class;
         }
 
         Intent intent = new Intent(activity, klass);
@@ -72,8 +72,8 @@ public class PayPalHelper {
      * @param resultCode Result code returned in result.
      * @param data {@link Intent} returned in result.
      * @return {@link com.braintreepayments.api.models.PayPalAccountBuilder} or null if
-     * resultCode is not {@link android.app.Activity#RESULT_OK} or {@link com.paypal.android.sdk.payments.PayPalFuturePaymentActivity#RESULT_EXTRAS_INVALID}
-     * @throws ConfigurationException if resultCode is {@link com.paypal.android.sdk.payments.PayPalFuturePaymentActivity#RESULT_EXTRAS_INVALID}
+     * resultCode is not {@link android.app.Activity#RESULT_OK} or {@link com.paypal.android.sdk.payments.PayPalProfileSharingActivity#RESULT_EXTRAS_INVALID}
+     * @throws ConfigurationException if resultCode is {@link com.paypal.android.sdk.payments.PayPalProfileSharingActivity#RESULT_EXTRAS_INVALID}
      */
     public static PayPalAccountBuilder getBuilderFromActivity(Activity activity, int resultCode, Intent data) throws ConfigurationException {
         if (resultCode == Activity.RESULT_OK) {
@@ -93,7 +93,7 @@ public class PayPalHelper {
                 paypalAccountBuilder.email(paypalTouchResponse.optString("email"));
             } else {
                 PayPalAuthorization authorization = data.getParcelableExtra(
-                        PayPalFuturePaymentActivity.EXTRA_RESULT_AUTHORIZATION);
+                        PayPalProfileSharingActivity.EXTRA_RESULT_AUTHORIZATION);
                 paypalAccountBuilder.authorizationCode(authorization.getAuthorizationCode())
                         .source("paypal-sdk");
                 try {
@@ -107,7 +107,7 @@ public class PayPalHelper {
             }
 
             return paypalAccountBuilder;
-        } else if (resultCode == PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID) {
+        } else if (resultCode == PayPalProfileSharingActivity.RESULT_EXTRAS_INVALID) {
             throw new ConfigurationException();
         }
 
@@ -124,7 +124,7 @@ public class PayPalHelper {
      */
     public static boolean isPayPalIntent(Intent data) {
         return (data.getParcelableExtra(PayPalTouchActivity.EXTRA_LOGIN_CONFIRMATION) != null ||
-                data.getParcelableExtra(PayPalFuturePaymentActivity.EXTRA_RESULT_AUTHORIZATION) != null);
+                data.getParcelableExtra(PayPalProfileSharingActivity.EXTRA_RESULT_AUTHORIZATION) != null);
     }
 
     protected static PayPalConfiguration buildPayPalConfiguration(ClientToken clientToken) {
