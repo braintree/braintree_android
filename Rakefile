@@ -29,6 +29,7 @@ task :release => :lint do
   braintree_api_build_file = "BraintreeApi/build.gradle"
   braintree_drop_in_build_file = "Drop-In/build.gradle"
   braintree_demo_build_file = "Demo/build.gradle"
+  braintree_fake_wallet_build_file = "FakeWallet/build.gradle"
   braintree_test_utils_build_file = "TestUtils/build.gradle"
 
   last_version = `git tag | tail -1`.chomp
@@ -62,6 +63,9 @@ task :release => :lint do
 
   increment_version_code(braintree_demo_build_file)
   update_version(braintree_demo_build_file, version)
+
+  increment_version_code(braintree_fake_wallet_build_file)
+  update_version(braintree_fake_wallet_build_file, version)
 
   increment_version_code(braintree_test_utils_build_file)
   update_version(braintree_test_utils_build_file, version)
