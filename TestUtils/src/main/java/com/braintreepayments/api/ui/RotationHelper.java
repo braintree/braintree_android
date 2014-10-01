@@ -3,7 +3,6 @@ package com.braintreepayments.api.ui;
 import android.annotation.TargetApi;
 import android.app.UiAutomation;
 import android.os.Build.VERSION_CODES;
-import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 
 public class RotationHelper {
@@ -23,8 +22,6 @@ public class RotationHelper {
         UiAutomation automation = testCase.getInstrumentation().getUiAutomation();
         automation.setRotation(UiAutomation.ROTATION_UNFREEZE);
         automation.setRotation(direction);
-
-        SystemClock.sleep(1000); // There is currently no way to wait for the rotation to complete
     }
 
 }

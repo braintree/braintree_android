@@ -25,6 +25,7 @@ import static com.braintreepayments.api.ui.ViewHelper.THREE_SECONDS;
 import static com.braintreepayments.api.ui.ViewHelper.TWO_SECONDS;
 import static com.braintreepayments.api.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.api.ui.ViewHelper.waitForView;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.addCardAndAssertSuccess;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.onCardField;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.onCvvField;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.onExpirationField;
@@ -245,6 +246,18 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         waitForAddPaymentFormHeader();
         onView(withId(R.id.bt_card_form_submit_button)).check(
                 matches(hasBackgroundResource(getContext(), R.drawable.bt_submit_button_background)));
+    }
+
+    public void testCardFormCreatesAPaymentMethodInLandscape() {
+        if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
+            return;
+        }
+
+        rotateToLandscape(this);
+        BraintreeTestUtils.setUpActivityTest(this);
+        BraintreePaymentActivity activity = getActivity();
+
+        addCardAndAssertSuccess(activity);
     }
 
     private Context getContext() {
