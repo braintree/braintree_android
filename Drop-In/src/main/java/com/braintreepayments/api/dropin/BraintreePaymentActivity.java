@@ -83,6 +83,8 @@ public class BraintreePaymentActivity extends Activity implements
      */
     public static final String EXTRA_PAYMENT_METHOD_NONCE = "com.braintreepayments.api.dropin.EXTRA_PAYMENT_METHOD_NONCE";
 
+    private static final String ON_PAYMENT_METHOD_ADD_FORM_KEY = "com.braintreepayments.api.dropin.PAYMENT_METHOD_ADD_FORM";
+
     private Braintree mBraintree;
     private AddPaymentMethodViewController mAddPaymentMethodViewController;
     private SelectPaymentMethodViewController mSelectPaymentMethodViewController;
@@ -106,7 +108,11 @@ public class BraintreePaymentActivity extends Activity implements
         mBraintree.sendAnalyticsEvent("sdk.initialized");
 
         if (mBraintree.hasCachedCards()) {
-            onPaymentMethodsUpdated(mBraintree.getCachedPaymentMethods());
+            if (mSavedInstanceState.getBoolean(ON_PAYMENT_METHOD_ADD_FORM_KEY)) {
+                initAddPaymentMethodView();
+            } else {
+                onPaymentMethodsUpdated(mBraintree.getCachedPaymentMethods());
+            }
         } else {
             mBraintree.getPaymentMethods();
             waitForData();
@@ -351,6 +357,11 @@ public class BraintreePaymentActivity extends Activity implements
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(EXTRA_CLIENT_TOKEN, getClientToken());
+
+        if (StubbedView.CARD_FORM.mCurrentView) {
+            outState.putBoolean(ON_PAYMENT_METHOD_ADD_FORM_KEY, true);
+        }
+
         saveState(mAddPaymentMethodViewController, outState);
         saveState(mSelectPaymentMethodViewController, outState);
     }

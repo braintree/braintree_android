@@ -87,6 +87,31 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         onView(withId(R.id.bt_card_form_submit_button)).check(matches(isEnabled()));
     }
 
+    public void testAddPaymentViewIsResumedOnRotationWhenThereAreExistingPaymentMethods()
+            throws ErrorWithResponse, BraintreeException {
+        if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
+            return;
+        }
+
+        String clientToken = BraintreeTestUtils.setUpActivityTest(this);
+        BraintreeApi api = new BraintreeApi(getContext(), clientToken);
+        api.create(new CardBuilder()
+                .cardNumber("4111111111111111")
+                .expirationMonth("02")
+                .expirationYear("18"));
+
+        getActivity();
+        waitForPaymentMethodList();
+        onView(withId(R.id.bt_change_payment_method_link)).perform(click());
+        waitForAddPaymentFormHeader();
+        onCardField().perform(typeText("378282246310005"), closeSoftKeyboard());
+
+        rotateToLandscape(this);
+
+        waitForAddPaymentFormHeader();
+        onCardField().check(matches(withText("378282246310005")));
+    }
+
     public void testSelectPaymentViewIsRestoredOnRotation()
             throws InterruptedException, ErrorWithResponse, BraintreeException {
         if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
