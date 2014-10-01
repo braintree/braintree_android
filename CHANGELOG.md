@@ -1,6 +1,17 @@
 # Braintree Android SDK Release Notes
 
+## 1.2.2
+
+* Fixes
+  * Fix crash caused by too large request code in `PaymentButton`
+  * Resume the payment method form after rotation
+* Improvements
+  * Updated PayPal SDK
+    * email scope is now requested in all PayPal requests
+  * `correlationId` is now included in the device data string returned from `BraintreeData#collectDeviceData`
+
 ## 1.2.1
+
 * Fixes
   * BraintreeApi release now includes the PayPal SDK again. Sorry!
 * Improvements
