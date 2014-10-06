@@ -201,6 +201,8 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         if (!mIsSubmitting) {
             if(areFieldsValid()) {
                 setEnabledSubmitButtonStyle();
+            } else {
+                setDisabledSubmitButtonStyle();
             }
         }
     }

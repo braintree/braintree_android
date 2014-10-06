@@ -2,6 +2,7 @@ package com.braintreepayments.api.dropin;
 
 import android.app.Activity;
 import android.os.SystemClock;
+import android.view.KeyEvent;
 
 import com.braintreepayments.api.BraintreeApi;
 import com.braintreepayments.api.BraintreeTestUtils;
@@ -12,14 +13,17 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.PaymentMethod;
 
 import static com.braintreepayments.api.BraintreeTestUtils.injectBraintreeApi;
+import static com.braintreepayments.api.ui.Matchers.hasBackgroundResource;
 import static com.braintreepayments.api.ui.Matchers.withHint;
 import static com.braintreepayments.api.ui.Matchers.withId;
 import static com.braintreepayments.api.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.api.ui.ViewHelper.waitForView;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInCardForm;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.typeText;
+import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -51,6 +55,30 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
         assertTrue(postalCode.isError());
 
         verify(api, never()).create((PaymentMethod.Builder) anyObject());
+    }
+
+    public void testShowsSubmitButtonAsDisabledWhenAFieldBecomesInvalid() {
+        BraintreeTestUtils.setUpActivityTest(this, new TestClientTokenBuilder().build());
+        getActivity();
+
+        waitForAddPaymentFormHeader();
+
+        onView(withId(R.id.bt_card_form_submit_button)).check(matches(
+                hasBackgroundResource(getInstrumentation().getContext(),
+                        R.color.bt_button_disabled_color)));
+
+        fillInCardForm(getInstrumentation().getContext());
+
+        onView(withId(R.id.bt_card_form_submit_button)).check(matches(
+                hasBackgroundResource(getInstrumentation().getContext(),
+                        R.drawable.bt_submit_button_background)));
+
+        onView(withId(R.id.bt_card_form_expiration)).perform(click());
+        sendKeys(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_DEL);
+
+        onView(withId(R.id.bt_card_form_submit_button)).check(matches(
+                hasBackgroundResource(getInstrumentation().getContext(),
+                        R.color.bt_button_disabled_color)));
     }
 
     public void testSubmitsToServerWhenFieldsPassClientValidation()
