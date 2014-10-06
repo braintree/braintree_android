@@ -83,6 +83,12 @@ public class BraintreePaymentActivity extends Activity implements
      */
     public static final String EXTRA_PAYMENT_METHOD_NONCE = "com.braintreepayments.api.dropin.EXTRA_PAYMENT_METHOD_NONCE";
 
+    /**
+     * Error messages are returned as the value of this key in the data intent in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * if {@code responseCode} is not {@link android.app.Activity#RESULT_OK} or {@link android.app.Activity#RESULT_CANCELED}
+     */
+    public static final String EXTRA_ERROR_MESSAGE = "com.braintreepayments.api.dropin.EXTRA_ERROR_MESSAGE";
+
     private static final String ON_PAYMENT_METHOD_ADD_FORM_KEY = "com.braintreepayments.api.dropin.PAYMENT_METHOD_ADD_FORM";
 
     private Braintree mBraintree;
@@ -203,13 +209,16 @@ public class BraintreePaymentActivity extends Activity implements
                     throwable instanceof UpgradeRequiredException ||
                     throwable instanceof ConfigurationException) {
                 mBraintree.sendAnalyticsEvent("sdk.exit.developer-error");
-                setResult(BRAINTREE_RESULT_DEVELOPER_ERROR);
+                setResult(BRAINTREE_RESULT_DEVELOPER_ERROR,
+                        new Intent().putExtra(EXTRA_ERROR_MESSAGE, throwable));
             } else if(throwable instanceof ServerException || throwable instanceof UnexpectedException) {
                 mBraintree.sendAnalyticsEvent("sdk.exit.server-error");
-                setResult(BRAINTREE_RESULT_SERVER_ERROR);
+                setResult(BRAINTREE_RESULT_SERVER_ERROR,
+                        new Intent().putExtra(EXTRA_ERROR_MESSAGE, throwable));
             } else if(throwable instanceof DownForMaintenanceException) {
                 mBraintree.sendAnalyticsEvent("sdk.exit.server-unavailable");
-                setResult(BRAINTREE_RESULT_SERVER_UNAVAILABLE);
+                setResult(BRAINTREE_RESULT_SERVER_UNAVAILABLE,
+                        new Intent().putExtra(EXTRA_ERROR_MESSAGE, throwable));
             }
 
             finish();

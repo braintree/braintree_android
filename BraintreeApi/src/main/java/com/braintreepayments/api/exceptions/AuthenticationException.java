@@ -5,4 +5,11 @@ package com.braintreepayments.api.exceptions;
  * Indicates authentication has failed in some way.
  */
 public class AuthenticationException extends BraintreeException {
+    public AuthenticationException(String message) {
+        super(message);
+    }
+
+    public AuthenticationException() {
+        super();
+    }
 }
