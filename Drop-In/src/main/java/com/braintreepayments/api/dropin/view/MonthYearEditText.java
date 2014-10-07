@@ -69,6 +69,14 @@ public class MonthYearEditText extends FloatingLabelEditText {
         return DateValidator.isValid(getString());
     }
 
+    @Override
+    public void afterTextChanged(Editable editable) {
+        super.afterTextChanged(editable);
+        if ((getSelectionStart() == 5 && !editable.toString().endsWith("20")) || (getSelectionStart() == 7)) {
+            focusNext();
+        }
+    }
+
     /**
      * Convenience method to get the input text as a {@link String}.
      */

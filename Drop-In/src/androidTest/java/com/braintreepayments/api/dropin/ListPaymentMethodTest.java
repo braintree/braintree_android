@@ -56,7 +56,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        mBraintreeApi = new BraintreeApi(getInstrumentation().getContext(),
+        mBraintreeApi = new BraintreeApi(mContext,
                 setUpActivityTest(this, new TestClientTokenBuilder().withFakePayPal().build()));
         mBraintreeApi.create(new CardBuilder()
                 .cardNumber("4111111111111111")
@@ -75,7 +75,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
 
     public void testDisplaysALoadingViewWhileGettingPaymentMethods() {
         String clientToken = new TestClientTokenBuilder().build();
-        injectSlowBraintree(getInstrumentation().getContext(), clientToken, 4000);
+        injectSlowBraintree(mContext, clientToken, 4000);
         setUpActivityTest(this, clientToken);
         Activity activity = getActivity();
 
@@ -84,7 +84,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
 
     public void testLoadingPaymentMethodsTimesOutAfterTenSecondsAndDropsToAddPaymentMethodForm() {
         String clientToken = new TestClientTokenBuilder().build();
-        injectSlowBraintree(getInstrumentation().getContext(), clientToken, 11000);
+        injectSlowBraintree(mContext, clientToken, 11000);
         setUpActivityTest(this, clientToken);
         getActivity();
 
@@ -98,7 +98,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         when(mockRequest.get(anyString())).thenThrow(new UnexpectedException("Mocked HTTP request"));
         when(mockRequest.post(anyString(), anyString())).thenThrow(new UnexpectedException("Mocked HTTP request"));
         BraintreeTestUtils
-                .injectBraintree(getInstrumentation().getContext(), clientToken, mockRequest);
+                .injectBraintree(mContext, clientToken, mockRequest);
 
         setUpActivityTest(this, clientToken);
         long testStartTime = System.currentTimeMillis();

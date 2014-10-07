@@ -36,8 +36,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        System.setProperty("dexmaker.dexcache",
-                getInstrumentation().getContext().getCacheDir().getPath());
+        System.setProperty("dexmaker.dexcache", mContext.getCacheDir().getPath());
     }
 
     public void testAddsEventOnSDKInitialized() {
@@ -61,8 +60,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     public void testAddsEventOnAddCardFailed() {
         String clientToken = new TestClientTokenBuilder().withCvvVerification().withAnalytics().build();
-        mBraintree = spy(Braintree.getInstance(getInstrumentation().getContext(),
-                clientToken));
+        mBraintree = spy(Braintree.getInstance(mContext, clientToken));
         injectBraintree(clientToken, mBraintree);
         setUpActivityTest(this, clientToken);
         mActivity = getActivity();
@@ -140,8 +138,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     private void setupActivity() {
         String clientToken = new TestClientTokenBuilder().withFakePayPal().withAnalytics().build();
-        mBraintree = spy(Braintree.getInstance(getInstrumentation().getContext(),
-                clientToken));
+        mBraintree = spy(Braintree.getInstance(mContext, clientToken));
         injectBraintree(clientToken, mBraintree);
         setUpActivityTest(this, clientToken);
         mActivity = getActivity();

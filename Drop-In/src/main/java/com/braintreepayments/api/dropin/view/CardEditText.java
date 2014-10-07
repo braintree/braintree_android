@@ -64,6 +64,14 @@ public class CardEditText extends FloatingLabelEditText {
         setCompoundDrawablesWithIntrinsicBounds(0, 0, mCardType.getFrontResource(), 0);
 
         super.afterTextChanged(editable);
+
+        if (mCardType.getMaxCardLength() == getSelectionStart()) {
+            validate();
+
+            if (isValid()) {
+                focusNext();
+            }
+        }
     }
 
     @Override

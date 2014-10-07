@@ -198,12 +198,12 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
     @Override
     public void onTextChanged(Editable editable) {
-        if (!mIsSubmitting) {
-            if(areFieldsValid()) {
-                setEnabledSubmitButtonStyle();
-            } else {
-                setDisabledSubmitButtonStyle();
-            }
+        if (mIsSubmitting) { return; }
+
+        if(areFieldsValid()) {
+            setEnabledSubmitButtonStyle();
+        } else {
+            setDisabledSubmitButtonStyle();
         }
     }
 

@@ -32,7 +32,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
         super.setUp();
 
         String clientToken = new TestClientTokenBuilder().build();
-        mBraintree = injectBraintree(getInstrumentation().getContext(), clientToken);
+        mBraintree = injectBraintree(mContext, clientToken);
         setUpActivityTest(this, clientToken);
         mActivity = getActivity();
 

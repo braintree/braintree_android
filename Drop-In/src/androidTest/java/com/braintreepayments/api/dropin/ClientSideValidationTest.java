@@ -35,7 +35,7 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
     public void testMarksFieldsAsErrorWhenSubmitButtonIsClicked()
             throws ErrorWithResponse, BraintreeException {
         String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
-        BraintreeApi api = spy(new BraintreeApi(getInstrumentation().getContext(), clientToken));
+        BraintreeApi api = spy(new BraintreeApi(mContext, clientToken));
         injectBraintreeApi(clientToken, api);
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         Activity activity = getActivity();
@@ -64,27 +64,24 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
         waitForAddPaymentFormHeader();
 
         onView(withId(R.id.bt_card_form_submit_button)).check(matches(
-                hasBackgroundResource(getInstrumentation().getContext(),
-                        R.color.bt_button_disabled_color)));
+                hasBackgroundResource(mContext, R.color.bt_button_disabled_color)));
 
-        fillInCardForm(getInstrumentation().getContext());
+        fillInCardForm(mContext);
 
         onView(withId(R.id.bt_card_form_submit_button)).check(matches(
-                hasBackgroundResource(getInstrumentation().getContext(),
-                        R.drawable.bt_submit_button_background)));
+                hasBackgroundResource(mContext, R.drawable.bt_submit_button_background)));
 
         onView(withId(R.id.bt_card_form_expiration)).perform(click());
         sendKeys(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_DEL);
 
         onView(withId(R.id.bt_card_form_submit_button)).check(matches(
-                hasBackgroundResource(getInstrumentation().getContext(),
-                        R.color.bt_button_disabled_color)));
+                hasBackgroundResource(mContext, R.color.bt_button_disabled_color)));
     }
 
     public void testSubmitsToServerWhenFieldsPassClientValidation()
             throws ErrorWithResponse, BraintreeException {
         String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
-        BraintreeApi api = spy(new BraintreeApi(getInstrumentation().getContext(), clientToken));
+        BraintreeApi api = spy(new BraintreeApi(mContext, clientToken));
         injectBraintreeApi(clientToken, api);
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();

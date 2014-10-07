@@ -1,6 +1,5 @@
 package com.braintreepayments.api.dropin;
 
-import android.content.Context;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
@@ -94,7 +93,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         }
 
         String clientToken = BraintreeTestUtils.setUpActivityTest(this);
-        BraintreeApi api = new BraintreeApi(getContext(), clientToken);
+        BraintreeApi api = new BraintreeApi(mContext, clientToken);
         api.create(new CardBuilder()
                 .cardNumber("4111111111111111")
                 .expirationMonth("02")
@@ -118,7 +117,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
             return;
         }
         String clientToken = BraintreeTestUtils.setUpActivityTest(this);
-        BraintreeApi api = new BraintreeApi(getContext(), clientToken);
+        BraintreeApi api = new BraintreeApi(mContext, clientToken);
         api.create(new CardBuilder()
                 .cardNumber("4111111111111111")
                 .expirationMonth("02")
@@ -171,7 +170,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         }
 
         String clientToken = new TestClientTokenBuilder().build();
-        injectSlowBraintree(getContext(), clientToken, TWO_SECONDS);
+        injectSlowBraintree(mContext, clientToken, TWO_SECONDS);
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
 
         getActivity();
@@ -186,7 +185,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
 
         int timeout = FOUR_SECONDS;
         String clientToken = new TestClientTokenBuilder().build();
-        injectSlowBraintree(getContext(), clientToken, timeout);
+        injectSlowBraintree(mContext, clientToken, timeout);
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
 
         getActivity();
@@ -209,7 +208,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         }
 
         String clientToken = new TestClientTokenBuilder().build();
-        injectSlowBraintree(getContext(), clientToken, THREE_SECONDS);
+        injectSlowBraintree(mContext, clientToken, THREE_SECONDS);
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
 
         getActivity();
@@ -231,7 +230,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         }
 
         String clientToken = new TestClientTokenBuilder().build();
-        injectSlowBraintree(getContext(), clientToken, THREE_SECONDS);
+        injectSlowBraintree(mContext, clientToken, THREE_SECONDS);
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
 
         getActivity();
@@ -266,11 +265,11 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
 
 
         onView(withId(R.id.bt_card_form_submit_button)).check(
-                matches(hasBackgroundResource(getContext(), R.drawable.bt_submit_button_background)));
+                matches(hasBackgroundResource(mContext, R.drawable.bt_submit_button_background)));
         rotateToLandscape(this);
         waitForAddPaymentFormHeader();
         onView(withId(R.id.bt_card_form_submit_button)).check(
-                matches(hasBackgroundResource(getContext(), R.drawable.bt_submit_button_background)));
+                matches(hasBackgroundResource(mContext, R.drawable.bt_submit_button_background)));
     }
 
     public void testCardFormCreatesAPaymentMethodInLandscape() {
@@ -283,10 +282,6 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         BraintreePaymentActivity activity = getActivity();
 
         addCardAndAssertSuccess(activity);
-    }
-
-    private Context getContext() {
-        return getInstrumentation().getContext();
     }
 
 }

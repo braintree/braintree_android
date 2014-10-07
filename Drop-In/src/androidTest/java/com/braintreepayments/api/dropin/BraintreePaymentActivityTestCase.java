@@ -22,6 +22,8 @@ import static com.google.android.apps.common.testing.ui.espresso.Espresso.setFai
 public class BraintreePaymentActivityTestCase extends
         ActivityInstrumentationTestCase2<BraintreePaymentActivity> {
 
+    protected Context mContext;
+
     public BraintreePaymentActivityTestCase() {
         super(BraintreePaymentActivity.class);
     }
@@ -36,6 +38,8 @@ public class BraintreePaymentActivityTestCase extends
         KeyguardManager keyguardManager = (KeyguardManager)
                 getInstrumentation().getContext().getSystemService(Context.KEYGUARD_SERVICE);
         keyguardManager.newKeyguardLock("BraintreePaymentActivity").disableKeyguard();
+
+        mContext = getInstrumentation().getContext();
     }
 
     @Override

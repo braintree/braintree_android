@@ -67,7 +67,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
     public void testSubmitButtonUsesCustomizationForSelectPaymentMethodIfIncludedAsAnExtra()
             throws ErrorWithResponse, BraintreeException {
         String clientToken = new TestClientTokenBuilder().build();
-        BraintreeApi api = new BraintreeApi(getInstrumentation().getContext(), clientToken);
+        BraintreeApi api = new BraintreeApi(mContext, clientToken);
         api.create(new CardBuilder()
                         .cardNumber("4111111111111111")
                         .expirationDate("08/19"));
@@ -137,8 +137,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
 
         ImageView actual = (ImageView) activity.findViewById(android.R.id.home);
         assertBitmapsEqual(actual.getDrawable(),
-                getInstrumentation().getContext().getResources()
-                        .getDrawable(android.R.drawable.ic_delete)
+                mContext.getResources().getDrawable(android.R.drawable.ic_delete)
         );
     }
 
@@ -155,13 +154,12 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
 
         assertEquals("Purchase", activity.getActionBar().getTitle());
         ImageView actual = (ImageView) activity.findViewById(android.R.id.home);
-        ColorDrawable expected = new ColorDrawable(getInstrumentation().getContext().getResources()
-                        .getColor(android.R.color.transparent));
+        ColorDrawable expected = new ColorDrawable(mContext.getResources().getColor(android.R.color.transparent));
         assertEquals(actual.getDrawable().getOpacity(), expected.getOpacity());
     }
 
     private Intent createIntent() {
-        return new Intent(getInstrumentation().getContext(), BraintreePaymentActivity.class);
+        return new Intent(mContext, BraintreePaymentActivity.class);
     }
 
 }

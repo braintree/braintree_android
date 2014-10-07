@@ -1,6 +1,7 @@
 package com.braintreepayments.api.dropin.view;
 
 import android.content.Context;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputFilter.LengthFilter;
 import android.text.InputType;
@@ -42,8 +43,9 @@ public class CvvEditText extends FloatingLabelEditText {
 
     /**
      * Sets the card type associated with the security code type. {@link CardType#AMEX} has a
-     * different icon and length than other card types.
-     * Typically handled through {@link com.braintreepayments.api.dropin.view.CardEditText.OnCardTypeChangedListener#onCardTypeChanged(com.braintreepayments.api.dropin.utils.CardType)}.
+     * different icon and length than other card types. Typically handled through {@link
+     * com.braintreepayments.api.dropin.view.CardEditText.OnCardTypeChangedListener#onCardTypeChanged(com.braintreepayments.api.dropin.utils.CardType)}.
+     *
      * @param cardType Type of card represented by the current value of card number input.
      */
     public void setCardType(CardType cardType) {
@@ -55,13 +57,30 @@ public class CvvEditText extends FloatingLabelEditText {
 
     /**
      * Force the CVV hint image to always show.
+     * <p/>
+     * By default, {@link com.braintreepayments.api.dropin.view.CvvEditText} will only show the hint
+     * when the view is focused.
      *
-     * By default, {@link com.braintreepayments.api.dropin.view.CvvEditText} will only show the hint when the view is focused.
      * @param alwaysDisplayHint Whether or not to show display hint when not focused.
      */
     public void setAlwaysDisplayHint(boolean alwaysDisplayHint) {
         mAlwaysDisplayHint = alwaysDisplayHint;
         invalidate();
+    }
+
+    @Override
+    public void afterTextChanged(Editable editable) {
+        super.afterTextChanged(editable);
+        if (mCardType == null) { return; }
+
+        if (mCardType.getSecurityCodeLength() == editable.length() &&
+                getSelectionStart() == editable.length()) {
+            validate();
+
+            if (isValid()) {
+                focusNext();
+            }
+        }
     }
 
     @Override
@@ -86,7 +105,7 @@ public class CvvEditText extends FloatingLabelEditText {
     }
 
     private int getSecurityCodeLength() {
-        if(mCardType == null) {
+        if (mCardType == null) {
             return DEFAULT_MAX_LENGTH;
         } else {
             return mCardType.getSecurityCodeLength();
