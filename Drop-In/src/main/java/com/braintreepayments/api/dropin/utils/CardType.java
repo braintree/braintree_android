@@ -134,7 +134,8 @@ public enum CardType {
     }
 
     /**
-     * Returns the card type matching this account, or {@code null} for no match.
+     * Returns the card type matching this account, or {@link com.braintreepayments.api.dropin.utils.CardType#UNKNOWN}
+     * for no match.
      * <p/>
      * A partial account type may be given, with the caveat that it may not have enough digits to
      * match.

@@ -6,7 +6,8 @@
         style="@style/bt_form_field"
         android:id="@+id/bt_card_form_card_number"
         android:imeOptions="actionNext"
-        android:hint="@string/bt_form_hint_card_number" />
+        android:hint="@string/bt_form_hint_card_number"
+        android:maxLength="19" />
 
     <com.braintreepayments.api.dropin.view.MonthYearEditText
         style="@style/bt_form_field"
