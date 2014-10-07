@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.braintreepayments.api.CardNumber.VISA;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -605,7 +606,7 @@ public class BraintreeTest extends AndroidTestCase {
     private static void createCardSync(Braintree braintree) throws ExecutionException,
             InterruptedException {
         braintree.createHelper(new CardBuilder()
-                .cardNumber("4111111111111111")
+                .cardNumber(VISA)
                 .expirationMonth("04")
                 .expirationYear("17")).get();
     }

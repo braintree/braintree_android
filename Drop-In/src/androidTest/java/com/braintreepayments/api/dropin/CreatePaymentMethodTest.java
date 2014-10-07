@@ -30,6 +30,7 @@ import static com.braintreepayments.api.BraintreeTestUtils.injectBraintreeApi;
 import static com.braintreepayments.api.BraintreeTestUtils.injectGeneric422ErrorOnCardCreateBraintree;
 import static com.braintreepayments.api.BraintreeTestUtils.injectSlowBraintree;
 import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
+import static com.braintreepayments.api.CardNumber.VISA;
 import static com.braintreepayments.api.ui.Matchers.withHint;
 import static com.braintreepayments.api.ui.Matchers.withId;
 import static com.braintreepayments.api.ui.ViewHelper.FIVE_SECONDS;
@@ -82,7 +83,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreePaymentActivity activity = getActivity();
 
         waitForAddPaymentFormHeader();
-        onView(withHint("Card Number")).perform(typeText("4111111111111111"));
+        onView(withHint("Card Number")).perform(typeText(VISA));
         onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_cvv)).check(matches(not(isDisplayed())));
         onView(withId(R.id.bt_card_form_postal_code)).check(matches(not(isDisplayed())));
@@ -171,7 +172,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreePaymentActivity activity = getActivity();
 
         waitForAddPaymentFormHeader();
-        onView(withHint("Card Number")).perform(typeText("4111111111111111"));
+        onView(withHint("Card Number")).perform(typeText(VISA));
         onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
         onView(withHint("CVV")).perform(typeText("123"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("12345"));
@@ -203,7 +204,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
         waitForAddPaymentFormHeader();
 
-        onView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"));
+        onView(withId(R.id.bt_card_form_card_number)).perform(typeText(VISA));
         onView(withId(R.id.bt_card_form_expiration)).perform(typeText("12/19"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_cvv)).perform(typeText("200"));
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
@@ -251,7 +252,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForAddPaymentFormHeader();
-        onView(withHint("Card Number")).perform(typeText("4111111111111111"));
+        onView(withHint("Card Number")).perform(typeText(VISA));
         onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
         onView(withHint("CVV")).perform(typeText("123"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("12345"));
@@ -310,7 +311,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreePaymentActivity activity = getActivity();
 
         waitForAddPaymentFormHeader();
-        onView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"));
+        onView(withId(R.id.bt_card_form_card_number)).perform(typeText(VISA));
         onView(withId(R.id.bt_card_form_expiration)).perform(typeText("0719"));
 
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
@@ -339,7 +340,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         BraintreePaymentActivity activity = getActivity();
 
-        waitForView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"));
+        waitForView(withId(R.id.bt_card_form_card_number)).perform(typeText(VISA));
         onView(withId(R.id.bt_card_form_expiration)).perform(typeText("08/15"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
@@ -359,7 +360,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
                 new TestClientTokenBuilder().withPostalCodeVerification().build());
         BraintreePaymentActivity activity = getActivity();
 
-        waitForView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"));
+        waitForView(withId(R.id.bt_card_form_card_number)).perform(typeText(VISA));
         onView(withId(R.id.bt_card_form_expiration)).perform(typeText("08/15"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_cvv)).perform(typeText("123"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_postal_code)).perform(typeText("20000"));
@@ -382,7 +383,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         setUpActivityTest(this, clientToken);
         BraintreePaymentActivity activity = getActivity();
 
-        waitForView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"));
+        waitForView(withId(R.id.bt_card_form_card_number)).perform(typeText(VISA));
         onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
         onView(withHint("CVV")) .perform(typeText("123"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("12345"));
@@ -402,7 +403,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreePaymentActivity activity = getActivity();
         waitForAddPaymentFormHeader();
 
-        onView(withHint("Card Number")).perform(typeText("4111111111111111"));
+        onView(withHint("Card Number")).perform(typeText(VISA));
         onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
         onView(withHint("CVV")) .perform(typeText("200"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("20000"));
@@ -426,7 +427,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreePaymentActivity activity = getActivity();
         waitForAddPaymentFormHeader();
 
-        onView(withHint("Card Number")).perform(typeText("4111111111111111"));
+        onView(withHint("Card Number")).perform(typeText(VISA));
         onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
         onView(withHint("CVV")) .perform(typeText("200"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("20000"));
@@ -450,7 +451,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreePaymentActivity activity = getActivity();
         waitForAddPaymentFormHeader();
 
-        onView(withHint("Card Number")).perform(typeText("4111111111111111"));
+        onView(withHint("Card Number")).perform(typeText(VISA));
         onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
         onView(withHint("CVV")) .perform(typeText("200"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("20000"));
@@ -483,4 +484,5 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         return (activity.getActionBar().getDisplayOptions() & ActionBar.DISPLAY_HOME_AS_UP) ==
             ActionBar.DISPLAY_HOME_AS_UP;
     }
+
 }

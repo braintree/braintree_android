@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.braintreepayments.api.CardNumber.VISA;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.matches;
@@ -222,7 +223,7 @@ public class BraintreeApiTest extends AndroidTestCase {
             throws ErrorWithResponse, BraintreeException, JSONException {
         BraintreeApi braintreeApi = new BraintreeApi(mContext, new TestClientTokenBuilder().build());
         Card card = braintreeApi.create(
-                new CardBuilder().cardNumber("4111111111111111").expirationDate("06/20"));
+                new CardBuilder().cardNumber(VISA).expirationDate("06/20"));
 
         Card cardFromShowNonce = (Card) braintreeApi.getPaymentMethod(card.getNonce());
 

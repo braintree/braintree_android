@@ -30,6 +30,9 @@ import java.util.Map;
 import static com.braintreepayments.api.BraintreeTestUtils.assertSelectedPaymentMethodIs;
 import static com.braintreepayments.api.BraintreeTestUtils.injectSlowBraintree;
 import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
+import static com.braintreepayments.api.CardNumber.AMEX;
+import static com.braintreepayments.api.CardNumber.VISA;
+import static com.braintreepayments.api.CardNumber.VISA_2;
 import static com.braintreepayments.api.ui.Matchers.withId;
 import static com.braintreepayments.api.ui.WaitForActivityHelper.waitForActivity;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.onAddPaymentFormHeader;
@@ -59,7 +62,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         mBraintreeApi = new BraintreeApi(mContext,
                 setUpActivityTest(this, new TestClientTokenBuilder().withFakePayPal().build()));
         mBraintreeApi.create(new CardBuilder()
-                .cardNumber("4111111111111111")
+                .cardNumber(VISA)
                 .expirationMonth("01")
                 .expirationYear("2018"));
     }
@@ -68,7 +71,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         SystemClock.sleep(1000);
 
         return mBraintreeApi.create(new CardBuilder()
-                .cardNumber("378282246310005")
+                .cardNumber(AMEX)
                 .expirationMonth("01")
                 .expirationYear("2019")).getNonce();
     }
@@ -236,7 +239,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
             throws IOException, ErrorWithResponse {
         String nonce = createAmex();
         mBraintreeApi.create(new CardBuilder()
-                .cardNumber("4005519200000004")
+                .cardNumber(VISA_2)
                 .expirationMonth("02")
                 .expirationYear("2029"));
         BraintreePaymentActivity activity = getActivity();

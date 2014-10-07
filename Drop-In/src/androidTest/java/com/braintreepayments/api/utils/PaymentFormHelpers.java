@@ -18,6 +18,7 @@ import org.hamcrest.Matcher;
 
 import java.util.Map;
 
+import static com.braintreepayments.api.CardNumber.VISA;
 import static com.braintreepayments.api.ui.Matchers.withHint;
 import static com.braintreepayments.api.ui.Matchers.withId;
 import static com.braintreepayments.api.ui.ViewHelper.FIFTEEN_SECONDS;
@@ -40,7 +41,7 @@ public class PaymentFormHelpers {
         waitForAddPaymentFormHeader();
 
         onView(withHint(context.getString(R.string.bt_form_hint_card_number)))
-                .perform(typeText("4111111111111111"), closeSoftKeyboard());
+                .perform(typeText(VISA), closeSoftKeyboard());
         onView(withHint(context.getString(R.string.bt_form_hint_expiration)))
                 .perform(typeText("0619"), closeSoftKeyboard());
         onView(withHint(context.getString(R.string.bt_form_hint_cvv)))

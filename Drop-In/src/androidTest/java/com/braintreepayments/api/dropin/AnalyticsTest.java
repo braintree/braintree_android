@@ -11,6 +11,7 @@ import com.braintreepayments.api.exceptions.ServerException;
 
 import static com.braintreepayments.api.BraintreeTestUtils.injectBraintree;
 import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
+import static com.braintreepayments.api.CardNumber.VISA;
 import static com.braintreepayments.api.ui.Matchers.withHint;
 import static com.braintreepayments.api.ui.Matchers.withId;
 import static com.braintreepayments.api.ui.ViewHelper.closeSoftKeyboard;
@@ -67,7 +68,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
         waitForAddPaymentFormHeader();
 
-        onView(withHint("Card Number")).perform(typeText("4111111111111111"));
+        onView(withHint("Card Number")).perform(typeText(VISA));
         onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
         onView(withHint("CVV")).perform(typeText("200"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("12345"));
@@ -146,7 +147,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
     }
 
     private void fillInCreditCard() {
-        onView(withHint("Card Number")).perform(typeText("4111111111111111"));
+        onView(withHint("Card Number")).perform(typeText(VISA));
         onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
         onView(withHint("CVV")).perform(typeText("123"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("12345"));

@@ -15,6 +15,8 @@ import com.braintreepayments.api.models.CardBuilder;
 import static com.braintreepayments.api.BraintreeTestUtils.assertSelectedPaymentMethodIs;
 import static com.braintreepayments.api.BraintreeTestUtils.injectBraintree;
 import static com.braintreepayments.api.BraintreeTestUtils.injectSlowBraintree;
+import static com.braintreepayments.api.CardNumber.AMEX;
+import static com.braintreepayments.api.CardNumber.VISA;
 import static com.braintreepayments.api.ui.Matchers.hasBackgroundResource;
 import static com.braintreepayments.api.ui.Matchers.withId;
 import static com.braintreepayments.api.ui.RotationHelper.rotateToLandscape;
@@ -71,7 +73,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
 
         getActivity();
         waitForAddPaymentFormHeader();
-        onCardField().perform(typeText("378282246310005"));
+        onCardField().perform(typeText(AMEX));
         onExpirationField().perform(typeText("12/18"), closeSoftKeyboard());
         onCvvField().perform(typeText("1234"), closeSoftKeyboard());
         onPostalCodeField().perform(typeText("12345"), closeSoftKeyboard());
@@ -79,7 +81,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
 
         rotateToLandscape(this);
         waitForAddPaymentFormHeader();
-        onCardField().check(matches(withText("378282246310005")));
+        onCardField().check(matches(withText(AMEX)));
         onExpirationField().check(matches(withText("12/18")));
         onCvvField().check(matches(withText("1234")));
         onPostalCodeField().check(matches(withText("12345")));
@@ -95,7 +97,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         String clientToken = BraintreeTestUtils.setUpActivityTest(this);
         BraintreeApi api = new BraintreeApi(mContext, clientToken);
         api.create(new CardBuilder()
-                .cardNumber("4111111111111111")
+                .cardNumber(VISA)
                 .expirationMonth("02")
                 .expirationYear("18"));
 
@@ -103,12 +105,12 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         waitForPaymentMethodList();
         onView(withId(R.id.bt_change_payment_method_link)).perform(click());
         waitForAddPaymentFormHeader();
-        onCardField().perform(typeText("378282246310005"), closeSoftKeyboard());
+        onCardField().perform(typeText(AMEX), closeSoftKeyboard());
 
         rotateToLandscape(this);
 
         waitForAddPaymentFormHeader();
-        onCardField().check(matches(withText("378282246310005")));
+        onCardField().check(matches(withText(AMEX)));
     }
 
     public void testSelectPaymentViewIsRestoredOnRotation()
@@ -119,14 +121,14 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         String clientToken = BraintreeTestUtils.setUpActivityTest(this);
         BraintreeApi api = new BraintreeApi(mContext, clientToken);
         api.create(new CardBuilder()
-                .cardNumber("4111111111111111")
+                .cardNumber(VISA)
                 .expirationMonth("02")
                 .expirationYear("18"));
 
         SystemClock.sleep(1000);
 
         api.create(new CardBuilder()
-                .cardNumber("378282246310005")
+                .cardNumber(AMEX)
                 .expirationMonth("02")
                 .expirationYear("18"));
 
@@ -191,7 +193,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForAddPaymentFormHeader(timeout * 4);
-        onView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"));
+        onView(withId(R.id.bt_card_form_card_number)).perform(typeText(VISA));
         onView(withId(R.id.bt_card_form_expiration)).perform(typeText("0119"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_cvv)).perform(typeText("123"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_postal_code)).perform(typeText("12345"), closeSoftKeyboard());
@@ -214,7 +216,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         getActivity();
         waitForAddPaymentFormHeader();
         rotateToLandscape(this);
-        onCardField().perform(typeText("378282246310005"), closeSoftKeyboard());
+        onCardField().perform(typeText(AMEX), closeSoftKeyboard());
         onExpirationField().perform(typeText("12/18"), closeSoftKeyboard());
         onCvvField().perform(typeText("1234"), closeSoftKeyboard());
         onPostalCodeField().perform(typeText("12345"), closeSoftKeyboard());
@@ -235,7 +237,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
 
         getActivity();
         waitForAddPaymentFormHeader();
-        onCardField().perform(typeText("378282246310005"), closeSoftKeyboard());
+        onCardField().perform(typeText(AMEX), closeSoftKeyboard());
         onExpirationField().perform(typeText("12/18"), closeSoftKeyboard());
         onCvvField().perform(typeText("1234"), closeSoftKeyboard());
         onPostalCodeField().perform(typeText("12345"), closeSoftKeyboard());
@@ -258,7 +260,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         BraintreeTestUtils.setUpActivityTest(this);
         getActivity();
         waitForAddPaymentFormHeader();
-        onCardField().perform(typeText("378282246310005"), closeSoftKeyboard());
+        onCardField().perform(typeText(AMEX), closeSoftKeyboard());
         onExpirationField().perform(typeText("12/18"), closeSoftKeyboard());
         onCvvField().perform(typeText("1234"), closeSoftKeyboard());
         onPostalCodeField().perform(typeText("12345"), closeSoftKeyboard());

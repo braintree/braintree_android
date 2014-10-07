@@ -15,6 +15,7 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.CardBuilder;
 
 import static com.braintreepayments.api.BraintreeTestUtils.assertBitmapsEqual;
+import static com.braintreepayments.api.CardNumber.VISA;
 import static com.braintreepayments.api.ui.Matchers.withId;
 import static com.braintreepayments.api.ui.ViewHelper.waitForView;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
@@ -69,8 +70,8 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         String clientToken = new TestClientTokenBuilder().build();
         BraintreeApi api = new BraintreeApi(mContext, clientToken);
         api.create(new CardBuilder()
-                        .cardNumber("4111111111111111")
-                        .expirationDate("08/19"));
+                .cardNumber(VISA)
+                .expirationDate("08/19"));
 
         Intent intent = createIntent();
         Customization customization = new CustomizationBuilder()
@@ -154,7 +155,8 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
 
         assertEquals("Purchase", activity.getActionBar().getTitle());
         ImageView actual = (ImageView) activity.findViewById(android.R.id.home);
-        ColorDrawable expected = new ColorDrawable(mContext.getResources().getColor(android.R.color.transparent));
+        ColorDrawable expected = new ColorDrawable(mContext.getResources().getColor(
+                android.R.color.transparent));
         assertEquals(actual.getDrawable().getOpacity(), expected.getOpacity());
     }
 

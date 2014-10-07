@@ -13,6 +13,9 @@ import com.braintreepayments.api.models.PaymentMethod;
 
 import java.util.List;
 
+import static com.braintreepayments.api.CardNumber.AMEX;
+import static com.braintreepayments.api.CardNumber.VISA;
+
 public class GetPaymentMethodsTest extends AndroidTestCase {
 
     @Override
@@ -35,7 +38,7 @@ public class GetPaymentMethodsTest extends AndroidTestCase {
         BraintreeApi braintreeApi = new BraintreeApi(getContext(),
                 new TestClientTokenBuilder().withFakePayPal().build());
         CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber("4111111111111111")
+                .cardNumber(VISA)
                 .expirationMonth("01")
                 .expirationYear("2017");
 
@@ -44,7 +47,7 @@ public class GetPaymentMethodsTest extends AndroidTestCase {
         SystemClock.sleep(1000);
 
         cardBuilder = new CardBuilder()
-                .cardNumber("371449635398431")
+                .cardNumber(AMEX)
                 .expirationMonth("01")
                 .expirationYear("2017");
 
@@ -61,7 +64,7 @@ public class GetPaymentMethodsTest extends AndroidTestCase {
 
         assertEquals(3, paymentMethods.size());
         assertEquals("PayPal", paymentMethods.get(0).getTypeLabel());
-        assertEquals("31", ((Card) paymentMethods.get(1)).getLastTwo());
+        assertEquals("05", ((Card) paymentMethods.get(1)).getLastTwo());
         assertEquals("11", ((Card) paymentMethods.get(2)).getLastTwo());
     }
 

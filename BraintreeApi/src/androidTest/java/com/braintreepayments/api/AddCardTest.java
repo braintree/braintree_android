@@ -7,6 +7,8 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 
+import static com.braintreepayments.api.CardNumber.VISA;
+
 public class AddCardTest extends AndroidTestCase {
 
     private BraintreeApi mBraintreeApi;
@@ -18,7 +20,7 @@ public class AddCardTest extends AndroidTestCase {
 
     public void testCanAddCard() throws ErrorWithResponse, BraintreeException {
         CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber("4111111111111111")
+                .cardNumber(VISA)
                 .expirationMonth("01")
                 .expirationYear("2017");
 

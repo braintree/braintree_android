@@ -8,12 +8,14 @@ import junit.framework.TestCase;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.braintreepayments.api.CardNumber.VISA;
+
 public class CardBuilderTest extends TestCase {
 
     private static final String CREDIT_CARD_KEY = "creditCard";
 
     public void testBuildsACardCorrectly() throws JSONException {
-        CardBuilder cardBuilder = new CardBuilder().cardNumber("41111111111111111")
+        CardBuilder cardBuilder = new CardBuilder().cardNumber(VISA)
                 .cvv("123")
                 .expirationMonth("01")
                 .expirationYear("2015")
@@ -27,7 +29,7 @@ public class CardBuilderTest extends TestCase {
         JSONObject jsonCard = json.getJSONObject(CREDIT_CARD_KEY);
         JSONObject jsonMetadata = json.getJSONObject(Builder.METADATA_KEY);
 
-        assertEquals("41111111111111111", jsonCard.getString("number"));
+        assertEquals(VISA, jsonCard.getString("number"));
         assertEquals("123", jsonCard.getString("cvv"));
         assertEquals("01", jsonCard.getString("expirationMonth"));
         assertEquals("2015", jsonCard.getString("expirationYear"));
@@ -43,14 +45,14 @@ public class CardBuilderTest extends TestCase {
     }
 
     public void testBuildsWithAnExpirationDateCorrectly() throws JSONException {
-        CardBuilder cardBuilder = new CardBuilder().cardNumber("41111111111111111")
+        CardBuilder cardBuilder = new CardBuilder().cardNumber(VISA)
                 .cvv("123")
                 .expirationDate("01/15")
                 .postalCode("12345");
 
         JSONObject jsonCard = new JSONObject(cardBuilder.toJsonString()).getJSONObject(CREDIT_CARD_KEY);
 
-        assertEquals("41111111111111111", jsonCard.getString("number"));
+        assertEquals(VISA, jsonCard.getString("number"));
         assertEquals("123", jsonCard.getString("cvv"));
         assertEquals("01/15", jsonCard.getString("expirationDate"));
         assertEquals("12345", jsonCard.getJSONObject("billingAddress").getString("postalCode"));

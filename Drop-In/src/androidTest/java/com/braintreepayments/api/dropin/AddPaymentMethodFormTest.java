@@ -10,6 +10,10 @@ import com.braintreepayments.api.dropin.view.CardEditText;
 import com.google.android.apps.common.testing.ui.espresso.ViewAssertion;
 
 import static com.braintreepayments.api.BraintreeTestUtils.injectBraintree;
+import static com.braintreepayments.api.CardNumber.AMEX;
+import static com.braintreepayments.api.CardNumber.INVALID_AMEX;
+import static com.braintreepayments.api.CardNumber.INVALID_VISA;
+import static com.braintreepayments.api.CardNumber.VISA;
 import static com.braintreepayments.api.ui.Matchers.withHint;
 import static com.braintreepayments.api.ui.Matchers.withId;
 import static com.braintreepayments.api.ui.ViewHelper.closeSoftKeyboard;
@@ -148,10 +152,10 @@ public class AddPaymentMethodFormTest extends BraintreePaymentActivityTestCase {
 
         waitForAddPaymentFormHeader();
 
-        onView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"), closeSoftKeyboard());
+        onView(withId(R.id.bt_card_form_card_number)).perform(typeText(VISA), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_expiration)).check(matches(hasFocus()));
 
-        onView(withId(R.id.bt_card_form_card_number)).perform(clearText(), typeText("378282246310005"), closeSoftKeyboard());
+        onView(withId(R.id.bt_card_form_card_number)).perform(clearText(), typeText(AMEX), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_expiration)).check(matches(hasFocus()));
     }
 
@@ -163,13 +167,13 @@ public class AddPaymentMethodFormTest extends BraintreePaymentActivityTestCase {
 
         CardEditText cardEditText =
                 (CardEditText) activity.findViewById(R.id.bt_card_form_card_number);
-        onView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111112"),
+        onView(withId(R.id.bt_card_form_card_number)).perform(typeText(INVALID_VISA),
                 closeSoftKeyboard());
         assertTrue(cardEditText.isError());
         onView(withId(R.id.bt_card_form_card_number)).check(matches(hasFocus()));
 
         onView(withId(R.id.bt_card_form_card_number)).perform(clearText(), typeText(
-                "371111111111111"), closeSoftKeyboard());
+               INVALID_AMEX), closeSoftKeyboard());
         assertTrue(cardEditText.isError());
         onView(withId(R.id.bt_card_form_card_number)).check(matches(hasFocus()));
     }
@@ -196,12 +200,12 @@ public class AddPaymentMethodFormTest extends BraintreePaymentActivityTestCase {
 
         waitForAddPaymentFormHeader();
 
-        onView(withId(R.id.bt_card_form_card_number)).perform(typeText("4111111111111111"), closeSoftKeyboard());
+        onView(withId(R.id.bt_card_form_card_number)).perform(typeText(VISA), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_cvv)).perform(typeText("123"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_postal_code)).check(matches(hasFocus()));
         onView(withId(R.id.bt_card_form_cvv)).check(matches(withText("123")));
 
-        onView(withId(R.id.bt_card_form_card_number)).perform(clearText(), typeText("378282246310005"), closeSoftKeyboard());
+        onView(withId(R.id.bt_card_form_card_number)).perform(clearText(), typeText(AMEX), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_cvv)).perform(clearText(), typeText("1234"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_postal_code)).check(matches(hasFocus()));
         onView(withId(R.id.bt_card_form_cvv)).check(matches(withText("1234")));

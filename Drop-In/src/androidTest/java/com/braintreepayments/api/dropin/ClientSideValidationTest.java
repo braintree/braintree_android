@@ -13,6 +13,8 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.PaymentMethod;
 
 import static com.braintreepayments.api.BraintreeTestUtils.injectBraintreeApi;
+import static com.braintreepayments.api.CardNumber.AMEX;
+import static com.braintreepayments.api.CardNumber.VISA;
 import static com.braintreepayments.api.ui.Matchers.hasBackgroundResource;
 import static com.braintreepayments.api.ui.Matchers.withHint;
 import static com.braintreepayments.api.ui.Matchers.withId;
@@ -88,7 +90,7 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
 
         waitForAddPaymentFormHeader();
 
-        onView(withHint("Card Number")).perform(typeText("4111111111111111"));
+        onView(withHint("Card Number")).perform(typeText(VISA));
         onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
         onView(withHint("CVV")) .perform(typeText("123"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("12345"));
@@ -151,7 +153,7 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
         assertFalse(cvvEditText.isFocused());
         assertFalse(cvvEditText.isError());
 
-        onView(withId(R.id.bt_card_form_card_number)).perform(typeText("378282246310005"), closeSoftKeyboard());
+        onView(withId(R.id.bt_card_form_card_number)).perform(typeText(AMEX), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_cvv)).perform(click(), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_card_number)).perform(click());
         assertFalse(cvvEditText.isFocused());
