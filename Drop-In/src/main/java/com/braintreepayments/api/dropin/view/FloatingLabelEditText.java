@@ -15,6 +15,7 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
+import android.view.inputmethod.EditorInfo;
 
 import com.braintreepayments.api.dropin.R;
 
@@ -141,6 +142,10 @@ public abstract class FloatingLabelEditText extends BraintreeEditText implements
 
     @SuppressWarnings("ResourceType")
     public void focusNext() {
+        if (getImeActionId() == EditorInfo.IME_ACTION_GO) {
+            return;
+        }
+
         View next = focusSearch(View.FOCUS_FORWARD);
         if (next != null) {
             next.requestFocus();
