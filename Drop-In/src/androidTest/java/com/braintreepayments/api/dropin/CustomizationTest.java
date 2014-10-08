@@ -71,7 +71,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         BraintreeApi api = new BraintreeApi(mContext, clientToken);
         api.create(new CardBuilder()
                 .cardNumber(VISA)
-                .expirationDate("08/19"));
+                .expirationDate("0819"));
 
         Intent intent = createIntent();
         Customization customization = new CustomizationBuilder()

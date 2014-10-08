@@ -3,7 +3,7 @@ package com.braintreepayments.api.android.dropin.view;
 import android.test.AndroidTestCase;
 import android.text.Editable;
 
-import com.braintreepayments.api.dropin.view.PaddingSpan;
+import com.braintreepayments.api.dropin.view.AppendSpaceSpan;
 import com.braintreepayments.api.dropin.view.CardEditText;
 
 import java.util.ArrayList;
@@ -69,11 +69,11 @@ public class CardEditTextTest extends AndroidTestCase {
 
     private void assertSpansAt(int... indices) {
         Editable text = view.getText();
-        List<PaddingSpan> allSpans = Arrays.asList(text.getSpans(0, text.length(),
-                PaddingSpan.class));
-        List<PaddingSpan> foundSpans = new ArrayList<PaddingSpan>();
+        List<AppendSpaceSpan> allSpans = Arrays.asList(text.getSpans(0, text.length(),
+                AppendSpaceSpan.class));
+        List<AppendSpaceSpan> foundSpans = new ArrayList<AppendSpaceSpan>();
         for (int i : indices) {
-            PaddingSpan[] span = text.getSpans(i - 1, i, PaddingSpan.class);
+            AppendSpaceSpan[] span = text.getSpans(i - 1, i, AppendSpaceSpan.class);
             assertEquals(1, span.length);
             foundSpans.add(span[0]);
         }

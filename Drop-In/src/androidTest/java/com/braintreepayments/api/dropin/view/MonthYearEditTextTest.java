@@ -17,7 +17,7 @@ public class MonthYearEditTextTest extends AndroidTestCase {
     public void testTyping_2_through_9_addsPrefix_0() {
         for (int i = 2; i <= 9; i++) {
             setText(String.valueOf(i));
-            assertTextIs("0" + i + "/");
+            assertTextIs("0" + i);
         }
     }
 
@@ -29,66 +29,55 @@ public class MonthYearEditTextTest extends AndroidTestCase {
         assertTextIs("1");
     }
 
-    public void testSlashIsTypedForYouWhenYouType_MM() {
-        for (int i = 1; i <= 12; i++) {
-            String monthFormatted = String.format("%02d", i);
-            setText(monthFormatted);
-            assertTextIs(monthFormatted + "/");
-        }
-    }
-
     public void testGetMonth() {
         assertEquals("getMonth() should be \"\" if text is empty", "", view.getMonth());
 
+        setText("1");
+        assertEquals("", view.getMonth());
         setText("01");
         assertEquals("01", view.getMonth());
-        setText("01/");
-        assertEquals("01", view.getMonth());
-        setText("01/18");
-        assertEquals("01", view.getMonth());
+        setText("0218");
+        assertEquals("02", view.getMonth());
+        setText("032018");
+        assertEquals("03", view.getMonth());
     }
 
     public void testGetYear() {
         assertEquals("getYear() should be \"\" if text is empty", "", view.getYear());
 
-        setText("01/");
+        setText("01");
         assertEquals("", view.getYear());
 
         type('1');
-        assertEquals("getYear() returns unformatted years", "1", view.getYear());
+        assertEquals("getYear() doesn't return unformatted years", "", view.getYear());
 
         type('8');
         assertEquals("18", view.getYear());
 
-        setText("01/2018");
+        setText("012018");
         assertEquals("getYear() will return 4-digit years", "2018", view.getYear());
     }
 
     public void testTypingForNumbersWithoutSlashWorks() {
         type('1', '2', '1', '8');
-        assertTextIs("12/18");
+        assertTextIs("1218");
     }
 
-    public void testCanTypeSlashEvenIfThoughItsAddedForYou() {
-        type('1', '2', '/', '1', '8');
-        assertTextIs("12/18");
-    }
-
-    public void testCanOnlyTypeNumericOrSlash() {
+    public void testCanOnlyTypeNumeric() {
         type('-');
         assertTextIs("");
 
         type('5', ':', '/', '-', 'h');
-        assertTextIs("05/");
+        assertTextIs("05");
     }
 
     public void testSlashHasPadding() {
-        setText("12/18");
+        setText("1218");
 
         Spanned spanned = view.getText();
 
-        PaddingSpan[] paddingSpan = spanned.getSpans(0, view.getText().toString().length(), PaddingSpan.class);
-        assertEquals(1, paddingSpan.length);
+        AppendSlashSpan[] appendSlashSpan = spanned.getSpans(0, view.getText().toString().length(), AppendSlashSpan.class);
+        assertEquals(1, appendSlashSpan.length);
     }
 
     private MonthYearEditTextTest type(char... chars) {

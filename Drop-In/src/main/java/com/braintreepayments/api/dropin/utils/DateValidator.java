@@ -4,8 +4,6 @@ import android.text.TextUtils;
 
 import java.util.Calendar;
 
-import static java.lang.Character.isDigit;
-
 /**
  * Class provided as a convenience to {@link com.braintreepayments.api.dropin.view.MonthYearEditText} to
  * make testing easier.
@@ -36,33 +34,24 @@ public class DateValidator {
 
     /**
      * Helper for determining whether a date is a valid credit card expiry date.
-     * @param dateString Date-formatted string (valid formats will be MM/YY or MM/YYYY) to validate
+     * @param month Two-digit month
+     * @param year Two or four digit year
      * @return Whether the date is a valid credit card expiry date.
      */
-    public static boolean isValid(String dateString) {
-        return INSTANCE.isValidHelper(dateString);
+    public static boolean isValid(String month, String year) {
+        return INSTANCE.isValidHelper(month, year);
     }
 
-    protected boolean isValidHelper(String dateString) {
-        if (!dateString.contains("/")) {
-            return false;
-        }
-
-        String[] pieces = dateString.split("/");
-        if (pieces.length != 2) {
-            return false;
-        }
-        String monthString = pieces[0];
-        String yearString = pieces[1];
-
-        for (char c : dateString.toCharArray()) {
-            // only slashes and digits are valid characters
-            if (c != '/' && !isDigit(c)) {
-                return false;
-            }
-        }
-
+    protected boolean isValidHelper(String monthString, String yearString) {
         if (TextUtils.isEmpty(monthString)) {
+            return false;
+        }
+
+        if (TextUtils.isEmpty(yearString)) {
+            return false;
+        }
+
+        if (!TextUtils.isDigitsOnly(monthString) || !TextUtils.isDigitsOnly(yearString)) {
             return false;
         }
 

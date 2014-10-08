@@ -53,7 +53,7 @@ public class CardEditText extends FloatingLabelEditText {
 
     @Override
     public void afterTextChanged(Editable editable) {
-        Object[] paddingSpans = editable.getSpans(0, editable.length(), PaddingSpan.class);
+        Object[] paddingSpans = editable.getSpans(0, editable.length(), AppendSpaceSpan.class);
         for (Object span : paddingSpans) {
             editable.removeSpan(span);
         }
@@ -98,7 +98,7 @@ public class CardEditText extends FloatingLabelEditText {
         final int length = editable.length();
         for (int index : spaceIndices) {
             if (index <= length) {
-                editable.setSpan(new PaddingSpan(0, 1), index - 1, index,
+                editable.setSpan(new AppendSpaceSpan(), index - 1, index,
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }

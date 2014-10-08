@@ -184,12 +184,12 @@ public class AddPaymentMethodFormTest extends BraintreePaymentActivityTestCase {
 
         waitForAddPaymentFormHeader();
 
-        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("06/16"), closeSoftKeyboard());
+        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("0616"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_cvv)).check(matches(hasFocus()));
 
-        onView(withId(R.id.bt_card_form_expiration)).perform(clearText(), typeText("06/2015"),
+        onView(withId(R.id.bt_card_form_expiration)).perform(clearText(), typeText("062015"),
                 closeSoftKeyboard());
-        onView(withId(R.id.bt_card_form_expiration)).check(matches(withText("06/2015")));
+        onView(withId(R.id.bt_card_form_expiration)).check(matches(withText("062015")));
         onView(withId(R.id.bt_card_form_cvv)).check(matches(withText("")));
         onView(withId(R.id.bt_card_form_cvv)).check(matches(hasFocus()));
     }
@@ -217,8 +217,8 @@ public class AddPaymentMethodFormTest extends BraintreePaymentActivityTestCase {
 
         waitForAddPaymentFormHeader();
 
-        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("06/15"));
-        onView(withId(R.id.bt_card_form_expiration)).check(matches(withText("06/15")));
+        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("0615"));
+        onView(withId(R.id.bt_card_form_expiration)).check(matches(withText("0615")));
     }
 
     private static ViewAssertion thereIsNoIconHint() {
