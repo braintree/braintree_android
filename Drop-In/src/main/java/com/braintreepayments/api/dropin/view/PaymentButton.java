@@ -10,7 +10,6 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import com.braintreepayments.api.Braintree;
-import com.braintreepayments.api.PayPalHelper;
 import com.braintreepayments.api.dropin.R;
 
 /**
@@ -96,24 +95,30 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
                 paypalButton.setOnClickListener(this);
             }
 
-            if (isVenmoEnabled) {
-                ImageButton venmoButton = (ImageButton) findViewById(R.id.bt_venmo_button);
-                venmoButton.setVisibility(VISIBLE);
-                venmoButton.setOnClickListener(this);
-            }
+//            if (isVenmoEnabled) {
+//                ImageButton venmoButton = (ImageButton) findViewById(R.id.bt_venmo_button);
+//                venmoButton.setVisibility(VISIBLE);
+//                venmoButton.setOnClickListener(this);
+//            }
 
             if (isPayPalEnabled && isVenmoEnabled) {
                 findViewById(R.id.bt_payment_button_divider).setVisibility(VISIBLE);
             }
         }
+
+        ImageButton googleWalletButton = (ImageButton) findViewById(R.id.bt_google_wallet_button);
+        googleWalletButton.setVisibility(VISIBLE);
+        googleWalletButton.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.bt_paypal_button) {
             mBraintree.startPayWithPayPal(mActivity, mRequestCode);
-        } else if (v.getId() == R.id.bt_venmo_button) {
-            mBraintree.startPayWithVenmo(mActivity, mRequestCode);
+//        } else if (v.getId() == R.id.bt_venmo_button) {
+//            mBraintree.startPayWithVenmo(mActivity, mRequestCode);
+        } else if (v.getId() == R.id.bt_google_wallet_button) {
+            mBraintree.startPayWithGoogleWallet(mActivity, mRequestCode);
         }
     }
 
@@ -126,11 +131,13 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
      */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == mRequestCode && resultCode == Activity.RESULT_OK) {
-            if(PayPalHelper.isPayPalIntent(data)) {
-                mBraintree.finishPayWithPayPal(mActivity, resultCode, data);
-            } else {
-                mBraintree.finishPayWithVenmo(resultCode, data);
-            }
+            mBraintree.finishPayWithGoogleWallet(resultCode, data);
+
+//            if(PayPalHelper.isPayPalIntent(data)) {
+//                mBraintree.finishPayWithPayPal(mActivity, resultCode, data);
+//            } else if (//isVenmoIntent) {
+//                mBraintree.finishPayWithVenmo(resultCode, data);
+//            }
         }
     }
 

@@ -21,6 +21,14 @@ import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.wallet.Cart;
+import com.google.android.gms.wallet.FullWallet;
+import com.google.android.gms.wallet.ProxyCard;
+import com.google.android.gms.wallet.WalletConstants;
 
 import org.json.JSONException;
 
@@ -569,6 +577,28 @@ public class Braintree {
             });
         } else {
             sendAnalyticsEvent("venmo-app.fail");
+        }
+    }
+
+    public void startPayWithGoogleWallet(Activity activity, int requestCode) {
+        activity.startActivityForResult(new Intent(activity, GoogleWalletActivity.class), requestCode);
+    }
+
+    public synchronized void finishPayWithGoogleWallet(int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (data.hasExtra(WalletConstants.EXTRA_FULL_WALLET)) {
+                FullWallet fullWallet = data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET);
+                ProxyCard proxyCard = fullWallet.getProxyCard();
+
+                CardBuilder cardBuilder = new CardBuilder()
+                        .cardNumber(proxyCard.getPan())
+                        .cvv(proxyCard.getCvn())
+                        .expirationMonth("" + proxyCard.getExpirationMonth())
+                        .expirationYear("" + proxyCard.getExpirationYear())
+                        .postalCode(fullWallet.getBillingAddress().getPostalCode());
+
+                create(cardBuilder);
+            }
         }
     }
 
