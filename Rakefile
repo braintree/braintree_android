@@ -80,14 +80,12 @@ task :release => :lint do
   puts "Done. Commits and tags have been created. If everything appears to be in order, hit ENTER to push."
   $stdin.gets
 
-  sh "git push origin master"
-  sh "git push --tags"
+  sh "git push origin master #{version}"
 
   puts "Pushed to GHE! Press ENTER to push to public Github."
   $stdin.gets
 
-  sh "git push github master"
-  sh "git push github --tags"
+  sh "git push github master #{version}"
 end
 
 def increment_version_code(filepath)
