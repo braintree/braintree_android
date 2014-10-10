@@ -1,5 +1,16 @@
 # Braintree Android SDK Release Notes
 
+## 1.2.3
+
+* minSdk is now 10
+* Fixes
+  * Set max length on card field for unknown card types in Drop-In
+  * Update PayPal SDK to fix rotation bug
+  * Fix edge cases in expiration entry in Drop-In
+* Improvements
+  * Error messages are now returned from Drop-In
+  * Drop-In auto advances to next field now
+
 ## 1.2.2
 
 * Fixes
