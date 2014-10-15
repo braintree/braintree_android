@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 1.2.4
+
+* Fixes
+  * Work around manifest merging issues on newer build plugins
+
 ## 1.2.3
 
 * minSdk is now 10
