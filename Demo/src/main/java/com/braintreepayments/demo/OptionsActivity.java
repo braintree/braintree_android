@@ -21,8 +21,6 @@ public class OptionsActivity extends Activity implements OnCheckedChangeListener
     private static final String SANDBOX_BASE_SERVER_URL = "https://braintree-sample-merchant.herokuapp.com";
     private static final String PRODUCTION_BASE_SERVER_URL = "https://executive-sample-merchant.herokuapp.com";
 
-    private RadioGroup mEnvironment;
-    private RadioGroup mForm;
     private EditText mCustomerId;
     private SharedPreferences mPrefs;
 
@@ -30,20 +28,20 @@ public class OptionsActivity extends Activity implements OnCheckedChangeListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.options);
-        mEnvironment = (RadioGroup) findViewById(R.id.environment);
-        mForm = (RadioGroup) findViewById(R.id.form);
         mCustomerId = (EditText) findViewById(R.id.customerId);
+        RadioGroup environment = (RadioGroup) findViewById(R.id.environment);
+        RadioGroup form = (RadioGroup) findViewById(R.id.form);
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        mEnvironment.check(getEnvironmentId());
-        mEnvironment.setOnCheckedChangeListener(this);
-        mForm.check(getFormId());
-        mForm.setOnCheckedChangeListener(this);
         mCustomerId.setText(mPrefs.getString(CUSTOMER, ""));
+        environment.check(getEnvironmentId());
+        environment.setOnCheckedChangeListener(this);
+        form.check(getFormId());
+        form.setOnCheckedChangeListener(this);
     }
 
     protected void onDestroy() {
-        mPrefs.edit().putString(CUSTOMER, mCustomerId.getText().toString()).commit();
+        mPrefs.edit().putString(CUSTOMER, mCustomerId.getText().toString()).apply();
         super.onDestroy();
     }
 
@@ -51,15 +49,15 @@ public class OptionsActivity extends Activity implements OnCheckedChangeListener
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         if (group.getId() == R.id.environment) {
             if (checkedId == R.id.production) {
-                mPrefs.edit().putString(ENVIRONMENT, PRODUCTION_BASE_SERVER_URL).commit();
+                mPrefs.edit().putString(ENVIRONMENT, PRODUCTION_BASE_SERVER_URL).apply();
             } else if (checkedId == R.id.sandbox) {
-                mPrefs.edit().putString(ENVIRONMENT, SANDBOX_BASE_SERVER_URL).commit();
+                mPrefs.edit().putString(ENVIRONMENT, SANDBOX_BASE_SERVER_URL).apply();
             }
         } else if (group.getId() == R.id.form) {
             if (checkedId == R.id.custom) {
-                mPrefs.edit().putInt(FORM_TYPE, CUSTOM).commit();
+                mPrefs.edit().putInt(FORM_TYPE, CUSTOM).apply();
             } else if (checkedId == R.id.dropin) {
-                mPrefs.edit().putInt(FORM_TYPE, DROP_IN).commit();
+                mPrefs.edit().putInt(FORM_TYPE, DROP_IN).apply();
             }
         }
     }
