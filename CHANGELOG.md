@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 1.2.5
+
+* Fixes
+  * Fix incorrectly named language resource directories
+
 ## 1.2.4
 
 * Fixes
