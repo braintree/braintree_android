@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="bt_form_pay_with_card_header">PAY WITH A CARD</string>
     <string name="bt_form_hint_card_number">Card Number</string>
     <string name="bt_form_hint_expiration">Expiration</string>
@@ -18,8 +18,8 @@
     <!-- Note: %s is a place holder and should be left in translated strings -->
     <string name="bt_card_descriptor">ends in %s</string>
 
-    <string name="bt_pay_with_paypal">Pay with PayPal</string>
-    <string name="bt_pay_with_venmo">Pay with Venmo</string>
+    <string name="bt_pay_with_paypal" tools:ignore="MissingTranslation">Pay with PayPal</string>
+    <string name="bt_pay_with_venmo" tools:ignore="MissingTranslation">Pay with Venmo</string>
 
     <string name="bt_descriptor_visa">Visa</string>
     <string name="bt_descriptor_mastercard">MasterCard</string>
