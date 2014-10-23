@@ -2,6 +2,8 @@ package com.braintreepayments.api.dropin.view;
 
 import android.content.Context;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.InputFilter.LengthFilter;
 import android.text.InputType;
 import android.text.Spanned;
 import android.util.AttributeSet;
@@ -33,6 +35,8 @@ public class MonthYearEditText extends FloatingLabelEditText {
 
     private void init() {
         setInputType(InputType.TYPE_CLASS_NUMBER);
+        InputFilter[] filters = { new LengthFilter(6) };
+        setFilters(filters);
     }
 
     /**

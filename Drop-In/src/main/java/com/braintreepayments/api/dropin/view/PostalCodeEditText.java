@@ -1,6 +1,8 @@
 package com.braintreepayments.api.dropin.view;
 
 import android.content.Context;
+import android.text.InputFilter;
+import android.text.InputFilter.LengthFilter;
 import android.text.InputType;
 import android.util.AttributeSet;
 
@@ -25,6 +27,8 @@ public class PostalCodeEditText extends FloatingLabelEditText {
 
     private void init() {
         setInputType(InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS);
+        InputFilter[] filters = { new LengthFilter(16) };
+        setFilters(filters);
     }
 
     @Override

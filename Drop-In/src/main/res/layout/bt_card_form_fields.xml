@@ -6,14 +6,12 @@
         style="@style/bt_form_field"
         android:id="@+id/bt_card_form_card_number"
         android:imeOptions="actionNext"
-        android:hint="@string/bt_form_hint_card_number"
-        android:maxLength="19" />
+        android:hint="@string/bt_form_hint_card_number" />
 
     <com.braintreepayments.api.dropin.view.MonthYearEditText
         style="@style/bt_form_field"
         android:id="@+id/bt_card_form_expiration"
-        android:hint="@string/bt_form_hint_expiration"
-        android:maxLength="7" />
+        android:hint="@string/bt_form_hint_expiration" />
 
     <com.braintreepayments.api.dropin.view.CvvEditText
         style="@style/bt_form_field"
@@ -23,7 +21,6 @@
     <com.braintreepayments.api.dropin.view.PostalCodeEditText
         style="@style/bt_form_field"
         android:id="@+id/bt_card_form_postal_code"
-        android:hint="@string/bt_form_hint_postal_code"
-        android:maxLength="16" />
+        android:hint="@string/bt_form_hint_postal_code" />
 
 </merge>
