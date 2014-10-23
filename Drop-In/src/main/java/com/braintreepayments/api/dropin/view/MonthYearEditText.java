@@ -80,7 +80,7 @@ public class MonthYearEditText extends FloatingLabelEditText {
             }
         }
 
-        Object[] paddingSpans = editable.getSpans(0, editable.length(), AppendSpaceSpan.class);
+        Object[] paddingSpans = editable.getSpans(0, editable.length(), AppendSlashSpan.class);
         for (Object span : paddingSpans) {
             editable.removeSpan(span);
         }
