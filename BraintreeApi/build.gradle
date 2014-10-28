@@ -6,12 +6,12 @@ apply plugin: 'signing'
 def paypalVersion = 'PayPalAndroidSDK-2.5.6.jar'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion '20.0.0'
+    compileSdkVersion 21
+    buildToolsVersion '21.0.2'
 
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 19
+        targetSdkVersion 21
         versionCode 16
         versionName '1.2.5'
     }
@@ -22,7 +22,7 @@ android {
 }
 
 sdkManager {
-    emulatorVersion 'android-19'
+    emulatorVersion 'android-21'
 }
 
 dependencies {
