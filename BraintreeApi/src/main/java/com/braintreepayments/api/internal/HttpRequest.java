@@ -17,8 +17,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.KeyStore;
-import java.security.Principal;
-import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -26,7 +24,6 @@ import java.util.Collection;
 import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
@@ -147,13 +144,10 @@ public class HttpRequest {
 
     /**
      * @return {@link javax.net.ssl.SSLSocketFactory}
-     * @see <a href="http://developer.android.com/training/articles/security-ssl.html#UnknownCa">Android
-     * Documentation</a>
-     * @see <a href="https://github.com/braintree/braintree_java/blob/95b96c356324d1532714f849402f830251ce8b81/src/main/java/com/braintreegateway/util/Http.java#L100">Braintree
-     * Java Client Library</a>
+     * @see <a href="http://developer.android.com/training/articles/security-ssl.html#UnknownCa">Android Documentation</a>
+     * @see <a href="https://github.com/braintree/braintree_java/blob/95b96c356324d1532714f849402f830251ce8b81/src/main/java/com/braintreegateway/util/Http.java#L100">Braintree Java Client Library</a>
      */
     private static SSLSocketFactory getSslSocketFactory() throws BraintreeSslException {
-        PRNGFixes.apply();
         try {
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, null);
@@ -164,9 +158,7 @@ public class HttpRequest {
             Collection<? extends Certificate> certificates = cf.generateCertificates(certStream);
             for (Certificate cert : certificates) {
                 if (cert instanceof X509Certificate) {
-                    X509Certificate x509cert = (X509Certificate) cert;
-                    Principal principal = x509cert.getSubjectDN();
-                    String subject = principal.getName();
+                    String subject = ((X509Certificate) cert).getSubjectDN().getName();
                     keyStore.setCertificateEntry(subject, cert);
                 }
             }
@@ -175,13 +167,8 @@ public class HttpRequest {
                     TrustManagerFactory.getDefaultAlgorithm());
             tmf.init(keyStore);
 
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance(
-                    KeyManagerFactory.getDefaultAlgorithm());
-            kmf.init(keyStore, null);
-
             SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(),
-                    SecureRandom.getInstance("SHA1PRNG"));
+            sslContext.init(null, tmf.getTrustManagers(), null);
 
             return sslContext.getSocketFactory();
         } catch (Exception e) {

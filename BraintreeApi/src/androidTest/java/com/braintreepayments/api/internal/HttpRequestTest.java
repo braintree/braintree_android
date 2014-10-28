@@ -63,15 +63,6 @@ public class HttpRequestTest extends TestCase {
         assertEquals(200, statusCode);
     }
 
-    public void testHostnameVerificationFailsForIncorrectHostName() {
-        try {
-            mHttpRequest.get("https://204.109.13.121:443");
-            fail();
-        } catch (Exception e) {
-            assertEquals("Hostname '204.109.13.121' was not verified", e.getMessage());
-        }
-    }
-
     public void testGetRequestBadCertificateCheck() {
         if (!BuildConfig.RUN_ALL_TESTS) {
             return;
