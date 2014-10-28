@@ -65,10 +65,10 @@ public class HttpRequestTest extends TestCase {
 
     public void testHostnameVerificationFailsForIncorrectHostName() {
         try {
-            mHttpRequest.get("https://184.169.137.109");
+            mHttpRequest.get("https://204.109.13.121:443");
             fail();
         } catch (Exception e) {
-            assertEquals("Hostname '184.169.137.109' was not verified", e.getMessage());
+            assertEquals("Hostname '204.109.13.121' was not verified", e.getMessage());
         }
     }
 
