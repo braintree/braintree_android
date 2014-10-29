@@ -101,9 +101,8 @@ public class TestClientTokenBuilder {
         switch (mMerchantType) {
             case MERCHANT_WITHOUT_PAYPAL:
                 return getClientTokenFromGateway("integration2_merchant_id", "integration2_public_key");
-            case MERCHANT_WITH_PAYPAL:
-                return getClientTokenFromGateway("altpay_merchant", "altpay_merchant_public_key");
             case MERCHANT_WITH_FAKE_PAYPAL:
+            case MERCHANT_WITH_PAYPAL:
                 return getClientTokenFromGateway("integration_merchant_id", "integration_public_key");
             case MERCHANT_WITH_CVV_VERIFICATION:
                 return getClientTokenFromGateway("client_api_cvv_verification_merchant_id", "client_api_cvv_verification_public_key");
@@ -185,10 +184,14 @@ public class TestClientTokenBuilder {
             }
             clientToken = clientToken.replaceAll(replacement, EnvironmentHelper.getGatewayIp());
 
+            JSONObject clientTokenJson = new JSONObject(clientToken);
             if (mVenmoEnvironment == null) {
-                clientToken = new JSONObject(clientToken).put("venmo", "off").toString();
+                clientTokenJson.put("venmo", "off");
             }
-            return Base64.encodeToString(clientToken.getBytes(), Base64.NO_WRAP);
+            if (mMerchantType == MERCHANT_WITH_FAKE_PAYPAL) {
+                clientTokenJson.put("paypal", clientTokenJson.getJSONObject("paypal").put("environment", "offline"));
+            }
+            return Base64.encodeToString(clientTokenJson.toString().getBytes(), Base64.NO_WRAP);
         } catch (MalformedURLException e) {
             throw new RuntimeException("The url to your Gateway was invalid");
         } catch (IOException e) {

@@ -72,10 +72,10 @@ public class PaymentFormHelpers {
         assertEquals("11", ((Card) response).getLastTwo());
     }
 
-    public static void fillInPayPal() {
+    public static void fillInOfflinePayPal() {
         waitForView(withId(R.id.bt_paypal_button)).perform(click());
 
-        waitForView(withHint("Email"), FIFTEEN_SECONDS).perform(typeText("bt_buyer_us@paypal.com"));
+        waitForView(withHint("Email"), FIFTEEN_SECONDS).perform(typeText("test@paypal.com"));
         onView(withHint("Password")).perform(typeText("11111111"));
         onView(withText("Log In")).perform(click());
 
@@ -83,7 +83,7 @@ public class PaymentFormHelpers {
     }
 
     public static void performPayPalAdd() {
-        fillInPayPal();
+        fillInOfflinePayPal();
         waitForPaymentMethodList();
     }
 

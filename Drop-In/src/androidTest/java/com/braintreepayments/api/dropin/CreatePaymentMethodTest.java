@@ -33,6 +33,7 @@ import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
 import static com.braintreepayments.api.CardNumber.VISA;
 import static com.braintreepayments.api.ui.Matchers.withHint;
 import static com.braintreepayments.api.ui.Matchers.withId;
+import static com.braintreepayments.api.ui.ViewHelper.FIFTEEN_SECONDS;
 import static com.braintreepayments.api.ui.ViewHelper.FIVE_SECONDS;
 import static com.braintreepayments.api.ui.ViewHelper.TEN_SECONDS;
 import static com.braintreepayments.api.ui.ViewHelper.THREE_SECONDS;
@@ -41,7 +42,7 @@ import static com.braintreepayments.api.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.api.ui.ViewHelper.waitForView;
 import static com.braintreepayments.api.ui.WaitForActivityHelper.waitForActivity;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.addCardAndAssertSuccess;
-import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInPayPal;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInOfflinePayPal;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.onAddPaymentFormHeader;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
@@ -101,27 +102,6 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         assertEquals("11", ((Card) response).getLastTwo());
     }
 
-    private void assertCreatePaymentMethodFromPayPal() {
-        BraintreePaymentActivity activity = getActivity();
-
-        waitForAddPaymentFormHeader();
-        performPayPalAdd();
-
-        onView(withId(R.id.bt_payment_method_description)).check(
-                matches(withText("bt_buyer_us@paypal.com")));
-        onView(withId(R.id.bt_select_payment_method_submit_button)).perform(click());
-
-        waitForActivity(activity);
-
-        Map<String, Object> result = BraintreeTestUtils.getActivityResult(activity);
-        PaymentMethod paymentMethod =
-                (PaymentMethod) ((Intent) result.get("resultData")).getSerializableExtra(
-                        BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
-
-        assertEquals(Activity.RESULT_OK, result.get("resultCode"));
-        assertNotNull(paymentMethod.getNonce());
-    }
-
     public void testPayPalCreatesAPaymentMethodWithACustomer() {
         BraintreeTestUtils.setUpActivityTest(this,
                 new TestClientTokenBuilder().withPayPal().build());
@@ -158,7 +138,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();
 
-        fillInPayPal();
+        fillInOfflinePayPal();
 
         waitForView(withId(R.id.bt_inflated_loading_view)).check(matches(isDisplayed()));
         onView(withId(R.id.bt_card_form_header)).check(matches(not(isDisplayed())));
@@ -269,7 +249,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
         getActivity();
 
-        fillInPayPal();
+        fillInOfflinePayPal();
 
         waitForView(withId(R.id.bt_inflated_loading_view)).check(matches(isDisplayed()));
         sendKeys(KeyEvent.KEYCODE_BACK);
@@ -289,7 +269,6 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreeTestUtils.setUpActivityTest(this);
         BraintreePaymentActivity activity = getActivity();
 
-        waitForAddPaymentFormHeader();
         performPayPalAdd();
 
         assertFalse("Expected up not to be present on action bar", checkHomeAsUpEnabled(activity));
@@ -477,6 +456,30 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
                 new TestClientTokenBuilder().withCvvAndPostalCodeVerification().build());
 
         addCardAndAssertSuccess(getActivity());
+    }
+
+    private void assertCreatePaymentMethodFromPayPal() {
+        BraintreePaymentActivity activity = getActivity();
+
+        waitForView(withId(R.id.bt_paypal_button)).perform(click());
+        waitForView(withHint("Email"), FIFTEEN_SECONDS).perform(typeText("bt_buyer_us@paypal.com"));
+        onView(withHint("Password")).perform(typeText("11111111"));
+        onView(withText("Log In")).perform(click());
+        waitForPaymentMethodList();
+
+        onView(withId(R.id.bt_payment_method_description)).check(
+                matches(withText("bt_buyer_us@paypal.com")));
+        onView(withId(R.id.bt_select_payment_method_submit_button)).perform(click());
+
+        waitForActivity(activity);
+
+        Map<String, Object> result = BraintreeTestUtils.getActivityResult(activity);
+        PaymentMethod paymentMethod =
+                (PaymentMethod) ((Intent) result.get("resultData")).getSerializableExtra(
+                        BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
+
+        assertEquals(Activity.RESULT_OK, result.get("resultCode"));
+        assertNotNull(paymentMethod.getNonce());
     }
 
     @TargetApi(VERSION_CODES.HONEYCOMB)
