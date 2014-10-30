@@ -79,6 +79,24 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
     }
 
     /**
+     * @param firstName First name on the card.
+     * @return {@link com.braintreepayments.api.models.CardBuilder}
+     */
+    public CardBuilder firstName(String firstName) {
+        getBillingAddress().setFirstName(firstName);
+        return this;
+    }
+
+    /**
+     * @param lastName Last name on the card.
+     * @return {@link com.braintreepayments.api.models.CardBuilder}
+     */
+    public CardBuilder lastName(String lastName) {
+        getBillingAddress().setLastName(lastName);
+        return this;
+    }
+
+    /**
      * @param countryName Country name of the card.
      * @return {@link com.braintreepayments.api.models.CardBuilder}
      */
