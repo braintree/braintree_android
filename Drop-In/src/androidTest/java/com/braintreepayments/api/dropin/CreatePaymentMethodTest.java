@@ -468,7 +468,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForPaymentMethodList();
 
         onView(withId(R.id.bt_payment_method_description)).check(
-                matches(withText("bt_buyer_us@paypal.com")));
+                matches(withText("jane.doe@example.com")));
         onView(withId(R.id.bt_select_payment_method_submit_button)).perform(click());
 
         waitForActivity(activity);
