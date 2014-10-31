@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 21
-        versionCode 16
-        versionName '1.2.5'
+        versionCode 17
+        versionName '1.2.6'
         testInstrumentationRunner 'com.braintreepayments.api.ui.NoAnimationsInstrumentationTestRunner'
     }
 
@@ -25,7 +25,7 @@ sdkManager {
 }
 
 dependencies {
-    compile project(':BraintreeApi')
+    compile 'com.braintreepayments.api:braintree-api:1.2.6'
 
     androidTestCompile project(':TestUtils')
 }

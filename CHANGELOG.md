@@ -1,5 +1,16 @@
 # Braintree Android SDK Release Notes
 
+## 1.2.6
+
+* Increase `targetSdkVersion` to 21
+* Increase `buildToolsVersion` to 21.0.2
+* Fixes
+  * Fix max length on `EditText`s
+  * Fix crash caused by `PRNGFixes`
+* Improvements
+  * Update PayPal SDK
+  * Add first and last name to `CardBuilder`
+
 ## 1.2.5
 
 * Fixes
