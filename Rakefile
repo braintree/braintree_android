@@ -86,6 +86,9 @@ task :release => :lint do
   $stdin.gets
 
   sh "git push github master #{version}"
+
+  puts "Update client_releases.yml in the docs. Press ENTER when done."
+  $stdin.gets
 end
 
 def increment_version_code(filepath)
