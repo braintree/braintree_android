@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.braintreepayments.fake.wallet">
 
-    <application
+    <application android:allowBackup="false"
         android:label="Fake Wallet"
         android:icon="@drawable/ic_launcher">
 

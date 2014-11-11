@@ -4,6 +4,4 @@
     <uses-permission android:name="android.permission.SET_ANIMATION_SCALE" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
-    <application />
-
 </manifest>
