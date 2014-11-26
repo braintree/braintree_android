@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="bt_form_pay_with_card_header">PAGAR COM UM CART&#xC3;O</string>
+    <string name="bt_form_hint_card_number">N&#xFA;mero do cart&#xE3;o</string>
+    <string name="bt_form_hint_expiration">Validade</string>
+    <string name="bt_form_hint_cvv">CSC</string>
+    <string name="bt_form_hint_postal_code">C&#xF3;digo postal</string>
+
+    <string name="bt_invalid_card">As informa&#xE7;&#xF5;es do cart&#xE3;o s&#xE3;o inv&#xE1;lidas</string>
+
+    <string name="bt_choose_payment_method">Escolher meio de pagamento</string>
+    <string name="bt_change_payment_method">Alterar meio de pagamento</string>
+    <string name="bt_add_new_payment_method">Adicionar novo meio de pagamento</string>
+    <string name="bt_add_payment_method">Adicionar meio de pagamento</string>
+
+    <string name="bt_default_submit_button_text">Comprar</string>
+    <string name="bt_default_action_bar_text">Comprar</string>
+
+    <!-- Note: %s is a place holder and should be left in translated strings -->
+    <string name="bt_card_descriptor">terminado em %s</string>
+
+    <string name="bt_pay_with_paypal">Pagar com PayPal</string>
+    <string name="bt_pay_with_venmo">Pagar com Venmo</string>
+
+    <string name="bt_descriptor_visa">Visa</string>
+    <string name="bt_descriptor_mastercard">MasterCard</string>
+    <string name="bt_descriptor_amex">Amex</string>
+    <string name="bt_descriptor_jcb">JCB</string>
+    <string name="bt_descriptor_discover">Discover</string>
+    <string name="bt_descriptor_diners">Diners</string>
+    <string name="bt_descriptor_maestro">Maestro</string>
+    <string name="bt_descriptor_paypal">PayPal</string>
+    <string name="bt_descriptor_unknown">Cart&#xE3;o</string>
+</resources>

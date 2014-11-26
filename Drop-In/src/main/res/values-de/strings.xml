@@ -1,22 +1,26 @@
+<?xml version="1.0"?>
 <resources>
     <string name="bt_form_pay_with_card_header">Mit Kreditkarte bezahlen</string>
     <string name="bt_form_hint_card_number">Kartennummer</string>
-    <string name="bt_form_hint_expiration">Gültig bis</string>
-    <string name="bt_form_hint_cvv">Kartenprüfnr.</string>
+    <string name="bt_form_hint_expiration">G&#xFC;ltig bis</string>
+    <string name="bt_form_hint_cvv">Kartenpr&#xFC;fnr.</string>
     <string name="bt_form_hint_postal_code">PLZ</string>
 
-    <string name="bt_invalid_card">Kreditkartendaten sind ungültig.</string>
+    <string name="bt_invalid_card">Kreditkartendaten sind ung&#xFC;ltig.</string>
 
-    <string name="bt_choose_payment_method">Zahlungsmethode wählen</string>
-    <string name="bt_change_payment_method">Zahlungsmethode ändern</string>
-    <string name="bt_add_new_payment_method">Neue Zahlungsmethode hinzufügen</string>
-    <string name="bt_add_payment_method">Zahlungsmethode hinzufügen</string>
+    <string name="bt_choose_payment_method">Zahlungsquelle w&#xE4;hlen</string>
+    <string name="bt_change_payment_method">Zahlungsmethode &#xE4;ndern</string>
+    <string name="bt_add_new_payment_method">Neue Zahlungsmethode hinzuf&#xFC;gen</string>
+    <string name="bt_add_payment_method">Zahlungsquelle hinzuf&#xFC;gen</string>
 
     <string name="bt_default_submit_button_text">Einkaufen</string>
     <string name="bt_default_action_bar_text">Einkaufen</string>
 
     <!-- Note: %s is a place holder and should be left in translated strings -->
-    <string name="bt_card_descriptor">mit Endziffern %s</string>
+    <string name="bt_card_descriptor">endet mit %s</string>
+
+    <string name="bt_pay_with_paypal">Mit PayPal zahlen</string>
+    <string name="bt_pay_with_venmo">Zahlen Sie mit Venmo</string>
 
     <string name="bt_descriptor_visa">Visa</string>
     <string name="bt_descriptor_mastercard">MasterCard</string>

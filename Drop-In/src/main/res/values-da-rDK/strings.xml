@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="bt_form_pay_with_card_header">BETAL MED KORT</string>
+    <string name="bt_form_hint_card_number">Kortnummer</string>
+    <string name="bt_form_hint_expiration">Udl&#xF8;bsdato</string>
+    <string name="bt_form_hint_cvv">Kontrolcifre</string>
+    <string name="bt_form_hint_postal_code">Postnummer</string>
+
+    <string name="bt_invalid_card">Kortoplysningerne er ugyldige</string>
+
+    <string name="bt_choose_payment_method">V&#xE6;lg betalingsmetode</string>
+    <string name="bt_change_payment_method">Skift betalingsmetode</string>
+    <string name="bt_add_new_payment_method">Tilf&#xF8;j ny betalingsmetode</string>
+    <string name="bt_add_payment_method">Tilf&#xF8;j betalingsmetode</string>
+
+    <string name="bt_default_submit_button_text">K&#xF8;b</string>
+    <string name="bt_default_action_bar_text">K&#xF8;b</string>
+
+    <!-- Note: %s is a place holder and should be left in translated strings -->
+    <string name="bt_card_descriptor">slutter p&#xE5; %s</string>
+
+    <string name="bt_pay_with_paypal">Betal med PayPal</string>
+    <string name="bt_pay_with_venmo">Betal med Venmo</string>
+
+    <string name="bt_descriptor_visa">Visa</string>
+    <string name="bt_descriptor_mastercard">MasterCard</string>
+    <string name="bt_descriptor_amex">Amex</string>
+    <string name="bt_descriptor_jcb">JCB</string>
+    <string name="bt_descriptor_discover">Discover</string>
+    <string name="bt_descriptor_diners">Diners</string>
+    <string name="bt_descriptor_maestro">Maestro</string>
+    <string name="bt_descriptor_paypal">PayPal</string>
+    <string name="bt_descriptor_unknown">Kort</string>
+</resources>

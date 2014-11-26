@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="bt_form_pay_with_card_header">B&#x130;R KARTLA &#xD6;DEME YAPIN</string>
+    <string name="bt_form_hint_card_number">Kart Numaras&#x131;</string>
+    <string name="bt_form_hint_expiration">Son Kullan&#x131;m</string>
+    <string name="bt_form_hint_cvv">CVV</string>
+    <string name="bt_form_hint_postal_code">Posta Kodu</string>
+
+    <string name="bt_invalid_card">Kart bilgileri ge&#xE7;ersiz</string>
+
+    <string name="bt_choose_payment_method">&#xD6;deme Y&#xF6;ntemi Se&#xE7;in</string>
+    <string name="bt_change_payment_method">&#xD6;deme Y&#xF6;ntemini De&#x11F;i&#x15F;tir</string>
+    <string name="bt_add_new_payment_method">Yeni &#xD6;deme Y&#xF6;ntemi Ekleyin</string>
+    <string name="bt_add_payment_method">&#xD6;deme Y&#xF6;ntemi Ekleyin</string>
+
+    <string name="bt_default_submit_button_text">Sat&#x131;n Al&#x131;n</string>
+    <string name="bt_default_action_bar_text">Sat&#x131;n Al&#x131;n</string>
+
+    <!-- Note: %s is a place holder and should be left in translated strings -->
+    <string name="bt_card_descriptor">sonu &#x15F;u numarayla biten %s</string>
+
+    <string name="bt_pay_with_paypal">PayPal ile &#xF6;deyin</string>
+    <string name="bt_pay_with_venmo">Venmo ile &#xF6;deyin </string>
+
+    <string name="bt_descriptor_visa">Visa</string>
+    <string name="bt_descriptor_mastercard">MasterCard</string>
+    <string name="bt_descriptor_amex">Amex</string>
+    <string name="bt_descriptor_jcb">JCB</string>
+    <string name="bt_descriptor_discover">Discover</string>
+    <string name="bt_descriptor_diners">Diners</string>
+    <string name="bt_descriptor_maestro">Maestro</string>
+    <string name="bt_descriptor_paypal">PayPal</string>
+    <string name="bt_descriptor_unknown">Kart</string>
+</resources>

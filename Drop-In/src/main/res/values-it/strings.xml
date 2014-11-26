@@ -1,9 +1,10 @@
+<?xml version="1.0"?>
 <resources>
     <string name="bt_form_pay_with_card_header">Paga con una carta</string>
     <string name="bt_form_hint_card_number">Numero di carta</string>
     <string name="bt_form_hint_expiration">Scadenza</string>
     <string name="bt_form_hint_cvv">CVV</string>
-    <string name="bt_form_hint_postal_code">Codice postale</string>
+    <string name="bt_form_hint_postal_code">CAP</string>
 
     <string name="bt_invalid_card">I dati della carta non sono validi</string>
 
@@ -16,7 +17,10 @@
     <string name="bt_default_action_bar_text">Acquisto</string>
 
     <!-- Note: %s is a place holder and should be left in translated strings -->
-    <string name="bt_card_descriptor">le cui ultime cifre sono %s</string>
+    <string name="bt_card_descriptor">termina in %s</string>
+
+    <string name="bt_pay_with_paypal">Paga con PayPal</string>
+    <string name="bt_pay_with_venmo">Paga con Venmo</string>
 
     <string name="bt_descriptor_visa">Visa</string>
     <string name="bt_descriptor_mastercard">MasterCard</string>
