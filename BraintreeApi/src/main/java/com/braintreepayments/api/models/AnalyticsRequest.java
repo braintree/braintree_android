@@ -145,7 +145,7 @@ public class AnalyticsRequest {
             String uuid = prefs.getString("braintreeUUID", null);
             if (uuid == null) {
                 uuid = UUID.randomUUID().toString().replace("-", "");
-                prefs.edit().putString("braintreeUUID", uuid).commit();
+                prefs.edit().putString("braintreeUUID", uuid).apply();
             }
 
             return uuid;
