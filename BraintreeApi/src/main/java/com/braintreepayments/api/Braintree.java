@@ -33,10 +33,17 @@ public class Braintree {
     protected static final String INTEGRATION_DROPIN = "dropin";
 
     /**
+     * Base interface for all event listeners. Only concrete classes that implement this interface
+     * (either directly or indirectly) can be registered with
+     * {@link #addListener(com.braintreepayments.api.Braintree.Listener)}.
+     */
+    private static interface Listener {}
+
+    /**
      * onPaymentMethodsUpdate will be called with a list of {@link com.braintreepayments.api.models.PaymentMethod}s
      * as a callback when {@link Braintree#getPaymentMethods()} is called
      */
-    public static interface PaymentMethodsUpdatedListener {
+    public static interface PaymentMethodsUpdatedListener extends Listener {
         void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods);
     }
 
@@ -46,7 +53,7 @@ public class Braintree {
      * {@link Braintree#create(com.braintreepayments.api.models.PaymentMethod.Builder)}
      * is called
      */
-    public static interface PaymentMethodCreatedListener {
+    public static interface PaymentMethodCreatedListener extends Listener {
         void onPaymentMethodCreated(PaymentMethod paymentMethod);
     }
 
@@ -56,7 +63,7 @@ public class Braintree {
      * or {@link Braintree#tokenize(com.braintreepayments.api.models.PaymentMethod.Builder)}
      * is called
      */
-    public static interface PaymentMethodNonceListener {
+    public static interface PaymentMethodNonceListener extends Listener {
         void onPaymentMethodNonce(String paymentMethodNonce);
     }
 
@@ -64,7 +71,7 @@ public class Braintree {
      * onUnrecoverableError will be called where there is an exception that cannot be handled.
      * onRecoverableError will be called on data validation errors
      */
-    public static interface ErrorListener {
+    public static interface ErrorListener extends Listener {
         void onUnrecoverableError(Throwable throwable);
         void onRecoverableError(ErrorWithResponse error);
     }
@@ -203,7 +210,7 @@ public class Braintree {
      *
      * @param listener the listener to add.
      */
-    public synchronized <T> void addListener(final T listener) {
+    public synchronized <T extends Listener> void addListener(final T listener) {
         if (listener instanceof PaymentMethodsUpdatedListener) {
             mUpdatedListeners.add((PaymentMethodsUpdatedListener) listener);
         }
@@ -226,7 +233,7 @@ public class Braintree {
      *
      * @param listener the listener to remove.
      */
-    public synchronized <T> void removeListener(T listener) {
+    public synchronized <T extends Listener> void removeListener(T listener) {
         if (listener instanceof PaymentMethodsUpdatedListener) {
             mUpdatedListeners.remove(listener);
         }
