@@ -40,7 +40,7 @@ public class CardEditText extends FloatingLabelEditText {
 
     private void init() {
         setInputType(InputType.TYPE_CLASS_NUMBER);
-        setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.bt_card_highlighted, 0);
+        setCardIcon(R.drawable.bt_card_highlighted);
     }
 
     public CardType getCardType() {
@@ -59,9 +59,11 @@ public class CardEditText extends FloatingLabelEditText {
         }
 
         updateCardType();
+        setCardIcon(mCardType.getFrontResource());
 
-        addSpans(editable, mCardType.getSpaceIndices());
-        setCompoundDrawablesWithIntrinsicBounds(0, 0, mCardType.getFrontResource(), 0);
+        if (!mRightToLeftLanguage) {
+            addSpans(editable, mCardType.getSpaceIndices());
+        }
 
         super.afterTextChanged(editable);
 
@@ -101,6 +103,14 @@ public class CardEditText extends FloatingLabelEditText {
                 editable.setSpan(new AppendSpaceSpan(), index - 1, index,
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
+        }
+    }
+
+    private void setCardIcon(int icon) {
+        if(mRightToLeftLanguage) {
+            setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0);
+        } else {
+            setCompoundDrawablesWithIntrinsicBounds(0, 0, icon, 0);
         }
     }
 

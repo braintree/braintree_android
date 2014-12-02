@@ -89,9 +89,12 @@ public class MonthYearEditText extends FloatingLabelEditText {
             editable.removeSpan(span);
         }
 
-        addDateSlash(editable);
+        if (!mRightToLeftLanguage) {
+            addDateSlash(editable);
+        }
 
         super.afterTextChanged(editable);
+
         if ((getSelectionStart() == 4 && !editable.toString().endsWith("20")) || (getSelectionStart() == 6)) {
             focusNext();
         }

@@ -7,8 +7,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.text.Editable;
 import android.text.TextPaint;
 import android.text.TextWatcher;
@@ -19,7 +17,10 @@ import android.view.inputmethod.EditorInfo;
 
 import com.braintreepayments.api.dropin.R;
 
+import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.HONEYCOMB;
+import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
+import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 
 /**
  * Parent {@link android.widget.EditText} for displaying floating hints when text has been entered.
@@ -49,6 +50,8 @@ public abstract class FloatingLabelEditText extends BraintreeEditText implements
     private float mHorizontalTextOffset;
     private int mPreviousTextLength;
 
+    protected boolean mRightToLeftLanguage;
+
     public FloatingLabelEditText(Context context) {
         super(context);
         init();
@@ -66,9 +69,10 @@ public abstract class FloatingLabelEditText extends BraintreeEditText implements
 
     @TargetApi(HONEYCOMB)
     private void init() {
+        mRightToLeftLanguage = isRightToLeftLanguage();
         addTextChangedListener(this);
         mPreviousTextLength = getText().length();
-        if (VERSION.SDK_INT >= HONEYCOMB) {
+        if (SDK_INT >= HONEYCOMB) {
             Resources res = getResources();
             mHorizontalTextOffset = res.getDimension(R.dimen.bt_floating_edit_text_horizontal_offset);
 
@@ -186,11 +190,11 @@ public abstract class FloatingLabelEditText extends BraintreeEditText implements
         }
     }
 
-    @TargetApi(VERSION_CODES.ICE_CREAM_SANDWICH)
+    @TargetApi(ICE_CREAM_SANDWICH)
     @Override
     public void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
         super.onTextChanged(text, start, lengthBefore, lengthAfter);
-        if (VERSION.SDK_INT >= VERSION_CODES.ICE_CREAM_SANDWICH) {
+        if (SDK_INT >= ICE_CREAM_SANDWICH) {
             if (mPreviousTextLength == 0 && text.length() > 0 && !mHintAnimator.isStarted()) {
                 mHintAnimator.start();
                 mFocusColorAnimator.start();
@@ -200,15 +204,25 @@ public abstract class FloatingLabelEditText extends BraintreeEditText implements
         mPreviousTextLength = text.length();
     }
 
-    @TargetApi(VERSION_CODES.HONEYCOMB)
+    @TargetApi(HONEYCOMB)
     protected void handleTextColorOnFocus(boolean hasFocus) {
-        if (VERSION.SDK_INT >= HONEYCOMB) {
+        if (SDK_INT >= HONEYCOMB) {
             if (hasFocus) {
                 mFocusColorAnimator.start();
             } else {
                 mInactiveColorAnimator.start();
             }
         }
+    }
+
+    @TargetApi(JELLY_BEAN_MR1)
+    private boolean isRightToLeftLanguage() {
+        if (SDK_INT >= JELLY_BEAN_MR1) {
+            if(getResources().getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

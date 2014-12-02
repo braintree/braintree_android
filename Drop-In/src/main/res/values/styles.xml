@@ -37,7 +37,7 @@
         <item name="android:layout_weight">1</item>
     </style>
 
-    <style name="bt_submit_button" parent="@bt_base_textview">
+    <style name="bt_submit_button" parent="bt_base_textview">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/bt_default_item_height</item>
         <item name="android:background">@drawable/bt_submit_button_background</item>

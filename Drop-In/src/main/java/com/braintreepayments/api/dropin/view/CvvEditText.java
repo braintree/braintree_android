@@ -96,7 +96,11 @@ public class CvvEditText extends FloatingLabelEditText {
             }
         }
 
-        setCompoundDrawablesWithIntrinsicBounds(0, 0, cvvResource, 0);
+        if(mRightToLeftLanguage) {
+            setCompoundDrawablesWithIntrinsicBounds(cvvResource, 0, 0, 0);
+        } else {
+            setCompoundDrawablesWithIntrinsicBounds(0, 0, cvvResource, 0);
+        }
     }
 
     @Override

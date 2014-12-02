@@ -20,8 +20,9 @@
             android:id="@+id/bt_primary_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/bt_description_amount"
+            android:layout_alignParentStart="true"
             android:textColor="@color/bt_black"
             android:maxLines="1" />
 
@@ -31,17 +32,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/bt_primary_description"
-            android:layout_alignLeft="@id/bt_primary_description"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:maxLines="1"
             android:textColor="@color/bt_light_gray"
             android:textSize="@dimen/bt_default_small_text_size" />
 
         <TextView
             style="@style/bt_base_textview_bold"
-            android:id="@id/bt_description_amount"
+            android:id="@+id/bt_description_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:maxLines="1"
             android:textColor="@color/bt_black" />
 
