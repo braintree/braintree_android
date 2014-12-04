@@ -41,6 +41,7 @@ public class HttpRequest {
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorizationFingerprint";
 
     private String mAuthorizationFingerprint;
+    private int mConnectTimeout = 0;
 
     public HttpRequest(String authorizationFingerprint) {
         mAuthorizationFingerprint = authorizationFingerprint;
@@ -58,8 +59,13 @@ public class HttpRequest {
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("User-Agent", "braintree/android/" + BuildConfig.VERSION_NAME);
         connection.setRequestProperty("Accept-Language", Locale.getDefault().getLanguage());
+        connection.setConnectTimeout(mConnectTimeout);
 
         return connection;
+    }
+
+    protected void setConnectTimeout(int timeout) {
+        mConnectTimeout = timeout;
     }
 
     public HttpResponse get(String url) throws UnexpectedException {

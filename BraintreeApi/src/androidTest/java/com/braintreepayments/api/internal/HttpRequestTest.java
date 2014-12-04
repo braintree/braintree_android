@@ -68,7 +68,8 @@ public class HttpRequestTest extends TestCase {
             return;
         }
         try {
-            mHttpRequest.get("https://" + EnvironmentHelper.getLocalhostIp() + ":9443");
+            mHttpRequest.setConnectTimeout(1000);
+            mHttpRequest.get("https://" + EnvironmentHelper.getLocalhostIp() + ":9443/");
             fail();
         } catch (Exception e) {
             // @formatter:off
