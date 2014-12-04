@@ -105,13 +105,13 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     public void testPayPalCreatesAPaymentMethodWithACustomer() {
         BraintreeTestUtils.setUpActivityTest(this,
                 new TestClientTokenBuilder().withPayPal().build());
-        assertCreatePaymentMethodFromPayPal();
+        assertCreatePaymentMethodFromPayPal("jane.doe@example.com");
     }
 
     public void testPayPalCreatesAPaymentMethodWithoutACustomer() {
         BraintreeTestUtils.setUpActivityTest(this,
                 new TestClientTokenBuilder().withoutCustomer().withPayPal().build());
-        assertCreatePaymentMethodFromPayPal();
+        assertCreatePaymentMethodFromPayPal("bt_buyer_us@paypal.com");
     }
 
     public void testReturnsToSelectPaymentMethodViewAfterAddingAPayPalAccount() {
@@ -458,7 +458,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         addCardAndAssertSuccess(getActivity());
     }
 
-    private void assertCreatePaymentMethodFromPayPal() {
+    private void assertCreatePaymentMethodFromPayPal(String descriptionEmail) {
         BraintreePaymentActivity activity = getActivity();
 
         waitForView(withId(R.id.bt_paypal_button)).perform(click());
@@ -468,7 +468,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForPaymentMethodList();
 
         onView(withId(R.id.bt_payment_method_description)).check(
-                matches(withText("jane.doe@example.com")));
+                matches(withText(descriptionEmail)));
         onView(withId(R.id.bt_select_payment_method_submit_button)).perform(click());
 
         waitForActivity(activity);
