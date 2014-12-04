@@ -12,6 +12,9 @@ gateway_path="$PWD/../$JOB_NAME-gateway"
 gateway_pid="/tmp/$JOB_NAME-gateway-server"
 gateway_port=3000
 
+emulator_started_at=0
+emulator_start_attempts=0
+
 cd_android() {
   cd $android_path
 }
@@ -69,6 +72,8 @@ start_emulator() {
   echo "hw.keyboard=yes" >> ~/.android/avd/braintree-android.avd/config.ini
   echo "Starting emulator"
   $ANDROID_HOME/tools/emulator -avd braintree-android -no-boot-anim -wipe-data -no-audio -no-window &
+  emulator_started_at=$(date +%s)
+  emulator_start_attempts=$(($emulator_start_attempts + 1))
 }
 
 wait_for_emulator() {
@@ -80,6 +85,18 @@ wait_for_emulator() {
   # before attempting to run tests.
   echo "Waiting for device package manager to load"
   while [[ `$android_adb shell pm path android` == 'Error'* ]]; do
+    if [ $(($emulator_started_at + 900)) -lt $(date +%s) ]; then
+      if [ $emulator_start_attempts -gt 2 ]; then
+        build_cleanup
+        exit 1
+      fi
+
+      $android_adb emu kill
+      start_emulator
+      wait_for_emulator
+      break
+    fi
+
     sleep 2
   done
   echo "Emulator fully armed and operational, starting tests"
