@@ -12,8 +12,8 @@ android {
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 21
-        versionCode 17
-        versionName '1.2.6'
+        versionCode 18
+        versionName '1.2.7'
     }
 
     packagingOptions {
@@ -27,7 +27,7 @@ sdkManager {
 
 dependencies {
     compile 'com.google.code.gson:gson:[2.2.4,3.0)'
-    compile project(':BraintreeData')
+    compile 'com.braintreepayments.api:data:1.2.7'
     compile files('libs/' + paypalVersion)
 
     androidTestCompile project(':TestUtils')

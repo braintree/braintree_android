@@ -1,5 +1,17 @@
 # Braintree Android SDK Release Notes
 
+## 1.2.7
+
+* Update gradle plugin to 0.14.1
+* Update build tools to 21.1.1
+* Update PayPal SDK to 2.7.3
+* Remove `android:allowBackup="false"` from library manifests, apps will now be able to choose if they allow backups
+* Remove `ACCESS_WIFI_STATE` permission
+* Improvements
+  * Add localizations for more locales (da-rDK, en-rAU, es, fr-rCA, iw-rIL, nl, no, pl, pt, ru, sv-rSE, tr, zh-rCN)
+  * Add initial right to left language support
+  * Add type safety to `Braintree#addListener(Listener)`. Thanks @adstro!
+
 ## 1.2.6
 
 * Increase `targetSdkVersion` to 21
