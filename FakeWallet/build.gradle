@@ -29,5 +29,5 @@ android {
 }
 
 sdkManager {
-    emulatorVersion 'android-21'
+    emulatorVersion 'android-19'
 }

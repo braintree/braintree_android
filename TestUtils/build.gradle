@@ -21,10 +21,6 @@ android {
     }
 }
 
-sdkManager {
-    emulatorVersion 'android-21'
-}
-
 dependencies {
     compile 'org.mockito:mockito-core:1.9.5'
     compile 'com.google.dexmaker:dexmaker:1.1'
