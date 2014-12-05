@@ -15,6 +15,7 @@
         <item name="android:layout_marginLeft">-4dp</item>
         <item name="android:layout_marginRight">-4dp</item>
         <item name="android:textColor">@color/bt_black</item>
+        <item name="android:textColorHint">@color/bt_light_gray</item>
     </style>
 
     <style name="bt_form_field" parent="bt_base_field">
