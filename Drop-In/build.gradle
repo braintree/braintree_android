@@ -56,35 +56,9 @@ task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
 }
 
-task projectDependenciesJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompile) {
-    archiveName "braintree-api-${android.defaultConfig.versionName}.jar"
-    from {
-        configurations.compile.findAll {
-            it.getName() != 'android.jar'
-        }.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
-}
-
-task fullProjectZip(type: Zip, dependsOn: android.libraryVariants.release.javaCompile) {
-    classifier = 'project'
-    from fileTree(dir: 'src/main').exclude('java')
-
-    into('libs') {
-        from projectDependenciesJar
-    }
-    into('src') {
-        from android.sourceSets.main.java.srcDirs
-    }
-}
-
-fullProjectZip.dependsOn(projectDependenciesJar)
-
 artifacts {
     archives javadocsJar
     archives sourcesJar
-    archives fullProjectZip
 }
 
 signing {
