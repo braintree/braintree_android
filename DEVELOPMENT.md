@@ -48,7 +48,6 @@ The individual components may be of interest for advanced integrations and are e
 * Gradle
 * Host app does not integrate the [PayPal Android SDK](https://github.com/paypal/PayPal-Android-SDK)
 * Host app does not integrate with the Kount SDK
-* Host app does not integrate with [card.io](https://www.card.io/)
 * Host app has a secure, authenticated server with a [Braintree server-side integration](https://developers.braintreepayments.com/android/start/hello-server)
 
 ## Committing

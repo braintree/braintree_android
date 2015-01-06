@@ -1,6 +1,7 @@
 package com.braintreepayments.api.data;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.devicecollector.DeviceCollector;
 
@@ -67,7 +68,7 @@ public final class BraintreeData {
         try {
             Method method = getClass().getClassLoader()
                     .loadClass("com.paypal.android.sdk.payments.PayPalConfiguration")
-                    .getMethod("getApplicationCorrelationId", Activity.class);
+                    .getMethod("getClientMetadataId", Context.class);
             return (String) method.invoke(null, activity);
         } catch (Exception ignored) {
             return null;

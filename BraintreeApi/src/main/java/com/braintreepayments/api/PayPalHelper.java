@@ -57,6 +57,8 @@ public class PayPalHelper {
                     PayPalOAuthScopes.PAYPAL_SCOPE_FUTURE_PAYMENTS)
         );
         intent.putExtra(PayPalTouchActivity.EXTRA_REQUESTED_SCOPES, new PayPalOAuthScopes(scopes));
+        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, buildPayPalConfiguration(
+                clientToken));
         activity.startActivityForResult(intent, requestCode);
     }
 
@@ -79,7 +81,7 @@ public class PayPalHelper {
         if (resultCode == Activity.RESULT_OK) {
             PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder();
             if (activity != null) {
-                paypalAccountBuilder.correlationId(PayPalConfiguration.getApplicationCorrelationId(activity));
+                paypalAccountBuilder.correlationId(PayPalConfiguration.getClientMetadataId(activity));
             }
 
             PayPalTouchConfirmation paypalTouchConfirmation = data.getParcelableExtra(
