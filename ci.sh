@@ -46,13 +46,13 @@ start_gateway() {
 }
 
 stop_gateway() {
+  cd_gateway
   if [ -f $gateway_pid ];  then
     bundle exec thin --pid "$gateway_pid" stop
   fi
 }
 
 build_cleanup() {
-  cd_gateway
   stop_gateway
   $android_adb emu kill
   $android_adb kill-server
@@ -110,6 +110,8 @@ lint_return_code=$?
 if [ $lint_return_code -ne 0 ]; then
   exit 1
 fi
+
+build_cleanup
 
 cd_android
 start_adb
