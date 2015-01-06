@@ -6,8 +6,9 @@ import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.testutils.TestClientTokenBuilder;
 
-import static com.braintreepayments.api.CardNumber.VISA;
+import static com.braintreepayments.testutils.CardNumber.VISA;
 
 public class AddCardTest extends AndroidTestCase {
 

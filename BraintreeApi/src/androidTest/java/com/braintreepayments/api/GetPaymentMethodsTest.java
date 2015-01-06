@@ -10,11 +10,13 @@ import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.testutils.FixturesHelper;
+import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 import java.util.List;
 
-import static com.braintreepayments.api.CardNumber.AMEX;
-import static com.braintreepayments.api.CardNumber.VISA;
+import static com.braintreepayments.testutils.CardNumber.AMEX;
+import static com.braintreepayments.testutils.CardNumber.VISA;
 
 public class GetPaymentMethodsTest extends AndroidTestCase {
 

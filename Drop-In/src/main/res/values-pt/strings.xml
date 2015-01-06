@@ -1,10 +1,6 @@
 <?xml version="1.0"?>
 <resources>
     <string name="bt_form_pay_with_card_header">PAGAR COM UM CART&#xC3;O</string>
-    <string name="bt_form_hint_card_number">N&#xFA;mero do cart&#xE3;o</string>
-    <string name="bt_form_hint_expiration">Validade</string>
-    <string name="bt_form_hint_cvv">CSC</string>
-    <string name="bt_form_hint_postal_code">C&#xF3;digo postal</string>
 
     <string name="bt_invalid_card">As informa&#xE7;&#xF5;es do cart&#xE3;o s&#xE3;o inv&#xE1;lidas</string>
 

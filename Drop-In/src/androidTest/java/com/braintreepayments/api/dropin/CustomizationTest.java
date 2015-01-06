@@ -8,18 +8,18 @@ import android.os.Build.VERSION_CODES;
 import android.widget.ImageView;
 
 import com.braintreepayments.api.BraintreeApi;
-import com.braintreepayments.api.TestClientTokenBuilder;
 import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.testutils.TestClientTokenBuilder;
 
-import static com.braintreepayments.api.BraintreeTestUtils.assertBitmapsEqual;
-import static com.braintreepayments.api.CardNumber.VISA;
-import static com.braintreepayments.api.ui.Matchers.withId;
-import static com.braintreepayments.api.ui.ViewHelper.waitForView;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodList;
+import static com.braintreepayments.testutils.CardNumber.VISA;
+import static com.braintreepayments.testutils.ui.Assertions.assertBitmapsEqual;
+import static com.braintreepayments.testutils.ui.Matchers.withId;
+import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDisplayed;
@@ -137,6 +137,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         assertEquals("This is a title", activity.getActionBar().getTitle());
 
         ImageView actual = (ImageView) activity.findViewById(android.R.id.home);
+
         assertBitmapsEqual(actual.getDrawable(),
                 mContext.getResources().getDrawable(android.R.drawable.ic_delete)
         );

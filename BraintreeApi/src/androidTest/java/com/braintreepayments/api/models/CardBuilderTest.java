@@ -8,7 +8,7 @@ import junit.framework.TestCase;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.braintreepayments.api.CardNumber.VISA;
+import static com.braintreepayments.testutils.CardNumber.VISA;
 
 public class CardBuilderTest extends TestCase {
 

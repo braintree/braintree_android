@@ -18,6 +18,8 @@ import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.testutils.FixturesHelper;
+import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 
 import org.json.JSONException;
@@ -27,7 +29,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.braintreepayments.api.CardNumber.VISA;
+import static com.braintreepayments.testutils.CardNumber.VISA;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;

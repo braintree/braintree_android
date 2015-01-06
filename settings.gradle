@@ -1,7 +1,8 @@
 include ':BraintreeApi'
 include ':BraintreeData'
+include ':CardForm'
 include ':Drop-In'
-include ':TestUtils'
 
+include ':TestUtils'
 include ':Demo'
 include ':FakeWallet'

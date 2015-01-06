@@ -6,6 +6,7 @@ import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
+import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 public class AddPaypalAccountTest extends AndroidTestCase {
 

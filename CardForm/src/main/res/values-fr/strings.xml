@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="bt_form_hint_card_number">N&#xBA; de carte</string>
+    <string name="bt_form_hint_expiration">Expiration</string>
+    <string name="bt_form_hint_cvv">Crypto.</string>
+    <string name="bt_form_hint_postal_code">Code postal</string>
+
+    <string name="bt_default_action_label">Acheter</string>
+</resources>

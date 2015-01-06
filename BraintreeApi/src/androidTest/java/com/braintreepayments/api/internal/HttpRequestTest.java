@@ -1,7 +1,7 @@
 package com.braintreepayments.api.internal;
 
 import com.braintreepayments.api.BuildConfig;
-import com.braintreepayments.api.EnvironmentHelper;
+import com.braintreepayments.testutils.EnvironmentHelper;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 
 import junit.framework.TestCase;

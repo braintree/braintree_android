@@ -12,7 +12,7 @@ task :tests => :lint do
     begin
       sh "ruby script/httpsd.rb /tmp/httpsd.pid"
       log_listener_pid = fork { exec 'ruby', 'log_listener.rb' }
-      sh "./gradlew --info runAllTests :BraintreeData:connectedAndroidTest :BraintreeApi:connectedAndroidTest :Drop-In:connectedAndroidTest"
+      sh "./gradlew --info runAllTests :BraintreeData:connectedAndroidTest :BraintreeApi:connectedAndroidTest :CardForm:connectedAndroidTest :Drop-In:connectedAndroidTest"
     ensure
       `kill -9 \`cat /tmp/httpsd.pid\``
       `kill -9 #{log_listener_pid}`
@@ -25,6 +25,7 @@ end
 
 task :release => :lint do
   braintree_data_build_file = "BraintreeData/build.gradle"
+  braintree_card_form_build_file = "CardForm/build.gradle"
   braintree_api_build_file = "BraintreeApi/build.gradle"
   braintree_drop_in_build_file = "Drop-In/build.gradle"
   braintree_demo_build_file = "Demo/build.gradle"
@@ -46,6 +47,12 @@ task :release => :lint do
   puts "BraintreeData was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
   $stdin.gets
 
+  increment_version_code(braintree_card_form_build_file)
+  update_version(braintree_card_form_build_file)
+  sh "./gradlew clean :CardForm:uploadArchives"
+  puts "CardForm was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
+  $stdin.gets
+
   increment_version_code(braintree_api_build_file)
   update_version(braintree_api_build_file, version)
   replace_string(braintree_api_build_file, "compile project(':BraintreeData')", "compile 'com.braintreepayments.api:data:#{version}'")
@@ -56,6 +63,7 @@ task :release => :lint do
   increment_version_code(braintree_drop_in_build_file)
   update_version(braintree_drop_in_build_file, version)
   replace_string(braintree_drop_in_build_file, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree-api:#{version}'")
+  replace_string(braintree_drop_in_build_file, "compile project(':CardForm')", "compile 'com.braintreepayments.card-form:#{version}'")
   sh "./gradlew clean :Drop-In:uploadArchives"
   puts "Drop-In was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
   $stdin.gets

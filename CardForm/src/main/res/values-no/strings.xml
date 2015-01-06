@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="bt_form_hint_card_number">Kortnummer</string>
+    <string name="bt_form_hint_expiration">Utl&#xF8;per</string>
+    <string name="bt_form_hint_cvv">CVV</string>
+    <string name="bt_form_hint_postal_code">Postnummer</string>
+
+    <string name="bt_default_action_label">Kj&#xF8;p</string>
+</resources>

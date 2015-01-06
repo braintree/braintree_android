@@ -2,6 +2,8 @@ package com.braintreepayments.api;
 
 import android.test.AndroidTestCase;
 
+import com.braintreepayments.testutils.FixturesHelper;
+
 import java.io.IOException;
 
 public class ClientTokenTest extends AndroidTestCase {

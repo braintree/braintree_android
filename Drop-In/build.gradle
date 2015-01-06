@@ -12,7 +12,7 @@ android {
         targetSdkVersion 21
         versionCode 18
         versionName '1.2.7'
-        testInstrumentationRunner 'com.braintreepayments.api.ui.NoAnimationsInstrumentationTestRunner'
+        testInstrumentationRunner 'com.braintreepayments.testutils.ui.NoAnimationsInstrumentationTestRunner'
     }
 
     packagingOptions {
@@ -26,6 +26,7 @@ sdkManager {
 
 dependencies {
     compile project(':BraintreeApi')
+    compile project(':CardForm')
 
     androidTestCompile project(':TestUtils')
 }

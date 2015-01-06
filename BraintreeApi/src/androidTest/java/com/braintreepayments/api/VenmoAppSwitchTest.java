@@ -5,6 +5,8 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.test.AndroidTestCase;
 
+import com.braintreepayments.testutils.TestClientTokenBuilder;
+
 public class VenmoAppSwitchTest extends AndroidTestCase {
 
     private VenmoAppSwitch mVenmoAppSwitch;

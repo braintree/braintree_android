@@ -11,7 +11,7 @@ import android.view.View;
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.SignatureVerification;
 import com.braintreepayments.api.internal.HttpRequest;
-import com.braintreepayments.api.ui.ViewHelper;
+import com.braintreepayments.testutils.ui.ViewHelper;
 import com.google.android.apps.common.testing.ui.espresso.FailureHandler;
 import com.google.android.apps.common.testing.ui.espresso.base.DefaultFailureHandler;
 

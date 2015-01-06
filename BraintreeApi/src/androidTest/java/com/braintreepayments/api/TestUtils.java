@@ -7,6 +7,7 @@ import android.os.Looper;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
+import com.braintreepayments.testutils.FixturesHelper;
 
 import java.util.concurrent.CountDownLatch;
 

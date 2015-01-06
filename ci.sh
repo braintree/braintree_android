@@ -127,7 +127,7 @@ ruby script/httpsd.rb /tmp/httpsd.pid
 ruby log_listener.rb &
 log_listener_pid=$!
 
-$android_path/gradlew --info --no-color runAllTests :BraintreeData:connectedAndroidTest :BraintreeApi:connectedAndroidTest
+$android_path/gradlew --info --no-color runAllTests :BraintreeData:connectedAndroidTest :BraintreeApi:connectedAndroidTest :CardForm:connectedAndroidTest
 test_return_code=$?
 
 build_cleanup

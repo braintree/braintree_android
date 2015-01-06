@@ -2,7 +2,7 @@ package com.braintreepayments.api.models;
 
 import android.test.AndroidTestCase;
 
-import com.braintreepayments.api.FixturesHelper;
+import com.braintreepayments.testutils.FixturesHelper;
 import com.braintreepayments.api.TestUtils;
 
 import static org.mockito.Mockito.spy;

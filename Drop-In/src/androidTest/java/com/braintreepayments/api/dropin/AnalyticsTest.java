@@ -4,19 +4,19 @@ import android.view.KeyEvent;
 
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.BraintreeTestUtils;
-import com.braintreepayments.api.TestClientTokenBuilder;
+import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
 import com.braintreepayments.api.exceptions.ServerException;
 
 import static com.braintreepayments.api.BraintreeTestUtils.injectBraintree;
 import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
-import static com.braintreepayments.api.CardNumber.VISA;
-import static com.braintreepayments.api.ui.Matchers.withHint;
-import static com.braintreepayments.api.ui.Matchers.withId;
-import static com.braintreepayments.api.ui.ViewHelper.closeSoftKeyboard;
-import static com.braintreepayments.api.ui.ViewHelper.waitForView;
-import static com.braintreepayments.api.ui.WaitForActivityHelper.waitForActivity;
+import static com.braintreepayments.testutils.CardNumber.VISA;
+import static com.braintreepayments.testutils.ui.Matchers.withHint;
+import static com.braintreepayments.testutils.ui.Matchers.withId;
+import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
+import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
+import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivity;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;

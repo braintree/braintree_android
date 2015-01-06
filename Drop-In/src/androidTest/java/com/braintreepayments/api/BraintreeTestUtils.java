@@ -3,11 +3,6 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 
@@ -17,6 +12,8 @@ import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
+import com.braintreepayments.testutils.FixturesHelper;
+import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -28,8 +25,6 @@ import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewA
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.assertThat;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withId;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withText;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.is;
 
 public class BraintreeTestUtils {
@@ -88,7 +83,7 @@ public class BraintreeTestUtils {
             public HttpResponse post(String url, String params) throws UnexpectedException {
                 if(url.contains("credit_cards")) {
                     return new HttpResponse(422,
-                            FixturesHelper .stringFromFixture(context, "errors/error_response.json"));
+                            FixturesHelper.stringFromFixture(context, "errors/error_response.json"));
                 } else {
                     return super.post(url, params);
                 }
@@ -138,26 +133,6 @@ public class BraintreeTestUtils {
         Braintree braintree = new Braintree(braintreeApi);
         Braintree.sInstances.put(clientToken, braintree);
         return braintree;
-    }
-
-    public static void assertBitmapsEqual(Drawable d1, Drawable d2) {
-        if (d1 == null || d2 == null) {
-            assertEquals(d1, d2);
-        } else {
-            Bitmap b1 = ((BitmapDrawable) d1).getBitmap();
-            Bitmap b2 = ((BitmapDrawable) d2).getBitmap();
-            if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB_MR1) {
-                assertTrue(b1.sameAs(b2));
-            } else {
-                assertEquals(b1.getHeight(), b2.getHeight());
-                assertEquals(b1.getWidth(), b2.getWidth());
-                for (int x = 0; x < b1.getWidth(); x++) {
-                    for (int y = 0; y < b1.getHeight(); y++) {
-                        assertEquals(b1.getPixel(x, y), b2.getPixel(x, y));
-                    }
-                }
-            }
-        }
     }
 
     public static void assertSelectedPaymentMethodIs(int string) {

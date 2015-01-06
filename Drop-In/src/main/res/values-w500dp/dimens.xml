@@ -1,4 +1,0 @@
-<resources>
-    <!-- These overwrite values specified in values/styles.xml -->
-    <dimen name="bt_full_width">@dimen/bt_landscape_max_width</dimen>
-</resources>

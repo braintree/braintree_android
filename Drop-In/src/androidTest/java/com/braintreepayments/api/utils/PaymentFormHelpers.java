@@ -18,14 +18,14 @@ import org.hamcrest.Matcher;
 
 import java.util.Map;
 
-import static com.braintreepayments.api.CardNumber.VISA;
-import static com.braintreepayments.api.ui.Matchers.withHint;
-import static com.braintreepayments.api.ui.Matchers.withId;
-import static com.braintreepayments.api.ui.ViewHelper.FIFTEEN_SECONDS;
-import static com.braintreepayments.api.ui.ViewHelper.TEN_SECONDS;
-import static com.braintreepayments.api.ui.ViewHelper.closeSoftKeyboard;
-import static com.braintreepayments.api.ui.ViewHelper.waitForView;
-import static com.braintreepayments.api.ui.WaitForActivityHelper.waitForActivity;
+import static com.braintreepayments.testutils.CardNumber.VISA;
+import static com.braintreepayments.testutils.ui.Matchers.withHint;
+import static com.braintreepayments.testutils.ui.Matchers.withId;
+import static com.braintreepayments.testutils.ui.ViewHelper.FIFTEEN_SECONDS;
+import static com.braintreepayments.testutils.ui.ViewHelper.TEN_SECONDS;
+import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
+import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
+import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivity;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.typeText;

@@ -2,7 +2,7 @@ package com.braintreepayments.api.exceptions;
 
 import android.test.InstrumentationTestCase;
 
-import com.braintreepayments.api.FixturesHelper;
+import com.braintreepayments.testutils.FixturesHelper;
 
 public class ErrorsWithResponseTest extends InstrumentationTestCase {
 

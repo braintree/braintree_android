@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="bt_form_hint_card_number">&#x41D;&#x43E;&#x43C;&#x435;&#x440; &#x43A;&#x430;&#x440;&#x442;&#x44B;</string>
+    <string name="bt_form_hint_expiration">&#x421;&#x440;&#x43E;&#x43A; &#x434;&#x435;&#x439;&#x441;&#x442;&#x432;&#x438;&#x44F;</string>
+    <string name="bt_form_hint_cvv">&#x41A;&#x43E;&#x434; &#x431;&#x435;&#x437;&#x43E;&#x43F;&#x430;&#x441;&#x43D;&#x43E;&#x441;&#x442;&#x438;</string>
+    <string name="bt_form_hint_postal_code">&#x418;&#x43D;&#x434;&#x435;&#x43A;&#x441;</string>
+
+    <string name="bt_default_action_label">&#x41F;&#x43E;&#x43A;&#x443;&#x43F;&#x43A;&#x430;</string>
+</resources>
+
+

@@ -5,6 +5,7 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import com.braintreepayments.api.data.BraintreeEnvironment;
 import com.braintreepayments.api.test.TestActivity;
+import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;

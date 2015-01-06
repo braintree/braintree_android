@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="bt_base_textview">
+        <item name="android:textSize">@dimen/bt_default_text_size</item>
+    </style>
+
+    <style name="bt_card_form_field" parent="bt_base_textview">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/bt_form_field_height</item>
+        <item name="android:layout_marginLeft">@dimen/bt_form_field_padding</item>
+        <item name="android:layout_marginRight">@dimen/bt_form_field_padding</item>
+        <item name="android:paddingTop">@dimen/bt_form_padding</item>
+        <item name="android:background">@drawable/bt_field_selector</item>
+        <item name="android:textColor">@color/bt_black</item>
+        <item name="android:textColorHint">@color/bt_light_gray</item>
+        <item name="android:textCursorDrawable" tools:ignore="NewApi">@null</item>
+    </style>
+
+    <style name="bt_card_form_field_landscape" parent="bt_card_form_field">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+</resources>
