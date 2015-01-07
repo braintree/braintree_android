@@ -3,12 +3,16 @@ package com.braintreepayments.demo;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.view.SecureLoadingProgressBar;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class FinishedActivity extends Activity {
 
@@ -31,14 +35,22 @@ public class FinishedActivity extends Activity {
                 new AsyncHttpResponseHandler() {
                     @Override
                     public void onSuccess(String response) {
-                        showSuccessView();
+                        try {
+                            showSuccessView(new JSONObject(response).optString("message"));
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 });
     }
 
-    private void showSuccessView() {
+    private void showSuccessView(String message) {
         mLoadingSpinner.setVisibility(View.GONE);
         findViewById(R.id.thanks).setVisibility(View.VISIBLE);
+        if (message != null) {
+            TextView textView = (TextView) findViewById(R.id.transaction_id);
+            textView.setText(message);
+            textView.setVisibility(View.VISIBLE);
+        }
     }
-
 }
