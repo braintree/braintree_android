@@ -46,6 +46,12 @@ public class ClientTokenTest extends AndroidTestCase {
         assertEquals("integration_merchant_id", token.getMerchantId());
     }
 
+    public void testParsesMerchantAccountIdFromToken() {
+        ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token.json");
+
+        assertEquals("integration_merchant_account_id", token.getMerchantAccountId());
+    }
+
     public void testParsesAuthorizationFingerprintFromToken() {
         ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token.json");
 

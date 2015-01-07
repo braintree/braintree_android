@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
     private String venmo;
     private Analytics analytics;
     private String merchantId;
+    private String merchantAccountId;
 
     protected static ClientToken getClientToken(String clientToken) {
         Pattern pattern = Pattern.compile("([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)");
@@ -79,6 +80,10 @@ import java.util.regex.Pattern;
 
     protected String getMerchantId() {
         return merchantId;
+    }
+
+    protected String getMerchantAccountId() {
+        return merchantAccountId;
     }
 
     class PayPal {
