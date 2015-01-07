@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 
-import com.braintreepayments.api.BraintreeTestUtils;
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.R;
 import com.braintreepayments.api.dropin.view.LoadingHeader;
@@ -18,6 +17,7 @@ import org.hamcrest.Matcher;
 
 import java.util.Map;
 
+import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.ui.Matchers.withHint;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
@@ -25,7 +25,7 @@ import static com.braintreepayments.testutils.ui.ViewHelper.FIFTEEN_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.TEN_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
-import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivity;
+import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.typeText;
@@ -60,9 +60,9 @@ public class PaymentFormHelpers {
         assertEquals(HeaderState.SUCCESS, loadingHeader.getCurrentState());
         onView(withId(R.id.bt_header_container)).check(matches(isDisplayed()));
 
-        waitForActivity(activity);
+        waitForActivityToFinish(activity);
 
-        Map<String, Object> result = BraintreeTestUtils.getActivityResult(activity);
+        Map<String, Object> result = getActivityResult(activity);
         PaymentMethod response =
                 (PaymentMethod) ((Intent) result.get("resultData")).getSerializableExtra(
                         BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);

@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
@@ -15,17 +14,11 @@ import com.braintreepayments.api.internal.HttpResponse;
 import com.braintreepayments.testutils.FixturesHelper;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.doesNotExist;
 import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
-import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.assertThat;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withId;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.is;
 
 public class BraintreeTestUtils {
 
@@ -46,29 +39,6 @@ public class BraintreeTestUtils {
         testCase.setActivityIntent(intent);
 
         return clientToken;
-    }
-
-
-    public static Map<String, Object> getActivityResult(Activity activity) {
-        assertThat("Activity did not finish", activity.isFinishing(), is(true));
-        Map<String, Object> resultMap = new HashMap<String, Object>();
-
-        try {
-            Field resultCodeField = Activity.class.getDeclaredField("mResultCode");
-            resultCodeField.setAccessible(true);
-            resultMap.put("resultCode", resultCodeField.get(activity));
-
-            Field resultDataField = Activity.class.getDeclaredField("mResultData");
-            resultDataField.setAccessible(true);
-            resultMap.put("resultData", resultDataField.get(activity));
-
-            return resultMap;
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(
-                    "Looks like the Android Activity class has changed it's private fields for mResultCode or mResultData. Time to update the reflection code.", e);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static void postUnrecoverableErrorFromBraintree(Braintree braintree, BraintreeException exception) {

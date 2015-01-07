@@ -17,9 +17,10 @@ import com.braintreepayments.testutils.TestClientTokenBuilder;
 import java.util.Map;
 
 import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
+import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
-import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivity;
+import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
 
 public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
 
@@ -42,8 +43,8 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
         AuthenticationException exception = new AuthenticationException();
         BraintreeTestUtils.postUnrecoverableErrorFromBraintree(mBraintree, exception);
 
-        waitForActivity(mActivity);
-        Map<String, Object> result = BraintreeTestUtils.getActivityResult(mActivity);
+        waitForActivityToFinish(mActivity);
+        Map<String, Object> result = getActivityResult(mActivity);
 
         assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_DEVELOPER_ERROR,
                 result.get("resultCode"));
@@ -55,8 +56,8 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
         AuthorizationException exception = new AuthorizationException();
         BraintreeTestUtils.postUnrecoverableErrorFromBraintree(mBraintree, exception);
 
-        waitForActivity(mActivity);
-        Map<String, Object> result = BraintreeTestUtils.getActivityResult(mActivity);
+        waitForActivityToFinish(mActivity);
+        Map<String, Object> result = getActivityResult(mActivity);
 
         assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_DEVELOPER_ERROR,
                 result.get("resultCode"));
@@ -68,8 +69,8 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
         UpgradeRequiredException exception = new UpgradeRequiredException();
         BraintreeTestUtils.postUnrecoverableErrorFromBraintree(mBraintree, exception);
 
-        waitForActivity(mActivity);
-        Map<String, Object> result = BraintreeTestUtils.getActivityResult(mActivity);
+        waitForActivityToFinish(mActivity);
+        Map<String, Object> result = getActivityResult(mActivity);
 
         assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_DEVELOPER_ERROR,
                 result.get("resultCode"));
@@ -81,8 +82,8 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
         ServerException exception = new ServerException();
         BraintreeTestUtils.postUnrecoverableErrorFromBraintree(mBraintree, exception);
 
-        waitForActivity(mActivity);
-        Map<String, Object> result = BraintreeTestUtils.getActivityResult(mActivity);
+        waitForActivityToFinish(mActivity);
+        Map<String, Object> result = getActivityResult(mActivity);
 
         assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_ERROR,
                 result.get("resultCode"));
@@ -94,8 +95,8 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
         DownForMaintenanceException exception = new DownForMaintenanceException();
         BraintreeTestUtils.postUnrecoverableErrorFromBraintree(mBraintree, exception);
 
-        waitForActivity(mActivity);
-        Map<String, Object> result = BraintreeTestUtils.getActivityResult(mActivity);
+        waitForActivityToFinish(mActivity);
+        Map<String, Object> result = getActivityResult(mActivity);
 
         assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_UNAVAILABLE,
                 result.get("resultCode"));
@@ -107,8 +108,8 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
         UnexpectedException exception = new UnexpectedException();
         BraintreeTestUtils.postUnrecoverableErrorFromBraintree(mBraintree, exception);
 
-        waitForActivity(mActivity);
-        Map<String, Object> result = BraintreeTestUtils.getActivityResult(mActivity);
+        waitForActivityToFinish(mActivity);
+        Map<String, Object> result = getActivityResult(mActivity);
 
         assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_ERROR,
                 result.get("resultCode"));
@@ -119,8 +120,8 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
     public void testReturnsUserCanceledOnBackButtonPress() {
         sendKeys(KeyEvent.KEYCODE_BACK);
 
-        waitForActivity(mActivity);
-        Map<String, Object> result = BraintreeTestUtils.getActivityResult(mActivity);
+        waitForActivityToFinish(mActivity);
+        Map<String, Object> result = getActivityResult(mActivity);
 
         assertEquals(Activity.RESULT_CANCELED, result.get("resultCode"));
     }

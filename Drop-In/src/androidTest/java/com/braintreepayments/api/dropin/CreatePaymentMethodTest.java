@@ -35,6 +35,7 @@ import static com.braintreepayments.api.utils.PaymentFormHelpers.onAddPaymentFor
 import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodList;
+import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.ui.Matchers.withHint;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
@@ -45,7 +46,7 @@ import static com.braintreepayments.testutils.ui.ViewHelper.THREE_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.TWO_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
-import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivity;
+import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.typeText;
@@ -88,9 +89,9 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withId(R.id.bt_card_form_postal_code)).check(matches(not(isDisplayed())));
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
-        waitForActivity(activity);
+        waitForActivityToFinish(activity);
 
-        Map<String, Object> result = BraintreeTestUtils.getActivityResult(activity);
+        Map<String, Object> result = getActivityResult(activity);
         PaymentMethod response =
                 (PaymentMethod) ((Intent) result.get("resultData")).getSerializableExtra(
                         BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
@@ -162,9 +163,9 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withId(R.id.bt_card_form_card_number)).perform(click());
         assertFalse(submitButton.isEnabled());
 
-        waitForActivity(activity);
+        waitForActivityToFinish(activity);
 
-        Map<String, Object> result = BraintreeTestUtils.getActivityResult(activity);
+        Map<String, Object> result = getActivityResult(activity);
         PaymentMethod response =
                 (PaymentMethod) ((Intent) result.get("resultData")).getSerializableExtra(
                         BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
@@ -366,9 +367,9 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withHint("Postal Code")).perform(typeText("12345"));
 
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
-        waitForActivity(activity);
+        waitForActivityToFinish(activity);
 
-        Map<String, Object> result = BraintreeTestUtils.getActivityResult(activity);
+        Map<String, Object> result = getActivityResult(activity);
         assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_ERROR,
                 result.get("resultCode"));
     }
@@ -469,9 +470,9 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
                 matches(withText(descriptionEmail)));
         onView(withId(R.id.bt_select_payment_method_submit_button)).perform(click());
 
-        waitForActivity(activity);
+        waitForActivityToFinish(activity);
 
-        Map<String, Object> result = BraintreeTestUtils.getActivityResult(activity);
+        Map<String, Object> result = getActivityResult(activity);
         PaymentMethod paymentMethod =
                 (PaymentMethod) ((Intent) result.get("resultData")).getSerializableExtra(
                         BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);

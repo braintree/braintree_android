@@ -4,11 +4,11 @@ import android.app.Activity;
 
 public class WaitForActivityHelper {
 
-    public static void waitForActivity(Activity activity) {
-        WaitForActivityHelper.waitForActivityWithTimeout(activity, 5000);
+    public static void waitForActivityToFinish(Activity activity) {
+        WaitForActivityHelper.waitForActivityToFinishWithTimeout(activity, 5000);
     }
 
-    public static void waitForActivityWithTimeout(Activity activity, long timeout) {
+    public static void waitForActivityToFinishWithTimeout(Activity activity, long timeout) {
         final long endTime = System.currentTimeMillis() + timeout;
 
         do {

@@ -16,7 +16,7 @@ import static com.braintreepayments.testutils.ui.Matchers.withHint;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
-import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivity;
+import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
@@ -54,7 +54,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
     public void testAddsEventOnAddCardSucceeded() {
         setupActivity();
         fillInCreditCard();
-        waitForActivity(mActivity);
+        waitForActivityToFinish(mActivity);
 
         verify(mBraintree, times(1)).sendAnalyticsEvent("add-card.success");
     }
@@ -98,7 +98,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
     public void testAddsEventOnSDKExitWithSuccess() {
         setupActivity();
         fillInCreditCard();
-        waitForActivity(mActivity);
+        waitForActivityToFinish(mActivity);
 
         verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.exit.success");
     }
@@ -106,7 +106,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
     public void testAddsEventOnSDKExitWithUserCanceled() {
         setupActivity();
         sendKeys(KeyEvent.KEYCODE_BACK);
-        waitForActivity(mActivity);
+        waitForActivityToFinish(mActivity);
 
         verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.exit.user-canceled");
     }
@@ -115,7 +115,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
         setupActivity();
         BraintreeTestUtils
                 .postUnrecoverableErrorFromBraintree(mBraintree, new AuthenticationException());
-        waitForActivity(mActivity);
+        waitForActivityToFinish(mActivity);
 
         verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.exit.developer-error");
     }
@@ -123,7 +123,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
     public void testAddsEventOnSDKExitWithServerError() {
         setupActivity();
         BraintreeTestUtils.postUnrecoverableErrorFromBraintree(mBraintree, new ServerException());
-        waitForActivity(mActivity);
+        waitForActivityToFinish(mActivity);
 
         verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.exit.server-error");
     }
@@ -132,7 +132,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
         setupActivity();
         BraintreeTestUtils
                 .postUnrecoverableErrorFromBraintree(mBraintree, new DownForMaintenanceException());
-        waitForActivity(mActivity);
+        waitForActivityToFinish(mActivity);
 
         verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.exit.server-unavailable");
     }

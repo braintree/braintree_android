@@ -30,11 +30,12 @@ import java.util.Map;
 import static com.braintreepayments.api.BraintreeTestUtils.assertSelectedPaymentMethodIs;
 import static com.braintreepayments.api.BraintreeTestUtils.injectSlowBraintree;
 import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
+import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.CardNumber.AMEX;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.CardNumber.VISA_2;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
-import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivity;
+import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.onAddPaymentFormHeader;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodList;
@@ -253,9 +254,9 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withText("Choose Payment Method")).check(doesNotExist());
         onView(withId(R.id.bt_select_payment_method_submit_button)).perform(click());
 
-        waitForActivity(activity);
+        waitForActivityToFinish(activity);
 
-        Map<String, Object> result = BraintreeTestUtils.getActivityResult(activity);
+        Map<String, Object> result = getActivityResult(activity);
         PaymentMethod response =
                 (PaymentMethod) ((Intent) result.get("resultData")).getSerializableExtra(
                         BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
@@ -271,9 +272,9 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForPaymentMethodList();
         onView(withId(R.id.bt_select_payment_method_submit_button)).perform(click());
 
-        waitForActivity(activity);
+        waitForActivityToFinish(activity);
 
-        Map<String, Object> result = BraintreeTestUtils.getActivityResult(activity);
+        Map<String, Object> result = getActivityResult(activity);
         PaymentMethod response =
                 (PaymentMethod) ((Intent) result.get("resultData")).getSerializableExtra(
                         BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
