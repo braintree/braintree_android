@@ -103,20 +103,16 @@ public class Braintree {
         if (sInstances.containsKey(clientToken)) {
             return sInstances.get(clientToken);
         } else {
-            Braintree braintree = new Braintree(context, clientToken);
-            sInstances.put(clientToken, braintree);
-            return braintree;
+            return new Braintree(clientToken,
+                    new BraintreeApi(context.getApplicationContext(), clientToken));
         }
     }
 
-    protected Braintree(Context context, String clientToken) {
-        this(new BraintreeApi(context.getApplicationContext(), clientToken));
-    }
-
-    protected Braintree(BraintreeApi braintreeApi) {
+    protected Braintree(String clientToken, BraintreeApi braintreeApi) {
         mBraintreeApi = braintreeApi;
         mExecutorService = Executors.newSingleThreadExecutor();
         mIntegrationType = "custom";
+        sInstances.put(clientToken, this);
     }
 
     protected String analyticsPrefix() {

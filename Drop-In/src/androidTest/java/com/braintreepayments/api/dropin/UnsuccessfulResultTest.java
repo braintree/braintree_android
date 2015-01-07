@@ -6,17 +6,16 @@ import android.view.KeyEvent;
 
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.BraintreeTestUtils;
-import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
 import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
+import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 import java.util.Map;
 
-import static com.braintreepayments.api.BraintreeTestUtils.injectBraintree;
 import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
@@ -32,7 +31,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
         super.setUp();
 
         String clientToken = new TestClientTokenBuilder().build();
-        mBraintree = injectBraintree(mContext, clientToken);
+        mBraintree = Braintree.getInstance(mContext, clientToken);
         setUpActivityTest(this, clientToken);
         mActivity = getActivity();
 

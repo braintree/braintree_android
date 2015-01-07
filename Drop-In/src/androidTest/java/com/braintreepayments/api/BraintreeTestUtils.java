@@ -90,8 +90,7 @@ public class BraintreeTestUtils {
             }
         };
 
-        Braintree braintree = new Braintree(new BraintreeApi(context, clientToken, request));
-        return injectBraintree(token, braintree);
+        return new Braintree(token, new BraintreeApi(context, clientToken, request));
     }
 
     public static Braintree injectSlowBraintree(Context context, String token, final long delay) {
@@ -110,12 +109,7 @@ public class BraintreeTestUtils {
             }
         };
 
-        Braintree braintree = new Braintree(new BraintreeApi(context, clientToken, request));
-        return injectBraintree(token, braintree);
-    }
-
-    public static Braintree injectBraintree(Context context, String clientToken) {
-        return injectBraintree(clientToken, new Braintree(context, clientToken));
+        return new Braintree(token, new BraintreeApi(context, clientToken, request));
     }
 
     public static Braintree injectBraintree(Context context, String clientToken,
@@ -130,9 +124,7 @@ public class BraintreeTestUtils {
     }
 
     public static Braintree injectBraintreeApi(String clientToken, BraintreeApi braintreeApi) {
-        Braintree braintree = new Braintree(braintreeApi);
-        Braintree.sInstances.put(clientToken, braintree);
-        return braintree;
+        return new Braintree(clientToken, braintreeApi);
     }
 
     public static void assertSelectedPaymentMethodIs(int string) {

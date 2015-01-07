@@ -43,6 +43,8 @@ import static org.mockito.Mockito.when;
 
 public class BraintreeTest extends AndroidTestCase {
 
+    private static final String TEST_CLIENT_TOKEN_KEY = "TEST_CLIENT_TOKEN_KEY";
+
     Braintree mBraintree;
     BraintreeApi mBraintreeApi;
 
@@ -50,8 +52,9 @@ public class BraintreeTest extends AndroidTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         TestUtils.setUp(getContext());
-        mBraintreeApi = new BraintreeApi(getContext(), new TestClientTokenBuilder().build());
-        mBraintree = new Braintree(mBraintreeApi);
+        String clientToken = new TestClientTokenBuilder().build();
+        mBraintreeApi = new BraintreeApi(getContext(), clientToken);
+        mBraintree = new Braintree(clientToken, mBraintreeApi);
     }
 
     public void testCreateAsync()
@@ -128,8 +131,8 @@ public class BraintreeTest extends AndroidTestCase {
     public void testOnUnrecoverableErrorsPostsToListeners()
             throws ExecutionException, InterruptedException, UnexpectedException {
         BraintreeApi braintreeApi = TestUtils.unexpectedExceptionThrowingApi(getContext(),
-                TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token.json"));
-        Braintree braintree = new Braintree(braintreeApi);
+                new ClientToken());
+        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
 
         final AtomicBoolean wasCalled = new AtomicBoolean(false);
         braintree.addListener(new SimpleListener() {
@@ -161,7 +164,7 @@ public class BraintreeTest extends AndroidTestCase {
 
         BraintreeApi braintreeApi =
                 TestUtils.apiWithExpectedResponse(getContext(), clientToken, response, 422);
-        Braintree braintree = new Braintree(braintreeApi);
+        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
 
         final AtomicBoolean wasCalled = new AtomicBoolean(false);
         braintree.addListener(new SimpleListener() {
@@ -191,7 +194,7 @@ public class BraintreeTest extends AndroidTestCase {
         when(braintreeApi.handlePayPalResponse(any(Activity.class), eq(PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID), eq(intent)))
                 .thenThrow(new ConfigurationException());
 
-        Braintree braintree = new Braintree(braintreeApi);
+        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
 
         final AtomicBoolean wasCalled = new AtomicBoolean(false);
         braintree.addListener(new SimpleListener() {
@@ -215,7 +218,7 @@ public class BraintreeTest extends AndroidTestCase {
     public void testStartPayWithPayPalSendsAnalyticsEvent() {
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
 
-        Braintree braintree = new Braintree(braintreeApi);
+        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
         braintree.startPayWithPayPal(null, 1);
         SystemClock.sleep(50);
         verify(braintreeApi).sendAnalyticsEvent("custom.android.add-paypal.start", "custom");
@@ -227,7 +230,7 @@ public class BraintreeTest extends AndroidTestCase {
         when(braintreeApi.handlePayPalResponse(any(Activity.class), eq(PayPalFuturePaymentActivity.RESULT_CANCELED), eq(intent))).
                 thenReturn(null);
 
-        Braintree braintree = new Braintree(braintreeApi);
+        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
 
         final AtomicBoolean listenerWasCalled = new AtomicBoolean(false);
         braintree.addListener(new SimpleListener() {
@@ -266,7 +269,7 @@ public class BraintreeTest extends AndroidTestCase {
     public void testStartPayWithVenmoSendsAnalyticsEvent() {
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
 
-        Braintree braintree = new Braintree(braintreeApi);
+        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
         braintree.startPayWithVenmo(null, 1);
         SystemClock.sleep(50);
         verify(braintreeApi).sendAnalyticsEvent("custom.android.add-venmo.start", "custom");
@@ -275,7 +278,7 @@ public class BraintreeTest extends AndroidTestCase {
     public void testStartPayWithVenmoSendsAnalyticsEventForDropin() {
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
 
-        Braintree braintree = new Braintree(braintreeApi);
+        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
         braintree.setIntegrationDropin();
         braintree.startPayWithVenmo(null, 1);
         SystemClock.sleep(50);
@@ -287,7 +290,7 @@ public class BraintreeTest extends AndroidTestCase {
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
         doThrow(new AppSwitchNotAvailableException()).when(braintreeApi).startPayWithVenmo(any(Activity.class), anyInt());
 
-        Braintree braintree = new Braintree(braintreeApi);
+        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
         braintree.startPayWithVenmo(null, 1);
         SystemClock.sleep(50);
         verify(braintreeApi).sendAnalyticsEvent("custom.android.add-venmo.unavailable", "custom");
@@ -306,7 +309,7 @@ public class BraintreeTest extends AndroidTestCase {
                 "nonce");
         when(braintreeApi.getPaymentMethod("nonce")).thenReturn(paymentMethod);
 
-        Braintree braintree = new Braintree(braintreeApi);
+        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
         final AtomicBoolean nonceListenerCalled = new AtomicBoolean(false);
         final AtomicBoolean paymentMethodListenerCalled = new AtomicBoolean(false);
         braintree.addListener(new SimpleListener() {
@@ -332,7 +335,7 @@ public class BraintreeTest extends AndroidTestCase {
     public void testFinishPayWithVenmoSendsAnalyticsEventOnSuccess()
             throws JSONException, BraintreeException, ErrorWithResponse {
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        Braintree braintree = new Braintree(braintreeApi);
+        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
         when(braintreeApi.finishPayWithVenmo(eq(Activity.RESULT_OK), any(Intent.class))).thenReturn("nonce");
         when(braintreeApi.getPaymentMethod("nonce")).thenReturn(new Card());
 
@@ -343,7 +346,7 @@ public class BraintreeTest extends AndroidTestCase {
 
     public void testFinishPayWithVenmoSendsAnalyticsEventOnFailure() {
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        Braintree braintree = new Braintree(braintreeApi);
+        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
 
         braintree.finishPayWithVenmo(Activity.RESULT_OK, new Intent());
         SystemClock.sleep(50);
@@ -356,7 +359,7 @@ public class BraintreeTest extends AndroidTestCase {
         when(braintreeApi.finishPayWithVenmo(eq(Activity.RESULT_CANCELED), eq(intent))).
                 thenReturn(null);
 
-        Braintree braintree = new Braintree(braintreeApi);
+        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
 
         final AtomicBoolean listenerWasCalled = new AtomicBoolean(false);
         braintree.addListener(new SimpleListener() {
@@ -469,7 +472,7 @@ public class BraintreeTest extends AndroidTestCase {
             throws ExecutionException, InterruptedException, UnexpectedException {
         BraintreeApi braintreeApi = TestUtils.unexpectedExceptionThrowingApi(getContext(),
                 TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token.json"));
-        Braintree braintree = new Braintree(braintreeApi);
+        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
 
         final AtomicBoolean wasRemoved = new AtomicBoolean(false);
         final AtomicBoolean wasCalled = new AtomicBoolean(false);
@@ -597,7 +600,7 @@ public class BraintreeTest extends AndroidTestCase {
     public void testProxiesSendAnalyticsEventToBraintreeApi()
             throws ExecutionException, InterruptedException {
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        Braintree braintree = new Braintree(braintreeApi);
+        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
 
         verify(braintreeApi, never()).sendAnalyticsEvent(anyString(), anyString());
         braintree.sendAnalyticsEventHelper("event", "TEST").get();

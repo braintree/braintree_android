@@ -3,9 +3,8 @@ package com.braintreepayments.api.dropin;
 import com.braintreepayments.api.BraintreeTestUtils;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
-import static com.braintreepayments.api.BraintreeTestUtils.injectBraintree;
-import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
+import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
 import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
 import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDisplayed;
@@ -29,7 +28,6 @@ public class AddPaymentMethodFormTest extends BraintreePaymentActivityTestCase {
                 .withoutCvvChallenge()
                 .withoutPostalCodeChallenge()
                 .build();
-        injectBraintree(mContext, clientToken);
         BraintreeTestUtils.setUpActivityTest(this, clientToken);
 
         getActivity();

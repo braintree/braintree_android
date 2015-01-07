@@ -16,6 +16,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class TestUtils {
+
     public static void setUp(Context context) {
         HttpRequest.DEBUG = true;
         System.setProperty("dexmaker.dexcache", context.getCacheDir().getPath());
@@ -56,4 +57,5 @@ public class TestUtils {
         });
         latch.await();
     }
+
 }
