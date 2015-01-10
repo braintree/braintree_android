@@ -1,13 +1,13 @@
 package com.braintreepayments.api.models;
 
-import android.test.InstrumentationTestCase;
+import android.test.AndroidTestCase;
 
 import com.braintreepayments.testutils.FixturesHelper;
 
-public class CardTest extends InstrumentationTestCase {
+public class CardTest extends AndroidTestCase {
 
     public void testCanCreateCardFromJson() {
-        String cardString = FixturesHelper.stringFromFixture(getInstrumentation().getContext(),
+        String cardString = FixturesHelper.stringFromFixture(getContext(),
                 "payment_methods/visa_credit_card.json");
 
         Card card = Card.fromJson(cardString);
@@ -17,4 +17,5 @@ public class CardTest extends InstrumentationTestCase {
         assertEquals("ending in ••11", card.getDescription());
         assertEquals("11", card.getLastTwo());
     }
+
 }

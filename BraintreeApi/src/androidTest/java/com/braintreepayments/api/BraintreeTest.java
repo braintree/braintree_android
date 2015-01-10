@@ -29,6 +29,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.braintreepayments.api.TestUtils.waitForMainThreadToFinish;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -83,7 +84,7 @@ public class BraintreeTest extends AndroidTestCase {
 
         createCardSync(mBraintree);
 
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
         assertTrue(paymentMethodCreatedCalled.get());
         assertTrue(paymentMethodNonceCalled.get());
     }
@@ -100,7 +101,7 @@ public class BraintreeTest extends AndroidTestCase {
 
         mBraintree.tokenizeHelper(new CardBuilder().cardNumber("55")).get();
 
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
         assertTrue(wasCalled.get());
     }
 
@@ -124,7 +125,7 @@ public class BraintreeTest extends AndroidTestCase {
 
         mBraintree.getPaymentMethodsHelper().get();
 
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
         assertTrue(wasCalled.get());
     }
 
@@ -145,13 +146,13 @@ public class BraintreeTest extends AndroidTestCase {
 
         braintree.getPaymentMethodsHelper().get();
 
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
         assertTrue(wasCalled.get());
 
         wasCalled.set(false);
         braintree.createHelper(new CardBuilder()).get();
 
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
         assertTrue(wasCalled.get());
     }
 
@@ -177,13 +178,13 @@ public class BraintreeTest extends AndroidTestCase {
 
         braintree.getPaymentMethodsHelper().get();
 
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
         assertTrue(wasCalled.get());
 
         wasCalled.set(false);
         braintree.createHelper(new CardBuilder()).get();
 
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
         assertTrue(wasCalled.get());
     }
 
@@ -412,14 +413,14 @@ public class BraintreeTest extends AndroidTestCase {
         mBraintree.addListener(listener);
 
         mBraintree.getPaymentMethodsHelper().get();
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
         assertTrue(wasCalled.get());
 
         mBraintree.removeListener(listener);
         wasRemoved.set(true);
 
         mBraintree.getPaymentMethodsHelper().get();
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
     }
 
     public void testDoesNotExecuteCallbackWithNoListeners()
@@ -438,7 +439,7 @@ public class BraintreeTest extends AndroidTestCase {
         };
 
         mBraintree.postOrQueueCallback(listenerCallback);
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
         assertFalse(wasCalled.get());
     }
 
@@ -458,12 +459,12 @@ public class BraintreeTest extends AndroidTestCase {
         };
 
         mBraintree.postOrQueueCallback(listenerCallback);
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
         assertFalse(wasCalled.get());
 
         hasListener.set(true);
         mBraintree.unlockListeners();
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
 
         assertTrue("Expected callback to have been called", wasCalled.get());
     }
@@ -489,14 +490,14 @@ public class BraintreeTest extends AndroidTestCase {
         braintree.addListener(listener);
 
         braintree.getPaymentMethodsHelper().get();
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
         assertTrue(wasCalled.get());
 
         braintree.removeListener(listener);
         wasRemoved.set(true);
 
         braintree.getPaymentMethodsHelper().get();
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
     }
 
     public void testSameBraintreeIsRetrievedForIdenticalClientTokens() {
@@ -529,7 +530,7 @@ public class BraintreeTest extends AndroidTestCase {
         });
 
         createCardSync(braintree);
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
 
         assertTrue(wasFirstListenerCalled.get());
         assertTrue(wasSecondListenerCalled.get());
@@ -550,15 +551,15 @@ public class BraintreeTest extends AndroidTestCase {
         braintree.lockListeners();
 
         createCardSync(braintree);
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
         assertEquals(0, callCount.get());
 
         braintree.unlockListeners();
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
         assertEquals(1, callCount.get());
 
         braintree.unlockListeners();
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
         assertEquals("Queued listeners were executed multiple times", 1, callCount.get());
     }
 
@@ -586,12 +587,12 @@ public class BraintreeTest extends AndroidTestCase {
         braintree.addListener(firstListener);
         braintree.lockListeners();
         createCardSync(braintree);
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
 
         braintree.removeListener(firstListener);
         braintree.addListener(secondListener);
         braintree.unlockListeners();
-        TestUtils.waitForMainThreadToFinish();
+        waitForMainThreadToFinish();
 
         assertFalse(firstListener.wasCalled());
         assertTrue(secondListener.wasCalled());
