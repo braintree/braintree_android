@@ -7,10 +7,26 @@
     android:padding="10dp">
 
     <Button
-        android:id="@+id/buy"
+        android:id="@+id/add_payment_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Buy Now"
-        android:onClick="onBuyClick" />
+        android:text="Add Payment Information"
+        android:onClick="onAddPaymentInformationClick" />
+
+    <Button
+        android:id="@+id/perform_three_d_secure_verification"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Perform 3D Secure Verification"
+        android:onClick="onPerformThreeDSecureVerificationClick"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/complete_purchase"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Complete Purchase"
+        android:onClick="onCompletePurchaseClick"
+        android:visibility="gone" />
 
 </LinearLayout>

@@ -8,9 +8,8 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.widget.EditText;
 import android.widget.RadioGroup;
-import android.widget.RadioGroup.OnCheckedChangeListener;
 
-public class OptionsActivity extends Activity implements OnCheckedChangeListener {
+public class OptionsActivity extends Activity implements RadioGroup.OnCheckedChangeListener {
 
     public static final int CUSTOM = 0;
     public static final int DROP_IN = 1;
@@ -97,5 +96,4 @@ public class OptionsActivity extends Activity implements OnCheckedChangeListener
     public static int getFormType(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getInt(FORM_TYPE, DROP_IN);
     }
-
 }
