@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
     private PayPal paypal;
     private boolean paypalEnabled;
     private String venmo;
+    private boolean threeDSecureEnabled;
     private Analytics analytics;
     private String merchantId;
     private String merchantAccountId;
@@ -56,6 +57,10 @@ import java.util.regex.Pattern;
         } else {
             return venmo;
         }
+    }
+
+    protected boolean isThreeDSecureEnabled() {
+        return threeDSecureEnabled;
     }
 
     protected Analytics getAnalytics() {

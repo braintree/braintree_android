@@ -34,6 +34,7 @@ import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PaymentMethod;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -234,7 +235,8 @@ public class BraintreePaymentActivity extends Activity implements
         mBraintree.sendAnalyticsEvent("sdk.exit.success");
 
         Intent resultIntent = new Intent();
-        resultIntent.putExtra(EXTRA_PAYMENT_METHOD, paymentMethod);
+        // required to be Serializable for backwards compatibility
+        resultIntent.putExtra(EXTRA_PAYMENT_METHOD, (Serializable) paymentMethod);
         resultIntent.putExtra(EXTRA_PAYMENT_METHOD_NONCE, paymentMethod.getNonce());
         setResult(RESULT_OK, resultIntent);
         finish();

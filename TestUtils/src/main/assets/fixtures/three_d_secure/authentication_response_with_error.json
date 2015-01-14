@@ -1,0 +1,11 @@
+{
+    "error": {
+        "message": "Failed to authenticate, please try a different form of payment"
+    },
+    "fieldErrors":[],
+    "threeDSecureInfo": {
+        "liabilityShifted": false,
+        "liabilityShiftPossible": true
+    },
+    "success": false
+}

@@ -1,13 +1,13 @@
 package com.braintreepayments.api.exceptions;
 
-import android.test.InstrumentationTestCase;
+import android.test.AndroidTestCase;
 
 import com.braintreepayments.testutils.FixturesHelper;
 
-public class ErrorsWithResponseTest extends InstrumentationTestCase {
+public class ErrorsWithResponseTest extends AndroidTestCase {
 
-    public void testParsesErrorsCorrectly() throws UnexpectedException {
-        String response = FixturesHelper.stringFromFixture(getInstrumentation().getContext(),
+    public void testParsesErrorsCorrectly() {
+        String response = FixturesHelper.stringFromFixture(getContext(),
                 "errors/credit_card_error_response.json");
 
         ErrorWithResponse errorWithResponse = new ErrorWithResponse(422, response);
@@ -25,8 +25,8 @@ public class ErrorsWithResponseTest extends InstrumentationTestCase {
                 errorWithResponse.errorFor("creditCard").errorFor("expirationYear").getMessage());
     }
 
-    public void testHandlesTopLevelErrors() throws UnexpectedException {
-        String topLevelError = FixturesHelper.stringFromFixture(getInstrumentation().getContext(),
+    public void testHandlesTopLevelErrors() {
+        String topLevelError = FixturesHelper.stringFromFixture(getContext(),
                 "errors/auth_fingerprint_error.json");
 
         ErrorWithResponse errorWithResponse = new ErrorWithResponse(422, topLevelError);
@@ -35,8 +35,8 @@ public class ErrorsWithResponseTest extends InstrumentationTestCase {
         assertEquals(1, errorWithResponse.getFieldErrors().size());
     }
 
-    public void testCanHandleMultipleCategories() throws UnexpectedException {
-        String errors = FixturesHelper.stringFromFixture(getInstrumentation().getContext(),
+    public void testCanHandleMultipleCategories() {
+        String errors = FixturesHelper.stringFromFixture(getContext(),
                 "errors/complex_error_response.json");
 
         ErrorWithResponse errorWithResponse = new ErrorWithResponse(422, errors);
@@ -44,6 +44,14 @@ public class ErrorsWithResponseTest extends InstrumentationTestCase {
         assertEquals(3, errorWithResponse.errorFor("creditCard").getFieldErrors().size());
 
         assertEquals("is invalid", errorWithResponse.errorFor("customer").getMessage());
-        assertNull(errorWithResponse.errorFor("customer").getFieldErrors());
+        assertEquals(0, errorWithResponse.errorFor("customer").getFieldErrors().size());
+    }
+
+    public void testDoesNotBlowUpParsingBadJson() {
+        String badJson = FixturesHelper.stringFromFixture(mContext, "random_json.json");
+
+        ErrorWithResponse errorWithResponse = new ErrorWithResponse(422, badJson);
+
+        assertEquals("Parsing error response failed", errorWithResponse.getMessage());
     }
 }

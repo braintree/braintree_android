@@ -1,5 +1,8 @@
 package com.braintreepayments.api.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.braintreepayments.api.Utils;
 import com.google.gson.annotations.SerializedName;
 
@@ -10,7 +13,7 @@ import java.io.Serializable;
  * @see com.braintreepayments.api.models.PaymentMethod
  * @see com.braintreepayments.api.models.PayPalAccount
  */
-public class Card extends PaymentMethod implements Serializable {
+public class Card extends PaymentMethod implements Parcelable, Serializable {
 
     protected static final String PAYMENT_METHOD_TYPE = "CreditCard";
 
@@ -21,6 +24,8 @@ public class Card extends PaymentMethod implements Serializable {
     private String expirationDate;
     @SerializedName("number") private String cardNumber;
     private String cvv;
+
+    public Card() {}
 
     /**
      * @return Type of this card (e.g. MasterCard, American Express)
@@ -70,15 +75,80 @@ public class Card extends PaymentMethod implements Serializable {
         return Utils.getGson().fromJson(creditCard, Card.class);
     }
 
-    private class CardDetails implements Serializable {
+    @Override
+    public int describeContents() { return 0; }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(this.billingAddress, 0);
+        dest.writeParcelable(this.details, 0);
+        dest.writeString(this.expirationMonth);
+        dest.writeString(this.expirationYear);
+        dest.writeString(this.expirationDate);
+        dest.writeString(this.cardNumber);
+        dest.writeString(this.cvv);
+        dest.writeString(this.nonce);
+        dest.writeString(this.description);
+        dest.writeSerializable(this.options);
+        dest.writeString(this.mSource);
+    }
+
+    private Card(Parcel in) {
+        this.billingAddress = in.readParcelable(BillingAddress.class.getClassLoader());
+        this.details = in.readParcelable(CardDetails.class.getClassLoader());
+        this.expirationMonth = in.readString();
+        this.expirationYear = in.readString();
+        this.expirationDate = in.readString();
+        this.cardNumber = in.readString();
+        this.cvv = in.readString();
+        this.nonce = in.readString();
+        this.description = in.readString();
+        this.options = (PaymentMethodOptions) in.readSerializable();
+        this.mSource = in.readString();
+    }
+
+    public static final Creator<Card> CREATOR = new Creator<Card>() {
+        public Card createFromParcel(Parcel source) {return new Card(source);}
+
+        public Card[] newArray(int size) {return new Card[size];}
+    };
+
+    private static class CardDetails implements Parcelable, Serializable {
         private String cardType;
         private String lastTwo;
 
-        protected String getCardType() { return cardType; }
-        protected String getLastTwo() { return lastTwo; }
+        public CardDetails() {}
+
+        protected String getCardType() {
+            return cardType;
+        }
+
+        protected String getLastTwo() {
+            return lastTwo;
+        }
+
+        @Override
+        public int describeContents() { return 0; }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(this.cardType);
+            dest.writeString(this.lastTwo);
+        }
+
+        private CardDetails(Parcel in) {
+            this.cardType = in.readString();
+            this.lastTwo = in.readString();
+        }
+
+        public static final Creator<CardDetails> CREATOR = new Creator<CardDetails>() {
+            public CardDetails createFromParcel(Parcel source) {return new CardDetails(source);}
+
+            public CardDetails[] newArray(int size) {return new CardDetails[size];}
+        };
     }
 
-    protected static class BillingAddress implements Serializable {
+    protected static class BillingAddress implements Parcelable, Serializable {
         private String firstName;
         private String lastName;
         private String countryName;
@@ -86,6 +156,8 @@ public class Card extends PaymentMethod implements Serializable {
         private String postalCode;
         private String region;
         private String streetAddress;
+
+        public BillingAddress() {}
 
         protected void setFirstName(String firstName) {
             this.firstName = firstName;
@@ -114,5 +186,38 @@ public class Card extends PaymentMethod implements Serializable {
         protected void setStreetAddress(String streetAddress) {
             this.streetAddress = streetAddress;
         }
+
+        @Override
+        public int describeContents() { return 0; }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(this.firstName);
+            dest.writeString(this.lastName);
+            dest.writeString(this.countryName);
+            dest.writeString(this.locality);
+            dest.writeString(this.postalCode);
+            dest.writeString(this.region);
+            dest.writeString(this.streetAddress);
+        }
+
+        private BillingAddress(Parcel in) {
+            this.firstName = in.readString();
+            this.lastName = in.readString();
+            this.countryName = in.readString();
+            this.locality = in.readString();
+            this.postalCode = in.readString();
+            this.region = in.readString();
+            this.streetAddress = in.readString();
+        }
+
+        public static final Creator<BillingAddress> CREATOR = new Creator<BillingAddress>() {
+            public BillingAddress createFromParcel(Parcel source) {
+                return new BillingAddress(source);
+            }
+
+            public BillingAddress[] newArray(int size) {return new BillingAddress[size];}
+        };
     }
+
 }

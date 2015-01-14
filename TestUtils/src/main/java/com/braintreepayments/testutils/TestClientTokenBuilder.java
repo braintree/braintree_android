@@ -23,9 +23,11 @@ public class TestClientTokenBuilder {
     private static final int MERCHANT_WITH_CVV_VERIFICATION = 3;
     private static final int MERCHANT_WITH_POSTAL_CODE_VERIFICATION = 4;
     private static final int MERCHANT_WITH_CVV_AND_POSTAL_CODE_VERIFICATION = 5;
+    private static final int MERCHANT_WITH_THREE_D_SECURE_ENABLED = 6;
 
     private boolean mWithCustomer = true;
     private int mMerchantType = MERCHANT_WITHOUT_PAYPAL;
+    private String mMerchantAccount = null;
     private boolean mAnalytics = false;
     private ArrayList<String> mChallenges = new ArrayList<String>() {{ add("cvv"); add("postal_code"); }};
     private boolean mRevoked = false;
@@ -59,6 +61,12 @@ public class TestClientTokenBuilder {
 
     public TestClientTokenBuilder withCvvAndPostalCodeVerification() {
         mMerchantType = MERCHANT_WITH_CVV_AND_POSTAL_CODE_VERIFICATION;
+        return this;
+    }
+
+    public TestClientTokenBuilder withThreeDSecure() {
+        mMerchantType = MERCHANT_WITH_THREE_D_SECURE_ENABLED;
+        mMerchantAccount = "three_d_secure_merchant_account";
         return this;
     }
 
@@ -103,6 +111,7 @@ public class TestClientTokenBuilder {
                 return getClientTokenFromGateway("integration2_merchant_id", "integration2_public_key");
             case MERCHANT_WITH_FAKE_PAYPAL:
             case MERCHANT_WITH_PAYPAL:
+            case MERCHANT_WITH_THREE_D_SECURE_ENABLED:
                 return getClientTokenFromGateway("integration_merchant_id", "integration_public_key");
             case MERCHANT_WITH_CVV_VERIFICATION:
                 return getClientTokenFromGateway("client_api_cvv_verification_merchant_id", "client_api_cvv_verification_public_key");
@@ -132,6 +141,17 @@ public class TestClientTokenBuilder {
             json.put("customer", "true");
             json.put("token_version", "2");
 
+            if (!mWithCustomer) {
+                json.put("no_customer", "true");
+            }
+            if (mAnalytics) {
+                json.put("analytics", "true");
+            }
+
+            if (mMerchantAccount != null) {
+                json.put("merchant_account_id", mMerchantAccount);
+            }
+
             JSONObject overrides = new JSONObject();
             JSONArray challenges = new JSONArray();
             for (String challenge : mChallenges) {
@@ -141,13 +161,6 @@ public class TestClientTokenBuilder {
 
             if (mRevoked) {
                 overrides.put("options", new JSONObject().put("revoked", "true"));
-            }
-
-            if (!mWithCustomer) {
-                json.put("no_customer", "true");
-            }
-            if (mAnalytics) {
-                json.put("analytics", "true");
             }
 
             if (!mTouchEnabled) {

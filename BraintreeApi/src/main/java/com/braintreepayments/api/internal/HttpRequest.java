@@ -32,6 +32,7 @@ public class HttpRequest {
 
     public static boolean DEBUG = false;
     public static final String TAG = "HttpRequest";
+    public static final String USER_AGENT = "braintree/android/" + BuildConfig.VERSION_NAME;
 
     private static final String METHOD_GET = "GET";
     private static final String METHOD_POST = "POST";
@@ -57,7 +58,7 @@ public class HttpRequest {
         }
 
         connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestProperty("User-Agent", "braintree/android/" + BuildConfig.VERSION_NAME);
+        connection.setRequestProperty("User-Agent", USER_AGENT);
         connection.setRequestProperty("Accept-Language", Locale.getDefault().getLanguage());
         connection.setConnectTimeout(mConnectTimeout);
 

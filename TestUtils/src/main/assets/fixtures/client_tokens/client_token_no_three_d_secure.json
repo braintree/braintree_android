@@ -4,6 +4,5 @@
     "challenges": ["cvv"],
     "merchantId": "integration_merchant_id",
     "merchantAccountId": "integration_merchant_account_id",
-    "paypalEnabled": false,
-    "threeDSecureEnabled": true
+    "paypalEnabled": false
 }

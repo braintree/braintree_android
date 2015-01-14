@@ -1,5 +1,7 @@
 package com.braintreepayments.api.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
 import com.braintreepayments.api.Utils;
@@ -11,13 +13,15 @@ import java.io.Serializable;
  * @see {@link com.braintreepayments.api.models.Card}
  * @see {@link com.braintreepayments.api.models.PaymentMethod}
  */
-public class PayPalAccount extends PaymentMethod implements Serializable {
+public class PayPalAccount extends PaymentMethod implements Parcelable, Serializable {
 
     protected static final String PAYMENT_METHOD_TYPE = "PayPalAccount";
 
     private String consentCode;
     private String correlationId;
     private PayPalDetails details;
+
+    public PayPalAccount() {}
 
     protected void setEmail(String email) {
         details = new PayPalDetails();
@@ -73,8 +77,40 @@ public class PayPalAccount extends PaymentMethod implements Serializable {
         return Utils.getGson().fromJson(json, PayPalAccount.class);
     }
 
-    private class PayPalDetails implements Serializable {
+    @Override
+    public int describeContents() { return 0; }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.consentCode);
+        dest.writeString(this.correlationId);
+        dest.writeParcelable(this.details, 0);
+        dest.writeString(this.nonce);
+        dest.writeString(this.description);
+        dest.writeSerializable(this.options);
+        dest.writeString(this.mSource);
+    }
+
+    private PayPalAccount(Parcel in) {
+        this.consentCode = in.readString();
+        this.correlationId = in.readString();
+        this.details = in.readParcelable(PayPalDetails.class.getClassLoader());
+        this.nonce = in.readString();
+        this.description = in.readString();
+        this.options = (PaymentMethodOptions) in.readSerializable();
+        this.mSource = in.readString();
+    }
+
+    public static final Creator<PayPalAccount> CREATOR = new Creator<PayPalAccount>() {
+        public PayPalAccount createFromParcel(Parcel source) {return new PayPalAccount(source);}
+
+        public PayPalAccount[] newArray(int size) {return new PayPalAccount[size];}
+    };
+
+    private static class PayPalDetails implements Parcelable, Serializable {
         private String email;
+
+        public PayPalDetails() {}
 
         private String getEmail() {
             return email;
@@ -83,5 +119,20 @@ public class PayPalAccount extends PaymentMethod implements Serializable {
         private void setEmail(String email) {
             this.email = email;
         }
+
+        @Override
+        public int describeContents() { return 0; }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {dest.writeString(this.email);}
+
+        private PayPalDetails(Parcel in) {this.email = in.readString();}
+
+        public static final Creator<PayPalDetails> CREATOR = new Creator<PayPalDetails>() {
+            public PayPalDetails createFromParcel(Parcel source) {return new PayPalDetails(source);}
+
+            public PayPalDetails[] newArray(int size) {return new PayPalDetails[size];}
+        };
     }
+
 }

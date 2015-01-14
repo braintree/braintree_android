@@ -1,0 +1,8 @@
+{
+    "lookup": {
+        "acsUrl": "https://acs-url/",
+        "md": "merchant-descriptor",
+        "termUrl": "https://term-url/",
+        "pareq": "pareq"
+    }
+}

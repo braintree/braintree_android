@@ -72,7 +72,6 @@ public class ClientTokenTest extends AndroidTestCase {
         assertTrue(token.getPayPal().getAllowHttp());
     }
 
-
     public void testReportsPayPalNotEnabledWhenFlagged() {
         ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token.json");
 
@@ -95,6 +94,18 @@ public class ClientTokenTest extends AndroidTestCase {
         ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token_venmo_offline.json");
 
         assertEquals("offline", token.getVenmoState());
+    }
+
+    public void testReportsThreeDSecureEnabledWhenEnabled() {
+        ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token.json");
+
+        assertTrue(token.isThreeDSecureEnabled());
+    }
+
+    public void testReportsThreeDSecureDisabledWhenAbsent() {
+        ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token_no_three_d_secure.json");
+
+        assertFalse(token.isThreeDSecureEnabled());
     }
 
     public void testParsesAnalyticConfigurationFromToken() {

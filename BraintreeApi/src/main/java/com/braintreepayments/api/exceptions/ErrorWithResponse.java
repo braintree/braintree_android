@@ -1,7 +1,11 @@
 package com.braintreepayments.api.exceptions;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.braintreepayments.api.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,19 +19,28 @@ import java.util.List;
 public final class ErrorWithResponse extends Exception {
 
     private final int statusCode;
-    private final List<BraintreeError> fieldErrors;
     private final String message;
+    private final ErrorInfo info;
+    private final List<BraintreeError> fieldErrors;
 
-    public ErrorWithResponse(int statusCode, String jsonString) throws UnexpectedException {
+    public ErrorWithResponse(int statusCode, String jsonString) {
+        this(statusCode, Utils.getGson().fromJson(jsonString, BraintreeErrors.class));
+    }
+
+    public ErrorWithResponse(int statusCode, BraintreeErrors errors) {
+        this(statusCode, errors, null);
+    }
+
+    public ErrorWithResponse(int statusCode, BraintreeErrors errors, ErrorInfo info) {
         this.statusCode = statusCode;
+        this.info = info;
 
-        BraintreeErrors errors = Utils.getGson().fromJson(jsonString, BraintreeErrors.class);
-
-        try {
-            this.fieldErrors = errors.getFieldErrors();
-            this.message = errors.getMessage();
-        } catch (NullPointerException e) {
-            throw new UnexpectedException("Parsing error response failed");
+        if (errors != null) {
+            fieldErrors = errors.getFieldErrors();
+            message = errors.getMessage();
+        } else {
+            fieldErrors = null;
+            message = "Parsing error response failed";
         }
     }
 
@@ -43,6 +56,16 @@ public final class ErrorWithResponse extends Exception {
      */
     public String getMessage() {
         return message;
+    }
+
+    /**
+     * @return Additional information specific to the type of error,
+     * ex: {@link com.braintreepayments.api.exceptions.ThreeDSecureInfo}.
+     *
+     * <b>Note:</b> can be {@code null}.
+     */
+    public ErrorInfo getErrorInfo() {
+        return info;
     }
 
     /**
@@ -75,23 +98,53 @@ public final class ErrorWithResponse extends Exception {
                 fieldErrors.toString();
     }
 
-    private final class BraintreeErrors {
-        private List<BraintreeError> fieldErrors;
+    public final static class BraintreeErrors implements Parcelable {
         private BraintreeError error;
+        private List<BraintreeError> fieldErrors = new ArrayList<BraintreeError>();
+
+        public BraintreeErrors() {}
 
         protected String getMessage() {
-            return error.getMessage();
+            if (error != null) {
+                return error.getMessage();
+            } else {
+                return "Parsing error response failed";
+            }
         }
 
         protected List<BraintreeError> getFieldErrors() {
             return fieldErrors;
         }
+
+        @Override
+        public int describeContents() { return 0; }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeTypedList(fieldErrors);
+            dest.writeParcelable(this.error, 0);
+        }
+
+        private BraintreeErrors(Parcel in) {
+            in.readTypedList(fieldErrors, BraintreeError.CREATOR);
+            this.error = in.readParcelable(BraintreeError.class.getClassLoader());
+        }
+
+        public static final Creator<BraintreeErrors> CREATOR = new Creator<BraintreeErrors>() {
+            public BraintreeErrors createFromParcel(Parcel source) {
+                return new BraintreeErrors(source);
+            }
+
+            public BraintreeErrors[] newArray(int size) {return new BraintreeErrors[size];}
+        };
     }
 
-    public final class BraintreeError {
-        private List<BraintreeError> fieldErrors;
+    public final static class BraintreeError implements android.os.Parcelable {
         private String field;
         private String message;
+        private List<BraintreeError> fieldErrors = new ArrayList<BraintreeError>();
+
+        public BraintreeError() {}
 
         /**
          * @return Human readable summary of the error for field. May be {@code null}.
@@ -135,5 +188,31 @@ public final class ErrorWithResponse extends Exception {
         public String toString() {
             return "BraintreeError for " + field + ": " + message + " -> " + (fieldErrors != null ? fieldErrors.toString() : "");
         }
+
+        @Override
+        public int describeContents() { return 0; }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeList(this.fieldErrors);
+            dest.writeString(this.field);
+            dest.writeString(this.message);
+        }
+
+        private BraintreeError(Parcel in) {
+            this.fieldErrors = new ArrayList<BraintreeError>();
+            in.readList(this.fieldErrors, ArrayList.class.getClassLoader());
+            this.field = in.readString();
+            this.message = in.readString();
+        }
+
+        public static final Creator<BraintreeError> CREATOR = new Creator<BraintreeError>() {
+            public BraintreeError createFromParcel(Parcel source) {
+                return new BraintreeError(source);
+            }
+
+            public BraintreeError[] newArray(int size) {return new BraintreeError[size];}
+        };
     }
+
 }

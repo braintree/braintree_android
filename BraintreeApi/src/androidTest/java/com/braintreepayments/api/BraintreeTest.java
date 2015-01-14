@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Parcel;
 import android.os.SystemClock;
 import android.test.AndroidTestCase;
 
@@ -18,11 +19,13 @@ import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.testutils.FixturesHelper;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -304,6 +307,12 @@ public class BraintreeTest extends AndroidTestCase {
             public String getTypeLabel() {
                 return "I am a payment method";
             }
+
+            @Override
+            public int describeContents() { return 0; }
+
+            @Override
+            public void writeToParcel(Parcel dest, int flags) {}
         };
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
         when(braintreeApi.finishPayWithVenmo(eq(Activity.RESULT_OK), any(Intent.class))).thenReturn(
@@ -316,14 +325,14 @@ public class BraintreeTest extends AndroidTestCase {
         braintree.addListener(new SimpleListener() {
             @Override
             public void onPaymentMethodCreated(PaymentMethod method) {
-                paymentMethodListenerCalled.set(true);
                 assertEquals(paymentMethod, method);
+                paymentMethodListenerCalled.set(true);
             }
 
             @Override
             public void onPaymentMethodNonce(String paymentMethodNonce) {
-                nonceListenerCalled.set(true);
                 assertEquals("nonce", paymentMethodNonce);
+                nonceListenerCalled.set(true);
             }
         });
 
@@ -395,6 +404,170 @@ public class BraintreeTest extends AndroidTestCase {
 
         assertFalse("Expected no listeners to fire but one did fire", listenerWasCalled.get());
     }
+
+    public void testStartThreeDSecureVerificationPostsPaymentMethodToListenersWhenLookupReturnsACard()
+            throws InterruptedException, ErrorWithResponse, BraintreeException {
+        String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
+        BraintreeApi braintreeApi = new BraintreeApi(getContext(), clientToken);
+        Braintree braintree = new Braintree(clientToken, braintreeApi);
+
+        final AtomicBoolean paymentMethodNonceCalled = new AtomicBoolean(false);
+        final AtomicBoolean paymentMethodCreatedCalled = new AtomicBoolean(false);
+        SimpleListener listener = new SimpleListener() {
+            @Override
+            public void onPaymentMethodNonce(String paymentMethodNonce) {
+                assertNotNull(paymentMethodNonce);
+                paymentMethodNonceCalled.set(true);
+            }
+
+            @Override
+            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+                assertEquals("51", ((Card) paymentMethod).getLastTwo());
+                paymentMethodCreatedCalled.set(true);
+            }
+        };
+        braintree.addListener(listener);
+
+        String nonce = braintreeApi.tokenize(new CardBuilder()
+                .cardNumber("4000000000000051")
+                .expirationDate("12/20"));
+
+        braintree.startThreeDSecureVerification(null, 0, nonce, "5");
+
+        SystemClock.sleep(5000);
+
+        assertTrue(paymentMethodNonceCalled.get());
+        assertTrue(paymentMethodCreatedCalled.get());
+    }
+
+    public void testFinishThreeDSecureVerificationPostsPaymentMethodToListener()
+            throws JSONException, InterruptedException {
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        SimpleListener listener = new SimpleListener() {
+            @Override
+            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+                assertEquals("11", ((Card) paymentMethod).getLastTwo());
+                wasCalled.set(true);
+            }
+        };
+        mBraintree.addListener(listener);
+
+        JSONObject card =
+                new JSONObject(FixturesHelper.stringFromFixture(mContext, "payment_methods/visa_credit_card.json"));
+        JSONObject json = new JSONObject()
+                .put("success", true)
+                .put("paymentMethod", card);
+
+        Intent data = new Intent()
+                .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT,
+                        ThreeDSecureAuthenticationResponse.fromJson(json.toString()));
+
+        mBraintree.finishThreeDSecureVerification(Activity.RESULT_OK, data);
+
+        waitForMainThreadToFinish();
+        assertTrue(wasCalled.get());
+    }
+
+    public void testFinishThreeDSecureVerificationPostsNonceToListener()
+            throws JSONException, InterruptedException {
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        SimpleListener listener = new SimpleListener() {
+            @Override
+            public void onPaymentMethodNonce(String paymentMethodNonce) {
+                assertEquals("123456-12345-12345-a-adfa", paymentMethodNonce);
+                wasCalled.set(true);
+            }
+        };
+        mBraintree.addListener(listener);
+
+        JSONObject card =
+                new JSONObject(FixturesHelper.stringFromFixture(mContext, "payment_methods/visa_credit_card.json"));
+        JSONObject json = new JSONObject()
+                .put("success", true)
+                .put("paymentMethod", card);
+
+        Intent data = new Intent()
+                .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT,
+                        ThreeDSecureAuthenticationResponse.fromJson(json.toString()));
+
+        mBraintree.finishThreeDSecureVerification(Activity.RESULT_OK, data);
+
+        waitForMainThreadToFinish();
+        assertTrue(wasCalled.get());
+    }
+
+    public void testFinishThreeDSecureVerificationPostsErrorsToListener()
+            throws InterruptedException, JSONException {
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        SimpleListener listener = new SimpleListener() {
+            @Override
+            public void onRecoverableError(ErrorWithResponse error) {
+                assertEquals("Failed to authenticate, please try a different form of payment", error.getMessage());
+                wasCalled.set(true);
+            }
+        };
+        mBraintree.addListener(listener);
+
+        JSONObject response =
+                new JSONObject(FixturesHelper.stringFromFixture(mContext, "errors/three_d_secure_error.json"));
+
+        Intent data = new Intent()
+                .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT,
+                        ThreeDSecureAuthenticationResponse.fromJson(response.toString()));
+
+        mBraintree.finishThreeDSecureVerification(Activity.RESULT_OK, data);
+
+        waitForMainThreadToFinish();
+        assertTrue(wasCalled.get());
+    }
+
+    public void testFinishThreeDSecureVerificationDoesNothingWhenResultCodeNotOk()
+            throws JSONException, InterruptedException {
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        SimpleListener listener = new SimpleListener() {
+            @Override
+            public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
+                wasCalled.set(true);
+            }
+
+            @Override
+            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+                wasCalled.set(true);
+            }
+
+            @Override
+            public void onPaymentMethodNonce(String paymentMethodNonce) {
+                wasCalled.set(true);
+            }
+
+            @Override
+            public void onUnrecoverableError(Throwable throwable) {
+                wasCalled.set(true);
+            }
+
+            @Override
+            public void onRecoverableError(ErrorWithResponse error) {
+                wasCalled.set(true);
+            }
+        };
+        mBraintree.addListener(listener);
+
+        JSONObject card =
+                new JSONObject(FixturesHelper.stringFromFixture(mContext, "payment_methods/visa_credit_card.json"));
+        JSONObject json = new JSONObject()
+                .put("success", true)
+                .put("paymentMethod", card);
+
+        Intent data = new Intent()
+                .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT,
+                        ThreeDSecureAuthenticationResponse.fromJson(json.toString()));
+
+        mBraintree.finishThreeDSecureVerification(Activity.RESULT_CANCELED, data);
+
+        waitForMainThreadToFinish();
+        assertFalse(wasCalled.get());
+    }
+
     public void testRemovedListenerIsNotPostedTo() throws ExecutionException, InterruptedException {
         createCardSync(mBraintree);
 

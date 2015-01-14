@@ -8,6 +8,8 @@
     <application
         android:supportsRtl="true"
         tools:ignore="UnusedAttribute">
+        <activity android:name="com.braintreepayments.api.ThreeDSecureWebViewActivity" />
+
         <activity android:name="com.braintreepayments.api.dropin.BraintreePaymentActivity" />
 
         <activity android:name="com.paypal.android.sdk.payments.PayPalProfileSharingActivity" />

@@ -1,5 +1,7 @@
 package com.braintreepayments.api.models;
 
+import android.os.Parcelable;
+
 import com.braintreepayments.api.Utils;
 import com.braintreepayments.api.exceptions.ServerException;
 
@@ -20,7 +22,7 @@ import java.util.Map;
  * PaymentMethod represents the common surface area of all payment methods, and can be handled by a
  * server interchangeably without special case logic.
  */
-public abstract class PaymentMethod implements Serializable {
+public abstract class PaymentMethod implements Parcelable, Serializable {
 
     private static final String PAYMENT_METHOD_COLLECTION_KEY = "paymentMethods";
     private static final String PAYMENT_METHOD_TYPE_KEY = "type";

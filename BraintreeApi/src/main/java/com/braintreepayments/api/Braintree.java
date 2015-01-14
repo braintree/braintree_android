@@ -12,8 +12,11 @@ import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.models.Card;
+import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 
 import org.json.JSONException;
 
@@ -158,6 +161,13 @@ public class Braintree {
     }
 
     /**
+     * @return If 3D Secure is supported and enabled for the current merchant account
+     */
+    public boolean isThreeDSecureEnabled() {
+        return mBraintreeApi.isThreeDSecureEnabled();
+    }
+
+    /**
      * Checks if cvv is required when add a new card
      * @return {@code true} if cvv is required to add a new card, {@code false} otherwise.
      */
@@ -171,35 +181,6 @@ public class Braintree {
      */
     public boolean isPostalCodeChallengePresent() {
         return mBraintreeApi.isPostalCodeChallengePresent();
-    }
-
-    /**
-     * Starts the Pay With PayPal flow. This will launch a new activity for the PayPal mobile SDK.
-     * @param activity the {@link android.app.Activity} to receive the {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     *   when payWithPayPal finishes.
-     * @param requestCode the request code associated with this start request. Will be returned
-     * in {@code onActivityResult}.
-     */
-    public void startPayWithPayPal(Activity activity, int requestCode) {
-        sendAnalyticsEvent("add-paypal.start");
-        mBraintreeApi.startPayWithPayPal(activity, requestCode);
-    }
-
-    /**
-     * Start the Pay With Venmo flow. This will app switch to the Venmo app.
-     * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     * when {@link #startPayWithVenmo(android.app.Activity, int)} finishes.
-     * @param requestCode The request code associated with this start request. Will be returned in
-     * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     */
-    public void startPayWithVenmo(Activity activity, int requestCode) {
-        try {
-            mBraintreeApi.startPayWithVenmo(activity, requestCode);
-            sendAnalyticsEvent("add-venmo.start");
-        } catch (AppSwitchNotAvailableException e) {
-            sendAnalyticsEvent("add-venmo.unavailable");
-            postUnrecoverableErrorToListeners(e);
-        }
     }
 
     /**
@@ -280,6 +261,18 @@ public class Braintree {
                 }
             }
         });
+    }
+
+    /**
+     * Starts the Pay With PayPal flow. This will launch a new activity for the PayPal mobile SDK.
+     * @param activity the {@link android.app.Activity} to receive the {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     *   when payWithPayPal finishes.
+     * @param requestCode the request code associated with this start request. Will be returned
+     * in {@code onActivityResult}.
+     */
+    public void startPayWithPayPal(Activity activity, int requestCode) {
+        sendAnalyticsEvent("add-paypal.start");
+        mBraintreeApi.startPayWithPayPal(activity, requestCode);
     }
 
     /**
@@ -371,6 +364,23 @@ public class Braintree {
     }
 
     /**
+     * Start the Pay With Venmo flow. This will app switch to the Venmo app.
+     * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * when {@link #startPayWithVenmo(android.app.Activity, int)} finishes.
+     * @param requestCode The request code associated with this start request. Will be returned in
+     * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     */
+    public void startPayWithVenmo(Activity activity, int requestCode) {
+        try {
+            mBraintreeApi.startPayWithVenmo(activity, requestCode);
+            sendAnalyticsEvent("add-venmo.start");
+        } catch (AppSwitchNotAvailableException e) {
+            sendAnalyticsEvent("add-venmo.unavailable");
+            postUnrecoverableErrorToListeners(e);
+        }
+    }
+
+    /**
      * Method to finish Pay With Venmo flow. Create a {@link com.braintreepayments.api.models.PaymentMethod}.
      *
      * The {@link com.braintreepayments.api.models.PaymentMethod} will be sent to
@@ -409,6 +419,138 @@ public class Braintree {
             });
         } else {
             sendAnalyticsEvent("venmo-app.fail");
+        }
+    }
+
+    /**
+     * 3D Secure is a protocol that enables cardholders and issuers to add a layer of security
+     * to e-commerce transactions via password entry at checkout.
+     *
+     * One of the primary reasons to use 3D Secure is to benefit from a shift in liability from the
+     * merchant to the issuer, which may result in interchange savings. Please read our online
+     * documentation (<a href="https://developers.braintreepayments.com">https://developers.braintreepayments.com</a>)
+     * for a full explanation of 3D Secure.
+     *
+     * Verification is associated with a transaction amount and your merchant account. To specify a
+     * different merchant account (or, in turn, currency), you will need to specify the merchant
+     * account id when generating a client token
+     * (See <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">https://developers.braintreepayments.com/android/sdk/overview/generate-client-token</a>).
+     *
+     * When verification succeeds, the original payment method nonce is consumed, and you will
+     * receive a new payment method nonce, which points to the original payment method, as well as
+     * the 3D Secure verification. Transactions created with this nonce will be 3D Secure, and
+     * benefit from the appropriate liability shift.
+     *
+     * When verification fails, the original payment method nonce is not consumed. While you may
+     * choose to proceed with transaction creation, using the original payment method nonce,
+     * this transaction will not be associated with a 3D Secure Verification.
+     *
+     * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     *                 when {@link #startThreeDSecureVerification(android.app.Activity, int, String, String)} finishes.
+     * @param requestCode The request code associated with this start request.
+     *                    Will be returned in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param cardBuilder The cardBuilder created from raw details. Will be tokenized before
+     *                    the 3D Secure verification if performed.
+     * @param amount The amount of the transaction in the current merchant account's currency
+     */
+    public synchronized void startThreeDSecureVerification(final Activity activity,
+            final int requestCode, final CardBuilder cardBuilder, final String amount) {
+        mExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String nonce = mBraintreeApi.tokenize(cardBuilder);
+                    startThreeDSecureVerification(activity, requestCode, nonce, amount);
+                } catch (BraintreeException e) {
+                    postUnrecoverableErrorToListeners(e);
+                } catch (ErrorWithResponse errorWithResponse) {
+                    postRecoverableErrorToListeners(errorWithResponse);
+                }
+            }
+        });
+    }
+
+    /**
+     * 3D Secure is a protocol that enables cardholders and issuers to add a layer of security
+     * to e-commerce transactions via password entry at checkout.
+     *
+     * One of the primary reasons to use 3D Secure is to benefit from a shift in liability from the
+     * merchant to the issuer, which may result in interchange savings. Please read our online
+     * documentation (<a href="https://developers.braintreepayments.com">https://developers.braintreepayments.com</a>)
+     * for a full explanation of 3D Secure.
+     *
+     * Verification is associated with a transaction amount and your merchant account. To specify a
+     * different merchant account (or, in turn, currency), you will need to specify the merchant
+     * account id when generating a client token
+     * (See <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">https://developers.braintreepayments.com/android/sdk/overview/generate-client-token</a>).
+     *
+     * When verification succeeds, the original payment method nonce is consumed, and you will
+     * receive a new payment method nonce, which points to the original payment method, as well as
+     * the 3D Secure verification. Transactions created with this nonce will be 3D Secure, and
+     * benefit from the appropriate liability shift.
+     *
+     * When verification fails, the original payment method nonce is not consumed. While you may
+     * choose to proceed with transaction creation, using the original payment method nonce,
+     * this transaction will not be associated with a 3D Secure Verification.
+     *
+     * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     *                 when {@link #startThreeDSecureVerification(android.app.Activity, int, String, String)} finishes.
+     * @param requestCode The request code associated with this start request.
+     *                    Will be returned in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param nonce The nonce that represents a card to perform a 3D Secure verification against
+     * @param amount The amount of the transaction in the current merchant account's currency
+     */
+    public synchronized void startThreeDSecureVerification(final Activity activity,
+            final int requestCode, final String nonce, final String amount) {
+        mExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Card card = mBraintreeApi.startThreeDSecureVerification(activity, requestCode, nonce,
+                            amount);
+                    if (card != null) {
+                        postCreatedMethodToListeners(card);
+                        postCreatedNonceToListeners(card.getNonce());
+                    }
+                } catch (BraintreeException e) {
+                    postUnrecoverableErrorToListeners(e);
+                } catch (JSONException e) {
+                    postUnrecoverableErrorToListeners(e);
+                } catch (ErrorWithResponse errorWithResponse) {
+                    postRecoverableErrorToListeners(errorWithResponse);
+                }
+            }
+        });
+    }
+
+    /**
+     * Method to finish a 3D Secure verification. Results in a new payment method nonce that points
+     * to the original payment method, as well as the 3D Secure verification.
+     *
+     * The {@link com.braintreepayments.api.models.Card} will be sent to
+     * {@link Braintree.PaymentMethodCreatedListener#onPaymentMethodCreated(com.braintreepayments.api.models.PaymentMethod)}
+     * and the nonce will be sent to
+     * {@link Braintree.PaymentMethodNonceListener#onPaymentMethodNonce(String)}.
+     *
+     * If an error occurs, the exception that occurred will be sent to
+     * {@link Braintree.ErrorListener#onRecoverableError(com.braintreepayments.api.exceptions.ErrorWithResponse)}.
+     *
+     * <b>Note:</b> If resultCode is not {@link android.app.Activity#RESULT_OK} no listeners will be called.
+     *
+     * @param resultCode Result code from the 3D Secure verification flow.
+     * @param data Intent returned from the 3D Secure verification flow.
+     */
+    public synchronized void finishThreeDSecureVerification(int resultCode, Intent data) {
+        ThreeDSecureAuthenticationResponse authenticationResponse =
+                mBraintreeApi.finishThreeDSecureVerification(resultCode, data);
+        if (authenticationResponse != null) {
+            if (authenticationResponse.isSuccess()) {
+                postCreatedMethodToListeners(authenticationResponse.getCard());
+                postCreatedNonceToListeners(authenticationResponse.getCard().getNonce());
+            } else {
+                postRecoverableErrorToListeners(new ErrorWithResponse(422,
+                        authenticationResponse.getErrors(), authenticationResponse.getThreeDSecureInfo()));
+            }
         }
     }
 
