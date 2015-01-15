@@ -1,4 +1,3 @@
-apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.library'
 
 def LOCALHOST_IP = System.properties['LOCALHOST_IP'] ?: '"10.0.2.2"';
@@ -6,14 +5,14 @@ def GATEWAY_IP = System.properties['GATEWAY_IP'] ?: '"10.0.2.2"';
 def GATEWAY_PORT = System.properties['GATEWAY_PORT'] ?: '"3000"';
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion '21.1.1'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 10
-        targetSdkVersion 21
-        versionCode 18
-        versionName '1.2.7'
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
     }
 
     packagingOptions {

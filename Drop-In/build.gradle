@@ -1,27 +1,22 @@
-apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion '21.1.1'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 10
-        targetSdkVersion 21
-        versionCode 18
-        versionName '1.2.7'
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
         testInstrumentationRunner 'com.braintreepayments.testutils.ui.NoAnimationsInstrumentationTestRunner'
     }
 
     packagingOptions {
         exclude 'LICENSE.txt'
     }
-}
-
-sdkManager {
-    emulatorVersion 'android-19'
 }
 
 dependencies {
