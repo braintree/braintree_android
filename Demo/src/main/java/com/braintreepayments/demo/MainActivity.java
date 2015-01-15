@@ -1,12 +1,17 @@
 package com.braintreepayments.demo;
 
+import android.app.ActionBar;
+import android.app.ActionBar.OnNavigationListener;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import com.braintreepayments.api.Braintree;
@@ -24,12 +29,14 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MainActivity extends Activity implements PaymentMethodNonceListener, ErrorListener {
+public class MainActivity extends Activity implements PaymentMethodNonceListener, ErrorListener,
+        OnNavigationListener {
 
     private static final int CUSTOM_REQUEST = 100;
     private static final int DROP_IN_REQUEST = 200;
     private static final int THREE_D_SECURE_REQUEST = 300;
 
+    private SharedPreferences mPrefs;
     private AsyncHttpClient mHttpClient;
 
     private String mClientToken;
@@ -46,19 +53,53 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        mPaymentInfoButton = (Button) findViewById(R.id.add_payment_info);
-        mThreeDSecureButton = (Button) findViewById(R.id.perform_three_d_secure_verification);
-        mPurchaseButton = (Button) findViewById(R.id.complete_purchase);
-
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         mHttpClient = new AsyncHttpClient();
-
-        getClientToken();
 
         // Warning, signature verification is disabled for this demo only, you should never
         // do this as it opens a security hole
         SignatureVerification.disableAppSwitchSignatureVerification();
+
+        mPaymentInfoButton = (Button) findViewById(R.id.add_payment_info);
+        mThreeDSecureButton = (Button) findViewById(R.id.perform_three_d_secure_verification);
+        mPurchaseButton = (Button) findViewById(R.id.complete_purchase);
+
+        setupActionBar();
+        getClientToken();
     }
 
+    @SuppressWarnings({"deprecation", "ConstantConditions"})
+    private void setupActionBar() {
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.environments, android.R.layout.simple_spinner_dropdown_item);
+        actionBar.setListNavigationCallbacks(adapter, this);
+        actionBar.setSelectedNavigationItem(mPrefs.getInt(OptionsActivity.ENVIRONMENT, 0));
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+        mPrefs.edit().putInt(OptionsActivity.ENVIRONMENT, itemPosition).apply();
+        resetState();
+        return true;
+    }
+
+    private void resetState() {
+        mPaymentInfoButton.setEnabled(false);
+        mThreeDSecureButton.setVisibility(View.GONE);
+        mPurchaseButton.setVisibility(View.GONE);
+
+        mClientToken = null;
+        mBraintree = null;
+        mNonce = null;
+
+        getClientToken();
+    }
+
+    @SuppressWarnings({"ConstantConditions", "deprecation"})
     private void getClientToken() {
         mHttpClient.get(OptionsActivity.getClientTokenUrl(this), new AsyncHttpResponseHandler() {
             @Override
@@ -90,15 +131,7 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.reset) {
-            mPaymentInfoButton.setEnabled(false);
-            mThreeDSecureButton.setVisibility(View.GONE);
-            mPurchaseButton.setVisibility(View.GONE);
-
-            mClientToken = null;
-            mBraintree = null;
-            mNonce = null;
-
-            getClientToken();
+            resetState();
         } else if (item.getItemId() == R.id.options) {
             startActivity(new Intent(this, OptionsActivity.class));
             return true;

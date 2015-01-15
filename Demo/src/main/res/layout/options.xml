@@ -8,34 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Environment"
-        android:layout_margin="20dp" />
-
-    <RadioGroup
-        android:id="@+id/environment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:checkedButton="@+id/sandbox"
-        android:layout_marginLeft="20dp">
-
-        <RadioButton
-            android:id="@+id/production"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Production" />
-
-        <RadioButton
-            android:id="@+id/sandbox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Sandbox" />
-
-    </RadioGroup>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Form Type"
         android:layout_margin="20dp"/>
 

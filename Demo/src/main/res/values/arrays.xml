@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="environments">
+        <item name="sandbox">Sandbox</item>
+        <item name="production">Production</item>
+    </string-array>
+</resources>

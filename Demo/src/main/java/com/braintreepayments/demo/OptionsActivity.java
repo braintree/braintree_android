@@ -6,37 +6,41 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 
-public class OptionsActivity extends Activity implements RadioGroup.OnCheckedChangeListener {
+public class OptionsActivity extends Activity implements OnCheckedChangeListener {
 
     public static final int CUSTOM = 0;
     public static final int DROP_IN = 1;
 
-    private static final String ENVIRONMENT = "environment";
+    public static final String ENVIRONMENT = "environment";
     private static final String FORM_TYPE = "form_type";
     private static final String CUSTOMER = "customer";
+
     private static final String SANDBOX_BASE_SERVER_URL = "https://braintree-sample-merchant.herokuapp.com";
     private static final String PRODUCTION_BASE_SERVER_URL = "https://executive-sample-merchant.herokuapp.com";
 
     private EditText mCustomerId;
     private SharedPreferences mPrefs;
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.options);
-        mCustomerId = (EditText) findViewById(R.id.customerId);
-        RadioGroup environment = (RadioGroup) findViewById(R.id.environment);
-        RadioGroup form = (RadioGroup) findViewById(R.id.form);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        mCustomerId.setText(mPrefs.getString(CUSTOMER, ""));
-        environment.check(getEnvironmentId());
-        environment.setOnCheckedChangeListener(this);
+
+        RadioGroup form = (RadioGroup) findViewById(R.id.form);
         form.check(getFormId());
         form.setOnCheckedChangeListener(this);
+
+        mCustomerId = (EditText) findViewById(R.id.customerId);
+        mCustomerId.setText(mPrefs.getString(CUSTOMER, ""));
     }
 
     protected void onDestroy() {
@@ -45,14 +49,17 @@ public class OptionsActivity extends Activity implements RadioGroup.OnCheckedCha
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
-        if (group.getId() == R.id.environment) {
-            if (checkedId == R.id.production) {
-                mPrefs.edit().putString(ENVIRONMENT, PRODUCTION_BASE_SERVER_URL).apply();
-            } else if (checkedId == R.id.sandbox) {
-                mPrefs.edit().putString(ENVIRONMENT, SANDBOX_BASE_SERVER_URL).apply();
-            }
-        } else if (group.getId() == R.id.form) {
+        if (group.getId() == R.id.form) {
             if (checkedId == R.id.custom) {
                 mPrefs.edit().putInt(FORM_TYPE, CUSTOM).apply();
             } else if (checkedId == R.id.dropin) {
@@ -61,17 +68,20 @@ public class OptionsActivity extends Activity implements RadioGroup.OnCheckedCha
         }
     }
 
-    private int getEnvironmentId() {
-        if (getEnvironmentUrl(this).equals(PRODUCTION_BASE_SERVER_URL)) {
-            return R.id.production;
+    private int getFormId() {
+        if (getFormType(this) == CUSTOM) {
+            return R.id.custom;
         } else {
-            return R.id.sandbox;
+            return R.id.dropin;
         }
     }
 
     public static String getEnvironmentUrl(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(ENVIRONMENT, SANDBOX_BASE_SERVER_URL);
+        if (PreferenceManager.getDefaultSharedPreferences(context).getInt(ENVIRONMENT, 0) == 0) {
+            return SANDBOX_BASE_SERVER_URL;
+        } else {
+            return PRODUCTION_BASE_SERVER_URL;
+        }
     }
 
     public static String getClientTokenUrl(Context context) {
@@ -83,14 +93,6 @@ public class OptionsActivity extends Activity implements RadioGroup.OnCheckedCha
         }
 
         return getEnvironmentUrl(context) + path;
-    }
-
-    private int getFormId() {
-        if (getFormType(this) == CUSTOM) {
-            return R.id.custom;
-        } else {
-            return R.id.dropin;
-        }
     }
 
     public static int getFormType(Context context) {
