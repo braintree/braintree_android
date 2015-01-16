@@ -13,7 +13,6 @@ gateway_pid="/tmp/$JOB_NAME-gateway-server"
 gateway_port=3000
 
 emulator_started_at=0
-emulator_start_attempts=0
 
 cd_android() {
   cd $android_path
@@ -52,8 +51,7 @@ stop_gateway() {
   fi
 }
 
-build_cleanup() {
-  stop_gateway
+cleanup_android() {
   $android_adb emu kill
   $android_adb kill-server
   kill -9 `cat /tmp/httpsd.pid`
@@ -73,33 +71,23 @@ start_emulator() {
   echo "Starting emulator"
   $ANDROID_HOME/tools/emulator -avd braintree-android -no-boot-anim -wipe-data -no-audio -no-window &
   emulator_started_at=$(date +%s)
-  emulator_start_attempts=$(($emulator_start_attempts + 1))
 }
 
 wait_for_emulator() {
-  echo "Waiting for emulator to start"
-  $android_adb wait-for-device
-
   # This is a hack - wait-for-device just checks power on.
   # By polling until the package manager is ready, we can make sure a device is actually booted
   # before attempting to run tests.
-  echo "Waiting for device package manager to load"
+  echo "Waiting for emulator to start and package manager to load"
   while [[ `$android_adb shell pm path android` == 'Error'* ]]; do
     if [ $(($emulator_started_at + 900)) -lt $(date +%s) ]; then
-      if [ $emulator_start_attempts -gt 2 ]; then
-        build_cleanup
-        exit 1
-      fi
-
-      $android_adb emu kill
-      start_emulator
-      wait_for_emulator
-      break
+      cleanup_android
+      stop_gateway
+      exit 1
     fi
 
     sleep 2
   done
-  echo "Emulator fully armed and operational, starting tests"
+  echo "Emulator ready, starting tests"
 }
 
 # Build twice, the first build will resolve dependencies via sdk-manager-plugin and then fail
@@ -111,7 +99,7 @@ if [ $lint_return_code -ne 0 ]; then
   exit 1
 fi
 
-build_cleanup
+cleanup_android
 
 cd_android
 start_adb
@@ -132,6 +120,7 @@ log_listener_pid=$!
 $android_path/gradlew --info --no-color runAllTests :BraintreeData:connectedAndroidTest :BraintreeApi:connectedAndroidTest :CardForm:connectedAndroidTest
 test_return_code=$?
 
-build_cleanup
+cleanup_android
+stop_gateway
 
 exit $test_return_code;
