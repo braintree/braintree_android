@@ -194,6 +194,9 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // required due to the conflicting Braintree instances
+        mBraintree.unlockListeners();
+
         if (resultCode == RESULT_OK) {
             if (requestCode == THREE_D_SECURE_REQUEST) {
                 mBraintree.finishThreeDSecureVerification(resultCode, data);
