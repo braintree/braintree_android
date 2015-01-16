@@ -78,7 +78,8 @@ wait_for_emulator() {
   # By polling until the package manager is ready, we can make sure a device is actually booted
   # before attempting to run tests.
   echo "Waiting for emulator to start and package manager to load"
-  while [[ `$android_adb shell pm path android` == 'Error'* ]]; do
+  adb_output=$(($android_adb shell pm path android) 2>&1)
+  while [[ $adb_output == *'error'* ]]; do
     if [ $(($emulator_started_at + 900)) -lt $(date +%s) ]; then
       cleanup_android
       stop_gateway
@@ -86,6 +87,7 @@ wait_for_emulator() {
     fi
 
     sleep 2
+    adb_output=$(($android_adb shell pm path android) 2>&1)
   done
   echo "Emulator ready, starting tests"
 }
