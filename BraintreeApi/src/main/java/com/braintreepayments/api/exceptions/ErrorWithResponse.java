@@ -20,7 +20,6 @@ public final class ErrorWithResponse extends Exception {
 
     private final int statusCode;
     private final String message;
-    private final ErrorInfo info;
     private final List<BraintreeError> fieldErrors;
 
     public ErrorWithResponse(int statusCode, String jsonString) {
@@ -28,12 +27,7 @@ public final class ErrorWithResponse extends Exception {
     }
 
     public ErrorWithResponse(int statusCode, BraintreeErrors errors) {
-        this(statusCode, errors, null);
-    }
-
-    public ErrorWithResponse(int statusCode, BraintreeErrors errors, ErrorInfo info) {
         this.statusCode = statusCode;
-        this.info = info;
 
         if (errors != null) {
             fieldErrors = errors.getFieldErrors();
@@ -56,16 +50,6 @@ public final class ErrorWithResponse extends Exception {
      */
     public String getMessage() {
         return message;
-    }
-
-    /**
-     * @return Additional information specific to the type of error,
-     * ex: {@link com.braintreepayments.api.exceptions.ThreeDSecureInfo}.
-     *
-     * <b>Note:</b> can be {@code null}.
-     */
-    public ErrorInfo getErrorInfo() {
-        return info;
     }
 
     /**

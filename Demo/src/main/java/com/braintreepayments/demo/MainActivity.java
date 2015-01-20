@@ -22,7 +22,6 @@ import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.Customization;
 import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.exceptions.ThreeDSecureInfo;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
@@ -177,13 +176,7 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
 
     @Override
     public void onRecoverableError(ErrorWithResponse error) {
-        if (error.getErrorInfo() instanceof ThreeDSecureInfo) {
-            ThreeDSecureInfo threeDSecureInfo = (ThreeDSecureInfo) error.getErrorInfo();
-            showDialog("3D Secure Error. liabilityShifted: " + threeDSecureInfo.isLiabilityShifted() +
-                " liabilityShiftPossible: " + threeDSecureInfo.isLiabilityShiftPossible());
-        } else {
-            showDialog("A recoverable error occurred: " + error.getMessage());
-        }
+        showDialog("A recoverable error occurred: " + error.getMessage());
     }
 
     @Override

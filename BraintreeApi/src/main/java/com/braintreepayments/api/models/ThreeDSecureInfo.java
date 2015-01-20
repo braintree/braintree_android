@@ -1,18 +1,31 @@
-package com.braintreepayments.api.exceptions;
+package com.braintreepayments.api.models;
 
 import android.os.Parcel;
+import android.os.Parcelable;
 
-public class ThreeDSecureInfo extends ErrorInfo implements android.os.Parcelable {
+/**
+ * A class to contain 3D Secure information about the current
+ * {@link com.braintreepayments.api.models.Card}
+ */
+public class ThreeDSecureInfo implements Parcelable {
 
     private boolean liabilityShifted;
     private boolean liabilityShiftPossible;
 
     public ThreeDSecureInfo() {}
 
+    /**
+     * @return If the 3D Secure liability shift has occurred for the current
+     * {@link com.braintreepayments.api.models.Card}
+     */
     public boolean isLiabilityShifted() {
         return liabilityShifted;
     }
 
+    /**
+     * @return If the 3D Secure liability shift is possible for the current
+     * {@link com.braintreepayments.api.models.Card}
+     */
     public boolean isLiabilityShiftPossible() {
         return liabilityShiftPossible;
     }
@@ -38,5 +51,5 @@ public class ThreeDSecureInfo extends ErrorInfo implements android.os.Parcelable
 
         public ThreeDSecureInfo[] newArray(int size) {return new ThreeDSecureInfo[size];}
     };
-
 }
+

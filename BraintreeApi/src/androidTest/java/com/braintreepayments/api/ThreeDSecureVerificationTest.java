@@ -9,9 +9,9 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
+import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.test.ThreeDSecureAuthenticationTestActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
@@ -58,16 +58,18 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
         assertEquals(Activity.RESULT_CANCELED, result.get("resultCode"));
     }
 
-    public void testDoesALookupAndReturnsACardWhenAuthenticationIsNotRequired()
+    public void testDoesALookupAndReturnsACardAndANullACSUrlWhenAuthenticationIsNotRequired()
             throws ErrorWithResponse, BraintreeException, JSONException {
         String nonce = mBraintreeApi.tokenize(new CardBuilder()
                 .cardNumber("4000000000000051")
                 .expirationDate("12/20"));
 
-        Card card = mBraintreeApi.startThreeDSecureVerification(null, 0, nonce, TEST_AMOUNT);
+        ThreeDSecureLookup threeDSecureLookup = mBraintreeApi.threeDSecureLookup(nonce, TEST_AMOUNT);
 
-        assertNotNull(card);
-        assertEquals("51", card.getLastTwo());
+        assertEquals("51", threeDSecureLookup.getCard().getLastTwo());
+        assertTrue(threeDSecureLookup.getCard().getThreeDSecureInfo().isLiabilityShifted());
+        assertTrue(threeDSecureLookup.getCard().getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertNull(threeDSecureLookup.getAcsUrl());
     }
 
     public void testDoesALookupAndReturnsACardWhenThereIsALookupError()
@@ -76,10 +78,9 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
                 .cardNumber("4000000000000077")
                 .expirationDate("12/20"));
 
-        Card card = mBraintreeApi.startThreeDSecureVerification(null, 0, nonce, TEST_AMOUNT);
+        ThreeDSecureLookup threeDSecureLookup = mBraintreeApi.threeDSecureLookup(nonce, TEST_AMOUNT);
 
-        assertNotNull(card);
-        assertEquals("77", card.getLastTwo());
+        assertEquals("77", threeDSecureLookup.getCard().getLastTwo());
     }
 
     public void pendingRequestsAuthenticationWhenRequired()
@@ -110,11 +111,11 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
         Map<String, Object> result = getActivityResult(activity);
         ThreeDSecureAuthenticationResponse threeDSecureResponse = ((Intent) result.get("resultData"))
                 .getParcelableExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT);
+        ErrorWithResponse errors = new ErrorWithResponse(0, threeDSecureResponse.getErrors());
 
         assertEquals(Activity.RESULT_OK, result.get("resultCode"));
         assertFalse(threeDSecureResponse.isSuccess());
-        assertFalse(threeDSecureResponse.getThreeDSecureInfo().isLiabilityShifted());
-        assertTrue(threeDSecureResponse.getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertEquals("Failed to authenticate, please try a different form of payment", errors.getMessage());
     }
 
     public void testReturnsASuccessfulAuthenticationWhenIssueDoesNotParticipate()
@@ -144,11 +145,11 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
         Map<String, Object> result = getActivityResult(activity);
         ThreeDSecureAuthenticationResponse threeDSecureResponse = ((Intent) result.get("resultData"))
                 .getParcelableExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT);
+        ErrorWithResponse errors = new ErrorWithResponse(0, threeDSecureResponse.getErrors());
 
         assertEquals(Activity.RESULT_OK, result.get("resultCode"));
         assertFalse(threeDSecureResponse.isSuccess());
-        assertFalse(threeDSecureResponse.getThreeDSecureInfo().isLiabilityShifted());
-        assertTrue(threeDSecureResponse.getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertEquals("Failed to authenticate, please try a different form of payment", errors.getMessage());
     }
 
     public void pendingWhenIssuerIsDown()

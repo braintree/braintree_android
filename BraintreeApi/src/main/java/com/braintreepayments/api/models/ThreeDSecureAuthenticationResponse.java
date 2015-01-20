@@ -6,24 +6,39 @@ import android.os.Parcelable;
 import com.braintreepayments.api.Utils;
 import com.braintreepayments.api.exceptions.ErrorWithResponse.BraintreeError;
 import com.braintreepayments.api.exceptions.ErrorWithResponse.BraintreeErrors;
-import com.braintreepayments.api.exceptions.ThreeDSecureInfo;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Class to parse and contain 3D Secure authentication responses
  */
 public class ThreeDSecureAuthenticationResponse implements Parcelable {
 
+    private Card card;
     private boolean success;
-    private Card paymentMethod;
-    private ThreeDSecureInfo threeDSecureInfo;
     private BraintreeErrors errors;
 
     public ThreeDSecureAuthenticationResponse() {}
 
     public static ThreeDSecureAuthenticationResponse fromJson(String jsonString) {
-        ThreeDSecureAuthenticationResponse authenticationResponse =
-                Utils.getGson().fromJson(jsonString, ThreeDSecureAuthenticationResponse.class);
-        authenticationResponse.errors = Utils.getGson().fromJson(jsonString, BraintreeErrors.class);
+        ThreeDSecureAuthenticationResponse authenticationResponse = new ThreeDSecureAuthenticationResponse();
+
+        try {
+            JSONObject json = new JSONObject(jsonString);
+
+            Card card = Utils.getGson()
+                    .fromJson(json.getJSONObject("paymentMethod").toString(), Card.class);
+            card.setThreeDSecureInfo(Utils.getGson().fromJson(
+                    json.getJSONObject("threeDSecureInfo").toString(), ThreeDSecureInfo.class));
+
+            authenticationResponse.card = card;
+            authenticationResponse.success = json.getBoolean("success");
+        } catch (JSONException e) {
+            authenticationResponse.success = false;
+        }
+        authenticationResponse.errors =
+                Utils.getGson().fromJson(jsonString, BraintreeErrors.class);
 
         return authenticationResponse;
     }
@@ -33,11 +48,7 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
     }
 
     public Card getCard() {
-        return paymentMethod;
-    }
-
-    public ThreeDSecureInfo getThreeDSecureInfo() {
-        return threeDSecureInfo;
+        return card;
     }
 
     public BraintreeErrors getErrors() {
@@ -50,15 +61,13 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte(success ? (byte) 1 : (byte) 0);
-        dest.writeParcelable(paymentMethod, flags);
-        dest.writeParcelable(threeDSecureInfo, flags);
+        dest.writeParcelable(card, flags);
         dest.writeParcelable(errors, flags);
     }
 
     private ThreeDSecureAuthenticationResponse(Parcel in) {
         success = in.readByte() != 0;
-        paymentMethod = in.readParcelable(Card.class.getClassLoader());
-        threeDSecureInfo = in.readParcelable(ThreeDSecureInfo.class.getClassLoader());
+        card = in.readParcelable(Card.class.getClassLoader());
         errors = in.readParcelable(BraintreeError.class.getClassLoader());
     }
 

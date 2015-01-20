@@ -19,11 +19,9 @@ import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
 import com.braintreepayments.api.models.AnalyticsRequest;
-import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
-import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 
 import org.json.JSONException;
@@ -266,19 +264,11 @@ public class BraintreeApi {
      * account id when generating a client token
      * (See <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">https://developers.braintreepayments.com/android/sdk/overview/generate-client-token</a>).
      *
-     * When verification succeeds, the original payment method nonce is consumed, and you will
-     * receive a new payment method nonce, which points to the original payment method, as well as
-     * the 3D Secure verification. Transactions created with this nonce will be 3D Secure, and
-     * benefit from the appropriate liability shift.
+     * During lookup the original payment method nonce is consumed and a new one is returned,
+     * which points to the original payment method, as well as the 3D Secure verification.
+     * Transactions created with this nonce will be 3D Secure, and benefit from the appropriate
+     * liability shift if authentication is successful or fail with a 3D Secure failure.
      *
-     * When verification fails, the original payment method nonce is not consumed. While you may
-     * choose to proceed with transaction creation, using the original payment method nonce,
-     * this transaction will not be associated with a 3D Secure Verification.
-     *
-     * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     *                 when {@link #startThreeDSecureVerification(android.app.Activity, int, String, String)} finishes.
-     * @param requestCode The request code associated with this start request.
-     *                    Will be returned in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @param nonce The nonce that represents a card to perform a 3D Secure verification against
      * @param amount The amount of the transaction in the current merchant account's currency
      * @return {@code null} if user authentication is required and an {@link android.app.Activity}
@@ -289,8 +279,8 @@ public class BraintreeApi {
      * @throws BraintreeException If the request to the Braintree Gateway fails
      * @throws ErrorWithResponse If there is an error with the request
      */
-    public Card startThreeDSecureVerification(Activity activity, int requestCode, String nonce,
-            String amount) throws JSONException, BraintreeException, ErrorWithResponse {
+    public ThreeDSecureLookup threeDSecureLookup(String nonce, String amount)
+            throws JSONException, BraintreeException, ErrorWithResponse {
         JSONObject params = new JSONObject()
                 .put("merchantAccountId", mClientToken.getMerchantAccountId())
                 .put("amount", amount);
@@ -301,31 +291,7 @@ public class BraintreeApi {
 
         checkAndThrowErrors(response);
 
-        JSONObject responseJson = new JSONObject(response.getResponseBody());
-        if (responseJson.has("lookup")) {
-            Intent intent = new Intent(activity, ThreeDSecureWebViewActivity.class)
-                    .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_LOOKUP,
-                            ThreeDSecureLookup.fromJson(response.getResponseBody()));
-            activity.startActivityForResult(intent, requestCode);
-            return null;
-        } else {
-            return Card.fromJson(responseJson.getJSONObject("paymentMethod").toString());
-        }
-    }
-
-    /**
-     * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     * @return The {@link com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse}
-     *         from the user authorization
-     *
-     * @see #startThreeDSecureVerification(android.app.Activity, int, String, String)
-     */
-    public ThreeDSecureAuthenticationResponse finishThreeDSecureVerification(int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
-            return data.getParcelableExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT);
-        }
-        return null;
+        return ThreeDSecureLookup.fromJson(response.getResponseBody());
     }
 
     /**

@@ -18,13 +18,11 @@ import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
-import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.testutils.FixturesHelper;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.List;
@@ -214,18 +212,6 @@ public class BraintreeApiTest extends AndroidTestCase {
         BraintreeApi braintreeApi = new BraintreeApi(mContext, new TestClientTokenBuilder().build());
 
         assertNull(braintreeApi.finishPayWithVenmo(Activity.RESULT_CANCELED, new Intent()));
-    }
-
-    public void testFinishThreeDSecureVerificationReturnsAnAuthorization() throws JSONException {
-        BraintreeApi braintreeApi = new BraintreeApi(mContext, new TestClientTokenBuilder().build());
-
-        JSONObject jsonResponse = new JSONObject().put("success", true);
-        Intent resultIntent = new Intent()
-                .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT, ThreeDSecureAuthenticationResponse.fromJson(jsonResponse.toString()));
-
-        ThreeDSecureAuthenticationResponse threeDSecureAuthResponse = braintreeApi.finishThreeDSecureVerification(Activity.RESULT_OK, resultIntent);
-
-        assertTrue(threeDSecureAuthResponse.isSuccess());
     }
 
     public void testGetPaymentMethodReturnsPaymentMethodFromNonce()

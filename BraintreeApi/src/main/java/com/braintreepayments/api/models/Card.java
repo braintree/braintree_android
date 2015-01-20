@@ -18,6 +18,7 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
     protected static final String PAYMENT_METHOD_TYPE = "CreditCard";
 
     private BillingAddress billingAddress;
+    private ThreeDSecureInfo threeDSecureInfo;
     private CardDetails details;
     private String expirationMonth;
     private String expirationYear;
@@ -42,8 +43,20 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
         return details.getLastTwo();
     }
 
+    /**
+     * @return The 3D Secure info for the current {@link com.braintreepayments.api.models.Card} or
+     * {@code null}
+     */
+    public ThreeDSecureInfo getThreeDSecureInfo() {
+        return threeDSecureInfo;
+    }
+
     protected void setBillingAddress(BillingAddress billingAddress) {
         this.billingAddress = billingAddress;
+    }
+
+    protected void setThreeDSecureInfo(ThreeDSecureInfo threeDSecureInfo) {
+        this.threeDSecureInfo = threeDSecureInfo;
     }
 
     protected void setExpirationMonth(String expirationMonth) {
@@ -219,5 +232,4 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
             public BillingAddress[] newArray(int size) {return new BillingAddress[size];}
         };
     }
-
 }

@@ -13,6 +13,7 @@ import org.json.JSONObject;
  */
 public class ThreeDSecureLookup implements Parcelable {
 
+    private Card card;
     private String acsUrl;
     private String md;
     private String termUrl;
@@ -20,23 +21,62 @@ public class ThreeDSecureLookup implements Parcelable {
 
     public ThreeDSecureLookup() {}
 
+    /**
+     * Used to parse a response from the Braintree Gateway to be used for 3D Secure
+     *
+     * @param jsonString The json response from the Braintree Gateway 3D Secure lookup route
+     * @return The {@link com.braintreepayments.api.models.ThreeDSecureLookup} to use when
+     *         performing 3D Secure authentication
+     * @throws JSONException when parsing fails
+     */
     public static ThreeDSecureLookup fromJson(String jsonString) throws JSONException {
-        return Utils.getGson().fromJson(new JSONObject(jsonString).optJSONObject("lookup").toString(),
-                ThreeDSecureLookup.class);
+        JSONObject json = new JSONObject(jsonString);
+
+        Card card = Utils.getGson().fromJson(json.getJSONObject("paymentMethod").toString(), Card.class);
+        card.setThreeDSecureInfo(Utils.getGson().fromJson(
+                json.getJSONObject("threeDSecureInfo").toString(), ThreeDSecureInfo.class));
+
+        ThreeDSecureLookup lookup = Utils.getGson().fromJson(
+                json.getJSONObject("lookup").toString(), ThreeDSecureLookup.class);
+        lookup.card = card;
+
+        return lookup;
     }
 
+    /**
+     * @return The {@link com.braintreepayments.api.models.Card} from the 3D Secure lookup.
+     * If {@link #getAcsUrl()} is {@code null} this card may be used immediately and will benefit
+     * from 3D Secure.
+     */
+    public Card getCard() {
+        return card;
+    }
+
+    /**
+     * @return The acs url from a 3D Secure lookup. May be {@code null} in which case no
+     * authentication will be performed.
+     */
     public String getAcsUrl() {
         return acsUrl;
     }
 
+    /**
+     * @return The merchant descriptor from a 3D Secure lookup
+     */
     public String getMd() {
         return md;
     }
 
+    /**
+     * @return The term url to be used for 3D Secure authentication
+     */
     public String getTermUrl() {
         return termUrl;
     }
 
+    /**
+     * @return The pareq to be used for 3D Secure authentication
+     */
     public String getPareq() {
         return pareq;
     }
@@ -70,5 +110,4 @@ public class ThreeDSecureLookup implements Parcelable {
             return new ThreeDSecureLookup[size];
         }
     };
-
 }

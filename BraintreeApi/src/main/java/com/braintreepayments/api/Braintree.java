@@ -12,11 +12,11 @@ import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
+import com.braintreepayments.api.models.ThreeDSecureLookup;
 
 import org.json.JSONException;
 
@@ -436,14 +436,10 @@ public class Braintree {
      * account id when generating a client token
      * (See <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">https://developers.braintreepayments.com/android/sdk/overview/generate-client-token</a>).
      *
-     * When verification succeeds, the original payment method nonce is consumed, and you will
-     * receive a new payment method nonce, which points to the original payment method, as well as
-     * the 3D Secure verification. Transactions created with this nonce will be 3D Secure, and
-     * benefit from the appropriate liability shift.
-     *
-     * When verification fails, the original payment method nonce is not consumed. While you may
-     * choose to proceed with transaction creation, using the original payment method nonce,
-     * this transaction will not be associated with a 3D Secure Verification.
+     * During lookup the original payment method nonce is consumed and a new one is returned,
+     * which points to the original payment method, as well as the 3D Secure verification.
+     * Transactions created with this nonce will be 3D Secure, and benefit from the appropriate
+     * liability shift if authentication is successful or fail with a 3D Secure failure.
      *
      * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      *                 when {@link #startThreeDSecureVerification(android.app.Activity, int, String, String)} finishes.
@@ -484,14 +480,10 @@ public class Braintree {
      * account id when generating a client token
      * (See <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">https://developers.braintreepayments.com/android/sdk/overview/generate-client-token</a>).
      *
-     * When verification succeeds, the original payment method nonce is consumed, and you will
-     * receive a new payment method nonce, which points to the original payment method, as well as
-     * the 3D Secure verification. Transactions created with this nonce will be 3D Secure, and
-     * benefit from the appropriate liability shift.
-     *
-     * When verification fails, the original payment method nonce is not consumed. While you may
-     * choose to proceed with transaction creation, using the original payment method nonce,
-     * this transaction will not be associated with a 3D Secure Verification.
+     * During lookup the original payment method nonce is consumed and a new one is returned,
+     * which points to the original payment method, as well as the 3D Secure verification.
+     * Transactions created with this nonce will be 3D Secure, and benefit from the appropriate
+     * liability shift if authentication is successful or fail with a 3D Secure failure.
      *
      * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      *                 when {@link #startThreeDSecureVerification(android.app.Activity, int, String, String)} finishes.
@@ -506,11 +498,14 @@ public class Braintree {
             @Override
             public void run() {
                 try {
-                    Card card = mBraintreeApi.startThreeDSecureVerification(activity, requestCode, nonce,
-                            amount);
-                    if (card != null) {
-                        postCreatedMethodToListeners(card);
-                        postCreatedNonceToListeners(card.getNonce());
+                    ThreeDSecureLookup threeDSecureLookup = mBraintreeApi.threeDSecureLookup(nonce, amount);
+                    if (threeDSecureLookup.getAcsUrl() != null) {
+                        Intent intent = new Intent(activity, ThreeDSecureWebViewActivity.class)
+                                .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup);
+                        activity.startActivityForResult(intent, requestCode);
+                    } else {
+                        postCreatedMethodToListeners(threeDSecureLookup.getCard());
+                        postCreatedNonceToListeners(threeDSecureLookup.getCard().getNonce());
                     }
                 } catch (BraintreeException e) {
                     postUnrecoverableErrorToListeners(e);
@@ -537,19 +532,20 @@ public class Braintree {
      *
      * <b>Note:</b> If resultCode is not {@link android.app.Activity#RESULT_OK} no listeners will be called.
      *
-     * @param resultCode Result code from the 3D Secure verification flow.
-     * @param data Intent returned from the 3D Secure verification flow.
+     * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     *
+     * @see #startThreeDSecureVerification(android.app.Activity, int, String, String)
      */
     public synchronized void finishThreeDSecureVerification(int resultCode, Intent data) {
-        ThreeDSecureAuthenticationResponse authenticationResponse =
-                mBraintreeApi.finishThreeDSecureVerification(resultCode, data);
-        if (authenticationResponse != null) {
+        if (resultCode == Activity.RESULT_OK) {
+            ThreeDSecureAuthenticationResponse authenticationResponse =
+                    data.getParcelableExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT);
             if (authenticationResponse.isSuccess()) {
                 postCreatedMethodToListeners(authenticationResponse.getCard());
                 postCreatedNonceToListeners(authenticationResponse.getCard().getNonce());
             } else {
-                postRecoverableErrorToListeners(new ErrorWithResponse(422,
-                        authenticationResponse.getErrors(), authenticationResponse.getThreeDSecureInfo()));
+                postRecoverableErrorToListeners(new ErrorWithResponse(422, authenticationResponse.getErrors()));
             }
         }
     }

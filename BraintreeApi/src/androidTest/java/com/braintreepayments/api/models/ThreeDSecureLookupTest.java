@@ -20,6 +20,10 @@ public class ThreeDSecureLookupTest extends AndroidTestCase {
         assertEquals("merchant-descriptor", mLookup.getMd());
         assertEquals("https://term-url/", mLookup.getTermUrl());
         assertEquals("pareq", mLookup.getPareq());
+        assertEquals("11", mLookup.getCard().getLastTwo());
+        assertEquals("123456-12345-12345-a-adfa", mLookup.getCard().getNonce());
+        assertTrue(mLookup.getCard().getThreeDSecureInfo().isLiabilityShifted());
+        assertTrue(mLookup.getCard().getThreeDSecureInfo().isLiabilityShiftPossible());
     }
 
     public void testCanBeSerialized() {
@@ -30,6 +34,12 @@ public class ThreeDSecureLookupTest extends AndroidTestCase {
         assertEquals(mLookup.getMd(), parsedLookup.getMd());
         assertEquals(mLookup.getTermUrl(), parsedLookup.getTermUrl());
         assertEquals(mLookup.getPareq(), parsedLookup.getPareq());
+        assertEquals(mLookup.getCard().getLastTwo(), parsedLookup.getCard().getLastTwo());
+        assertEquals(mLookup.getCard().getNonce(), parsedLookup.getCard().getNonce());
+        assertEquals(mLookup.getCard().getThreeDSecureInfo().isLiabilityShifted(),
+                parsedLookup.getCard().getThreeDSecureInfo().isLiabilityShifted());
+        assertEquals(mLookup.getCard().getThreeDSecureInfo().isLiabilityShiftPossible(),
+                parsedLookup.getCard().getThreeDSecureInfo().isLiabilityShiftPossible());
     }
 
 }
