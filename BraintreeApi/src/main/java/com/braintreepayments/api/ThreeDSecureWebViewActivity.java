@@ -37,8 +37,25 @@ public class ThreeDSecureWebViewActivity extends Activity {
     public static final String EXTRA_THREE_D_SECURE_LOOKUP = "com.braintreepayments.api.EXTRA_THREE_D_SECURE_LOOKUP";
     public static final String EXTRA_THREE_D_SECURE_RESULT = "com.braintreepayments.api.EXTRA_THREE_D_SECURE_RESULT";
 
+    private static final String CLOSE_URL_SCHEME = "close-page://";
+    private static final String JAVASCRIPT_MODIFICATION = "javascript:(function() {" +
+            "var as = document.getElementsByTagName('a');" +
+            "for (var i = 0; i < as.length; i++) {" +
+            "  if (as[i]['href'] === 'javascript:window.close();') {" +
+            "    as[i]['href'] = '" + CLOSE_URL_SCHEME + "';" +
+            "  };" +
+            "};" +
+            "var forms = document.getElementsByTagName('form');" +
+            "for (var i = 0; i < forms.length; i++) {" +
+            "  if (forms[i]['action'].indexOf('close_window.htm') > -1) {" +
+            "    forms[i]['action'] = '" + CLOSE_URL_SCHEME + "';" +
+            "  };" +
+            "};" +
+            "})()";
+
     private ActionBar mActionBar;
     private WebView mThreeDSecureWebView;
+    private ThreeDSecureLookup mThreeDSecureLookup;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -46,9 +63,8 @@ public class ThreeDSecureWebViewActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_PROGRESS);
 
-        ThreeDSecureLookup threeDSecureLookup =
-                getIntent().getParcelableExtra(EXTRA_THREE_D_SECURE_LOOKUP);
-        if (threeDSecureLookup == null) {
+        mThreeDSecureLookup = getIntent().getParcelableExtra(EXTRA_THREE_D_SECURE_LOOKUP);
+        if (mThreeDSecureLookup == null) {
             throw new IllegalArgumentException("A ThreeDSecureLookup must be specified with " +
                     ThreeDSecureLookup.class.getSimpleName() + ".EXTRA_THREE_D_SECURE_LOOKUP extra");
         }
@@ -71,21 +87,24 @@ public class ThreeDSecureWebViewActivity extends Activity {
         ((FrameLayout) findViewById(android.R.id.content)).addView(mThreeDSecureWebView);
 
         List<NameValuePair> params = new LinkedList<NameValuePair>();
-        params.add(new BasicNameValuePair("PaReq", threeDSecureLookup.getPareq()));
-        params.add(new BasicNameValuePair("MD", threeDSecureLookup.getMd()));
-        params.add(new BasicNameValuePair("TermUrl", threeDSecureLookup.getTermUrl()));
+        params.add(new BasicNameValuePair("PaReq", mThreeDSecureLookup.getPareq()));
+        params.add(new BasicNameValuePair("MD", mThreeDSecureLookup.getMd()));
+        params.add(new BasicNameValuePair("TermUrl", mThreeDSecureLookup.getTermUrl()));
         ByteArrayOutputStream encodedParams = new ByteArrayOutputStream();
         try {
             new UrlEncodedFormEntity(params, HTTP.UTF_8).writeTo(encodedParams);
         } catch (IOException e) {
             finish();
         }
-        mThreeDSecureWebView.postUrl(threeDSecureLookup.getAcsUrl(), encodedParams.toByteArray());
+        mThreeDSecureWebView.postUrl(mThreeDSecureLookup.getAcsUrl(), encodedParams.toByteArray());
     }
 
     private WebViewClient mThreeDSecureWebViewClient = new WebViewClient() {
         public void onPageStarted(WebView view, String url, Bitmap icon) {
-            if (url.contains("html/authentication_complete_frame")) {
+            if (url.equals(CLOSE_URL_SCHEME) && view.canGoBack()) {
+                view.stopLoading();
+                view.goBack();
+            } else if (url.contains("html/authentication_complete_frame")) {
                 view.stopLoading();
 
                 String authResponseJson = (Uri.parse(url).getQueryParameter("auth_response"));
@@ -105,6 +124,7 @@ public class ThreeDSecureWebViewActivity extends Activity {
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             setActionBarTitle(view.getTitle());
+            view.loadUrl(JAVASCRIPT_MODIFICATION);
         }
     };
 
@@ -151,7 +171,8 @@ public class ThreeDSecureWebViewActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (mThreeDSecureWebView.canGoBack()) {
+        String originalUrl = mThreeDSecureWebView.copyBackForwardList().getCurrentItem().getOriginalUrl();
+        if (!originalUrl.equals(mThreeDSecureLookup.getAcsUrl()) && mThreeDSecureWebView.canGoBack()) {
             mThreeDSecureWebView.goBack();
         } else {
             super.onBackPressed();

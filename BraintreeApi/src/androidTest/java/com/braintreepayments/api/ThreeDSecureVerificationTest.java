@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
+import android.view.KeyEvent;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
@@ -51,6 +52,41 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
 
         waitForView(withId(android.R.id.widget_frame));
         onView(withId(android.R.id.home)).perform(click());
+
+        waitForActivityToFinish(activity);
+        Map<String, Object> result = getActivityResult(activity);
+
+        assertEquals(Activity.RESULT_CANCELED, result.get("resultCode"));
+    }
+
+    public void testReturnsWithStatusResultCanceledWhenBackIsPressedOnFirstPage()
+            throws ErrorWithResponse, BraintreeException {
+        Activity activity = startThreeDSecureTestActivity("4000000000000002");
+
+        waitForView(withId(android.R.id.widget_frame));
+
+        // wait for page to load
+        SystemClock.sleep(5000);
+
+        sendKeys(KeyEvent.KEYCODE_BACK);
+
+        waitForActivityToFinish(activity);
+        Map<String, Object> result = getActivityResult(activity);
+
+        assertEquals(Activity.RESULT_CANCELED, result.get("resultCode"));
+    }
+
+    public void pendingReturnsWithStatusResultCanceledWhenUserGoesOnePageDeepAndPressesBackTwice()
+            throws ErrorWithResponse, BraintreeException {
+        Activity activity = startThreeDSecureTestActivity("4000000000000002");
+
+        waitForView(withId(android.R.id.widget_frame));
+
+        // wait for page to load and click a link
+        SystemClock.sleep(10000);
+
+        sendKeys(KeyEvent.KEYCODE_BACK);
+        sendKeys(KeyEvent.KEYCODE_BACK);
 
         waitForActivityToFinish(activity);
         Map<String, Object> result = getActivityResult(activity);
