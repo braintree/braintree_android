@@ -59,10 +59,14 @@ public class ThreeDSecureWebViewActivity extends Activity {
         mThreeDSecureWebView.setId(android.R.id.widget_frame);
         mThreeDSecureWebView.setWebChromeClient(mThreeDSecureWebChromeClient);
         mThreeDSecureWebView.setWebViewClient(mThreeDSecureWebViewClient);
-        mThreeDSecureWebView.getSettings().setJavaScriptEnabled(true);
-        mThreeDSecureWebView.getSettings().setBuiltInZoomControls(true);
         mThreeDSecureWebView.getSettings().setUserAgentString(HttpRequest.USER_AGENT);
         mThreeDSecureWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        mThreeDSecureWebView.getSettings().setJavaScriptEnabled(true);
+        mThreeDSecureWebView.getSettings().setBuiltInZoomControls(true);
+
+        if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
+            mThreeDSecureWebView.getSettings().setDisplayZoomControls(false);
+        }
 
         ((FrameLayout) findViewById(android.R.id.content)).addView(mThreeDSecureWebView);
 
