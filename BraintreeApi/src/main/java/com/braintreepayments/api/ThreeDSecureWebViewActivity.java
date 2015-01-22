@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.net.http.SslError;
+import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -81,10 +82,7 @@ public class ThreeDSecureWebViewActivity extends Activity {
         mThreeDSecureWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         mThreeDSecureWebView.getSettings().setJavaScriptEnabled(true);
         mThreeDSecureWebView.getSettings().setBuiltInZoomControls(true);
-
-        if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
-            mThreeDSecureWebView.getSettings().setDisplayZoomControls(false);
-        }
+        disableZoomControls();
 
         ((FrameLayout) findViewById(android.R.id.content)).addView(mThreeDSecureWebView);
 
@@ -173,6 +171,13 @@ public class ThreeDSecureWebViewActivity extends Activity {
     private void setActionBarTitle(String title) {
         if (mActionBar != null) {
             mActionBar.setTitle(title);
+        }
+    }
+
+    @TargetApi(VERSION_CODES.HONEYCOMB)
+    private void disableZoomControls() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            mThreeDSecureWebView.getSettings().setDisplayZoomControls(false);
         }
     }
 
