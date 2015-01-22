@@ -18,9 +18,17 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
     private Card card;
     private boolean success;
     private BraintreeErrors errors;
+    private String exception;
 
     public ThreeDSecureAuthenticationResponse() {}
 
+    /**
+     * Used to parse a response from the Braintree Gateway to be used for 3D Secure
+     *
+     * @param jsonString The json response from the Braintree Gateway 3D Secure authentication route
+     * @return The {@link com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse} to use when
+     *         performing 3D Secure authentication
+     */
     public static ThreeDSecureAuthenticationResponse fromJson(String jsonString) {
         ThreeDSecureAuthenticationResponse authenticationResponse = new ThreeDSecureAuthenticationResponse();
 
@@ -43,16 +51,48 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
         return authenticationResponse;
     }
 
+    /**
+     * Used to handle exceptions that occur during 3D Secure authentication
+     *
+     * @param exception The message of the exception that occured
+     * @return The {@link com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse} to be
+     *         handled by {@link com.braintreepayments.api.Braintree}
+     */
+    public static ThreeDSecureAuthenticationResponse fromException(String exception) {
+        ThreeDSecureAuthenticationResponse authenticationResponse = new ThreeDSecureAuthenticationResponse();
+        authenticationResponse.success = false;
+        authenticationResponse.exception = exception;
+
+        return authenticationResponse;
+    }
+
+    /**
+     * @return If the authentication was completed
+     */
     public boolean isSuccess() {
         return success;
     }
 
+    /**
+     * @return The {@link com.braintreepayments.api.models.Card} associated with the 3D Secure
+     *         authentication
+     */
     public Card getCard() {
         return card;
     }
 
+    /**
+     * @return Possible errors that occurred during the authentication
+     */
     public BraintreeErrors getErrors() {
         return errors;
+    }
+
+    /**
+     * @return Possible exception that occurred during the authentication
+     */
+    public String getException() {
+        return exception;
     }
 
     @Override
@@ -63,12 +103,14 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
         dest.writeByte(success ? (byte) 1 : (byte) 0);
         dest.writeParcelable(card, flags);
         dest.writeParcelable(errors, flags);
+        dest.writeString(exception);
     }
 
     private ThreeDSecureAuthenticationResponse(Parcel in) {
         success = in.readByte() != 0;
         card = in.readParcelable(Card.class.getClassLoader());
         errors = in.readParcelable(BraintreeError.class.getClassLoader());
+        exception = in.readString();
     }
 
     public static final Creator<ThreeDSecureAuthenticationResponse> CREATOR =

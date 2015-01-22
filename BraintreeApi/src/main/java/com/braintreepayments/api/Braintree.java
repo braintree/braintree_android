@@ -544,6 +544,8 @@ public class Braintree {
             if (authenticationResponse.isSuccess()) {
                 postCreatedMethodToListeners(authenticationResponse.getCard());
                 postCreatedNonceToListeners(authenticationResponse.getCard().getNonce());
+            } else if (authenticationResponse.getException() != null) {
+                postUnrecoverableErrorToListeners(new BraintreeException(authenticationResponse.getException()));
             } else {
                 postRecoverableErrorToListeners(new ErrorWithResponse(422, authenticationResponse.getErrors()));
             }

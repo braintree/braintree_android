@@ -523,7 +523,31 @@ public class BraintreeTest extends AndroidTestCase {
         assertTrue(wasCalled.get());
     }
 
-    public void testFinishThreeDSecureVerificationPostsErrorsToListener()
+    public void testFinishThreeDSecureVerificationPostsUnrecoverableErrorsToListeners()
+            throws InterruptedException {
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        SimpleListener listener = new SimpleListener() {
+            @Override
+            public void onUnrecoverableError(Throwable throwable) {
+                assertEquals("Error!", throwable.getMessage());
+                wasCalled.set(true);
+            }
+        };
+        mBraintree.addListener(listener);
+
+        ThreeDSecureAuthenticationResponse authResponse =
+                ThreeDSecureAuthenticationResponse.fromException("Error!");
+
+        Intent data = new Intent()
+                .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT, authResponse);
+
+        mBraintree.finishThreeDSecureVerification(Activity.RESULT_OK, data);
+
+        waitForMainThreadToFinish();
+        assertTrue(wasCalled.get());
+    }
+
+    public void testFinishThreeDSecureVerificationPostsRecoverableErrorsToListener()
             throws InterruptedException, JSONException {
         final AtomicBoolean wasCalled = new AtomicBoolean(false);
         SimpleListener listener = new SimpleListener() {

@@ -19,6 +19,14 @@ public class ThreeDSecureAuthenticationResponseTest extends AndroidTestCase {
         assertTrue(authResponse.isSuccess());
     }
 
+    public void testCanInstantiateFromAnExceptionMessage() {
+        ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse
+                .fromException("Error!");
+
+        assertFalse(authResponse.isSuccess());
+        assertEquals("Error!", authResponse.getException());
+    }
+
     public void testCanInstantiateFromJsonErrorString() {
         ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
                 FixturesHelper.stringFromFixture(getContext(),
@@ -44,6 +52,17 @@ public class ThreeDSecureAuthenticationResponseTest extends AndroidTestCase {
         assertEquals(authResponse.getCard().getThreeDSecureInfo().isLiabilityShiftPossible(),
                 parsedAuthResponse.getCard().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertEquals(authResponse.isSuccess(), parsedAuthResponse.isSuccess());
+        assertEquals(authResponse.getException(), parsedAuthResponse.getException());
     }
 
+    public void testExceptionsAreSerialized() {
+        ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse
+                .fromException("Error!");
+
+        Intent intent = new Intent().putExtra("auth-response", authResponse);
+        ThreeDSecureAuthenticationResponse parsedAuthResponse = intent.getParcelableExtra("auth-response");
+
+        assertEquals(authResponse.isSuccess(), parsedAuthResponse.isSuccess());
+        assertEquals(authResponse.getException(), parsedAuthResponse.getException());
+    }
 }

@@ -7,11 +7,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Window;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -108,13 +110,7 @@ public class ThreeDSecureWebViewActivity extends Activity {
                 view.stopLoading();
 
                 String authResponseJson = (Uri.parse(url).getQueryParameter("auth_response"));
-
-                ThreeDSecureAuthenticationResponse authResponse =
-                        ThreeDSecureAuthenticationResponse.fromJson(authResponseJson);
-                setResult(Activity.RESULT_OK, new Intent()
-                        .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT,
-                                authResponse));
-                finish();
+                finishWithResult(ThreeDSecureAuthenticationResponse.fromJson(authResponseJson));
             } else {
                 super.onPageStarted(view, url, icon);
             }
@@ -125,6 +121,20 @@ public class ThreeDSecureWebViewActivity extends Activity {
             super.onPageFinished(view, url);
             setActionBarTitle(view.getTitle());
             view.loadUrl(JAVASCRIPT_MODIFICATION);
+        }
+
+        @Override
+        public void onReceivedError(WebView view, int errorCode, String description,
+                String failingUrl) {
+            view.stopLoading();
+            finishWithResult(ThreeDSecureAuthenticationResponse.fromException(description));
+        }
+
+        @Override
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            handler.cancel();
+            view.stopLoading();
+            finishWithResult(ThreeDSecureAuthenticationResponse.fromException(error.toString()));
         }
     };
 
@@ -140,6 +150,13 @@ public class ThreeDSecureWebViewActivity extends Activity {
             }
         }
     };
+
+    private void finishWithResult(ThreeDSecureAuthenticationResponse threeDSecureAuthenticationResponse) {
+        setResult(Activity.RESULT_OK,  new Intent()
+                .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT,
+                        threeDSecureAuthenticationResponse));
+        finish();
+    }
 
     @TargetApi(VERSION_CODES.HONEYCOMB)
     private void setupActionBar() {
