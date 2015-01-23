@@ -4,6 +4,9 @@ import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.Braintree.ErrorListener;
@@ -31,9 +35,10 @@ import org.json.JSONObject;
 public class MainActivity extends Activity implements PaymentMethodNonceListener, ErrorListener,
         OnNavigationListener {
 
-    private static final int CUSTOM_REQUEST = 100;
-    private static final int DROP_IN_REQUEST = 200;
-    private static final int THREE_D_SECURE_REQUEST = 300;
+    private static final int DROP_IN_REQUEST = 100;
+    private static final int PAYMENT_BUTTON_REQUEST = 200;
+    private static final int CUSTOM_REQUEST = 300;
+    private static final int THREE_D_SECURE_REQUEST = 400;
 
     private SharedPreferences mPrefs;
     private AsyncHttpClient mHttpClient;
@@ -41,11 +46,15 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
     private String mClientToken;
     private Braintree mBraintree;
 
-    private Button mPaymentInfoButton;
-    private Button mThreeDSecureButton;
-    private Button mPurchaseButton;
-
     private String mNonce;
+
+    private TextView mNonceTextView;
+    private Button mDropInButton;
+    private Button mPaymentButtonButton;
+    private Button mCustomButton;
+    private Button mCreateTransactionButton;
+    private ProgressDialog mLoading;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +68,11 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
         // do this as it opens a security hole
         SignatureVerification.disableAppSwitchSignatureVerification();
 
-        mPaymentInfoButton = (Button) findViewById(R.id.add_payment_info);
-        mThreeDSecureButton = (Button) findViewById(R.id.perform_three_d_secure_verification);
-        mPurchaseButton = (Button) findViewById(R.id.complete_purchase);
+        mNonceTextView = (TextView) findViewById(R.id.nonce);
+        mDropInButton = (Button) findViewById(R.id.drop_in);
+        mPaymentButtonButton = (Button) findViewById(R.id.payment_button);
+        mCustomButton = (Button) findViewById(R.id.custom);
+        mCreateTransactionButton = (Button) findViewById(R.id.create_transaction);
 
         setupActionBar();
         getClientToken();
@@ -76,20 +87,20 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.environments, android.R.layout.simple_spinner_dropdown_item);
         actionBar.setListNavigationCallbacks(adapter, this);
-        actionBar.setSelectedNavigationItem(mPrefs.getInt(OptionsActivity.ENVIRONMENT, 0));
+        actionBar.setSelectedNavigationItem(mPrefs.getInt(Settings.ENVIRONMENT, 0));
     }
 
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        mPrefs.edit().putInt(OptionsActivity.ENVIRONMENT, itemPosition).apply();
+        Settings.setEnvironment(this, itemPosition);
         resetState();
         return true;
     }
 
     private void resetState() {
-        mPaymentInfoButton.setEnabled(false);
-        mThreeDSecureButton.setVisibility(View.GONE);
-        mPurchaseButton.setVisibility(View.GONE);
+        enableButtons(false);
+        mCreateTransactionButton.setEnabled(false);
+        mNonceTextView.setText("");
 
         mClientToken = null;
         mBraintree = null;
@@ -100,14 +111,15 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
 
     @SuppressWarnings({"ConstantConditions", "deprecation"})
     private void getClientToken() {
-        mHttpClient.get(OptionsActivity.getClientTokenUrl(this), new AsyncHttpResponseHandler() {
+        mHttpClient.get(Settings.getClientTokenUrl(this), new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(String response) {
                 try {
                     mClientToken = new JSONObject(response).getString("client_token");
                     mBraintree = Braintree.getInstance(MainActivity.this, mClientToken);
                     mBraintree.addListener(MainActivity.this);
-                    mPaymentInfoButton.setEnabled(true);
+
+                    enableButtons(true);
                 } catch (JSONException e) {
                     showDialog("Unable to decode client token");
                 }
@@ -121,6 +133,113 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
         });
     }
 
+    public void launchDropIn(View v) {
+        Customization customization = new CustomizationBuilder()
+                .primaryDescription("Cart")
+                .secondaryDescription("3 Items")
+                .amount("$1")
+                .submitButtonText("Buy")
+                .build();
+
+        Intent intent = new Intent(this, BraintreePaymentActivity.class)
+                .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken)
+                .putExtra(BraintreePaymentActivity.EXTRA_CUSTOMIZATION, customization);
+
+        startActivityForResult(intent, DROP_IN_REQUEST);
+    }
+
+    public void launchPaymentButton(View v) {
+        Intent intent = new Intent(this, PaymentButtonActivity.class)
+                .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken);
+
+        startActivityForResult(intent, PAYMENT_BUTTON_REQUEST);
+    }
+
+    public void launchCustom(View v) {
+        Intent intent = new Intent(this, CustomFormActivity.class)
+                .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken);
+
+        startActivityForResult(intent, CUSTOM_REQUEST);
+    }
+
+    public void createTransaction(View v) {
+        Intent intent = new Intent(this, FinishedActivity.class)
+                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, mNonce);
+        startActivity(intent);
+        resetState();
+    }
+
+    @Override
+    public void onUnrecoverableError(Throwable throwable) {
+        showDialog("An unrecoverable error was encountered (" + throwable.getClass().getSimpleName() +
+                "): " + throwable.getMessage());
+        safelyCloseLoadingView();
+    }
+
+    @Override
+    public void onRecoverableError(ErrorWithResponse error) {
+        showDialog("A recoverable error occurred: " + error.getMessage());
+        safelyCloseLoadingView();
+    }
+
+    @Override
+    public void onPaymentMethodNonce(String paymentMethodNonce) {
+        mNonce = paymentMethodNonce;
+        setNonce(mNonce);
+        mCreateTransactionButton.setEnabled(true);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // required due to the conflicting Braintree instances in this unusual integration
+        mBraintree.unlockListeners();
+
+        safelyCloseLoadingView();
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == THREE_D_SECURE_REQUEST) {
+                mBraintree.finishThreeDSecureVerification(resultCode, data);
+            } else {
+                mNonce = data.getStringExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE);
+                setNonce(mNonce);
+
+                if (Settings.isThreeDSecureEnabled(this) && mBraintree.isThreeDSecureEnabled()) {
+                    mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
+                    mBraintree.startThreeDSecureVerification(this, THREE_D_SECURE_REQUEST, mNonce, "1");
+                } else {
+                    mCreateTransactionButton.setEnabled(true);
+                }
+            }
+        }
+    }
+
+    private void setNonce(String nonce) {
+        mNonceTextView.setText(getString(R.string.nonce) + ": " + nonce);
+    }
+
+    private void enableButtons(boolean enable) {
+        mDropInButton.setEnabled(enable);
+        mPaymentButtonButton.setEnabled(enable);
+        mCustomButton.setEnabled(enable);
+    }
+
+    private void safelyCloseLoadingView() {
+        if (mLoading != null && mLoading.isShowing()) {
+            mLoading.dismiss();
+        }
+    }
+    private void showDialog(String message) {
+        new AlertDialog.Builder(this)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
@@ -131,87 +250,10 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.reset) {
             resetState();
-        } else if (item.getItemId() == R.id.options) {
-            startActivity(new Intent(this, OptionsActivity.class));
+        } else if (item.getItemId() == R.id.settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
         return false;
-    }
-
-    public void onAddPaymentInformationClick(View v) {
-        Intent intent = new Intent()
-                .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken);
-        if (OptionsActivity.getFormType(this) == OptionsActivity.CUSTOM) {
-            intent.setClass(this, CustomFormActivity.class);
-            startActivityForResult(intent, CUSTOM_REQUEST);
-        } else if (OptionsActivity.getFormType(this) == OptionsActivity.DROP_IN) {
-            Customization customization = new CustomizationBuilder()
-                    .primaryDescription("Cart")
-                    .secondaryDescription("3 Items")
-                    .amount("$1")
-                    .submitButtonText("Buy")
-                    .build();
-
-            intent.setClass(this, BraintreePaymentActivity.class)
-                .putExtra(BraintreePaymentActivity.EXTRA_CUSTOMIZATION, customization);
-            startActivityForResult(intent, DROP_IN_REQUEST);
-        }
-    }
-
-    public void onPerformThreeDSecureVerificationClick(View v) {
-        mBraintree.startThreeDSecureVerification(this, THREE_D_SECURE_REQUEST, mNonce, "1");
-    }
-
-    public void onCompletePurchaseClick(View v) {
-        Intent intent = new Intent(this, FinishedActivity.class)
-                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, mNonce);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onUnrecoverableError(Throwable throwable) {
-        showDialog("An unrecoverable error was encountered (" + throwable.getClass().getSimpleName() +
-                "): " + throwable.getMessage());
-    }
-
-    @Override
-    public void onRecoverableError(ErrorWithResponse error) {
-        showDialog("A recoverable error occurred: " + error.getMessage());
-    }
-
-    @Override
-    public void onPaymentMethodNonce(String paymentMethodNonce) {
-        mNonce = paymentMethodNonce;
-        mPurchaseButton.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // required due to the conflicting Braintree instances
-        mBraintree.unlockListeners();
-
-        if (resultCode == RESULT_OK) {
-            if (requestCode == THREE_D_SECURE_REQUEST) {
-                mBraintree.finishThreeDSecureVerification(resultCode, data);
-                mThreeDSecureButton.setVisibility(View.GONE);
-                mPurchaseButton.setVisibility(View.GONE);
-            } else {
-                mNonce = data.getStringExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE);
-
-                if (mBraintree.isThreeDSecureEnabled()) {
-                    mThreeDSecureButton.setVisibility(View.VISIBLE);
-                } else {
-                    mThreeDSecureButton.setVisibility(View.GONE);
-                }
-
-                mPurchaseButton.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
-    private void showDialog(String message) {
-        new AlertDialog.Builder(this)
-            .setMessage(message)
-            .show();
     }
 }

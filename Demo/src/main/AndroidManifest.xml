@@ -14,7 +14,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".OptionsActivity" android:label="Options" />
+        <activity android:name=".SettingsActivity" android:label="Options" />
+        <activity android:name=".PaymentButtonActivity" android:label="Buy" />
         <activity android:name=".CustomFormActivity" android:label="Buy" />
         <activity android:name=".FinishedActivity" android:label="Purchase Complete" />
     </application>

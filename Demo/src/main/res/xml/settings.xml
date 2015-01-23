@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/three_d_secure">
+
+        <CheckBoxPreference
+            android:key="enable_three_d_secure"
+            android:title="@string/enable_three_d_secure"
+            android:summary="@string/enable_three_d_secure_summary"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="required_three_d_secure"
+            android:title="@string/require_three_d_secure"
+            android:summary="@string/require_three_d_secure_summary"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/customer">
+
+        <EditTextPreference
+            android:key="customer"
+            android:title="@string/customer"
+            android:summary="@string/customer_summary"
+            android:defaultValue="" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

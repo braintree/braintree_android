@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="40sp"
-        android:text="Thank you for your purchase!"
+        android:text="@string/transaction_complete"
         android:layout_margin="30dp"
         android:visibility="gone" />
 

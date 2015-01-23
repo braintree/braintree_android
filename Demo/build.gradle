@@ -19,6 +19,4 @@ android {
 dependencies {
     compile 'com.loopj.android:android-async-http:1.4.4'
     compile project(':Drop-In')
-
-    androidTestCompile project(':TestUtils')
 }

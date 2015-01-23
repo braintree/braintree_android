@@ -31,7 +31,16 @@ public class FinishedActivity extends Activity {
     private void sendNonceToServer(String nonce) {
         RequestParams params = new RequestParams();
         params.put("nonce", nonce);
-        new AsyncHttpClient().post(OptionsActivity.getEnvironmentUrl(this) + "/nonce/transaction", params,
+
+        if (Settings.isThreeDSecureEnabled(this)) {
+            if (Settings.getEnvironment(this) == 1) {
+                params.put("merchant_account_id", "test_AIB");
+            }
+
+            params.put("requireThreeDSecure", Settings.isThreeDSecureRequired(this));
+        }
+
+        new AsyncHttpClient().post(Settings.getEnvironmentUrl(this) + "/nonce/transaction", params,
                 new AsyncHttpResponseHandler() {
                     @Override
                     public void onSuccess(String response) {
