@@ -53,7 +53,6 @@ public class PayPalHelper {
         Set<String> scopes = new HashSet<String>(
                 Arrays.asList(
                     PayPalOAuthScopes.PAYPAL_SCOPE_EMAIL,
-                    PayPalOAuthScopes.PAYPAL_SCOPE_PROFILE,
                     PayPalOAuthScopes.PAYPAL_SCOPE_FUTURE_PAYMENTS)
         );
         intent.putExtra(PayPalTouchActivity.EXTRA_REQUESTED_SCOPES, new PayPalOAuthScopes(scopes));
