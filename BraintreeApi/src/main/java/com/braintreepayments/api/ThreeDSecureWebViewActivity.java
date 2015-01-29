@@ -32,7 +32,6 @@ public class ThreeDSecureWebViewActivity extends Activity {
 
     private ActionBar mActionBar;
     private FrameLayout mRootView;
-    private ThreeDSecureLookup mThreeDSecureLookup;
     private Stack<ThreeDSecureWebView> mThreeDSecureWebViews;
 
     @Override
@@ -40,8 +39,9 @@ public class ThreeDSecureWebViewActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_PROGRESS);
 
-        mThreeDSecureLookup = getIntent().getParcelableExtra(EXTRA_THREE_D_SECURE_LOOKUP);
-        if (mThreeDSecureLookup == null) {
+        ThreeDSecureLookup threeDSecureLookup =
+                getIntent().getParcelableExtra(EXTRA_THREE_D_SECURE_LOOKUP);
+        if (threeDSecureLookup == null) {
             throw new IllegalArgumentException("A ThreeDSecureLookup must be specified with " +
                     ThreeDSecureLookup.class.getSimpleName() + ".EXTRA_THREE_D_SECURE_LOOKUP extra");
         }
@@ -50,19 +50,22 @@ public class ThreeDSecureWebViewActivity extends Activity {
 
         mThreeDSecureWebViews = new Stack<ThreeDSecureWebView>();
         mRootView = ((FrameLayout) findViewById(android.R.id.content));
-        pushNewWebView(new ThreeDSecureWebView(this));
 
         List<NameValuePair> params = new LinkedList<NameValuePair>();
-        params.add(new BasicNameValuePair("PaReq", mThreeDSecureLookup.getPareq()));
-        params.add(new BasicNameValuePair("MD", mThreeDSecureLookup.getMd()));
-        params.add(new BasicNameValuePair("TermUrl", mThreeDSecureLookup.getTermUrl()));
+        params.add(new BasicNameValuePair("PaReq", threeDSecureLookup.getPareq()));
+        params.add(new BasicNameValuePair("MD", threeDSecureLookup.getMd()));
+        params.add(new BasicNameValuePair("TermUrl", threeDSecureLookup.getTermUrl()));
         ByteArrayOutputStream encodedParams = new ByteArrayOutputStream();
         try {
             new UrlEncodedFormEntity(params, HTTP.UTF_8).writeTo(encodedParams);
         } catch (IOException e) {
             finish();
         }
-        mThreeDSecureWebViews.peek().postUrl(mThreeDSecureLookup.getAcsUrl(), encodedParams.toByteArray());
+
+        ThreeDSecureWebView webView = new ThreeDSecureWebView(this);
+        webView.setActivity(this);
+        webView.postUrl(threeDSecureLookup.getAcsUrl(), encodedParams.toByteArray());
+        pushNewWebView(webView);
     }
 
     protected void pushNewWebView(ThreeDSecureWebView webView) {
@@ -72,7 +75,7 @@ public class ThreeDSecureWebViewActivity extends Activity {
         mRootView.addView(webView);
     }
 
-    protected void closeCurrentWebView() {
+    protected void popCurrentWebView() {
         mThreeDSecureWebViews.pop();
         pushNewWebView(mThreeDSecureWebViews.pop());
     }
@@ -89,7 +92,7 @@ public class ThreeDSecureWebViewActivity extends Activity {
         if (mThreeDSecureWebViews.peek().canGoBack()) {
             mThreeDSecureWebViews.peek().goBack();
         } else if (mThreeDSecureWebViews.size() > 1) {
-            closeCurrentWebView();
+            popCurrentWebView();
         } else {
             super.onBackPressed();
         }

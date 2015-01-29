@@ -56,12 +56,13 @@ public class ThreeDSecureWebView extends WebView {
     private void init() {
         setId(android.R.id.widget_frame);
 
-        getSettings().setUserAgentString(HttpRequest.USER_AGENT);
-        getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-        getSettings().setSupportMultipleWindows(true);
-        getSettings().setJavaScriptEnabled(true);
-        getSettings().setBuiltInZoomControls(true);
-        disableOnScreenZoomControls();
+        WebSettings settings = getSettings();
+        settings.setUserAgentString(HttpRequest.USER_AGENT);
+        settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        settings.setSupportMultipleWindows(true);
+        settings.setJavaScriptEnabled(true);
+        settings.setBuiltInZoomControls(true);
+        disableOnScreenZoomControls(settings);
 
         setWebChromeClient(mThreeDSecureWebChromeClient);
         setWebViewClient(mThreeDSecureWebViewClient);
@@ -112,6 +113,7 @@ public class ThreeDSecureWebView extends WebView {
         public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture,
                 Message resultMsg) {
             ThreeDSecureWebView newWebView = new ThreeDSecureWebView(getContext());
+            newWebView.setActivity(mActivity);
             mActivity.pushNewWebView(newWebView);
             ((WebView.WebViewTransport) resultMsg.obj)
                     .setWebView(newWebView);
@@ -122,7 +124,7 @@ public class ThreeDSecureWebView extends WebView {
 
         @Override
         public void onCloseWindow(WebView window) {
-            mActivity.closeCurrentWebView();
+            mActivity.popCurrentWebView();
         }
 
         @Override
@@ -138,9 +140,9 @@ public class ThreeDSecureWebView extends WebView {
     };
 
     @TargetApi(VERSION_CODES.HONEYCOMB)
-    private void disableOnScreenZoomControls() {
+    private void disableOnScreenZoomControls(WebSettings settings) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            getSettings().setDisplayZoomControls(false);
+            settings.setDisplayZoomControls(false);
         }
     }
 }
