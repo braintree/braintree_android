@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.threedsecure;
 
 import android.annotation.TargetApi;
 import android.app.ActionBar;
@@ -63,13 +63,12 @@ public class ThreeDSecureWebViewActivity extends Activity {
         }
 
         ThreeDSecureWebView webView = new ThreeDSecureWebView(this);
-        webView.setActivity(this);
+        webView.init(this);
         webView.postUrl(threeDSecureLookup.getAcsUrl(), encodedParams.toByteArray());
         pushNewWebView(webView);
     }
 
     protected void pushNewWebView(ThreeDSecureWebView webView) {
-        webView.setActivity(this);
         mThreeDSecureWebViews.push(webView);
         mRootView.removeAllViews();
         mRootView.addView(webView);

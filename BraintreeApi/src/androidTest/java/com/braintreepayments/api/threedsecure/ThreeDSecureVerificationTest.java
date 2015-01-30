@@ -1,4 +1,4 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.threedsecure;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -8,6 +8,7 @@ import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
 
+import com.braintreepayments.api.BraintreeApi;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.CardBuilder;
@@ -154,7 +155,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
         assertEquals("Failed to authenticate, please try a different form of payment", errors.getMessage());
     }
 
-    public void testReturnsASuccessfulAuthenticationWhenIssueDoesNotParticipate()
+    public void testReturnsASuccessfulAuthenticationWhenIssuerDoesNotParticipate()
             throws ErrorWithResponse, BraintreeException {
         Activity activity = startThreeDSecureTestActivity("4000000000000101");
 
