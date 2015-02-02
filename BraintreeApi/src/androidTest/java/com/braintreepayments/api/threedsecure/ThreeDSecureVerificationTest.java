@@ -87,6 +87,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
         SystemClock.sleep(10000);
 
         sendKeys(KeyEvent.KEYCODE_BACK);
+        SystemClock.sleep(2000);
         sendKeys(KeyEvent.KEYCODE_BACK);
 
         waitForActivityToFinish(activity);
