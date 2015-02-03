@@ -77,7 +77,7 @@ public class PaymentFormHelpers {
 
         waitForView(withHint("Email"), FIFTEEN_SECONDS).perform(typeText("test@paypal.com"));
         onView(withHint("Password")).perform(typeText("11111111"));
-        onView(withText("Log In")).perform(click());
+        onView(withHint("Log In")).perform(click());
 
         waitForView(withText("Agree")).perform(click());
     }

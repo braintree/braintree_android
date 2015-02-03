@@ -117,15 +117,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreeTestUtils.setUpActivityTest(this);
         getActivity();
 
-        waitForView(withId(R.id.bt_paypal_button)).perform(click());
-
-        waitForView(withHint("Email"));
-        onView(withHint("Email")).perform(typeText("bt_buyer_us@paypal.com"));
-        onView(withHint("Password")).perform(typeText("11111111"));
-        onView(withText("Log In")).perform(click());
-
-        waitForView(withText("Agree"));
-        onView(withText("Agree")).perform(click());
+        fillInOfflinePayPal();
 
         waitForPaymentMethodList(TEN_SECONDS);
         assertSelectedPaymentMethodIs(R.string.bt_descriptor_paypal);
@@ -463,7 +455,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForView(withId(R.id.bt_paypal_button)).perform(click());
         waitForView(withHint("Email"), FIFTEEN_SECONDS).perform(typeText("bt_buyer_us@paypal.com"));
         onView(withHint("Password")).perform(typeText("11111111"));
-        onView(withText("Log In")).perform(click());
+        onView(withHint("Log In")).perform(click());
         waitForPaymentMethodList();
 
         onView(withId(R.id.bt_payment_method_description)).check(

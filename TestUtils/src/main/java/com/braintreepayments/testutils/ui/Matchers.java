@@ -6,7 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.android.apps.common.testing.ui.espresso.matcher.BoundedMatcher;
 
@@ -49,15 +49,15 @@ public class Matchers {
         checkNotNull(hintText);
 
         final Matcher<String> matcher = is(hintText);
-        return new BoundedMatcher<View, EditText>(EditText.class) {
+        return new BoundedMatcher<View, TextView>(TextView.class) {
             @Override
             public void describeTo(Description description) {
                 description.appendText("with hint: " + matcher);
             }
 
             @Override
-            protected boolean matchesSafely(EditText editTextField) {
-                return matcher.matches(editTextField.getHint().toString());
+            protected boolean matchesSafely(TextView textView) {
+                return matcher.matches(textView.getHint());
             }
         };
     }
