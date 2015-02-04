@@ -171,15 +171,15 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
 
     @Override
     public void onUnrecoverableError(Throwable throwable) {
+        safelyCloseLoadingView();
         showDialog("An unrecoverable error was encountered (" + throwable.getClass().getSimpleName() +
                 "): " + throwable.getMessage());
-        safelyCloseLoadingView();
     }
 
     @Override
     public void onRecoverableError(ErrorWithResponse error) {
-        showDialog("A recoverable error occurred: " + error.getMessage());
         safelyCloseLoadingView();
+        showDialog("A recoverable error occurred: " + error.getMessage());
     }
 
     @Override
@@ -187,6 +187,8 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
         mNonce = paymentMethodNonce;
         setNonce(mNonce);
         mCreateTransactionButton.setEnabled(true);
+
+        safelyCloseLoadingView();
     }
 
     @Override
