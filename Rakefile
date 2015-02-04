@@ -38,7 +38,7 @@ task :release => :lint do
   version = $stdin.gets.chomp
 
   increment_version_code(braintree_android_build_file)
-  update_version(braintree_android_build_file)
+  update_version(braintree_android_build_file, version)
 
   sh "./gradlew clean :BraintreeData:uploadArchives"
   puts "BraintreeData was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
@@ -54,7 +54,7 @@ task :release => :lint do
   $stdin.gets
 
   replace_string(braintree_drop_in_build_file, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree-api:#{version}'")
-  replace_string(braintree_drop_in_build_file, "compile project(':CardForm')", "compile 'com.braintreepayments.card-form:#{version}'")
+  replace_string(braintree_drop_in_build_file, "compile project(':CardForm')", "compile 'com.braintreepayments:card-form:#{version}'")
   sh "./gradlew clean :Drop-In:uploadArchives"
   puts "Drop-In was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
   $stdin.gets
