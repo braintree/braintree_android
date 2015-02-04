@@ -48,6 +48,7 @@ import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
 import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
+import static com.google.android.apps.common.testing.ui.espresso.Espresso.pressBack;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
 import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.typeText;
 import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
@@ -243,7 +244,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         fillInOfflinePayPal();
 
         waitForView(withId(R.id.bt_inflated_loading_view)).check(matches(isDisplayed()));
-        sendKeys(KeyEvent.KEYCODE_BACK);
+        pressBack();
         onView(withId(R.id.bt_inflated_loading_view)).check(matches(isDisplayed()));
     }
 
