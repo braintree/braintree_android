@@ -1,6 +1,6 @@
 # Braintree v.zero SDK for Android
 
-Welcome to Braintree's v.zero SDK for Android. This library will help you accept card and PayPal payments in your Android app.
+Welcome to Braintree's v.zero SDK for Android. This library will help you accept card and alternative payments in your Android app.
 
 ![Screenshot of v.zero](screenshot.png)
 
@@ -18,7 +18,7 @@ Next, read the [**full documentation**](https://developers.braintreepayments.com
 
 ## Feedback
 
-Braintree v.zero is brand new and in active development. We appreciate the time you take to try it out and welcome your feedback!
+Braintree v.zero is in active development. We appreciate the time you take to try it out and welcome your feedback!
 
 Here are a few ways to get in touch:
 

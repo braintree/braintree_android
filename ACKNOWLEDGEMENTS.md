@@ -7,7 +7,6 @@ The Braintree SDK uses code from the following libraries:
  * Google [Gson](https://code.google.com/p/google-gson/)
  * [Mockito](https://github.com/mockito/mockito)
  * [Dexmaker](https://code.google.com/p/dexmaker/)
- * [Espresso](https://code.google.com/p/android-test-kit/)
 
 Full Licenses
 -------------
@@ -79,6 +78,4 @@ Dexmaker, Apache 2.0 License
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
-
-Espresso, [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)
 

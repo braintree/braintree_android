@@ -7,7 +7,7 @@ This document outlines development practices that we follow internally while dev
 The included demo app utilizes a test merchant server hosted on heroku ([https://braintree-sample-merchant.herokuapp.com](https://braintree-sample-merchant.herokuapp.com)).
 It produces client tokens that point to Braintree's Sandbox Environment.
 
-You can also host a locally running Gateway and/or merchant server. The url the demo app uses can be modified in `Demo/src/main/java/com/braintreepayments/demo/OptionsActivity.java`.
+You can also host a locally running Gateway and/or merchant server.
 
 ## Tests
 
@@ -34,6 +34,7 @@ There are several components that comprise this SDK:
 
 * [BraintreeApi](BraintreeApi) provides the networking and communication layer. Includes the PayPal Android mobile SDK.
 * [BraintreeData](BraintreeData) collects and provides data for fraud detection.
+* [CardForm](CardForm) is a pre-build card form view that can be used anywhere.
 * [Drop-In](Drop-In) uses `BraintreeApi` to create a full checkout experience inside an `Activity`.
 * [Demo](Demo) is the reference integration of [Drop-In](Drop-In).
 * [FakeWallet](FakeWallet) is used to test the app switch portion of the SDK.
@@ -43,8 +44,8 @@ The individual components may be of interest for advanced integrations and are e
 
 ## Environmental Assumptions
 
-* Android Studio 0.8.x and Android 19
-* Android 19 target sdk
+* Android Studio >= 1.0.0 and Android >= 10
+* Android 21 target SDK
 * Gradle
 * Host app does not integrate the [PayPal Android SDK](https://github.com/paypal/PayPal-Android-SDK)
 * Host app does not integrate with the Kount SDK
@@ -54,7 +55,7 @@ The individual components may be of interest for advanced integrations and are e
 
 * Commits should be small but atomic. Tests should always be passing; the product should always function appropriately.
 * Commit messages should be concise and descriptive.
-* Commit messages reference the trello board by ID or URL. (Sorry, these are not externally viewable.)
+* Commit messages may reference the trello board by ID or URL. (Sorry, these are not externally viewable.)
 
 ## Deployment and Code Organization
 
