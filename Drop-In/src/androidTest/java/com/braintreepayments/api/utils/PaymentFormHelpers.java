@@ -3,6 +3,7 @@ package com.braintreepayments.api.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.test.espresso.ViewInteraction;
 import android.view.View;
 
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
@@ -11,12 +12,17 @@ import com.braintreepayments.api.dropin.view.LoadingHeader;
 import com.braintreepayments.api.dropin.view.LoadingHeader.HeaderState;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.PaymentMethod;
-import com.google.android.apps.common.testing.ui.espresso.ViewInteraction;
 
 import org.hamcrest.Matcher;
 
 import java.util.Map;
 
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.ui.Matchers.withHint;
@@ -26,12 +32,6 @@ import static com.braintreepayments.testutils.ui.ViewHelper.TEN_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
 import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
-import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
-import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
-import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.typeText;
-import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
-import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDisplayed;
-import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 

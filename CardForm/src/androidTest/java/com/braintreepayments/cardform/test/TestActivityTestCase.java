@@ -5,16 +5,15 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
+import android.support.test.espresso.FailureHandler;
+import android.support.test.espresso.base.DefaultFailureHandler;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 import android.view.View;
 
-import com.google.android.apps.common.testing.ui.espresso.FailureHandler;
-import com.google.android.apps.common.testing.ui.espresso.base.DefaultFailureHandler;
-
 import org.hamcrest.Matcher;
 
-import static com.google.android.apps.common.testing.ui.espresso.Espresso.setFailureHandler;
+import static android.support.test.espresso.Espresso.setFailureHandler;
 
 public class TestActivityTestCase extends ActivityInstrumentationTestCase2<TestActivity> {
 
@@ -70,5 +69,4 @@ public class TestActivityTestCase extends ActivityInstrumentationTestCase2<TestA
             mDelegate.handle(error, viewMatcher);
         }
     }
-
 }

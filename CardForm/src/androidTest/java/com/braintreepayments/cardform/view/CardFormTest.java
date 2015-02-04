@@ -1,69 +1,32 @@
 package com.braintreepayments.cardform.view;
 
-import android.test.AndroidTestCase;
-import android.view.View;
+import android.test.UiThreadTest;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.braintreepayments.cardform.OnCardFormValidListener;
 import com.braintreepayments.cardform.R;
+import com.braintreepayments.cardform.test.TestActivityTestCase;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.braintreepayments.testutils.CardNumber.VISA;
 
-public class CardFormTest extends AndroidTestCase {
+public class CardFormTest extends TestActivityTestCase {
 
     private static final String TEST = "TEST";
 
     private CardForm mCardForm;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
-        mCardForm = new CardForm(getContext());
+        mCardForm = (CardForm) getActivity().findViewById(android.R.id.custom);
         mCardForm.setRequiredFields(true, true, true, true, TEST);
     }
 
-    public void testCardNumberIsShownIfRequired() {
-        mCardForm.setRequiredFields(true, false, false, false, TEST);
-
-        assertEquals(View.VISIBLE,
-                mCardForm.findViewById(R.id.bt_card_form_card_number).getVisibility());
-        assertEquals(View.GONE, mCardForm.findViewById(R.id.bt_card_form_expiration).getVisibility());
-        assertEquals(View.GONE, mCardForm.findViewById(R.id.bt_card_form_cvv).getVisibility());
-        assertEquals(View.GONE, mCardForm.findViewById(R.id.bt_card_form_postal_code).getVisibility());
-    }
-
-    public void testExpirationIsShownIfRequired() {
-        mCardForm.setRequiredFields(false, true, false, false, TEST);
-
-        assertEquals(View.GONE, mCardForm.findViewById(R.id.bt_card_form_card_number).getVisibility());
-        assertEquals(View.VISIBLE, mCardForm.findViewById(R.id.bt_card_form_expiration).getVisibility());
-        assertEquals(View.GONE, mCardForm.findViewById(R.id.bt_card_form_cvv).getVisibility());
-        assertEquals(View.GONE, mCardForm.findViewById(R.id.bt_card_form_postal_code).getVisibility());
-    }
-
-    public void testCvvIsShownIfRequired() {
-        mCardForm.setRequiredFields(false, false, true, false, TEST);
-
-        assertEquals(View.GONE, mCardForm.findViewById(R.id.bt_card_form_card_number).getVisibility());
-        assertEquals(View.GONE, mCardForm.findViewById(R.id.bt_card_form_expiration).getVisibility());
-        assertEquals(View.VISIBLE, mCardForm.findViewById(R.id.bt_card_form_cvv).getVisibility());
-        assertEquals(View.GONE, mCardForm.findViewById(R.id.bt_card_form_postal_code).getVisibility());
-    }
-
-    public void testPostalCodeIsShownIfRequired() {
-        mCardForm.setRequiredFields(false, false, false, true, TEST);
-
-        assertEquals(View.GONE, mCardForm.findViewById(R.id.bt_card_form_card_number).getVisibility());
-        assertEquals(View.GONE, mCardForm.findViewById(R.id.bt_card_form_expiration).getVisibility());
-        assertEquals(View.GONE, mCardForm.findViewById(R.id.bt_card_form_cvv).getVisibility());
-        assertEquals(View.VISIBLE,
-                mCardForm.findViewById(R.id.bt_card_form_postal_code).getVisibility());
-    }
-
+    @UiThreadTest
     public void testSetsIMEActionAsGoForExpirationIfCvvAndPostalAreNotPresent() {
         mCardForm.setRequiredFields(true, true, false, false, TEST);
 
@@ -71,6 +34,7 @@ public class CardFormTest extends AndroidTestCase {
                 ((TextView) mCardForm.findViewById(R.id.bt_card_form_expiration)).getImeOptions());
     }
 
+    @UiThreadTest
     public void testSetsIMEActionAsGoForCvvIfCvvIsPresentAndPostalIsNot() {
         mCardForm.setRequiredFields(true, true, true, false, TEST);
 
@@ -80,6 +44,7 @@ public class CardFormTest extends AndroidTestCase {
                 ((TextView) mCardForm.findViewById(R.id.bt_card_form_cvv)).getImeOptions());
     }
 
+    @UiThreadTest
     public void testSetsIMEActionAsGoForPostalAndNextForExpirationIfCvvIsNotPresent() {
         mCardForm.setRequiredFields(true, true, false, true, TEST);
 
@@ -89,6 +54,7 @@ public class CardFormTest extends AndroidTestCase {
                 ((TextView) mCardForm.findViewById(R.id.bt_card_form_postal_code)).getImeOptions());
     }
 
+    @UiThreadTest
     public void testSetsIMEActionAsGoForPostalCodeIfCvvAndPostalArePresent() {
         assertEquals(EditorInfo.IME_ACTION_NEXT,
                 ((TextView) mCardForm.findViewById(R.id.bt_card_form_expiration)).getImeOptions());
@@ -98,6 +64,7 @@ public class CardFormTest extends AndroidTestCase {
                 ((TextView) mCardForm.findViewById(R.id.bt_card_form_postal_code)).getImeOptions());
     }
 
+    @UiThreadTest
     public void testSetEnabledSetsStateCorrectly() {
         assertTrue(mCardForm.findViewById(R.id.bt_card_form_card_number).isEnabled());
         assertTrue(mCardForm.findViewById(R.id.bt_card_form_expiration).isEnabled());
@@ -112,6 +79,7 @@ public class CardFormTest extends AndroidTestCase {
         assertFalse(mCardForm.findViewById(R.id.bt_card_form_postal_code).isEnabled());
     }
 
+    @UiThreadTest
     public void testIsValidOnlyValidatesRequiredFields() {
         mCardForm.setRequiredFields(true, false, false, false, TEST);
         assertFalse(mCardForm.isValid());
@@ -138,6 +106,7 @@ public class CardFormTest extends AndroidTestCase {
         assertFalse(((ErrorEditText) mCardForm.findViewById(R.id.bt_card_form_postal_code)).isError());
     }
 
+    @UiThreadTest
     public void testValidateSetsErrorOnFields() {
         assertFalse(((ErrorEditText) mCardForm.findViewById(R.id.bt_card_form_card_number)).isError());
         assertFalse(((ErrorEditText) mCardForm.findViewById(R.id.bt_card_form_expiration)).isError());
@@ -152,31 +121,37 @@ public class CardFormTest extends AndroidTestCase {
         assertTrue(((ErrorEditText) mCardForm.findViewById(R.id.bt_card_form_postal_code)).isError());
     }
 
+    @UiThreadTest
     public void testGetCardNumberReturnsCardNumber() {
         ((EditText) mCardForm.findViewById(R.id.bt_card_form_card_number)).setText(VISA);
         assertEquals(VISA, mCardForm.getCardNumber());
     }
 
+    @UiThreadTest
     public void testGetExpirationMonthReturnsExpirationMonth() {
         ((EditText) mCardForm.findViewById(R.id.bt_card_form_expiration)).setText("1230");
         assertEquals("12", mCardForm.getExpirationMonth());
     }
 
+    @UiThreadTest
     public void testGetExpirationYearReturnsExpirationYear() {
         ((EditText) mCardForm.findViewById(R.id.bt_card_form_expiration)).setText("1230");
         assertEquals("30", mCardForm.getExpirationYear());
     }
 
+    @UiThreadTest
     public void testGetCvvReturnsCvv() {
         ((EditText) mCardForm.findViewById(R.id.bt_card_form_cvv)).setText("123");
         assertEquals("123", mCardForm.getCvv());
     }
 
+    @UiThreadTest
     public void testGetPostalCodeReturnsPostalCode() {
         ((EditText) mCardForm.findViewById(R.id.bt_card_form_postal_code)).setText("12345");
         assertEquals("12345", mCardForm.getPostalCode());
     }
 
+    @UiThreadTest
     public void testSetCardNumberError() {
         assertFalse(((ErrorEditText) mCardForm.findViewById(R.id.bt_card_form_card_number)).isError());
         mCardForm.setCardNumberError();
@@ -184,13 +159,17 @@ public class CardFormTest extends AndroidTestCase {
         assertTrue((mCardForm.findViewById(R.id.bt_card_form_card_number)).isFocused());
     }
 
+    @UiThreadTest
     public void testSetExpirationError() {
+        mCardForm.setRequiredFields(false, true, true, true, TEST);
+
         assertFalse(((ErrorEditText) mCardForm.findViewById(R.id.bt_card_form_expiration)).isError());
         mCardForm.setExpirationError();
         assertTrue(((ErrorEditText) mCardForm.findViewById(R.id.bt_card_form_expiration)).isError());
         assertTrue((mCardForm.findViewById(R.id.bt_card_form_expiration)).isFocused());
     }
 
+    @UiThreadTest
     public void testSetExpirationErrorDoesNotRequestFocusIfCardNumberIsAlreadyFocused() {
         mCardForm.findViewById(R.id.bt_card_form_card_number).requestFocus();
         mCardForm.setExpirationError();
@@ -198,13 +177,17 @@ public class CardFormTest extends AndroidTestCase {
         assertFalse(mCardForm.findViewById(R.id.bt_card_form_expiration).isFocused());
     }
 
+    @UiThreadTest
     public void testSetCvvError() {
+        mCardForm.setRequiredFields(false, false, true, true, TEST);
+
         assertFalse(((ErrorEditText) mCardForm.findViewById(R.id.bt_card_form_cvv)).isError());
         mCardForm.setCvvError();
         assertTrue(((ErrorEditText) mCardForm.findViewById(R.id.bt_card_form_cvv)).isError());
         assertTrue((mCardForm.findViewById(R.id.bt_card_form_cvv)).isFocused());
     }
 
+    @UiThreadTest
     public void testSetCvvErrorDoesNotRequestFocusIfCardNumberOrExpirationIsAlreadyFocused() {
         mCardForm.findViewById(R.id.bt_card_form_card_number).requestFocus();
         mCardForm.setCvvError();
@@ -217,13 +200,17 @@ public class CardFormTest extends AndroidTestCase {
         assertFalse(mCardForm.findViewById(R.id.bt_card_form_cvv).isFocused());
     }
 
+    @UiThreadTest
     public void testSetPostalCodeError() {
+        mCardForm.setRequiredFields(false, false, false, true, TEST);
+
         assertFalse(((ErrorEditText) mCardForm.findViewById(R.id.bt_card_form_postal_code)).isError());
         mCardForm.setPostalCodeError();
         assertTrue(((ErrorEditText) mCardForm.findViewById(R.id.bt_card_form_postal_code)).isError());
         assertTrue((mCardForm.findViewById(R.id.bt_card_form_postal_code)).isFocused());
     }
 
+    @UiThreadTest
     public void testSetPostalCodeErrorDoesNotRequestFocusIfCardNumberCvvOrExpirationIsAlreadyFocused() {
         mCardForm.findViewById(R.id.bt_card_form_card_number).requestFocus();
         mCardForm.setPostalCodeError();
@@ -241,6 +228,7 @@ public class CardFormTest extends AndroidTestCase {
         assertFalse(mCardForm.findViewById(R.id.bt_card_form_postal_code).isFocused());
     }
 
+    @UiThreadTest
     public void testOnCardFormValidListenerOnlyCalledOnValidityChange() {
         final AtomicInteger counter = new AtomicInteger(0);
         mCardForm.setOnCardFormValidListener(new OnCardFormValidListener() {
@@ -261,5 +249,4 @@ public class CardFormTest extends AndroidTestCase {
 
         assertEquals(2, counter.get());
     }
-
 }

@@ -22,7 +22,7 @@ allprojects {
 
     apply plugin: 'android-sdk-manager'
     sdkManager {
-        emulatorVersion 'android-19'
+        emulatorVersion 'android-21'
     }
 
     ext {

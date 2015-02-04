@@ -20,6 +20,7 @@ public class TestActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         mCardForm = new CardForm(this);
+        mCardForm.setId(android.R.id.custom);
         mCardForm.setRequiredFields(
                 getIntent().getBooleanExtra(CREDIT_CARD, true),
                 getIntent().getBooleanExtra(EXPIRATION, true),

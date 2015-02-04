@@ -41,6 +41,16 @@ gradle.taskGraph.whenReady { taskGraph ->
     android.buildTypes.debug.buildConfigField('boolean', 'RUN_ALL_TESTS', '' + RUN_ALL_TESTS)
 }
 
+task grantAnimationPermission(type: Exec, dependsOn: 'installDebugTest') {
+    commandLine 'adb shell pm grant com.braintreepayments.api.test android.permission.SET_ANIMATION_SCALE'.split(' ')
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name.startsWith('connectedAndroidTest')) {
+        task.dependsOn grantAnimationPermission
+    }
+}
+
 /* maven deploy + signing */
 task javadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs

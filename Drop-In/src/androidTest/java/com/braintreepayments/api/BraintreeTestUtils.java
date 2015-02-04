@@ -14,11 +14,11 @@ import com.braintreepayments.api.internal.HttpResponse;
 import com.braintreepayments.testutils.FixturesHelper;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
-import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
-import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.doesNotExist;
-import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
-import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withId;
-import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withText;
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.braintreepayments.testutils.ui.Matchers.withId;
 
 public class BraintreeTestUtils {
 

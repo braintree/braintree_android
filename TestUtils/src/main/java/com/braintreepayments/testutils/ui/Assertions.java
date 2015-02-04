@@ -5,12 +5,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.test.espresso.NoMatchingViewException;
+import android.support.test.espresso.ViewAssertion;
 import android.view.View;
 import android.widget.EditText;
-
-import com.google.android.apps.common.testing.ui.espresso.NoMatchingViewException;
-import com.google.android.apps.common.testing.ui.espresso.ViewAssertion;
-import com.google.common.base.Optional;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.HONEYCOMB_MR1;
@@ -28,10 +26,9 @@ public class Assertions {
             final Drawable right, final Drawable bottom) {
         return new ViewAssertion() {
             @Override
-            public void check(Optional<View> viewOptional,
-                    Optional<NoMatchingViewException> noMatchingViewExceptionOptional) {
-                EditText editText = ((EditText) viewOptional.get());
-                Drawable[] drawables = editText.getCompoundDrawables();
+            public void check(View view, NoMatchingViewException e) {
+                assert (view) != null;
+                Drawable[] drawables = ((EditText) view).getCompoundDrawables();
                 assertBitmapsEqual(drawables[0], left);
                 assertBitmapsEqual(drawables[1], top);
                 assertBitmapsEqual(drawables[2], right);

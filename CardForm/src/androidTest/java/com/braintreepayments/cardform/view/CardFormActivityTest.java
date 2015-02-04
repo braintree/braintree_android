@@ -4,8 +4,15 @@ import com.braintreepayments.cardform.R;
 import com.braintreepayments.cardform.test.TestActivityTestCase;
 import com.braintreepayments.testutils.CardNumber;
 import com.braintreepayments.testutils.ui.Matchers;
-import com.google.android.apps.common.testing.ui.espresso.action.ViewActions;
 
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.clearText;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.hasFocus;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.braintreepayments.testutils.CardNumber.AMEX;
 import static com.braintreepayments.testutils.CardNumber.INVALID_AMEX;
 import static com.braintreepayments.testutils.CardNumber.INVALID_VISA;
@@ -17,15 +24,45 @@ import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.RotationHelper.rotateToLandscape;
 import static com.braintreepayments.testutils.ui.RotationHelper.rotateToPortrait;
 import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
-import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
-import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.clearText;
-import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
-import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.typeText;
-import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
-import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.hasFocus;
-import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.not;
 
 public class CardFormActivityTest extends TestActivityTestCase {
+
+    public void testCardNumberIsShownIfRequired() {
+        setupCardForm(true, false, false, false);
+
+        onView(withId(R.id.bt_card_form_card_number)).check(matches(isDisplayed()));
+        onView(withId(R.id.bt_card_form_expiration)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bt_card_form_cvv)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bt_card_form_postal_code)).check(matches(not(isDisplayed())));
+    }
+
+    public void testExpirationIsShownIfRequired() {
+        setupCardForm(false, true, false, false);
+
+        onView(withId(R.id.bt_card_form_card_number)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bt_card_form_expiration)).check(matches(isDisplayed()));
+        onView(withId(R.id.bt_card_form_cvv)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bt_card_form_postal_code)).check(matches(not(isDisplayed())));
+    }
+
+    public void testCvvIsShownIfRequired() {
+        setupCardForm(false, false, true, false);
+
+        onView(withId(R.id.bt_card_form_card_number)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bt_card_form_expiration)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bt_card_form_cvv)).check(matches(isDisplayed()));
+        onView(withId(R.id.bt_card_form_postal_code)).check(matches(not(isDisplayed())));
+    }
+
+    public void testPostalCodeIsShownIfRequired() {
+        setupCardForm(false, false, false, true);
+
+        onView(withId(R.id.bt_card_form_card_number)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bt_card_form_expiration)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bt_card_form_cvv)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bt_card_form_postal_code)).check(matches(isDisplayed()));
+    }
 
     public void testCorrectCardHintsAreDisplayed() {
         setupCardForm();
@@ -181,7 +218,7 @@ public class CardFormActivityTest extends TestActivityTestCase {
         setupCardForm();
 
         onView(withId(R.id.bt_card_form_cvv)).perform(typeText("111"), closeSoftKeyboard());
-        onView(Matchers.withId(R.id.bt_card_form_card_number)).perform(ViewActions.click());
+        onView(Matchers.withId(R.id.bt_card_form_card_number)).perform(click());
         ErrorEditText cvvEditText = (ErrorEditText) mActivity.findViewById(R.id.bt_card_form_cvv);
         assertFalse(cvvEditText.isFocused());
         assertFalse(cvvEditText.isError());
@@ -211,5 +248,4 @@ public class CardFormActivityTest extends TestActivityTestCase {
         setupCardForm();
         onView(withId(R.id.bt_card_form_card_number)).perform(click(), typeText(VISA));
     }
-
 }

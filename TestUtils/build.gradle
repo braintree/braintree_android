@@ -18,13 +18,17 @@ android {
     packagingOptions {
         exclude 'LICENSE.txt'
     }
+
+    lintOptions {
+        disable 'InvalidPackage'
+    }
 }
 
 dependencies {
     compile 'org.mockito:mockito-core:1.9.5'
     compile 'com.google.dexmaker:dexmaker:1.1'
     compile 'com.google.dexmaker:dexmaker-mockito:1.1'
-    compile 'com.jakewharton.espresso:espresso:1.1-r3'
+    compile 'com.android.support.test.espresso:espresso-core:2.0'
 }
 
 android.buildTypes.each { type ->

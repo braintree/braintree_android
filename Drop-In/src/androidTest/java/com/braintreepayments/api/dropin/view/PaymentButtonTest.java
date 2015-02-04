@@ -20,12 +20,10 @@ import static org.mockito.Mockito.when;
 public class PaymentButtonTest extends AndroidTestCase {
 
     private Braintree mBraintree;
-    private Activity mActivity;
 
     @Override
     public void setUp() {
         mBraintree = mock(Braintree.class);
-        mActivity = new Activity();
     }
 
     public void testNotInflatedByDefault() {
@@ -38,7 +36,7 @@ public class PaymentButtonTest extends AndroidTestCase {
         when(mBraintree.isVenmoEnabled()).thenReturn(false);
         PaymentButton button = new PaymentButton(getContext());
 
-        button.initialize(mActivity, mBraintree);
+        button.initialize(null, mBraintree);
         assertEquals(View.GONE, button.getVisibility());
     }
 
@@ -47,7 +45,7 @@ public class PaymentButtonTest extends AndroidTestCase {
         when(mBraintree.isVenmoEnabled()).thenReturn(false);
         PaymentButton button = new PaymentButton(getContext());
 
-        button.initialize(mActivity, mBraintree);
+        button.initialize(null, mBraintree);
         assertEquals(View.VISIBLE, button.getVisibility());
         assertEquals(View.VISIBLE, button.findViewById(R.id.bt_paypal_button).getVisibility());
         assertEquals(View.GONE, button.findViewById(R.id.bt_venmo_button).getVisibility());
@@ -59,7 +57,7 @@ public class PaymentButtonTest extends AndroidTestCase {
         when(mBraintree.isVenmoEnabled()).thenReturn(true);
         PaymentButton button = new PaymentButton(getContext());
 
-        button.initialize(mActivity, mBraintree);
+        button.initialize(null, mBraintree);
         assertEquals(View.VISIBLE, button.getVisibility());
         assertEquals(View.VISIBLE, button.findViewById(R.id.bt_venmo_button).getVisibility());
         assertEquals(View.GONE, button.findViewById(R.id.bt_paypal_button).getVisibility());
@@ -71,7 +69,7 @@ public class PaymentButtonTest extends AndroidTestCase {
         when(mBraintree.isVenmoEnabled()).thenReturn(true);
         PaymentButton button = new PaymentButton(getContext());
 
-        button.initialize(mActivity, mBraintree);
+        button.initialize(null, mBraintree);
         assertEquals(View.VISIBLE, button.getVisibility());
         assertEquals(View.VISIBLE, button.findViewById(R.id.bt_venmo_button).getVisibility());
         assertEquals(View.VISIBLE, button.findViewById(R.id.bt_paypal_button).getVisibility());
@@ -83,9 +81,9 @@ public class PaymentButtonTest extends AndroidTestCase {
         when(mBraintree.isVenmoEnabled()).thenReturn(true);
         PaymentButton button = new PaymentButton(getContext());
 
-        button.initialize(mActivity, mBraintree);
+        button.initialize(null, mBraintree);
         button.findViewById(R.id.bt_paypal_button).performClick();
-        verify(mBraintree).startPayWithPayPal(mActivity, PaymentButton.REQUEST_CODE);
+        verify(mBraintree).startPayWithPayPal(null, PaymentButton.REQUEST_CODE);
     }
 
     public void testStartsPayWithVenmo() {
@@ -93,9 +91,9 @@ public class PaymentButtonTest extends AndroidTestCase {
         when(mBraintree.isVenmoEnabled()).thenReturn(true);
         PaymentButton button = new PaymentButton(getContext());
 
-        button.initialize(mActivity, mBraintree);
+        button.initialize(null, mBraintree);
         button.findViewById(R.id.bt_venmo_button).performClick();
-        verify(mBraintree).startPayWithVenmo(mActivity, PaymentButton.REQUEST_CODE);
+        verify(mBraintree).startPayWithVenmo(null, PaymentButton.REQUEST_CODE);
     }
 
     public void testDoesNotLaunchFinishMethodsOnNonOkResponses() {
@@ -119,7 +117,7 @@ public class PaymentButtonTest extends AndroidTestCase {
     public void testAllowsRequestCodeOverride() {
         PaymentButton button = new PaymentButton(getContext());
 
-        button.initialize(mActivity, mBraintree, 500);
+        button.initialize(null, mBraintree, 500);
         button.onActivityResult(500, Activity.RESULT_OK, new Intent());
         verify(mBraintree, never()).finishPayWithPayPal(any(Activity.class), any(Integer.class),
                 any(Intent.class));
@@ -128,18 +126,18 @@ public class PaymentButtonTest extends AndroidTestCase {
 
     public void testFinishesPayPalOnPayPalIntent() {
         PaymentButton button = new PaymentButton(getContext());
-        button.initialize(mActivity, mBraintree);
+        button.initialize(null, mBraintree);
 
         Intent intent = new Intent()
                 .putExtra(PayPalTouchActivity.EXTRA_LOGIN_CONFIRMATION, newParcelable());
         button.onActivityResult(PaymentButton.REQUEST_CODE, Activity.RESULT_OK, intent);
-        verify(mBraintree).finishPayWithPayPal(mActivity, Activity.RESULT_OK, intent);
+        verify(mBraintree).finishPayWithPayPal(null, Activity.RESULT_OK, intent);
         verify(mBraintree, never()).finishPayWithVenmo(any(Integer.class), any(Intent.class));
     }
 
     public void testFinishesVenmo() {
         PaymentButton button = new PaymentButton(getContext());
-        button.initialize(mActivity, mBraintree);
+        button.initialize(null, mBraintree);
 
         Intent intent = new Intent();
         button.onActivityResult(PaymentButton.REQUEST_CODE, Activity.RESULT_OK, intent);

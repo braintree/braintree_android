@@ -3,12 +3,12 @@ package com.braintreepayments.api.dropin;
 import com.braintreepayments.api.BraintreeTestUtils;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
-import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
-import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
-import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDisplayed;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.CoreMatchers.not;
 
 public class AddPaymentMethodFormTest extends BraintreePaymentActivityTestCase {
 

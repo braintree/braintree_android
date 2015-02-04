@@ -1,18 +1,17 @@
 package com.braintreepayments.testutils.ui;
 
+import android.support.test.espresso.UiController;
+import android.support.test.espresso.ViewAction;
+import android.support.test.espresso.ViewInteraction;
+import android.support.test.espresso.action.CloseKeyboardAction;
 import android.view.View;
-
-import com.google.android.apps.common.testing.ui.espresso.UiController;
-import com.google.android.apps.common.testing.ui.espresso.ViewAction;
-import com.google.android.apps.common.testing.ui.espresso.ViewInteraction;
-import com.google.android.apps.common.testing.ui.espresso.action.CloseKeyboardAction;
 
 import org.hamcrest.Matcher;
 
-import static com.google.android.apps.common.testing.testrunner.util.Checks.checkNotNull;
-import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
-import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
-import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.internal.util.Checks.checkNotNull;
 
 /* http://stackoverflow.com/a/22563297 */
 public class ViewHelper {

@@ -4,6 +4,8 @@ import android.app.Instrumentation;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.os.SystemClock;
+import android.support.test.espresso.FailureHandler;
+import android.support.test.espresso.base.DefaultFailureHandler;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
 import android.view.View;
@@ -12,12 +14,10 @@ import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.SignatureVerification;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.testutils.ui.ViewHelper;
-import com.google.android.apps.common.testing.ui.espresso.FailureHandler;
-import com.google.android.apps.common.testing.ui.espresso.base.DefaultFailureHandler;
 
 import org.hamcrest.Matcher;
 
-import static com.google.android.apps.common.testing.ui.espresso.Espresso.setFailureHandler;
+import static android.support.test.espresso.Espresso.setFailureHandler;
 
 public class BraintreePaymentActivityTestCase extends
         ActivityInstrumentationTestCase2<BraintreePaymentActivity> {
