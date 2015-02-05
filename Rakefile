@@ -65,7 +65,7 @@ task :release => :lint do
 
   replace_string(braintree_api_build_file, "compile 'com.braintreepayments.api:data:#{version}'", "compile project(':BraintreeData')")
   replace_string(braintree_drop_in_build_file, "compile 'com.braintreepayments.api:braintree-api:#{version}'", "compile project(':BraintreeApi')")
-  replace_string(braintree_drop_in_build_file, "compile 'com.braintreepayments.card-form:#{version}'", "compile project(':CardForm')")
+  replace_string(braintree_drop_in_build_file, "compile 'com.braintreepayments:card-form:#{version}'", "compile project(':CardForm')")
   sh "git commit -am 'Prepare for development'"
 
   puts "Done. Commits and tags have been created. If everything appears to be in order, hit ENTER to push."
