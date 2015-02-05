@@ -92,8 +92,9 @@ wait_for_emulator() {
   echo "Emulator ready, starting tests"
 }
 
-# Build twice, the first build will resolve dependencies via sdk-manager-plugin and then fail
+# Build three times, the first two builds will resolve dependencies via sdk-manager-plugin and then fail
 # https://github.com/JakeWharton/sdk-manager-plugin/issues/10
+$android_path/gradlew --info --no-color clean assembleDebug
 $android_path/gradlew --info --no-color clean assembleDebug
 $android_path/gradlew --info --no-color clean lint
 lint_return_code=$?
