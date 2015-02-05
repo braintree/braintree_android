@@ -20,6 +20,8 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -85,13 +87,13 @@ public class Braintree {
      */
     private final Handler mListenerHandler = new Handler(Looper.getMainLooper());
 
-    private final List<ListenerCallback> mCallbackQueue = Utils.newLinkedList();
+    private final List<ListenerCallback> mCallbackQueue = new LinkedList<ListenerCallback>();
     private boolean mListenersLocked = false;
 
-    private final Set<PaymentMethodsUpdatedListener> mUpdatedListeners = Utils.newHashSet();
-    private final Set<PaymentMethodCreatedListener> mCreatedListeners = Utils.newHashSet();
-    private final Set<PaymentMethodNonceListener> mNonceListeners = Utils.newHashSet();
-    private final Set<ErrorListener> mErrorListeners = Utils.newHashSet();
+    private final Set<PaymentMethodsUpdatedListener> mUpdatedListeners = new HashSet<PaymentMethodsUpdatedListener>();
+    private final Set<PaymentMethodCreatedListener> mCreatedListeners = new HashSet<PaymentMethodCreatedListener>();
+    private final Set<PaymentMethodNonceListener> mNonceListeners = new HashSet<PaymentMethodNonceListener>();
+    private final Set<ErrorListener> mErrorListeners = new HashSet<ErrorListener>();
 
     private List<PaymentMethod> mCachedPaymentMethods;
 
