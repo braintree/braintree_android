@@ -66,7 +66,7 @@ start_adb() {
 
 start_emulator() {
   echo "Creating emulator"
-  echo no | $ANDROID_HOME/tools/android create avd --force -n braintree-android -t android-19 --abi armeabi-v7a --skin WXGA720
+  echo no | $ANDROID_HOME/tools/android create avd --force -n braintree-android -t android-21 --abi armeabi-v7a --skin WXGA720
   echo "hw.keyboard=yes" >> ~/.android/avd/braintree-android.avd/config.ini
   echo "Starting emulator"
   $ANDROID_HOME/tools/emulator -avd braintree-android -no-boot-anim -wipe-data -no-audio -no-window &
