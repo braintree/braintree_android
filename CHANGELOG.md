@@ -1,5 +1,14 @@
 # Braintree Android SDK Release Notes
 
+## 1.3.0
+
+* Remove Drop-In support for Eclipse
+* Open source [card form](CardForm) separate from Drop-In
+* Update PayPal SDK to 2.8.5
+  * card.io is no longer included in the SDK
+* Update Espresso to 2.0
+* Remove unused PayPal `PROFILE` scope
+
 ## 1.2.7
 
 * Update gradle plugin to 0.14.1
