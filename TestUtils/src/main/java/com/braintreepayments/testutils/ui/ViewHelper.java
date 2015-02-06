@@ -40,8 +40,8 @@ public class ViewHelper {
 
                 ViewHelper.sWaitingForView = false;
                 return interaction;
-            } catch (Exception e) {
-            } catch (Error e) {
+            } catch (Exception ignored) {
+            } catch (Error ignored) {
             }
         } while (System.currentTimeMillis() < endTime);
 
