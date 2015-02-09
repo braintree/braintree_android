@@ -360,7 +360,7 @@ import java.io.UnsupportedEncodingException;
         "W/POuZ6lcg5Ktz885hZo+L7tdEy8W9ViH0Pd\n" +
         "-----END CERTIFICATE-----\n";
 
-    public static InputStream getCertInputStream() {
+    protected static InputStream getCertInputStream() {
         try {
             return new ByteArrayInputStream(CERTIFICATE.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {
