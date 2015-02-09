@@ -3,8 +3,8 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.braintreepayments.api.Utils;
 import com.braintreepayments.api.annotations.Beta;
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -88,7 +88,7 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
      * @return {@link com.braintreepayments.api.models.Card} for use in payment method selection UIs.
      */
     public static Card fromJson(String creditCard) {
-        return Utils.getGson().fromJson(creditCard, Card.class);
+        return new Gson().fromJson(creditCard, Card.class);
     }
 
     @Override

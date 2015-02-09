@@ -2,8 +2,8 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcelable;
 
-import com.braintreepayments.api.Utils;
 import com.braintreepayments.api.exceptions.ServerException;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -94,9 +94,11 @@ public abstract class PaymentMethod implements Parcelable, Serializable {
                 paymentMethod = paymentMethods.getJSONObject(i);
                 String type = paymentMethod.getString(PAYMENT_METHOD_TYPE_KEY);
                 if (type.equals(Card.PAYMENT_METHOD_TYPE)) {
-                    paymentMethodsList.add(Utils.getGson().fromJson(paymentMethod.toString(), Card.class));
+                    paymentMethodsList.add(
+                            new Gson().fromJson(paymentMethod.toString(), Card.class));
                 } else if (type.equals(PayPalAccount.PAYMENT_METHOD_TYPE)) {
-                    paymentMethodsList.add(Utils.getGson().fromJson(paymentMethod.toString(), PayPalAccount.class));
+                    paymentMethodsList.add(
+                            new Gson().fromJson(paymentMethod.toString(), PayPalAccount.class));
                 }
             }
 

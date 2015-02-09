@@ -1,7 +1,7 @@
 package com.braintreepayments.api.models;
 
-import com.braintreepayments.api.Utils;
 import com.braintreepayments.api.models.PaymentMethod.Builder;
+import com.google.gson.Gson;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -92,7 +92,7 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
 
     @Override
     public String toJsonString() {
-        return Utils.getGson().toJson(toJson());
+        return new Gson().toJson(toJson());
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.braintreepayments.api.exceptions;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.braintreepayments.api.Utils;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public final class ErrorWithResponse extends Exception {
     private final List<BraintreeError> fieldErrors;
 
     public ErrorWithResponse(int statusCode, String jsonString) {
-        this(statusCode, Utils.getGson().fromJson(jsonString, BraintreeErrors.class));
+        this(statusCode, new Gson().fromJson(jsonString, BraintreeErrors.class));
     }
 
     public ErrorWithResponse(int statusCode, BraintreeErrors errors) {

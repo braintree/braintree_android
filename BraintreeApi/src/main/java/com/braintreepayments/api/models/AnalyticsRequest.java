@@ -12,7 +12,7 @@ import android.os.Build.VERSION;
 import android.provider.Settings.Secure;
 
 import com.braintreepayments.api.BuildConfig;
-import com.braintreepayments.api.Utils;
+import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,7 +30,7 @@ public class AnalyticsRequest {
     }
 
     public String toJson() {
-        return Utils.getGson().toJson(this);
+        return new Gson().toJson(this);
     }
 
     private class Analytics {

@@ -3,8 +3,8 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.braintreepayments.api.Utils;
 import com.braintreepayments.api.annotations.Beta;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,12 +34,14 @@ public class ThreeDSecureLookup implements Parcelable {
     public static ThreeDSecureLookup fromJson(String jsonString) throws JSONException {
         JSONObject json = new JSONObject(jsonString);
 
-        Card card = Utils.getGson().fromJson(json.getJSONObject("paymentMethod").toString(), Card.class);
-        card.setThreeDSecureInfo(Utils.getGson().fromJson(
-                json.getJSONObject("threeDSecureInfo").toString(), ThreeDSecureInfo.class));
+        Gson gson = new Gson();
 
-        ThreeDSecureLookup lookup = Utils.getGson().fromJson(
-                json.getJSONObject("lookup").toString(), ThreeDSecureLookup.class);
+        Card card = gson.fromJson(json.getJSONObject("paymentMethod").toString(), Card.class);
+        card.setThreeDSecureInfo(gson.fromJson(json.getJSONObject("threeDSecureInfo").toString(),
+                ThreeDSecureInfo.class));
+
+        ThreeDSecureLookup lookup = gson.fromJson(json.getJSONObject("lookup").toString(),
+                ThreeDSecureLookup.class);
         lookup.card = card;
 
         return lookup;

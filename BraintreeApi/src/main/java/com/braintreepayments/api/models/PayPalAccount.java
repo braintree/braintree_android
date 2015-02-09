@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.braintreepayments.api.Utils;
+import com.google.gson.Gson;
 
 import java.io.Serializable;
 
@@ -74,7 +74,7 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
      * @return {@link com.braintreepayments.api.models.PayPalAccount} for use in payment method selection UIs.
      */
     public static PayPalAccount fromJson(String json) {
-        return Utils.getGson().fromJson(json, PayPalAccount.class);
+        return new Gson().fromJson(json, PayPalAccount.class);
     }
 
     @Override
