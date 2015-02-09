@@ -5,10 +5,10 @@ import android.content.Intent;
 import android.test.AndroidTestCase;
 
 import com.braintreepayments.api.PayPalHelper;
-import com.braintreepayments.api.Utils;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
+import com.google.gson.Gson;
 
 public class PayPalHelperTest extends AndroidTestCase {
 
@@ -19,7 +19,7 @@ public class PayPalHelperTest extends AndroidTestCase {
 
         PayPalAccountBuilder accountBuilder = PayPalHelper.getBuilderFromActivity(null,
                 Activity.RESULT_OK, successfulPaypal);
-        String json = Utils.getGson().toJson(accountBuilder.build());
+        String json = new Gson().toJson(accountBuilder.build());
         assertTrue(json.contains("fake_paypal_authorization_code"));
     }
 

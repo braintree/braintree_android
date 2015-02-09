@@ -3,10 +3,10 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.braintreepayments.api.Utils;
 import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.exceptions.ErrorWithResponse.BraintreeError;
 import com.braintreepayments.api.exceptions.ErrorWithResponse.BraintreeErrors;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,22 +33,21 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
      */
     public static ThreeDSecureAuthenticationResponse fromJson(String jsonString) {
         ThreeDSecureAuthenticationResponse authenticationResponse = new ThreeDSecureAuthenticationResponse();
+        Gson gson = new Gson();
 
         try {
             JSONObject json = new JSONObject(jsonString);
 
-            Card card = Utils.getGson()
-                    .fromJson(json.getJSONObject("paymentMethod").toString(), Card.class);
-            card.setThreeDSecureInfo(Utils.getGson().fromJson(
-                    json.getJSONObject("threeDSecureInfo").toString(), ThreeDSecureInfo.class));
+            Card card = gson.fromJson(json.getJSONObject("paymentMethod").toString(), Card.class);
+            card.setThreeDSecureInfo(gson.fromJson(json.getJSONObject("threeDSecureInfo").toString(),
+                    ThreeDSecureInfo.class));
 
             authenticationResponse.card = card;
             authenticationResponse.success = json.getBoolean("success");
         } catch (JSONException e) {
             authenticationResponse.success = false;
         }
-        authenticationResponse.errors =
-                Utils.getGson().fromJson(jsonString, BraintreeErrors.class);
+        authenticationResponse.errors = gson.fromJson(jsonString, BraintreeErrors.class);
 
         return authenticationResponse;
     }

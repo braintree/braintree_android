@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 
 import com.braintreepayments.api.annotations.Beta;
+import com.google.gson.Gson;
 
 import java.util.regex.Pattern;
 
@@ -26,7 +27,7 @@ import java.util.regex.Pattern;
             clientToken = new String(Base64.decode(clientToken, Base64.DEFAULT));
         }
 
-        return Utils.getGson().fromJson(clientToken, ClientToken.class);
+        return new Gson().fromJson(clientToken, ClientToken.class);
     }
 
     protected String getClientApiUrl() {
