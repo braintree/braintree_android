@@ -61,7 +61,7 @@ public class AnalyticsRequest {
         private String integrationType;
         private String userInterfaceOrientation;
 
-        Meta(Context context, String integrationType) {
+        protected Meta(Context context, String integrationType) {
             ApplicationInfo applicationInfo;
             String packageName = context.getPackageName();
             PackageManager packageManager = context.getPackageManager();
