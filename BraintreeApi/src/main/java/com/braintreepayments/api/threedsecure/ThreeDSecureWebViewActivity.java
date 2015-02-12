@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.widget.FrameLayout;
 
+import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 
@@ -25,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
+@Beta
 public class ThreeDSecureWebViewActivity extends Activity {
 
     public static final String EXTRA_THREE_D_SECURE_LOOKUP = "com.braintreepayments.api.EXTRA_THREE_D_SECURE_LOOKUP";

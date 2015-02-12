@@ -9,8 +9,10 @@ import android.util.AttributeSet;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.internal.HttpRequest;
 
+@Beta
 @SuppressLint("SetJavaScriptEnabled")
 public class ThreeDSecureWebView extends WebView {
 

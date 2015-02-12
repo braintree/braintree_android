@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 
+import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.data.BraintreeEnvironment;
 import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.exceptions.BraintreeException;
@@ -164,6 +165,7 @@ public class Braintree {
     /**
      * @return If 3D Secure is supported and enabled for the current merchant account
      */
+    @Beta
     public boolean isThreeDSecureEnabled() {
         return mBraintreeApi.isThreeDSecureEnabled();
     }
@@ -450,6 +452,7 @@ public class Braintree {
      *                    the 3D Secure verification if performed.
      * @param amount The amount of the transaction in the current merchant account's currency
      */
+    @Beta
     public synchronized void startThreeDSecureVerification(final Activity activity,
             final int requestCode, final CardBuilder cardBuilder, final String amount) {
         mExecutorService.submit(new Runnable() {
@@ -493,6 +496,7 @@ public class Braintree {
      * @param nonce The nonce that represents a card to perform a 3D Secure verification against
      * @param amount The amount of the transaction in the current merchant account's currency
      */
+    @Beta
     public synchronized void startThreeDSecureVerification(final Activity activity,
             final int requestCode, final String nonce, final String amount) {
         mExecutorService.submit(new Runnable() {
@@ -538,6 +542,7 @@ public class Braintree {
      *
      * @see #startThreeDSecureVerification(android.app.Activity, int, String, String)
      */
+    @Beta
     public synchronized void finishThreeDSecureVerification(int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             ThreeDSecureAuthenticationResponse authenticationResponse =

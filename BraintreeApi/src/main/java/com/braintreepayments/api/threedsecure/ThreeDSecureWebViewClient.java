@@ -7,8 +7,10 @@ import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 
+@Beta
 public class ThreeDSecureWebViewClient extends WebViewClient {
 
     private ThreeDSecureWebViewActivity mActivity;

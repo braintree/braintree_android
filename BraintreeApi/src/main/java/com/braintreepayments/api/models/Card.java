@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.braintreepayments.api.Utils;
+import com.braintreepayments.api.annotations.Beta;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -47,6 +48,7 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
      * @return The 3D Secure info for the current {@link com.braintreepayments.api.models.Card} or
      * {@code null}
      */
+    @Beta
     public ThreeDSecureInfo getThreeDSecureInfo() {
         return threeDSecureInfo;
     }
@@ -55,6 +57,7 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
         this.billingAddress = billingAddress;
     }
 
+    @Beta
     protected void setThreeDSecureInfo(ThreeDSecureInfo threeDSecureInfo) {
         this.threeDSecureInfo = threeDSecureInfo;
     }

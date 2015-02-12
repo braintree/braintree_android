@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.braintreepayments.api.Utils;
+import com.braintreepayments.api.annotations.Beta;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,6 +12,7 @@ import org.json.JSONObject;
 /**
  * Class to parse and contain 3D Secure lookup params
  */
+@Beta
 public class ThreeDSecureLookup implements Parcelable {
 
     private Card card;

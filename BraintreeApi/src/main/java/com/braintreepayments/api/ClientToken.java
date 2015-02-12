@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import android.text.TextUtils;
 import android.util.Base64;
 
+import com.braintreepayments.api.annotations.Beta;
+
 import java.util.regex.Pattern;
 
 /* package */ class ClientToken {
@@ -59,6 +61,7 @@ import java.util.regex.Pattern;
         }
     }
 
+    @Beta
     protected boolean isThreeDSecureEnabled() {
         return threeDSecureEnabled;
     }

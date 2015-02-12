@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.data.BraintreeData;
 import com.braintreepayments.api.data.BraintreeEnvironment;
 import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
@@ -87,6 +88,7 @@ public class BraintreeApi {
     /**
      * @return If 3D Secure is supported and enabled for the current merchant account
      */
+    @Beta
     public boolean isThreeDSecureEnabled() {
         return mClientToken.isThreeDSecureEnabled();
     }
@@ -279,6 +281,7 @@ public class BraintreeApi {
      * @throws BraintreeException If the request to the Braintree Gateway fails
      * @throws ErrorWithResponse If there is an error with the request
      */
+    @Beta
     public ThreeDSecureLookup threeDSecureLookup(String nonce, String amount)
             throws JSONException, BraintreeException, ErrorWithResponse {
         JSONObject params = new JSONObject()

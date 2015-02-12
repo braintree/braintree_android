@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.braintreepayments.api.Utils;
+import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.exceptions.ErrorWithResponse.BraintreeError;
 import com.braintreepayments.api.exceptions.ErrorWithResponse.BraintreeErrors;
 
@@ -13,6 +14,7 @@ import org.json.JSONObject;
 /**
  * Class to parse and contain 3D Secure authentication responses
  */
+@Beta
 public class ThreeDSecureAuthenticationResponse implements Parcelable {
 
     private Card card;
