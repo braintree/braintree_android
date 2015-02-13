@@ -1,0 +1,18 @@
+apply plugin: 'java'
+
+jar {
+    manifest {
+        attributes 'Lint-Registry': 'com.braintreepayments.lint.LintIssueRegistry'
+    }
+}
+
+configurations {
+    lintChecks
+}
+
+dependencies {
+    compile 'com.android.tools.lint:lint-api:23.2.2'
+
+    lintChecks files(jar)
+}
+

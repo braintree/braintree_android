@@ -21,12 +21,33 @@ android {
     }
 }
 
+configurations {
+    lintChecks
+}
+
 dependencies {
     compile 'com.google.code.gson:gson:[2.2.4,3.0)'
     compile project(':BraintreeData')
     compile files('libs/' + paypalVersion)
 
+    lintChecks project(path: ":Lint", configuration: "lintChecks")
+
     androidTestCompile project(':TestUtils')
+}
+
+task copyLintJar(type: Copy) {
+    from (configurations.lintChecks) {
+        rename {
+            String fileName ->
+                'lint.jar'
+        }
+    }
+    into 'build/intermediates/lint/'
+}
+
+project.afterEvaluate {
+    def compileLintTask = project.tasks.find { it.name == 'compileLint' }
+    compileLintTask.dependsOn(copyLintJar)
 }
 
 task runAllTests {

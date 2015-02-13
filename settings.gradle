@@ -4,5 +4,6 @@ include ':CardForm'
 include ':Drop-In'
 
 include ':TestUtils'
+include ':Lint'
 include ':Demo'
 include ':FakeWallet'
