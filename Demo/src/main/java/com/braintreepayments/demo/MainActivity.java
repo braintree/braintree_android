@@ -109,7 +109,7 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
         getClientToken();
     }
 
-    @SuppressWarnings({"ConstantConditions", "deprecation"})
+    @SuppressWarnings("deprecation")
     private void getClientToken() {
         mHttpClient.get(Settings.getClientTokenUrl(this), new AsyncHttpResponseHandler() {
             @Override
