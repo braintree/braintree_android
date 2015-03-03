@@ -23,6 +23,7 @@ import java.util.Map;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
@@ -52,7 +53,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
         Activity activity = startThreeDSecureTestActivity("4000000000000002");
 
         waitForView(withId(android.R.id.widget_frame));
-        onView(withId(android.R.id.home)).perform(click());
+        onView(withContentDescription("Navigate up")).perform(click());
 
         waitForActivityToFinish(activity);
         Map<String, Object> result = getActivityResult(activity);

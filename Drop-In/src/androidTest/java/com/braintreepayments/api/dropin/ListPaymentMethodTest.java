@@ -33,6 +33,7 @@ import static android.support.test.espresso.assertion.ViewAssertions.doesNotExis
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.hasSibling;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.braintreepayments.api.BraintreeTestUtils.assertSelectedPaymentMethodIs;
 import static com.braintreepayments.api.BraintreeTestUtils.injectSlowBraintree;
@@ -315,7 +316,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withId(R.id.bt_change_payment_method_link)).perform(click());
 
         onAddPaymentFormHeader().check(matches(isDisplayed()));
-        onView(withId(android.R.id.home)).perform(click());
+        onView(withContentDescription("Navigate up")).perform(click());
 
         onView(withId(R.id.bt_change_payment_method_link)).check(matches(isDisplayed()));
         assertFalse("Expected up not to be set on action bar",
