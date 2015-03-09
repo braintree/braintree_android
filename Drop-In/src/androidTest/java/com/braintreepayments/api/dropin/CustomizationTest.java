@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.widget.ImageView;
 
@@ -136,11 +137,12 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
 
         assertEquals("This is a title", activity.getActionBar().getTitle());
 
-        ImageView actual = (ImageView) activity.findViewById(android.R.id.home);
-
-        assertBitmapsEqual(actual.getDrawable(),
-                mContext.getResources().getDrawable(android.R.drawable.ic_delete)
-        );
+        if (VERSION.SDK_INT < VERSION_CODES.LOLLIPOP) {
+            ImageView actual = (ImageView) activity.findViewById(android.R.id.home);
+            assertBitmapsEqual(actual.getDrawable(),
+                    mContext.getResources().getDrawable(android.R.drawable.ic_delete)
+            );
+        }
     }
 
     @TargetApi(VERSION_CODES.HONEYCOMB)
@@ -155,10 +157,13 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         Activity activity = getActivity();
 
         assertEquals("Purchase", activity.getActionBar().getTitle());
-        ImageView actual = (ImageView) activity.findViewById(android.R.id.home);
-        ColorDrawable expected = new ColorDrawable(mContext.getResources().getColor(
-                android.R.color.transparent));
-        assertEquals(actual.getDrawable().getOpacity(), expected.getOpacity());
+
+        if (VERSION.SDK_INT < VERSION_CODES.LOLLIPOP) {
+            ImageView actual = (ImageView) activity.findViewById(android.R.id.home);
+            ColorDrawable expected = new ColorDrawable(mContext.getResources().getColor(
+                    android.R.color.transparent));
+            assertEquals(actual.getDrawable().getOpacity(), expected.getOpacity());
+        }
     }
 
     private Intent createIntent() {
