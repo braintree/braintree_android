@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.widget.ImageView;
 
@@ -139,7 +140,6 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
 
         if (VERSION.SDK_INT < VERSION_CODES.LOLLIPOP) {
             ImageView actual = (ImageView) activity.findViewById(android.R.id.home);
-
             assertBitmapsEqual(actual.getDrawable(),
                     mContext.getResources().getDrawable(android.R.drawable.ic_delete)
             );
@@ -158,7 +158,6 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         Activity activity = getActivity();
 
         assertEquals("Purchase", activity.getActionBar().getTitle());
-
 
         if (VERSION.SDK_INT < VERSION_CODES.LOLLIPOP) {
             ImageView actual = (ImageView) activity.findViewById(android.R.id.home);
