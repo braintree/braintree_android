@@ -2,12 +2,13 @@ package com.braintreepayments.api.models;
 
 import android.test.AndroidTestCase;
 
-import com.braintreepayments.testutils.FixturesHelper;
+import static com.braintreepayments.api.TestUtils.getConfigurationFromFixture;
 
 public class PayPalConfigurationTest extends AndroidTestCase {
 
-    public void testParsesPayPalConfigurationFromToken() {
-        Configuration configuration = getConfiguration("configuration_with_offline_paypal.json");
+    public void testParsesPayPalConfiguration() {
+        Configuration configuration = getConfigurationFromFixture(getContext(),
+                "configuration_with_offline_paypal.json");
 
         assertTrue(configuration.isPayPalEnabled());
 
@@ -22,25 +23,23 @@ public class PayPalConfigurationTest extends AndroidTestCase {
     }
 
     public void testReportsPayPalNotEnabledWhenFlagged() {
-        Configuration configuration = getConfiguration("configuration_with_disabled_paypal.json");
+        Configuration configuration = getConfigurationFromFixture(getContext(),
+                "configuration_with_disabled_paypal.json");
 
         assertFalse(configuration.isPayPalEnabled());
     }
 
     public void testReportsPayPalNotEnabledWhenConfigAbsent() {
-        Configuration configuration = getConfiguration("configuration_with_disabled_paypal.json");
+        Configuration configuration = getConfigurationFromFixture(getContext(),
+                "configuration_with_missing_paypal.json");
 
         assertFalse(configuration.isPayPalEnabled());
     }
 
     public void testExposesPayPalTouchKillSwitch() {
-        Configuration configuration = getConfiguration("configuration_with_paypal_touch_disabled.json");
+        Configuration configuration = getConfigurationFromFixture(getContext(),
+                "configuration_with_paypal_touch_disabled.json");
 
         assertTrue(configuration.getPayPal().getTouchDisabled());
-    }
-
-    /* helpers */
-    private Configuration getConfiguration(String fixture) {
-        return Configuration.fromJson(FixturesHelper.stringFromFixture(getContext(), fixture));
     }
 }
