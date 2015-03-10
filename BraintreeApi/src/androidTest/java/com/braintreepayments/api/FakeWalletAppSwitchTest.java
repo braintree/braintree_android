@@ -6,13 +6,15 @@ import android.os.SystemClock;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
+import com.braintreepayments.api.models.Configuration;
+
 public class FakeWalletAppSwitchTest extends AndroidTestCase {
 
     private FakeWalletAppSwitch mFakeWalletAppSwitch;
 
     @Override
     public void setUp(){
-        mFakeWalletAppSwitch = new FakeWalletAppSwitch(getContext(), new ClientToken());
+        mFakeWalletAppSwitch = new FakeWalletAppSwitch(getContext(), new Configuration());
     }
 
     public void testIsAvailableReturnsFalseWhenAppNotInstalled() {
@@ -44,8 +46,8 @@ public class FakeWalletAppSwitchTest extends AndroidTestCase {
     }
 
     private class FakeWalletAppSwitch extends AppSwitch {
-        public FakeWalletAppSwitch(Context context, ClientToken clientToken) {
-            super(context, clientToken);
+        public FakeWalletAppSwitch(Context context, Configuration configuration) {
+            super(context, configuration);
         }
 
         @Override
@@ -84,5 +86,4 @@ public class FakeWalletAppSwitchTest extends AndroidTestCase {
             return data.getStringExtra(AppSwitch.EXTRA_PAYMENT_METHOD_NONCE);
         }
     }
-
 }

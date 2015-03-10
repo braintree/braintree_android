@@ -3,23 +3,21 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Base64;
 
 import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.data.BraintreeData;
 import com.braintreepayments.api.data.BraintreeEnvironment;
 import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
-import com.braintreepayments.api.exceptions.AuthenticationException;
-import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
-import com.braintreepayments.api.exceptions.DownForMaintenanceException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.ServerException;
-import com.braintreepayments.api.exceptions.UnexpectedException;
-import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
 import com.braintreepayments.api.models.AnalyticsRequest;
+import com.braintreepayments.api.models.ClientToken;
+import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
@@ -29,14 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
-
-import static java.net.HttpURLConnection.HTTP_ACCEPTED;
-import static java.net.HttpURLConnection.HTTP_CREATED;
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
-import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
-import static java.net.HttpURLConnection.HTTP_OK;
-import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
-import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
+import java.util.regex.Pattern;
 
 /**
  * Synchronous communication with the Braintree gateway. Consumed by {@link Braintree}.
@@ -49,33 +40,87 @@ public class BraintreeApi {
     private static final String PAYMENT_METHOD_ENDPOINT = "payment_methods";
 
     private Context mContext;
-    private ClientToken mClientToken;
+    private Configuration mConfiguration;
     private HttpRequest mHttpRequest;
 
     private VenmoAppSwitch mVenmoAppSwitch;
     private BraintreeData mBraintreeData;
 
-    public BraintreeApi(Context context, String clientToken) {
-        this(context, ClientToken.getClientToken(clientToken));
+    /**
+     * @deprecated
+     *
+     * Initialize a BraintreeApi instance to communicate with Braintree.
+     *
+     * @param context
+     * @param clientToken A client token obtained from a Braintree server side SDK.
+     */
+    public BraintreeApi(Context context, String clientTokenString) {
+        Pattern pattern = Pattern.compile("([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)");
+        if (pattern.matcher(clientTokenString).matches()) {
+            clientTokenString = new String(Base64.decode(clientTokenString, Base64.DEFAULT));
+        }
+
+        ClientToken clientToken = ClientToken.fromString(clientTokenString);
+
+        mContext = context.getApplicationContext();
+        mConfiguration = Configuration.fromJson(clientTokenString);
+        mHttpRequest = new HttpRequest(clientToken.getClientApiUrl(),
+                clientToken.getAuthorizationFingerprint());
+
+        mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
+        mBraintreeData = null;
     }
 
-    protected BraintreeApi(Context context, ClientToken token) {
-        this(context, token, new HttpRequest(token.getAuthorizationFingerprint()));
+    protected BraintreeApi(Context context, ClientToken clientToken) {
+        mContext = context.getApplicationContext();
+        mHttpRequest = new HttpRequest(clientToken.getClientApiUrl(),
+                clientToken.getAuthorizationFingerprint());
+
+        mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
+        mBraintreeData = null;
     }
 
-    protected BraintreeApi(Context context, ClientToken token, HttpRequest requestor) {
-        mContext = context;
-        mClientToken = token;
+    protected BraintreeApi(Context context, HttpRequest requestor) {
+        mContext = context.getApplicationContext();
         mHttpRequest = requestor;
 
-        mVenmoAppSwitch = new VenmoAppSwitch(context, token);
+        mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
+        mBraintreeData = null;
+    }
+
+    protected BraintreeApi(Context context, ClientToken clientToken, Configuration configuration) {
+        this(context, configuration,
+                new HttpRequest(clientToken.getClientApiUrl(), clientToken.getAuthorizationFingerprint()));
+    }
+
+    protected BraintreeApi(Context context, Configuration configuration,
+            HttpRequest requestor) {
+        mContext = context.getApplicationContext();
+        mConfiguration = configuration;
+        mHttpRequest = requestor;
+
+        mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
+        mBraintreeData = null;
+    }
+
+    protected boolean isSetup() {
+        return mConfiguration != null;
+    }
+
+    protected void setup() throws ErrorWithResponse, BraintreeException {
+        mConfiguration = getConfiguration();
+    }
+
+    private Configuration getConfiguration() throws ErrorWithResponse, BraintreeException {
+        HttpResponse response = mHttpRequest.get(versionedPath("configuration"));
+        return Configuration.fromJson(response.getResponseBody());
     }
 
     /**
      * @return If PayPal is supported and enabled in the current environment.
      */
     public boolean isPayPalEnabled() {
-        return mClientToken.isPayPalEnabled();
+        return mConfiguration.isPayPalEnabled();
     }
 
     /**
@@ -90,21 +135,21 @@ public class BraintreeApi {
      */
     @Beta
     public boolean isThreeDSecureEnabled() {
-        return mClientToken.isThreeDSecureEnabled();
+        return mConfiguration.isThreeDSecureEnabled();
     }
 
     /**
      * @return If cvv is required to add a card
      */
     public boolean isCvvChallengePresent() {
-        return mClientToken.isCvvChallengePresent();
+        return mConfiguration.isCvvChallengePresent();
     }
 
     /**
      * @return If postal code is required to add a card
      */
     public boolean isPostalCodeChallengePresent() {
-        return mClientToken.isPostalCodeChallengePresent();
+        return mConfiguration.isPostalCodeChallengePresent();
     }
 
     /**
@@ -115,8 +160,8 @@ public class BraintreeApi {
      * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      */
     public void startPayWithPayPal(Activity activity, int requestCode) {
-        PayPalHelper.startPaypal(activity.getApplicationContext(), mClientToken);
-        PayPalHelper.launchPayPal(activity, requestCode, mClientToken);
+        PayPalHelper.startPaypal(activity.getApplicationContext(), mConfiguration.getPayPal());
+        PayPalHelper.launchPayPal(activity, requestCode, mConfiguration.getPayPal());
     }
 
     /**
@@ -224,10 +269,9 @@ public class BraintreeApi {
     public <T extends PaymentMethod> T create(PaymentMethod.Builder<T> paymentMethodBuilder)
             throws ErrorWithResponse, BraintreeException {
         HttpResponse response = mHttpRequest.post(
-                versionedUrl(PAYMENT_METHOD_ENDPOINT + "/" + paymentMethodBuilder.getApiPath()),
+                versionedPath(PAYMENT_METHOD_ENDPOINT + "/" + paymentMethodBuilder.getApiPath()),
                 paymentMethodBuilder.toJsonString());
 
-        checkAndThrowErrors(response);
         return paymentMethodBuilder.fromJson(jsonForType(response.getResponseBody(),
                 paymentMethodBuilder.getApiResource()));
     }
@@ -285,14 +329,12 @@ public class BraintreeApi {
     public ThreeDSecureLookup threeDSecureLookup(String nonce, String amount)
             throws JSONException, BraintreeException, ErrorWithResponse {
         JSONObject params = new JSONObject()
-                .put("merchantAccountId", mClientToken.getMerchantAccountId())
+                .put("merchantAccountId", mConfiguration.getMerchantAccountId())
                 .put("amount", amount);
 
         HttpResponse response = mHttpRequest.post(
-                versionedUrl(PAYMENT_METHOD_ENDPOINT + "/" + nonce + "/three_d_secure/lookup"),
+                versionedPath(PAYMENT_METHOD_ENDPOINT + "/" + nonce + "/three_d_secure/lookup"),
                 params.toString());
-
-        checkAndThrowErrors(response);
 
         return ThreeDSecureLookup.fromJson(response.getResponseBody());
     }
@@ -304,17 +346,15 @@ public class BraintreeApi {
      * @throws BraintreeException When a non-recoverable error (authentication, server error, network, etc.) occurs.
      */
     public List<PaymentMethod> getPaymentMethods() throws ErrorWithResponse, BraintreeException {
-        HttpResponse response = mHttpRequest.get(versionedUrl(PAYMENT_METHOD_ENDPOINT));
-
-        checkAndThrowErrors(response);
+        HttpResponse response = mHttpRequest.get(versionedPath(PAYMENT_METHOD_ENDPOINT));
         return PaymentMethod.parsePaymentMethods(response.getResponseBody());
     }
 
     protected PaymentMethod getPaymentMethod(String nonce)
             throws ErrorWithResponse, BraintreeException, JSONException {
-        HttpResponse response = mHttpRequest.get(versionedUrl(PAYMENT_METHOD_ENDPOINT + "/" + nonce));
+        HttpResponse response = mHttpRequest.get(versionedPath(
+                PAYMENT_METHOD_ENDPOINT + "/" + nonce));
 
-        checkAndThrowErrors(response);
         List<PaymentMethod> paymentMethodsList = PaymentMethod.parsePaymentMethods(response.getResponseBody());
         if (paymentMethodsList.size() == 1) {
             return paymentMethodsList.get(0);
@@ -332,12 +372,14 @@ public class BraintreeApi {
      * using {@link Braintree} or {@link BraintreeApi} without Drop-In
      */
     public void sendAnalyticsEvent(String event, String integrationType) {
-        if (mClientToken.isAnalyticsEnabled()) {
+        if (mConfiguration.isAnalyticsEnabled()) {
             AnalyticsRequest analyticsRequest = new AnalyticsRequest(mContext, event, integrationType);
 
             try {
-                mHttpRequest.post(mClientToken.getAnalytics().getUrl(), analyticsRequest.toJson());
-            } catch (UnexpectedException e) {
+                mHttpRequest.post(mConfiguration.getAnalytics().getUrl(), analyticsRequest.toJson());
+            } catch (BraintreeException ignored) {
+                // Analytics failures should not interrupt normal application activity
+            } catch (ErrorWithResponse ignored) {
                 // Analytics failures should not interrupt normal application activity
             }
         }
@@ -371,8 +413,8 @@ public class BraintreeApi {
         return mBraintreeData.collectDeviceData();
     }
 
-    private String versionedUrl(String path) {
-        return mClientToken.getClientApiUrl() + "/v1/" + path;
+    private String versionedPath(String path) {
+        return "/v1/" + path;
     }
 
     private String jsonForType(String response, String type) throws ServerException {
@@ -385,27 +427,4 @@ public class BraintreeApi {
             throw new ServerException("Parsing server response failed");
         }
     }
-
-    private void checkAndThrowErrors(HttpResponse response)
-            throws ErrorWithResponse, BraintreeException {
-        switch(response.getResponseCode()) {
-            case HTTP_OK: case HTTP_CREATED: case HTTP_ACCEPTED:
-                return;
-            case HTTP_UNAUTHORIZED:
-                throw new AuthenticationException();
-            case HTTP_FORBIDDEN:
-                throw new AuthorizationException();
-            case 422: // HTTP_UNPROCESSABLE_ENTITY
-                throw new ErrorWithResponse(response.getResponseCode(), response.getResponseBody());
-            case 426: // HTTP_UPGRADE_REQUIRED
-                throw new UpgradeRequiredException();
-            case HTTP_INTERNAL_ERROR:
-                throw new ServerException();
-            case HTTP_UNAVAILABLE:
-                throw new DownForMaintenanceException();
-            default:
-                throw new UnexpectedException();
-        }
-    }
-
 }

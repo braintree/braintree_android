@@ -13,9 +13,11 @@ import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.SetupResult;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
@@ -45,6 +47,10 @@ public class Braintree {
      * {@link #addListener(com.braintreepayments.api.Braintree.Listener)}.
      */
     private static interface Listener {}
+
+    public static interface BraintreeSetupFinishedListener {
+        void onBraintreeSetupFinished(SetupResult setupResult);
+    }
 
     /**
      * onPaymentMethodsUpdate will be called with a list of {@link com.braintreepayments.api.models.PaymentMethod}s
@@ -103,8 +109,16 @@ public class Braintree {
     private List<PaymentMethod> mCachedPaymentMethods;
 
     /**
+     * @deprecated
+     *
      * Obtain an instance of {@link Braintree}. If multiple calls are made with the same {@code
      * clientToken}, you may get the same instance returned.
+     *
+     * @param context
+     * @param clientToken A client token obtained from a Braintree server SDK.
+     * @return {@link com.braintreepayments.api.Braintree} instance. Repeated called to
+     *         {@link #getInstance(android.content.Context, String)} with the same {@code clientToken}
+     *         may return the same {@link com.braintreepayments.api.Braintree} instance.
      */
     public static Braintree getInstance(Context context, String clientToken) {
         if (sInstances.containsKey(clientToken)) {
@@ -115,11 +129,76 @@ public class Braintree {
         }
     }
 
+    /**
+     * Called to begin the setup of {@link Braintree}. Once setup is complete the supplied
+     * {@link com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener} will receive
+     * a call to {@link com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener#onBraintreeSetupFinished(com.braintreepayments.api.models.SetupResult)}
+     * with an instance of a {@link com.braintreepayments.api.Braintree} or an error.
+     *
+     * @param context
+     * @param clientToken The client token obtained from a Braintree server SDK.
+     * @param listener The listener to notify when setup is complete, or fails.
+     */
+    public static void setup(final Context context, final String clientToken, final BraintreeSetupFinishedListener listener) {
+        Executors.newSingleThreadExecutor().submit(new Runnable() {
+            @Override
+            public void run() {
+                Braintree braintree;
+                if (sInstances.containsKey(clientToken)) {
+                    braintree = sInstances.get(clientToken);
+                } else {
+                    braintree = new Braintree(context, clientToken);
+                }
+
+                Exception exception = null;
+                if (!braintree.isSetup()) {
+                    try {
+                        braintree.setup();
+                    } catch (ErrorWithResponse errorWithResponse) {
+                        exception = errorWithResponse;
+                    } catch (BraintreeException e) {
+                        exception = e;
+                    }
+                }
+
+                final SetupResult setupResult;
+                if (exception != null) {
+                    setupResult = new SetupResult(false, exception.getMessage(), exception, null);
+                } else {
+                    setupResult = new SetupResult(true, null, null, braintree);
+                }
+
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.onBraintreeSetupFinished(setupResult);
+                    }
+                });
+            }
+        });
+    }
+
     protected Braintree(String clientToken, BraintreeApi braintreeApi) {
         mBraintreeApi = braintreeApi;
         mExecutorService = Executors.newSingleThreadExecutor();
         mIntegrationType = "custom";
         sInstances.put(clientToken, this);
+    }
+
+    protected Braintree(Context context, String clientToken) {
+        mBraintreeApi = new BraintreeApi(context.getApplicationContext(),
+                ClientToken.fromString(clientToken));
+        mExecutorService = Executors.newSingleThreadExecutor();
+        mIntegrationType = "custom";
+        sInstances.put(clientToken, this);
+    }
+
+    private boolean isSetup() {
+        return mBraintreeApi.isSetup();
+    }
+
+    private void setup() throws ErrorWithResponse, BraintreeException {
+        mBraintreeApi.setup();
     }
 
     protected String analyticsPrefix() {

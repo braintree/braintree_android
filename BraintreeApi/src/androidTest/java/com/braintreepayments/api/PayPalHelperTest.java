@@ -6,43 +6,52 @@ import android.os.Parcelable;
 import android.test.AndroidTestCase;
 
 import com.braintreepayments.api.exceptions.ConfigurationException;
+import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PayPalTouchActivity;
 
+import static com.braintreepayments.api.TestUtils.getConfigurationFromFixture;
+
 public class PayPalHelperTest extends AndroidTestCase {
 
     public void testBuildsOfflinePayPalConfiguration() {
-        ClientToken token = TestUtils.clientTokenFromFixture(getContext(),
-                "client_tokens/offline_paypal_client_token.json");
+        Configuration configuration = getConfigurationFromFixture(getContext(),
+                "configuration_with_offline_paypal.json");
 
-        PayPalConfiguration configuration = PayPalHelper.buildPayPalConfiguration(token);
+        PayPalConfiguration payPalConfiguration =
+                PayPalHelper.buildPayPalConfiguration(configuration.getPayPal());
 
-        assertTrue(configuration.toString().contains("environment:mock"));
+        assertTrue(payPalConfiguration.toString().contains("environment:mock"));
     }
 
     public void testBuildsLivePayPalConfiguration() {
-        ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/live_paypal_client_token.json");
+        Configuration configuration = getConfigurationFromFixture(getContext(),
+                "configuration_with_live_paypal.json");
 
-        PayPalConfiguration configuration = PayPalHelper.buildPayPalConfiguration(token);
+        PayPalConfiguration payPalConfiguration =
+                PayPalHelper.buildPayPalConfiguration(configuration.getPayPal());
 
-        assertTrue(configuration.toString().contains("environment:live"));
+        assertTrue(payPalConfiguration.toString().contains("environment:live"));
     }
 
     public void testBuildsCustomPayPalConfiguration() {
-        ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/custom_paypal_client_token.json");
+        Configuration configuration = getConfigurationFromFixture(getContext(),
+                "configuration_with_custom_paypal.json");
 
-        PayPalConfiguration configuration = PayPalHelper.buildPayPalConfiguration(token);
+        PayPalConfiguration payPalConfiguration =
+                PayPalHelper.buildPayPalConfiguration(configuration.getPayPal());
 
-        assertTrue(configuration.toString().contains("environment:custom"));
+        assertTrue(payPalConfiguration.toString().contains("environment:custom"));
     }
 
     public void testBuildsPayPalServiceIntentWithCustomStageUrlAndSslVerificationOffForCustomEnvironment() {
-        ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/custom_paypal_client_token.json");
+        Configuration configuration = getConfigurationFromFixture(getContext(),
+                "configuration_with_custom_paypal.json");
 
-        Intent intent = PayPalHelper.buildPayPalServiceIntent(getContext(), token);
+        Intent intent = PayPalHelper.buildPayPalServiceIntent(getContext(), configuration.getPayPal());
 
         assertNotNull(intent.getParcelableExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION));
         assertEquals("https://braintree.paypal.com/v1/",
@@ -51,9 +60,10 @@ public class PayPalHelperTest extends AndroidTestCase {
     }
 
     public void testDoesNotAddBonusExtrasToIntentForOffline() {
-        ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/offline_paypal_client_token.json");
+        Configuration configuration = getConfigurationFromFixture(getContext(),
+                "configuration_with_offline_paypal.json");
 
-        Intent intent = PayPalHelper.buildPayPalServiceIntent(getContext(), token);
+        Intent intent = PayPalHelper.buildPayPalServiceIntent(getContext(), configuration.getPayPal());
 
         assertNotNull(intent.getParcelableExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION));
         assertNull(intent.getStringExtra("com.paypal.android.sdk.baseEnvironmentUrl"));
@@ -61,9 +71,10 @@ public class PayPalHelperTest extends AndroidTestCase {
     }
 
     public void testDoesNotAddBonusExtrasToIntentForLive() {
-        ClientToken token = TestUtils.clientTokenFromFixture(getContext(), "client_tokens/live_paypal_client_token.json");
+        Configuration configuration = getConfigurationFromFixture(getContext(),
+                "configuration_with_live_paypal.json");
 
-        Intent intent = PayPalHelper.buildPayPalServiceIntent(getContext(), token);
+        Intent intent = PayPalHelper.buildPayPalServiceIntent(getContext(), configuration.getPayPal());
 
         assertNotNull(intent.getParcelableExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION));
         assertNull(intent.getStringExtra("com.paypal.android.sdk.baseEnvironmentUrl"));
@@ -71,16 +82,13 @@ public class PayPalHelperTest extends AndroidTestCase {
     }
 
     public void testThrowsConfigurationExceptionWhenResultExtrasInvalidResultCodeReturned() {
-        boolean exceptionHappened = false;
         try {
             PayPalHelper.getBuilderFromActivity(null,
                     PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID, new Intent());
-            fail("Configuration exception was not thrown");
+            fail("Expected a ConfigurationException but nothing was thrown");
         } catch (ConfigurationException e) {
-            exceptionHappened = true;
+            assertEquals("Result extras were invalid", e.getMessage());
         }
-
-        assertTrue("Expected a ConfigurationException but nothing was raises", exceptionHappened);
     }
 
     public void testReturnsNullWhenResultCodeIsNotExpected() throws ConfigurationException {

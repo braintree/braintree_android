@@ -1,0 +1,5 @@
+{
+    "challenges": ["cvv"],
+    "merchantId": "integration_merchant_id",
+    "paypalEnabled": false
+}

@@ -1,0 +1,6 @@
+{
+    "paypalEnabled": true,
+    "paypal": {
+        "touchDisabled": true
+    }
+}
