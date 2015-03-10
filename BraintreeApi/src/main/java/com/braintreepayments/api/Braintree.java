@@ -242,6 +242,13 @@ public class Braintree {
     }
 
     /**
+     * @return if Coinbase is enabled in the current environment.
+     */
+    public boolean isCoinbaseEnabled() {
+        return mBraintreeApi.isCoinbaseEnabled();
+    }
+
+    /**
      * @return If 3D Secure is supported and enabled for the current merchant account
      */
     @Beta
@@ -447,6 +454,7 @@ public class Braintree {
 
     /**
      * Start the Pay With Venmo flow. This will app switch to the Venmo app.
+     *
      * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * when {@link #startPayWithVenmo(android.app.Activity, int)} finishes.
      * @param requestCode The request code associated with this start request. Will be returned in
@@ -501,6 +509,22 @@ public class Braintree {
             });
         } else {
             sendAnalyticsEvent("venmo-app.fail");
+        }
+    }
+
+    /**
+     * Start the pay with Coinbase flow. This will switch to the Coinbase website.
+     *
+     * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     *        when {@link #startPayWithCoinbase(android.app.Activity, int)} finishes.
+     * @param requestCode The request code associated with this start request. Will be returned in
+     *        {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     */
+    public void startPayWithCoinbase(Activity activity, int requestCode) {
+        boolean payWithCoinbaseInitiated = mBraintreeApi.startPayWithCoinbase(activity, requestCode);
+
+        if (!payWithCoinbaseInitiated) {
+            postUnrecoverableErrorToListeners(new AppSwitchNotAvailableException());
         }
     }
 
@@ -582,7 +606,8 @@ public class Braintree {
             @Override
             public void run() {
                 try {
-                    ThreeDSecureLookup threeDSecureLookup = mBraintreeApi.threeDSecureLookup(nonce, amount);
+                    ThreeDSecureLookup threeDSecureLookup = mBraintreeApi.threeDSecureLookup(nonce,
+                            amount);
                     if (threeDSecureLookup.getAcsUrl() != null) {
                         Intent intent = new Intent(activity, ThreeDSecureWebViewActivity.class)
                                 .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup);

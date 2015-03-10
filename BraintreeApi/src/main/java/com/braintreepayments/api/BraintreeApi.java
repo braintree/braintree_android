@@ -44,6 +44,7 @@ public class BraintreeApi {
     private HttpRequest mHttpRequest;
 
     private VenmoAppSwitch mVenmoAppSwitch;
+    private Coinbase mCoinbase;
     private BraintreeData mBraintreeData;
 
     /**
@@ -68,6 +69,7 @@ public class BraintreeApi {
                 clientToken.getAuthorizationFingerprint());
 
         mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
+        mCoinbase = new Coinbase(context, mConfiguration);
         mBraintreeData = null;
     }
 
@@ -77,6 +79,7 @@ public class BraintreeApi {
                 clientToken.getAuthorizationFingerprint());
 
         mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
+        mCoinbase = new Coinbase(context, mConfiguration);
         mBraintreeData = null;
     }
 
@@ -85,6 +88,7 @@ public class BraintreeApi {
         mHttpRequest = requestor;
 
         mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
+        mCoinbase = new Coinbase(context, mConfiguration);
         mBraintreeData = null;
     }
 
@@ -100,6 +104,7 @@ public class BraintreeApi {
         mHttpRequest = requestor;
 
         mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
+        mCoinbase = new Coinbase(context, mConfiguration);
         mBraintreeData = null;
     }
 
@@ -131,6 +136,13 @@ public class BraintreeApi {
     }
 
     /**
+     * @return if Coinbase is enabled in the current environment.
+     */
+    public boolean isCoinbaseEnabled() {
+        return mCoinbase.isAvailable();
+    }
+
+    /**
      * @return If 3D Secure is supported and enabled for the current merchant account
      */
     @Beta
@@ -154,6 +166,7 @@ public class BraintreeApi {
 
     /**
      * Start the Pay With PayPal flow. This will launch a new activity for the PayPal mobile SDK.
+     *
      * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      *   when {@link #startPayWithPayPal(android.app.Activity, int)} finishes.
      * @param requestCode The request code associated with this start request. Will be returned in
@@ -176,6 +189,26 @@ public class BraintreeApi {
     public void startPayWithVenmo(Activity activity, int requestCode)
             throws AppSwitchNotAvailableException {
         mVenmoAppSwitch.launch(activity, requestCode);
+    }
+
+    /**
+     * Start the pay with Coinbase flow. This will switch to the Coinbase website.
+     *
+     * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     *        when {@link #startPayWithCoinbase(android.app.Activity, int)} finishes.
+     * @param requestCode the request code associated with the start request. Will be returned in
+     *        {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @return
+     */
+    public boolean startPayWithCoinbase(Activity activity, int requestCode) {
+        if (isCoinbaseEnabled()) {
+            Intent coinbaseIntent = mCoinbase.getLaunchIntent();
+            if (coinbaseIntent != null) {
+                activity.startActivityForResult(mCoinbase.getLaunchIntent(), requestCode);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
