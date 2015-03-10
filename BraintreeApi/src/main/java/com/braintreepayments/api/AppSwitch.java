@@ -10,6 +10,7 @@ import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
 
 import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
+import com.braintreepayments.api.models.Configuration;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -27,11 +28,11 @@ public abstract class AppSwitch {
     protected static boolean sEnableSignatureVerification = true;
 
     protected Context mContext;
-    protected ClientToken mClientToken;
+    protected Configuration mConfiguration;
 
-    public AppSwitch(Context context, ClientToken clientToken) {
+    public AppSwitch(Context context, Configuration configuration) {
         mContext = context;
-        mClientToken = clientToken;
+        mConfiguration = configuration;
     }
 
     protected boolean isAvailable() {

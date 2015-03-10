@@ -3,8 +3,15 @@ package com.braintreepayments.api.internal;
 import android.util.Log;
 
 import com.braintreepayments.api.BuildConfig;
+import com.braintreepayments.api.exceptions.AuthenticationException;
+import com.braintreepayments.api.exceptions.AuthorizationException;
+import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.BraintreeSslException;
+import com.braintreepayments.api.exceptions.DownForMaintenanceException;
+import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
+import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,24 +35,124 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
+import static java.net.HttpURLConnection.HTTP_ACCEPTED;
+import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
+import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
+
 public class HttpRequest {
 
-    public static boolean DEBUG = false;
     public static final String TAG = "HttpRequest";
     public static final String USER_AGENT = "braintree/android/" + BuildConfig.VERSION_NAME;
 
     private static final String METHOD_GET = "GET";
     private static final String METHOD_POST = "POST";
-
     private static final String UTF_8 = "UTF-8";
-
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorizationFingerprint";
 
+    public static boolean DEBUG = false;
+
+    private String mBaseUrl;
     private String mAuthorizationFingerprint;
     private int mConnectTimeout = 0;
 
-    public HttpRequest(String authorizationFingerprint) {
-        mAuthorizationFingerprint = authorizationFingerprint;
+    public HttpRequest(String baseUrl, String authorizationFingerprint) {
+        mBaseUrl = (baseUrl == null) ? "" : baseUrl;
+        mAuthorizationFingerprint = (authorizationFingerprint == null) ? "" : authorizationFingerprint;
+    }
+
+    protected void setConnectTimeout(int timeout) {
+        mConnectTimeout = timeout;
+    }
+
+    /**
+     * Make a HTTP GET request to Braintree using the url and authorization fingerprint supplied in
+     * the constructor. If the path is a ful url, it will be used instead of the url provided in the
+     * constructor.
+     *
+     * @param path The path or url to request from the server via HTTP GET
+     * @return {@link com.braintreepayments.api.internal.HttpResponse} containing the response code
+     *         and body.
+     * @throws com.braintreepayments.api.exceptions.ErrorWithResponse where there was a validation error.
+     *         (Response code 422)
+     * @throws com.braintreepayments.api.exceptions.BraintreeException when there was an error fulfilling
+     *         the request.
+     */
+    public HttpResponse get(String path) throws ErrorWithResponse, BraintreeException {
+        HttpURLConnection connection = null;
+        try {
+            String url = path + "?" + AUTHORIZATION_FINGERPRINT_KEY + "="
+                    + URLEncoder.encode(mAuthorizationFingerprint, UTF_8);
+
+            if (url.startsWith("http")) {
+                connection = init(url);
+            } else {
+                connection = init(mBaseUrl + url);
+            }
+
+            connection.setRequestMethod(METHOD_GET);
+
+            return parseResponse(connection);
+        } catch (BraintreeException e) {
+            throw e;
+        } catch (IOException e) {
+            throw new UnexpectedException(e.getMessage());
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+
+    /**
+     * Make a HTTP POST request to Braintree using the url and authorization fingerprint supplied in
+     * the constructor. If the path is a full url, it will be used instead of the url provided in the
+     * constructor.
+     *
+     * @param path The path or url to request from the server via HTTP POST
+     * @param data The body of the POST request
+     * @return {@link com.braintreepayments.api.internal.HttpResponse} containing the response code
+     *         and body.
+     * @throws com.braintreepayments.api.exceptions.ErrorWithResponse when there was a validation error.
+     * @throws com.braintreepayments.api.exceptions.BraintreeException when there was an error fulfilling
+     *         the request.
+     */
+    public HttpResponse post(String path, String data) throws ErrorWithResponse, BraintreeException {
+        HttpURLConnection connection = null;
+        try {
+            String payload = new JSONObject(data)
+                    .put(AUTHORIZATION_FINGERPRINT_KEY, mAuthorizationFingerprint)
+                    .toString();
+
+            if (path.startsWith("http")) {
+                connection = init(path);
+            } else {
+                connection = init(mBaseUrl + path);
+            }
+
+            connection.setRequestMethod(METHOD_POST);
+            connection.setDoOutput(true);
+
+            DataOutputStream out = new DataOutputStream(connection.getOutputStream());
+            out.writeBytes(payload);
+            out.flush();
+            out.close();
+
+            return parseResponse(connection);
+        } catch (BraintreeException e) {
+            throw e;
+        } catch (IOException e) {
+            throw new UnexpectedException(e.getMessage());
+        } catch (JSONException e) {
+            throw new UnexpectedException(e.getMessage());
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
     }
 
     protected HttpURLConnection init(String url) throws IOException {
@@ -65,73 +172,37 @@ public class HttpRequest {
         return connection;
     }
 
-    protected void setConnectTimeout(int timeout) {
-        mConnectTimeout = timeout;
-    }
-
-    public HttpResponse get(String url) throws UnexpectedException {
-        HttpURLConnection connection = null;
-        try {
-            url += "?" + AUTHORIZATION_FINGERPRINT_KEY + "="
-                    + URLEncoder.encode(mAuthorizationFingerprint, UTF_8);
-            connection = init(url);
-            connection.setRequestMethod(METHOD_GET);
-
-            return handleServerResponse(connection);
-        } catch (IOException e) {
-            throw new UnexpectedException(e.getMessage());
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-    }
-
-    public HttpResponse post(String url, String data) throws UnexpectedException {
-        HttpURLConnection connection = null;
-        try {
-            String payload = new JSONObject(data)
-                .put(AUTHORIZATION_FINGERPRINT_KEY, mAuthorizationFingerprint)
-                .toString();
-
-            connection = init(url);
-            connection.setRequestMethod(METHOD_POST);
-            connection.setDoOutput(true);
-
-            DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-            out.writeBytes(payload);
-            out.flush();
-            out.close();
-
-            HttpResponse response = handleServerResponse(connection);
-            response.setData(payload);
-            return response;
-        } catch (IOException e) {
-            throw new UnexpectedException(e.getMessage());
-        } catch (JSONException e) {
-            throw new UnexpectedException(e.getMessage());
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-    }
-
-    private HttpResponse handleServerResponse(HttpURLConnection connection) throws IOException {
+    private HttpResponse parseResponse(HttpURLConnection connection)
+            throws ErrorWithResponse, IOException {
         int responseCode = connection.getResponseCode();
         String responseBody;
-        if (responseCode >= HttpURLConnection.HTTP_OK && responseCode < HttpURLConnection.HTTP_BAD_REQUEST) {
-            responseBody = readStream(connection.getInputStream());
-        } else {
-            responseBody = readStream(connection.getErrorStream());
-        }
 
         log("Received response code: " + responseCode);
-        log("Received response: " + responseBody);
 
-        HttpResponse response = new HttpResponse(responseCode, responseBody);
-        response.setUrl(connection.getURL().toString());
-        return response;
+        switch(responseCode) {
+            case HTTP_OK: case HTTP_CREATED: case HTTP_ACCEPTED:
+                responseBody = readStream(connection.getInputStream());
+                log("Received response body: " + responseBody);
+
+                return new HttpResponse(responseCode, responseBody);
+            case HTTP_UNAUTHORIZED:
+                throw new AuthenticationException();
+            case HTTP_FORBIDDEN:
+                throw new AuthorizationException();
+            case 422: // HTTP_UNPROCESSABLE_ENTITY
+                responseBody = readStream(connection.getErrorStream());
+                log("Received error response body: " + responseBody);
+
+                throw new ErrorWithResponse(responseCode, responseBody);
+            case 426: // HTTP_UPGRADE_REQUIRED
+                throw new UpgradeRequiredException();
+            case HTTP_INTERNAL_ERROR:
+                throw new ServerException();
+            case HTTP_UNAVAILABLE:
+                throw new DownForMaintenanceException();
+            default:
+                throw new UnexpectedException();
+        }
     }
 
     private String readStream(InputStream in) throws IOException {
@@ -182,5 +253,4 @@ public class HttpRequest {
             throw new BraintreeSslException(e);
         }
     }
-
 }

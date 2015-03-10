@@ -15,26 +15,28 @@ import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
-import com.braintreepayments.testutils.FixturesHelper;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.braintreepayments.api.TestUtils.apiWithExpectedResponse;
+import static com.braintreepayments.api.TestUtils.unexpectedExceptionThrowingApi;
 import static com.braintreepayments.api.TestUtils.waitForMainThreadToFinish;
 import static com.braintreepayments.testutils.CardNumber.VISA;
+import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -134,9 +136,8 @@ public class BraintreeTest extends AndroidTestCase {
     }
 
     public void testOnUnrecoverableErrorsPostsToListeners()
-            throws ExecutionException, InterruptedException, UnexpectedException {
-        BraintreeApi braintreeApi = TestUtils.unexpectedExceptionThrowingApi(getContext(),
-                new ClientToken());
+            throws ExecutionException, InterruptedException, BraintreeException, ErrorWithResponse {
+        BraintreeApi braintreeApi = unexpectedExceptionThrowingApi(getContext());
         Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
 
         final AtomicBoolean wasCalled = new AtomicBoolean(false);
@@ -161,15 +162,10 @@ public class BraintreeTest extends AndroidTestCase {
     }
 
     public void testOnRecoverableErrorsPostsToListeners()
-            throws ExecutionException, InterruptedException, UnexpectedException {
-        ClientToken clientToken =
-                TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token.json");
-        String response = FixturesHelper.stringFromFixture(getContext(),
-                "errors/error_response.json");
-
-        BraintreeApi braintreeApi =
-                TestUtils.apiWithExpectedResponse(getContext(), clientToken, response, 422);
-        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
+            throws ExecutionException, InterruptedException, IOException, ErrorWithResponse {
+        String response = stringFromFixture(getContext(), "error_response.json");
+        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY,
+                apiWithExpectedResponse(getContext(), 422, response));
 
         final AtomicBoolean wasCalled = new AtomicBoolean(false);
         braintree.addListener(new SimpleListener() {
@@ -197,7 +193,7 @@ public class BraintreeTest extends AndroidTestCase {
         Intent intent = new Intent();
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
         when(braintreeApi.handlePayPalResponse(any(Activity.class), eq(PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID), eq(intent)))
-                .thenThrow(new ConfigurationException());
+                .thenThrow(new ConfigurationException("Test"));
 
         Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
 
@@ -486,7 +482,7 @@ public class BraintreeTest extends AndroidTestCase {
         };
         mBraintree.addListener(listener);
 
-        JSONObject authResponse = new JSONObject(FixturesHelper.stringFromFixture(mContext,
+        JSONObject authResponse = new JSONObject(stringFromFixture(mContext,
                 "three_d_secure/authentication_response.json"));
 
         Intent data = new Intent()
@@ -511,7 +507,7 @@ public class BraintreeTest extends AndroidTestCase {
         };
         mBraintree.addListener(listener);
 
-        JSONObject authResponse = new JSONObject(FixturesHelper.stringFromFixture(mContext,
+        JSONObject authResponse = new JSONObject(stringFromFixture(mContext,
                 "three_d_secure/authentication_response.json"));
 
         Intent data = new Intent()
@@ -561,7 +557,7 @@ public class BraintreeTest extends AndroidTestCase {
         mBraintree.addListener(listener);
 
         JSONObject response =
-                new JSONObject(FixturesHelper.stringFromFixture(mContext, "errors/three_d_secure_error.json"));
+                new JSONObject(stringFromFixture(mContext, "errors/three_d_secure_error.json"));
 
         Intent data = new Intent()
                 .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT,
@@ -605,7 +601,7 @@ public class BraintreeTest extends AndroidTestCase {
         mBraintree.addListener(listener);
 
         JSONObject card =
-                new JSONObject(FixturesHelper.stringFromFixture(mContext, "payment_methods/visa_credit_card.json"));
+                new JSONObject(stringFromFixture(mContext, "payment_methods/visa_credit_card.json"));
         JSONObject json = new JSONObject()
                 .put("success", true)
                 .put("paymentMethod", card);
@@ -695,9 +691,8 @@ public class BraintreeTest extends AndroidTestCase {
     }
 
     public void testRemovedErrorListenerIsNotPostedTo()
-            throws ExecutionException, InterruptedException, UnexpectedException {
-        BraintreeApi braintreeApi = TestUtils.unexpectedExceptionThrowingApi(getContext(),
-                TestUtils.clientTokenFromFixture(getContext(), "client_tokens/client_token.json"));
+            throws ExecutionException, InterruptedException, BraintreeException, ErrorWithResponse {
+        BraintreeApi braintreeApi = unexpectedExceptionThrowingApi(getContext());
         Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
 
         final AtomicBoolean wasRemoved = new AtomicBoolean(false);

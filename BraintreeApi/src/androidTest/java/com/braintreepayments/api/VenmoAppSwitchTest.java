@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.test.AndroidTestCase;
 
+import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 public class VenmoAppSwitchTest extends AndroidTestCase {
@@ -13,9 +14,8 @@ public class VenmoAppSwitchTest extends AndroidTestCase {
 
     @Override
     public void setUp() {
-        ClientToken token = ClientToken.getClientToken(new TestClientTokenBuilder().build());
-
-        mVenmoAppSwitch = new VenmoAppSwitch(getContext(), token);
+        Configuration configuration = Configuration.fromJson(new TestClientTokenBuilder().build());
+        mVenmoAppSwitch = new VenmoAppSwitch(getContext(), configuration);
     }
 
     public void testGetPackage() {
@@ -47,16 +47,16 @@ public class VenmoAppSwitchTest extends AndroidTestCase {
     }
 
     public void testIntentIncludesVenmoEnvironment() {
-        ClientToken token = ClientToken.getClientToken(new TestClientTokenBuilder().withOfflineVenmo().build());
-        VenmoAppSwitch venmoAppSwitch = new VenmoAppSwitch(getContext(), token);
+        Configuration configuration = Configuration.fromJson(new TestClientTokenBuilder().withOfflineVenmo().build());
+        VenmoAppSwitch venmoAppSwitch = new VenmoAppSwitch(getContext(), configuration);
         Intent intent = venmoAppSwitch.getLaunchIntent();
 
         assertTrue(intent.getBooleanExtra(AppSwitch.EXTRA_OFFLINE, false));
     }
 
     public void testIntentIncludesLiveVenmoEnvironment() {
-        ClientToken token = ClientToken.getClientToken(new TestClientTokenBuilder().withLiveVenmo().build());
-        VenmoAppSwitch venmoAppSwitch = new VenmoAppSwitch(getContext(), token);
+        Configuration configuration = Configuration.fromJson(new TestClientTokenBuilder().withLiveVenmo().build());
+        VenmoAppSwitch venmoAppSwitch = new VenmoAppSwitch(getContext(), configuration);
         Intent intent = venmoAppSwitch.getLaunchIntent();
 
         assertFalse(intent.getBooleanExtra(AppSwitch.EXTRA_OFFLINE, true));

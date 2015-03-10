@@ -5,18 +5,19 @@ import android.test.AndroidTestCase;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
-import com.braintreepayments.testutils.FixturesHelper;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
+import java.io.IOException;
 import java.util.List;
 
+import static com.braintreepayments.api.TestUtils.apiWithExpectedResponse;
 import static com.braintreepayments.testutils.CardNumber.AMEX;
 import static com.braintreepayments.testutils.CardNumber.VISA;
+import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 
 public class GetPaymentMethodsTest extends AndroidTestCase {
 
@@ -71,11 +72,8 @@ public class GetPaymentMethodsTest extends AndroidTestCase {
     }
 
     public void testGetPaymentMethodsReturnsAnError() throws ErrorWithResponse,
-            UnexpectedException {
-        ClientToken clientToken = TestUtils.clientTokenFromFixture(getContext(),
-                "client_tokens/client_token.json");
-        BraintreeApi braintreeApi = TestUtils.unexpectedExceptionThrowingApi(getContext(),
-                clientToken);
+            BraintreeException {
+        BraintreeApi braintreeApi = TestUtils.unexpectedExceptionThrowingApi(getContext());
 
         try {
             braintreeApi.getPaymentMethods();
@@ -85,11 +83,10 @@ public class GetPaymentMethodsTest extends AndroidTestCase {
         }
     }
 
-    public void testGetPaymentMethodsThrowsErrorWithResponse() throws BraintreeException {
-        ClientToken clientToken = TestUtils.clientTokenFromFixture(getContext(),
-                "client_tokens/client_token.json");
-        BraintreeApi braintreeApi = TestUtils.apiWithExpectedResponse(getContext(), clientToken,
-                FixturesHelper.stringFromFixture(getContext(), "errors/error_response.json"), 422);
+    public void testGetPaymentMethodsThrowsErrorWithResponse()
+            throws IOException, ErrorWithResponse {
+        BraintreeApi braintreeApi = apiWithExpectedResponse(getContext(), 422,
+                stringFromFixture(getContext(), "error_response.json"));
 
         try {
             braintreeApi.getPaymentMethods();

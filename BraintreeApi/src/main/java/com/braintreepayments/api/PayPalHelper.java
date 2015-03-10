@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-import com.braintreepayments.api.ClientToken.PayPal;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.paypal.android.sdk.payments.PayPalAuthorization;
@@ -34,16 +33,16 @@ public class PayPalHelper {
         throw new IllegalStateException("Non-instantiable class.");
     }
 
-    protected static void startPaypal(Context context, ClientToken clientToken) {
+    protected static void startPaypal(Context context, com.braintreepayments.api.models.PayPalConfiguration configuration) {
         stopPaypalService(context);
-        context.startService(buildPayPalServiceIntent(context, clientToken));
+        context.startService(buildPayPalServiceIntent(context, configuration));
     }
 
-    protected static void launchPayPal(Activity activity, int requestCode, ClientToken clientToken) {
+    protected static void launchPayPal(Activity activity, int requestCode, com.braintreepayments.api.models.PayPalConfiguration configuration) {
         Class klass;
         if (PayPalTouch.available(activity.getBaseContext(), sEnableSignatureVerification) &&
-                !clientToken.getPayPal().getEnvironment().equals(OFFLINE) &&
-                !clientToken.getPayPal().getTouchDisabled()) {
+                !configuration.getEnvironment().equals(OFFLINE) &&
+                !configuration.getTouchDisabled()) {
             klass = PayPalTouchActivity.class;
         } else {
             klass = PayPalProfileSharingActivity.class;
@@ -56,8 +55,7 @@ public class PayPalHelper {
                     PayPalOAuthScopes.PAYPAL_SCOPE_FUTURE_PAYMENTS)
         );
         intent.putExtra(PayPalTouchActivity.EXTRA_REQUESTED_SCOPES, new PayPalOAuthScopes(scopes));
-        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, buildPayPalConfiguration(
-                clientToken));
+        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, buildPayPalConfiguration(configuration));
         activity.startActivityForResult(intent, requestCode);
     }
 
@@ -109,7 +107,7 @@ public class PayPalHelper {
 
             return paypalAccountBuilder;
         } else if (resultCode == PayPalProfileSharingActivity.RESULT_EXTRAS_INVALID) {
-            throw new ConfigurationException();
+            throw new ConfigurationException("Result extras were invalid");
         }
 
         return null;
@@ -128,35 +126,31 @@ public class PayPalHelper {
                 data.getParcelableExtra(PayPalProfileSharingActivity.EXTRA_RESULT_AUTHORIZATION) != null);
     }
 
-    protected static PayPalConfiguration buildPayPalConfiguration(ClientToken clientToken) {
+    protected static PayPalConfiguration buildPayPalConfiguration(com.braintreepayments.api.models.PayPalConfiguration configuration) {
         PayPalConfiguration paypalConfiguration = new PayPalConfiguration();
 
-        PayPal paypal = clientToken.getPayPal();
-
-        if (paypal.getEnvironment().equals("live")) {
+        if (configuration.getEnvironment().equals("live")) {
             paypalConfiguration.environment(PayPalConfiguration.ENVIRONMENT_PRODUCTION);
-        } else if (paypal.getEnvironment().equals("offline")) {
+        } else if (configuration.getEnvironment().equals("offline")) {
             paypalConfiguration.environment(PayPalConfiguration.ENVIRONMENT_NO_NETWORK);
         } else {
-            paypalConfiguration.environment(paypal.getEnvironment());
+            paypalConfiguration.environment(configuration.getEnvironment());
         }
 
         return paypalConfiguration
-                .clientId(paypal.getClientId())
-                .merchantName(paypal.getDisplayName())
-                .merchantUserAgreementUri(Uri.parse(paypal.getUserAgreementUrl()))
-                .merchantPrivacyPolicyUri(Uri.parse(paypal.getPrivacyUrl()));
+                .clientId(configuration.getClientId())
+                .merchantName(configuration.getDisplayName())
+                .merchantUserAgreementUri(Uri.parse(configuration.getUserAgreementUrl()))
+                .merchantPrivacyPolicyUri(Uri.parse(configuration.getPrivacyUrl()));
     }
 
-    protected static Intent buildPayPalServiceIntent(Context context, ClientToken clientToken) {
+    protected static Intent buildPayPalServiceIntent(Context context, com.braintreepayments.api.models.PayPalConfiguration configuration) {
         Intent intent = new Intent(context, PayPalService.class);
-        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, buildPayPalConfiguration(
-                clientToken));
+        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, buildPayPalConfiguration(configuration));
         intent.putExtra("com.paypal.android.sdk.enableAuthenticatorSecurity", sEnableSignatureVerification);
 
-        if(clientToken.getPayPal().getEnvironment().equals("custom")) {
-            intent.putExtra("com.paypal.android.sdk.baseEnvironmentUrl",
-                    clientToken.getPayPal().getDirectBaseUrl());
+        if(configuration.getEnvironment().equals("custom")) {
+            intent.putExtra("com.paypal.android.sdk.baseEnvironmentUrl", configuration.getDirectBaseUrl());
             intent.putExtra("com.paypal.android.sdk.enableStageSsl", false);
         }
 

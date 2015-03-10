@@ -204,7 +204,7 @@ public class TestClientTokenBuilder {
             if (mMerchantType == MERCHANT_WITH_FAKE_PAYPAL) {
                 clientTokenJson.put("paypal", clientTokenJson.getJSONObject("paypal").put("environment", "offline"));
             }
-            return Base64.encodeToString(clientTokenJson.toString().getBytes(), Base64.NO_WRAP);
+            return clientTokenJson.toString();
         } catch (MalformedURLException e) {
             throw new RuntimeException("The url to your Gateway was invalid");
         } catch (IOException e) {

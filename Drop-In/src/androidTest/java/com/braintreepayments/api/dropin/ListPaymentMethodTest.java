@@ -15,6 +15,7 @@ import android.widget.ImageView;
 
 import com.braintreepayments.api.BraintreeApi;
 import com.braintreepayments.api.BraintreeTestUtils;
+import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.internal.HttpRequest;
@@ -97,7 +98,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testFallsBackToAddPaymentMethodFormIfLoadingPaymentMethodsBlowsUp()
-            throws UnexpectedException {
+            throws BraintreeException, ErrorWithResponse {
         String clientToken = new TestClientTokenBuilder().build();
         HttpRequest mockRequest = mock(HttpRequest.class);
         when(mockRequest.get(anyString())).thenThrow(new UnexpectedException("Mocked HTTP request"));

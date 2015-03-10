@@ -8,23 +8,24 @@ import android.test.ActivityInstrumentationTestCase2;
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.R;
 import com.braintreepayments.api.exceptions.BraintreeException;
-import com.braintreepayments.api.exceptions.UnexpectedException;
+import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
-import com.braintreepayments.testutils.FixturesHelper;
+import com.braintreepayments.api.models.ClientToken;
+import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 
 public class BraintreeTestUtils {
 
     private BraintreeTestUtils() { throw new IllegalStateException("Non instantiable class"); }
 
-    /** Returns a {@link String} client token to allow setup to make Gateway calls. */
     public static String setUpActivityTest(
             ActivityInstrumentationTestCase2<BraintreePaymentActivity> testCase) {
         return setUpActivityTest(testCase, new TestClientTokenBuilder().withFakePayPal().build());
@@ -46,46 +47,50 @@ public class BraintreeTestUtils {
     }
 
     public static Braintree injectGeneric422ErrorOnCardCreateBraintree(final Context context,
-            String token) {
-        ClientToken clientToken = ClientToken.getClientToken(token);
-        HttpRequest request = new HttpRequest(clientToken.getAuthorizationFingerprint()) {
+            String clientTokenString) {
+        ClientToken clientToken = ClientToken.fromString(clientTokenString);
+        HttpRequest request = new HttpRequest(clientToken.getClientApiUrl(),
+                clientToken.getAuthorizationFingerprint()) {
             @Override
-            public HttpResponse post(String url, String params) throws UnexpectedException {
+            public HttpResponse post(String url, String params)
+                    throws ErrorWithResponse, BraintreeException {
                 if(url.contains("credit_cards")) {
                     return new HttpResponse(422,
-                            FixturesHelper.stringFromFixture(context, "errors/error_response.json"));
+                            stringFromFixture(context, "error_response.json"));
                 } else {
                     return super.post(url, params);
                 }
             }
         };
 
-        return new Braintree(token, new BraintreeApi(context, clientToken, request));
+        return injectBraintree(context, clientTokenString, request);
     }
 
-    public static Braintree injectSlowBraintree(Context context, String token, final long delay) {
-        ClientToken clientToken = ClientToken.getClientToken(token);
-        HttpRequest request = new HttpRequest(clientToken.getAuthorizationFingerprint()) {
+    public static Braintree injectSlowBraintree(Context context, String clientTokenString, final long delay) {
+        ClientToken clientToken = ClientToken.fromString(clientTokenString);
+        HttpRequest request = new HttpRequest(clientToken.getClientApiUrl(),
+                clientToken.getAuthorizationFingerprint()) {
             @Override
-            public HttpResponse get(String url) throws UnexpectedException {
+            public HttpResponse get(String url) throws BraintreeException, ErrorWithResponse {
                 SystemClock.sleep(delay);
                 return super.get(url);
             }
 
             @Override
-            public HttpResponse post(String url, String params) throws UnexpectedException {
+            public HttpResponse post(String url, String params)
+                    throws BraintreeException, ErrorWithResponse {
                 SystemClock.sleep(delay);
                 return super.post(url, params);
             }
         };
 
-        return new Braintree(token, new BraintreeApi(context, clientToken, request));
+        return injectBraintree(context, clientTokenString, request);
     }
 
     public static Braintree injectBraintree(Context context, String clientToken,
             HttpRequest httpRequest) {
         return injectBraintreeApi(clientToken,
-                new BraintreeApi(context, ClientToken.getClientToken(clientToken), httpRequest));
+                new BraintreeApi(context, Configuration.fromJson(clientToken), httpRequest));
     }
 
     public static Braintree injectBraintree(String clientToken, Braintree braintree) {
