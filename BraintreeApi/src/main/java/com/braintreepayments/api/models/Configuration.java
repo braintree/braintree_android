@@ -14,6 +14,8 @@ public class Configuration {
     private boolean paypalEnabled;
     private PayPalConfiguration paypal;
     private String venmo;
+    private boolean coinbaseEnabled;
+    private CoinbaseConfiguration coinbase;
     private boolean threeDSecureEnabled;
     private String merchantId;
     private String merchantAccountId;
@@ -68,6 +70,20 @@ public class Configuration {
         } else {
             return venmo;
         }
+    }
+
+    /**
+     * @return {@code true} if Coinbase is enabled, {@code false} otherwise.
+     */
+    public boolean isCoinbaseEnabled() {
+        return (coinbaseEnabled && coinbase != null);
+    }
+
+    /**
+     * @return instance of {@link com.braintreepayments.api.models.CoinbaseConfiguration}.
+     */
+    public CoinbaseConfiguration getCoinbase() {
+        return coinbase;
     }
 
     /**
