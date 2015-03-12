@@ -26,6 +26,7 @@ import com.braintreepayments.api.models.ThreeDSecureLookup;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -200,7 +201,8 @@ public class BraintreeApi {
      *        {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @return
      */
-    public boolean startPayWithCoinbase(Activity activity, int requestCode) {
+    public boolean startPayWithCoinbase(Activity activity, int requestCode)
+            throws UnsupportedEncodingException {
         if (isCoinbaseEnabled()) {
             Intent coinbaseIntent = mCoinbase.getLaunchIntent();
             if (coinbaseIntent != null) {

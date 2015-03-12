@@ -17,7 +17,6 @@ public class CoinbaseConfigurationTest extends AndroidTestCase {
         assertEquals("dfaldfjfhadsfhasdfh", coinbaseConfiguration.getClientId());
         assertEquals("coinbase-merchant@example.com", coinbaseConfiguration.getMerchantAccount());
         assertEquals("authorizations:test user", coinbaseConfiguration.getScopes());
-        assertEquals("coinbase://", coinbaseConfiguration.getRedirectUrl());
     }
 
     public void testReportsCoinbaseNotEnabledWhenFlagged() {

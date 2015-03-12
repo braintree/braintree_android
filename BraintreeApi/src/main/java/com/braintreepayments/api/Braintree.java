@@ -24,6 +24,7 @@ import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
 
 import org.json.JSONException;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -521,7 +522,12 @@ public class Braintree {
      *        {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      */
     public void startPayWithCoinbase(Activity activity, int requestCode) {
-        boolean payWithCoinbaseInitiated = mBraintreeApi.startPayWithCoinbase(activity, requestCode);
+        boolean payWithCoinbaseInitiated = false;
+        try {
+            payWithCoinbaseInitiated = mBraintreeApi.startPayWithCoinbase(activity, requestCode);
+        } catch (UnsupportedEncodingException e) {
+            postUnrecoverableErrorToListeners(e);
+        }
 
         if (!payWithCoinbaseInitiated) {
             postUnrecoverableErrorToListeners(new AppSwitchNotAvailableException());
