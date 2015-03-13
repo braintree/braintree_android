@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.api.internal.HttpRequestTestUtils.requestWithExpectedResponse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -53,5 +55,11 @@ public class TestUtils {
             }
         });
         latch.await();
+    }
+
+    public static void assertIsANonce(String maybeANonceA) {
+        assertNotNull("Nonce was null", maybeANonceA);
+        assertTrue("Does not match the expected form of a nonce",
+                maybeANonceA.matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"));
     }
 }

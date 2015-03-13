@@ -70,6 +70,7 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
 
     /**
      * Required for and handled by {@link com.braintreepayments.api.Braintree}. Not intended for general consumption.
+     *
      * @param json Raw JSON representation of a {@link com.braintreepayments.api.models.PayPalAccount}.
      * @return {@link com.braintreepayments.api.models.PayPalAccount} for use in payment method selection UIs.
      */

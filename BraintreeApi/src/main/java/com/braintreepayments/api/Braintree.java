@@ -15,6 +15,7 @@ import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
+import com.braintreepayments.api.models.CoinbaseAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.SetupResult;
@@ -516,6 +517,10 @@ public class Braintree {
     /**
      * Start the pay with Coinbase flow. This will switch to the Coinbase website.
      *
+     * If an error occurs, the exception that occurred will be sent to
+     * {@link Braintree.ErrorListener#onRecoverableError(com.braintreepayments.api.exceptions.ErrorWithResponse)} or
+     * {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)} as appropriate.
+     *
      * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      *        when {@link #startPayWithCoinbase(android.app.Activity, int)} finishes.
      * @param requestCode The request code associated with this start request. Will be returned in
@@ -532,6 +537,35 @@ public class Braintree {
         if (!payWithCoinbaseInitiated) {
             postUnrecoverableErrorToListeners(new AppSwitchNotAvailableException());
         }
+    }
+
+    /**
+     * Finish the Coinbase flow and create a {@link com.braintreepayments.api.models.CoinbaseAccount}
+     *
+     * If an error occurs, the exception that occurred will be sent to
+     * {@link Braintree.ErrorListener#onRecoverableError(com.braintreepayments.api.exceptions.ErrorWithResponse)} or
+     * {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)} as appropriate.
+     *
+     * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     */
+    public synchronized void finishPayWithCoinbase(final int resultCode, final Intent data) {
+        mExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    CoinbaseAccount coinbaseAccount = mBraintreeApi.finishPayWithCoinbase(resultCode, data);
+                    if (coinbaseAccount != null) {
+                        postCreatedMethodToListeners(coinbaseAccount);
+                        postCreatedNonceToListeners(coinbaseAccount.getNonce());
+                    }
+                } catch (BraintreeException e) {
+                    postUnrecoverableErrorToListeners(e);
+                } catch (ErrorWithResponse errorWithResponse) {
+                    postRecoverableErrorToListeners(errorWithResponse);
+                }
+            }
+        });
     }
 
     /**

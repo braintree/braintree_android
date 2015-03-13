@@ -43,7 +43,7 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
     /**
      * Used by PayPal wrappers to construct a {@link com.braintreepayments.api.models.PayPalAccount}.
      * @param correlationId Application correlation ID created by
-     * {@link com.paypal.android.sdk.payments.PayPalConfiguration#getApplicationCorrelationId(android.app.Activity)}
+     * {@link com.paypal.android.sdk.payments.PayPalConfiguration#getApplicationCorrelationId(android.content.Context)}
      * to verify the payment.
      * @return {@link com.braintreepayments.api.models.PayPalAccountBuilder}
      */

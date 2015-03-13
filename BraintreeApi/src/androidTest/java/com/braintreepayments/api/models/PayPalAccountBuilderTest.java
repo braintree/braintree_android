@@ -64,5 +64,4 @@ public class PayPalAccountBuilderTest extends TestCase {
 
         assertFalse(builtAccount.keys().hasNext());
     }
-
 }

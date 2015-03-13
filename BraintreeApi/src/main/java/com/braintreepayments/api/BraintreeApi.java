@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Base64;
 
 import com.braintreepayments.api.annotations.Beta;
@@ -17,6 +18,8 @@ import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
 import com.braintreepayments.api.models.AnalyticsRequest;
 import com.braintreepayments.api.models.ClientToken;
+import com.braintreepayments.api.models.CoinbaseAccount;
+import com.braintreepayments.api.models.CoinbaseAccountBuilder;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
@@ -199,7 +202,8 @@ public class BraintreeApi {
      *        when {@link #startPayWithCoinbase(android.app.Activity, int)} finishes.
      * @param requestCode the request code associated with the start request. Will be returned in
      *        {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     * @return
+     * @return A {@link java.lang.Boolean} if switching to Coinbase was successful.
+     * @throws java.io.UnsupportedEncodingException If the UTF-8 encoder was not available.
      */
     public boolean startPayWithCoinbase(Activity activity, int requestCode)
             throws UnsupportedEncodingException {
@@ -218,6 +222,7 @@ public class BraintreeApi {
      * {@link #create(com.braintreepayments.api.models.PaymentMethod.Builder)}. {@link #finishPayWithPayPal(android.app.Activity, int, android.content.Intent)}
      * will call this and {@link #create(com.braintreepayments.api.models.PaymentMethod.Builder)} for you
      * and may be a better option.
+     *
      * @param activity The activity that received the result.
      * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
@@ -281,12 +286,35 @@ public class BraintreeApi {
 
     /**
      * Handles response from Venmo app after One Touch app switch.
+     *
      * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @return The nonce representing the Venmo payment method.
      */
     public String finishPayWithVenmo(int resultCode, Intent data) {
         return mVenmoAppSwitch.handleAppSwitchResponse(resultCode, data);
+    }
+
+    /**
+     * Handles response from Coinbase after user authorization.
+     *
+     * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @return The {@link com.braintreepayments.api.models.CoinbaseAccount} for the user or {@code null}
+     *         if the resultCode was not {@link android.app.Activity#RESULT_OK}.
+     * @throws com.braintreepayments.api.exceptions.BraintreeException If an error not due to validation
+     *         (server error, network issue, ect.) occurs
+     * @throws com.braintreepayments.api.exceptions.ErrorWithResponse If creation fails server side validation.
+     */
+    public CoinbaseAccount finishPayWithCoinbase(int resultCode, Intent data)
+            throws BraintreeException, ErrorWithResponse {
+        if (resultCode == Activity.RESULT_OK) {
+            Uri redirectUri =
+                    data.getParcelableExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL);
+
+            return create(new CoinbaseAccountBuilder().code(mCoinbase.parseResponse(redirectUri)));
+        }
+        return null;
     }
 
     /**

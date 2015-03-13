@@ -17,6 +17,7 @@ import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.CoinbaseAccount;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
@@ -27,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -39,6 +41,7 @@ import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -400,6 +403,151 @@ public class BraintreeTest extends AndroidTestCase {
         SystemClock.sleep(50);
 
         assertFalse("Expected no listeners to fire but one did fire", listenerWasCalled.get());
+    }
+
+    public void testStartPayWithCoinbaseStartsCoinbase() throws UnsupportedEncodingException {
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        Braintree braintree = new Braintree("client-token", braintreeApi);
+
+        braintree.startPayWithCoinbase(mock(Activity.class), 0);
+
+        verify(braintreeApi).startPayWithCoinbase((Activity) anyObject(), anyInt());
+    }
+
+    public void testStartPayWithCoinbasePostsAnUnrecoverableErrorForEncodingExceptions()
+            throws UnsupportedEncodingException {
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        when(braintreeApi.isCoinbaseEnabled()).thenReturn(true);
+        doThrow(new UnsupportedEncodingException()).when(braintreeApi).startPayWithCoinbase(
+                (Activity) anyObject(), anyInt());
+        Braintree braintree = new Braintree("client-token", braintreeApi);
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        braintree.addListener(new SimpleListener() {
+            @Override
+            public void onUnrecoverableError(Throwable throwable) {
+                if (throwable instanceof UnsupportedEncodingException) {
+                    wasCalled.set(true);
+                }
+            }
+        });
+
+        braintree.startPayWithCoinbase(mock(Activity.class), 0);
+        SystemClock.sleep(50);
+
+        assertTrue("Listener was never called with UnsupportedEncodingException", wasCalled.get());
+    }
+
+    public void testStartPayWithCoinbasePostsAnUnrecoverableErrorWhenCoinbaseNotEnabled() {
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        when(braintreeApi.isCoinbaseEnabled()).thenReturn(false);
+        Braintree braintree = new Braintree("client-token", braintreeApi);
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        braintree.addListener(new SimpleListener() {
+            @Override
+            public void onUnrecoverableError(Throwable throwable) {
+                if (throwable instanceof AppSwitchNotAvailableException) {
+                    wasCalled.set(true);
+                }
+            }
+        });
+
+        braintree.startPayWithCoinbase(mock(Activity.class), 0);
+        SystemClock.sleep(50);
+
+        assertTrue("Listener was never called with AppSwitchNotAvailableException", wasCalled.get());
+    }
+
+    public void testStartPayWithCoinbasePostsAnUnrecoverableErrorWhenCreatingTheIntentFails()
+            throws UnsupportedEncodingException {
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        when(braintreeApi.isCoinbaseEnabled()).thenReturn(true);
+        when(braintreeApi.startPayWithCoinbase((Activity) anyObject(), anyInt())).thenReturn(false);
+        Braintree braintree = new Braintree("client-token", braintreeApi);
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        braintree.addListener(new SimpleListener() {
+            @Override
+            public void onUnrecoverableError(Throwable throwable) {
+                assertEquals(AppSwitchNotAvailableException.class, throwable.getClass());
+                wasCalled.set(true);
+            }
+        });
+
+        braintree.startPayWithCoinbase(mock(Activity.class), 0);
+        SystemClock.sleep(50);
+
+        assertTrue("Listener was never called with AppSwitchNotAvailableException", wasCalled.get());
+    }
+
+    public void testFinishPayWithCoinbasePostsAPaymentMethod()
+            throws ErrorWithResponse, BraintreeException {
+        final CoinbaseAccount coinbaseAccount = mock(CoinbaseAccount.class);
+        when(coinbaseAccount.getNonce()).thenReturn("coinbase-nonce");
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        when(braintreeApi.finishPayWithCoinbase(anyInt(), (Intent) anyObject())).thenReturn(coinbaseAccount);
+        Braintree braintree = new Braintree("client-token", braintreeApi);
+        final AtomicBoolean paymentMethodCalled = new AtomicBoolean(false);
+        final AtomicBoolean paymentMethodNonceCalled = new AtomicBoolean(false);
+        braintree.addListener(new SimpleListener() {
+            @Override
+            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+                assertEquals(coinbaseAccount, paymentMethod);
+                paymentMethodCalled.set(true);
+            }
+
+            @Override
+            public void onPaymentMethodNonce(String paymentMethodNonce) {
+                assertEquals("coinbase-nonce", paymentMethodNonce);
+                paymentMethodNonceCalled.set(true);
+            }
+        });
+
+        braintree.finishPayWithCoinbase(0, new Intent());
+        SystemClock.sleep(50);
+
+        assertTrue("onPaymentMethodCreated should have been called", paymentMethodCalled.get());
+        assertTrue("onPaymentMethodNonce should have been called", paymentMethodNonceCalled.get());
+    }
+
+    public void testFinishPayWithCoinbasePostsAnUnrecoverableError()
+            throws ErrorWithResponse, BraintreeException {
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        doThrow(new BraintreeException()).when(braintreeApi)
+                .finishPayWithCoinbase(anyInt(), (Intent) anyObject());
+        Braintree braintree = new Braintree("client-token", braintreeApi);
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        braintree.addListener(new SimpleListener() {
+            @Override
+            public void onUnrecoverableError(Throwable throwable) {
+                assertEquals(BraintreeException.class, throwable.getClass());
+                wasCalled.set(true);
+            }
+        });
+
+        braintree.finishPayWithCoinbase(0, new Intent());
+        SystemClock.sleep(50);
+
+        assertTrue("onUnrecoverableError was not called", wasCalled.get());
+    }
+
+    public void testFinishPayWithCoinbasePostsARecoverableError()
+            throws ErrorWithResponse, BraintreeException {
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        doThrow(new ErrorWithResponse(0, "{}")).when(braintreeApi)
+                .finishPayWithCoinbase(anyInt(), (Intent) anyObject());
+        Braintree braintree = new Braintree("client-token", braintreeApi);
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        braintree.addListener(new SimpleListener() {
+            @Override
+            public void onRecoverableError(ErrorWithResponse error) {
+                assertEquals(ErrorWithResponse.class, error.getClass());
+                wasCalled.set(true);
+            }
+        });
+
+        braintree.finishPayWithCoinbase(0, new Intent());
+        SystemClock.sleep(50);
+
+        assertTrue("onRecoverableError was not called", wasCalled.get());
     }
 
     public void testStartThreeDSecureVerificationPostsPaymentMethodToListenersWhenLookupReturnsACard()

@@ -8,7 +8,7 @@ import android.os.Bundle;
 public class BraintreeBrowserSwitchActivity extends Activity {
 
     public static final String EXTRA_REQUEST_URL = "com.braintreepayments.api.BraintreeBrowserSwitchActivity.EXTRA_REQUEST_URL";
-    private static final String EXTRA_REDIRECT_URL = "com.braintreepayments.api.BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL";
+    public static final String EXTRA_REDIRECT_URL = "com.braintreepayments.api.BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL";
 
     private boolean mShouldCancelOnResume = false;
 
