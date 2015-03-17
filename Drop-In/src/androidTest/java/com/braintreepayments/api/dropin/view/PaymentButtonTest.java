@@ -2,16 +2,19 @@ package com.braintreepayments.api.dropin.view;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.test.AndroidTestCase;
 import android.view.View;
 
 import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.BraintreeBrowserSwitchActivity;
 import com.braintreepayments.api.dropin.R;
 import com.paypal.android.sdk.payments.PayPalTouchActivity;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -34,6 +37,7 @@ public class PaymentButtonTest extends AndroidTestCase {
     public void testNotVisibleWhenNoMethodsAreEnabled() {
         when(mBraintree.isPayPalEnabled()).thenReturn(false);
         when(mBraintree.isVenmoEnabled()).thenReturn(false);
+        when(mBraintree.isCoinbaseEnabled()).thenReturn(false);
         PaymentButton button = new PaymentButton(getContext());
 
         button.initialize(null, mBraintree);
@@ -49,7 +53,9 @@ public class PaymentButtonTest extends AndroidTestCase {
         assertEquals(View.VISIBLE, button.getVisibility());
         assertEquals(View.VISIBLE, button.findViewById(R.id.bt_paypal_button).getVisibility());
         assertEquals(View.GONE, button.findViewById(R.id.bt_venmo_button).getVisibility());
+        assertEquals(View.GONE, button.findViewById(R.id.bt_coinbase_button).getVisibility());
         assertEquals(View.GONE, button.findViewById(R.id.bt_payment_button_divider).getVisibility());
+        assertEquals(View.GONE, button.findViewById(R.id.bt_payment_button_divider_2).getVisibility());
     }
 
     public void testOnlyShowsVenmo() {
@@ -61,19 +67,40 @@ public class PaymentButtonTest extends AndroidTestCase {
         assertEquals(View.VISIBLE, button.getVisibility());
         assertEquals(View.VISIBLE, button.findViewById(R.id.bt_venmo_button).getVisibility());
         assertEquals(View.GONE, button.findViewById(R.id.bt_paypal_button).getVisibility());
+        assertEquals(View.GONE, button.findViewById(R.id.bt_coinbase_button).getVisibility());
         assertEquals(View.GONE, button.findViewById(R.id.bt_payment_button_divider).getVisibility());
+        assertEquals(View.GONE, button.findViewById(R.id.bt_payment_button_divider_2).getVisibility());
+    }
+
+    public void testOnlyShowsCoinbase() {
+        when(mBraintree.isPayPalEnabled()).thenReturn(false);
+        when(mBraintree.isVenmoEnabled()).thenReturn(false);
+        when(mBraintree.isCoinbaseEnabled()).thenReturn(true);
+        PaymentButton button = new PaymentButton(getContext());
+
+        button.initialize(null, mBraintree);
+        assertEquals(View.VISIBLE, button.getVisibility());
+        assertEquals(View.VISIBLE, button.findViewById(R.id.bt_coinbase_button).getVisibility());
+        assertEquals(View.GONE, button.findViewById(R.id.bt_paypal_button).getVisibility());
+        assertEquals(View.GONE, button.findViewById(R.id.bt_venmo_button).getVisibility());
+        assertEquals(View.GONE, button.findViewById(R.id.bt_payment_button_divider).getVisibility());
+        assertEquals(View.GONE,
+                button.findViewById(R.id.bt_payment_button_divider_2).getVisibility());
     }
 
     public void testShowsAllMethodsAndDivider() {
         when(mBraintree.isPayPalEnabled()).thenReturn(true);
         when(mBraintree.isVenmoEnabled()).thenReturn(true);
+        when(mBraintree.isCoinbaseEnabled()).thenReturn(true);
         PaymentButton button = new PaymentButton(getContext());
 
         button.initialize(null, mBraintree);
         assertEquals(View.VISIBLE, button.getVisibility());
-        assertEquals(View.VISIBLE, button.findViewById(R.id.bt_venmo_button).getVisibility());
         assertEquals(View.VISIBLE, button.findViewById(R.id.bt_paypal_button).getVisibility());
+        assertEquals(View.VISIBLE, button.findViewById(R.id.bt_venmo_button).getVisibility());
+        assertEquals(View.VISIBLE, button.findViewById(R.id.bt_coinbase_button).getVisibility());
         assertEquals(View.VISIBLE, button.findViewById(R.id.bt_payment_button_divider).getVisibility());
+        assertEquals(View.VISIBLE, button.findViewById(R.id.bt_payment_button_divider_2).getVisibility());
     }
 
     public void testStartsPayWithPayPal() {
@@ -96,6 +123,17 @@ public class PaymentButtonTest extends AndroidTestCase {
         verify(mBraintree).startPayWithVenmo(null, PaymentButton.REQUEST_CODE);
     }
 
+    public void testStartsPayWithCoinbase() {
+        when(mBraintree.isPayPalEnabled()).thenReturn(true);
+        when(mBraintree.isVenmoEnabled()).thenReturn(true);
+        when(mBraintree.isCoinbaseEnabled()).thenReturn(true);
+        PaymentButton button = new PaymentButton(getContext());
+
+        button.initialize(null, mBraintree);
+        button.findViewById(R.id.bt_coinbase_button).performClick();
+        verify(mBraintree).startPayWithCoinbase(null, PaymentButton.REQUEST_CODE);
+    }
+
     public void testDoesNotLaunchFinishMethodsOnNonOkResponses() {
         PaymentButton button = new PaymentButton(getContext());
 
@@ -103,6 +141,7 @@ public class PaymentButtonTest extends AndroidTestCase {
         verify(mBraintree, never()).finishPayWithPayPal(any(Activity.class), any(Integer.class),
                 any(Intent.class));
         verify(mBraintree, never()).finishPayWithVenmo(any(Integer.class), any(Intent.class));
+        verify(mBraintree, never()).finishPayWithCoinbase(any(Integer.class), any(Intent.class));
     }
 
     public void testDoesNotLaunchFinishMethodsOnUnknownRequestCode() {
@@ -112,6 +151,7 @@ public class PaymentButtonTest extends AndroidTestCase {
         verify(mBraintree, never()).finishPayWithPayPal(any(Activity.class), any(Integer.class),
                 any(Intent.class));
         verify(mBraintree, never()).finishPayWithVenmo(any(Integer.class), any(Intent.class));
+        verify(mBraintree, never()).finishPayWithCoinbase(any(Integer.class), any(Intent.class));
     }
 
     public void testAllowsRequestCodeOverride() {
@@ -121,6 +161,7 @@ public class PaymentButtonTest extends AndroidTestCase {
         button.onActivityResult(500, Activity.RESULT_OK, new Intent());
         verify(mBraintree, never()).finishPayWithPayPal(any(Activity.class), any(Integer.class),
                 any(Intent.class));
+        verify(mBraintree, never()).finishPayWithCoinbase(any(Integer.class), any(Intent.class));
         verify(mBraintree).finishPayWithVenmo(any(Integer.class), any(Intent.class));
     }
 
@@ -132,6 +173,22 @@ public class PaymentButtonTest extends AndroidTestCase {
                 .putExtra(PayPalTouchActivity.EXTRA_LOGIN_CONFIRMATION, newParcelable());
         button.onActivityResult(PaymentButton.REQUEST_CODE, Activity.RESULT_OK, intent);
         verify(mBraintree).finishPayWithPayPal(null, Activity.RESULT_OK, intent);
+        verify(mBraintree, never()).finishPayWithVenmo(any(Integer.class), any(Intent.class));
+        verify(mBraintree, never()).finishPayWithCoinbase(any(Integer.class), any(Intent.class));
+    }
+
+    public void testFinishesCoinbaseOnCoinbaseIntent() {
+        Activity mockActivity = mock(Activity.class);
+        when(mockActivity.getPackageName()).thenReturn("com.braintree.test");
+        PaymentButton button = new PaymentButton(getContext());
+        button.initialize(mockActivity, mBraintree);
+
+        Intent intent = new Intent()
+                .putExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL,
+                        Uri.parse("com.braintree.test.braintree://coinbase?code=1234"));
+        button.onActivityResult(PaymentButton.REQUEST_CODE, Activity.RESULT_OK, intent);
+        verify(mBraintree).finishPayWithCoinbase(Activity.RESULT_OK, intent);
+        verify(mBraintree, never()).finishPayWithPayPal(any(Activity.class), anyInt(), any(Intent.class));
         verify(mBraintree, never()).finishPayWithVenmo(any(Integer.class), any(Intent.class));
     }
 

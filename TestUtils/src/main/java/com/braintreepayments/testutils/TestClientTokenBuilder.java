@@ -24,7 +24,6 @@ public class TestClientTokenBuilder {
     private static final int MERCHANT_WITH_POSTAL_CODE_VERIFICATION = 4;
     private static final int MERCHANT_WITH_CVV_AND_POSTAL_CODE_VERIFICATION = 5;
     private static final int MERCHANT_WITH_THREE_D_SECURE_ENABLED = 6;
-    private static final int MERCHANT_WITH_COINBASE_ENABLED = 7;
 
     private boolean mWithCustomer = true;
     private int mMerchantType = MERCHANT_WITHOUT_PAYPAL;
@@ -71,11 +70,6 @@ public class TestClientTokenBuilder {
         return this;
     }
 
-    public TestClientTokenBuilder withCoinbase() {
-        mMerchantType = MERCHANT_WITH_COINBASE_ENABLED;
-        return this;
-    }
-
     public TestClientTokenBuilder withAnalytics() {
         mAnalytics = true;
         return this;
@@ -118,7 +112,6 @@ public class TestClientTokenBuilder {
             case MERCHANT_WITH_FAKE_PAYPAL:
             case MERCHANT_WITH_PAYPAL:
             case MERCHANT_WITH_THREE_D_SECURE_ENABLED:
-            case MERCHANT_WITH_COINBASE_ENABLED:
                 return getClientTokenFromGateway("integration_merchant_id", "integration_public_key");
             case MERCHANT_WITH_CVV_VERIFICATION:
                 return getClientTokenFromGateway("client_api_cvv_verification_merchant_id", "client_api_cvv_verification_public_key");

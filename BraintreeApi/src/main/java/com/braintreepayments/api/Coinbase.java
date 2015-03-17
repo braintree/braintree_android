@@ -13,7 +13,10 @@ import com.braintreepayments.api.models.Configuration;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-/* package */ class Coinbase {
+/**
+ * Class to generate Coinbase request url and parse Coinbase response.
+ */
+public class Coinbase {
 
     private static final String REDIRECT_URI_HOST = "coinbase";
     private static final String REDIRECT_URI_SCHEME_SUFFIX = "braintree";
@@ -22,16 +25,16 @@ import java.net.URLEncoder;
     private Context mContext;
     private Configuration mConfiguration;
 
-    public Coinbase(Context context, Configuration configuration) {
+    protected Coinbase(Context context, Configuration configuration) {
         mContext = context;
         mConfiguration = configuration;
     }
 
-    public boolean isAvailable() {
+    protected boolean isAvailable() {
         return mConfiguration.isCoinbaseEnabled();
     }
 
-    public Intent getLaunchIntent() throws UnsupportedEncodingException {
+    protected Intent getLaunchIntent() throws UnsupportedEncodingException {
         CoinbaseConfiguration configuration = mConfiguration.getCoinbase();
 
         String url = "https://www.coinbase.com/oauth/authorize?response_type=code" +
@@ -54,16 +57,29 @@ import java.net.URLEncoder;
                 .toString();
     }
 
-    public boolean canParseResponse(Uri responseUri) {
+    /**
+     * Method to check if a given {@link android.content.Intent} was a Coinbase response or not.
+     *
+     * @param context
+     * @param intent Intent to check
+     * @return {@code true} if {@link android.content.Intent} was a Coinbase response, {@code false}
+     *         otherwise.
+     */
+    public static boolean canParseResponse(Context context, Intent intent) {
+        Uri redirectUri = intent.getParcelableExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL);
+        return canParseResponse(context, redirectUri);
+    }
+
+    protected static boolean canParseResponse(Context context, Uri responseUri) {
         return responseUri != null &&
                 responseUri.getScheme().equals(
-                        mContext.getPackageName() + "." + REDIRECT_URI_SCHEME_SUFFIX) &&
+                        context.getPackageName() + "." + REDIRECT_URI_SCHEME_SUFFIX) &&
                 responseUri.getHost().equals(REDIRECT_URI_HOST);
     }
 
-    public String parseResponse(Uri responseUri)
+    protected String parseResponse(Uri responseUri)
             throws CoinbaseException, ConfigurationException {
-        if (canParseResponse(responseUri)) {
+        if (Coinbase.canParseResponse(mContext, responseUri)) {
             String code = responseUri.getQueryParameter("code");
 
             if (!TextUtils.isEmpty(code)) {

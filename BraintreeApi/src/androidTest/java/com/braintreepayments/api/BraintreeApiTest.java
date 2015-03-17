@@ -157,12 +157,12 @@ public class BraintreeApiTest extends AndroidTestCase {
         assertFalse(braintreeApi.startPayWithCoinbase(mock(Activity.class), 0));
     }
 
-    public void testPayWithCoinbase()
+    public void pendingPayWithCoinbase()
             throws UnsupportedEncodingException, ErrorWithResponse, BraintreeException {
         ArgumentCaptor<Intent> launchIntentCaptor = ArgumentCaptor.forClass(Intent.class);
         Activity mockActivity = mock(Activity.class);
 
-        BraintreeApi braintreeApi = new BraintreeApi(mContext, new TestClientTokenBuilder().withCoinbase().build());
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, new TestClientTokenBuilder().build());
         braintreeApi.startPayWithCoinbase(mockActivity, 1);
 
         verify(mockActivity).startActivityForResult(launchIntentCaptor.capture(), anyInt());

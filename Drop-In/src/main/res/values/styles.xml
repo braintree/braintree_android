@@ -33,10 +33,18 @@
 
     <style name="bt_payment_method_app_switch_button">
         <item name="android:layout_height">fill_parent</item>
-        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_centerVertical">true</item>
         <item name="android:visibility">gone</item>
         <item name="android:padding">@dimen/bt_payment_method_button_type_padding</item>
         <item name="android:background">@drawable/bt_payment_button_background</item>
+    </style>
+
+    <style name="bt_app_switch_button_divider">
+        <item name="android:layout_height">@dimen/bt_payment_method_button_divider_height</item>
+        <item name="android:layout_width">@dimen/bt_payment_method_button_divider_width</item>
+        <item name="android:background">@color/bt_border_color</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:visibility">gone</item>
     </style>
 </resources>

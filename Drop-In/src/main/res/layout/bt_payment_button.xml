@@ -1,34 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/bt_payment_method_button_height"
+    android:orientation="horizontal"
+    android:weightSum="3"
     android:background="@color/bt_white" >
-
-    <View
-        android:id="@+id/bt_payment_button_divider"
-        android:layout_height="@dimen/bt_payment_method_button_divider_height"
-        android:layout_width="@dimen/bt_payment_method_button_divider_width"
-        android:background="@color/bt_border_color"
-        android:layout_centerInParent="true"
-        android:layout_marginLeft="@dimen/bt_payment_method_button_divider_padding"
-        android:layout_marginRight="@dimen/bt_payment_method_button_divider_padding"
-        android:visibility="gone" />
 
     <ImageButton
         style="@style/bt_payment_method_app_switch_button"
         android:id="@+id/bt_paypal_button"
         android:src="@drawable/bt_logo_paypal"
-        android:contentDescription="@string/bt_pay_with_paypal"
-        android:layout_toLeftOf="@id/bt_payment_button_divider"
-        android:layout_toStartOf="@id/bt_payment_button_divider"/>
+        android:contentDescription="@string/bt_pay_with_paypal" />
+
+    <View
+        style="@style/bt_app_switch_button_divider"
+        android:id="@+id/bt_payment_button_divider" />
 
     <ImageButton
         style="@style/bt_payment_method_app_switch_button"
         android:id="@+id/bt_venmo_button"
         android:src="@drawable/bt_logo_venmo"
-        android:contentDescription="@string/bt_pay_with_venmo"
-        android:layout_toRightOf="@id/bt_payment_button_divider"
-        android:layout_toEndOf="@id/bt_payment_button_divider" />
+        android:contentDescription="@string/bt_pay_with_venmo" />
 
-</RelativeLayout>
+    <View
+        style="@style/bt_app_switch_button_divider"
+        android:id="@+id/bt_payment_button_divider_2" />
+
+    <ImageButton
+        style="@style/bt_payment_method_app_switch_button"
+        android:id="@+id/bt_coinbase_button"
+        android:src="@drawable/bt_logo_coinbase"
+        android:contentDescription="@string/bt_pay_with_coinbase" />
+
+</LinearLayout>

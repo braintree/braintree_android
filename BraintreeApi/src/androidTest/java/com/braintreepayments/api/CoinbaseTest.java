@@ -76,7 +76,7 @@ public class CoinbaseTest {
                 .build();
 
         assertTrue("Coinbase should handle a round trip redirect success",
-                getCoinbaseWithValidConfiguration().canParseResponse(redirectUri));
+                Coinbase.canParseResponse(getContext(), redirectUri));
     }
 
     @Test
@@ -84,8 +84,7 @@ public class CoinbaseTest {
         Uri uri = Uri.parse("my.app.social.stuff://not-for-braintree");
 
         assertFalse("Coinbase should reject a random url",
-                getCoinbaseWithValidConfiguration().canParseResponse(
-                        uri));
+                Coinbase.canParseResponse(getContext(), uri));
     }
 
     @Test
@@ -161,8 +160,12 @@ public class CoinbaseTest {
     }
 
     private Coinbase getCoinbaseWithSpecifiedConfiguration(Configuration configuration) {
+        return new Coinbase(getContext(), configuration);
+    }
+
+    private Context getContext() {
         Context context = mock(Context.class);
         when(context.getPackageName()).thenReturn("com.example.merchant");
-        return new Coinbase(context, configuration);
+        return context;
     }
 }
