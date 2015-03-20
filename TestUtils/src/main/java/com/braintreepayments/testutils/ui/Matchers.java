@@ -1,7 +1,7 @@
 package com.braintreepayments.testutils.ui;
 
 import android.annotation.TargetApi;
-import android.content.Context;
+import android.content.res.Resources.NotFoundException;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION_CODES;
@@ -62,22 +62,34 @@ public class Matchers {
     }
 
     @TargetApi(VERSION_CODES.HONEYCOMB)
-    public static Matcher<View> hasBackgroundResource(final Context context, final int resource) {
-        final Drawable expectedDrawable = context.getResources().getDrawable(resource);
-
+    public static Matcher<View> hasBackgroundResource(final int resourceId) {
         return new BoundedMatcher<View, View>(View.class) {
+            private Drawable expectedDrawable = null;
+            private String resourceName = null;
+
             @Override
             public void describeTo(Description description) {
-                description.appendText(
-                        "with resource: " + context.getResources().getResourceName(resource));
+                description.appendText("with resource: ");
+                description.appendText(resourceName);
             }
 
             @Override
             protected boolean matchesSafely(View view) {
-                return is(((ColorDrawable) expectedDrawable.getCurrent())
-                        .getColor()).matches(((ColorDrawable) view.getBackground().getCurrent()).getColor());
+                if (null == expectedDrawable) {
+                    try {
+                        expectedDrawable = view.getResources().getDrawable(resourceId);
+                        resourceName = view.getResources().getResourceEntryName(resourceId);
+                    } catch (NotFoundException ignored) {
+                        /* view could be from a context unaware of the resource id. */
+                    }
+                }
+                if (null != expectedDrawable) {
+                    return is(((ColorDrawable) expectedDrawable.getCurrent())
+                            .getColor()).matches(((ColorDrawable) view.getBackground().getCurrent()).getColor());
+                } else {
+                    return false;
+                }
             }
         };
     }
-
 }

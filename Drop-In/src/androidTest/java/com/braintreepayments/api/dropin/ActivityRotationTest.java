@@ -267,11 +267,11 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
 
 
         onView(withId(R.id.bt_card_form_submit_button)).check(
-                matches(hasBackgroundResource(mContext, R.drawable.bt_submit_button_background)));
+                matches(hasBackgroundResource(R.drawable.bt_submit_button_background)));
         rotateToLandscape(this);
         waitForAddPaymentFormHeader();
         onView(withId(R.id.bt_card_form_submit_button)).check(
-                matches(hasBackgroundResource(mContext, R.drawable.bt_submit_button_background)));
+                matches(hasBackgroundResource(R.drawable.bt_submit_button_background)));
     }
 
     public void testCardFormCreatesAPaymentMethodInLandscape() {

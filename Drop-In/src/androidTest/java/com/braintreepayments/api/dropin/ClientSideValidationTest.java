@@ -63,18 +63,18 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
         waitForAddPaymentFormHeader();
 
         onView(withId(R.id.bt_card_form_submit_button)).check(matches(
-                hasBackgroundResource(mContext, R.color.bt_button_disabled_color)));
+                hasBackgroundResource(R.color.bt_button_disabled_color)));
 
         fillInCardForm(mContext);
 
         onView(withId(R.id.bt_card_form_submit_button)).check(
-                matches(hasBackgroundResource(mContext, R.drawable.bt_submit_button_background)));
+                matches(hasBackgroundResource(R.drawable.bt_submit_button_background)));
 
         onView(withId(R.id.bt_card_form_expiration)).perform(click());
         sendKeys(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_DEL);
 
         onView(withId(R.id.bt_card_form_submit_button)).check(
-                matches(hasBackgroundResource(mContext, R.color.bt_button_disabled_color)));
+                matches(hasBackgroundResource(R.color.bt_button_disabled_color)));
     }
 
     public void testSubmitsToServerWhenFieldsPassClientValidation()
