@@ -64,6 +64,15 @@ public class CardFormActivityTest extends TestActivityTestCase {
         onView(withId(R.id.bt_card_form_postal_code)).check(matches(isDisplayed()));
     }
 
+    public void testHintsAreDisplayed() {
+        setupCardForm(true, true, true, true);
+
+        onView(withHint(R.string.bt_form_hint_card_number)).check(matches(isDisplayed()));
+        onView(withHint(R.string.bt_form_hint_expiration)).check(matches(isDisplayed()));
+        onView(withHint(R.string.bt_form_hint_cvv)).check(matches(isDisplayed()));
+        onView(withHint(R.string.bt_form_hint_postal_code)).check(matches(isDisplayed()));
+    }
+
     public void testCorrectCardHintsAreDisplayed() {
         setupCardForm();
 

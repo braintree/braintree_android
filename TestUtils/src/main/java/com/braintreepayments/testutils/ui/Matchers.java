@@ -44,6 +44,44 @@ public class Matchers {
         };
     }
 
+    public static Matcher<View> withHint(final int resourceId) {
+        return new BoundedMatcher<View, TextView>(TextView.class) {
+            private String resourceName = null;
+            private String expectedHint = null;
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with hint from resource id: ");
+                description.appendValue(resourceId);
+                if (null != resourceName) {
+                    description.appendText(" with hint from resource: ");
+                    description.appendText(expectedHint);
+                }
+                if (null != expectedHint) {
+                    description.appendText(" value: ");
+                    description.appendText(expectedHint);
+                }
+            }
+
+            @Override
+            protected boolean matchesSafely(TextView textView) {
+                if (null == expectedHint) {
+                    try {
+                        expectedHint = textView.getResources().getString(resourceId);
+                        resourceName = textView.getResources().getResourceEntryName(resourceId);
+                    } catch (NotFoundException ignored) {
+                        /* view could be from a context unaware of the resource id. */
+                    }
+                }
+                if (null != expectedHint) {
+                    return expectedHint.equals(textView.getHint());
+                } else {
+                    return false;
+                }
+            }
+        };
+    }
+
     public static Matcher<View> withHint(String hintText) {
         checkNotNull(hintText);
 

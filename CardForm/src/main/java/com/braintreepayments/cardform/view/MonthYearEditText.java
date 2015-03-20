@@ -72,8 +72,9 @@ public class MonthYearEditText extends FloatingLabelEditText {
     }
 
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-        mChangeWasAddition = count > before;
+    public void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
+        super.onTextChanged(text, start, lengthBefore, lengthAfter);
+        mChangeWasAddition = lengthAfter > lengthBefore;
     }
 
     @Override
