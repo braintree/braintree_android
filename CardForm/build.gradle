@@ -23,7 +23,7 @@ dependencies {
     androidTestCompile project(':TestUtils')
 }
 
-task grantAnimationPermission(type: Exec, dependsOn: 'installDebugTest') {
+task grantAnimationPermission(type: Exec, dependsOn: 'installDebugAndroidTest') {
     commandLine 'adb shell pm grant com.braintreepayments.cardform.test android.permission.SET_ANIMATION_SCALE'.split(' ')
 }
 
