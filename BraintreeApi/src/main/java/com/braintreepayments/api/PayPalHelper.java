@@ -86,8 +86,15 @@ public class PayPalHelper {
             PayPalTouchConfirmation paypalTouchConfirmation = data.getParcelableExtra(
                     PayPalTouchActivity.EXTRA_LOGIN_CONFIRMATION);
             if (paypalTouchConfirmation != null) {
-                JSONObject paypalTouchResponse = paypalTouchConfirmation
-                        .getPayPalTouchResponseBundle().toJSONObject();
+                JSONObject paypalTouchResponse;
+                try {
+                    paypalTouchResponse = paypalTouchConfirmation
+                            .toJSONObject()
+                            .getJSONObject("response");
+                } catch (JSONException ignored) {
+                    return null;
+                }
+
                 paypalAccountBuilder
                         .authorizationCode(paypalTouchResponse.optString("authorization_code"))
                         .source("paypal-app");
