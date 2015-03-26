@@ -11,7 +11,7 @@ task :tests => :lint do
   if output.match(/device$/)
     begin
       sh "ruby script/httpsd.rb /tmp/httpsd.pid"
-      log_listener_pid = fork { exec 'ruby', 'log_listener.rb' }
+      log_listener_pid = fork { exec 'ruby', 'script/log_listener.rb' }
       sh "./gradlew --info runAllTests :BraintreeData:connectedAndroidTest :BraintreeApi:connectedAndroidTest :CardForm:connectedAndroidTest :Drop-In:connectedAndroidTest"
     ensure
       `kill -9 \`cat /tmp/httpsd.pid\``
