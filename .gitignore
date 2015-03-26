@@ -2,6 +2,7 @@
 /gradle.properties
 /local.properties
 /.idea
+Gemfile.lock
 .DS_Store
 .bundle
 *.iml
