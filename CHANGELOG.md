@@ -1,5 +1,16 @@
 # Braintree Android SDK Release Notes
 
+## 1.4.0
+
+* Update gradle plugin to 1.1.2
+* Update build tools to 22
+* Update `compileSdkVersion` and `targetSdkVersion` to 22
+* Update PayPal SDK to 2.9.0
+* Features
+  * Add support for 3D Secure. *Please note:* this API is in beta and subject to change.
+* Fixes
+  * Fix missing expiration date float label (#21)
+
 ## 1.3.0
 
 * Remove Drop-In support for Eclipse
