@@ -556,6 +556,7 @@ public class Braintree {
                 try {
                     CoinbaseAccount coinbaseAccount = mBraintreeApi.finishPayWithCoinbase(resultCode, data);
                     if (coinbaseAccount != null) {
+                        addPaymentMethodToCache(coinbaseAccount);
                         postCreatedMethodToListeners(coinbaseAccount);
                         postCreatedNonceToListeners(coinbaseAccount.getNonce());
                     }

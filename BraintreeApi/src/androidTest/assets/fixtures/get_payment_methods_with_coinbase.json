@@ -1,0 +1,12 @@
+{
+    "paymentMethods": [
+         {
+            "type": "CoinbaseAccount",
+            "nonce": "f1648f66-068b-4710-a34a-46128774454f",
+            "description": "Coinbase",
+            "details": {
+                "email": "satoshi@example.com"
+            }
+         }
+    ]
+}

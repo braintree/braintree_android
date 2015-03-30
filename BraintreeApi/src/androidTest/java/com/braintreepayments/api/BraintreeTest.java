@@ -18,6 +18,8 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CoinbaseAccount;
+import com.braintreepayments.api.models.PayPalAccount;
+import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
@@ -96,6 +98,15 @@ public class BraintreeTest extends AndroidTestCase {
         waitForMainThreadToFinish();
         assertTrue(paymentMethodCreatedCalled.get());
         assertTrue(paymentMethodNonceCalled.get());
+    }
+
+    public void testCreateAddsPaymentMethodsToCache()
+            throws ExecutionException, InterruptedException {
+        createCardSync(mBraintree);
+
+        waitForMainThreadToFinish();
+        assertEquals("Payment method was not added to the cache", 1, mBraintree.getCachedPaymentMethods().size());
+        assertEquals("11", ((Card) mBraintree.getCachedPaymentMethods().get(0)).getLastTwo());
     }
 
     public void testTokenizePostsNonceToListeners() throws ExecutionException, InterruptedException {
@@ -228,6 +239,24 @@ public class BraintreeTest extends AndroidTestCase {
         verify(braintreeApi).sendAnalyticsEvent("custom.android.add-paypal.start", "custom");
     }
 
+    public void testFinishPayWithPayPalAddsPaymentMethodToCache()
+            throws ErrorWithResponse, BraintreeException {
+        final PayPalAccount payPalAccount = mock(PayPalAccount.class);
+        when(payPalAccount.getNonce()).thenReturn("paypal-nonce");
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        when(braintreeApi.handlePayPalResponse(any(Activity.class), eq(Activity.RESULT_OK), any(Intent.class)))
+                .thenReturn(new PayPalAccountBuilder());
+        when(braintreeApi.create(any(PayPalAccountBuilder.class))).thenReturn(payPalAccount);
+        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
+
+        braintree.finishPayWithPayPal(null, Activity.RESULT_OK, new Intent());
+        SystemClock.sleep(50);
+
+        List<PaymentMethod> paymentMethods = braintree.getCachedPaymentMethods();
+        assertEquals("PayPal payment methods should be added to the cache", 1, paymentMethods.size());
+        assertEquals("paypal-nonce", paymentMethods.get(0).getNonce());
+    }
+
     public void testFinishPayWithPayPalDoesNothingOnNullBuilder() throws ConfigurationException {
         Intent intent = new Intent();
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
@@ -340,6 +369,39 @@ public class BraintreeTest extends AndroidTestCase {
         SystemClock.sleep(50);
         assertTrue(nonceListenerCalled.get());
         assertTrue(paymentMethodListenerCalled.get());
+    }
+
+    public void testFinishPayWithVenmoAddPaymentMethodToCache()
+            throws JSONException, BraintreeException, ErrorWithResponse {
+        final PaymentMethod paymentMethod = new PaymentMethod() {
+            @Override
+            public String getNonce() {
+                return "venmo-nonce";
+            }
+
+            @Override
+            public String getTypeLabel() {
+                return "Payment Method";
+            }
+
+            @Override
+            public int describeContents() { return 0; }
+
+            @Override
+            public void writeToParcel(Parcel dest, int flags) {}
+        };
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        when(braintreeApi.finishPayWithVenmo(eq(Activity.RESULT_OK), any(Intent.class)))
+                .thenReturn("venmo-nonce");
+        when(braintreeApi.getPaymentMethod("venmo-nonce")).thenReturn(paymentMethod);
+        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
+
+        braintree.finishPayWithVenmo(Activity.RESULT_OK, new Intent());
+        SystemClock.sleep(50);
+
+        List<PaymentMethod> paymentMethods = braintree.getCachedPaymentMethods();
+        assertEquals("Created payment methods should be added to the cache", 1, paymentMethods.size());
+        assertEquals("venmo-nonce", paymentMethods.get(0).getNonce());
     }
 
     public void testFinishPayWithVenmoSendsAnalyticsEventOnSuccess()
@@ -506,6 +568,23 @@ public class BraintreeTest extends AndroidTestCase {
 
         assertTrue("onPaymentMethodCreated should have been called", paymentMethodCalled.get());
         assertTrue("onPaymentMethodNonce should have been called", paymentMethodNonceCalled.get());
+    }
+
+    public void testFinishPayWithCoinbaseAddsPaymentMethodToCache()
+            throws ErrorWithResponse, BraintreeException {
+        final CoinbaseAccount coinbaseAccount = mock(CoinbaseAccount.class);
+        when(coinbaseAccount.getNonce()).thenReturn("coinbase-nonce");
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        when(braintreeApi.finishPayWithCoinbase(anyInt(), (Intent) anyObject())).thenReturn(coinbaseAccount);
+        Braintree braintree = new Braintree("client-token", braintreeApi);
+
+        braintree.finishPayWithCoinbase(0, new Intent());
+        SystemClock.sleep(50);
+
+        List<PaymentMethod> paymentMethods = braintree.getCachedPaymentMethods();
+
+        assertEquals("Coinbase accounts should be added to cached payment methods on create", 1, paymentMethods.size());
+        assertEquals("coinbase-nonce", paymentMethods.get(0).getNonce());
     }
 
     public void testFinishPayWithCoinbasePostsAnUnrecoverableError()

@@ -93,12 +93,20 @@ public abstract class PaymentMethod implements Parcelable, Serializable {
             for(int i = 0; i < paymentMethods.length(); i++) {
                 paymentMethod = paymentMethods.getJSONObject(i);
                 String type = paymentMethod.getString(PAYMENT_METHOD_TYPE_KEY);
-                if (type.equals(Card.PAYMENT_METHOD_TYPE)) {
-                    paymentMethodsList.add(
-                            new Gson().fromJson(paymentMethod.toString(), Card.class));
-                } else if (type.equals(PayPalAccount.PAYMENT_METHOD_TYPE)) {
-                    paymentMethodsList.add(
-                            new Gson().fromJson(paymentMethod.toString(), PayPalAccount.class));
+                switch (type) {
+                    case Card.PAYMENT_METHOD_TYPE:
+                        paymentMethodsList.add(
+                                new Gson().fromJson(paymentMethod.toString(), Card.class));
+                        break;
+                    case PayPalAccount.PAYMENT_METHOD_TYPE:
+                        paymentMethodsList.add(
+                                new Gson().fromJson(paymentMethod.toString(), PayPalAccount.class));
+                        break;
+                    case CoinbaseAccount.PAYMENT_METHOD_TYPE:
+                        paymentMethodsList.add(
+                                new Gson()
+                                        .fromJson(paymentMethod.toString(), CoinbaseAccount.class));
+                        break;
                 }
             }
 
