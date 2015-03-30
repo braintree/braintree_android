@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<resources>
+    <string name="bt_form_pay_with_card_header">&#x4F7F;&#x7528;&#x4FE1;&#x7528;&#x5361;&#x4ED8;&#x6B3E;</string>
+
+    <string name="bt_invalid_card">&#x4FE1;&#x7528;&#x5361;&#x7121;&#x6548;</string>
+
+    <string name="bt_choose_payment_method">&#x9078;&#x64C7;&#x4ED8;&#x6B3E;&#x65B9;&#x5F0F;</string>
+    <string name="bt_change_payment_method">&#x66F4;&#x6539;&#x4ED8;&#x6B3E;&#x65B9;&#x5F0F;</string>
+    <string name="bt_add_new_payment_method">&#x65B0;&#x589E;&#x4ED8;&#x6B3E;&#x65B9;&#x5F0F;</string>
+    <string name="bt_add_payment_method">&#x589E;&#x52A0;&#x4ED8;&#x6B3E;&#x65B9;&#x5F0F;</string>
+
+    <string name="bt_default_submit_button_text">&#x8CFC;&#x8CB7;</string>
+    <string name="bt_default_action_bar_text">&#x8CFC;&#x8CB7;</string>
+
+    <!-- Note: %s is a place holder and should be left in translated strings -->
+    <string name="bt_card_descriptor">&#x5C3E;&#x865F;&#x70BA;%s</string>
+
+    <string name="bt_pay_with_paypal">&#x7528;PayPal&#x4ED8;&#x6B3E;</string>
+    <string name="bt_pay_with_venmo">&#x7528;Venmo&#x4ED8;&#x6B3E;</string>
+
+    <string name="bt_descriptor_visa">Visa</string>
+    <string name="bt_descriptor_mastercard">MasterCard</string>
+    <string name="bt_descriptor_amex">Amex</string>
+    <string name="bt_descriptor_jcb">JCB</string>
+    <string name="bt_descriptor_discover">Discover</string>
+    <string name="bt_descriptor_diners">Diners</string>
+    <string name="bt_descriptor_maestro">Maestro</string>
+    <string name="bt_descriptor_paypal">PayPal</string>
+    <string name="bt_descriptor_unknown">&#x5361;</string>
+</resources>
