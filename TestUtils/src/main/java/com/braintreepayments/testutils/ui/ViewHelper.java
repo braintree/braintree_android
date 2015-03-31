@@ -65,6 +65,11 @@ public class ViewHelper {
         return waitForView(viewMatcher, TEN_SECONDS);
     }
 
+    /**
+     * Closes the soft keyboard and sleeps to ensure the keyboard is fully closed.
+     *
+     * @return {@link android.support.test.espresso.ViewAction} instance for chaining
+     */
     public static ViewAction closeSoftKeyboard() {
         return new ViewAction() {
             /**
@@ -94,5 +99,4 @@ public class ViewHelper {
             }
         };
     }
-
 }

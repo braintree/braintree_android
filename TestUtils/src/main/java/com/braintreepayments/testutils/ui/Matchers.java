@@ -1,6 +1,7 @@
 package com.braintreepayments.testutils.ui;
 
 import android.annotation.TargetApi;
+import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -23,27 +24,43 @@ public class Matchers {
      * are not guaranteed to be unique. You may have to pair this matcher with another one to
      * guarantee a unique view selection.
      *
-     * @param id the resource id to match
+     * @param resourceId the resource id to match
      */
-    public static Matcher<View> withId(final int id) {
-        final Matcher<Integer> integerMatcher = is(id);
-        checkNotNull(integerMatcher);
+    public static Matcher<View> withId(final int resourceId) {
         return new TypeSafeMatcher<View>() {
-            private View mView;
+            private String resourceName = null;
 
             @Override
             public void describeTo(Description description) {
-                description.appendText(mView.getResources().getResourceName(id));
+                description.appendText("with resource id: ");
+                description.appendValue(resourceId);
+                if (null != resourceName) {
+                    description.appendText(" resource name: ");
+                    description.appendText(resourceName);
+                }
             }
 
             @Override
             public boolean matchesSafely(View view) {
-                mView = view;
-                return integerMatcher.matches(view.getId());
+                if (null == resourceName) {
+                    try {
+                        resourceName = view.getResources().getResourceEntryName(resourceId);
+                    } catch (Resources.NotFoundException ignored) {
+                        /* view could be from a context unaware of the resource id. */
+                    }
+                }
+                return resourceId == view.getId();
             }
         };
     }
 
+    /**
+     * Returns a matcher that matches {@link android.widget.TextView}s based on their hints.
+     * Note: You are not guaranteed to match a unique view.
+     * You may have to pair this matcher with another one to guarantee a unique view selection.
+     *
+     * @param resourceId the resource id of a {@link String} to match the hints
+     */
     public static Matcher<View> withHint(final int resourceId) {
         return new BoundedMatcher<View, TextView>(TextView.class) {
             private String resourceName = null;
@@ -55,7 +72,7 @@ public class Matchers {
                 description.appendValue(resourceId);
                 if (null != resourceName) {
                     description.appendText(" with hint from resource: ");
-                    description.appendText(expectedHint);
+                    description.appendText(resourceName);
                 }
                 if (null != expectedHint) {
                     description.appendText(" value: ");
