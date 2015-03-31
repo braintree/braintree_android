@@ -6,12 +6,14 @@ import android.os.Parcel;
 import android.os.SystemClock;
 import android.test.AndroidTestCase;
 
+import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
 import com.braintreepayments.api.Braintree.ErrorListener;
 import com.braintreepayments.api.Braintree.ListenerCallback;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodNonceListener;
 import com.braintreepayments.api.Braintree.PaymentMethodsUpdatedListener;
 import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
+import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
@@ -62,6 +64,53 @@ public class BraintreeTest extends AndroidTestCase {
         String clientToken = new TestClientTokenBuilder().build();
         mBraintreeApi = new BraintreeApi(getContext(), clientToken);
         mBraintree = new Braintree(clientToken, mBraintreeApi);
+    }
+
+    public void testSetupIsSuccessful() throws ExecutionException, InterruptedException {
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        BraintreeSetupFinishedListener setupFinishedListener = new BraintreeSetupFinishedListener() {
+            @Override
+            public void onBraintreeSetupFinished(boolean setupSuccessful, Braintree braintree,
+                    String errorMessage, Exception exception) {
+                assertTrue(setupSuccessful);
+                assertNotNull(braintree);
+                assertNull(errorMessage);
+                assertNull(exception);
+                wasCalled.set(true);
+            }
+        };
+
+        Braintree.setupHelper(mContext, new TestClientTokenBuilder().build(), setupFinishedListener)
+                .get();
+
+        waitForMainThreadToFinish();
+        assertTrue(wasCalled.get());
+    }
+
+    public void testSetupReturnsAnError()
+            throws ExecutionException, InterruptedException, ErrorWithResponse, BraintreeException {
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        BraintreeSetupFinishedListener setupFinishedListener = new BraintreeSetupFinishedListener() {
+            @Override
+            public void onBraintreeSetupFinished(boolean setupSuccessful, Braintree braintree,
+                    String errorMessage, Exception exception) {
+                assertFalse(setupSuccessful);
+                assertNull(braintree);
+                assertEquals("Error!", errorMessage);
+                assertTrue(exception instanceof AuthenticationException);
+                wasCalled.set(true);
+            }
+        };
+
+        String clientToken = new TestClientTokenBuilder().build();
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        doThrow(new AuthenticationException("Error!")).when(braintreeApi).setup();
+        Braintree braintree = new Braintree(clientToken, braintreeApi);
+        Braintree.sInstances.put(clientToken, braintree);
+        Braintree.setupHelper(mContext, clientToken, setupFinishedListener).get();
+
+        waitForMainThreadToFinish();
+        assertTrue(wasCalled.get());
     }
 
     public void testCreateAsync()

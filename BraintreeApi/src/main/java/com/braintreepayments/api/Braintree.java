@@ -13,11 +13,10 @@ import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
-import com.braintreepayments.api.models.SetupResult;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
@@ -48,8 +47,21 @@ public class Braintree {
      */
     private static interface Listener {}
 
+    /**
+     * Interface that defines the response for
+     * {@link com.braintreepayments.api.Braintree#setup(android.content.Context, String, com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener)}
+     */
     public static interface BraintreeSetupFinishedListener {
-        void onBraintreeSetupFinished(SetupResult setupResult);
+        /**
+         * @param setupSuccessful {@code true} if setup was successful, {@code false} otherwise.
+         * @param braintree the {@link com.braintreepayments.api.Braintree} instance or {@code null}
+         *        if setup failed.
+         * @param errorMessage the message if setupSuccessful is {@code false} or {@code null}
+         *        otherwise.
+         * @param exception the exception that occurred if setupSuccessful is {@code false} or {@code null}
+         *        otherwise.
+         */
+        void onBraintreeSetupFinished(boolean setupSuccessful, Braintree braintree, String errorMessage, Exception exception);
     }
 
     /**
@@ -132,18 +144,27 @@ public class Braintree {
     /**
      * Called to begin the setup of {@link Braintree}. Once setup is complete the supplied
      * {@link com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener} will receive
-     * a call to {@link com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener#onBraintreeSetupFinished(com.braintreepayments.api.models.SetupResult)}
+     * a call to {@link com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener#onBraintreeSetupFinished(boolean, Braintree, String, Exception)}
      * with an instance of a {@link com.braintreepayments.api.Braintree} or an error.
      *
      * @param context
      * @param clientToken The client token obtained from a Braintree server SDK.
      * @param listener The listener to notify when setup is complete, or fails.
      */
-    public static void setup(final Context context, final String clientToken, final BraintreeSetupFinishedListener listener) {
-        Executors.newSingleThreadExecutor().submit(new Runnable() {
+    public static void setup(Context context, String clientToken, BraintreeSetupFinishedListener listener) {
+        setupHelper(context, clientToken, listener);
+    }
+
+    /**
+     * Helper method to
+     * {@link #setup(android.content.Context, String, com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener)}
+     * to make execution synchronous in testing.
+     */
+    protected static Future<?> setupHelper(final Context context, final String clientToken, final BraintreeSetupFinishedListener listener) {
+        return Executors.newSingleThreadExecutor().submit(new Runnable() {
             @Override
             public void run() {
-                Braintree braintree;
+                final Braintree braintree;
                 if (sInstances.containsKey(clientToken)) {
                     braintree = sInstances.get(clientToken);
                 } else {
@@ -151,27 +172,27 @@ public class Braintree {
                 }
 
                 Exception exception = null;
+                String errorMessage = null;
                 if (!braintree.isSetup()) {
                     try {
                         braintree.setup();
-                    } catch (ErrorWithResponse errorWithResponse) {
-                        exception = errorWithResponse;
-                    } catch (BraintreeException e) {
+                    } catch (Exception e) {
                         exception = e;
+                        errorMessage = e.getMessage();
                     }
                 }
 
-                final SetupResult setupResult;
-                if (exception != null) {
-                    setupResult = new SetupResult(false, exception.getMessage(), exception, null);
-                } else {
-                    setupResult = new SetupResult(true, null, null, braintree);
-                }
-
+                final String finalErrorMessage = errorMessage;
+                final Exception finalException = exception;
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        listener.onBraintreeSetupFinished(setupResult);
+                        if (braintree.isSetup()) {
+                            listener.onBraintreeSetupFinished(true, braintree, null, null);
+                        } else {
+                            listener.onBraintreeSetupFinished(false, null, finalErrorMessage,
+                                    finalException);
+                        }
                     }
                 });
             }
