@@ -12,7 +12,7 @@ task :tests => :lint do
     begin
       sh "ruby script/httpsd.rb /tmp/httpsd.pid"
       log_listener_pid = fork { exec 'ruby', 'script/log_listener.rb' }
-      sh "./gradlew --info runAllTests :BraintreeData:connectedAndroidTest :BraintreeApi:connectedAndroidTest :CardForm:connectedAndroidTest :Drop-In:connectedAndroidTest"
+      sh "./gradlew --info runAllTests :BraintreeData:connectedAndroidTest :BraintreeApi:connectedAndroidTest :Drop-In:connectedAndroidTest"
     ensure
       `kill -9 \`cat /tmp/httpsd.pid\``
       `kill -9 #{log_listener_pid}`
@@ -44,28 +44,22 @@ task :release => :lint do
   puts "BraintreeData was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
   $stdin.gets
 
-  sh "./gradlew clean :CardForm:uploadArchives"
-  puts "CardForm was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
-  $stdin.gets
-
   replace_string(braintree_api_build_file, "compile project(':BraintreeData')", "compile 'com.braintreepayments.api:data:#{version}'")
   sh "./gradlew clean :BraintreeApi:uploadArchives"
   puts "BraintreeApi was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
   $stdin.gets
 
   replace_string(braintree_drop_in_build_file, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree-api:#{version}'")
-  replace_string(braintree_drop_in_build_file, "compile project(':CardForm')", "compile 'com.braintreepayments:card-form:#{version}'")
   sh "./gradlew clean :Drop-In:uploadArchives"
   puts "Drop-In was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
   $stdin.gets
 
-  puts "Archives are uploaded! Commiting and tagging #{version} and preparing for the next development iteration"
+  puts "Archives are uploaded! Committing and tagging #{version} and preparing for the next development iteration"
   sh "git commit -am 'Release #{version}'"
   sh "git tag #{version} -am '#{version}'"
 
   replace_string(braintree_api_build_file, "compile 'com.braintreepayments.api:data:#{version}'", "compile project(':BraintreeData')")
   replace_string(braintree_drop_in_build_file, "compile 'com.braintreepayments.api:braintree-api:#{version}'", "compile project(':BraintreeApi')")
-  replace_string(braintree_drop_in_build_file, "compile 'com.braintreepayments:card-form:#{version}'", "compile project(':CardForm')")
   sh "git commit -am 'Prepare for development'"
 
   puts "Done. Commits and tags have been created. If everything appears to be in order, hit ENTER to push."

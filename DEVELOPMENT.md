@@ -42,7 +42,6 @@ There are several components that comprise this SDK:
 
 * [BraintreeApi](BraintreeApi) provides the networking and communication layer. Includes the PayPal Android mobile SDK.
 * [BraintreeData](BraintreeData) collects and provides data for fraud detection.
-* [CardForm](CardForm) is a pre-build card form view that can be used anywhere.
 * [Drop-In](Drop-In) uses `BraintreeApi` to create a full checkout experience inside an `Activity`.
 * [Demo](Demo) is the reference integration of [Drop-In](Drop-In).
 * [FakeWallet](FakeWallet) is used to test the app switch portion of the SDK.
