@@ -47,12 +47,13 @@ public class BraintreeApi {
     private BraintreeData mBraintreeData;
 
     /**
-     * @deprecated
+     * @deprecated Interactions should be done using {@link com.braintreepayments.api.Braintree}
+     * instead.
      *
      * Initialize a BraintreeApi instance to communicate with Braintree.
      *
      * @param context
-     * @param clientToken A client token obtained from a Braintree server side SDK.
+     * @param clientTokenString A client token obtained from a Braintree server side SDK.
      */
     public BraintreeApi(Context context, String clientTokenString) {
         Pattern pattern = Pattern.compile("([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)");
@@ -196,7 +197,8 @@ public class BraintreeApi {
     }
 
     /**
-     * @deprecated
+     * @deprecated Use {@link com.braintreepayments.api.BraintreeApi#finishPayWithPayPal(android.app.Activity, int, android.content.Intent)}
+     * instead.
      *
      * This method should *not* be used, it does not include a Application Correlation ID.
      * PayPal uses the Application Correlation ID to verify that the payment is originating from

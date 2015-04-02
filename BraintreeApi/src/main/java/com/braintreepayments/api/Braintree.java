@@ -121,7 +121,9 @@ public class Braintree {
     private List<PaymentMethod> mCachedPaymentMethods;
 
     /**
-     * @deprecated
+     * @deprecated Use the asynchronous
+     * {@link com.braintreepayments.api.Braintree#setup(android.content.Context, String, com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener)}
+     * instead.
      *
      * Obtain an instance of {@link Braintree}. If multiple calls are made with the same {@code
      * clientToken}, you may get the same instance returned.
@@ -406,7 +408,8 @@ public class Braintree {
     }
 
     /**
-     * @deprecated
+     * @deprecated Use {@link com.braintreepayments.api.Braintree#finishPayWithPayPal(android.app.Activity, int, android.content.Intent)}
+     * instead.
      *
      * This method should *not* be used, it does not include a Application Correlation ID.
      * PayPal uses the Application Correlation ID to verify that the payment is originating from
@@ -750,6 +753,7 @@ public class Braintree {
 
     /**
      * @deprecated Use {@link #sendAnalyticsEvent(String)} instead.
+     *
      * Sends analytics event to send to the Braintree analytics service. Used internally and by Drop-In.
      * @param event Name of event to be sent.
      * @param integrationType The type of integration used. Should be "custom" for those directly

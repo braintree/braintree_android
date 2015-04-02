@@ -143,9 +143,10 @@ public abstract class PaymentMethod implements Parcelable, Serializable {
         public T build();
 
         /**
+         * @deprecated Replaced by {@link com.braintreepayments.api.models.PaymentMethod.Builder#toJsonString()} in 1.0.7.
+         *
          * Required for and handled by {@link com.braintreepayments.api.Braintree}. Not intended for general consumption.
          * @return Serialized representation of {@link com.braintreepayments.api.models.PaymentMethod} for API use.
-         * @deprecated Replaced by {@link #toJsonString()} in 1.0.7.
          */
         @Deprecated
         public Map<String, Object> toJson();
