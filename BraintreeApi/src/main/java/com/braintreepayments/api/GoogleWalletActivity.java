@@ -19,8 +19,8 @@ import com.google.android.gms.wallet.WalletConstants;
 public class GoogleWalletActivity extends Activity implements ConnectionCallbacks,
         OnConnectionFailedListener {
 
-    private static final int MASKED_WALLET_REQUEST = 1817;
-    private static final int FULL_WALLET_REQUEST = 1818;
+    private static final int MASKED_WALLET_REQUEST = 100;
+    private static final int FULL_WALLET_REQUEST = 200;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -53,7 +53,6 @@ public class GoogleWalletActivity extends Activity implements ConnectionCallback
 
     @Override
     public void onConnectionSuspended(int i) {
-
     }
 
     @Override
@@ -89,5 +88,4 @@ public class GoogleWalletActivity extends Activity implements ConnectionCallback
             }
         }
     }
-
 }

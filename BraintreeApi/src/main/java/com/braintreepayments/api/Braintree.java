@@ -588,11 +588,11 @@ public class Braintree {
                 CardBuilder cardBuilder = new CardBuilder()
                         .cardNumber(proxyCard.getPan())
                         .cvv(proxyCard.getCvn())
-                        .expirationMonth("" + proxyCard.getExpirationMonth())
-                        .expirationYear("" + proxyCard.getExpirationYear())
+                        .expirationMonth(Integer.toString(proxyCard.getExpirationMonth()))
+                        .expirationYear(Integer.toString(proxyCard.getExpirationYear()))
                         .postalCode(fullWallet.getBillingAddress().getPostalCode());
 
-                create(cardBuilder);
+                tokenize(cardBuilder);
             }
         }
     }

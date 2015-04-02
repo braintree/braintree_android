@@ -10,7 +10,10 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.PayPalHelper;
 import com.braintreepayments.api.dropin.R;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
 /**
  * Skinned button for launching flows other than basic credit card forms (Pay With PayPal, Pay With Venmo, etc.).
@@ -84,9 +87,10 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
         inflate(getContext(), R.layout.bt_payment_button, this);
 
         boolean isPayPalEnabled = mBraintree.isPayPalEnabled();
-        boolean isVenmoEnabled = mBraintree.isVenmoEnabled();
+        boolean isGoogleWalletAvailable =
+                (GooglePlayServicesUtil.isGooglePlayServicesAvailable(mActivity) == ConnectionResult.SUCCESS);
 
-        if (!isPayPalEnabled && !isVenmoEnabled) {
+        if (!isPayPalEnabled && !isGoogleWalletAvailable) {
             setVisibility(GONE);
         } else {
             if (isPayPalEnabled) {
@@ -95,28 +99,22 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
                 paypalButton.setOnClickListener(this);
             }
 
-//            if (isVenmoEnabled) {
-//                ImageButton venmoButton = (ImageButton) findViewById(R.id.bt_venmo_button);
-//                venmoButton.setVisibility(VISIBLE);
-//                venmoButton.setOnClickListener(this);
-//            }
+            if (isGoogleWalletAvailable) {
+                ImageButton googleWalletButton = (ImageButton) findViewById(R.id.bt_google_wallet_button);
+                googleWalletButton.setVisibility(VISIBLE);
+                googleWalletButton.setOnClickListener(this);
+            }
 
-            if (isPayPalEnabled && isVenmoEnabled) {
+            if (isPayPalEnabled && isGoogleWalletAvailable) {
                 findViewById(R.id.bt_payment_button_divider).setVisibility(VISIBLE);
             }
         }
-
-        ImageButton googleWalletButton = (ImageButton) findViewById(R.id.bt_google_wallet_button);
-        googleWalletButton.setVisibility(VISIBLE);
-        googleWalletButton.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.bt_paypal_button) {
             mBraintree.startPayWithPayPal(mActivity, mRequestCode);
-//        } else if (v.getId() == R.id.bt_venmo_button) {
-//            mBraintree.startPayWithVenmo(mActivity, mRequestCode);
         } else if (v.getId() == R.id.bt_google_wallet_button) {
             mBraintree.startPayWithGoogleWallet(mActivity, mRequestCode);
         }
@@ -131,14 +129,11 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
      */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == mRequestCode && resultCode == Activity.RESULT_OK) {
-            mBraintree.finishPayWithGoogleWallet(resultCode, data);
-
-//            if(PayPalHelper.isPayPalIntent(data)) {
-//                mBraintree.finishPayWithPayPal(mActivity, resultCode, data);
-//            } else if (//isVenmoIntent) {
-//                mBraintree.finishPayWithVenmo(resultCode, data);
-//            }
+            if(PayPalHelper.isPayPalIntent(data)) {
+                mBraintree.finishPayWithPayPal(mActivity, resultCode, data);
+            } else {
+                mBraintree.finishPayWithGoogleWallet(resultCode, data);
+            }
         }
     }
-
 }
