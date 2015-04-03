@@ -10,6 +10,7 @@ import com.google.gson.Gson;
  */
 public class Configuration {
 
+    private String clientApiUrl;
     private String[] challenges;
     private boolean paypalEnabled;
     private PayPalConfiguration paypal;
@@ -27,6 +28,13 @@ public class Configuration {
      */
     public static Configuration fromJson(String configuration) {
         return new Gson().fromJson(configuration, Configuration.class);
+    }
+
+    /**
+     * @return The url of the Braintree client API for the current environment.
+     */
+    public String getClientApiUrl() {
+        return clientApiUrl;
     }
 
     /**

@@ -45,7 +45,8 @@ public class BraintreeApiTest extends AndroidTestCase {
     public void testThrowsConfigurationExceptionOnBadPayPalConfiguration()
             throws ErrorWithResponse, BraintreeException {
         Configuration configuration = mock(Configuration.class);
-        BraintreeApi braintreeApi = new BraintreeApi(mContext, configuration, mock(HttpRequest.class));
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, mock(ClientToken.class),
+                configuration, mock(HttpRequest.class));
         boolean exceptionHappened = false;
 
         try {
@@ -94,7 +95,8 @@ public class BraintreeApiTest extends AndroidTestCase {
         Configuration configuration = mock(Configuration.class);
         when(configuration.isAnalyticsEnabled()).thenReturn(true);
         when(configuration.getAnalytics()).thenReturn(analyticsConfiguration);
-        BraintreeApi braintreeApi = new BraintreeApi(mContext, configuration, httpRequest);
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, mock(ClientToken.class),
+                configuration, httpRequest);
 
         braintreeApi.sendAnalyticsEvent("very.important.analytics-payload", "TEST");
 
@@ -107,7 +109,8 @@ public class BraintreeApiTest extends AndroidTestCase {
         HttpRequest httpRequest = mock(HttpRequest.class);
         Configuration configuration = mock(Configuration.class);
         when(configuration.isAnalyticsEnabled()).thenReturn(false);
-        BraintreeApi braintreeApi = new BraintreeApi(mContext, configuration, httpRequest);
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, mock(ClientToken.class),
+                configuration, httpRequest);
 
         braintreeApi.sendAnalyticsEvent("event", "TEST");
 
@@ -118,8 +121,10 @@ public class BraintreeApiTest extends AndroidTestCase {
         final AtomicInteger requestCount = new AtomicInteger(0);
         final AtomicInteger responseCode = new AtomicInteger(0);
 
-        ClientToken clientToken = ClientToken.fromString(new TestClientTokenBuilder().build());
-        HttpRequest request = new HttpRequest(clientToken.getClientApiUrl(), clientToken.getAuthorizationFingerprint()) {
+        String clientTokenString = new TestClientTokenBuilder().build();
+        ClientToken clientToken = ClientToken.fromString(clientTokenString);
+        Configuration configuration = Configuration.fromJson(clientTokenString);
+        HttpRequest request = new HttpRequest(clientToken.getAuthorizationFingerprint()) {
             @Override
             public HttpResponse post (String url, String params)
                     throws BraintreeException, ErrorWithResponse {
@@ -129,7 +134,8 @@ public class BraintreeApiTest extends AndroidTestCase {
                 return response;
             }
         };
-        BraintreeApi braintreeApi = new BraintreeApi(mContext, request);
+        request.setBaseUrl(configuration.getClientApiUrl());
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, clientToken, configuration, request);
         braintreeApi.setup();
 
         braintreeApi.sendAnalyticsEvent("event", "TEST");

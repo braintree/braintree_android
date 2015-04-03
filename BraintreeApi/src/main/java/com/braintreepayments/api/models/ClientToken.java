@@ -7,14 +7,14 @@ import com.google.gson.Gson;
 import java.util.regex.Pattern;
 
 /**
- * A class containing the url and authorization for the current Braintree environment.
+ * A class containing the configuration url and authorization for the current Braintree environment.
  */
 public class ClientToken {
 
     private static final Pattern BASE_64_PATTERN = Pattern.compile(
             "([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)");
 
-    private String clientApiUrl;
+    private String configUrl;
     private String authorizationFingerprint;
 
     /**
@@ -32,10 +32,10 @@ public class ClientToken {
     }
 
     /**
-     * @return The url of the Braintree API for the current environment
+     * @return The url to fetch configuration for the current Braintree environment.
      */
-    public String getClientApiUrl() {
-        return clientApiUrl;
+    public String getConfigUrl() {
+        return configUrl;
     }
 
     /**

@@ -49,8 +49,8 @@ public class BraintreeTestUtils {
     public static Braintree injectGeneric422ErrorOnCardCreateBraintree(final Context context,
             String clientTokenString) {
         ClientToken clientToken = ClientToken.fromString(clientTokenString);
-        HttpRequest request = new HttpRequest(clientToken.getClientApiUrl(),
-                clientToken.getAuthorizationFingerprint()) {
+        Configuration configuration = Configuration.fromJson(clientTokenString);
+        HttpRequest request = new HttpRequest(clientToken.getAuthorizationFingerprint()) {
             @Override
             public HttpResponse post(String url, String params)
                     throws ErrorWithResponse, BraintreeException {
@@ -62,14 +62,15 @@ public class BraintreeTestUtils {
                 }
             }
         };
+        request.setBaseUrl(configuration.getClientApiUrl());
 
         return injectBraintree(context, clientTokenString, request);
     }
 
     public static Braintree injectSlowBraintree(Context context, String clientTokenString, final long delay) {
         ClientToken clientToken = ClientToken.fromString(clientTokenString);
-        HttpRequest request = new HttpRequest(clientToken.getClientApiUrl(),
-                clientToken.getAuthorizationFingerprint()) {
+        Configuration configuration = Configuration.fromJson(clientTokenString);
+        HttpRequest request = new HttpRequest(clientToken.getAuthorizationFingerprint()) {
             @Override
             public HttpResponse get(String url) throws BraintreeException, ErrorWithResponse {
                 SystemClock.sleep(delay);
@@ -83,6 +84,7 @@ public class BraintreeTestUtils {
                 return super.post(url, params);
             }
         };
+        request.setBaseUrl(configuration.getClientApiUrl());
 
         return injectBraintree(context, clientTokenString, request);
     }
@@ -90,7 +92,8 @@ public class BraintreeTestUtils {
     public static Braintree injectBraintree(Context context, String clientToken,
             HttpRequest httpRequest) {
         return injectBraintreeApi(clientToken,
-                new BraintreeApi(context, Configuration.fromJson(clientToken), httpRequest));
+                new BraintreeApi(context, ClientToken.fromString(clientToken),
+                        Configuration.fromJson(clientToken), httpRequest));
     }
 
     public static Braintree injectBraintree(String clientToken, Braintree braintree) {
@@ -106,5 +109,4 @@ public class BraintreeTestUtils {
         onView(withText("Choose Payment Method")).check(doesNotExist());
         onView(withId(R.id.bt_payment_method_type)).check(matches(withText(string)));
     }
-
 }

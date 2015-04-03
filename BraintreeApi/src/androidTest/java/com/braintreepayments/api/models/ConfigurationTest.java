@@ -8,6 +8,13 @@ import static com.braintreepayments.api.TestUtils.getConfigurationFromFixture;
 
 public class ConfigurationTest extends AndroidTestCase {
 
+    public void testParsesClientApiUrlFromToken() {
+        Configuration configuration = getConfigurationFromFixture(getContext(),
+                "configuration_with_client_api_url.json");
+
+        assertEquals("client_api_url", configuration.getClientApiUrl());
+    }
+
     public void testParsesSingleChallengeFromToken() throws IOException {
         Configuration configuration = getConfigurationFromFixture(getContext(),
                 "configuration_with_cvv_challenge.json");

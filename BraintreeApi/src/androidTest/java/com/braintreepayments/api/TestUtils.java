@@ -8,6 +8,7 @@ import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.internal.HttpRequest;
+import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.FixturesHelper;
 
@@ -36,12 +37,13 @@ public class TestUtils {
         when(mockRequest.get(anyString())).thenThrow(new UnexpectedException("Mocked HTTP request"));
         when(mockRequest.post(anyString(), anyString())).thenThrow(new UnexpectedException("Mocked HTTP request"));
 
-        return new BraintreeApi(context, mockRequest);
+        return new BraintreeApi(context, mock(ClientToken.class), mock(Configuration.class), mockRequest);
     }
 
     public static BraintreeApi apiWithExpectedResponse(Context context, final int responseCode,
             final String response) throws IOException, ErrorWithResponse {
-        return new BraintreeApi(context, requestWithExpectedResponse(responseCode, response));
+        return new BraintreeApi(context, mock(ClientToken.class), mock(Configuration.class),
+                requestWithExpectedResponse(responseCode, response));
     }
 
     public static void waitForMainThreadToFinish() throws InterruptedException {

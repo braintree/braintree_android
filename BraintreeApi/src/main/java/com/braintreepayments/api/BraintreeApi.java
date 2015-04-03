@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Base64;
 
 import com.braintreepayments.api.annotations.Beta;
@@ -40,6 +41,7 @@ public class BraintreeApi {
     private static final String PAYMENT_METHOD_ENDPOINT = "payment_methods";
 
     private Context mContext;
+    private ClientToken mClientToken;
     private Configuration mConfiguration;
     private HttpRequest mHttpRequest;
 
@@ -61,12 +63,12 @@ public class BraintreeApi {
             clientTokenString = new String(Base64.decode(clientTokenString, Base64.DEFAULT));
         }
 
-        ClientToken clientToken = ClientToken.fromString(clientTokenString);
+        mClientToken = ClientToken.fromString(clientTokenString);
 
         mContext = context.getApplicationContext();
         mConfiguration = Configuration.fromJson(clientTokenString);
-        mHttpRequest = new HttpRequest(clientToken.getClientApiUrl(),
-                clientToken.getAuthorizationFingerprint());
+        mHttpRequest = new HttpRequest(mClientToken.getAuthorizationFingerprint());
+        mHttpRequest.setBaseUrl(mConfiguration.getClientApiUrl());
 
         mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
         mBraintreeData = null;
@@ -74,29 +76,17 @@ public class BraintreeApi {
 
     protected BraintreeApi(Context context, ClientToken clientToken) {
         mContext = context.getApplicationContext();
-        mHttpRequest = new HttpRequest(clientToken.getClientApiUrl(),
-                clientToken.getAuthorizationFingerprint());
+        mClientToken = clientToken;
+        mHttpRequest = new HttpRequest(mClientToken.getAuthorizationFingerprint());
 
         mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
         mBraintreeData = null;
     }
 
-    protected BraintreeApi(Context context, HttpRequest requestor) {
-        mContext = context.getApplicationContext();
-        mHttpRequest = requestor;
-
-        mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
-        mBraintreeData = null;
-    }
-
-    protected BraintreeApi(Context context, ClientToken clientToken, Configuration configuration) {
-        this(context, configuration,
-                new HttpRequest(clientToken.getClientApiUrl(), clientToken.getAuthorizationFingerprint()));
-    }
-
-    protected BraintreeApi(Context context, Configuration configuration,
+    protected BraintreeApi(Context context, ClientToken clientToken, Configuration configuration,
             HttpRequest requestor) {
         mContext = context.getApplicationContext();
+        mClientToken = clientToken;
         mConfiguration = configuration;
         mHttpRequest = requestor;
 
@@ -110,10 +100,16 @@ public class BraintreeApi {
 
     protected void setup() throws ErrorWithResponse, BraintreeException {
         mConfiguration = getConfiguration();
+        mHttpRequest.setBaseUrl(mConfiguration.getClientApiUrl());
     }
 
     private Configuration getConfiguration() throws ErrorWithResponse, BraintreeException {
-        HttpResponse response = mHttpRequest.get(versionedPath("configuration"));
+        String configUrl = Uri.parse(mClientToken.getConfigUrl())
+                .buildUpon()
+                .appendQueryParameter("configVersion", "3")
+                .build()
+                .toString();
+        HttpResponse response = mHttpRequest.get(configUrl);
         return Configuration.fromJson(response.getResponseBody());
     }
 

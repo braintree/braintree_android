@@ -1,5 +1,6 @@
 package com.braintreepayments.api.internal;
 
+import android.net.Uri;
 import android.util.Log;
 
 import com.braintreepayments.api.BuildConfig;
@@ -58,13 +59,16 @@ public class HttpRequest {
     private String mAuthorizationFingerprint;
     private int mConnectTimeout = 0;
 
-    public HttpRequest(String baseUrl, String authorizationFingerprint) {
-        mBaseUrl = (baseUrl == null) ? "" : baseUrl;
+    public HttpRequest(String authorizationFingerprint) {
         mAuthorizationFingerprint = (authorizationFingerprint == null) ? "" : authorizationFingerprint;
     }
 
     public static String getUserAgent() {
         return  "braintree/android/" + BuildConfig.VERSION_NAME;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        mBaseUrl = (baseUrl == null) ? "" : baseUrl;
     }
 
     protected void setConnectTimeout(int timeout) {
@@ -87,15 +91,17 @@ public class HttpRequest {
     public HttpResponse get(String path) throws ErrorWithResponse, BraintreeException {
         HttpURLConnection connection = null;
         try {
-            String url = path + "?" + AUTHORIZATION_FINGERPRINT_KEY + "="
-                    + URLEncoder.encode(mAuthorizationFingerprint, UTF_8);
-
-            if (url.startsWith("http")) {
-                connection = init(url);
+            Uri uri;
+            if (path.startsWith("http")) {
+                uri = Uri.parse(path);
             } else {
-                connection = init(mBaseUrl + url);
+                uri = Uri.parse(mBaseUrl + path);
             }
+            uri = uri.buildUpon()
+                    .appendQueryParameter(AUTHORIZATION_FINGERPRINT_KEY, mAuthorizationFingerprint)
+                    .build();
 
+            connection = init(uri.toString());
             connection.setRequestMethod(METHOD_GET);
 
             return parseResponse(connection);
