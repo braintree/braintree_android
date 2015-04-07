@@ -31,6 +31,7 @@ import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.models.Card;
+import com.braintreepayments.api.models.CoinbaseAccount;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PaymentMethod;
 
@@ -189,6 +190,12 @@ public class BraintreePaymentActivity extends Activity implements
             }
         } else if (paymentMethod instanceof PayPalAccount) {
             mBraintree.sendAnalyticsEvent("add-paypal.success");
+            finishCreate();
+        } else if (paymentMethod instanceof CoinbaseAccount) {
+            mBraintree.sendAnalyticsEvent("add-coinbase.success");
+            finishCreate();
+        } else {
+            mBraintree.sendAnalyticsEvent("add-unknown.success");
             finishCreate();
         }
     }

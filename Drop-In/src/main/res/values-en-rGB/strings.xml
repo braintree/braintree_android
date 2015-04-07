@@ -27,4 +27,5 @@
     <string name="bt_descriptor_maestro">Maestro</string>
     <string name="bt_descriptor_paypal">PayPal</string>
     <string name="bt_descriptor_unknown">Card</string>
+    <string name="bt_descriptor_coinbase">Coinbase</string>
 </resources>
