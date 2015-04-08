@@ -1,13 +1,15 @@
 package com.braintreepayments.api.dropin;
 
+import android.os.SystemClock;
 import android.view.KeyEvent;
 
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.BraintreeTestUtils;
-import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
 import com.braintreepayments.api.exceptions.ServerException;
+import com.braintreepayments.api.models.CoinbaseAccountBuilder;
+import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -17,14 +19,14 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static com.braintreepayments.api.BraintreeTestUtils.injectBraintree;
 import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.ui.Matchers.withHint;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
 import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
-import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
-import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -55,6 +57,8 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
         setupActivity();
         fillInCreditCard();
         waitForActivityToFinish(mActivity);
+
+        verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.initialized");
 
         verify(mBraintree, times(1)).sendAnalyticsEvent("add-card.success");
     }
@@ -93,6 +97,20 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
         performPayPalAdd();
 
         verify(mBraintree, times(1)).sendAnalyticsEvent("add-paypal.success");
+    }
+
+    public void testAddsEventOnCoinbaseSucceeded() {
+        setupActivity();
+
+        mBraintree.create(new CoinbaseAccountBuilder().code("coinbase-code").storeInVault(true));
+
+        SystemClock.sleep(1000);
+
+        verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.initialized");
+
+        verify(mBraintree, times(1)).sendAnalyticsEvent("add-card.start");
+
+        verify(mBraintree, times(1)).sendAnalyticsEvent("add-coinbase.success");
     }
 
     public void testAddsEventOnSDKExitWithSuccess() {
