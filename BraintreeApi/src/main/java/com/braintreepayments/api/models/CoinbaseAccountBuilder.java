@@ -17,6 +17,14 @@ public class CoinbaseAccountBuilder implements PaymentMethod.Builder<CoinbaseAcc
         return this;
     }
 
+    public CoinbaseAccountBuilder storeInVault(boolean storeInVault) {
+        if (mOptions == null) {
+            mOptions = new PaymentMethodOptions();
+        }
+        mOptions.setStoreInVault(storeInVault);
+        return this;
+    }
+
     @Override
     public CoinbaseAccountBuilder integration(String integration) {
         mIntegration = integration;
@@ -53,7 +61,9 @@ public class CoinbaseAccountBuilder implements PaymentMethod.Builder<CoinbaseAcc
 
     @Override
     public CoinbaseAccountBuilder validate(boolean validate) {
-        mOptions = new PaymentMethodOptions();
+        if (mOptions == null) {
+            mOptions = new PaymentMethodOptions();
+        }
         mOptions.setValidate(validate);
         return this;
     }
