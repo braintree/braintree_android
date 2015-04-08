@@ -9,13 +9,13 @@ import java.io.Serializable;
 public class PaymentMethodOptions implements Serializable {
 
     private boolean validate;
-    private boolean store_in_vault;
+    private boolean storeInVault;
 
     public void setValidate(boolean validate) {
         this.validate = validate;
     }
 
     public void setStoreInVault(boolean storeInVault) {
-        this.store_in_vault = storeInVault;
+        this.storeInVault = storeInVault;
     }
 }
