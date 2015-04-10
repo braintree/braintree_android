@@ -208,9 +208,9 @@ public class BraintreeApi {
     public boolean startPayWithCoinbase(Activity activity, int requestCode)
             throws UnsupportedEncodingException {
         if (isCoinbaseEnabled()) {
-            Intent coinbaseIntent = mCoinbase.getLaunchIntent();
+            Intent coinbaseIntent = mCoinbase.getLaunchIntent(); //DM Why do it likes this? Getting the intent twice
             if (coinbaseIntent != null) {
-                activity.startActivityForResult(mCoinbase.getLaunchIntent(), requestCode);
+                activity.startActivityForResult(coinbaseIntent, requestCode);
                 return true;
             }
         }
