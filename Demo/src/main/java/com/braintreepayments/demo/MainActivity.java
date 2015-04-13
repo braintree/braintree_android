@@ -40,13 +40,20 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
     private static final int CUSTOM_REQUEST = 300;
     private static final int THREE_D_SECURE_REQUEST = 400;
 
+    /**
+     * Keys to store state on config changes.
+     */
+    private static final String KEY_CLIENT_TOKEN = "clientToken";
+    private static final String KEY_NONCE = "nonce";
+    private static final String KEY_ENVIRONMENT = "environment";
+
     private SharedPreferences mPrefs;
     private AsyncHttpClient mHttpClient;
 
     private String mClientToken;
     private Braintree mBraintree;
-
     private String mNonce;
+    private int mEnvironment;
 
     private TextView mNonceTextView;
     private Button mDropInButton;
@@ -74,8 +81,33 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
         mCustomButton = (Button) findViewById(R.id.custom);
         mCreateTransactionButton = (Button) findViewById(R.id.create_transaction);
 
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(KEY_CLIENT_TOKEN)) {
+                setClientToken(savedInstanceState.getString(KEY_CLIENT_TOKEN));
+            }
+            if (savedInstanceState.containsKey(KEY_NONCE)) {
+                setPaymentMethodNonce(savedInstanceState.getString(KEY_NONCE));
+            }
+            mEnvironment = savedInstanceState.getInt(KEY_ENVIRONMENT);
+        } else {
+            mEnvironment = mPrefs.getInt(Settings.ENVIRONMENT, 0);
+        }
         setupActionBar();
-        getClientToken();
+        if (mClientToken == null) {
+            getClientToken();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mClientToken != null) {
+            outState.putString(KEY_CLIENT_TOKEN, mClientToken);
+        }
+        if (mNonce != null) {
+            outState.putString(KEY_NONCE, mNonce);
+        }
+        outState.putInt(KEY_ENVIRONMENT, mEnvironment);
     }
 
     @SuppressWarnings({"deprecation", "ConstantConditions"})
@@ -87,13 +119,16 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.environments, android.R.layout.simple_spinner_dropdown_item);
         actionBar.setListNavigationCallbacks(adapter, this);
-        actionBar.setSelectedNavigationItem(mPrefs.getInt(Settings.ENVIRONMENT, 0));
+        actionBar.setSelectedNavigationItem(mEnvironment);
     }
 
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        Settings.setEnvironment(this, itemPosition);
-        resetState();
+        if (mEnvironment != itemPosition) {
+            mEnvironment = itemPosition;
+            Settings.setEnvironment(this, itemPosition);
+            resetState();
+        }
         return true;
     }
 
@@ -115,11 +150,7 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
             @Override
             public void onSuccess(String response) {
                 try {
-                    mClientToken = new JSONObject(response).getString("client_token");
-                    mBraintree = Braintree.getInstance(MainActivity.this, mClientToken);
-                    mBraintree.addListener(MainActivity.this);
-
-                    enableButtons(true);
+                    setClientToken(new JSONObject(response).getString("client_token"));
                 } catch (JSONException e) {
                     showDialog("Unable to decode client token");
                 }
@@ -131,6 +162,14 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
                         errorMessage);
             }
         });
+    }
+
+    private void setClientToken(String clientToken) {
+        mClientToken = clientToken;
+        mBraintree = Braintree.getInstance(this, mClientToken);
+        mBraintree.addListener(this);
+
+        enableButtons(true);
     }
 
     public void launchDropIn(View v) {
@@ -184,11 +223,14 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
 
     @Override
     public void onPaymentMethodNonce(String paymentMethodNonce) {
-        mNonce = paymentMethodNonce;
-        setNonce(mNonce);
-        mCreateTransactionButton.setEnabled(true);
-
+        setPaymentMethodNonce(paymentMethodNonce);
         safelyCloseLoadingView();
+    }
+
+    private void setPaymentMethodNonce(String paymentMethodNonce) {
+        mNonce = paymentMethodNonce;
+        mNonceTextView.setText(getString(R.string.nonce) + ": " + paymentMethodNonce);
+        mCreateTransactionButton.setEnabled(true);
     }
 
     @Override
@@ -202,8 +244,8 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
             if (requestCode == THREE_D_SECURE_REQUEST) {
                 mBraintree.finishThreeDSecureVerification(resultCode, data);
             } else {
-                mNonce = data.getStringExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE);
-                setNonce(mNonce);
+                setPaymentMethodNonce(
+                        data.getStringExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE));
 
                 if (Settings.isThreeDSecureEnabled(this) && mBraintree.isThreeDSecureEnabled()) {
                     mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
@@ -213,10 +255,6 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
                 }
             }
         }
-    }
-
-    private void setNonce(String nonce) {
-        mNonceTextView.setText(getString(R.string.nonce) + ": " + nonce);
     }
 
     private void enableButtons(boolean enable) {
