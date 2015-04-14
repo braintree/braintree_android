@@ -63,6 +63,8 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         mHttpClient = new AsyncHttpClient();
+        mHttpClient.setUserAgent("braintree/android-demo-app/" + BuildConfig.VERSION_NAME);
+        mHttpClient.addHeader("Accept", "application/json");
 
         // Warning, signature verification is disabled for this demo only, you should never
         // do this as it opens a security hole

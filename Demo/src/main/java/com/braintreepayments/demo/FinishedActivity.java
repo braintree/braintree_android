@@ -40,7 +40,10 @@ public class FinishedActivity extends Activity {
             params.put("requireThreeDSecure", Settings.isThreeDSecureRequired(this));
         }
 
-        new AsyncHttpClient().post(Settings.getEnvironmentUrl(this) + "/nonce/transaction", params,
+        AsyncHttpClient httpClient = new AsyncHttpClient();
+        httpClient.setUserAgent("braintree/android-demo-app/" + BuildConfig.VERSION_NAME);
+        httpClient.addHeader("Accept", "application/json");
+        httpClient.post(Settings.getEnvironmentUrl(this) + "/nonce/transaction", params,
                 new AsyncHttpResponseHandler() {
                     @Override
                     public void onSuccess(String response) {
