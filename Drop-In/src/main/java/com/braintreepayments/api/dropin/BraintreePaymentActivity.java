@@ -4,8 +4,10 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -19,6 +21,7 @@ import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.Braintree.ErrorListener;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodsUpdatedListener;
+import com.braintreepayments.api.BraintreeBrowserSwitchActivity;
 import com.braintreepayments.api.VenmoAppSwitch;
 import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
 import com.braintreepayments.api.dropin.view.PaymentButton;
@@ -100,10 +103,36 @@ public class BraintreePaymentActivity extends Activity implements
     private boolean mUnableToGetPaymentMethods = false;
     private Bundle mSavedInstanceState;
     private Customization mCustomization;
+    private ReceiveBraintreeMessages mReceiveBraintreeMessages;
+
+    /**
+     * {@link com.braintreepayments.api.BraintreeBrowserSwitchActivity} used to receive messages from successful browser switches
+     */
+    public class ReceiveBraintreeMessages extends BroadcastReceiver
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            String action = intent.getAction();
+            if (action.equalsIgnoreCase(BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_SUCCESS)) {
+                StubbedView.LOADING_VIEW.show(BraintreePaymentActivity.this);
+                intent.putExtra("store-in-vault", true);
+                BraintreePaymentActivity.this.mAddPaymentMethodViewController.onPaymentResult(
+                        PaymentButton.REQUEST_CODE, Activity.RESULT_OK, intent);
+            }
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mReceiveBraintreeMessages = new ReceiveBraintreeMessages();
+        registerReceiver(mReceiveBraintreeMessages, new IntentFilter(
+                BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_SUCCESS));
+
+
         mSavedInstanceState = (savedInstanceState != null) ? savedInstanceState : new Bundle();
 
         setContentView(R.layout.bt_drop_in_ui);
@@ -141,16 +170,21 @@ public class BraintreePaymentActivity extends Activity implements
         mBraintree.removeListener(this);
     }
 
+    protected void onDestroy() {
+        unregisterReceiver(mReceiveBraintreeMessages);
+        super.onDestroy();
+
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == PaymentButton.REQUEST_CODE) {
                 StubbedView.LOADING_VIEW.show(this);
                 mAddPaymentMethodViewController.onPaymentResult(requestCode, resultCode, data);
             }
         } else if (resultCode == RESULT_CANCELED) {
-            mBraintree.sendAnalyticsEvent("add-paypal.user-canceled"); // BUG
+            mBraintree.sendAnalyticsEvent("add-paypal.user-canceled"); // TODO Bug
         }
     }
 
@@ -274,6 +308,8 @@ public class BraintreePaymentActivity extends Activity implements
         if (mSelectPaymentMethodViewController == null) {
             mSelectPaymentMethodViewController = new SelectPaymentMethodViewController(this,
                     mSavedInstanceState, selectMethodView, mBraintree, mCustomization);
+        } else {
+            mSelectPaymentMethodViewController.setupPaymentMethod();
         }
 
         setActionBarUpEnabled(false);

@@ -208,9 +208,9 @@ public class BraintreeApi {
     public boolean startPayWithCoinbase(Activity activity, int requestCode)
             throws UnsupportedEncodingException {
         if (isCoinbaseEnabled()) {
-            Intent coinbaseIntent = mCoinbase.getLaunchIntent(); //DM Why do it likes this? Getting the intent twice
+            Intent coinbaseIntent = mCoinbase.getLaunchIntent();
             if (coinbaseIntent != null) {
-                activity.startActivityForResult(coinbaseIntent, requestCode);
+                activity.startActivity(coinbaseIntent);
                 return true;
             }
         }
@@ -299,7 +299,7 @@ public class BraintreeApi {
      * Handles response from Coinbase after user authorization.
      *
      * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)} use store-in-vault Extra to specify vaulting
      * @return The {@link com.braintreepayments.api.models.CoinbaseAccount} for the user or {@code null}
      *         if the resultCode was not {@link android.app.Activity#RESULT_OK}.
      * @throws com.braintreepayments.api.exceptions.BraintreeException If an error not due to validation
@@ -311,8 +311,14 @@ public class BraintreeApi {
         if (resultCode == Activity.RESULT_OK) {
             Uri redirectUri =
                     data.getParcelableExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL);
+            CoinbaseAccountBuilder coinbaseAccount = new CoinbaseAccountBuilder().code(mCoinbase.parseResponse(redirectUri));
 
-            return create(new CoinbaseAccountBuilder().code(mCoinbase.parseResponse(redirectUri)));
+
+            if(data.getBooleanExtra("store-in-vault", false)){
+                coinbaseAccount.storeInVault(true);
+            }
+
+            return create(coinbaseAccount);
         }
         return null;
     }
