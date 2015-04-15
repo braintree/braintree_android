@@ -3,7 +3,7 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.braintreepayments.api.Utils;
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -30,7 +30,7 @@ public class GoogleWalletCard extends PaymentMethod implements Parcelable, Seria
      * @return {@link GoogleWalletCard} for use in payment method selection UIs.
      */
     public static GoogleWalletCard fromJson(String googleWalletCard) {
-        return Utils.getGson().fromJson(googleWalletCard, GoogleWalletCard.class);
+        return new Gson().fromJson(googleWalletCard, GoogleWalletCard.class);
     }
 
     @Override
@@ -38,21 +38,21 @@ public class GoogleWalletCard extends PaymentMethod implements Parcelable, Seria
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(this.mDetails, 0);
-        dest.writeString(this.nonce);
-        dest.writeString(this.description);
-        dest.writeSerializable(this.options);
-        dest.writeString(this.mSource);
+        dest.writeParcelable(mDetails, 0);
+        dest.writeString(mNonce);
+        dest.writeString(mDescription);
+        dest.writeSerializable(mPaymentMethodOptions);
+        dest.writeString(mSource);
     }
 
     public GoogleWalletCard() {}
 
     private GoogleWalletCard(Parcel in) {
-        this.mDetails = in.readParcelable(GoogleWalletCardDetails.class.getClassLoader());
-        this.nonce = in.readString();
-        this.description = in.readString();
-        this.options = (PaymentMethodOptions) in.readSerializable();
-        this.mSource = in.readString();
+        mDetails = in.readParcelable(GoogleWalletCardDetails.class.getClassLoader());
+        mNonce = in.readString();
+        mDescription = in.readString();
+        mPaymentMethodOptions = (PaymentMethodOptions) in.readSerializable();
+        mSource = in.readString();
     }
 
     public static final Creator<GoogleWalletCard> CREATOR = new Creator<GoogleWalletCard>() {
@@ -64,17 +64,18 @@ public class GoogleWalletCard extends PaymentMethod implements Parcelable, Seria
     };
 
     private static class GoogleWalletCardDetails implements Parcelable, Serializable {
-        private String cardType;
-        private String lastTwo;
+
+        @SerializedName("cardType") private String mCardType;
+        @SerializedName("lastTwo") private String mLastTwo;
 
         public GoogleWalletCardDetails() {}
 
         protected String getCardType() {
-            return cardType;
+            return mCardType;
         }
 
         protected String getLastTwo() {
-            return lastTwo;
+            return mLastTwo;
         }
 
         @Override
@@ -82,13 +83,13 @@ public class GoogleWalletCard extends PaymentMethod implements Parcelable, Seria
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(this.cardType);
-            dest.writeString(this.lastTwo);
+            dest.writeString(mCardType);
+            dest.writeString(mLastTwo);
         }
 
         private GoogleWalletCardDetails(Parcel in) {
-            this.cardType = in.readString();
-            this.lastTwo = in.readString();
+            mCardType = in.readString();
+            mLastTwo = in.readString();
         }
 
         public static final Creator<GoogleWalletCardDetails> CREATOR = new Creator<GoogleWalletCardDetails>() {

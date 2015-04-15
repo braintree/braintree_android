@@ -16,14 +16,15 @@ import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
+import com.braintreepayments.api.models.GoogleWalletCard;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
 import com.google.android.gms.wallet.FullWallet;
-import com.google.android.gms.wallet.ProxyCard;
 import com.google.android.gms.wallet.WalletConstants;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 
@@ -576,6 +577,9 @@ public class Braintree {
     }
 
     public void startPayWithGoogleWallet(Activity activity, int requestCode) {
+        Intent intent = new Intent(activity, GoogleWalletActivity.class)
+                .putExtra("clientToken", new Gson().toJson(mBraintreeApi.getClientToken()))
+                .putExtra("configuration", mBraintreeApi.getConfigurationString());
         activity.startActivityForResult(new Intent(activity, GoogleWalletActivity.class), requestCode);
     }
 
@@ -583,16 +587,13 @@ public class Braintree {
         if (resultCode == Activity.RESULT_OK) {
             if (data.hasExtra(WalletConstants.EXTRA_FULL_WALLET)) {
                 FullWallet fullWallet = data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET);
-                ProxyCard proxyCard = fullWallet.getProxyCard();
+                GoogleWalletCard googleWalletPaymentMethod =
+                        new Gson().fromJson(fullWallet.getPaymentMethodToken().getToken(),
+                                GoogleWalletCard.class);
 
-                CardBuilder cardBuilder = new CardBuilder()
-                        .cardNumber(proxyCard.getPan())
-                        .cvv(proxyCard.getCvn())
-                        .expirationMonth(Integer.toString(proxyCard.getExpirationMonth()))
-                        .expirationYear(Integer.toString(proxyCard.getExpirationYear()))
-                        .postalCode(fullWallet.getBillingAddress().getPostalCode());
-
-                tokenize(cardBuilder);
+                addPaymentMethodToCache(googleWalletPaymentMethod);
+                postCreatedMethodToListeners(googleWalletPaymentMethod);
+                postCreatedNonceToListeners(googleWalletPaymentMethod.getNonce());
             }
         }
     }

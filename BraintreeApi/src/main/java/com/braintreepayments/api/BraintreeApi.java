@@ -128,6 +128,10 @@ public class BraintreeApi {
         }
     }
 
+    public ClientToken getClientToken() {
+        return mClientToken;
+    }
+
     /**
      * @return If PayPal is supported and enabled in the current environment.
      */

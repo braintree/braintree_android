@@ -4,25 +4,29 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.braintreepayments.api.models.ClientToken;
+import com.braintreepayments.api.models.Configuration;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWalletRequest;
-import com.google.android.gms.wallet.LineItem;
 import com.google.android.gms.wallet.MaskedWallet;
-import com.google.android.gms.wallet.MaskedWalletRequest;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
+import com.google.gson.Gson;
 
 public class GoogleWalletActivity extends Activity implements ConnectionCallbacks,
         OnConnectionFailedListener {
+
+    public static final int CONNECTION_FAILED = 16;
+    public static final String EXTRA_CONNECTION_FAILED_ERROR_CODE = "com.braintreepayments.api.GoogleWalletActivity.EXTRA_CONNECTION_FAILED_ERROR_CODE";
 
     private static final int MASKED_WALLET_REQUEST = 100;
     private static final int FULL_WALLET_REQUEST = 200;
 
     private GoogleApiClient mGoogleApiClient;
+    private GoogleWallet mGoogleWallet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,51 +41,48 @@ public class GoogleWalletActivity extends Activity implements ConnectionCallback
                         .build())
                 .build();
         mGoogleApiClient.connect();
+
+        ClientToken clientToken =
+                new Gson().fromJson(getIntent().getStringExtra("clientToken"), ClientToken.class);
+        Configuration configuration = new Gson().fromJson(getIntent().getStringExtra("configuration"), Configuration.class);
+        mGoogleWallet = new GoogleWallet(clientToken, configuration);
     }
 
     @Override
     public void onConnected(Bundle bundle) {
-        MaskedWalletRequest maskedWalletRequest =
-                MaskedWalletRequest.newBuilder()
-                        .setMerchantName("Braintree Demo")
-                        .setCurrencyCode("USD")
-                        .setEstimatedTotalPrice("150.00")
-                        .build();
-
-        Wallet.Payments.loadMaskedWallet(mGoogleApiClient, maskedWalletRequest, MASKED_WALLET_REQUEST);
+        Wallet.Payments.loadMaskedWallet(mGoogleApiClient, mGoogleWallet.getMaskedWalletRequest(), MASKED_WALLET_REQUEST);
     }
 
     @Override
     public void onConnectionSuspended(int i) {
+        Intent intent = new Intent()
+                .putExtra(EXTRA_CONNECTION_FAILED_ERROR_CODE, i);
+        setResult(CONNECTION_FAILED, intent);
+        finish();
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
+        Intent intent = new Intent()
+                .putExtra(EXTRA_CONNECTION_FAILED_ERROR_CODE, connectionResult.getErrorCode());
+        setResult(CONNECTION_FAILED, intent);
+        finish();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == MASKED_WALLET_REQUEST) {
+                // no need to do full wallet here?
+                // just do masked and return txn id
+
                 MaskedWallet maskedWallet =
                         data.getParcelableExtra(WalletConstants.EXTRA_MASKED_WALLET);
-                FullWalletRequest fullWalletRequest = FullWalletRequest.newBuilder()
-                        .setCart(Cart.newBuilder()
-                                .setCurrencyCode("USD")
-                                .setTotalPrice("150.00")
-                                .addLineItem(LineItem.newBuilder()
-                                        .setCurrencyCode("150.00")
-                                        .setDescription("Description")
-                                        .setQuantity("1")
-                                        .setUnitPrice("150.00")
-                                        .setTotalPrice("150.00")
-                                        .build())
-                                .build())
-                        .setGoogleTransactionId(maskedWallet.getGoogleTransactionId())
-                        .build();
+                FullWalletRequest fullWalletRequest = mGoogleWallet.getFullWalletRequest(
+                        maskedWallet.getGoogleTransactionId());
 
-                Wallet.Payments
-                        .loadFullWallet(mGoogleApiClient, fullWalletRequest, FULL_WALLET_REQUEST);
+                Wallet.Payments.loadFullWallet(mGoogleApiClient, fullWalletRequest,
+                        FULL_WALLET_REQUEST);
             } else if (requestCode == FULL_WALLET_REQUEST) {
                 setResult(Activity.RESULT_OK, data);
                 finish();
