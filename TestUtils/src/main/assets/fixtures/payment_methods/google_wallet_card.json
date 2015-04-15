@@ -1,0 +1,13 @@
+{
+  "googleWalletCards": [
+    {
+      "type": "GoogleWalletCard",
+      "nonce": "fake-google-wallet-card-nonce",
+      "description": "Google Wallet",
+      "details": {
+        "cardType": "Visa",
+        "lastTwo": "11"
+      }
+    }
+  ]
+}
