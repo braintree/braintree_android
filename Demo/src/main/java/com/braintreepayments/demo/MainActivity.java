@@ -212,6 +212,8 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
                     mCreateTransactionButton.setEnabled(true);
                 }
             }
+        } else if (resultCode == RESULT_CANCELED) {
+            mNonceTextView.setText("Canceled");
         }
     }
 

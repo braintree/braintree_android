@@ -114,11 +114,13 @@ public class BraintreePaymentActivity extends Activity implements
         public void onReceive(Context context, Intent intent)
         {
             String action = intent.getAction();
-            if (action.equalsIgnoreCase(BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_SUCCESS)) {
+            if (action.equalsIgnoreCase(BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED)) {
                 StubbedView.LOADING_VIEW.show(BraintreePaymentActivity.this);
                 intent.putExtra("store-in-vault", true);
                 BraintreePaymentActivity.this.mAddPaymentMethodViewController.onPaymentResult(
-                        PaymentButton.REQUEST_CODE, Activity.RESULT_OK, intent);
+                        PaymentButton.REQUEST_CODE, intent.getIntExtra(
+                                BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_EXTRA_RESULT,
+                                Activity.RESULT_OK), intent);
             }
         }
     }
@@ -130,7 +132,7 @@ public class BraintreePaymentActivity extends Activity implements
 
         mReceiveBraintreeMessages = new ReceiveBraintreeMessages();
         registerReceiver(mReceiveBraintreeMessages, new IntentFilter(
-                BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_SUCCESS));
+                BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED));
 
 
         mSavedInstanceState = (savedInstanceState != null) ? savedInstanceState : new Bundle();

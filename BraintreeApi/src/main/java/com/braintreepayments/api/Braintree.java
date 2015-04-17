@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -528,14 +529,18 @@ public class Braintree {
      */
     public void startPayWithCoinbase(Activity activity, int requestCode) {
         boolean payWithCoinbaseInitiated = false;
+        sendAnalyticsEvent("coinbase.initiate.started");
         try {
             payWithCoinbaseInitiated = mBraintreeApi.startPayWithCoinbase(activity, requestCode);
+            sendAnalyticsEvent("coinbase.webswitch.started");
+
         } catch (UnsupportedEncodingException e) {
             postUnrecoverableErrorToListeners(e);
         }
 
         if (!payWithCoinbaseInitiated) {
             postUnrecoverableErrorToListeners(new AppSwitchNotAvailableException());
+            sendAnalyticsEvent("coinbase.initiate.unavailable");
         }
     }
 
@@ -550,23 +555,40 @@ public class Braintree {
      * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      */
     public synchronized void finishPayWithCoinbase(final int resultCode, final Intent data) {
-        mExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    CoinbaseAccount coinbaseAccount = mBraintreeApi.finishPayWithCoinbase(resultCode, data);
-                    if (coinbaseAccount != null) {
-                        addPaymentMethodToCache(coinbaseAccount);
-                        postCreatedMethodToListeners(coinbaseAccount);
-                        postCreatedNonceToListeners(coinbaseAccount.getNonce());
-                    }
-                } catch (BraintreeException e) {
-                    postUnrecoverableErrorToListeners(e);
-                } catch (ErrorWithResponse errorWithResponse) {
-                    postRecoverableErrorToListeners(errorWithResponse);
-                }
+
+        Uri redirectUri = data.getParcelableExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL);
+        String error = redirectUri.getQueryParameter("error");
+        if (error != null) {
+            if (error.equals("access_denied")) {
+                sendAnalyticsEvent("coinbase.webswitch.denied");
+            } else {
+                sendAnalyticsEvent("coinbase.webswitch.failed");
             }
-        });
+        } else {
+            mExecutorService.submit(new Runnable() {
+                @Override
+                public void run() {
+
+                    sendAnalyticsEvent("coinbase.webswitch.authorized");
+
+                    try {
+                        CoinbaseAccount coinbaseAccount = mBraintreeApi.finishPayWithCoinbase(resultCode, data);
+                        if (coinbaseAccount != null) {
+                            addPaymentMethodToCache(coinbaseAccount);
+                            postCreatedMethodToListeners(coinbaseAccount);
+                            postCreatedNonceToListeners(coinbaseAccount.getNonce());
+                            sendAnalyticsEvent("coinbase.tokenize.succeeded");
+                        }
+                    } catch (BraintreeException e) {
+                        sendAnalyticsEvent("coinbase.tokenize.failed");
+                        postUnrecoverableErrorToListeners(e);
+                    } catch (ErrorWithResponse errorWithResponse) {
+                        sendAnalyticsEvent("coinbase.tokenize.failed");
+                        postRecoverableErrorToListeners(errorWithResponse);
+                    }
+                }
+            });
+        }
     }
 
     /**

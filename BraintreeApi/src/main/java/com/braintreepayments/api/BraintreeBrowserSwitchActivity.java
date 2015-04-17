@@ -9,7 +9,8 @@ public class BraintreeBrowserSwitchActivity extends Activity {
 
     public static final String EXTRA_REQUEST_URL = "com.braintreepayments.api.BraintreeBrowserSwitchActivity.EXTRA_REQUEST_URL";
     public static final String EXTRA_REDIRECT_URL = "com.braintreepayments.api.BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL";
-    public static final String BROADCAST_BROWSER_SUCCESS = "com.braintreepayments.api.messages.BROWSER_SWITCH_SUCCESS";
+    public static final String BROADCAST_BROWSER_COMPLETED = "com.braintreepayments.api.messages.BROWSER_SWITCH_COMPLETED";
+    public static final String BROADCAST_BROWSER_EXTRA_RESULT = "com.braintreepayments.api.messages.BROADCAST_BROWSER_EXTRA_RESULT";
 
     private boolean mShouldCancelOnResume = false;
 
@@ -57,9 +58,16 @@ public class BraintreeBrowserSwitchActivity extends Activity {
 //        responseIntent.putExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL, intent.getData());
 //        setResult(Activity.RESULT_OK, responseIntent);
 
-        Intent broadcastIntent = new Intent(BROADCAST_BROWSER_SUCCESS);
-        broadcastIntent.putExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL, intent.getData());
-        setResult(Activity.RESULT_OK, broadcastIntent);
+        Uri redirectUri = intent.getData();
+        String error = redirectUri.getQueryParameter("error");
+        Intent broadcastIntent = new Intent(BROADCAST_BROWSER_COMPLETED);
+        broadcastIntent.putExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL,
+                intent.getData());
+        if (error != null) {
+            broadcastIntent.putExtra(BROADCAST_BROWSER_EXTRA_RESULT, Activity.RESULT_CANCELED);
+        } else {
+            broadcastIntent.putExtra(BROADCAST_BROWSER_EXTRA_RESULT, Activity.RESULT_OK);
+        }
         sendBroadcast(broadcastIntent);
 
         finish();
