@@ -65,7 +65,7 @@ public class BraintreeBroadcastManager {
         }
     }
 
-    private static final String TAG = "LocalBroadcastManager";
+    private static final String TAG = "BraintreeBroadcastManager";
     private static final boolean DEBUG = false;
 
     private final Context mAppContext;
@@ -218,7 +218,7 @@ public class BraintreeBroadcastManager {
                     }
 
                     int match = receiver.filter.match(action, type, scheme, data,
-                            categories, "LocalBroadcastManager");
+                            categories, "BraintreeBroadcastManager");
                     if (match >= 0) {
                         if (debug) Log.v(TAG, "  Filter matched!  match=0x" +
                                 Integer.toHexString(match));

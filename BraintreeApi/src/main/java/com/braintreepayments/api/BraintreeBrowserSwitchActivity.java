@@ -9,7 +9,7 @@ public class BraintreeBrowserSwitchActivity extends Activity {
 
     public static final String EXTRA_REQUEST_URL = "com.braintreepayments.api.BraintreeBrowserSwitchActivity.EXTRA_REQUEST_URL";
     public static final String EXTRA_REDIRECT_URL = "com.braintreepayments.api.BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL";
-    public static final String BROADCAST_BROWSER_COMPLETED = "com.braintreepayments.api.messages.BROWSER_SWITCH_COMPLETED";
+    public static final String LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED = "com.braintreepayments.api.messages.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED";
     public static final String BROADCAST_BROWSER_EXTRA_RESULT = "com.braintreepayments.api.messages.BROADCAST_BROWSER_EXTRA_RESULT";
 
     private boolean mShouldCancelOnResume = false;
@@ -27,7 +27,6 @@ public class BraintreeBrowserSwitchActivity extends Activity {
         if (stringExtra != null) {
             Uri uri = Uri.parse(stringExtra);
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            //String stringExtra = "https://www.coinbase.com/oauth/authorize?response_type=code&client_id=11d27229ba58b56d7e3c01a0527f4d5b446d4f684817cb623d255b573addc59b&scope=authorizations%3Abraintree+user&redirect_uri=com.braintreepayments.demo.braintree%3A%2F%2Fcoinbase&meta%5Bauthorizations_merchant_account%5D=coinbase-development-merchant%40getbraintree.com";
             startActivity(intent);
         }
 
@@ -60,7 +59,7 @@ public class BraintreeBrowserSwitchActivity extends Activity {
 
         Uri redirectUri = intent.getData();
         String error = redirectUri.getQueryParameter("error");
-        Intent broadcastIntent = new Intent(BROADCAST_BROWSER_COMPLETED);
+        Intent broadcastIntent = new Intent(LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED);
         broadcastIntent.putExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL,
                 intent.getData());
         if (error != null) {

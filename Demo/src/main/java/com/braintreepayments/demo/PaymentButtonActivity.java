@@ -19,12 +19,12 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodNonc
     private Braintree mBraintree;
     private PaymentButton mPaymentButton;
 
-    private BroadcastReceiver mReceiveBraintreeMessages = new BroadcastReceiver() {
+    private BroadcastReceiver mBrowserSwitchReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action
-                    .equalsIgnoreCase(BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED)) {
+                    .equalsIgnoreCase(BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED)) {
                 mPaymentButton.onActivityResult(PaymentButton.REQUEST_CODE, intent.getIntExtra(
                         BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_EXTRA_RESULT,
                         Activity.RESULT_OK),
@@ -37,9 +37,9 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodNonc
         super.onCreate(onSaveInstanceState);
         setContentView(R.layout.payment_button);
 
-        BraintreeBroadcastManager.getInstance(this).registerReceiver(mReceiveBraintreeMessages,
+        BraintreeBroadcastManager.getInstance(this).registerReceiver(mBrowserSwitchReceiver,
                 new IntentFilter(
-                        BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED));
+                        BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
 
         mPaymentButton = (PaymentButton) findViewById(R.id.payment_button);
 
@@ -50,7 +50,7 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodNonc
     }
 
     protected void onDestroy() {
-        BraintreeBroadcastManager.getInstance(this).unregisterReceiver(mReceiveBraintreeMessages);
+        BraintreeBroadcastManager.getInstance(this).unregisterReceiver(mBrowserSwitchReceiver);
         super.onDestroy();
     }
 

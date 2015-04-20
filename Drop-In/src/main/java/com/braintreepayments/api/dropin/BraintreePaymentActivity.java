@@ -104,11 +104,12 @@ public class BraintreePaymentActivity extends Activity implements
     private boolean mUnableToGetPaymentMethods = false;
     private Bundle mSavedInstanceState;
     private Customization mCustomization;
-    private BroadcastReceiver mReceiveBraintreeMessages = new BroadcastReceiver() {
+
+    private BroadcastReceiver mBrowserSwitchReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equalsIgnoreCase(BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED)) {
+            if (action.equalsIgnoreCase(BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED)) {
                 StubbedView.LOADING_VIEW.show(BraintreePaymentActivity.this);
                 intent.putExtra("store-in-vault", true);
                 BraintreePaymentActivity.this.mAddPaymentMethodViewController.onPaymentResult(
@@ -124,9 +125,9 @@ public class BraintreePaymentActivity extends Activity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        BraintreeBroadcastManager.getInstance(this).registerReceiver(mReceiveBraintreeMessages,
+        BraintreeBroadcastManager.getInstance(this).registerReceiver(mBrowserSwitchReceiver,
                 new IntentFilter(
-                        BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED));
+                        BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
 
 
         mSavedInstanceState = (savedInstanceState != null) ? savedInstanceState : new Bundle();
@@ -167,7 +168,7 @@ public class BraintreePaymentActivity extends Activity implements
     }
 
     protected void onDestroy() {
-        BraintreeBroadcastManager.getInstance(this).unregisterReceiver(mReceiveBraintreeMessages);
+        BraintreeBroadcastManager.getInstance(this).unregisterReceiver(mBrowserSwitchReceiver);
         super.onDestroy();
     }
 

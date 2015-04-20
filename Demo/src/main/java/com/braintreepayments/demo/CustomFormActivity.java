@@ -23,12 +23,12 @@ public class CustomFormActivity extends Activity implements PaymentMethodNonceLi
     private PaymentButton mPaymentButton;
     private EditText mCardNumber;
     private EditText mExpirationDate;
-    private BroadcastReceiver mReceiveBraintreeMessages = new BroadcastReceiver() {
+    private BroadcastReceiver mBrowserSwitchReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action
-                    .equalsIgnoreCase(BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED)) {
+                    .equalsIgnoreCase(BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED)) {
                 mBraintree.finishPayWithCoinbase(intent.getIntExtra(
                         BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_EXTRA_RESULT,
                         Activity.RESULT_OK), intent);
@@ -41,9 +41,9 @@ public class CustomFormActivity extends Activity implements PaymentMethodNonceLi
         super.onCreate(onSaveInstanceState);
         setContentView(R.layout.custom);
 
-        BraintreeBroadcastManager.getInstance(this).registerReceiver(mReceiveBraintreeMessages,
+        BraintreeBroadcastManager.getInstance(this).registerReceiver(mBrowserSwitchReceiver,
                 new IntentFilter(
-                        BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED));
+                        BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
 
 
         mPaymentButton = (PaymentButton) findViewById(R.id.payment_button);
@@ -57,7 +57,7 @@ public class CustomFormActivity extends Activity implements PaymentMethodNonceLi
     }
 
     protected void onDestroy() {
-        BraintreeBroadcastManager.getInstance(this).unregisterReceiver(mReceiveBraintreeMessages);
+        BraintreeBroadcastManager.getInstance(this).unregisterReceiver(mBrowserSwitchReceiver);
         super.onDestroy();
     }
 
