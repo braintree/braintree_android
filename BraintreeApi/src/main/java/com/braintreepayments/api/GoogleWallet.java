@@ -4,7 +4,6 @@ import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWalletRequest;
-import com.google.android.gms.wallet.LineItem;
 import com.google.android.gms.wallet.MaskedWalletRequest;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.PaymentMethodTokenizationType;
@@ -13,10 +12,12 @@ public class GoogleWallet {
 
     private ClientToken mClientToken;
     private Configuration mConfiguration;
+    private Cart mCart;
 
-    protected GoogleWallet(ClientToken clientToken, Configuration configuration) {
+    protected GoogleWallet(ClientToken clientToken, Configuration configuration, Cart cart) {
         mClientToken = clientToken;
         mConfiguration = configuration;
+        mCart = cart;
     }
 
     protected MaskedWalletRequest getMaskedWalletRequest() {
@@ -35,24 +36,14 @@ public class GoogleWallet {
         return MaskedWalletRequest.newBuilder()
                 .setMerchantName("Braintree Demo")
                 .setCurrencyCode("USD")
-                .setEstimatedTotalPrice("150.00")
+                .setEstimatedTotalPrice(mCart.getTotalPrice())
                 .setPaymentMethodTokenizationParameters(paymentMethodTokenizationParameters)
                 .build();
     }
 
     protected FullWalletRequest getFullWalletRequest(String googleTransactionId) {
         return FullWalletRequest.newBuilder()
-                .setCart(Cart.newBuilder()
-                        .setCurrencyCode("USD")
-                        .setTotalPrice("150.00")
-                        .addLineItem(LineItem.newBuilder()
-                                .setCurrencyCode("USD")
-                                .setDescription("Description")
-                                .setQuantity("1")
-                                .setUnitPrice("150.00")
-                                .setTotalPrice("150.00")
-                                .build())
-                        .build())
+                .setCart(mCart)
                 .setGoogleTransactionId(googleTransactionId)
                 .build();
     }

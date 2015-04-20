@@ -22,7 +22,13 @@
         android:contentDescription="@string/bt_pay_with_paypal"
         android:layout_toLeftOf="@id/bt_payment_button_divider"
         android:layout_toStartOf="@id/bt_payment_button_divider"/>
-
+    <!--<ImageButton-->
+        <!--style="@style/bt_payment_method_app_switch_button"-->
+        <!--android:id="@+id/bt_venmo_button"-->
+        <!--android:src="@drawable/bt_logo_venmo"-->
+        <!--android:contentDescription="@string/bt_pay_with_venmo"-->
+        <!--android:layout_toRightOf="@id/bt_payment_button_divider"-->
+        <!--android:layout_toEndOf="@id/bt_payment_button_divider" /> -->
     <ImageButton
         style="@style/bt_payment_method_app_switch_button"
         android:id="@+id/bt_google_wallet_button"

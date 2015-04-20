@@ -34,6 +34,7 @@ import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PaymentMethod;
+import com.google.android.gms.wallet.Cart;
 
 import java.io.Serializable;
 import java.util.List;
@@ -65,6 +66,11 @@ public class BraintreePaymentActivity extends Activity implements
      * Try again later.
      */
     public static final int BRAINTREE_RESULT_SERVER_UNAVAILABLE = 4;
+
+    /**
+     * Used to specify a {@link com.google.android.gms.wallet.Cart} for presentation and customization.
+     */
+    public static final String EXTRA_CART = "com.braintreepayments.api.dropin.EXTRA_CART";
 
     /**
      * Used to specify a client token during initialization.
@@ -100,6 +106,7 @@ public class BraintreePaymentActivity extends Activity implements
     private AtomicBoolean mHavePaymentMethodsBeenReceived = new AtomicBoolean(false);
     private Bundle mSavedInstanceState;
     private Customization mCustomization;
+    private Cart mCart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +115,7 @@ public class BraintreePaymentActivity extends Activity implements
 
         mSavedInstanceState = (savedInstanceState != null) ? savedInstanceState : new Bundle();
         mCustomization = getCustomization();
+        mCart = getCart();
         customizeActionBar();
 
         mBraintree = Braintree.restoreSavedInstanceState(this, mSavedInstanceState);
@@ -134,6 +142,7 @@ public class BraintreePaymentActivity extends Activity implements
 
     private void init() {
         mBraintree.setIntegrationDropin();
+        mBraintree.setCart(mCart);
         mBraintree.sendAnalyticsEvent("sdk.initialized");
         mBraintree.addListener(this);
         mBraintree.unlockListeners();
@@ -370,6 +379,10 @@ public class BraintreePaymentActivity extends Activity implements
                     .build();
         }
         return customization;
+    }
+
+    private Cart getCart() {
+        return getIntent().getParcelableExtra(EXTRA_CART);
     }
 
     @Override

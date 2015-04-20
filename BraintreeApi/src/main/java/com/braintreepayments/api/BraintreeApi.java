@@ -132,6 +132,10 @@ public class BraintreeApi {
         return mClientToken;
     }
 
+    public Configuration getLocalConfiguration() {
+        return mConfiguration;
+    }
+
     /**
      * @return If PayPal is supported and enabled in the current environment.
      */

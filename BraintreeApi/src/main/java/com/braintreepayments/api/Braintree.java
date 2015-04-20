@@ -22,6 +22,7 @@ import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
+import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
 import com.google.android.gms.wallet.WalletConstants;
 import com.google.gson.Gson;
@@ -128,6 +129,7 @@ public class Braintree {
     private final Set<ErrorListener> mErrorListeners = new HashSet<ErrorListener>();
 
     private List<PaymentMethod> mCachedPaymentMethods;
+    private Cart mCart;
 
     /**
      * @deprecated Use the asynchronous
@@ -241,6 +243,10 @@ public class Braintree {
 
     protected String getIntegrationType() {
         return mIntegrationType;
+    }
+
+    public void setCart(Cart cart) {
+        mCart = cart;
     }
 
     /**
@@ -579,8 +585,9 @@ public class Braintree {
     public void startPayWithGoogleWallet(Activity activity, int requestCode) {
         Intent intent = new Intent(activity, GoogleWalletActivity.class)
                 .putExtra("clientToken", new Gson().toJson(mBraintreeApi.getClientToken()))
-                .putExtra("configuration", mBraintreeApi.getConfigurationString());
-        activity.startActivityForResult(new Intent(activity, GoogleWalletActivity.class), requestCode);
+                .putExtra("configuration", new Gson().toJson(mBraintreeApi.getLocalConfiguration()))
+                .putExtra("cart", mCart);
+        activity.startActivityForResult(intent, requestCode);
     }
 
     public synchronized void finishPayWithGoogleWallet(int resultCode, Intent data) {

@@ -10,6 +10,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWalletRequest;
 import com.google.android.gms.wallet.MaskedWallet;
 import com.google.android.gms.wallet.Wallet;
@@ -27,6 +28,7 @@ public class GoogleWalletActivity extends Activity implements ConnectionCallback
 
     private GoogleApiClient mGoogleApiClient;
     private GoogleWallet mGoogleWallet;
+    private Cart mCart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +46,10 @@ public class GoogleWalletActivity extends Activity implements ConnectionCallback
 
         ClientToken clientToken =
                 new Gson().fromJson(getIntent().getStringExtra("clientToken"), ClientToken.class);
-        Configuration configuration = new Gson().fromJson(getIntent().getStringExtra("configuration"), Configuration.class);
-        mGoogleWallet = new GoogleWallet(clientToken, configuration);
+        Configuration configuration =
+                new Gson().fromJson(getIntent().getStringExtra("configuration"), Configuration.class);
+        mCart = getIntent().getParcelableExtra("cart");
+        mGoogleWallet = new GoogleWallet(clientToken, configuration, mCart);
     }
 
     @Override
