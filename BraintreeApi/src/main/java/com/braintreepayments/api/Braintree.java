@@ -530,17 +530,23 @@ public class Braintree {
     public void startPayWithCoinbase(Activity activity, int requestCode) {
         boolean payWithCoinbaseInitiated = false;
         sendAnalyticsEvent("coinbase.initiate.started");
-        try {
-            payWithCoinbaseInitiated = mBraintreeApi.startPayWithCoinbase(activity, requestCode);
-            sendAnalyticsEvent("coinbase.webswitch.started");
-
-        } catch (UnsupportedEncodingException e) {
-            postUnrecoverableErrorToListeners(e);
-        }
-
-        if (!payWithCoinbaseInitiated) {
-            postUnrecoverableErrorToListeners(new AppSwitchNotAvailableException());
+        if (!mBraintreeApi.isCoinbaseEnabled()) {
             sendAnalyticsEvent("coinbase.initiate.unavailable");
+            postUnrecoverableErrorToListeners(new AppSwitchNotAvailableException());
+        } else {
+            try {
+                payWithCoinbaseInitiated = mBraintreeApi.startPayWithCoinbase(activity, requestCode);
+                sendAnalyticsEvent("coinbase.webswitch.started");
+
+            } catch (UnsupportedEncodingException e) {
+                postUnrecoverableErrorToListeners(e);
+                sendAnalyticsEvent("coinbase.initiate.exception");
+            }
+
+            if (!payWithCoinbaseInitiated) {
+                postUnrecoverableErrorToListeners(new AppSwitchNotAvailableException());
+                sendAnalyticsEvent("coinbase.initiate.failed");
+            }
         }
     }
 
