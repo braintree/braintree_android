@@ -27,9 +27,11 @@ public class CustomFormActivity extends Activity implements PaymentMethodNonceLi
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equalsIgnoreCase(BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED)) {
-                mPaymentButton.onActivityResult(PaymentButton.REQUEST_CODE, intent.getIntExtra(BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_EXTRA_RESULT, Activity.RESULT_OK),
-                        intent);
+            if (action
+                    .equalsIgnoreCase(BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED)) {
+                mBraintree.finishPayWithCoinbase(intent.getIntExtra(
+                        BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_EXTRA_RESULT,
+                        Activity.RESULT_OK), intent);
             }
         }
     };

@@ -23,8 +23,11 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodNonc
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equalsIgnoreCase(BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED)) {
-                mPaymentButton.onActivityResult(PaymentButton.REQUEST_CODE, intent.getIntExtra(BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_EXTRA_RESULT, Activity.RESULT_OK),
+            if (action
+                    .equalsIgnoreCase(BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED)) {
+                mPaymentButton.onActivityResult(PaymentButton.REQUEST_CODE, intent.getIntExtra(
+                        BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_EXTRA_RESULT,
+                        Activity.RESULT_OK),
                         intent);
             }
         }
