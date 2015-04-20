@@ -21,6 +21,7 @@ import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.Braintree.ErrorListener;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodsUpdatedListener;
+import com.braintreepayments.api.BraintreeBroadcastManager;
 import com.braintreepayments.api.BraintreeBrowserSwitchActivity;
 import com.braintreepayments.api.VenmoAppSwitch;
 import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
@@ -103,16 +104,9 @@ public class BraintreePaymentActivity extends Activity implements
     private boolean mUnableToGetPaymentMethods = false;
     private Bundle mSavedInstanceState;
     private Customization mCustomization;
-    private ReceiveBraintreeMessages mReceiveBraintreeMessages;
-
-    /**
-     * {@link com.braintreepayments.api.BraintreeBrowserSwitchActivity} used to receive messages from successful browser switches
-     */
-    public class ReceiveBraintreeMessages extends BroadcastReceiver
-    {
+    private BroadcastReceiver mReceiveBraintreeMessages = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent)
-        {
+        public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equalsIgnoreCase(BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED)) {
                 StubbedView.LOADING_VIEW.show(BraintreePaymentActivity.this);
@@ -123,16 +117,16 @@ public class BraintreePaymentActivity extends Activity implements
                                 Activity.RESULT_OK), intent);
             }
         }
-    }
+    };
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mReceiveBraintreeMessages = new ReceiveBraintreeMessages();
-        registerReceiver(mReceiveBraintreeMessages, new IntentFilter(
-                BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED));
+        BraintreeBroadcastManager.getInstance(this).registerReceiver(mReceiveBraintreeMessages,
+                new IntentFilter(
+                        BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED));
 
 
         mSavedInstanceState = (savedInstanceState != null) ? savedInstanceState : new Bundle();
@@ -173,9 +167,8 @@ public class BraintreePaymentActivity extends Activity implements
     }
 
     protected void onDestroy() {
-        unregisterReceiver(mReceiveBraintreeMessages);
+        BraintreeBroadcastManager.getInstance(this).unregisterReceiver(mReceiveBraintreeMessages);
         super.onDestroy();
-
     }
 
     @Override

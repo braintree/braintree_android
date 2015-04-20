@@ -11,6 +11,7 @@ import android.widget.EditText;
 
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.Braintree.PaymentMethodNonceListener;
+import com.braintreepayments.api.BraintreeBroadcastManager;
 import com.braintreepayments.api.BraintreeBrowserSwitchActivity;
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.view.PaymentButton;
@@ -22,29 +23,25 @@ public class CustomFormActivity extends Activity implements PaymentMethodNonceLi
     private PaymentButton mPaymentButton;
     private EditText mCardNumber;
     private EditText mExpirationDate;
-    private ReceiveBraintreeMessages mReceiveBraintreeMessages;
-
-    public class ReceiveBraintreeMessages extends BroadcastReceiver
-    {
+    private BroadcastReceiver mReceiveBraintreeMessages = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent)
-        {
+        public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (action.equalsIgnoreCase(BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED)) {
                 mPaymentButton.onActivityResult(PaymentButton.REQUEST_CODE, intent.getIntExtra(BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_EXTRA_RESULT, Activity.RESULT_OK),
                         intent);
             }
         }
-    }
+    };
 
 
     protected void onCreate(Bundle onSaveInstanceState) {
         super.onCreate(onSaveInstanceState);
         setContentView(R.layout.custom);
 
-        mReceiveBraintreeMessages = new ReceiveBraintreeMessages();
-        registerReceiver(mReceiveBraintreeMessages, new IntentFilter(
-                BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED));
+        BraintreeBroadcastManager.getInstance(this).registerReceiver(mReceiveBraintreeMessages,
+                new IntentFilter(
+                        BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_COMPLETED));
 
 
         mPaymentButton = (PaymentButton) findViewById(R.id.payment_button);
@@ -58,8 +55,8 @@ public class CustomFormActivity extends Activity implements PaymentMethodNonceLi
     }
 
     protected void onDestroy() {
+        BraintreeBroadcastManager.getInstance(this).unregisterReceiver(mReceiveBraintreeMessages);
         super.onDestroy();
-        unregisterReceiver(mReceiveBraintreeMessages);
     }
 
     public void onPurchase(View v) {

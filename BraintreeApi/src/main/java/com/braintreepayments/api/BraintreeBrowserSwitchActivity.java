@@ -68,7 +68,7 @@ public class BraintreeBrowserSwitchActivity extends Activity {
         } else {
             broadcastIntent.putExtra(BROADCAST_BROWSER_EXTRA_RESULT, Activity.RESULT_OK);
         }
-        sendBroadcast(broadcastIntent);
+        BraintreeBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
 
         finish();
     }
