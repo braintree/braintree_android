@@ -53,10 +53,11 @@ public class BraintreeBrowserSwitchActivity extends Activity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         //Doesn't work in API 19
-//        Intent responseIntent = new Intent();
-//        responseIntent.putExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL, intent.getData());
-//        setResult(Activity.RESULT_OK, responseIntent);
+        //Intent responseIntent = new Intent();
+        //responseIntent.putExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL, intent.getData());
+        //setResult(Activity.RESULT_OK, responseIntent);
 
+        //This error checking is Coinbase specific at the moment
         Uri redirectUri = intent.getData();
         String error = redirectUri.getQueryParameter("error");
         Intent broadcastIntent = new Intent(LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED);
@@ -67,8 +68,7 @@ public class BraintreeBrowserSwitchActivity extends Activity {
         } else {
             broadcastIntent.putExtra(BROADCAST_BROWSER_EXTRA_RESULT, Activity.RESULT_OK);
         }
-        BraintreeBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
-
+        BraintreeBroadcastManager.getInstance(this).sendBroadcastSync(broadcastIntent);
         finish();
     }
 }
