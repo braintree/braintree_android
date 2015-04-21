@@ -27,5 +27,6 @@
     <string name="bt_descriptor_diners">Diners</string>
     <string name="bt_descriptor_maestro">Maestro</string>
     <string name="bt_descriptor_paypal">PayPal</string>
+    <string name="bt_descriptor_android_pay">Android Pay</string>
     <string name="bt_descriptor_unknown">Card</string>
 </resources>
