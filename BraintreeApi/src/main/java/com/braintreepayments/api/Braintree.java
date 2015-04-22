@@ -28,6 +28,7 @@ import com.google.android.gms.wallet.WalletConstants;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -583,6 +584,9 @@ public class Braintree {
     }
 
     public void startPayWithGoogleWallet(Activity activity, int requestCode) {
+        if(mCart == null) {
+            mCart = Cart.newBuilder().setTotalPrice("100").setCurrencyCode("USD").build();
+        }
         Intent intent = new Intent(activity, GoogleWalletActivity.class)
                 .putExtra("clientToken", new Gson().toJson(mBraintreeApi.getClientToken()))
                 .putExtra("configuration", new Gson().toJson(mBraintreeApi.getLocalConfiguration()))
@@ -594,8 +598,15 @@ public class Braintree {
         if (resultCode == Activity.RESULT_OK) {
             if (data.hasExtra(WalletConstants.EXTRA_FULL_WALLET)) {
                 FullWallet fullWallet = data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET);
+                String cardJson;
+                try {
+                    cardJson = new JSONObject(fullWallet.getPaymentMethodToken().getToken())
+                            .getJSONArray("googleWalletCards").get(0).toString();
+                } catch (JSONException e) {
+                    cardJson = "";
+                }
                 GoogleWalletCard googleWalletPaymentMethod =
-                        new Gson().fromJson(fullWallet.getPaymentMethodToken().getToken(),
+                        new Gson().fromJson(cardJson,
                                 GoogleWalletCard.class);
 
                 addPaymentMethodToCache(googleWalletPaymentMethod);
