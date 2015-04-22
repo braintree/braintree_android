@@ -17,7 +17,7 @@ public class GoogleWalletCard extends PaymentMethod implements Parcelable, Seria
 
     @Override
     public String getTypeLabel() {
-        return "Google Wallet";
+        return "Android Pay";
     }
 
     public String getLastTwo() {
