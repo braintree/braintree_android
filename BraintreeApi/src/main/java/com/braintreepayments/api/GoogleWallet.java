@@ -20,24 +20,24 @@ public class GoogleWallet {
         mCart = cart;
     }
 
-    protected MaskedWalletRequest getMaskedWalletRequest() {
-        PaymentMethodTokenizationParameters paymentMethodTokenizationParameters =
-                PaymentMethodTokenizationParameters.newBuilder()
-                        .setPaymentMethodTokenizationType(
-                                PaymentMethodTokenizationType.PAYMENT_GATEWAY)
-                        .addParameter("gateway", "braintree")
-                        .addParameter("braintree:merchantId", mConfiguration.getMerchantId())
-                        .addParameter("braintree:authorizationFingerprint",
-                                mClientToken.getAuthorizationFingerprint())
-                        .addParameter("braintree:apiVersion", "v1")
-                        .addParameter("braintree:sdkVersion", BuildConfig.VERSION_NAME)
-                        .build();
+    protected PaymentMethodTokenizationParameters getTokenizationParameters() {
+        return PaymentMethodTokenizationParameters.newBuilder()
+                .setPaymentMethodTokenizationType(PaymentMethodTokenizationType.PAYMENT_GATEWAY)
+                .addParameter("gateway", "braintree")
+                .addParameter("braintree:merchantId", mConfiguration.getMerchantId())
+                .addParameter("braintree:authorizationFingerprint",
+                        mClientToken.getAuthorizationFingerprint())
+                .addParameter("braintree:apiVersion", "v1")
+                .addParameter("braintree:sdkVersion", BuildConfig.VERSION_NAME)
+                .build();
+    }
 
+    protected MaskedWalletRequest getMaskedWalletRequest() {
         return MaskedWalletRequest.newBuilder()
                 .setMerchantName("Braintree Demo")
                 .setCurrencyCode("USD")
                 .setEstimatedTotalPrice(mCart.getTotalPrice())
-                .setPaymentMethodTokenizationParameters(paymentMethodTokenizationParameters)
+                .setPaymentMethodTokenizationParameters(getTokenizationParameters())
                 .build();
     }
 
