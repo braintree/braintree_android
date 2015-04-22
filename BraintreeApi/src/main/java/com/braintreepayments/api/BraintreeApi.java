@@ -23,6 +23,8 @@ import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -148,6 +150,10 @@ public class BraintreeApi {
      */
     public boolean isVenmoEnabled() {
         return mVenmoAppSwitch.isAvailable();
+    }
+
+    public boolean isAndroidPayEnabled() {
+        return GooglePlayServicesUtil.isGooglePlayServicesAvailable(mContext) == ConnectionResult.SUCCESS;
     }
 
     /**

@@ -327,6 +327,10 @@ public class Braintree {
         return mBraintreeApi.isThreeDSecureEnabled();
     }
 
+    public boolean isAndroidPayEnabled() {
+        return mBraintreeApi.isAndroidPayEnabled();
+    }
+
     /**
      * Checks if cvv is required when add a new card
      * @return {@code true} if cvv is required to add a new card, {@code false} otherwise.

@@ -12,8 +12,6 @@ import android.widget.RelativeLayout;
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.PayPalHelper;
 import com.braintreepayments.api.dropin.R;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 
 /**
  * Skinned button for launching flows other than basic credit card forms (Pay With PayPal, Pay With Venmo, etc.).
@@ -87,10 +85,9 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
         inflate(getContext(), R.layout.bt_payment_button, this);
 
         boolean isPayPalEnabled = mBraintree.isPayPalEnabled();
-        boolean isGoogleWalletAvailable =
-                (GooglePlayServicesUtil.isGooglePlayServicesAvailable(mActivity) == ConnectionResult.SUCCESS);
+        boolean isAndroidPayEnabled = mBraintree.isAndroidPayEnabled();
 
-        if (!isPayPalEnabled && !isGoogleWalletAvailable) {
+        if (!isPayPalEnabled && !isAndroidPayEnabled) {
             setVisibility(GONE);
         } else {
             if (isPayPalEnabled) {
@@ -99,13 +96,13 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
                 paypalButton.setOnClickListener(this);
             }
 
-            if (isGoogleWalletAvailable) {
+            if (isAndroidPayEnabled) {
                 ImageButton googleWalletButton = (ImageButton) findViewById(R.id.bt_google_wallet_button);
                 googleWalletButton.setVisibility(VISIBLE);
                 googleWalletButton.setOnClickListener(this);
             }
 
-            if (isPayPalEnabled && isGoogleWalletAvailable) {
+            if (isPayPalEnabled && isAndroidPayEnabled) {
                 findViewById(R.id.bt_payment_button_divider).setVisibility(VISIBLE);
             }
         }
