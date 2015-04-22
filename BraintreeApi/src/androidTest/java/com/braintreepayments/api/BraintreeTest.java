@@ -475,6 +475,7 @@ public class BraintreeTest extends AndroidTestCase {
         braintree.startPayWithCoinbase(mock(Activity.class), 0);
 
         verify(braintreeApi).startPayWithCoinbase((Activity) anyObject(), anyInt());
+
     }
 
     public void testStartPayWithCoinbasePostsAnUnrecoverableErrorForEncodingExceptions()
