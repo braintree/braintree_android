@@ -469,11 +469,13 @@ public class BraintreeTest extends AndroidTestCase {
 
     public void testStartPayWithCoinbaseStartsCoinbase() throws UnsupportedEncodingException {
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        when(braintreeApi.isCoinbaseEnabled()).thenReturn(true);
         Braintree braintree = new Braintree("client-token", braintreeApi);
 
         braintree.startPayWithCoinbase(mock(Activity.class), 0);
 
         verify(braintreeApi).startPayWithCoinbase((Activity) anyObject(), anyInt());
+
     }
 
     public void testStartPayWithCoinbasePostsAnUnrecoverableErrorForEncodingExceptions()
