@@ -563,7 +563,7 @@ public class Braintree {
     public synchronized void finishPayWithCoinbase(final int resultCode, final Intent data) {
 
         Uri redirectUri = data.getParcelableExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL);
-        String error = redirectUri.getQueryParameter("error");
+        String error = redirectUri != null ? redirectUri.getQueryParameter("error") : null;
         if (error != null) {
             if (error.equals("access_denied")) {
                 sendAnalyticsEvent("coinbase.webswitch.denied");

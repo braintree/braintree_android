@@ -469,6 +469,7 @@ public class BraintreeTest extends AndroidTestCase {
 
     public void testStartPayWithCoinbaseStartsCoinbase() throws UnsupportedEncodingException {
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        when(braintreeApi.isCoinbaseEnabled()).thenReturn(true);
         Braintree braintree = new Braintree("client-token", braintreeApi);
 
         braintree.startPayWithCoinbase(mock(Activity.class), 0);
@@ -496,6 +497,8 @@ public class BraintreeTest extends AndroidTestCase {
         braintree.startPayWithCoinbase(mock(Activity.class), 0);
         SystemClock.sleep(50);
 
+        verify(braintreeApi).sendAnalyticsEvent("custom.android.coinbase.initiate.started", "custom");
+        verify(braintreeApi).sendAnalyticsEvent("custom.android.coinbase.initiate.exception", "custom");
         assertTrue("Listener was never called with UnsupportedEncodingException", wasCalled.get());
     }
 
@@ -515,7 +518,8 @@ public class BraintreeTest extends AndroidTestCase {
 
         braintree.startPayWithCoinbase(mock(Activity.class), 0);
         SystemClock.sleep(50);
-
+        verify(braintreeApi).sendAnalyticsEvent("custom.android.coinbase.initiate.started", "custom");
+        verify(braintreeApi).sendAnalyticsEvent("custom.android.coinbase.initiate.unavailable", "custom");
         assertTrue("Listener was never called with AppSwitchNotAvailableException", wasCalled.get());
     }
 
