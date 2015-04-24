@@ -34,7 +34,7 @@ public class GoogleWallet {
 
     protected MaskedWalletRequest getMaskedWalletRequest() {
         return MaskedWalletRequest.newBuilder()
-                .setMerchantName("Braintree Demo")
+                .setMerchantName(getMerchantName())
                 .setCurrencyCode("USD")
                 .setEstimatedTotalPrice(mCart.getTotalPrice())
                 .setPaymentMethodTokenizationParameters(getTokenizationParameters())
@@ -46,5 +46,13 @@ public class GoogleWallet {
                 .setCart(mCart)
                 .setGoogleTransactionId(googleTransactionId)
                 .build();
+    }
+
+    private String getMerchantName() {
+        if((mConfiguration.getAndroidPay() != null) && (mConfiguration.getAndroidPay().getDisplayName() != null)) {
+            return mConfiguration.getAndroidPay().getDisplayName();
+        } else {
+            return "Braintree Demo";
+        }
     }
 }

@@ -35,20 +35,33 @@ public class GoogleWalletActivity extends Activity implements ConnectionCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ClientToken clientToken =
+                new Gson().fromJson(getIntent().getStringExtra("clientToken"), ClientToken.class);
+        Configuration configuration =
+                new Gson().fromJson(getIntent().getStringExtra("configuration"), Configuration.class);
+        int environment = WalletConstants.ENVIRONMENT_SANDBOX;
+        if(configuration.getAndroidPay() != null) {
+            switch(configuration.getAndroidPay().getEnvironment()) {
+                case "sandbox":
+                    environment = WalletConstants.ENVIRONMENT_SANDBOX;
+                    break;
+                case "production":
+                    environment = WalletConstants.ENVIRONMENT_PRODUCTION;
+                    break;
+                default:
+                    environment = WalletConstants.ENVIRONMENT_SANDBOX;
+            }
+        }
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Wallet.API, new Wallet.WalletOptions.Builder()
-                        .setEnvironment(WalletConstants.ENVIRONMENT_SANDBOX)
+                        .setEnvironment(environment)
                         .setTheme(WalletConstants.THEME_HOLO_LIGHT)
                         .build())
                 .build();
         mGoogleApiClient.connect();
 
-        ClientToken clientToken =
-                new Gson().fromJson(getIntent().getStringExtra("clientToken"), ClientToken.class);
-        Configuration configuration =
-                new Gson().fromJson(getIntent().getStringExtra("configuration"), Configuration.class);
         mCart = getIntent().getParcelableExtra("cart");
         mGoogleWallet = new GoogleWallet(clientToken, configuration, mCart);
     }

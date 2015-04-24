@@ -15,6 +15,7 @@ public class Configuration {
     @SerializedName("challenges") private String[] mChallenges;
     @SerializedName("paypalEnabled") private boolean mPaypalEnabled;
     @SerializedName("paypal") private PayPalConfiguration mPayPalConfiguration;
+    @SerializedName("androidPay") private AndroidPayConfiguration mAndroidPayConfiguration;
     @SerializedName("venmo") private String mVenmo;
     @SerializedName("threeDSecureEnabled") private boolean mThreeDSecureEnabled;
     @SerializedName("merchantId") private String mMerchantId;
@@ -64,6 +65,10 @@ public class Configuration {
      */
     public PayPalConfiguration getPayPal() {
         return mPayPalConfiguration;
+    }
+
+    public AndroidPayConfiguration getAndroidPay() {
+        return mAndroidPayConfiguration;
     }
 
     /**
