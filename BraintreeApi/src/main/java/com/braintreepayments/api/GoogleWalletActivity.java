@@ -20,7 +20,7 @@ import com.google.gson.Gson;
 public class GoogleWalletActivity extends Activity implements ConnectionCallbacks,
         OnConnectionFailedListener {
 
-    public static final int REQUEST_FAILED = 1;
+    public static final int REQUEST_FAILED = 15;
     public static final int CONNECTION_FAILED = 16;
     public static final String EXTRA_CONNECTION_FAILED_ERROR_CODE = "com.braintreepayments.api.GoogleWalletActivity.EXTRA_CONNECTION_FAILED_ERROR_CODE";
 
