@@ -23,12 +23,8 @@ import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
 import com.google.android.gms.wallet.Cart;
-import com.google.android.gms.wallet.FullWallet;
-import com.google.android.gms.wallet.WalletConstants;
-import com.google.gson.Gson;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -588,34 +584,20 @@ public class Braintree {
     }
 
     public void startPayWithGoogleWallet(Activity activity, int requestCode) {
-        if(mCart == null) {
-            mCart = Cart.newBuilder().setTotalPrice("100").setCurrencyCode("USD").build();
-        }
-        Intent intent = new Intent(activity, GoogleWalletActivity.class)
-                .putExtra("clientToken", new Gson().toJson(mBraintreeApi.getClientToken()))
-                .putExtra("configuration", new Gson().toJson(mBraintreeApi.getLocalConfiguration()))
-                .putExtra("cart", mCart);
-        activity.startActivityForResult(intent, requestCode);
+        mBraintreeApi.startPayWithGoogleWallet(activity, requestCode, mCart);
     }
 
     public synchronized void finishPayWithGoogleWallet(int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            if (data.hasExtra(WalletConstants.EXTRA_FULL_WALLET)) {
-                FullWallet fullWallet = data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET);
-                String cardJson;
-                try {
-                    cardJson = new JSONObject(fullWallet.getPaymentMethodToken().getToken())
-                            .getJSONArray("googleWalletCards").get(0).toString();
-                } catch (JSONException e) {
-                    cardJson = "";
+            try {
+                GoogleWalletCard googleWalletCard = mBraintreeApi.finishPayWithGoogleWallet(data);
+                if (googleWalletCard != null) {
+                    addPaymentMethodToCache(googleWalletCard);
+                    postCreatedMethodToListeners(googleWalletCard);
+                    postCreatedNonceToListeners(googleWalletCard.getNonce());
                 }
-                GoogleWalletCard googleWalletPaymentMethod =
-                        new Gson().fromJson(cardJson,
-                                GoogleWalletCard.class);
-
-                addPaymentMethodToCache(googleWalletPaymentMethod);
-                postCreatedMethodToListeners(googleWalletPaymentMethod);
-                postCreatedNonceToListeners(googleWalletPaymentMethod.getNonce());
+            } catch (JSONException e) {
+                postUnrecoverableErrorToListeners(e);
             }
         }
     }

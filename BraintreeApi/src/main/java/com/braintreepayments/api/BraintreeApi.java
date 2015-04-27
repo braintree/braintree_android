@@ -19,12 +19,16 @@ import com.braintreepayments.api.internal.HttpResponse;
 import com.braintreepayments.api.models.AnalyticsRequest;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.models.GoogleWalletCard;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.wallet.Cart;
+import com.google.android.gms.wallet.FullWallet;
+import com.google.android.gms.wallet.WalletConstants;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -130,14 +134,6 @@ public class BraintreeApi {
         }
     }
 
-    public ClientToken getClientToken() {
-        return mClientToken;
-    }
-
-    public Configuration getLocalConfiguration() {
-        return mConfiguration;
-    }
-
     /**
      * @return If PayPal is supported and enabled in the current environment.
      */
@@ -202,6 +198,20 @@ public class BraintreeApi {
     public void startPayWithVenmo(Activity activity, int requestCode)
             throws AppSwitchNotAvailableException {
         mVenmoAppSwitch.launch(activity, requestCode);
+    }
+
+    protected void startPayWithGoogleWallet(Activity activity, int requestCode, Cart cart) {
+        if(cart == null) {
+            cart = Cart.newBuilder().setTotalPrice("100").setCurrencyCode("USD").build();
+        }
+
+        Gson gson = new Gson();
+        Intent intent = new Intent(activity, GoogleWalletActivity.class)
+                .putExtra("clientToken", gson.toJson(mClientToken))
+                .putExtra("configuration", gson.toJson(mConfiguration))
+                .putExtra("cart", cart);
+
+        activity.startActivityForResult(intent, requestCode);
     }
 
     /**
@@ -279,6 +289,17 @@ public class BraintreeApi {
      */
     public String finishPayWithVenmo(int resultCode, Intent data) {
         return mVenmoAppSwitch.handleAppSwitchResponse(resultCode, data);
+    }
+
+    protected GoogleWalletCard finishPayWithGoogleWallet(Intent data) throws JSONException {
+        if (data.hasExtra(WalletConstants.EXTRA_FULL_WALLET)) {
+            FullWallet fullWallet = data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET);
+            String cardJson = new JSONObject(fullWallet.getPaymentMethodToken().getToken())
+                        .getJSONArray("googleWalletCards").get(0).toString();
+            return new Gson().fromJson(cardJson, GoogleWalletCard.class);
+        }
+
+        return null;
     }
 
     /**
