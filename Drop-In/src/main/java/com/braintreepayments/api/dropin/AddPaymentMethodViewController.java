@@ -63,6 +63,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         mCardForm = findView(R.id.bt_card_form);
         mSubmitButton = findView(R.id.bt_card_form_submit_button);
 
+        mPaymentButton.setOnClickListener(this);
         mPaymentButton.initialize(getActivity(), mBraintree);
 
         mCardForm.setRequiredFields(true, true, mBraintree.isCvvChallenegePresent(),
@@ -103,7 +104,9 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
     @Override
     public void onClick(View v) {
-        if (v == mSubmitButton) {
+        if (v == mPaymentButton) {
+            mActivity.showLoadingView();
+        } else if (v == mSubmitButton) {
             if (mCardForm.isValid()) {
                 startSubmit();
                 mBraintree.create(getCardBuilder());
@@ -230,5 +233,4 @@ public class AddPaymentMethodViewController extends BraintreeViewController
     private void setDisabledSubmitButtonStyle() {
         mSubmitButton.setBackgroundResource(R.color.bt_button_disabled_color);
     }
-
 }

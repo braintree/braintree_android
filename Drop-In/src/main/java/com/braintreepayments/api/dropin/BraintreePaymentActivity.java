@@ -184,7 +184,7 @@ public class BraintreePaymentActivity extends Activity implements
             if (requestCode == PaymentButton.REQUEST_CODE) {
                 // prevent NPE if activity was restarted
                 initAddPaymentMethodView(StubbedView.CARD_FORM.inflateOrFind(this));
-                StubbedView.LOADING_VIEW.show(this);
+                showLoadingView();
                 mAddPaymentMethodViewController.onPaymentResult(requestCode, resultCode, data);
             }
         } else if (resultCode == RESULT_CANCELED) {
@@ -298,7 +298,7 @@ public class BraintreePaymentActivity extends Activity implements
                 }
             }
         }, 10, TimeUnit.SECONDS);
-        StubbedView.LOADING_VIEW.show(this);
+        showLoadingView();
     }
 
     private void initSelectPaymentMethodView() {
@@ -328,6 +328,10 @@ public class BraintreePaymentActivity extends Activity implements
             mAddPaymentMethodViewController = new AddPaymentMethodViewController(this,
                     mSavedInstanceState, paymentMethodView, mBraintree, mCustomization);
         }
+    }
+
+    protected void showLoadingView() {
+        StubbedView.LOADING_VIEW.show(this);
     }
 
     @TargetApi(VERSION_CODES.HONEYCOMB)

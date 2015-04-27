@@ -13,7 +13,7 @@ import com.braintreepayments.api.Braintree;
 public abstract class BraintreeViewController {
 
     private View mRootView;
-    private BraintreePaymentActivity mActivity;
+    protected BraintreePaymentActivity mActivity;
     protected final Braintree mBraintree;
     private final Customization mCustomization;
 

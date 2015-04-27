@@ -115,6 +115,8 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
         } else if (v.getId() == R.id.bt_google_wallet_button) {
             mBraintree.startPayWithGoogleWallet(mActivity, mRequestCode);
         }
+
+        callOnClick();
     }
 
     /**
