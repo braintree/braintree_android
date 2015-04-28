@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewStub;
 
 import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
 import com.braintreepayments.api.Braintree.ErrorListener;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodsUpdatedListener;
@@ -44,7 +45,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * {@link android.app.Activity} encompassing Braintree's Drop-In UI.
  */
 public class BraintreePaymentActivity extends Activity implements
-        PaymentMethodsUpdatedListener, PaymentMethodCreatedListener, ErrorListener {
+        BraintreeSetupFinishedListener, PaymentMethodsUpdatedListener, PaymentMethodCreatedListener,
+        ErrorListener {
 
     /**
      * The payment method flow halted due to a resolvable error (authentication, authorization, SDK upgrade required).
@@ -110,34 +112,52 @@ public class BraintreePaymentActivity extends Activity implements
         mCustomization = getCustomization();
         customizeActionBar();
 
-        mBraintree = Braintree.getInstance(this, getClientToken());
-        mBraintree.setIntegrationDropin();
-        mBraintree.sendAnalyticsEvent("sdk.initialized");
+        Braintree.setup(this, getClientToken(), this);
+    }
 
-        if (mBraintree.hasCachedCards()) {
-            if (mSavedInstanceState.getBoolean(ON_PAYMENT_METHOD_ADD_FORM_KEY)) {
-                initAddPaymentMethodView();
-            } else {
-                onPaymentMethodsUpdated(mBraintree.getCachedPaymentMethods());
-            }
+    @Override
+    public void onBraintreeSetupFinished(boolean setupSuccessful, Braintree braintree,
+        String errorMessage, Exception exception) {
+        if (!setupSuccessful) {
+            setResult(BRAINTREE_RESULT_SERVER_ERROR,
+                new Intent().putExtra(EXTRA_ERROR_MESSAGE, exception));
+            finish();
         } else {
-            mBraintree.getPaymentMethods();
-            waitForData();
+            mBraintree = braintree;
+            mBraintree.setIntegrationDropin();
+            mBraintree.sendAnalyticsEvent("sdk.initialized");
+            mBraintree.addListener(this);
+            mBraintree.unlockListeners();
+
+            if (mBraintree.hasCachedCards()) {
+                if (mSavedInstanceState.getBoolean(ON_PAYMENT_METHOD_ADD_FORM_KEY)) {
+                    initAddPaymentMethodView();
+                } else {
+                    onPaymentMethodsUpdated(mBraintree.getCachedPaymentMethods());
+                }
+            } else {
+                mBraintree.getPaymentMethods();
+                waitForData();
+            }
         }
     }
 
     protected void onResume() {
         super.onResume();
 
-        mBraintree.addListener(this);
-        mBraintree.unlockListeners();
+        if (mBraintree != null) {
+            mBraintree.addListener(this);
+            mBraintree.unlockListeners();
+        }
     }
 
     protected void onPause() {
         super.onPause();
 
-        mBraintree.lockListeners();
-        mBraintree.removeListener(this);
+        if (mBraintree != null) {
+            mBraintree.lockListeners();
+            mBraintree.removeListener(this);
+        }
     }
 
     @Override

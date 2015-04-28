@@ -4,10 +4,10 @@ import android.view.KeyEvent;
 
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.BraintreeTestUtils;
-import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
 import com.braintreepayments.api.exceptions.ServerException;
+import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -15,16 +15,16 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
-import static com.braintreepayments.api.BraintreeTestUtils.injectBraintree;
-import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
+import static com.braintreepayments.api.BraintreeTestUtils.setClientTokenExtraForTest;
+import static com.braintreepayments.api.TestDependencyInjector.injectBraintree;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.ui.Matchers.withHint;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
 import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
-import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
-import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -61,9 +61,9 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     public void testAddsEventOnAddCardFailed() {
         String clientToken = new TestClientTokenBuilder().withCvvVerification().withAnalytics().build();
-        mBraintree = spy(Braintree.getInstance(mContext, clientToken));
+        mBraintree = spy(injectBraintree(mContext, clientToken, clientToken));
         injectBraintree(clientToken, mBraintree);
-        setUpActivityTest(this, clientToken);
+        setClientTokenExtraForTest(this, clientToken);
         mActivity = getActivity();
 
         waitForAddPaymentFormHeader();
@@ -139,9 +139,9 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     private void setupActivity() {
         String clientToken = new TestClientTokenBuilder().withFakePayPal().withAnalytics().build();
-        mBraintree = spy(Braintree.getInstance(mContext, clientToken));
+        mBraintree = spy(injectBraintree(mContext, clientToken, clientToken));
         injectBraintree(clientToken, mBraintree);
-        setUpActivityTest(this, clientToken);
+        setClientTokenExtraForTest(this, clientToken);
         mActivity = getActivity();
         waitForAddPaymentFormHeader();
     }

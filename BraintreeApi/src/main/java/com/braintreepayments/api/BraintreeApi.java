@@ -70,17 +70,14 @@ public class BraintreeApi {
         mHttpRequest = new HttpRequest(mClientToken.getAuthorizationFingerprint());
         mHttpRequest.setBaseUrl(mConfiguration.getClientApiUrl());
 
-        mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
         mBraintreeData = null;
+        mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
     }
 
     protected BraintreeApi(Context context, ClientToken clientToken) {
         mContext = context.getApplicationContext();
         mClientToken = clientToken;
         mHttpRequest = new HttpRequest(mClientToken.getAuthorizationFingerprint());
-
-        mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
-        mBraintreeData = null;
     }
 
     protected BraintreeApi(Context context, ClientToken clientToken, Configuration configuration,
@@ -90,8 +87,8 @@ public class BraintreeApi {
         mConfiguration = configuration;
         mHttpRequest = requestor;
 
-        mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
         mBraintreeData = null;
+        mVenmoAppSwitch = new VenmoAppSwitch(mContext, mConfiguration);
     }
 
     protected boolean isSetup() {
@@ -101,6 +98,9 @@ public class BraintreeApi {
     protected void setup() throws ErrorWithResponse, BraintreeException {
         mConfiguration = getConfiguration();
         mHttpRequest.setBaseUrl(mConfiguration.getClientApiUrl());
+
+        mBraintreeData = null;
+        mVenmoAppSwitch = new VenmoAppSwitch(mContext, mConfiguration);
     }
 
     private Configuration getConfiguration() throws ErrorWithResponse, BraintreeException {
