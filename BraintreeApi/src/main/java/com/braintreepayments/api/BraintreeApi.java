@@ -17,9 +17,9 @@ import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
 import com.braintreepayments.api.models.AnalyticsRequest;
+import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.GoogleWalletCard;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
@@ -200,13 +200,13 @@ public class BraintreeApi {
         mVenmoAppSwitch.launch(activity, requestCode);
     }
 
-    protected void startPayWithGoogleWallet(Activity activity, int requestCode, Cart cart) {
+    protected void startPayWithAndroidPay(Activity activity, int requestCode, Cart cart) {
         if(cart == null) {
             cart = Cart.newBuilder().setTotalPrice("100").setCurrencyCode("USD").build();
         }
 
         Gson gson = new Gson();
-        Intent intent = new Intent(activity, GoogleWalletActivity.class)
+        Intent intent = new Intent(activity, AndroidPayActivity.class)
                 .putExtra("clientToken", gson.toJson(mClientToken))
                 .putExtra("configuration", gson.toJson(mConfiguration))
                 .putExtra("cart", cart);
@@ -291,12 +291,12 @@ public class BraintreeApi {
         return mVenmoAppSwitch.handleAppSwitchResponse(resultCode, data);
     }
 
-    protected GoogleWalletCard finishPayWithGoogleWallet(Intent data) throws JSONException {
+    protected AndroidPayCard finishPayWithAndroidPay(Intent data) throws JSONException {
         if (data.hasExtra(WalletConstants.EXTRA_FULL_WALLET)) {
             FullWallet fullWallet = data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET);
             String cardJson = new JSONObject(fullWallet.getPaymentMethodToken().getToken())
                         .getJSONArray("googleWalletCards").get(0).toString();
-            return new Gson().fromJson(cardJson, GoogleWalletCard.class);
+            return new Gson().fromJson(cardJson, AndroidPayCard.class);
         }
 
         return null;

@@ -71,11 +71,11 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
 
     /**
      * Use this if you need to manually specify a request code.
-     * @param activity {@link android.app.Activity} hosting the button
-     * @param braintree {@link com.braintreepayments.api.Braintree} instance being used to communicate with the Braintree gateway.
-     * @param requestCode Unique identifier for launching activities via {@link android.app.Activity#startActivityForResult(android.content.Intent, int)}.
-     *                      Use this in your {@link android.app.Activity} when overriding {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     *                      to call {@link com.braintreepayments.api.dropin.view.PaymentButton#onActivityResult(int, int, android.content.Intent)}.
+     * @param activity {@link Activity} hosting the button
+     * @param braintree {@link Braintree} instance being used to communicate with the Braintree gateway.
+     * @param requestCode Unique identifier for launching activities via {@link Activity#startActivityForResult(Intent, int)}.
+     *                      Use this in your {@link Activity} when overriding {@link Activity#onActivityResult(int, int, Intent)}
+     *                      to call {@link PaymentButton#onActivityResult(int, int, Intent)}.
      */
     public void initialize(Activity activity, Braintree braintree, int requestCode) {
         mActivity = activity;
@@ -97,9 +97,9 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
             }
 
             if (isAndroidPayEnabled) {
-                ImageButton googleWalletButton = (ImageButton) findViewById(R.id.bt_google_wallet_button);
-                googleWalletButton.setVisibility(VISIBLE);
-                googleWalletButton.setOnClickListener(this);
+                ImageButton androidPayButton = (ImageButton) findViewById(R.id.bt_android_pay_button);
+                androidPayButton.setVisibility(VISIBLE);
+                androidPayButton.setOnClickListener(this);
             }
 
             if (isPayPalEnabled && isAndroidPayEnabled) {
@@ -112,8 +112,8 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
     public void onClick(View v) {
         if (v.getId() == R.id.bt_paypal_button) {
             mBraintree.startPayWithPayPal(mActivity, mRequestCode);
-        } else if (v.getId() == R.id.bt_google_wallet_button) {
-            mBraintree.startPayWithGoogleWallet(mActivity, mRequestCode);
+        } else if (v.getId() == R.id.bt_android_pay_button) {
+            mBraintree.startPayWithAndroidPay(mActivity, mRequestCode);
         }
 
         callOnClick();
@@ -131,7 +131,7 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
             if(PayPalHelper.isPayPalIntent(data)) {
                 mBraintree.finishPayWithPayPal(mActivity, resultCode, data);
             } else {
-                mBraintree.finishPayWithGoogleWallet(resultCode, data);
+                mBraintree.finishPayWithAndroidPay(resultCode, data);
             }
         }
     }

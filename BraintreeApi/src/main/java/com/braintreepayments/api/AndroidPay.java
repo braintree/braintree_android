@@ -8,13 +8,13 @@ import com.google.android.gms.wallet.MaskedWalletRequest;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.PaymentMethodTokenizationType;
 
-public class GoogleWallet {
+public class AndroidPay {
 
     private ClientToken mClientToken;
     private Configuration mConfiguration;
     private Cart mCart;
 
-    protected GoogleWallet(ClientToken clientToken, Configuration configuration, Cart cart) {
+    protected AndroidPay(ClientToken clientToken, Configuration configuration, Cart cart) {
         mClientToken = clientToken;
         mConfiguration = configuration;
         mCart = cart;

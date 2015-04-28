@@ -3,17 +3,18 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.braintreepayments.api.BraintreeApi;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class GoogleWalletCard extends PaymentMethod implements Parcelable, Serializable {
+public class AndroidPayCard extends PaymentMethod implements Parcelable, Serializable {
 
     protected static final String PAYMENT_METHOD_TYPE = "GoogleWalletCard";
 
     @SerializedName("details")
-    private GoogleWalletCardDetails mDetails;
+    private AndroidPayCardDetails mDetails;
 
     @Override
     public String getTypeLabel() {
@@ -26,11 +27,11 @@ public class GoogleWalletCard extends PaymentMethod implements Parcelable, Seria
 
     /**
      * Required for and handled by {@link com.braintreepayments.api.Braintree}. Not intended for general consumption.
-     * @param googleWalletCard Raw JSON representation of a {@link com.braintreepayments.api.models.Card}.
-     * @return {@link GoogleWalletCard} for use in payment method selection UIs.
+     * @param androidPayCard Raw JSON representation of a {@link com.braintreepayments.api.models.Card}.
+     * @return {@link AndroidPayCard} for use in payment method selection UIs.
      */
-    public static GoogleWalletCard fromJson(String googleWalletCard) {
-        return new Gson().fromJson(googleWalletCard, GoogleWalletCard.class);
+    public static AndroidPayCard fromJson(String androidPayCard) {
+        return new Gson().fromJson(androidPayCard, AndroidPayCard.class);
     }
 
     @Override
@@ -45,30 +46,30 @@ public class GoogleWalletCard extends PaymentMethod implements Parcelable, Seria
         dest.writeString(mSource);
     }
 
-    public GoogleWalletCard() {}
+    public AndroidPayCard() {}
 
-    private GoogleWalletCard(Parcel in) {
-        mDetails = in.readParcelable(GoogleWalletCardDetails.class.getClassLoader());
+    private AndroidPayCard(Parcel in) {
+        mDetails = in.readParcelable(AndroidPayCardDetails.class.getClassLoader());
         mNonce = in.readString();
         mDescription = in.readString();
-        mPaymentMethodOptions = (PaymentMethodOptions) in.readSerializable();
+        mPaymentMethodOptions= (PaymentMethodOptions) in.readSerializable();
         mSource = in.readString();
     }
 
-    public static final Creator<GoogleWalletCard> CREATOR = new Creator<GoogleWalletCard>() {
-        public GoogleWalletCard createFromParcel(Parcel source) {
-            return new GoogleWalletCard(source);
+    public static final Creator<AndroidPayCard> CREATOR = new Creator<AndroidPayCard>() {
+        public AndroidPayCard createFromParcel(Parcel source) {
+            return new AndroidPayCard(source);
         }
 
-        public GoogleWalletCard[] newArray(int size) {return new GoogleWalletCard[size];}
+        public AndroidPayCard[] newArray(int size) {return new AndroidPayCard[size];}
     };
 
-    private static class GoogleWalletCardDetails implements Parcelable, Serializable {
+    private static class AndroidPayCardDetails implements Parcelable, Serializable {
 
         @SerializedName("cardType") private String mCardType;
         @SerializedName("lastTwo") private String mLastTwo;
 
-        public GoogleWalletCardDetails() {}
+        public AndroidPayCardDetails() {}
 
         protected String getCardType() {
             return mCardType;
@@ -87,15 +88,15 @@ public class GoogleWalletCard extends PaymentMethod implements Parcelable, Seria
             dest.writeString(mLastTwo);
         }
 
-        private GoogleWalletCardDetails(Parcel in) {
+        private AndroidPayCardDetails(Parcel in) {
             mCardType = in.readString();
             mLastTwo = in.readString();
         }
 
-        public static final Creator<GoogleWalletCardDetails> CREATOR = new Creator<GoogleWalletCardDetails>() {
-            public GoogleWalletCardDetails createFromParcel(Parcel source) {return new GoogleWalletCardDetails(source);}
+        public static final Creator<AndroidPayCardDetails> CREATOR = new Creator<AndroidPayCardDetails>() {
+            public AndroidPayCardDetails createFromParcel(Parcel source) {return new AndroidPayCardDetails(source);}
 
-            public GoogleWalletCardDetails[] newArray(int size) {return new GoogleWalletCardDetails[size];}
+            public AndroidPayCardDetails[] newArray(int size) {return new AndroidPayCardDetails[size];}
         };
     }
 }

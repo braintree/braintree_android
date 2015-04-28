@@ -16,7 +16,7 @@ import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
-import com.braintreepayments.api.models.GoogleWalletCard;
+import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
@@ -583,18 +583,18 @@ public class Braintree {
         }
     }
 
-    public void startPayWithGoogleWallet(Activity activity, int requestCode) {
-        mBraintreeApi.startPayWithGoogleWallet(activity, requestCode, mCart);
+    public void startPayWithAndroidPay(Activity activity, int requestCode) {
+        mBraintreeApi.startPayWithAndroidPay(activity, requestCode, mCart);
     }
 
-    public synchronized void finishPayWithGoogleWallet(int resultCode, Intent data) {
+    public synchronized void finishPayWithAndroidPay(int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             try {
-                GoogleWalletCard googleWalletCard = mBraintreeApi.finishPayWithGoogleWallet(data);
-                if (googleWalletCard != null) {
-                    addPaymentMethodToCache(googleWalletCard);
-                    postCreatedMethodToListeners(googleWalletCard);
-                    postCreatedNonceToListeners(googleWalletCard.getNonce());
+                AndroidPayCard androidPayCard = mBraintreeApi.finishPayWithAndroidPay(data);
+                if (androidPayCard != null) {
+                    addPaymentMethodToCache(androidPayCard);
+                    postCreatedMethodToListeners(androidPayCard);
+                    postCreatedNonceToListeners(androidPayCard.getNonce());
                 }
             } catch (JSONException e) {
                 postUnrecoverableErrorToListeners(e);

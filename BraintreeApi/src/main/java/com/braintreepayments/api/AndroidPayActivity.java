@@ -17,18 +17,18 @@ import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 import com.google.gson.Gson;
 
-public class GoogleWalletActivity extends Activity implements ConnectionCallbacks,
+public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
         OnConnectionFailedListener {
 
     public static final int REQUEST_FAILED = 15;
     public static final int CONNECTION_FAILED = 16;
-    public static final String EXTRA_CONNECTION_FAILED_ERROR_CODE = "com.braintreepayments.api.GoogleWalletActivity.EXTRA_CONNECTION_FAILED_ERROR_CODE";
+    public static final String EXTRA_CONNECTION_FAILED_ERROR_CODE = "com.braintreepayments.api.AndroidPayActivity.EXTRA_CONNECTION_FAILED_ERROR_CODE";
 
     private static final int MASKED_WALLET_REQUEST = 100;
     private static final int FULL_WALLET_REQUEST = 200;
 
     private GoogleApiClient mGoogleApiClient;
-    private GoogleWallet mGoogleWallet;
+    private AndroidPay mAndroidPay;
     private Cart mCart;
 
     @Override
@@ -63,12 +63,12 @@ public class GoogleWalletActivity extends Activity implements ConnectionCallback
         mGoogleApiClient.connect();
 
         mCart = getIntent().getParcelableExtra("cart");
-        mGoogleWallet = new GoogleWallet(clientToken, configuration, mCart);
+        mAndroidPay = new AndroidPay(clientToken, configuration, mCart);
     }
 
     @Override
     public void onConnected(Bundle bundle) {
-        Wallet.Payments.loadMaskedWallet(mGoogleApiClient, mGoogleWallet.getMaskedWalletRequest(), MASKED_WALLET_REQUEST);
+        Wallet.Payments.loadMaskedWallet(mGoogleApiClient, mAndroidPay.getMaskedWalletRequest(), MASKED_WALLET_REQUEST);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class GoogleWalletActivity extends Activity implements ConnectionCallback
 
                 MaskedWallet maskedWallet =
                         data.getParcelableExtra(WalletConstants.EXTRA_MASKED_WALLET);
-                FullWalletRequest fullWalletRequest = mGoogleWallet.getFullWalletRequest(
+                FullWalletRequest fullWalletRequest = mAndroidPay.getFullWalletRequest(
                         maskedWallet.getGoogleTransactionId());
 
                 Wallet.Payments.loadFullWallet(mGoogleApiClient, fullWalletRequest,
