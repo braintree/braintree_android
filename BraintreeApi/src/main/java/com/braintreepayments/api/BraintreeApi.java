@@ -295,7 +295,7 @@ public class BraintreeApi {
         if (data.hasExtra(WalletConstants.EXTRA_FULL_WALLET)) {
             FullWallet fullWallet = data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET);
             String cardJson = new JSONObject(fullWallet.getPaymentMethodToken().getToken())
-                        .getJSONArray("googleWalletCards").get(0).toString();
+                        .getJSONArray("androidPayCards").get(0).toString();
             return new Gson().fromJson(cardJson, AndroidPayCard.class);
         }
 

@@ -1,9 +1,9 @@
 {
-  "googleWalletCards": [
+  "androidPayCards": [
     {
-      "type": "GoogleWalletCard",
-      "nonce": "fake-google-wallet-card-nonce",
-      "description": "Google Wallet",
+      "type": "AndroidPayCard",
+      "nonce": "fake-android-pay-nonce",
+      "description": "Android Pay",
       "details": {
         "cardType": "Visa",
         "lastTwo": "11"

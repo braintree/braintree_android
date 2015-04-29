@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 public class AndroidPayCard extends PaymentMethod implements Parcelable, Serializable {
 
-    protected static final String PAYMENT_METHOD_TYPE = "GoogleWalletCard";
+    protected static final String PAYMENT_METHOD_TYPE = "AndroidPayCard";
 
     @SerializedName("details")
     private AndroidPayCardDetails mDetails;
