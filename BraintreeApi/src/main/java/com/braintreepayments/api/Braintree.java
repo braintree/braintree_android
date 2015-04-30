@@ -14,6 +14,7 @@ import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.AndroidPayCard;
@@ -584,7 +585,11 @@ public class Braintree {
     }
 
     public void startPayWithAndroidPay(Activity activity, int requestCode) {
-        mBraintreeApi.startPayWithAndroidPay(activity, requestCode, mCart);
+        try {
+            mBraintreeApi.startPayWithAndroidPay(activity, requestCode, mCart);
+        } catch (InvalidArgumentException e) {
+            postUnrecoverableErrorToListeners(e);
+        }
     }
 
     public synchronized void finishPayWithAndroidPay(int resultCode, Intent data) {

@@ -13,6 +13,7 @@ import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
@@ -205,9 +206,10 @@ public class BraintreeApi {
         mVenmoAppSwitch.launch(activity, requestCode);
     }
 
-    protected void startPayWithAndroidPay(Activity activity, int requestCode, Cart cart) {
+    protected void startPayWithAndroidPay(Activity activity, int requestCode, Cart cart)
+            throws InvalidArgumentException {
         if(cart == null) {
-            cart = Cart.newBuilder().setTotalPrice("100").setCurrencyCode("USD").build();
+            throw new InvalidArgumentException("Cart cannot be null");
         }
 
         Gson gson = new Gson();
