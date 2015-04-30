@@ -40,16 +40,11 @@ public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
         Configuration configuration =
                 new Gson().fromJson(getIntent().getStringExtra("configuration"), Configuration.class);
         int environment = WalletConstants.ENVIRONMENT_SANDBOX;
-        if(configuration.getAndroidPay() != null) {
-            switch(configuration.getAndroidPay().getEnvironment()) {
-                case "sandbox":
-                    environment = WalletConstants.ENVIRONMENT_SANDBOX;
-                    break;
-                case "production":
-                    environment = WalletConstants.ENVIRONMENT_PRODUCTION;
-                    break;
-                default:
-                    environment = WalletConstants.ENVIRONMENT_SANDBOX;
+        if(configuration.getAndroidPay() != null && configuration.getAndroidPay().getEnvironment() != null) {
+            if (configuration.getAndroidPay().getEnvironment().equals("production")) {
+                environment = WalletConstants.ENVIRONMENT_PRODUCTION;
+            } else {
+                environment = WalletConstants.ENVIRONMENT_SANDBOX;
             }
         }
         mGoogleApiClient = new GoogleApiClient.Builder(this)
