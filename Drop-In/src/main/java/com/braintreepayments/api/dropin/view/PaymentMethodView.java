@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.braintreepayments.api.dropin.R;
+import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.PaymentMethod;
 
@@ -89,6 +90,9 @@ public class PaymentMethodView extends RelativeLayout {
         if (paymentMethod instanceof Card) {
             mDescription = String.format(getResources().getString(R.string.bt_card_descriptor),
                     ((Card) paymentMethod).getLastTwo());
+        } else if (paymentMethod instanceof AndroidPayCard) {
+            mDescription = String.format(getResources().getString(R.string.bt_card_descriptor),
+                    ((AndroidPayCard) paymentMethod).getLastTwo());
         } else {
             mDescription = paymentMethod.getDescription();
         }

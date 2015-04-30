@@ -101,7 +101,8 @@ public abstract class PaymentMethod implements Parcelable, Serializable {
                     paymentMethodsList.add(
                             new Gson().fromJson(paymentMethod.toString(), PayPalAccount.class));
                 } else if (type.equals(AndroidPayCard.PAYMENT_METHOD_TYPE)) {
-                    paymentMethodsList.add(new Gson().fromJson(paymentMethod.toString(), AndroidPayCard.class));
+                    paymentMethodsList.add(
+                            new Gson().fromJson(paymentMethod.toString(), AndroidPayCard.class));
                 }
             }
 
