@@ -49,10 +49,10 @@ public class AndroidPay {
     }
 
     private String getMerchantName() {
-        if((mConfiguration.getAndroidPay() != null) && (mConfiguration.getAndroidPay().getDisplayName() != null)) {
+        if (mConfiguration.getAndroidPay() != null && mConfiguration.getAndroidPay().getDisplayName() != null) {
             return mConfiguration.getAndroidPay().getDisplayName();
         } else {
-            return "Braintree Demo";
+            return "";
         }
     }
 }
