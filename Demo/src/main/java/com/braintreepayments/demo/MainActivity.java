@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
 import com.braintreepayments.api.Braintree.ErrorListener;
 import com.braintreepayments.api.Braintree.PaymentMethodNonceListener;
 import com.braintreepayments.api.SignatureVerification;
@@ -31,6 +32,8 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.google.android.gms.wallet.Cart;
+import com.google.android.gms.wallet.LineItem;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -117,30 +120,34 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
     }
 
     public void launchDropIn(View v) {
+        Cart cart = getCart();
         Customization customization = new CustomizationBuilder()
                 .primaryDescription("Cart")
-                .secondaryDescription("3 Items")
-                .amount("$1")
+                .secondaryDescription("1 Item")
+                .amount("$" + cart.getTotalPrice())
                 .submitButtonText("Buy")
                 .build();
 
         Intent intent = new Intent(this, BraintreePaymentActivity.class)
                 .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken)
-                .putExtra(BraintreePaymentActivity.EXTRA_CUSTOMIZATION, customization);
+                .putExtra(BraintreePaymentActivity.EXTRA_CUSTOMIZATION, customization)
+                .putExtra(BraintreePaymentActivity.EXTRA_CART, cart);
 
         startActivityForResult(intent, DROP_IN_REQUEST);
     }
 
     public void launchPaymentButton(View v) {
         Intent intent = new Intent(this, PaymentButtonActivity.class)
-                .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken);
+                .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken)
+                .putExtra(BraintreePaymentActivity.EXTRA_CART, getCart());
 
         startActivityForResult(intent, PAYMENT_BUTTON_REQUEST);
     }
 
     public void launchCustom(View v) {
         Intent intent = new Intent(this, CustomFormActivity.class)
-                .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken);
+                .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken)
+                .putExtra(BraintreePaymentActivity.EXTRA_CART, getCart());
 
         startActivityForResult(intent, CUSTOM_REQUEST);
     }
@@ -155,8 +162,9 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
     @Override
     public void onUnrecoverableError(Throwable throwable) {
         safelyCloseLoadingView();
-        showDialog("An unrecoverable error was encountered (" + throwable.getClass().getSimpleName() +
-                "): " + throwable.getMessage());
+        showDialog(
+                "An unrecoverable error was encountered (" + throwable.getClass().getSimpleName() +
+                        "): " + throwable.getMessage());
     }
 
     @Override
@@ -192,6 +200,9 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
                     mCreateTransactionButton.setEnabled(true);
                 }
             }
+        } else if (resultCode != RESULT_CANCELED) {
+            safelyCloseLoadingView();
+            showDialog(data.getStringExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE));
         }
     }
 
@@ -248,8 +259,20 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
 
     private void setClientToken(String clientToken) {
         mClientToken = clientToken;
-        mBraintree = Braintree.getInstance(this, mClientToken);
-        mBraintree.addListener(this);
+        Braintree.setup(MainActivity.this, mClientToken, new BraintreeSetupFinishedListener() {
+            @Override
+            public void onBraintreeSetupFinished(boolean setupSuccessful,
+                    Braintree braintree,
+                    String errorMessage, Exception exception) {
+                if (setupSuccessful) {
+                    mBraintree = braintree;
+                    mBraintree.addListener(MainActivity.this);
+                    enableButtons(true);
+                } else {
+                    showDialog(errorMessage);
+                }
+            }
+        });
 
         enableButtons(true);
     }
@@ -258,6 +281,20 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
         mNonce = paymentMethodNonce;
         mNonceTextView.setText(getString(R.string.nonce) + ": " + paymentMethodNonce);
         mCreateTransactionButton.setEnabled(true);
+    }
+
+    private Cart getCart() {
+        return Cart.newBuilder()
+                .setCurrencyCode("USD")
+                .setTotalPrice("1.00")
+                .addLineItem(LineItem.newBuilder()
+                        .setCurrencyCode("USD")
+                        .setDescription("Description")
+                        .setQuantity("1")
+                        .setUnitPrice("1.00")
+                        .setTotalPrice("1.00")
+                        .build())
+                .build();
     }
 
     private void enableButtons(boolean enable) {

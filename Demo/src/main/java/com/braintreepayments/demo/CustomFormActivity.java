@@ -7,12 +7,15 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodNonceListener;
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.view.PaymentButton;
 import com.braintreepayments.api.models.CardBuilder;
+import com.google.android.gms.wallet.Cart;
 
-public class CustomFormActivity extends Activity implements PaymentMethodNonceListener {
+public class CustomFormActivity extends Activity implements PaymentMethodNonceListener,
+        BraintreeSetupFinishedListener {
 
     private Braintree mBraintree;
     private PaymentButton mPaymentButton;
@@ -27,10 +30,27 @@ public class CustomFormActivity extends Activity implements PaymentMethodNonceLi
         mCardNumber = (EditText) findViewById(R.id.card_number);
         mExpirationDate = (EditText) findViewById(R.id.card_expiration_date);
 
-        mBraintree = Braintree.getInstance(this,
-                getIntent().getStringExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN));
-        mBraintree.addListener(this);
-        mPaymentButton.initialize(this, mBraintree);
+        Braintree.setup(this,
+                getIntent().getStringExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN),
+                this);
+    }
+
+    @Override
+    public void onBraintreeSetupFinished(boolean setupSuccessful, Braintree braintree,
+            String errorMessage, Exception exception) {
+        if (setupSuccessful) {
+            mBraintree = braintree;
+            mBraintree.setCart((Cart) getIntent().getParcelableExtra(BraintreePaymentActivity.EXTRA_CART));
+            mBraintree.addListener(this);
+            mPaymentButton.initialize(this, mBraintree);
+
+            findViewById(R.id.purchase_button).setEnabled(true);
+        } else {
+            Intent intent = new Intent()
+                    .putExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE, errorMessage);
+            setResult(RESULT_FIRST_USER, intent);
+            finish();
+        }
     }
 
     public void onPurchase(View v) {

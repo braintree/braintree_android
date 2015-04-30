@@ -5,13 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodNonceListener;
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.view.PaymentButton;
+import com.google.android.gms.wallet.Cart;
 
-public class PaymentButtonActivity extends Activity implements PaymentMethodNonceListener {
+public class PaymentButtonActivity extends Activity implements PaymentMethodNonceListener,
+        BraintreeSetupFinishedListener {
 
-    private Braintree mBraintree;
     private PaymentButton mPaymentButton;
 
     protected void onCreate(Bundle onSaveInstanceState) {
@@ -20,10 +22,23 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodNonc
 
         mPaymentButton = (PaymentButton) findViewById(R.id.payment_button);
 
-        mBraintree = Braintree.getInstance(this,
-                getIntent().getStringExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN));
-        mBraintree.addListener(this);
-        mPaymentButton.initialize(this, mBraintree);
+        Braintree.setup(this, getIntent().getStringExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN),
+                this);
+    }
+
+    @Override
+    public void onBraintreeSetupFinished(boolean setupSuccessful, Braintree braintree,
+            String errorMessage, Exception exception) {
+        if (setupSuccessful) {
+            braintree.addListener(this);
+            braintree.setCart((Cart) getIntent().getParcelableExtra(BraintreePaymentActivity.EXTRA_CART));
+            mPaymentButton.initialize(this, braintree);
+        } else {
+            Intent intent = new Intent()
+                    .putExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE, errorMessage);
+            setResult(RESULT_FIRST_USER, intent);
+            finish();
+        }
     }
 
     @Override
