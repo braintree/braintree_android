@@ -113,8 +113,10 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
                 enableButton(findViewById(R.id.bt_android_pay_button), buttonCount);
             }
 
-            if (buttonCount > 1) {
+            if (isPayPalEnabled && buttonCount > 1) {
                 findViewById(R.id.bt_payment_button_divider).setVisibility(VISIBLE);
+            } else if (isVenmoEnabled && buttonCount > 1) {
+                findViewById(R.id.bt_payment_button_divider_2).setVisibility(VISIBLE);
             }
             if (buttonCount > 2) {
                 findViewById(R.id.bt_payment_button_divider_2).setVisibility(VISIBLE);
