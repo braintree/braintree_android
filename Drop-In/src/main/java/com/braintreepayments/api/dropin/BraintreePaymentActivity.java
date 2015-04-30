@@ -229,7 +229,7 @@ public class BraintreePaymentActivity extends Activity implements
             mBraintree.sendAnalyticsEvent("add-paypal.success");
             finishCreate();
         } else if (paymentMethod instanceof AndroidPayCard) {
-            mBraintree.sendAnalyticsEvent("add-google-wallet.success");
+            mBraintree.sendAnalyticsEvent("add-android-pay.success");
             finishCreate();
         }
     }
