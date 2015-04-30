@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageButton;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.braintreepayments.api.AndroidPay;
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.PayPalHelper;
 import com.braintreepayments.api.dropin.R;
@@ -85,33 +87,56 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
         inflate(getContext(), R.layout.bt_payment_button, this);
 
         boolean isPayPalEnabled = mBraintree.isPayPalEnabled();
+        boolean isVenmoEnabled = mBraintree.isVenmoEnabled();
         boolean isAndroidPayEnabled = mBraintree.isAndroidPayEnabled();
-
-        if (!isPayPalEnabled && !isAndroidPayEnabled) {
+        int buttonCount = 0;
+        if (!isPayPalEnabled && !isVenmoEnabled && !isAndroidPayEnabled) {
             setVisibility(GONE);
         } else {
             if (isPayPalEnabled) {
-                ImageButton paypalButton = (ImageButton) findViewById(R.id.bt_paypal_button);
-                paypalButton.setVisibility(VISIBLE);
-                paypalButton.setOnClickListener(this);
+                buttonCount++;
             }
-
+            if (isVenmoEnabled) {
+                buttonCount++;
+            }
             if (isAndroidPayEnabled) {
-                ImageButton androidPayButton = (ImageButton) findViewById(R.id.bt_android_pay_button);
-                androidPayButton.setVisibility(VISIBLE);
-                androidPayButton.setOnClickListener(this);
+                buttonCount++;
             }
 
-            if (isPayPalEnabled && isAndroidPayEnabled) {
+            if (isPayPalEnabled) {
+                enableButton(findViewById(R.id.bt_paypal_button), buttonCount);
+            }
+            if (isVenmoEnabled) {
+                enableButton(findViewById(R.id.bt_venmo_button), buttonCount);
+            }
+            if (isAndroidPayEnabled) {
+                enableButton(findViewById(R.id.bt_android_pay_button), buttonCount);
+            }
+
+            if (buttonCount > 1) {
                 findViewById(R.id.bt_payment_button_divider).setVisibility(VISIBLE);
             }
+            if (buttonCount > 2) {
+                findViewById(R.id.bt_payment_button_divider_2).setVisibility(VISIBLE);
+            }
         }
+    }
+
+    private void enableButton(View view, int buttonCount) {
+        view.setVisibility(VISIBLE);
+        view.setOnClickListener(this);
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT, 3f / buttonCount);
+        view.setLayoutParams(params);
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.bt_paypal_button) {
             mBraintree.startPayWithPayPal(mActivity, mRequestCode);
+        } else if (v.getId() == R.id.bt_venmo_button) {
+            mBraintree.startPayWithVenmo(mActivity, mRequestCode);
         } else if (v.getId() == R.id.bt_android_pay_button) {
             mBraintree.startPayWithAndroidPay(mActivity, mRequestCode);
         }
@@ -128,10 +153,12 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
      */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == mRequestCode && resultCode == Activity.RESULT_OK) {
-            if(PayPalHelper.isPayPalIntent(data)) {
+            if (PayPalHelper.isPayPalIntent(data)) {
                 mBraintree.finishPayWithPayPal(mActivity, resultCode, data);
-            } else {
+            } else if (AndroidPay.isAndroidPayIntent(data)) {
                 mBraintree.finishPayWithAndroidPay(resultCode, data);
+            } else {
+                mBraintree.finishPayWithVenmo(resultCode, data);
             }
         }
     }

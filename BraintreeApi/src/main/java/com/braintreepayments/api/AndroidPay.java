@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.content.Intent;
+
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.google.android.gms.wallet.Cart;
@@ -7,6 +9,7 @@ import com.google.android.gms.wallet.FullWalletRequest;
 import com.google.android.gms.wallet.MaskedWalletRequest;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.PaymentMethodTokenizationType;
+import com.google.android.gms.wallet.WalletConstants;
 
 public class AndroidPay {
 
@@ -18,6 +21,11 @@ public class AndroidPay {
         mClientToken = clientToken;
         mConfiguration = configuration;
         mCart = cart;
+    }
+
+    public static boolean isAndroidPayIntent(Intent intent) {
+        return (intent.hasExtra(WalletConstants.EXTRA_MASKED_WALLET) ||
+                intent.hasExtra(WalletConstants.EXTRA_FULL_WALLET));
     }
 
     protected PaymentMethodTokenizationParameters getTokenizationParameters() {
