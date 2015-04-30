@@ -311,7 +311,7 @@ public class BraintreeApi {
         if (resultCode == Activity.RESULT_OK) {
             Uri redirectUri =
                     data.getParcelableExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL);
-            CoinbaseAccountBuilder coinbaseAccount = new CoinbaseAccountBuilder().code(mCoinbase.parseResponse(redirectUri));
+            CoinbaseAccountBuilder coinbaseAccount = new CoinbaseAccountBuilder().code(mCoinbase.parseResponse(redirectUri)).redirectUri(mCoinbase.getRedirectUri());
 
 
             if(data.getBooleanExtra("store-in-vault", false)){

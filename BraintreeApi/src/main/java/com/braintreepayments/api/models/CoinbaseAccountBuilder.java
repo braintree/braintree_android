@@ -10,10 +10,16 @@ public class CoinbaseAccountBuilder implements PaymentMethod.Builder<CoinbaseAcc
     private String mCode;
     private PaymentMethodOptions mOptions;
     private String mIntegration = "custom";
+    private String mRedirectUri;
     private String mSource;
 
     public CoinbaseAccountBuilder code(String code) {
         mCode = code;
+        return this;
+    }
+
+    public CoinbaseAccountBuilder redirectUri(String redirectUri) {
+        mRedirectUri = redirectUri;
         return this;
     }
 
@@ -43,6 +49,7 @@ public class CoinbaseAccountBuilder implements PaymentMethod.Builder<CoinbaseAcc
         account.setAccessCode(mCode);
         account.setOptions(mOptions);
         account.setSource(mSource);
+        account.setRedirectUri(mRedirectUri);
         return account;
     }
 

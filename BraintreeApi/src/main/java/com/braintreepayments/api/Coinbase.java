@@ -37,7 +37,8 @@ public class Coinbase {
     protected Intent getLaunchIntent() throws UnsupportedEncodingException {
         CoinbaseConfiguration configuration = mConfiguration.getCoinbase();
 
-        String url = "https://www.coinbase.com/oauth/authorize?response_type=code" +
+        String url = configuration.getBaseURLForEnvironment() +
+                "oauth/authorize?response_type=code" +
                 "&client_id=" + URLEncoder.encode(configuration.getClientId(), UTF_8) +
                 "&scope=" + URLEncoder.encode(configuration.getScopes(), UTF_8) +
                 "&redirect_uri=" + URLEncoder.encode(getRedirectUri(), UTF_8) +
@@ -49,7 +50,7 @@ public class Coinbase {
                 .putExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_URL, url);
     }
 
-    private String getRedirectUri() {
+    public String getRedirectUri() {
         return new Uri.Builder()
                 .scheme(mContext.getPackageName() + "." + REDIRECT_URI_SCHEME_SUFFIX)
                 .authority(REDIRECT_URI_HOST)

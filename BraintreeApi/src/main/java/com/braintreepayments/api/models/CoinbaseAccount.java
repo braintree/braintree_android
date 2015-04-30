@@ -23,10 +23,17 @@ public class CoinbaseAccount extends PaymentMethod implements Parcelable, Serial
     @SerializedName("details")
     private CoinbaseAccountDetails mDetails;
 
+    @SerializedName("redirect_uri")
+    private String mRedirectUri;
+
     public CoinbaseAccount() {}
 
     protected void setAccessCode(String accessCode) {
         mAccessCode = accessCode;
+    }
+
+    protected void setRedirectUri(String redirectUri) {
+        mRedirectUri = redirectUri;
     }
 
     /**
