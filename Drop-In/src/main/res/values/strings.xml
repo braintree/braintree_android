@@ -17,7 +17,7 @@
 
     <string name="bt_pay_with_paypal">Pay with PayPal</string>
     <string name="bt_pay_with_venmo">Pay with Venmo</string>
-    <string name="bt_pay_with_android_pay">Pay with Android Pay</string>
+    <string name="bt_pay_with_android_pay">Pay with Google Wallet</string>
 
     <string name="bt_descriptor_visa">Visa</string>
     <string name="bt_descriptor_mastercard">MasterCard</string>
@@ -27,6 +27,6 @@
     <string name="bt_descriptor_diners">Diners</string>
     <string name="bt_descriptor_maestro">Maestro</string>
     <string name="bt_descriptor_paypal">PayPal</string>
-    <string name="bt_descriptor_android_pay">Android Pay</string>
+    <string name="bt_descriptor_android_pay">Google Wallet</string>
     <string name="bt_descriptor_unknown">Card</string>
 </resources>
