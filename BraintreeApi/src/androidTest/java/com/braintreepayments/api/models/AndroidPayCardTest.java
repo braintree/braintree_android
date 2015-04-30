@@ -1,19 +1,19 @@
 package com.braintreepayments.api.models;
 
 import android.test.AndroidTestCase;
-import com.braintreepayments.testutils.FixturesHelper;
+
+import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 
 public class AndroidPayCardTest extends AndroidTestCase {
 
     public void testCanCreateFromJson() {
-        String googleWalletString = FixturesHelper.stringFromFixture(mContext,
-                "payment_methods/google_wallet_card.json");
+        String androidPayString = stringFromFixture(mContext, "payment_methods/android_pay_card.json");
 
-        AndroidPayCard androidPayCard = AndroidPayCard.fromJson(googleWalletString);
+        AndroidPayCard androidPayCard = AndroidPayCard.fromJson(androidPayString);
 
-        assertEquals("Google Wallet", androidPayCard.getTypeLabel());
-        assertEquals("fake-google-wallet-card-nonce", androidPayCard.getNonce());
-        assertEquals("Google Wallet", androidPayCard.getDescription());
+        assertEquals("Android Pay", androidPayCard.getTypeLabel());
+        assertEquals("fake-android-pay-nonce", androidPayCard.getNonce());
+        assertEquals("Android Pay", androidPayCard.getDescription());
         assertEquals("11", androidPayCard.getLastTwo());
     }
 }
