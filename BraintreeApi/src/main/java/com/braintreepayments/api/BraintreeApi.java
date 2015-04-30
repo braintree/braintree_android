@@ -142,18 +142,23 @@ public class BraintreeApi {
     }
 
     /**
-     * @return If Venmo app switch is supported and enabled in the current environment
+     * @return If Venmo app switch is supported and enabled in the current environment.
      */
     public boolean isVenmoEnabled() {
         return mVenmoAppSwitch.isAvailable();
     }
 
+    /**
+     * @return If Android Pay is enabled.
+     */
     public boolean isAndroidPayEnabled() {
-        return GooglePlayServicesUtil.isGooglePlayServicesAvailable(mContext) == ConnectionResult.SUCCESS;
+        return (mConfiguration.getAndroidPay() != null &&
+                mConfiguration.getAndroidPay().getEnabled() &&
+                GooglePlayServicesUtil.isGooglePlayServicesAvailable(mContext) == ConnectionResult.SUCCESS);
     }
 
     /**
-     * @return If 3D Secure is supported and enabled for the current merchant account
+     * @return If 3D Secure is supported and enabled for the current merchant account.
      */
     @Beta
     public boolean isThreeDSecureEnabled() {
@@ -161,14 +166,14 @@ public class BraintreeApi {
     }
 
     /**
-     * @return If cvv is required to add a card
+     * @return If cvv is required to add a card.
      */
     public boolean isCvvChallengePresent() {
         return mConfiguration.isCvvChallengePresent();
     }
 
     /**
-     * @return If postal code is required to add a card
+     * @return If postal code is required to add a card.
      */
     public boolean isPostalCodeChallengePresent() {
         return mConfiguration.isPostalCodeChallengePresent();
