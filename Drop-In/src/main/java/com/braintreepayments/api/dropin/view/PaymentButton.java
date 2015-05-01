@@ -143,7 +143,7 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
             mBraintree.startPayWithAndroidPay(mActivity, mRequestCode);
         }
 
-        callOnClick();
+        performClick();
     }
 
     /**
