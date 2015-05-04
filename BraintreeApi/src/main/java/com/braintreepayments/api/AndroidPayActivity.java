@@ -54,6 +54,7 @@ public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
                         .setEnvironment(environment)
                         .setTheme(WalletConstants.THEME_HOLO_LIGHT)
                         .build())
+                .useDefaultAccount()
                 .build();
         mGoogleApiClient.connect();
 
