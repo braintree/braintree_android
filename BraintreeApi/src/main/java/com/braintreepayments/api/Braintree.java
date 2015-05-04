@@ -24,6 +24,7 @@ import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
 import com.google.android.gms.wallet.Cart;
+import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 
 import org.json.JSONException;
 
@@ -582,6 +583,20 @@ public class Braintree {
         } else {
             sendAnalyticsEvent("venmo-app.fail");
         }
+    }
+
+    /**
+     * Get Braintree specific tokenization parameters for Android Pay. Useful for existing Android
+     * Pay integrations or very advanced integrations.
+     *
+     * These parameters should be supplied to the
+     * {@link com.google.android.gms.wallet.MaskedWalletRequest} via
+     * {@link com.google.android.gms.wallet.MaskedWalletRequest.Builder#setPaymentMethodTokenizationParameters(PaymentMethodTokenizationParameters)}.
+     *
+     * @return {@link PaymentMethodTokenizationParameters}
+     */
+    public PaymentMethodTokenizationParameters getAndroidPayTokenizationParameters() {
+        return mBraintreeApi.getAndroidPayTokenizationParameters();
     }
 
     public void startPayWithAndroidPay(Activity activity, int requestCode) {

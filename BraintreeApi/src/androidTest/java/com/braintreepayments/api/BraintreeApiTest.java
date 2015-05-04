@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.test.AndroidTestCase;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
@@ -165,5 +166,21 @@ public class BraintreeApiTest extends AndroidTestCase {
         String configurationString = braintreeApi.getConfigurationString();
 
         assertNull(configurationString);
+    }
+
+    public void testGetAndroidPayPaymentMethodTokenizationParametersReturnsParameters() {
+        ClientToken clientToken = mock(ClientToken.class);
+        when(clientToken.getAuthorizationFingerprint()).thenReturn("test-auth-fingerprint");
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.getMerchantId()).thenReturn("android-pay-merchant-id");
+
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, clientToken, configuration, null);
+        Bundle tokenizationParameters = braintreeApi.getAndroidPayTokenizationParameters().getParameters();
+
+        assertEquals("braintree", tokenizationParameters.getString("gateway"));
+        assertEquals(configuration.getMerchantId(), tokenizationParameters.getString("braintree:merchantId"));
+        assertEquals(clientToken.getAuthorizationFingerprint(), tokenizationParameters.getString("braintree:authorizationFingerprint"));
+        assertEquals("v1", tokenizationParameters.getString("braintree:apiVersion"));
+        assertEquals(BuildConfig.VERSION_NAME, tokenizationParameters.getString("braintree:sdkVersion"));
     }
 }

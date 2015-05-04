@@ -29,6 +29,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
+import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.WalletConstants;
 import com.google.gson.Gson;
 
@@ -204,6 +205,10 @@ public class BraintreeApi {
     public void startPayWithVenmo(Activity activity, int requestCode)
             throws AppSwitchNotAvailableException {
         mVenmoAppSwitch.launch(activity, requestCode);
+    }
+
+    protected PaymentMethodTokenizationParameters getAndroidPayTokenizationParameters() {
+        return new AndroidPay(mClientToken, mConfiguration, null).getTokenizationParameters();
     }
 
     protected void startPayWithAndroidPay(Activity activity, int requestCode, Cart cart)
