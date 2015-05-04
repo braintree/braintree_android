@@ -1,0 +1,7 @@
+{
+  "androidPay": {
+    "enabled": true,
+    "displayName": "Android Pay Merchant",
+    "environment": "sandbox"
+  }
+}

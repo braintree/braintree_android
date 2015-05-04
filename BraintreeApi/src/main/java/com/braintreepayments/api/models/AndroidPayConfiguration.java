@@ -6,7 +6,7 @@ public class AndroidPayConfiguration {
     private String environment;
     private String displayName;
 
-    public boolean getEnabled() {
+    public boolean isEnabled() {
         return enabled;
     }
 

@@ -154,8 +154,7 @@ public class BraintreeApi {
      * @return If Android Pay is enabled.
      */
     public boolean isAndroidPayEnabled() {
-        return (mConfiguration.getAndroidPay() != null &&
-                mConfiguration.getAndroidPay().getEnabled() &&
+        return (mConfiguration.getAndroidPay().isEnabled() &&
                 GooglePlayServicesUtil.isGooglePlayServicesAvailable(mContext) == ConnectionResult.SUCCESS);
     }
 

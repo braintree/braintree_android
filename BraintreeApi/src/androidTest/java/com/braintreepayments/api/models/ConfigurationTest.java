@@ -72,4 +72,13 @@ public class ConfigurationTest extends AndroidTestCase {
 
         assertFalse(configuration.isThreeDSecureEnabled());
     }
+
+    public void testReturnsNewAndroidPayConfigurationWhenAndroidPayIsNull() {
+        Configuration configuration = new Configuration();
+
+        assertNotNull(configuration.getAndroidPay());
+        assertFalse(configuration.getAndroidPay().isEnabled());
+        assertNull(configuration.getAndroidPay().getDisplayName());
+        assertNull(configuration.getAndroidPay().getEnvironment());
+    }
 }

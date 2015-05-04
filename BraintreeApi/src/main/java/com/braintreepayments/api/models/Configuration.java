@@ -67,8 +67,11 @@ public class Configuration {
         return mPayPalConfiguration;
     }
 
+    /**
+     * @return instance of {@link AndroidPayConfiguration}.
+     */
     public AndroidPayConfiguration getAndroidPay() {
-        return mAndroidPayConfiguration;
+        return (mAndroidPayConfiguration == null ? new AndroidPayConfiguration() : mAndroidPayConfiguration);
     }
 
     /**
