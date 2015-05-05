@@ -13,6 +13,7 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
+import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
@@ -174,18 +175,19 @@ public class BraintreeApiTest extends AndroidTestCase {
     }
 
     public void testGetAndroidPayPaymentMethodTokenizationParametersReturnsParameters() {
-        ClientToken clientToken = mock(ClientToken.class);
-        when(clientToken.getAuthorizationFingerprint()).thenReturn("test-auth-fingerprint");
+        AndroidPayConfiguration androidPayConfiguration = mock(AndroidPayConfiguration.class);
+        when(androidPayConfiguration.getGoogleAuthorizationFingerprint()).thenReturn("google-auth-fingerprint");
         Configuration configuration = mock(Configuration.class);
         when(configuration.getMerchantId()).thenReturn("android-pay-merchant-id");
+        when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
 
-        BraintreeApi braintreeApi = new BraintreeApi(mContext, clientToken, configuration, null);
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, mock(ClientToken.class), configuration, null);
         Bundle tokenizationParameters = braintreeApi.getAndroidPayTokenizationParameters().getParameters();
 
         assertEquals("braintree", tokenizationParameters.getString("gateway"));
         assertEquals(configuration.getMerchantId(), tokenizationParameters.getString(
                 "braintree:merchantId"));
-        assertEquals(clientToken.getAuthorizationFingerprint(),
+        assertEquals(androidPayConfiguration.getGoogleAuthorizationFingerprint(),
                 tokenizationParameters.getString("braintree:authorizationFingerprint"));
         assertEquals("v1", tokenizationParameters.getString("braintree:apiVersion"));
         assertEquals(BuildConfig.VERSION_NAME, tokenizationParameters.getString(

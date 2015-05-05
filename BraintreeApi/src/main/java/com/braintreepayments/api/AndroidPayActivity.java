@@ -66,7 +66,7 @@ public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
         mGoogleApiClient.connect();
 
         Cart cart = getIntent().getParcelableExtra(EXTRA_CART);
-        mAndroidPay = new AndroidPay(clientToken, configuration, cart);
+        mAndroidPay = new AndroidPay(configuration, cart);
     }
 
     @Override

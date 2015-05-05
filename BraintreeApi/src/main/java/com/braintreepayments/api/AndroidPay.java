@@ -2,7 +2,6 @@ package com.braintreepayments.api;
 
 import android.content.Intent;
 
-import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWalletRequest;
@@ -13,12 +12,10 @@ import com.google.android.gms.wallet.WalletConstants;
 
 public class AndroidPay {
 
-    private ClientToken mClientToken;
     private Configuration mConfiguration;
     private Cart mCart;
 
-    protected AndroidPay(ClientToken clientToken, Configuration configuration, Cart cart) {
-        mClientToken = clientToken;
+    protected AndroidPay(Configuration configuration, Cart cart) {
         mConfiguration = configuration;
         mCart = cart;
     }
@@ -34,7 +31,7 @@ public class AndroidPay {
                 .addParameter("gateway", "braintree")
                 .addParameter("braintree:merchantId", mConfiguration.getMerchantId())
                 .addParameter("braintree:authorizationFingerprint",
-                        mClientToken.getAuthorizationFingerprint())
+                        mConfiguration.getAndroidPay().getGoogleAuthorizationFingerprint())
                 .addParameter("braintree:apiVersion", "v1")
                 .addParameter("braintree:sdkVersion", BuildConfig.VERSION_NAME)
                 .build();

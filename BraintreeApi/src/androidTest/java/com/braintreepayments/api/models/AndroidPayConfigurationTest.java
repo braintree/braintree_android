@@ -13,6 +13,7 @@ public class AndroidPayConfigurationTest extends AndroidTestCase {
         AndroidPayConfiguration androidPayConfiguration = configuration.getAndroidPay();
 
         assertTrue(androidPayConfiguration.isEnabled());
+        assertEquals("google-auth-fingerprint", androidPayConfiguration.getGoogleAuthorizationFingerprint());
         assertEquals("Android Pay Merchant", androidPayConfiguration.getDisplayName());
         assertEquals("sandbox", androidPayConfiguration.getEnvironment());
     }

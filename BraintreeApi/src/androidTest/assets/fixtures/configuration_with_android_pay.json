@@ -2,6 +2,7 @@
   "androidPay": {
     "enabled": true,
     "displayName": "Android Pay Merchant",
-    "environment": "sandbox"
+    "environment": "sandbox",
+    "googleAuthorizationFingerprint": "google-auth-fingerprint"
   }
 }

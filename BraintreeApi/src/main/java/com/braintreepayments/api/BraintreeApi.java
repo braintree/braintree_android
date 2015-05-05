@@ -207,7 +207,7 @@ public class BraintreeApi {
     }
 
     protected PaymentMethodTokenizationParameters getAndroidPayTokenizationParameters() {
-        return new AndroidPay(mClientToken, mConfiguration, null).getTokenizationParameters();
+        return new AndroidPay(mConfiguration, null).getTokenizationParameters();
     }
 
     protected void startPayWithAndroidPay(Activity activity, int requestCode, Cart cart,
