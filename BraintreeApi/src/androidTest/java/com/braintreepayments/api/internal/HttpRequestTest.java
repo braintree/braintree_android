@@ -160,20 +160,20 @@ public class HttpRequestTest extends AndroidTestCase {
 
     public void testGetRequestSslCertificateSuccessfulInSandbox()
             throws BraintreeException, ErrorWithResponse {
-        HttpRequest httpRequest = new HttpRequest( "myAuthFingerprint");
+        HttpRequest httpRequest = new HttpRequest("");
         httpRequest.setBaseUrl("https://api.sandbox.braintreegateway.com");
 
-        int statusCode = httpRequest.get("/").getResponseCode();
+        int statusCode = httpRequest.get("/wellness").getResponseCode();
 
         assertEquals(200, statusCode);
     }
 
     public void testGetRequestSslCertificateSuccessfulInProduction()
             throws BraintreeException, ErrorWithResponse {
-        HttpRequest httpRequest = new HttpRequest("myAuthFingerprint");
+        HttpRequest httpRequest = new HttpRequest("");
         httpRequest.setBaseUrl("https://api.braintreegateway.com");
 
-        int statusCode = httpRequest.get("/").getResponseCode();
+        int statusCode = httpRequest.get("/wellness").getResponseCode();
 
         assertEquals(200, statusCode);
     }
