@@ -120,18 +120,18 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
     }
 
     public void launchDropIn(View v) {
-        Cart cart = getCart();
         Customization customization = new CustomizationBuilder()
                 .primaryDescription("Cart")
                 .secondaryDescription("1 Item")
-                .amount("$" + cart.getTotalPrice())
+                .amount("$1.00")
                 .submitButtonText("Buy")
                 .build();
 
         Intent intent = new Intent(this, BraintreePaymentActivity.class)
                 .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken)
                 .putExtra(BraintreePaymentActivity.EXTRA_CUSTOMIZATION, customization)
-                .putExtra(BraintreePaymentActivity.EXTRA_CART, cart);
+                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
+                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, Settings.isAndroidPayBillingAgreement(this));
 
         startActivityForResult(intent, DROP_IN_REQUEST);
     }
@@ -139,7 +139,10 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
     public void launchPaymentButton(View v) {
         Intent intent = new Intent(this, PaymentButtonActivity.class)
                 .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken)
-                .putExtra(BraintreePaymentActivity.EXTRA_CART, getCart());
+                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
+                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, Settings.isAndroidPayBillingAgreement(this))
+                .putExtra("shippingAddressRequired", Settings.isAndroidPayShippingAddressRequired(this))
+                .putExtra("phoneNumberRequired", Settings.isAndroidPayPhoneNumberRequired(this));
 
         startActivityForResult(intent, PAYMENT_BUTTON_REQUEST);
     }
@@ -147,7 +150,10 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
     public void launchCustom(View v) {
         Intent intent = new Intent(this, CustomFormActivity.class)
                 .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken)
-                .putExtra(BraintreePaymentActivity.EXTRA_CART, getCart());
+                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
+                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, Settings.isAndroidPayBillingAgreement(this))
+                .putExtra("shippingAddressRequired", Settings.isAndroidPayShippingAddressRequired(this))
+                .putExtra("phoneNumberRequired", Settings.isAndroidPayPhoneNumberRequired(this));
 
         startActivityForResult(intent, CUSTOM_REQUEST);
     }
@@ -162,9 +168,8 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
     @Override
     public void onUnrecoverableError(Throwable throwable) {
         safelyCloseLoadingView();
-        showDialog(
-                "An unrecoverable error was encountered (" + throwable.getClass().getSimpleName() +
-                        "): " + throwable.getMessage());
+        showDialog("An unrecoverable error was encountered (" +
+                throwable.getClass().getSimpleName() + "): " + throwable.getMessage());
     }
 
     @Override
@@ -283,18 +288,22 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
         mCreateTransactionButton.setEnabled(true);
     }
 
-    private Cart getCart() {
-        return Cart.newBuilder()
-                .setCurrencyCode("USD")
-                .setTotalPrice("1.00")
-                .addLineItem(LineItem.newBuilder()
-                        .setCurrencyCode("USD")
-                        .setDescription("Description")
-                        .setQuantity("1")
-                        .setUnitPrice("1.00")
-                        .setTotalPrice("1.00")
-                        .build())
-                .build();
+    private Cart getAndroidPayCart() {
+        if (Settings.isAndroidPayBillingAgreement(this)) {
+            return null;
+        } else {
+            return Cart.newBuilder()
+                    .setCurrencyCode("USD")
+                    .setTotalPrice("1.00")
+                    .addLineItem(LineItem.newBuilder()
+                            .setCurrencyCode("USD")
+                            .setDescription("Description")
+                            .setQuantity("1")
+                            .setUnitPrice("1.00")
+                            .setTotalPrice("1.00")
+                            .build())
+                    .build();
+        }
     }
 
     private void enableButtons(boolean enable) {

@@ -13,6 +13,7 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWalletRequest;
 import com.google.android.gms.wallet.MaskedWallet;
+import com.google.android.gms.wallet.MaskedWalletRequest;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 import com.google.gson.Gson;
@@ -23,30 +24,37 @@ public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
     public static final int REQUEST_FAILED = 15;
     public static final int CONNECTION_FAILED = 16;
     public static final String EXTRA_CONNECTION_FAILED_ERROR_CODE = "com.braintreepayments.api.AndroidPayActivity.EXTRA_CONNECTION_FAILED_ERROR_CODE";
+    public static final String EXTRA_CLIENT_TOKEN = "com.braintreepayments.api.AndroidPayActivity.EXTRA_CLIENT_TOKEN";
+    public static final String EXTRA_CONFIGURATION = "com.braintreepayments.api.AndroidPayActivity.EXTRA_CONFIGURATION";
+    public static final String EXTRA_CART = "com.braintreepayments.api.AndroidPayActivity.EXTRA_CART";
+    public static final String EXTRA_IS_BILLING_AGREEMENT = "com.braintreepayments.api.AndroidPayActivity.EXTRA_IS_BILLING_AGREEMENT";
+    public static final String EXTRA_SHIPPING_ADDRESS_REQUIRED = "com.braintreepayments.api.AndroidPayActivity.EXTRA_SHIPPING_ADDRESS_REQUIRED";
+    public static final String EXTRA_PHONE_NUMBER_REQUIRED = "com.braintreepayments.api.AndroidPayActivity.EXTRA_PHONE_NUMBER_REQUIRED";
 
     private static final int MASKED_WALLET_REQUEST = 100;
     private static final int FULL_WALLET_REQUEST = 200;
 
     private GoogleApiClient mGoogleApiClient;
     private AndroidPay mAndroidPay;
-    private Cart mCart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         ClientToken clientToken =
-                new Gson().fromJson(getIntent().getStringExtra("clientToken"), ClientToken.class);
+                new Gson().fromJson(getIntent().getStringExtra(EXTRA_CLIENT_TOKEN), ClientToken.class);
         Configuration configuration =
-                new Gson().fromJson(getIntent().getStringExtra("configuration"), Configuration.class);
+                new Gson().fromJson(getIntent().getStringExtra(EXTRA_CONFIGURATION), Configuration.class);
+
         int environment = WalletConstants.ENVIRONMENT_SANDBOX;
-        if(configuration.getAndroidPay() != null && configuration.getAndroidPay().getEnvironment() != null) {
+        if(configuration.getAndroidPay().getEnvironment() != null) {
             if (configuration.getAndroidPay().getEnvironment().equals("production")) {
                 environment = WalletConstants.ENVIRONMENT_PRODUCTION;
             } else {
                 environment = WalletConstants.ENVIRONMENT_SANDBOX;
             }
         }
+
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -57,13 +65,17 @@ public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
                 .build();
         mGoogleApiClient.connect();
 
-        mCart = getIntent().getParcelableExtra("cart");
-        mAndroidPay = new AndroidPay(clientToken, configuration, mCart);
+        Cart cart = getIntent().getParcelableExtra(EXTRA_CART);
+        mAndroidPay = new AndroidPay(clientToken, configuration, cart);
     }
 
     @Override
     public void onConnected(Bundle bundle) {
-        Wallet.Payments.loadMaskedWallet(mGoogleApiClient, mAndroidPay.getMaskedWalletRequest(), MASKED_WALLET_REQUEST);
+        MaskedWalletRequest maskedWalletRequest = mAndroidPay.getMaskedWalletRequest(
+                getBooleanExtra(EXTRA_IS_BILLING_AGREEMENT),
+                getBooleanExtra(EXTRA_SHIPPING_ADDRESS_REQUIRED),
+                getBooleanExtra(EXTRA_PHONE_NUMBER_REQUIRED));
+        Wallet.Payments.loadMaskedWallet(mGoogleApiClient, maskedWalletRequest, MASKED_WALLET_REQUEST);
     }
 
     @Override
@@ -104,5 +116,9 @@ public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
             setResult(REQUEST_FAILED, data);
             finish();
         }
+    }
+
+    private boolean getBooleanExtra(String key) {
+        return getIntent().getBooleanExtra(key, false);
     }
 }

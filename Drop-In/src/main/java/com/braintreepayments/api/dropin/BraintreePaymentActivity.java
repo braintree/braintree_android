@@ -69,9 +69,14 @@ public class BraintreePaymentActivity extends Activity implements
     public static final int BRAINTREE_RESULT_SERVER_UNAVAILABLE = 4;
 
     /**
-     * Used to specify a {@link com.google.android.gms.wallet.Cart} for presentation and customization.
+     * Used for Android Pay to specify a {@link com.google.android.gms.wallet.Cart} for presentation and customization.
      */
-    public static final String EXTRA_CART = "com.braintreepayments.api.dropin.EXTRA_CART";
+    public static final String EXTRA_ANDROID_PAY_CART = "com.braintreepayments.api.dropin.EXTRA_CART";
+
+    /**
+     * Used for Android Pay to specify a billing agreement.
+     */
+    public static final String EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT = "com.braintreepayments.api.dropin.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT";
 
     /**
      * Used to specify a client token during initialization.
@@ -107,7 +112,6 @@ public class BraintreePaymentActivity extends Activity implements
     private AtomicBoolean mHavePaymentMethodsBeenReceived = new AtomicBoolean(false);
     private Bundle mSavedInstanceState;
     private Customization mCustomization;
-    private Cart mCart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +120,6 @@ public class BraintreePaymentActivity extends Activity implements
 
         mSavedInstanceState = (savedInstanceState != null) ? savedInstanceState : new Bundle();
         mCustomization = getCustomization();
-        mCart = getCart();
         customizeActionBar();
 
         mBraintree = Braintree.restoreSavedInstanceState(this, mSavedInstanceState);
@@ -143,7 +146,6 @@ public class BraintreePaymentActivity extends Activity implements
 
     private void init() {
         mBraintree.setIntegrationDropin();
-        mBraintree.setCart(mCart);
         mBraintree.sendAnalyticsEvent("sdk.initialized");
         mBraintree.addListener(this);
         mBraintree.unlockListeners();
@@ -389,8 +391,12 @@ public class BraintreePaymentActivity extends Activity implements
         return customization;
     }
 
-    private Cart getCart() {
-        return getIntent().getParcelableExtra(EXTRA_CART);
+    protected Cart getAndroidPayCart() {
+        return getIntent().getParcelableExtra(EXTRA_ANDROID_PAY_CART);
+    }
+
+    protected boolean getAndroidPayIsBillingAgreement() {
+        return getIntent().getBooleanExtra(EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, false);
     }
 
     @Override

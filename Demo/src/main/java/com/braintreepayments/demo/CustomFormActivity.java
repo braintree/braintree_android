@@ -40,8 +40,14 @@ public class CustomFormActivity extends Activity implements PaymentMethodNonceLi
             String errorMessage, Exception exception) {
         if (setupSuccessful) {
             mBraintree = braintree;
-            mBraintree.setCart((Cart) getIntent().getParcelableExtra(BraintreePaymentActivity.EXTRA_CART));
             mBraintree.addListener(this);
+
+            Cart cart = getIntent().getParcelableExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_CART);
+            boolean isBillingAgreement = getIntent().getBooleanExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, false);
+            boolean shippingAddressRequired = getIntent().getBooleanExtra("shippingAddressRequired", false);
+            boolean phoneNumberRequired = getIntent().getBooleanExtra("phoneNumberRequired", false);
+            mPaymentButton.setAndroidPayOptions(cart, isBillingAgreement, shippingAddressRequired,
+                    phoneNumberRequired);
             mPaymentButton.initialize(this, mBraintree);
 
             findViewById(R.id.purchase_button).setEnabled(true);

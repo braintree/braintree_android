@@ -53,6 +53,18 @@ public class Settings {
         return getEnvironmentUrl(context) + path;
     }
 
+    public static boolean isAndroidPayBillingAgreement(Context context) {
+        return getPreferences(context).getBoolean("android_pay_billing_agreement", false);
+    }
+
+    public static boolean isAndroidPayShippingAddressRequired(Context context) {
+        return getPreferences(context).getBoolean("android_pay_require_shipping_address", false);
+    }
+
+    public static boolean isAndroidPayPhoneNumberRequired(Context context) {
+        return getPreferences(context).getBoolean("android_pay_require_phone_number", false);
+    }
+
     public static boolean isThreeDSecureEnabled(Context context) {
         return getPreferences(context).getBoolean("enable_three_d_secure", false);
     }

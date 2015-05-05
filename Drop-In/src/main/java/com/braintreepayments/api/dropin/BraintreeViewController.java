@@ -44,7 +44,7 @@ public abstract class BraintreeViewController {
         String actionText = mCustomization.getSubmitButtonText();
 
         if (TextUtils.isEmpty(actionText)) {
-            actionText = getActivity().getString(R.string.bt_default_submit_button_text);
+            actionText = mActivity.getString(R.string.bt_default_submit_button_text);
         }
 
         return actionText;
@@ -65,10 +65,6 @@ public abstract class BraintreeViewController {
             TextView subview = findView(id);
             subview.setText(text);
         }
-    }
-
-    protected BraintreePaymentActivity getActivity() {
-        return mActivity;
     }
 
     /**

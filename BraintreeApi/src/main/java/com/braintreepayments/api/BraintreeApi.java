@@ -210,17 +210,23 @@ public class BraintreeApi {
         return new AndroidPay(mClientToken, mConfiguration, null).getTokenizationParameters();
     }
 
-    protected void startPayWithAndroidPay(Activity activity, int requestCode, Cart cart)
-            throws InvalidArgumentException {
-        if(cart == null) {
-            throw new InvalidArgumentException("Cart cannot be null");
+    protected void startPayWithAndroidPay(Activity activity, int requestCode, Cart cart,
+            boolean isBillingAgreement, boolean shippingAddressRequired,
+            boolean phoneNumberRequired) throws InvalidArgumentException {
+        if (isBillingAgreement && cart != null) {
+            throw new InvalidArgumentException("The cart must be null when isBillingAgreement is true");
+        } else if(!isBillingAgreement && cart == null) {
+            throw new InvalidArgumentException("Cart cannot be null unless isBillingAgreement is true");
         }
 
         Gson gson = new Gson();
         Intent intent = new Intent(activity, AndroidPayActivity.class)
-                .putExtra("clientToken", gson.toJson(mClientToken))
-                .putExtra("configuration", gson.toJson(mConfiguration))
-                .putExtra("cart", cart);
+                .putExtra(AndroidPayActivity.EXTRA_CLIENT_TOKEN, gson.toJson(mClientToken))
+                .putExtra(AndroidPayActivity.EXTRA_CONFIGURATION, gson.toJson(mConfiguration))
+                .putExtra(AndroidPayActivity.EXTRA_CART, cart)
+                .putExtra(AndroidPayActivity.EXTRA_IS_BILLING_AGREEMENT, isBillingAgreement)
+                .putExtra(AndroidPayActivity.EXTRA_SHIPPING_ADDRESS_REQUIRED, shippingAddressRequired)
+                .putExtra(AndroidPayActivity.EXTRA_PHONE_NUMBER_REQUIRED, phoneNumberRequired);
 
         activity.startActivityForResult(intent, requestCode);
     }

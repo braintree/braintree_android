@@ -128,7 +128,6 @@ public class Braintree {
     private final Set<ErrorListener> mErrorListeners = new HashSet<ErrorListener>();
 
     private List<PaymentMethod> mCachedPaymentMethods;
-    private Cart mCart;
 
     /**
      * @deprecated Use the asynchronous
@@ -242,10 +241,6 @@ public class Braintree {
 
     protected String getIntegrationType() {
         return mIntegrationType;
-    }
-
-    public void setCart(Cart cart) {
-        mCart = cart;
     }
 
     /**
@@ -599,9 +594,16 @@ public class Braintree {
         return mBraintreeApi.getAndroidPayTokenizationParameters();
     }
 
-    public void startPayWithAndroidPay(Activity activity, int requestCode) {
+    public void startPayWithAndroidPay(Activity activity, int requestCode, Cart cart) {
+        startPayWithAndroidPay(activity, requestCode, cart, false, false, false);
+    }
+
+    public void startPayWithAndroidPay(Activity activity, int requestCode, Cart cart,
+            boolean isBillingAgreement, boolean shippingAddressRequired,
+            boolean phoneNumberRequired) {
         try {
-            mBraintreeApi.startPayWithAndroidPay(activity, requestCode, mCart);
+            mBraintreeApi.startPayWithAndroidPay(activity, requestCode, cart, isBillingAgreement,
+                    shippingAddressRequired, phoneNumberRequired);
         } catch (InvalidArgumentException e) {
             postUnrecoverableErrorToListeners(e);
         }
@@ -1075,5 +1077,4 @@ public class Braintree {
         void execute();
         boolean hasListeners();
     }
-
 }

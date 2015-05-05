@@ -9,6 +9,7 @@ import android.view.View;
 
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.dropin.R;
+import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.WalletConstants;
 import com.paypal.android.sdk.payments.PayPalTouchActivity;
 
@@ -77,6 +78,7 @@ public class PaymentButtonTest extends AndroidTestCase {
         when(mBraintree.isAndroidPayEnabled()).thenReturn(true);
         PaymentButton button = new PaymentButton(getContext());
 
+        button.setAndroidPayOptions(Cart.newBuilder().build(), false, false, false);
         button.initialize(null, mBraintree);
         assertEquals(View.VISIBLE, button.getVisibility());
         assertEquals(View.VISIBLE, button.findViewById(R.id.bt_android_pay_button).getVisibility());
@@ -92,6 +94,7 @@ public class PaymentButtonTest extends AndroidTestCase {
         when(mBraintree.isAndroidPayEnabled()).thenReturn(true);
         PaymentButton button = new PaymentButton(getContext());
 
+        button.setAndroidPayOptions(Cart.newBuilder().build(), false, false, false);
         button.initialize(null, mBraintree);
         assertEquals(View.VISIBLE, button.getVisibility());
         assertEquals(View.VISIBLE, button.findViewById(R.id.bt_paypal_button).getVisibility());
@@ -107,6 +110,7 @@ public class PaymentButtonTest extends AndroidTestCase {
         when(mBraintree.isAndroidPayEnabled()).thenReturn(true);
         PaymentButton button = new PaymentButton(getContext());
 
+        button.setAndroidPayOptions(Cart.newBuilder().build(), false, false, false);
         button.initialize(null, mBraintree);
         assertEquals(View.VISIBLE, button.getVisibility());
         assertEquals(View.GONE, button.findViewById(R.id.bt_paypal_button).getVisibility());
@@ -141,10 +145,12 @@ public class PaymentButtonTest extends AndroidTestCase {
         when(mBraintree.isVenmoEnabled()).thenReturn(true);
         when(mBraintree.isAndroidPayEnabled()).thenReturn(true);
         PaymentButton button = new PaymentButton(getContext());
+        Cart cart = Cart.newBuilder().build();
 
+        button.setAndroidPayOptions(cart, true, true, true);
         button.initialize(null, mBraintree);
         button.findViewById(R.id.bt_android_pay_button).performClick();
-        verify(mBraintree).startPayWithAndroidPay(null, PaymentButton.REQUEST_CODE);
+        verify(mBraintree).startPayWithAndroidPay(null, PaymentButton.REQUEST_CODE, cart, true, true, true);
     }
 
     public void testDoesNotLaunchFinishMethodsOnNonOkResponses() {

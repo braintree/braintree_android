@@ -17,6 +17,13 @@
 
     <!-- Settings -->
     <string name="environment">Environment</string>
+    <string name="android_pay">Android Pay</string>
+    <string name="android_pay_is_billing_agreement">isBillingAgreement</string>
+    <string name="android_pay_is_billing_agreement_summary">Use Android Pay with a billing agreement</string>
+    <string name="android_pay_require_shipping_address">Require Shipping Address</string>
+    <string name="android_pay_require_shipping_address_summary">Require shipping address from the user</string>
+    <string name="android_pay_require_phone_number">Require Phone Number</string>
+    <string name="android_pay_require_phone_number_summary">Require phone number from the user</string>
     <string name="three_d_secure">3D Secure</string>
     <string name="enable_three_d_secure">Enable 3D Secure</string>
     <string name="enable_three_d_secure_summary">3D Secure will automatically be run on all Card payment methods</string>

@@ -40,13 +40,22 @@ public class AndroidPay {
                 .build();
     }
 
-    protected MaskedWalletRequest getMaskedWalletRequest() {
-        return MaskedWalletRequest.newBuilder()
+    protected MaskedWalletRequest getMaskedWalletRequest(boolean isBillingAgreement,
+            boolean shippingAddressRequired, boolean phoneNumberRequired) {
+        MaskedWalletRequest.Builder maskedWalletRequestBuilder = MaskedWalletRequest.newBuilder()
                 .setMerchantName(getMerchantName())
                 .setCurrencyCode("USD")
-                .setEstimatedTotalPrice(mCart.getTotalPrice())
-                .setPaymentMethodTokenizationParameters(getTokenizationParameters())
-                .build();
+                .setCart(mCart)
+                .setIsBillingAgreement(isBillingAgreement)
+                .setShippingAddressRequired(shippingAddressRequired)
+                .setPhoneNumberRequired(phoneNumberRequired)
+                .setPaymentMethodTokenizationParameters(getTokenizationParameters());
+
+        if (mCart != null) {
+            maskedWalletRequestBuilder.setEstimatedTotalPrice(mCart.getTotalPrice());
+        }
+
+        return maskedWalletRequestBuilder.build();
     }
 
     protected FullWalletRequest getFullWalletRequest(String googleTransactionId) {

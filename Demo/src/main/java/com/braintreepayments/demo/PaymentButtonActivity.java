@@ -31,7 +31,13 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodNonc
             String errorMessage, Exception exception) {
         if (setupSuccessful) {
             braintree.addListener(this);
-            braintree.setCart((Cart) getIntent().getParcelableExtra(BraintreePaymentActivity.EXTRA_CART));
+
+            Cart cart = getIntent().getParcelableExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_CART);
+            boolean isBillingAgreement = getIntent().getBooleanExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, false);
+            boolean shippingAddressRequired = getIntent().getBooleanExtra("shippingAddressRequired", false);
+            boolean phoneNumberRequired = getIntent().getBooleanExtra("phoneNumberRequired", false);
+            mPaymentButton.setAndroidPayOptions(cart, isBillingAgreement, shippingAddressRequired,
+                    phoneNumberRequired);
             mPaymentButton.initialize(this, braintree);
         } else {
             Intent intent = new Intent()

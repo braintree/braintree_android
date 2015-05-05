@@ -14,6 +14,7 @@ import com.braintreepayments.api.AndroidPay;
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.PayPalHelper;
 import com.braintreepayments.api.dropin.R;
+import com.google.android.gms.wallet.Cart;
 
 /**
  * Skinned button for launching flows other than basic credit card forms (Pay With PayPal, Pay With Venmo, etc.).
@@ -42,6 +43,11 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
     private Activity mActivity;
     private int mRequestCode;
     private Braintree mBraintree;
+
+    private Cart mCart;
+    private boolean mIsBillingAgreement;
+    private boolean mShippingAddressRequired;
+    private boolean mPhoneNumberRequired;
 
     /**
      * Default request code to use when launching Pay With... flows.
@@ -88,7 +94,7 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
 
         boolean isPayPalEnabled = mBraintree.isPayPalEnabled();
         boolean isVenmoEnabled = mBraintree.isVenmoEnabled();
-        boolean isAndroidPayEnabled = mBraintree.isAndroidPayEnabled();
+        boolean isAndroidPayEnabled = (mBraintree.isAndroidPayEnabled() && (mCart != null || mIsBillingAgreement));
         int buttonCount = 0;
         if (!isPayPalEnabled && !isVenmoEnabled && !isAndroidPayEnabled) {
             setVisibility(GONE);
@@ -124,13 +130,22 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
         }
     }
 
-    private void enableButton(View view, int buttonCount) {
-        view.setVisibility(VISIBLE);
-        view.setOnClickListener(this);
-
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.MATCH_PARENT, 3f / buttonCount);
-        view.setLayoutParams(params);
+    /**
+     * Options to be used with Android Pay. Must be called *before*
+     * {@link PaymentButton#initialize(Activity, Braintree)} if you would like to use Android Pay.
+     * Failure to do so will result in Android Pay not present in the {@link PaymentButton}.
+     *
+     * @param cart The {@link Cart} to use with Android Pay
+     * @param isBillingAgreement Should a multiple use card be requested.
+     * @param shippingAddressRequired Should the user be prompted for a shipping address.
+     * @param phoneNumberRequired Should the user be prompted for a phone number.
+     */
+    public void setAndroidPayOptions(Cart cart, boolean isBillingAgreement,
+            boolean shippingAddressRequired, boolean phoneNumberRequired) {
+        mCart = cart;
+        mIsBillingAgreement = isBillingAgreement;
+        mShippingAddressRequired = shippingAddressRequired;
+        mPhoneNumberRequired = phoneNumberRequired;
     }
 
     @Override
@@ -140,7 +155,8 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
         } else if (v.getId() == R.id.bt_venmo_button) {
             mBraintree.startPayWithVenmo(mActivity, mRequestCode);
         } else if (v.getId() == R.id.bt_android_pay_button) {
-            mBraintree.startPayWithAndroidPay(mActivity, mRequestCode);
+            mBraintree.startPayWithAndroidPay(mActivity, mRequestCode, mCart, mIsBillingAgreement,
+                    mShippingAddressRequired, mPhoneNumberRequired);
         }
 
         performClick();
@@ -163,5 +179,14 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
                 mBraintree.finishPayWithVenmo(resultCode, data);
             }
         }
+    }
+
+    private void enableButton(View view, int buttonCount) {
+        view.setVisibility(VISIBLE);
+        view.setOnClickListener(this);
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT, 3f / buttonCount);
+        view.setLayoutParams(params);
     }
 }

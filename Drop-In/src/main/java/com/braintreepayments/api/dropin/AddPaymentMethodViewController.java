@@ -64,7 +64,9 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         mSubmitButton = findView(R.id.bt_card_form_submit_button);
 
         mPaymentButton.setOnClickListener(this);
-        mPaymentButton.initialize(getActivity(), mBraintree);
+        mPaymentButton.setAndroidPayOptions(mActivity.getAndroidPayCart(),
+                mActivity.getAndroidPayIsBillingAgreement(), false, false);
+        mPaymentButton.initialize(mActivity, mBraintree);
 
         mCardForm.setRequiredFields(true, true, mBraintree.isCvvChallenegePresent(),
                 mBraintree.isPostalCodeChallengePresent(), getCustomizedCallToAction());
@@ -189,12 +191,12 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
             showErrorUI();
         } else {
-            getActivity().onUnrecoverableError(new UnexpectedException(error.getMessage()));
+            mActivity.onUnrecoverableError(new UnexpectedException(error.getMessage()));
         }
     }
 
     private void showErrorUI() {
-        mLoadingHeader.setError(getActivity().getString(R.string.bt_invalid_card));
+        mLoadingHeader.setError(mActivity.getString(R.string.bt_invalid_card));
     }
 
     protected boolean isSubmitting() {
