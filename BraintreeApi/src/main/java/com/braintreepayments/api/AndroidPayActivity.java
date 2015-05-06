@@ -96,7 +96,7 @@ public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             if (requestCode == MASKED_WALLET_REQUEST) {
                 // no need to do full wallet here?
                 // just do masked and return txn id
@@ -112,6 +112,9 @@ public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
                 setResult(Activity.RESULT_OK, data);
                 finish();
             }
+        } else if (resultCode == RESULT_CANCELED) {
+            setResult(RESULT_CANCELED);
+            finish();
         } else {
             setResult(REQUEST_FAILED, data);
             finish();

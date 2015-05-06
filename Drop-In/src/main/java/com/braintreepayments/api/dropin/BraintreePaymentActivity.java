@@ -190,6 +190,9 @@ public class BraintreePaymentActivity extends Activity implements
                 mAddPaymentMethodViewController.onPaymentResult(requestCode, resultCode, data);
             }
         } else if (resultCode == RESULT_CANCELED) {
+            if (requestCode == PaymentButton.REQUEST_CODE) {
+                initAddPaymentMethodView();
+            }
             mBraintree.sendAnalyticsEvent("add-paypal.user-canceled");
         }
     }
