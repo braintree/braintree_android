@@ -88,6 +88,29 @@ public class PaymentButtonTest extends AndroidTestCase {
         assertEquals(View.GONE, button.findViewById(R.id.bt_payment_button_divider_2).getVisibility());
     }
 
+    public void testShowsAndroidPayIfBillingAgreementIsTrue() {
+        when(mBraintree.isPayPalEnabled()).thenReturn(false);
+        when(mBraintree.isVenmoEnabled()).thenReturn(false);
+        when(mBraintree.isAndroidPayEnabled()).thenReturn(true);
+        PaymentButton button = new PaymentButton(getContext());
+
+        button.setAndroidPayOptions(null, true, false, false);
+        button.initialize(null, mBraintree);
+        assertEquals(View.VISIBLE, button.getVisibility());
+        assertEquals(View.VISIBLE, button.findViewById(R.id.bt_android_pay_button).getVisibility());
+    }
+
+    public void testDoesntShowAndroidPayIfSetAndroidPayOptionsWasNotCalled() {
+        when(mBraintree.isPayPalEnabled()).thenReturn(false);
+        when(mBraintree.isVenmoEnabled()).thenReturn(false);
+        when(mBraintree.isAndroidPayEnabled()).thenReturn(true);
+        PaymentButton button = new PaymentButton(getContext());
+
+        button.initialize(null, mBraintree);
+        assertEquals(View.GONE, button.getVisibility());
+        assertEquals(View.GONE, button.findViewById(R.id.bt_android_pay_button).getVisibility());
+    }
+
     public void testShowsAllMethodsAndDividers() {
         when(mBraintree.isPayPalEnabled()).thenReturn(true);
         when(mBraintree.isVenmoEnabled()).thenReturn(true);
