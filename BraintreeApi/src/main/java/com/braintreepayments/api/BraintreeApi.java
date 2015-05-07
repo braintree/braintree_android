@@ -66,6 +66,7 @@ public class BraintreeApi {
      * @param context
      * @param clientTokenString A client token obtained from a Braintree server side SDK.
      */
+    @Deprecated
     public BraintreeApi(Context context, String clientTokenString) {
         Pattern pattern = Pattern.compile("([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)");
         if (pattern.matcher(clientTokenString).matches()) {
@@ -267,6 +268,7 @@ public class BraintreeApi {
      *
      * @see BraintreeApi#create(com.braintreepayments.api.models.PaymentMethod.Builder)
      */
+    @Deprecated
     public PayPalAccount finishPayWithPayPal(int resultCode, Intent data)
             throws BraintreeException, ErrorWithResponse {
         PayPalAccountBuilder payPalAccountBuilder = handlePayPalResponse(null, resultCode, data);

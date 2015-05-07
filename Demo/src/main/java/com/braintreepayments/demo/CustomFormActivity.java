@@ -77,7 +77,7 @@ public class CustomFormActivity extends Activity implements PaymentMethodNonceLi
     @Override
     public void onActivityResult(int requestCode, int responseCode, Intent data) {
         if (requestCode == PaymentButton.REQUEST_CODE) {
-            mPaymentButton.onActivityResult(requestCode, responseCode, data);
+            mBraintree.onActivityResult(this, requestCode, responseCode, data);
         }
     }
 }

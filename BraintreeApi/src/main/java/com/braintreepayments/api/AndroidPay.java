@@ -20,9 +20,26 @@ public class AndroidPay {
         mCart = cart;
     }
 
-    public static boolean isAndroidPayIntent(Intent intent) {
-        return (intent.hasExtra(WalletConstants.EXTRA_MASKED_WALLET) ||
-                intent.hasExtra(WalletConstants.EXTRA_FULL_WALLET));
+    /**
+     * Checks the given {@link Intent} to see if it contains a {@link com.google.android.gms.wallet.MaskedWallet}.
+     *
+     * @param intent The {@link Intent} to check.
+     * @return {@code true} is the {@link Intent} contains a {@link WalletConstants#EXTRA_MASKED_WALLET},
+     *         {@code false} otherwise.
+     */
+    public static boolean isMaskedWalletResponse(Intent intent) {
+        return intent.hasExtra(WalletConstants.EXTRA_MASKED_WALLET);
+    }
+
+    /**
+     * Checks the given {@link Intent} to see if it contains a {@link com.google.android.gms.wallet.FullWallet}.
+     *
+     * @param intent The {@link Intent} to check.
+     * @return {@code true} is the {@link Intent} contains a {@link WalletConstants#EXTRA_FULL_WALLET},
+     *         {@code false} otherwise.
+     */
+    public static boolean isFullWalletResponse(Intent intent) {
+        return intent.hasExtra(WalletConstants.EXTRA_FULL_WALLET);
     }
 
     protected PaymentMethodTokenizationParameters getTokenizationParameters() {

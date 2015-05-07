@@ -143,6 +143,7 @@ public class Braintree {
      *         {@link #getInstance(android.content.Context, String)} with the same {@code clientToken}
      *         may return the same {@link com.braintreepayments.api.Braintree} instance.
      */
+    @Deprecated
     public static Braintree getInstance(Context context, String clientToken) {
         if (sInstances.containsKey(clientToken)) {
             return sInstances.get(clientToken);
@@ -483,6 +484,7 @@ public class Braintree {
      * @param resultCode Result code from the Pay With PayPal flow.
      * @param data Intent returned from Pay With PayPal flow.
      */
+    @Deprecated
     public synchronized void finishPayWithPayPal(int resultCode, Intent data) {
         try {
             PayPalAccountBuilder payPalAccountBuilder = mBraintreeApi.handlePayPalResponse(null, resultCode, data);
@@ -702,7 +704,8 @@ public class Braintree {
             @Override
             public void run() {
                 try {
-                    ThreeDSecureLookup threeDSecureLookup = mBraintreeApi.threeDSecureLookup(nonce, amount);
+                    ThreeDSecureLookup threeDSecureLookup = mBraintreeApi.threeDSecureLookup(nonce,
+                            amount);
                     if (threeDSecureLookup.getAcsUrl() != null) {
                         Intent intent = new Intent(activity, ThreeDSecureWebViewActivity.class)
                                 .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup);
@@ -753,6 +756,35 @@ public class Braintree {
                 postUnrecoverableErrorToListeners(new BraintreeException(authenticationResponse.getException()));
             } else {
                 postRecoverableErrorToListeners(new ErrorWithResponse(422, authenticationResponse.getErrors()));
+            }
+        }
+    }
+
+    /**
+     * Handles processing of any Braintree associated activity results and posts
+     * {@link PaymentMethod}s or nonces to listeners as appropriate.
+     *
+     * @param activity The activity that received the {@link Activity#onActivityResult(int, int, Intent)}
+     * @param requestCode The requestCode received in {@link Activity#onActivityResult(int, int, Intent)}
+     * @param responseCode The responseCode received in {@link Activity#onActivityResult(int, int, Intent)}
+     * @param data The {@link Intent} received in {@link Activity#onActivityResult(int, int, Intent)}
+     */
+    public void onActivityResult(Activity activity, int requestCode, int responseCode, Intent data) {
+        if (PayPalHelper.isPayPalIntent(data)) {
+            if (responseCode == Activity.RESULT_OK) {
+                finishPayWithPayPal(activity, responseCode, data);
+            }
+        } else if (AndroidPay.isFullWalletResponse(data)) {
+            if (responseCode == Activity.RESULT_OK) {
+                finishPayWithAndroidPay(responseCode, data);
+            }
+        } else if (VenmoAppSwitch.isVenmoAppSwitchResponse(data)) {
+            if (responseCode == Activity.RESULT_OK) {
+                finishPayWithVenmo(responseCode, data);
+            }
+        } else if (ThreeDSecureAuthenticationResponse.isThreeDSecureAuthenticationResponse(data)) {
+            if (responseCode == Activity.RESULT_OK) {
+                finishThreeDSecureVerification(responseCode, data);
             }
         }
     }
@@ -853,12 +885,18 @@ public class Braintree {
      * Sends analytics event to send to the Braintree analytics service. Used internally and by Drop-In.
      * @param event Name of event to be sent.
      * @param integrationType The type of integration used. Should be "custom" for those directly
-     * using {@link Braintree} or {@link BraintreeApi} without Drop-In
+     *                        using {@link Braintree} or {@link BraintreeApi} without Drop-In
      */
+    @Deprecated
     public synchronized void sendAnalyticsEvent(String event, String integrationType) {
         sendAnalyticsEventHelper(event, integrationType);
     }
 
+    /**
+     * Sends analytics event to the Braintree analytics service.
+     *
+     * @param eventFragment Event to be sent.
+     */
     public synchronized void sendAnalyticsEvent(String eventFragment) {
         sendAnalyticsEventHelper(analyticsPrefix() + "." + eventFragment, getIntegrationType());
     }

@@ -1,11 +1,13 @@
 package com.braintreepayments.api.models;
 
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.exceptions.ErrorWithResponse.BraintreeError;
 import com.braintreepayments.api.exceptions.ErrorWithResponse.BraintreeErrors;
+import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
@@ -24,6 +26,17 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
     @SerializedName("exception") private String mException;
 
     public ThreeDSecureAuthenticationResponse() {}
+
+    /**
+     * Checks the given {@link Intent} to see if it contains a {@link ThreeDSecureAuthenticationResponse}.
+     *
+     * @param intent The {@link Intent} to check.
+     * @return {@code true} is the {@link Intent} contains a {@link ThreeDSecureWebViewActivity#EXTRA_THREE_D_SECURE_RESULT},
+     *         {@code false} otherwise.
+     */
+    public static boolean isThreeDSecureAuthenticationResponse(Intent intent) {
+        return intent.hasExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT);
+    }
 
     /**
      * Used to parse a response from the Braintree Gateway to be used for 3D Secure

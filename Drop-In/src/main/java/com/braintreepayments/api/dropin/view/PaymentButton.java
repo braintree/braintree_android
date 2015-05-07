@@ -163,17 +163,21 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
     }
 
     /**
+     * @deprecated Use {@link Braintree#onActivityResult(Activity, int, int, Intent)} instead.
+     *
      * Extracts payment information from activity results and posts {@link com.braintreepayments.api.models.PaymentMethod}s
      * or nonces to listeners as appropriate.
+     *
      * @param requestCode Request code from {@link Activity#onActivityResult(int, int, android.content.Intent)}
      * @param resultCode Result code from {@link Activity#onActivityResult(int, int, android.content.Intent)}
      * @param data {@link android.content.Intent} from {@link Activity#onActivityResult(int, int, android.content.Intent)}
      */
+    @Deprecated
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == mRequestCode && resultCode == Activity.RESULT_OK) {
             if (PayPalHelper.isPayPalIntent(data)) {
                 mBraintree.finishPayWithPayPal(mActivity, resultCode, data);
-            } else if (AndroidPay.isAndroidPayIntent(data)) {
+            } else if (AndroidPay.isFullWalletResponse(data)) {
                 mBraintree.finishPayWithAndroidPay(resultCode, data);
             } else {
                 mBraintree.finishPayWithVenmo(resultCode, data);

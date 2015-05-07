@@ -12,6 +12,7 @@ import com.braintreepayments.api.dropin.R;
  * A skinned {@link android.widget.ImageButton} intended for launching the Pay With PayPal flow.
  * No behavior outside of appearance is included by default.
  */
+@Deprecated
 public class PayPalButton extends ImageButton {
 
     public PayPalButton(Context context) {

@@ -24,7 +24,9 @@ import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
+import com.google.android.gms.wallet.WalletConstants;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
+import com.paypal.android.sdk.payments.PayPalProfileSharingActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,11 +46,14 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class BraintreeTest extends AndroidTestCase {
@@ -918,6 +923,68 @@ public class BraintreeTest extends AndroidTestCase {
         Braintree braintree = Braintree.restoreSavedInstanceState(mContext, bundle);
         assertTrue(braintree != null);
         assertTrue(Braintree.sInstances.size() == 1);
+    }
+
+    public void testOnActivityResultHandlesPayPalResults() {
+        Braintree braintree = spy(mBraintree);
+        doNothing().when(braintree).finishPayWithPayPal(any(Activity.class), anyInt(),
+                any(Intent.class));
+        int requestCode = 10;
+        int responseCode = Activity.RESULT_OK;
+        Intent intent = new Intent().putExtra(PayPalProfileSharingActivity.EXTRA_RESULT_AUTHORIZATION, "");
+
+        braintree.onActivityResult(null, requestCode, responseCode, intent);
+
+        verify(braintree).finishPayWithPayPal(null, responseCode, intent);
+    }
+
+    public void testOnActivityResultHandlesAndroidPayResults() {
+        Braintree braintree = spy(mBraintree);
+        doNothing().when(braintree).finishPayWithAndroidPay(anyInt(), any(Intent.class));
+        int requestCode = 10;
+        int responseCode = Activity.RESULT_OK;
+        Intent intent = new Intent().putExtra(WalletConstants.EXTRA_FULL_WALLET, "");
+
+        braintree.onActivityResult(null, requestCode, responseCode, intent);
+
+        verify(braintree).finishPayWithAndroidPay(responseCode, intent);
+    }
+
+    public void testOnActivityResultHandlesVenmoResults() {
+        Braintree braintree = spy(mBraintree);
+        doNothing().when(braintree).finishPayWithVenmo(anyInt(), any(Intent.class));
+        int requestCode = 10;
+        int responseCode = Activity.RESULT_OK;
+        Intent intent = new Intent().putExtra(AppSwitch.EXTRA_PAYMENT_METHOD_NONCE, "");
+
+        braintree.onActivityResult(null, requestCode, responseCode, intent);
+
+        verify(braintree).finishPayWithVenmo(responseCode, intent);
+    }
+
+    public void testOnActivityResultHandlesThreeDSecureResults() {
+        Braintree braintree = spy(mBraintree);
+        doNothing().when(braintree).finishThreeDSecureVerification(anyInt(), any(Intent.class));
+        int requestCode = 10;
+        int responseCode = Activity.RESULT_OK;
+        Intent intent = new Intent().putExtra(
+                ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT, "");
+
+        braintree.onActivityResult(null, requestCode, responseCode, intent);
+
+        verify(braintree).finishThreeDSecureVerification(responseCode, intent);
+    }
+
+    public void testOnActivityResultDoesNothingForUnknownActivity() {
+        Braintree braintree = spy(mBraintree);
+        int requestCode = 10;
+        int resultCode = Activity.RESULT_OK;
+        Intent intent = new Intent();
+
+        braintree.onActivityResult(null, requestCode, resultCode, intent);
+
+        verify(braintree).onActivityResult(null, requestCode, resultCode, intent);
+        verifyNoMoreInteractions(braintree);
     }
 
     /** helper to synchronously create a credit card */
