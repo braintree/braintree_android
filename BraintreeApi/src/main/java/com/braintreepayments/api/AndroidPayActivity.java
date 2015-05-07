@@ -60,7 +60,7 @@ public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
                 .addOnConnectionFailedListener(this)
                 .addApi(Wallet.API, new Wallet.WalletOptions.Builder()
                         .setEnvironment(environment)
-                        .setTheme(WalletConstants.THEME_HOLO_LIGHT)
+                        .setTheme(WalletConstants.THEME_LIGHT)
                         .build())
                 .build();
         mGoogleApiClient.connect();
