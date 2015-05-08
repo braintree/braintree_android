@@ -18,9 +18,9 @@ end
 
 def handle_command_request(command)
   if command == 'install fakewallet'
-    puts `./gradlew :FakeWallet:installDebug`
+    `./gradlew :FakeWallet:installDebug > /dev/null`
   elsif command == 'uninstall fakewallet'
-    puts `adb uninstall com.braintreepayments.fake.wallet`
+    `adb uninstall com.braintreepayments.fake.wallet > /dev/null`
   end
 end
 
