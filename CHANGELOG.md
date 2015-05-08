@@ -6,7 +6,7 @@
 * Move `CardForm` to [separate repo](https://github.com/braintree/android-card-form)
 * Deprecate `Braintree#getInstance` in favor of `Braintree#setup`
 * Fixes
-  * Remove metadata from assets, fixes [#16](#16)
+  * Remove metadata from assets, fixes [#16](https://github.com/braintree/braintree_android/issues/16)
 
 ## 1.4.0
 
