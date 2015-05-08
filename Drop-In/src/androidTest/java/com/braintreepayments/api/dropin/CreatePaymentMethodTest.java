@@ -272,7 +272,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     public void testBackButtonDuringPayPalAddDoesNothing() {
         String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
         injectSlowBraintree(mContext, clientToken, FIVE_SECONDS);
-        setUpActivityTest(this, clientToken);
+        setClientTokenExtraForTest(this, clientToken);
         getActivity();
 
         fillInOfflinePayPal();

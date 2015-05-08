@@ -191,8 +191,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         int timeout = FOUR_SECONDS;
         String clientToken = new TestClientTokenBuilder().build();
         injectSlowBraintree(mContext, clientToken, timeout);
-        setUpActivityTest(this, clientToken);
-
+        setClientTokenExtraForTest(this, clientToken);
         getActivity();
 
         waitForAddPaymentFormHeader(timeout * 4);
@@ -214,9 +213,9 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
 
         String clientToken = new TestClientTokenBuilder().build();
         injectSlowBraintree(mContext, clientToken, THREE_SECONDS);
-        setUpActivityTest(this, clientToken);
-
+        setClientTokenExtraForTest(this, clientToken);
         getActivity();
+
         waitForAddPaymentFormHeader();
         rotateToLandscape(this);
         onCardField().perform(typeText(AMEX), closeSoftKeyboard());
