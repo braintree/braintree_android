@@ -1,5 +1,13 @@
 # Braintree Android SDK Release Notes
 
+## 1.5.0
+
+* Update PayPal SDK to 2.9.4
+* Move `CardForm` to [separate repo](https://github.com/braintree/android-card-form)
+* Deprecate `Braintree#getInstance` in favor of `Braintree#setup`
+* Fixes
+  * Remove metadata from assets, fixes [#16](#16)
+
 ## 1.4.0
 
 * Update gradle plugin to 1.1.2

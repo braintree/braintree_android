@@ -21,7 +21,7 @@ android {
 
 dependencies {
     compile 'com.braintreepayments:card-form:1.4.0'
-    compile project(':BraintreeApi')
+    compile 'com.braintreepayments.api:braintree-api:1.5.0'
 
     androidTestCompile project(':TestUtils')
 }
