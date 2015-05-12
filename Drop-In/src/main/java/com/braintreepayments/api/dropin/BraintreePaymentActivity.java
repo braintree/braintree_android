@@ -166,8 +166,7 @@ public class BraintreePaymentActivity extends Activity implements
         super.onResume();
 
         if (mBraintree != null) {
-            mBraintree.addListener(this);
-            mBraintree.unlockListeners();
+            mBraintree.onResume(this);
         }
     }
 
@@ -175,8 +174,7 @@ public class BraintreePaymentActivity extends Activity implements
         super.onPause();
 
         if (mBraintree != null) {
-            mBraintree.lockListeners();
-            mBraintree.removeListener(this);
+            mBraintree.onPause(this);
         }
     }
 

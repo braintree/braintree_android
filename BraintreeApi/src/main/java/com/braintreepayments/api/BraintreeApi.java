@@ -257,8 +257,10 @@ public class BraintreeApi {
         mAndroidPay.performFullWalletRequest(activity, requestCode, googleTransactionId);
     }
 
-    protected void disconnectionGoogleApiClient() {
-        mAndroidPay.disconnect();
+    protected void disconnectGoogleApiClient() {
+        if (mAndroidPay != null) {
+            mAndroidPay.disconnect();
+        }
     }
 
     /**

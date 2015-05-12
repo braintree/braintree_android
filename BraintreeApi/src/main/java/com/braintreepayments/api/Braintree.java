@@ -393,6 +393,37 @@ public class Braintree {
     }
 
     /**
+     * To be called in {@link Activity#onResume()} each time the {@link Activity} is resumed.
+     * Handles adding listeners if the {@link Activity} implements listeners as well as unlocking
+     * the listeners (see {@link Braintree#unlockListeners()}.
+     *
+     * @param activity The {@link Activity} that is being resumed.
+     */
+    public synchronized void onResume(Activity activity) {
+        if (activity instanceof Listener) {
+            addListener((Listener) activity);
+        }
+        unlockListeners();
+    }
+
+    /**
+     * To be called in {@link Activity#onPause()} each time the {@link Activity} is paused. Handles
+     * locking (see {@link Braintree#lockListeners()}) and removing listeners if the {@link Activity}
+     * implements the listeners. Also handles disconnecting the
+     * {@link com.google.android.gms.common.api.GoogleApiClient} if {@link Braintree} has an active
+     * connection to it.
+     *
+     * @param activity The {@link Activity} that is being paused.
+     */
+    public synchronized void onPause(Activity activity) {
+        lockListeners();
+        if (activity instanceof Listener) {
+            removeListener((Listener) activity);
+        }
+        mBraintreeApi.disconnectGoogleApiClient();
+    }
+
+    /**
      * Retrieves the current list of {@link com.braintreepayments.api.models.PaymentMethod} for this device and client token.
      *
      * When finished, the {@link java.util.List} of {@link com.braintreepayments.api.models.PaymentMethod}s
@@ -667,7 +698,7 @@ public class Braintree {
     public synchronized void getNonceFromAndroidPayFullWalletResponse(int responseCode, Intent data) {
         if (responseCode == Activity.RESULT_OK) {
             try {
-                mBraintreeApi.disconnectionGoogleApiClient();
+                mBraintreeApi.disconnectGoogleApiClient();
 
                 AndroidPayCard androidPayCard =
                         mBraintreeApi.getNonceFromAndroidPayFullWalletResponse(data);

@@ -23,6 +23,7 @@ import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
+import com.braintreepayments.test.TestListenerActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.WalletConstants;
@@ -1004,6 +1005,35 @@ public class BraintreeTest extends AndroidTestCase {
 
         verify(braintree).onActivityResult(null, requestCode, resultCode, intent);
         verifyNoMoreInteractions(braintree);
+    }
+
+    public void testOnResumeAddsListenersAndUnlocksListeners() {
+        Braintree braintree = spy(new Braintree(null, mock(BraintreeApi.class)));
+        Activity listenerActivity = mock(TestListenerActivity.class);
+
+        braintree.onResume(listenerActivity);
+
+        verify(braintree).addListener((PaymentMethodNonceListener) listenerActivity);
+        verify(braintree).unlockListeners();
+    }
+
+    public void testOnPauseLocksListenersAndRemovesListeners() {
+        Braintree braintree = spy(new Braintree(null, mock(BraintreeApi.class)));
+        Activity listenerActivity = mock(TestListenerActivity.class);
+
+        braintree.onPause(listenerActivity);
+
+        verify(braintree).lockListeners();
+        verify(braintree).removeListener((PaymentMethodNonceListener) listenerActivity);
+    }
+
+    public void testOnPauseDisconnectsGoogleApiClient() {
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        Braintree braintree = new Braintree(null, braintreeApi);
+
+        braintree.onPause(null);
+
+        verify(braintreeApi).disconnectGoogleApiClient();
     }
 
     /** helper to synchronously create a credit card */
