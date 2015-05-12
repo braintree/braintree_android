@@ -24,6 +24,7 @@ import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
+import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.WalletConstants;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 import com.paypal.android.sdk.payments.PayPalProfileSharingActivity;
@@ -47,6 +48,7 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -938,16 +940,33 @@ public class BraintreeTest extends AndroidTestCase {
         verify(braintree).finishPayWithPayPal(null, responseCode, intent);
     }
 
-    public void testOnActivityResultHandlesAndroidPayResults() {
+    public void testOnActivityResultHandlesAndroidPayMaskedWalletResults() {
+        int requestCode = 10;
+        int responseCode = Activity.RESULT_OK;
+        Intent intent = new Intent().putExtra(WalletConstants.EXTRA_MASKED_WALLET, "");
+
         Braintree braintree = spy(mBraintree);
-        doNothing().when(braintree).finishPayWithAndroidPay(anyInt(), any(Intent.class));
+        doReturn(null).when(braintree).getAndroidPayGoogleTransactionId(intent);
+        doNothing().when(braintree).performAndroidPayFullWalletRequest(any(Activity.class),
+                anyInt(), any(Cart.class), anyString());
+
+        braintree.onActivityResult(null, requestCode, responseCode, intent);
+
+        verify(braintree).performAndroidPayFullWalletRequest(null, requestCode, null, null);
+    }
+
+    public void testOnActivityResultHandlesAndroidPayFullWalletResults() {
         int requestCode = 10;
         int responseCode = Activity.RESULT_OK;
         Intent intent = new Intent().putExtra(WalletConstants.EXTRA_FULL_WALLET, "");
 
+        Braintree braintree = spy(mBraintree);
+        doNothing().when(braintree).getNonceFromAndroidPayFullWalletResponse(Activity.RESULT_OK,
+                intent);
+
         braintree.onActivityResult(null, requestCode, responseCode, intent);
 
-        verify(braintree).finishPayWithAndroidPay(responseCode, intent);
+        verify(braintree).getNonceFromAndroidPayFullWalletResponse(responseCode, intent);
     }
 
     public void testOnActivityResultHandlesVenmoResults() {

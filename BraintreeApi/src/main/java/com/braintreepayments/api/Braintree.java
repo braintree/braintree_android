@@ -15,16 +15,20 @@ import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.exceptions.UnexpectedException;
+import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
-import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
 import com.google.android.gms.wallet.Cart;
+import com.google.android.gms.wallet.FullWallet;
+import com.google.android.gms.wallet.MaskedWallet;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
+import com.google.android.gms.wallet.WalletConstants;
 
 import org.json.JSONException;
 
@@ -596,25 +600,77 @@ public class Braintree {
         return mBraintreeApi.getAndroidPayTokenizationParameters();
     }
 
-    public void startPayWithAndroidPay(Activity activity, int requestCode, Cart cart) {
-        startPayWithAndroidPay(activity, requestCode, cart, false, false, false);
-    }
-
-    public void startPayWithAndroidPay(Activity activity, int requestCode, Cart cart,
-            boolean isBillingAgreement, boolean shippingAddressRequired,
-            boolean phoneNumberRequired) {
-        try {
-            mBraintreeApi.startPayWithAndroidPay(activity, requestCode, cart, isBillingAgreement,
-                    shippingAddressRequired, phoneNumberRequired);
-        } catch (InvalidArgumentException e) {
-            postUnrecoverableErrorToListeners(e);
+    public String getAndroidPayGoogleTransactionId(Intent data) {
+        if (AndroidPay.isMaskedWalletResponse(data)) {
+            return ((MaskedWallet) data.getParcelableExtra(WalletConstants.EXTRA_MASKED_WALLET))
+                    .getGoogleTransactionId();
+        } else if (AndroidPay.isFullWalletResponse(data)) {
+            return ((FullWallet) data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET))
+                    .getGoogleTransactionId();
+        } else {
+            return null;
         }
     }
 
-    public synchronized void finishPayWithAndroidPay(int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
+    public void performAndroidPayMaskedWalletRequest(Activity activity, int requestCode, Cart cart) {
+        performAndroidPayMaskedWalletRequest(activity, requestCode, cart, false, false, false);
+    }
+
+    public synchronized void performAndroidPayMaskedWalletRequest(final Activity activity,
+            final int requestCode, final Cart cart, final boolean isBillingAgreement, final boolean shippingAddressRequired,
+            final boolean phoneNumberRequired) {
+        mExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mBraintreeApi.performAndroidPayMaskedWalletRequest(activity, requestCode, cart,
+                            isBillingAgreement, shippingAddressRequired, phoneNumberRequired);
+                } catch (InvalidArgumentException e) {
+                    postUnrecoverableErrorToListeners(e);
+                } catch (UnexpectedException e) {
+                    postUnrecoverableErrorToListeners(e);
+                }
+            }
+        });
+    }
+
+    public synchronized void performAndroidPayChangeMaskedWalletRequest(final Activity activity,
+            final int requestCode, final String googleTransactionId) {
+        mExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mBraintreeApi.performAndroidPayChangeMaskedWalletRequest(activity, requestCode,
+                            googleTransactionId);
+                } catch (UnexpectedException e) {
+                    postUnrecoverableErrorToListeners(e);
+                }
+            }
+        });
+    }
+
+    public synchronized void performAndroidPayFullWalletRequest(final Activity activity,
+            final int requestCode, final Cart cart, final String googleTransactionId) {
+        mExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mBraintreeApi.performAndroidPayFullWalletRequest(activity, requestCode, cart,
+                            googleTransactionId);
+                } catch (UnexpectedException e) {
+                    postUnrecoverableErrorToListeners(e);
+                }
+            }
+        });
+    }
+
+    public synchronized void getNonceFromAndroidPayFullWalletResponse(int responseCode, Intent data) {
+        if (responseCode == Activity.RESULT_OK) {
             try {
-                AndroidPayCard androidPayCard = mBraintreeApi.finishPayWithAndroidPay(data);
+                mBraintreeApi.disconnectionGoogleApiClient();
+
+                AndroidPayCard androidPayCard =
+                        mBraintreeApi.getNonceFromAndroidPayFullWalletResponse(data);
                 if (androidPayCard != null) {
                     addPaymentMethodToCache(androidPayCard);
                     postCreatedMethodToListeners(androidPayCard);
@@ -774,9 +830,14 @@ public class Braintree {
             if (responseCode == Activity.RESULT_OK) {
                 finishPayWithPayPal(activity, responseCode, data);
             }
+        } else if (AndroidPay.isMaskedWalletResponse(data)) {
+            if (responseCode == Activity.RESULT_OK) {
+                performAndroidPayFullWalletRequest(activity, requestCode, null,
+                        getAndroidPayGoogleTransactionId(data));
+            }
         } else if (AndroidPay.isFullWalletResponse(data)) {
             if (responseCode == Activity.RESULT_OK) {
-                finishPayWithAndroidPay(responseCode, data);
+                getNonceFromAndroidPayFullWalletResponse(responseCode, data);
             }
         } else if (VenmoAppSwitch.isVenmoAppSwitchResponse(data)) {
             if (responseCode == Activity.RESULT_OK) {

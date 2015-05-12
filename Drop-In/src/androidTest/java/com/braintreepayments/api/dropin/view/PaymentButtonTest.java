@@ -7,17 +7,16 @@ import android.os.Parcelable;
 import android.test.AndroidTestCase;
 import android.view.View;
 
+import com.braintreepayments.api.AppSwitch;
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.dropin.R;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.WalletConstants;
 import com.paypal.android.sdk.payments.PayPalTouchActivity;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class PaymentButtonTest extends AndroidTestCase {
@@ -173,36 +172,33 @@ public class PaymentButtonTest extends AndroidTestCase {
         button.setAndroidPayOptions(cart, true, true, true);
         button.initialize(null, mBraintree);
         button.findViewById(R.id.bt_android_pay_button).performClick();
-        verify(mBraintree).startPayWithAndroidPay(null, PaymentButton.REQUEST_CODE, cart, true, true, true);
+        verify(mBraintree).performAndroidPayMaskedWalletRequest(null, PaymentButton.REQUEST_CODE,
+                cart, true, true, true);
     }
 
     public void testDoesNotLaunchFinishMethodsOnNonOkResponses() {
         PaymentButton button = new PaymentButton(getContext());
 
-        button.onActivityResult(PaymentButton.REQUEST_CODE, Activity.RESULT_CANCELED, new Intent());
-        verify(mBraintree, never()).finishPayWithPayPal(any(Activity.class), anyInt(), any(Intent.class));
-        verify(mBraintree, never()).finishPayWithVenmo(anyInt(), any(Intent.class));
-        verify(mBraintree, never()).finishPayWithAndroidPay(anyInt(), any(Intent.class));
+        Intent intent = new Intent();
+        button.onActivityResult(PaymentButton.REQUEST_CODE, Activity.RESULT_CANCELED, intent);
+        verifyNoMoreInteractions(mBraintree);
     }
 
     public void testDoesNotLaunchFinishMethodsOnUnknownRequestCode() {
         PaymentButton button = new PaymentButton(getContext());
 
-        button.onActivityResult(PaymentButton.REQUEST_CODE - 1, Activity.RESULT_CANCELED, new Intent());
-        verify(mBraintree, never()).finishPayWithPayPal(any(Activity.class), anyInt(), any(Intent.class));
-        verify(mBraintree, never()).finishPayWithVenmo(anyInt(), any(Intent.class));
-        verify(mBraintree, never()).finishPayWithAndroidPay(anyInt(), any(Intent.class));
+        Intent intent = new Intent();
+        button.onActivityResult(PaymentButton.REQUEST_CODE - 1, Activity.RESULT_CANCELED, intent);
+        verifyNoMoreInteractions(mBraintree);
     }
 
     public void testAllowsRequestCodeOverride() {
         PaymentButton button = new PaymentButton(getContext());
 
         button.initialize(null, mBraintree, 500);
-        button.onActivityResult(500, Activity.RESULT_OK, new Intent());
-        verify(mBraintree, never()).finishPayWithPayPal(any(Activity.class), anyInt(),
-                any(Intent.class));
-        verify(mBraintree, never()).finishPayWithAndroidPay(anyInt(), any(Intent.class));
-        verify(mBraintree).finishPayWithVenmo(anyInt(), any(Intent.class));
+        Intent intent = new Intent().putExtra(AppSwitch.EXTRA_PAYMENT_METHOD_NONCE, "");
+        button.onActivityResult(500, Activity.RESULT_OK, intent);
+        verify(mBraintree).onActivityResult(null, 500, Activity.RESULT_OK, intent);
     }
 
     public void testFinishesPayPalOnPayPalIntent() {
@@ -212,19 +208,18 @@ public class PaymentButtonTest extends AndroidTestCase {
         Intent intent = new Intent()
                 .putExtra(PayPalTouchActivity.EXTRA_LOGIN_CONFIRMATION, newParcelable());
         button.onActivityResult(PaymentButton.REQUEST_CODE, Activity.RESULT_OK, intent);
-        verify(mBraintree).finishPayWithPayPal(null, Activity.RESULT_OK, intent);
-        verify(mBraintree, never()).finishPayWithVenmo(anyInt(), any(Intent.class));
-        verify(mBraintree, never()).finishPayWithAndroidPay(anyInt(), any(Intent.class));
+        verify(mBraintree).onActivityResult(null, PaymentButton.REQUEST_CODE, Activity.RESULT_OK,
+                intent);
     }
 
     public void testFinishesVenmo() {
         PaymentButton button = new PaymentButton(getContext());
         button.initialize(null, mBraintree);
 
-        Intent intent = new Intent();
+        Intent intent = new Intent().putExtra(AppSwitch.EXTRA_PAYMENT_METHOD_NONCE, "");
         button.onActivityResult(PaymentButton.REQUEST_CODE, Activity.RESULT_OK, intent);
-        verify(mBraintree, never()).finishPayWithPayPal(any(Activity.class), anyInt(), any(Intent.class));
-        verify(mBraintree).finishPayWithVenmo(Activity.RESULT_OK, intent);
+        verify(mBraintree).onActivityResult(null, PaymentButton.REQUEST_CODE, Activity.RESULT_OK,
+                intent);
     }
 
     public void testFinishesAndroidPayOnAndroidPayIntent() {
@@ -232,11 +227,10 @@ public class PaymentButtonTest extends AndroidTestCase {
         button.initialize(null, mBraintree);
 
         Intent intent = new Intent()
-                .putExtra(WalletConstants.EXTRA_FULL_WALLET, newParcelable());
+                .putExtra(WalletConstants.EXTRA_MASKED_WALLET, newParcelable());
         button.onActivityResult(PaymentButton.REQUEST_CODE, Activity.RESULT_OK, intent);
-        verify(mBraintree).finishPayWithAndroidPay(Activity.RESULT_OK, intent);
-        verify(mBraintree, never()).finishPayWithPayPal(any(Activity.class), anyInt(), any(Intent.class));
-        verify(mBraintree, never()).finishPayWithVenmo(anyInt(), any(Intent.class));
+        verify(mBraintree).onActivityResult(null, PaymentButton.REQUEST_CODE, Activity.RESULT_OK,
+                intent);
     }
 
     private Parcelable newParcelable() {

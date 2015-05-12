@@ -15,6 +15,7 @@ import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.exceptions.ServerException;
+import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
 import com.braintreepayments.api.models.AnalyticsRequest;
@@ -55,6 +56,7 @@ public class BraintreeApi {
     private HttpRequest mHttpRequest;
 
     private VenmoAppSwitch mVenmoAppSwitch;
+    private AndroidPay mAndroidPay;
     private BraintreeData mBraintreeData;
 
     /**
@@ -208,28 +210,55 @@ public class BraintreeApi {
     }
 
     protected PaymentMethodTokenizationParameters getAndroidPayTokenizationParameters() {
-        return new AndroidPay(mConfiguration, null).getTokenizationParameters();
+        if (mAndroidPay == null) {
+            mAndroidPay = new AndroidPay(mConfiguration);
+        }
+
+        return mAndroidPay.getTokenizationParameters();
     }
 
-    protected void startPayWithAndroidPay(Activity activity, int requestCode, Cart cart,
+    protected void performAndroidPayMaskedWalletRequest(Activity activity, int requestCode, Cart cart,
             boolean isBillingAgreement, boolean shippingAddressRequired,
-            boolean phoneNumberRequired) throws InvalidArgumentException {
+            boolean phoneNumberRequired) throws InvalidArgumentException, UnexpectedException {
         if (isBillingAgreement && cart != null) {
             throw new InvalidArgumentException("The cart must be null when isBillingAgreement is true");
         } else if(!isBillingAgreement && cart == null) {
             throw new InvalidArgumentException("Cart cannot be null unless isBillingAgreement is true");
         }
 
-        Gson gson = new Gson();
-        Intent intent = new Intent(activity, AndroidPayActivity.class)
-                .putExtra(AndroidPayActivity.EXTRA_CLIENT_TOKEN, gson.toJson(mClientToken))
-                .putExtra(AndroidPayActivity.EXTRA_CONFIGURATION, gson.toJson(mConfiguration))
-                .putExtra(AndroidPayActivity.EXTRA_CART, cart)
-                .putExtra(AndroidPayActivity.EXTRA_IS_BILLING_AGREEMENT, isBillingAgreement)
-                .putExtra(AndroidPayActivity.EXTRA_SHIPPING_ADDRESS_REQUIRED, shippingAddressRequired)
-                .putExtra(AndroidPayActivity.EXTRA_PHONE_NUMBER_REQUIRED, phoneNumberRequired);
+        if (mAndroidPay == null) {
+            mAndroidPay = new AndroidPay(mConfiguration);
+        }
 
-        activity.startActivityForResult(intent, requestCode);
+        mAndroidPay.setCart(cart);
+        mAndroidPay.performMaskedWalletRequest(activity, requestCode, isBillingAgreement,
+                shippingAddressRequired, phoneNumberRequired);
+    }
+
+    protected void performAndroidPayChangeMaskedWalletRequest(Activity activity, int requestCode,
+            String googleTransactionId) throws UnexpectedException {
+        if (mAndroidPay == null) {
+            mAndroidPay = new AndroidPay(mConfiguration);
+        }
+
+        mAndroidPay.performChangeMaskedWalletRequest(activity, requestCode, googleTransactionId);
+    }
+
+    protected void performAndroidPayFullWalletRequest(Activity activity, int requestCode, Cart cart,
+            String googleTransactionId) throws UnexpectedException {
+        if (mAndroidPay == null) {
+            mAndroidPay = new AndroidPay(mConfiguration);
+        }
+
+        if (cart != null) {
+            mAndroidPay.setCart(cart);
+        }
+
+        mAndroidPay.performFullWalletRequest(activity, requestCode, googleTransactionId);
+    }
+
+    protected void disconnectionGoogleApiClient() {
+        mAndroidPay.disconnect();
     }
 
     /**
@@ -310,7 +339,7 @@ public class BraintreeApi {
         return mVenmoAppSwitch.handleAppSwitchResponse(resultCode, data);
     }
 
-    protected AndroidPayCard finishPayWithAndroidPay(Intent data) throws JSONException {
+    protected AndroidPayCard getNonceFromAndroidPayFullWalletResponse(Intent data) throws JSONException {
         if (data.hasExtra(WalletConstants.EXTRA_FULL_WALLET)) {
             FullWallet fullWallet = data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET);
             String cardJson = new JSONObject(fullWallet.getPaymentMethodToken().getToken())

@@ -9,7 +9,6 @@ import android.test.AndroidTestCase;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
@@ -19,18 +18,13 @@ import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
-import com.google.android.gms.wallet.Cart;
-import com.google.gson.Gson;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 
 import org.json.JSONException;
-import org.mockito.ArgumentCaptor;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.braintreepayments.testutils.CardNumber.VISA;
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.matches;
@@ -192,54 +186,5 @@ public class BraintreeApiTest extends AndroidTestCase {
         assertEquals("v1", tokenizationParameters.getString("braintree:apiVersion"));
         assertEquals(BuildConfig.VERSION_NAME, tokenizationParameters.getString(
                 "braintree:sdkVersion"));
-    }
-
-    public void testStartPayWithAndroidPayIncludesAllParametersForBillingAgreement() throws InvalidArgumentException {
-        ArgumentCaptor<Intent> launchIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        Activity mockActivity = mock(Activity.class);
-
-        String clientTokenString = new Gson().toJson(
-                ClientToken.fromString(stringFromFixture(mContext, "client_token.json")));
-        String configurationString = new Gson().toJson(
-                Configuration.fromJson(stringFromFixture(mContext, "configuration_with_android_pay.json")));
-        BraintreeApi braintreeApi = new BraintreeApi(mContext,
-                ClientToken.fromString(clientTokenString), Configuration.fromJson(configurationString),
-                null);
-
-        braintreeApi.startPayWithAndroidPay(mockActivity, 2737, null, true, true, true);
-
-        verify(mockActivity).startActivityForResult(launchIntentCaptor.capture(), anyInt());
-        Intent launchIntent = launchIntentCaptor.getValue();
-        assertEquals(clientTokenString, launchIntent.getStringExtra(AndroidPayActivity.EXTRA_CLIENT_TOKEN));
-        assertEquals(configurationString, launchIntent.getStringExtra(AndroidPayActivity.EXTRA_CONFIGURATION));
-        assertEquals(null, launchIntent.getParcelableExtra(AndroidPayActivity.EXTRA_CART));
-        assertEquals(true, launchIntent.getBooleanExtra(AndroidPayActivity.EXTRA_IS_BILLING_AGREEMENT, false));
-        assertEquals(true, launchIntent.getBooleanExtra(AndroidPayActivity.EXTRA_SHIPPING_ADDRESS_REQUIRED, false));
-        assertEquals(true, launchIntent.getBooleanExtra(AndroidPayActivity.EXTRA_PHONE_NUMBER_REQUIRED, false));
-    }
-
-    public void testStartPayWithAndroidPayIncludesAllParametersForNonBillingAgreement() throws InvalidArgumentException {
-        ArgumentCaptor<Intent> launchIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        Activity mockActivity = mock(Activity.class);
-
-        String clientTokenString = new Gson().toJson(
-                ClientToken.fromString(stringFromFixture(mContext, "client_token.json")));
-        String configurationString = new Gson().toJson(
-                Configuration.fromJson(stringFromFixture(mContext, "configuration_with_android_pay.json")));
-        Cart cart = Cart.newBuilder().build();
-        BraintreeApi braintreeApi = new BraintreeApi(mContext,
-                ClientToken.fromString(clientTokenString), Configuration.fromJson(configurationString),
-                null);
-
-        braintreeApi.startPayWithAndroidPay(mockActivity, 2737, cart, false, true, true);
-
-        verify(mockActivity).startActivityForResult(launchIntentCaptor.capture(), anyInt());
-        Intent launchIntent = launchIntentCaptor.getValue();
-        assertEquals(clientTokenString, launchIntent.getStringExtra(AndroidPayActivity.EXTRA_CLIENT_TOKEN));
-        assertEquals(configurationString, launchIntent.getStringExtra(AndroidPayActivity.EXTRA_CONFIGURATION));
-        assertEquals(cart, launchIntent.getParcelableExtra(AndroidPayActivity.EXTRA_CART));
-        assertEquals(false, launchIntent.getBooleanExtra(AndroidPayActivity.EXTRA_IS_BILLING_AGREEMENT, false));
-        assertEquals(true, launchIntent.getBooleanExtra(AndroidPayActivity.EXTRA_SHIPPING_ADDRESS_REQUIRED, false));
-        assertEquals(true, launchIntent.getBooleanExtra(AndroidPayActivity.EXTRA_PHONE_NUMBER_REQUIRED, false));
     }
 }

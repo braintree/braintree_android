@@ -21,7 +21,7 @@ public class AndroidPayTest extends TestCase {
         when(configuration.getMerchantId()).thenReturn("android-pay-merchant-id");
         when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
 
-        AndroidPay androidPay = new AndroidPay(configuration, null);
+        AndroidPay androidPay = new AndroidPay(configuration);
         Bundle tokenizationParameters = androidPay.getTokenizationParameters().getParameters();
 
         assertEquals("braintree", tokenizationParameters.getString("gateway"));

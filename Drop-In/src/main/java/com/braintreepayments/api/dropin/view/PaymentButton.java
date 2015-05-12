@@ -10,9 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.braintreepayments.api.AndroidPay;
 import com.braintreepayments.api.Braintree;
-import com.braintreepayments.api.PayPalHelper;
 import com.braintreepayments.api.dropin.R;
 import com.google.android.gms.wallet.Cart;
 
@@ -155,8 +153,8 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
         } else if (v.getId() == R.id.bt_venmo_button) {
             mBraintree.startPayWithVenmo(mActivity, mRequestCode);
         } else if (v.getId() == R.id.bt_android_pay_button) {
-            mBraintree.startPayWithAndroidPay(mActivity, mRequestCode, mCart, mIsBillingAgreement,
-                    mShippingAddressRequired, mPhoneNumberRequired);
+            mBraintree.performAndroidPayMaskedWalletRequest(mActivity, mRequestCode, mCart,
+                    mIsBillingAgreement, mShippingAddressRequired, mPhoneNumberRequired);
         }
 
         performClick();
@@ -169,19 +167,13 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
      * or nonces to listeners as appropriate.
      *
      * @param requestCode Request code from {@link Activity#onActivityResult(int, int, android.content.Intent)}
-     * @param resultCode Result code from {@link Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param responseCode Result code from {@link Activity#onActivityResult(int, int, android.content.Intent)}
      * @param data {@link android.content.Intent} from {@link Activity#onActivityResult(int, int, android.content.Intent)}
      */
     @Deprecated
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == mRequestCode && resultCode == Activity.RESULT_OK) {
-            if (PayPalHelper.isPayPalIntent(data)) {
-                mBraintree.finishPayWithPayPal(mActivity, resultCode, data);
-            } else if (AndroidPay.isFullWalletResponse(data)) {
-                mBraintree.finishPayWithAndroidPay(resultCode, data);
-            } else {
-                mBraintree.finishPayWithVenmo(resultCode, data);
-            }
+    public void onActivityResult(int requestCode, int responseCode, Intent data) {
+        if (requestCode == mRequestCode) {
+            mBraintree.onActivityResult(mActivity, requestCode, responseCode, data);
         }
     }
 
