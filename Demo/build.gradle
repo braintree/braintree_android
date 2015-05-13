@@ -14,9 +14,14 @@ android {
     packagingOptions {
         exclude 'LICENSE.txt'
     }
+
+    lintOptions {
+        // Caused by Okio in OkHttp, should not fail lint
+        warning 'InvalidPackage'
+    }
 }
 
 dependencies {
-    compile 'com.loopj.android:android-async-http:1.4.4'
+    compile 'com.squareup.okhttp:okhttp:2.3.0'
     compile project(':Drop-In')
 }

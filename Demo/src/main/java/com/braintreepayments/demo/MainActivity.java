@@ -26,11 +26,16 @@ import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.Customization;
 import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.braintreepayments.demo.internal.BraintreeHttpRequest;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
 
 public class MainActivity extends Activity implements PaymentMethodNonceListener, ErrorListener,
         OnNavigationListener {
@@ -48,7 +53,7 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
     private static final String KEY_ENVIRONMENT = "environment";
 
     private SharedPreferences mPrefs;
-    private AsyncHttpClient mHttpClient;
+    private OkHttpClient mHttpClient;
 
     private String mClientToken;
     private Braintree mBraintree;
@@ -69,9 +74,8 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
         setContentView(R.layout.main);
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        mHttpClient = new AsyncHttpClient();
-        mHttpClient.setUserAgent("braintree/android-demo-app/" + BuildConfig.VERSION_NAME);
-        mHttpClient.addHeader("Accept", "application/json");
+        mHttpClient = new OkHttpClient();
+        mHttpClient.networkInterceptors().add(new BraintreeHttpRequest());
 
         // Warning, signature verification is disabled for this demo only, you should never
         // do this as it opens a security hole
@@ -191,22 +195,41 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
         }
     }
 
-    @SuppressWarnings("deprecation")
     private void getClientToken() {
-        mHttpClient.get(Settings.getClientTokenUrl(this), new AsyncHttpResponseHandler() {
+        Request getClientTokenRequest = new Request.Builder()
+                .url(Settings.getClientTokenUrl(this))
+                .build();
+
+        mHttpClient.newCall(getClientTokenRequest).enqueue(new Callback() {
             @Override
-            public void onSuccess(String response) {
-                try {
-                    setClientToken(new JSONObject(response).getString("client_token"));
-                } catch (JSONException e) {
-                    showDialog("Unable to decode client token");
-                }
+            public void onResponse(final Response response) throws IOException {
+                final String responseBody = response.body().string();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (response.isSuccessful()) {
+                            try {
+                                setClientToken(
+                                        new JSONObject(responseBody).getString("client_token"));
+                            } catch (JSONException e) {
+                                showDialog("Unable to decode client token");
+                            }
+                        } else {
+                            showDialog("Unable to get a client token. Response Code: " +
+                                    response.code() + " Response body: " + responseBody);
+                        }
+                    }
+                });
             }
 
             @Override
-            public void onFailure(int statusCode, Throwable error, String errorMessage) {
-                showDialog("Unable to get a client token. Status code: " + statusCode + ". Error:" +
-                        errorMessage);
+            public void onFailure(Request request, final IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showDialog("Unable to get a client token. Error:" + e.getMessage());
+                    }
+                });
             }
         });
     }
