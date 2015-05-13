@@ -112,68 +112,6 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
         outState.putInt(KEY_ENVIRONMENT, mEnvironment);
     }
 
-    @SuppressWarnings({"deprecation", "ConstantConditions"})
-    private void setupActionBar() {
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.environments, android.R.layout.simple_spinner_dropdown_item);
-        actionBar.setListNavigationCallbacks(adapter, this);
-        actionBar.setSelectedNavigationItem(mEnvironment);
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        if (mEnvironment != itemPosition) {
-            mEnvironment = itemPosition;
-            Settings.setEnvironment(this, itemPosition);
-            resetState();
-        }
-        return true;
-    }
-
-    private void resetState() {
-        enableButtons(false);
-        mCreateTransactionButton.setEnabled(false);
-        mNonceTextView.setText("");
-
-        mClientToken = null;
-        mBraintree = null;
-        mNonce = null;
-
-        getClientToken();
-    }
-
-    @SuppressWarnings("deprecation")
-    private void getClientToken() {
-        mHttpClient.get(Settings.getClientTokenUrl(this), new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(String response) {
-                try {
-                    setClientToken(new JSONObject(response).getString("client_token"));
-                } catch (JSONException e) {
-                    showDialog("Unable to decode client token");
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Throwable error, String errorMessage) {
-                showDialog("Unable to get a client token. Status code: " + statusCode + ". Error:" +
-                        errorMessage);
-            }
-        });
-    }
-
-    private void setClientToken(String clientToken) {
-        mClientToken = clientToken;
-        mBraintree = Braintree.getInstance(this, mClientToken);
-        mBraintree.addListener(this);
-
-        enableButtons(true);
-    }
-
     public void launchDropIn(View v) {
         Customization customization = new CustomizationBuilder()
                 .primaryDescription("Cart")
@@ -229,12 +167,6 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
         safelyCloseLoadingView();
     }
 
-    private void setPaymentMethodNonce(String paymentMethodNonce) {
-        mNonce = paymentMethodNonce;
-        mNonceTextView.setText(getString(R.string.nonce) + ": " + paymentMethodNonce);
-        mCreateTransactionButton.setEnabled(true);
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // required due to the conflicting Braintree instances in this unusual integration
@@ -259,6 +191,52 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
         }
     }
 
+    @SuppressWarnings("deprecation")
+    private void getClientToken() {
+        mHttpClient.get(Settings.getClientTokenUrl(this), new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(String response) {
+                try {
+                    setClientToken(new JSONObject(response).getString("client_token"));
+                } catch (JSONException e) {
+                    showDialog("Unable to decode client token");
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Throwable error, String errorMessage) {
+                showDialog("Unable to get a client token. Status code: " + statusCode + ". Error:" +
+                        errorMessage);
+            }
+        });
+    }
+
+    private void resetState() {
+        enableButtons(false);
+        mCreateTransactionButton.setEnabled(false);
+        mNonceTextView.setText("");
+
+        mClientToken = null;
+        mBraintree = null;
+        mNonce = null;
+
+        getClientToken();
+    }
+
+    private void setClientToken(String clientToken) {
+        mClientToken = clientToken;
+        mBraintree = Braintree.getInstance(this, mClientToken);
+        mBraintree.addListener(this);
+
+        enableButtons(true);
+    }
+
+    private void setPaymentMethodNonce(String paymentMethodNonce) {
+        mNonce = paymentMethodNonce;
+        mNonceTextView.setText(getString(R.string.nonce) + ": " + paymentMethodNonce);
+        mCreateTransactionButton.setEnabled(true);
+    }
+
     private void enableButtons(boolean enable) {
         mDropInButton.setEnabled(enable);
         mPaymentButtonButton.setEnabled(enable);
@@ -270,6 +248,7 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
             mLoading.dismiss();
         }
     }
+
     private void showDialog(String message) {
         new AlertDialog.Builder(this)
                 .setMessage(message)
@@ -282,6 +261,28 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
                 .show();
     }
 
+    @SuppressWarnings({"deprecation", "ConstantConditions"})
+    private void setupActionBar() {
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.environments, android.R.layout.simple_spinner_dropdown_item);
+        actionBar.setListNavigationCallbacks(adapter, this);
+        actionBar.setSelectedNavigationItem(mEnvironment);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+        if (mEnvironment != itemPosition) {
+            mEnvironment = itemPosition;
+            Settings.setEnvironment(this, itemPosition);
+            resetState();
+        }
+        return true;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
@@ -292,6 +293,7 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.reset) {
             resetState();
+            return true;
         } else if (item.getItemId() == R.id.settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
