@@ -114,7 +114,7 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
     }
 
     private void launchFormView() {
-        getActivity().initAddPaymentMethodView();
+        getActivity().showAddPaymentMethodView();
     }
 
     protected void onPaymentMethodSelected(int paymentMethodIndex) {

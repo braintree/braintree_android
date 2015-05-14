@@ -11,11 +11,12 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
-import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
+import com.google.gson.Gson;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 
 import org.json.JSONException;
@@ -145,5 +146,24 @@ public class BraintreeApiTest extends AndroidTestCase {
         braintreeApi.sendAnalyticsEvent("another-event", "TEST");
         assertEquals(2, requestCount.get());
         assertEquals(200, responseCode.get());
+    }
+
+    public void testGetConfigurationReturnsConfigurationAsAString() {
+        Configuration configuration = Configuration.fromJson(new TestClientTokenBuilder().build());
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, mock(ClientToken.class), configuration,
+                mock(HttpRequest.class));
+
+        String configurationString = braintreeApi.getConfigurationString();
+
+        assertEquals(new Gson().toJson(configuration), configurationString);
+    }
+
+    public void testGetConfigurationReturnsNullIfConfigurationIsNull() {
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, mock(ClientToken.class), null,
+                mock(HttpRequest.class));
+
+        String configurationString = braintreeApi.getConfigurationString();
+
+        assertNull(configurationString);
     }
 }

@@ -23,6 +23,7 @@ import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,6 +81,12 @@ public class BraintreeApi {
         mHttpRequest = new HttpRequest(mClientToken.getAuthorizationFingerprint());
     }
 
+    protected BraintreeApi(Context context, String clientTokenString, String configurationString) {
+        this(context, ClientToken.fromString(clientTokenString),
+                Configuration.fromJson(configurationString),
+                new HttpRequest(ClientToken.fromString(clientTokenString).getAuthorizationFingerprint()));
+    }
+
     protected BraintreeApi(Context context, ClientToken clientToken, Configuration configuration,
             HttpRequest requestor) {
         mContext = context.getApplicationContext();
@@ -111,6 +118,14 @@ public class BraintreeApi {
                 .toString();
         HttpResponse response = mHttpRequest.get(configUrl);
         return Configuration.fromJson(response.getResponseBody());
+    }
+
+    protected String getConfigurationString() {
+        if (mConfiguration != null) {
+            return new Gson().toJson(mConfiguration);
+        } else {
+            return null;
+        }
     }
 
     /**

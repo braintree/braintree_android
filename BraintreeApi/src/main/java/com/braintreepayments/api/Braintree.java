@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -36,6 +37,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class Braintree {
+
+    private static final String KEY_CLIENT_TOKEN = "com.braintreepayments.api.KEY_CLIENT_TOKEN";
+    private static final String KEY_CONFIGURATION =  "com.braintreepayments.api.KEY_CONFIGURATION";
 
     protected static final Map<String, Braintree> sInstances = new HashMap<String, Braintree>();
     protected static final String INTEGRATION_DROPIN = "dropin";
@@ -104,6 +108,7 @@ public class Braintree {
     private final ExecutorService mExecutorService;
     private final BraintreeApi mBraintreeApi;
     private String mIntegrationType;
+    private String mClientTokenKey;
 
     /**
      * {@link Handler} to deliver events to listeners; events are always delivered on the main thread.
@@ -205,7 +210,8 @@ public class Braintree {
         mBraintreeApi = braintreeApi;
         mExecutorService = Executors.newSingleThreadExecutor();
         mIntegrationType = "custom";
-        sInstances.put(clientToken, this);
+        mClientTokenKey = clientToken;
+        sInstances.put(mClientTokenKey, this);
     }
 
     protected Braintree(Context context, String clientToken) {
@@ -213,7 +219,8 @@ public class Braintree {
                 ClientToken.fromString(clientToken));
         mExecutorService = Executors.newSingleThreadExecutor();
         mIntegrationType = "custom";
-        sInstances.put(clientToken, this);
+        mClientTokenKey = clientToken;
+        sInstances.put(mClientTokenKey, this);
     }
 
     private boolean isSetup() {
@@ -230,6 +237,43 @@ public class Braintree {
 
     protected String getIntegrationType() {
         return mIntegrationType;
+    }
+
+    /**
+     * Saves the current state of {@link Braintree} to the provided {@link Bundle}. Call
+     * This method from your {@link Activity}'s {@link Activity#onSaveInstanceState(Bundle)} method.
+     *
+     * @param outState The bundle supplied to {@link Activity#onSaveInstanceState(Bundle)}
+     */
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(KEY_CLIENT_TOKEN, mClientTokenKey);
+        outState.putString(KEY_CONFIGURATION, mBraintreeApi.getConfigurationString());
+    }
+
+    /**
+     * Restores the state of {@link Braintree} and returns an instance of {@link Braintree}.
+     *
+     * @param context
+     * @param savedInstanceState The {@link Bundle} supplied to {@link Activity#onCreate(Bundle)} or
+     *                           {@link Activity#onRestoreInstanceState(Bundle)}
+     * @return The restored instance of {@link Braintree} or {@code null} if it could not be restored.
+     */
+    public static Braintree restoreSavedInstanceState(Context context, Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            return null;
+        }
+
+        String clientToken = savedInstanceState.getString(KEY_CLIENT_TOKEN);
+        String configuration = savedInstanceState.getString(KEY_CONFIGURATION);
+        Braintree braintree = sInstances.get(clientToken);
+        if (braintree != null && braintree.isSetup()) {
+            return braintree;
+        } else if (!TextUtils.isEmpty(clientToken) && !TextUtils.isEmpty(configuration)) {
+            return new Braintree(clientToken,
+                    new BraintreeApi(context.getApplicationContext(), clientToken, configuration));
+        } else {
+            return null;
+        }
     }
 
     /**
