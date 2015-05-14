@@ -127,7 +127,7 @@ public class BraintreePaymentActivity extends Activity implements
             init();
         } else {
             Braintree.setup(this, getClientToken(), this);
-            StubbedView.LOADING_VIEW.show(this);
+            showLoadingView();
         }
     }
 
@@ -189,7 +189,7 @@ public class BraintreePaymentActivity extends Activity implements
             }
         } else if (resultCode == RESULT_CANCELED) {
             if (requestCode == PaymentButton.REQUEST_CODE) {
-                initAddPaymentMethodView(StubbedView.CARD_FORM.show(this));
+                showAddPaymentMethodView();
             }
             mBraintree.sendAnalyticsEvent("add-paypal.user-canceled");
         }

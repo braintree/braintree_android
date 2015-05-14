@@ -890,44 +890,6 @@ public class BraintreeTest extends AndroidTestCase {
         verify(braintreeApi, times(1)).sendAnalyticsEvent("event", "TEST");
     }
 
-    public void testOnSaveInstanceStateAddsClientTokenAndConfigurationToBundle() {
-        BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        when(braintreeApi.getConfigurationString()).thenReturn("configuration-string");
-        Braintree braintree = new Braintree("client-token", braintreeApi);
-        Bundle bundle = new Bundle();
-
-        braintree.onSaveInstanceState(bundle);
-
-        assertEquals("client-token", bundle.getString("com.braintreepayments.api.KEY_CLIENT_TOKEN"));
-        assertEquals("configuration-string",
-                bundle.getString("com.braintreepayments.api.KEY_CONFIGURATION"));
-    }
-
-    public void testReturnsNullIfBundleIsNull() {
-        assertNull(Braintree.restoreSavedInstanceState(mContext, null));
-    }
-
-    public void testReturnsBraintreeInstanceIfThereIsAnExistingInstance() {
-        Bundle bundle = new Bundle();
-
-        mBraintree.onSaveInstanceState(bundle);
-        Braintree restoredBraintree = Braintree.restoreSavedInstanceState(mContext, bundle);
-
-        assertEquals(mBraintree, restoredBraintree);
-    }
-
-    public void testReturnsANewBraintreeInstanceIfThereIsNoExistingInstance() {
-        Braintree.reset();
-        Bundle bundle = new Bundle();
-        bundle.putString("com.braintreepayments.api.KEY_CLIENT_TOKEN", "{}");
-        bundle.putString("com.braintreepayments.api.KEY_CONFIGURATION", "{}");
-
-        assertTrue(Braintree.sInstances.size() == 0);
-        Braintree braintree = Braintree.restoreSavedInstanceState(mContext, bundle);
-        assertTrue(braintree != null);
-        assertTrue(Braintree.sInstances.size() == 1);
-    }
-
     public void testOnActivityResultHandlesPayPalResults() {
         Braintree braintree = spy(mBraintree);
         doNothing().when(braintree).finishPayWithPayPal(any(Activity.class), anyInt(),
@@ -1034,6 +996,44 @@ public class BraintreeTest extends AndroidTestCase {
         braintree.onPause(null);
 
         verify(braintreeApi).disconnectGoogleApiClient();
+    }
+
+    public void testOnSaveInstanceStateAddsClientTokenAndConfigurationToBundle() {
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        when(braintreeApi.getConfigurationString()).thenReturn("configuration-string");
+        Braintree braintree = new Braintree("client-token", braintreeApi);
+        Bundle bundle = new Bundle();
+
+        braintree.onSaveInstanceState(bundle);
+
+        assertEquals("client-token", bundle.getString("com.braintreepayments.api.KEY_CLIENT_TOKEN"));
+        assertEquals("configuration-string",
+                bundle.getString("com.braintreepayments.api.KEY_CONFIGURATION"));
+    }
+
+    public void testReturnsNullIfBundleIsNull() {
+        assertNull(Braintree.restoreSavedInstanceState(mContext, null));
+    }
+
+    public void testReturnsBraintreeInstanceIfThereIsAnExistingInstance() {
+        Bundle bundle = new Bundle();
+
+        mBraintree.onSaveInstanceState(bundle);
+        Braintree restoredBraintree = Braintree.restoreSavedInstanceState(mContext, bundle);
+
+        assertEquals(mBraintree, restoredBraintree);
+    }
+
+    public void testReturnsANewBraintreeInstanceIfThereIsNoExistingInstance() {
+        Braintree.reset();
+        Bundle bundle = new Bundle();
+        bundle.putString("com.braintreepayments.api.KEY_CLIENT_TOKEN", "{}");
+        bundle.putString("com.braintreepayments.api.KEY_CONFIGURATION", "{}");
+
+        assertTrue(Braintree.sInstances.size() == 0);
+        Braintree braintree = Braintree.restoreSavedInstanceState(mContext, bundle);
+        assertTrue(braintree != null);
+        assertTrue(Braintree.sInstances.size() == 1);
     }
 
     /** helper to synchronously create a credit card */
