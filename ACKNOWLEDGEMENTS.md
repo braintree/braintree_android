@@ -7,6 +7,7 @@ The Braintree SDK uses code from the following libraries:
  * Google [Gson](https://code.google.com/p/google-gson/)
  * [Mockito](https://github.com/mockito/mockito)
  * [Dexmaker](https://code.google.com/p/dexmaker/)
+ * [SDK Manager Plugin](https://github.com/JakeWharton/sdk-manager-plugin)
 
 Full Licenses
 -------------
@@ -79,3 +80,18 @@ Dexmaker, Apache 2.0 License
     See the License for the specific language governing permissions and
     limitations under the License.
 
+SDK Manager Plugin, Apache 2.0 License
+
+    Copyright 2014 Jake Wharton
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
