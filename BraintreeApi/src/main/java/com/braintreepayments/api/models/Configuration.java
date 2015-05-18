@@ -4,21 +4,22 @@ import android.text.TextUtils;
 
 import com.braintreepayments.api.annotations.Beta;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Contains the remote configuration for the Braintree Android SDK.
  */
 public class Configuration {
 
-    private String clientApiUrl;
-    private String[] challenges;
-    private boolean paypalEnabled;
-    private PayPalConfiguration paypal;
-    private String venmo;
-    private boolean threeDSecureEnabled;
-    private String merchantId;
-    private String merchantAccountId;
-    private AnalyticsConfiguration analytics;
+    @SerializedName("clientApiUrl") private String mClientApiUrl;
+    @SerializedName("challenges") private String[] mChallenges;
+    @SerializedName("paypalEnabled") private boolean mPaypalEnabled;
+    @SerializedName("paypal") private PayPalConfiguration mPayPalConfiguration;
+    @SerializedName("venmo") private String mVenmo;
+    @SerializedName("threeDSecureEnabled") private boolean mThreeDSecureEnabled;
+    @SerializedName("merchantId") private String mMerchantId;
+    @SerializedName("merchantAccountId") private String mMerchantAccountId;
+    @SerializedName("analytics") private AnalyticsConfiguration mAnalyticsConfiguration;
 
     /**
      * Creates a new {@link com.braintreepayments.api.models.Configuration} instance from a json string.
@@ -34,7 +35,7 @@ public class Configuration {
      * @return The url of the Braintree client API for the current environment.
      */
     public String getClientApiUrl() {
-        return clientApiUrl;
+        return mClientApiUrl;
     }
 
     /**
@@ -55,14 +56,14 @@ public class Configuration {
      * @return {@code true} if PayPal is enabled, {@code false} otherwise.
      */
     public boolean isPayPalEnabled() {
-        return (paypalEnabled && paypal != null);
+        return (mPaypalEnabled && mPayPalConfiguration != null);
     }
 
     /**
      * @return instance of {@link com.braintreepayments.api.models.PayPalConfiguration}.
      */
     public PayPalConfiguration getPayPal() {
-        return paypal;
+        return mPayPalConfiguration;
     }
 
     /**
@@ -71,10 +72,10 @@ public class Configuration {
      * Venmo environment is live.
      */
     public String getVenmoState() {
-        if (venmo == null) {
+        if (mVenmo == null) {
             return "off";
         } else {
-            return venmo;
+            return mVenmo;
         }
     }
 
@@ -83,40 +84,40 @@ public class Configuration {
      */
     @Beta
     public boolean isThreeDSecureEnabled() {
-        return threeDSecureEnabled;
+        return mThreeDSecureEnabled;
     }
 
     /**
      * @return the current Braintree merchant id.
      */
     public String getMerchantId() {
-        return merchantId;
+        return mMerchantId;
     }
 
     /**
      * @return the current Braintree merchant account id.
      */
     public String getMerchantAccountId() {
-        return merchantAccountId;
+        return mMerchantAccountId;
     }
 
     /**
      * @return {@code true} if analytics are enabled, {@code false} otherwise.
      */
     public boolean isAnalyticsEnabled() {
-        return (analytics != null && !TextUtils.isEmpty(analytics.getUrl()));
+        return (mAnalyticsConfiguration != null && !TextUtils.isEmpty(mAnalyticsConfiguration.getUrl()));
     }
 
     /**
      * @return instance of {@link com.braintreepayments.api.models.AnalyticsConfiguration}.
      */
     public AnalyticsConfiguration getAnalytics() {
-        return analytics;
+        return mAnalyticsConfiguration;
     }
 
     private boolean isChallengePresent(String requestedChallenge) {
-        if (challenges != null && challenges.length > 0) {
-            for (String challenge : challenges) {
+        if (mChallenges != null && mChallenges.length > 0) {
+            for (String challenge : mChallenges) {
                 if (challenge.equals(requestedChallenge)) {
                     return true;
                 }

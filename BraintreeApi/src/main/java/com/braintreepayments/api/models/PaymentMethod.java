@@ -4,6 +4,7 @@ import android.os.Parcelable;
 
 import com.braintreepayments.api.exceptions.ServerException;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,13 +28,13 @@ public abstract class PaymentMethod implements Parcelable, Serializable {
     private static final String PAYMENT_METHOD_COLLECTION_KEY = "paymentMethods";
     private static final String PAYMENT_METHOD_TYPE_KEY = "type";
 
-    protected String nonce;
-    protected String description;
-    protected PaymentMethodOptions options;
+    @SerializedName("nonce") protected String mNonce;
+    @SerializedName("description") protected String mDescription;
+    @SerializedName("options") protected PaymentMethodOptions mPaymentMethodOptions;
     protected transient String mSource;
 
     protected void setOptions(PaymentMethodOptions options) {
-        this.options = options;
+        mPaymentMethodOptions = options;
     }
 
     /**
@@ -42,14 +43,14 @@ public abstract class PaymentMethod implements Parcelable, Serializable {
      *          actions.
      */
     public String getNonce() {
-        return nonce;
+        return mNonce;
     }
 
     /**
      * @return The description of this PaymentMethod for displaying to a customer, e.g. 'Visa ending in...'
      */
     public String getDescription() {
-        return description;
+        return mDescription;
     }
 
     /**

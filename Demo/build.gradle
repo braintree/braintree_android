@@ -43,6 +43,14 @@ android {
         // Caused by Okio in OkHttp, should not fail lint
         warning 'InvalidPackage'
     }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'demo-proguard-rules.pro',
+                    'braintree-proguard-rules.pro'
+        }
+    }
 }
 
 dependencies {

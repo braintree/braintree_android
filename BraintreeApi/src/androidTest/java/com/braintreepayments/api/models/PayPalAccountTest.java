@@ -37,7 +37,7 @@ public class PayPalAccountTest extends AndroidTestCase {
 
     public void testDescriptionUsesGetEmailIfDescriptionIsPayPalAndEmailIsNotEmpty() {
         PayPalAccount payPalAccount = spy(new PayPalAccount());
-        payPalAccount.description = "PayPal";
+        payPalAccount.mDescription = "PayPal";
         when(payPalAccount.getEmail()).thenReturn("test_email_address");
 
         assertEquals("test_email_address", payPalAccount.getDescription());

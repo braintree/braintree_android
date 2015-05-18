@@ -18,14 +18,14 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
 
     protected static final String PAYMENT_METHOD_TYPE = "CreditCard";
 
-    private BillingAddress billingAddress;
-    private ThreeDSecureInfo threeDSecureInfo;
-    private CardDetails details;
-    private String expirationMonth;
-    private String expirationYear;
-    private String expirationDate;
-    @SerializedName("number") private String cardNumber;
-    private String cvv;
+    @SerializedName("billingAddress") private BillingAddress mBillingAddress;
+    @SerializedName("threeDSecureInfo") private ThreeDSecureInfo mThreeDSecureInfo;
+    @SerializedName("details") private CardDetails mDetails;
+    @SerializedName("expirationMonth") private String mExpirationMonth;
+    @SerializedName("expirationYear") private String mExpirationYear;
+    @SerializedName("expirationDate") private String mExpirationDate;
+    @SerializedName("number") private String mNumber;
+    @SerializedName("cvv") private String mCvv;
 
     public Card() {}
 
@@ -34,14 +34,14 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
      */
     @Override
     public String getTypeLabel() {
-        return details.getCardType();
+        return mDetails.getCardType();
     }
 
     /**
      * @return Last two digits of the card, intended for display purposes.
      */
     public String getLastTwo() {
-        return details.getLastTwo();
+        return mDetails.getLastTwo();
     }
 
     /**
@@ -50,36 +50,36 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
      */
     @Beta
     public ThreeDSecureInfo getThreeDSecureInfo() {
-        return threeDSecureInfo;
+        return mThreeDSecureInfo;
     }
 
     protected void setBillingAddress(BillingAddress billingAddress) {
-        this.billingAddress = billingAddress;
+        mBillingAddress = billingAddress;
     }
 
     @Beta
     protected void setThreeDSecureInfo(ThreeDSecureInfo threeDSecureInfo) {
-        this.threeDSecureInfo = threeDSecureInfo;
+        mThreeDSecureInfo = threeDSecureInfo;
     }
 
     protected void setExpirationMonth(String expirationMonth) {
-        this.expirationMonth = expirationMonth;
+        mExpirationMonth = expirationMonth;
     }
 
     protected void setExpirationYear(String expirationYear) {
-        this.expirationYear = expirationYear;
+        mExpirationYear = expirationYear;
     }
 
     protected void setExpirationDate(String expirationDate) {
-        this.expirationDate = expirationDate;
+        mExpirationDate = expirationDate;
     }
 
     protected void setCardNumber(String number) {
-        this.cardNumber = number;
+        mNumber = number;
     }
 
     protected void setCvv(String cvv) {
-        this.cvv = cvv;
+        mCvv = cvv;
     }
 
     /**
@@ -96,31 +96,31 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(this.billingAddress, 0);
-        dest.writeParcelable(this.details, 0);
-        dest.writeString(this.expirationMonth);
-        dest.writeString(this.expirationYear);
-        dest.writeString(this.expirationDate);
-        dest.writeString(this.cardNumber);
-        dest.writeString(this.cvv);
-        dest.writeString(this.nonce);
-        dest.writeString(this.description);
-        dest.writeSerializable(this.options);
-        dest.writeString(this.mSource);
+        dest.writeParcelable(mBillingAddress, 0);
+        dest.writeParcelable(mDetails, 0);
+        dest.writeString(mExpirationMonth);
+        dest.writeString(mExpirationYear);
+        dest.writeString(mExpirationDate);
+        dest.writeString(mNumber);
+        dest.writeString(mCvv);
+        dest.writeString(mNonce);
+        dest.writeString(mDescription);
+        dest.writeSerializable(mPaymentMethodOptions);
+        dest.writeString(mSource);
     }
 
     private Card(Parcel in) {
-        this.billingAddress = in.readParcelable(BillingAddress.class.getClassLoader());
-        this.details = in.readParcelable(CardDetails.class.getClassLoader());
-        this.expirationMonth = in.readString();
-        this.expirationYear = in.readString();
-        this.expirationDate = in.readString();
-        this.cardNumber = in.readString();
-        this.cvv = in.readString();
-        this.nonce = in.readString();
-        this.description = in.readString();
-        this.options = (PaymentMethodOptions) in.readSerializable();
-        this.mSource = in.readString();
+        mBillingAddress = in.readParcelable(BillingAddress.class.getClassLoader());
+        mDetails = in.readParcelable(CardDetails.class.getClassLoader());
+        mExpirationMonth = in.readString();
+        mExpirationYear = in.readString();
+        mExpirationDate = in.readString();
+        mNumber = in.readString();
+        mCvv = in.readString();
+        mNonce = in.readString();
+        mDescription = in.readString();
+        mPaymentMethodOptions = (PaymentMethodOptions) in.readSerializable();
+        mSource = in.readString();
     }
 
     public static final Creator<Card> CREATOR = new Creator<Card>() {
@@ -130,17 +130,18 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
     };
 
     private static class CardDetails implements Parcelable, Serializable {
-        private String cardType;
-        private String lastTwo;
+
+        @SerializedName("cardType") private String mCardType;
+        @SerializedName("lastTwo") private String mLastTwo;
 
         public CardDetails() {}
 
         protected String getCardType() {
-            return cardType;
+            return mCardType;
         }
 
         protected String getLastTwo() {
-            return lastTwo;
+            return mLastTwo;
         }
 
         @Override
@@ -148,13 +149,13 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(this.cardType);
-            dest.writeString(this.lastTwo);
+            dest.writeString(mCardType);
+            dest.writeString(mLastTwo);
         }
 
         private CardDetails(Parcel in) {
-            this.cardType = in.readString();
-            this.lastTwo = in.readString();
+            mCardType = in.readString();
+            mLastTwo = in.readString();
         }
 
         public static final Creator<CardDetails> CREATOR = new Creator<CardDetails>() {
@@ -165,42 +166,43 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
     }
 
     protected static class BillingAddress implements Parcelable, Serializable {
-        private String firstName;
-        private String lastName;
-        private String countryName;
-        private String locality;
-        private String postalCode;
-        private String region;
-        private String streetAddress;
+
+        @SerializedName("firstName") private String mFirstName;
+        @SerializedName("lastName") private String mLastName;
+        @SerializedName("countryName") private String mCountryName;
+        @SerializedName("locality") private String mLocality;
+        @SerializedName("postalCode") private String mPostalCode;
+        @SerializedName("region") private String mRegion;
+        @SerializedName("streetAddress") private String mStreetAddress;
 
         public BillingAddress() {}
 
         protected void setFirstName(String firstName) {
-            this.firstName = firstName;
+            mFirstName = firstName;
         }
 
         protected void setLastName(String lastName) {
-            this.lastName = lastName;
+            mLastName = lastName;
         }
 
         protected void setCountryName(String countryName) {
-            this.countryName = countryName;
+            mCountryName = countryName;
         }
 
         protected void setLocality(String locality) {
-            this.locality = locality;
+            mLocality = locality;
         }
 
         protected void setPostalCode(String postalCode) {
-            this.postalCode = postalCode;
+            mPostalCode = postalCode;
         }
 
         protected void setRegion(String region) {
-            this.region = region;
+            mRegion = region;
         }
 
         protected void setStreetAddress(String streetAddress) {
-            this.streetAddress = streetAddress;
+            mStreetAddress = streetAddress;
         }
 
         @Override
@@ -208,23 +210,23 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(this.firstName);
-            dest.writeString(this.lastName);
-            dest.writeString(this.countryName);
-            dest.writeString(this.locality);
-            dest.writeString(this.postalCode);
-            dest.writeString(this.region);
-            dest.writeString(this.streetAddress);
+            dest.writeString(mFirstName);
+            dest.writeString(mLastName);
+            dest.writeString(mCountryName);
+            dest.writeString(mLocality);
+            dest.writeString(mPostalCode);
+            dest.writeString(mRegion);
+            dest.writeString(mStreetAddress);
         }
 
         private BillingAddress(Parcel in) {
-            this.firstName = in.readString();
-            this.lastName = in.readString();
-            this.countryName = in.readString();
-            this.locality = in.readString();
-            this.postalCode = in.readString();
-            this.region = in.readString();
-            this.streetAddress = in.readString();
+            mFirstName = in.readString();
+            mLastName = in.readString();
+            mCountryName = in.readString();
+            mLocality = in.readString();
+            mPostalCode = in.readString();
+            mRegion = in.readString();
+            mStreetAddress = in.readString();
         }
 
         public static final Creator<BillingAddress> CREATOR = new Creator<BillingAddress>() {

@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.braintreepayments.api.annotations.Beta;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,11 +16,11 @@ import org.json.JSONObject;
 @Beta
 public class ThreeDSecureLookup implements Parcelable {
 
-    private Card card;
-    private String acsUrl;
-    private String md;
-    private String termUrl;
-    private String pareq;
+    @SerializedName("card") private Card mCard;
+    @SerializedName("acsUrl") private String mAcsUrl;
+    @SerializedName("md") private String mMd;
+    @SerializedName("termUrl") private String mTermUrl;
+    @SerializedName("pareq") private String mPareq;
 
     public ThreeDSecureLookup() {}
 
@@ -42,7 +43,7 @@ public class ThreeDSecureLookup implements Parcelable {
 
         ThreeDSecureLookup lookup = gson.fromJson(json.getJSONObject("lookup").toString(),
                 ThreeDSecureLookup.class);
-        lookup.card = card;
+        lookup.mCard = card;
 
         return lookup;
     }
@@ -53,7 +54,7 @@ public class ThreeDSecureLookup implements Parcelable {
      * from 3D Secure.
      */
     public Card getCard() {
-        return card;
+        return mCard;
     }
 
     /**
@@ -61,28 +62,28 @@ public class ThreeDSecureLookup implements Parcelable {
      * authentication will be performed.
      */
     public String getAcsUrl() {
-        return acsUrl;
+        return mAcsUrl;
     }
 
     /**
      * @return The merchant descriptor from a 3D Secure lookup
      */
     public String getMd() {
-        return md;
+        return mMd;
     }
 
     /**
      * @return The term url to be used for 3D Secure authentication
      */
     public String getTermUrl() {
-        return termUrl;
+        return mTermUrl;
     }
 
     /**
      * @return The pareq to be used for 3D Secure authentication
      */
     public String getPareq() {
-        return pareq;
+        return mPareq;
     }
 
     @Override
@@ -92,17 +93,17 @@ public class ThreeDSecureLookup implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.acsUrl);
-        dest.writeString(this.md);
-        dest.writeString(this.termUrl);
-        dest.writeString(this.pareq);
+        dest.writeString(mAcsUrl);
+        dest.writeString(mMd);
+        dest.writeString(mTermUrl);
+        dest.writeString(mPareq);
     }
 
     private ThreeDSecureLookup(Parcel in) {
-        acsUrl = in.readString();
-        md = in.readString();
-        termUrl = in.readString();
-        pareq = in.readString();
+        mAcsUrl = in.readString();
+        mMd = in.readString();
+        mTermUrl = in.readString();
+        mPareq = in.readString();
     }
 
     public static final Creator<ThreeDSecureLookup> CREATOR = new Creator<ThreeDSecureLookup>() {
