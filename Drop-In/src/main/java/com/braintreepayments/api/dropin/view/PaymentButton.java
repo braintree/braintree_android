@@ -134,6 +134,17 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
      * Failure to do so will result in Android Pay not present in the {@link PaymentButton}.
      *
      * @param cart The {@link Cart} to use with Android Pay
+     */
+    public void setAndroidPayOptions(Cart cart) {
+        setAndroidPayOptions(cart, false, false, false);
+    }
+
+    /**
+     * Options to be used with Android Pay. Must be called *before*
+     * {@link PaymentButton#initialize(Activity, Braintree)} if you would like to use Android Pay.
+     * Failure to do so will result in Android Pay not present in the {@link PaymentButton}.
+     *
+     * @param cart The {@link Cart} to use with Android Pay
      * @param isBillingAgreement Should a multiple use card be requested.
      * @param shippingAddressRequired Should the user be prompted for a shipping address.
      * @param phoneNumberRequired Should the user be prompted for a phone number.
