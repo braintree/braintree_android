@@ -391,7 +391,10 @@ public class BraintreePaymentActivity extends Activity implements
                 mAddPaymentMethodViewController.isSubmitting()) {
             // noop
         } else {
-            mBraintree.sendAnalyticsEvent("sdk.exit.user-canceled");
+            if (mBraintree != null) {
+                mBraintree.sendAnalyticsEvent("sdk.exit.user-canceled");
+            }
+
             setResult(RESULT_CANCELED);
             finish();
         }
