@@ -20,6 +20,9 @@ Next, read the [**full documentation**](https://developers.braintreepayments.com
 
 Braintree v.zero is in active development. We appreciate the time you take to try it out and welcome your feedback!
 
+Here are a few ways to get in touch:
+
+* [GitHub Issues](https://github.com/braintree/braintree_android/issues) - For generally applicable issues and feedback
 * [Braintree Support](https://articles.braintreepayments.com/) / [support@braintreepayments.com](mailto:support@braintreepayments.com) -
 for personal support at any phase of integration
 
