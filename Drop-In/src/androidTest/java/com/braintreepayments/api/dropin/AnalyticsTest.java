@@ -20,6 +20,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static com.braintreepayments.api.BraintreeTestUtils.setClientTokenExtraForTest;
 import static com.braintreepayments.api.TestDependencyInjector.injectBraintree;
+import static com.braintreepayments.api.TestDependencyInjector.injectSlowNonSetupBraintree;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
@@ -116,9 +117,12 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testDoesntCrashWhenUserExitsRightAfterDropInIsLaunched() {
-        setClientTokenExtraForTest(this, new TestClientTokenBuilder().withAnalytics().build());
+        String clientToken = new TestClientTokenBuilder().withAnalytics().build();
+        injectSlowNonSetupBraintree(mContext, clientToken, 5000);
+        setClientTokenExtraForTest(this, clientToken);
         mActivity = getActivity();
 
+        waitForView(withId(R.id.bt_loading_progress_bar));
         sendKeys(KeyEvent.KEYCODE_BACK);
 
         waitForActivityToFinish(mActivity);

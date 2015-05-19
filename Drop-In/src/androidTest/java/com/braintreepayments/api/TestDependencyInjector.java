@@ -48,6 +48,38 @@ public class TestDependencyInjector {
     }
 
     /**
+     * Inject an instance of Braintree that will use the supplied client token and sleep for
+     * *delay* before every network request.
+     *
+     * *Note:* This instance of Braintree is not setup and will require a call to the configuration
+     * endpoint.
+     *
+     * @param context
+     * @param clientTokenString
+     * @param delay
+     */
+    public static void injectSlowNonSetupBraintree(Context context, String clientTokenString,
+            final long delay) {
+        ClientToken clientToken = ClientToken.fromString(clientTokenString);
+        HttpRequest httpRequest = new HttpRequest(clientToken.getAuthorizationFingerprint()) {
+            @Override
+            public HttpResponse get(String url) throws BraintreeException, ErrorWithResponse {
+                SystemClock.sleep(delay);
+                return super.get(url);
+            }
+
+            @Override
+            public HttpResponse post(String url, String params)
+                    throws BraintreeException, ErrorWithResponse {
+                SystemClock.sleep(delay);
+                return super.post(url, params);
+            }
+        };
+
+        injectBraintree(context, clientTokenString, clientToken, null, httpRequest);
+    }
+
+    /**
      * Inject a mocked or already setup Braintree for use in Drop-In.
      *
      * @param clientToken
