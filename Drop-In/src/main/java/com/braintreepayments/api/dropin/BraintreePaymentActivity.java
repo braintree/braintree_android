@@ -116,6 +116,7 @@ public class BraintreePaymentActivity extends Activity implements
             init();
         } else {
             Braintree.setup(this, getClientToken(), this);
+            StubbedView.LOADING_VIEW.show(this);
         }
     }
 
