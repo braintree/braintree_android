@@ -695,8 +695,8 @@ public class Braintree {
         });
     }
 
-    public synchronized void getNonceFromAndroidPayFullWalletResponse(int responseCode, Intent data) {
-        if (responseCode == Activity.RESULT_OK) {
+    public synchronized void getNonceFromAndroidPayFullWalletResponse(int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
             try {
                 mBraintreeApi.disconnectGoogleApiClient();
 
