@@ -311,6 +311,8 @@ public class BraintreeApi {
     }
 
     /**
+     * @deprecated Use {@link Braintree#finishPayWithPayPal(Activity, int, Intent)} instead.
+     *
      * @param activity The calling activity
      * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
@@ -321,6 +323,7 @@ public class BraintreeApi {
      *
      * @see BraintreeApi#create(com.braintreepayments.api.models.PaymentMethod.Builder)
      */
+    @Deprecated
     public PayPalAccount finishPayWithPayPal(Activity activity, int resultCode, Intent data)
             throws BraintreeException, ErrorWithResponse {
         PayPalAccountBuilder payPalAccountBuilder = handlePayPalResponse(activity, resultCode, data);
