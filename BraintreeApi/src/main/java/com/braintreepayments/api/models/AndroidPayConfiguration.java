@@ -1,25 +1,27 @@
 package com.braintreepayments.api.models;
 
+import com.google.gson.annotations.SerializedName;
+
 public class AndroidPayConfiguration {
 
-    private boolean enabled;
-    private String googleAuthorizationFingerprint;
-    private String environment;
-    private String displayName;
+    @SerializedName("enabled") private boolean mEnabled;
+    @SerializedName("googleAuthorizationFingerprint") private String mGoogleAuthorizationFingerprint;
+    @SerializedName("environment") private String mEnvironment;
+    @SerializedName("displayName") private String mDisplayName;
 
     public boolean isEnabled() {
-        return enabled;
+        return mEnabled;
     }
 
     public String getGoogleAuthorizationFingerprint() {
-        return googleAuthorizationFingerprint;
+        return mGoogleAuthorizationFingerprint;
     }
 
     public String getEnvironment() {
-        return environment;
+        return mEnvironment;
     }
 
     public String getDisplayName() {
-        return displayName;
+        return mDisplayName;
     }
 }
