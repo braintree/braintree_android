@@ -54,7 +54,6 @@ import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.ui.Matchers.withHint;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.ViewHelper.FIFTEEN_SECONDS;
-import static com.braintreepayments.testutils.ui.ViewHelper.FIVE_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.TEN_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.THREE_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.TWO_SECONDS;
@@ -220,6 +219,27 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withId(R.id.bt_card_form_submit_button)).check(matches(isEnabled()));
     }
 
+    public void testFinishesActivityWithErrorIfANonCreditCardErrorIsReturned()
+            throws ErrorWithResponse, BraintreeException {
+        String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
+        BraintreeApi braintreeApi = spy(new BraintreeApi(mContext, clientToken));
+        doThrow(new ErrorWithResponse(422, "{}")).when(braintreeApi)
+                .create(any(PaymentMethod.Builder.class));
+        injectBraintree(clientToken, braintreeApi);
+        setClientTokenExtraForTest(this, clientToken);
+        Activity activity = getActivity();
+
+        fillInOfflinePayPal();
+
+        waitForActivityToFinish(activity);
+        Map<String, Object> result = getActivityResult(activity);
+        assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_ERROR,
+                result.get("resultCode"));
+        Throwable error = (Throwable) ((Intent) result.get("resultData"))
+                .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE);
+        assertEquals("Parsing error response failed", error.getMessage());
+    }
+
     public void testPayPalButtonIsNotShownIfPayPalIsNotSupported() {
         setUpActivityTest(this, new TestClientTokenBuilder().build());
         getActivity();
@@ -271,7 +291,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
     public void testBackButtonDuringPayPalAddDoesNothing() {
         String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
-        injectSlowBraintree(mContext, clientToken, FIVE_SECONDS);
+        injectSlowBraintree(mContext, clientToken, TWO_SECONDS);
         setClientTokenExtraForTest(this, clientToken);
         getActivity();
 

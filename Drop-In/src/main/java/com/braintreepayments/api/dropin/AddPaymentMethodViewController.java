@@ -160,27 +160,31 @@ public class AddPaymentMethodViewController extends BraintreeViewController
     }
 
     public void setErrors(ErrorWithResponse error) {
-        showErrorUI();
         endSubmit();
 
-        if(error.errorFor("creditCard") != null) {
+        BraintreeError cardErrors = error.errorFor("creditCard");
+        if(cardErrors != null) {
             mBraintree.sendAnalyticsEvent("add-card.failed");
 
-            BraintreeError cardErrors = error.errorFor("creditCard");
             if(cardErrors.errorFor("number") != null) {
                 mCardForm.setCardNumberError();
             }
+
             if(cardErrors.errorFor("expirationYear") != null ||
                     cardErrors.errorFor("expirationMonth") != null ||
                     cardErrors.errorFor("expirationDate") != null ) {
                 mCardForm.setExpirationError();
             }
+
             if (cardErrors.errorFor("cvv") != null) {
                 mCardForm.setCvvError();
             }
+
             if(cardErrors.errorFor("billingAddress") != null) {
                 mCardForm.setPostalCodeError();
             }
+
+            showErrorUI();
         } else {
             getActivity().onUnrecoverableError(new UnexpectedException(error.getMessage()));
         }

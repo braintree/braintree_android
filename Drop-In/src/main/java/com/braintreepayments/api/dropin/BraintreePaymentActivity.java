@@ -97,8 +97,7 @@ public class BraintreePaymentActivity extends Activity implements
     private Braintree mBraintree;
     private AddPaymentMethodViewController mAddPaymentMethodViewController;
     private SelectPaymentMethodViewController mSelectPaymentMethodViewController;
-    private AtomicBoolean mHasDataBeenReceived = new AtomicBoolean(false);
-    private boolean mUnableToGetPaymentMethods = false;
+    private AtomicBoolean mHavePaymentMethodsBeenReceived = new AtomicBoolean(false);
     private Bundle mSavedInstanceState;
     private Customization mCustomization;
 
@@ -185,14 +184,12 @@ public class BraintreePaymentActivity extends Activity implements
 
     @Override
     public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
-        if (!mUnableToGetPaymentMethods) {
-            mHasDataBeenReceived.set(true);
+        mHavePaymentMethodsBeenReceived.set(true);
 
-            if (paymentMethods.size() == 0) {
-                showAddPaymentMethodView();
-            } else {
-                initSelectPaymentMethodView();
-            }
+        if (paymentMethods.size() == 0) {
+            showAddPaymentMethodView();
+        } else {
+            initSelectPaymentMethodView();
         }
     }
 
@@ -232,8 +229,8 @@ public class BraintreePaymentActivity extends Activity implements
     @Override
     public void onUnrecoverableError(Throwable throwable) {
         // Falling back to add payment method if getPaymentMethods fails
-        if (StubbedView.LOADING_VIEW.mCurrentView) {
-            mHasDataBeenReceived.set(true);
+        if (StubbedView.LOADING_VIEW.mCurrentView && !mHavePaymentMethodsBeenReceived.get()) {
+            mHavePaymentMethodsBeenReceived.set(true);
             showAddPaymentMethodView();
         } else {
             if(throwable instanceof AuthenticationException ||
@@ -277,11 +274,11 @@ public class BraintreePaymentActivity extends Activity implements
         Executors.newScheduledThreadPool(1).schedule(new Runnable() {
             @Override
             public void run() {
-                if (!mHasDataBeenReceived.get()) {
+                if (!mHavePaymentMethodsBeenReceived.get()) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mUnableToGetPaymentMethods = true;
+                            mHavePaymentMethodsBeenReceived.set(true);
                             showAddPaymentMethodView();
                         }
                     });
