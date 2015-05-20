@@ -161,7 +161,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
     public void onPaymentResult(int requestCode, int resultCode, Intent data) {
         mIsSubmitting = true;
-        mPaymentButton.onActivityResult(requestCode, resultCode, data);
+        mBraintree.onActivityResult(mActivity, requestCode, resultCode, data);
     }
 
     public void setErrors(ErrorWithResponse error) {
