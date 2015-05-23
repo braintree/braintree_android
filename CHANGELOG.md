@@ -1,5 +1,17 @@
 # Braintree Android SDK Release Notes
 
+## 1.5.1
+
+* Update PayPal SDK to 2.9.5
+* Switch to OkHttp for Demo app
+* Improvements
+  * Add methods to persist state across rotations
+* Fixes
+  * Fix Demo app crash when `MainActivity` was destroyed ([#26](https://github.com/braintree/braintree_android/pull/26))
+  * Fix NPE in Drop-in ([#30](https://github.com/braintree/braintree_android/issues/30))
+  * Fix ProGuard support and add ProGuard rules ([#29](https://github.com/braintree/braintree_android/issues/29))
+  * Fix Drop-in error handling for non-card errors
+
 ## 1.5.0
 
 * Update PayPal SDK to 2.9.4
