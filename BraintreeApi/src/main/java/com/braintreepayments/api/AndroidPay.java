@@ -56,7 +56,8 @@ public class AndroidPay {
             boolean phoneNumberRequired) throws UnexpectedException {
         MaskedWalletRequest maskedWalletRequest = getMaskedWalletRequest(isBillingAgreement,
                 shippingAddressRequired, phoneNumberRequired);
-        Wallet.Payments.loadMaskedWallet(getConnectedApiClient(context), maskedWalletRequest, requestCode);
+        Wallet.Payments.loadMaskedWallet(getConnectedApiClient(context), maskedWalletRequest,
+                requestCode);
     }
 
     protected void performChangeMaskedWalletRequest(Context context, int requestCode,
@@ -109,7 +110,9 @@ public class AndroidPay {
     }
 
     protected void disconnect() {
-        mGoogleApiClient.disconnect();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.disconnect();
+        }
     }
 
     /**
