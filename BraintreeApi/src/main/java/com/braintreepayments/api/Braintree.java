@@ -631,6 +631,15 @@ public class Braintree {
         return mBraintreeApi.getAndroidPayTokenizationParameters();
     }
 
+    /**
+     * Get the Google transaction id from an Android Pay request. If the request is a masked or full
+     * wallet request indicated by the presence of {@link WalletConstants#EXTRA_MASKED_WALLET} or
+     * {@link WalletConstants#EXTRA_FULL_WALLET} in the intent, the transaction id will be returned,
+     * otherwise {@code null} is returned.
+     *
+     * @param data The {@link Intent} to parse the transaction id from.
+     * @return The {@link String} transaction id or {@code null}.
+     */
     public String getAndroidPayGoogleTransactionId(Intent data) {
         if (AndroidPay.isMaskedWalletResponse(data)) {
             return ((MaskedWallet) data.getParcelableExtra(WalletConstants.EXTRA_MASKED_WALLET))
@@ -643,10 +652,29 @@ public class Braintree {
         }
     }
 
-    public void performAndroidPayMaskedWalletRequest(Activity activity, int requestCode, Cart cart) {
+    /**
+     * Launch an Android Pay masked wallet request. This method will show the payment instrument
+     * chooser to the user.
+     *
+     * @param activity The current {@link Activity}.
+     * @param requestCode The requestCode for this request.
+     * @param cart The cart representation with price and optionally items.
+     */
+    public synchronized void performAndroidPayMaskedWalletRequest(Activity activity, int requestCode, Cart cart) {
         performAndroidPayMaskedWalletRequest(activity, requestCode, cart, false, false, false);
     }
 
+    /**
+     * Launch an Android Pay masked wallet request. This method will show the payment instrument
+     * chooser to the user.
+     *
+     * @param activity The current {@link Activity}.
+     * @param requestCode The requestCode for this request.
+     * @param cart The cart representation with price and optionally items.
+     * @param isBillingAgreement {@code true} if this request is for a billing agreement, {@code false} otherwise.
+     * @param shippingAddressRequired {@code true} if this request requires a shipping address, {@code false} otherwise.
+     * @param phoneNumberRequired {@code true} if this request requires a phone number, {@code false} otherwise.
+     */
     public synchronized void performAndroidPayMaskedWalletRequest(final Activity activity,
             final int requestCode, final Cart cart, final boolean isBillingAgreement, final boolean shippingAddressRequired,
             final boolean phoneNumberRequired) {
@@ -665,6 +693,14 @@ public class Braintree {
         });
     }
 
+    /**
+     * Perform a change masked wallet request and allow the user to change the payment instrument they
+     * have selected.
+     *
+     * @param activity The current {@link Activity}.
+     * @param requestCode The requestCode for this request.
+     * @param googleTransactionId The transaction id of the {@link MaskedWallet} to change.
+     */
     public synchronized void performAndroidPayChangeMaskedWalletRequest(final Activity activity,
             final int requestCode, final String googleTransactionId) {
         mExecutorService.submit(new Runnable() {
@@ -680,6 +716,15 @@ public class Braintree {
         });
     }
 
+    /**
+     * Perform a full wallet request. This can only be done after a masked wallet request has been
+     * made.
+     *
+     * @param activity The current {@link Activity}
+     * @param requestCode The requestCode for this request.
+     * @param cart The cart representation with the price and optionally items.
+     * @param googleTransactionId The transaction id from the {@link MaskedWallet}.
+     */
     public synchronized void performAndroidPayFullWalletRequest(final Activity activity,
             final int requestCode, final Cart cart, final String googleTransactionId) {
         mExecutorService.submit(new Runnable() {
@@ -695,6 +740,12 @@ public class Braintree {
         });
     }
 
+    /**
+     * Parse a payment method nonce from a {@link FullWallet} response.
+     *
+     * @param resultCode The resultCode of the request.
+     * @param data The {@link Intent} containing the {@link FullWallet}.
+     */
     public synchronized void getNonceFromAndroidPayFullWalletResponse(int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             try {

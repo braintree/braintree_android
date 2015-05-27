@@ -15,6 +15,9 @@ import com.google.android.gms.wallet.PaymentMethodTokenizationType;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 
+/**
+ * Class containing Android Pay specific logic.
+ */
 public class AndroidPay {
 
     private Configuration mConfiguration;
