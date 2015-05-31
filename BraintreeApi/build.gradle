@@ -27,7 +27,7 @@ configurations {
 
 dependencies {
     compile 'com.google.code.gson:gson:[2.2.4,3.0)'
-    compile 'com.google.android.gms:play-services-wallet:7.0.0'
+    compile 'com.google.android.gms:play-services-wallet:7.5.0'
 
     compile project(':BraintreeData')
     compile files('libs/' + paypalVersion)
