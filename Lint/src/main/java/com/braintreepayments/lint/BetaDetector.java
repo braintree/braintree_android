@@ -28,7 +28,16 @@ public class BetaDetector extends Detector implements JavaScanner {
             "isThreeDSecureEnabled",
             "startThreeDSecureVerification",
             "finishThreeDSecureVerification",
-            "getThreeDSecureInfo"
+            "getThreeDSecureInfo",
+            "isMaskedWalletResponse",
+            "isFullWalletResponse",
+            "getAndroidPayTokenizationParameters",
+            "getAndroidPayGoogleTransactionId",
+            "performAndroidPayMaskedWalletRequest",
+            "performAndroidPayChangeMaskedWalletRequest",
+            "performAndroidPayFullWalletRequest",
+            "getNonceFromAndroidPayFullWalletResponse",
+            "getAndroidPay"
     );
 
     private static final Implementation IMPLEMENTATION = new Implementation(

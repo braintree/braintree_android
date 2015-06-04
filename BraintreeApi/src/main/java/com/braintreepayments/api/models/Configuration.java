@@ -70,6 +70,7 @@ public class Configuration {
     /**
      * @return instance of {@link AndroidPayConfiguration}.
      */
+    @Beta
     public AndroidPayConfiguration getAndroidPay() {
         return (mAndroidPayConfiguration == null ? new AndroidPayConfiguration() : mAndroidPayConfiguration);
     }

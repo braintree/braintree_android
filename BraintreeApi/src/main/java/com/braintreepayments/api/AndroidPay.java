@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.content.Context;
 import android.content.Intent;
 
+import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.models.Configuration;
 import com.google.android.gms.common.ConnectionResult;
@@ -18,6 +19,7 @@ import com.google.android.gms.wallet.WalletConstants;
 /**
  * Class containing Android Pay specific logic.
  */
+@Beta
 public class AndroidPay {
 
     private Configuration mConfiguration;
@@ -39,6 +41,7 @@ public class AndroidPay {
      * @return {@code true} is the {@link Intent} contains a {@link WalletConstants#EXTRA_MASKED_WALLET},
      *         {@code false} otherwise.
      */
+    @Beta
     public static boolean isMaskedWalletResponse(Intent intent) {
         return intent.hasExtra(WalletConstants.EXTRA_MASKED_WALLET);
     }
@@ -50,6 +53,7 @@ public class AndroidPay {
      * @return {@code true} is the {@link Intent} contains a {@link WalletConstants#EXTRA_FULL_WALLET},
      *         {@code false} otherwise.
      */
+    @Beta
     public static boolean isFullWalletResponse(Intent intent) {
         return intent.hasExtra(WalletConstants.EXTRA_FULL_WALLET);
     }

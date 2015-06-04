@@ -1,7 +1,9 @@
 package com.braintreepayments.api.models;
 
+import com.braintreepayments.api.annotations.Beta;
 import com.google.gson.annotations.SerializedName;
 
+@Beta
 public class AndroidPayConfiguration {
 
     @SerializedName("enabled") private boolean mEnabled;

@@ -627,6 +627,7 @@ public class Braintree {
      *
      * @return {@link PaymentMethodTokenizationParameters}
      */
+    @Beta
     public PaymentMethodTokenizationParameters getAndroidPayTokenizationParameters() {
         return mBraintreeApi.getAndroidPayTokenizationParameters();
     }
@@ -640,6 +641,7 @@ public class Braintree {
      * @param data The {@link Intent} to parse the transaction id from.
      * @return The {@link String} transaction id or {@code null}.
      */
+    @Beta
     public String getAndroidPayGoogleTransactionId(Intent data) {
         if (AndroidPay.isMaskedWalletResponse(data)) {
             return ((MaskedWallet) data.getParcelableExtra(WalletConstants.EXTRA_MASKED_WALLET))
@@ -660,6 +662,7 @@ public class Braintree {
      * @param requestCode The requestCode for this request.
      * @param cart The cart representation with price and optionally items.
      */
+    @Beta
     public synchronized void performAndroidPayMaskedWalletRequest(Activity activity, int requestCode, Cart cart) {
         performAndroidPayMaskedWalletRequest(activity, requestCode, cart, false, false, false);
     }
@@ -675,6 +678,7 @@ public class Braintree {
      * @param shippingAddressRequired {@code true} if this request requires a shipping address, {@code false} otherwise.
      * @param phoneNumberRequired {@code true} if this request requires a phone number, {@code false} otherwise.
      */
+    @Beta
     public synchronized void performAndroidPayMaskedWalletRequest(final Activity activity,
             final int requestCode, final Cart cart, final boolean isBillingAgreement, final boolean shippingAddressRequired,
             final boolean phoneNumberRequired) {
@@ -701,6 +705,7 @@ public class Braintree {
      * @param requestCode The requestCode for this request.
      * @param googleTransactionId The transaction id of the {@link MaskedWallet} to change.
      */
+    @Beta
     public synchronized void performAndroidPayChangeMaskedWalletRequest(final Activity activity,
             final int requestCode, final String googleTransactionId) {
         mExecutorService.submit(new Runnable() {
@@ -725,6 +730,7 @@ public class Braintree {
      * @param cart The cart representation with the price and optionally items.
      * @param googleTransactionId The transaction id from the {@link MaskedWallet}.
      */
+    @Beta
     public synchronized void performAndroidPayFullWalletRequest(final Activity activity,
             final int requestCode, final Cart cart, final String googleTransactionId) {
         mExecutorService.submit(new Runnable() {
@@ -746,6 +752,7 @@ public class Braintree {
      * @param resultCode The resultCode of the request.
      * @param data The {@link Intent} containing the {@link FullWallet}.
      */
+    @Beta
     public synchronized void getNonceFromAndroidPayFullWalletResponse(int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             try {
