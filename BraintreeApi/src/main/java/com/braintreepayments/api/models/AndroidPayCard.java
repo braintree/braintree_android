@@ -3,12 +3,15 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.braintreepayments.api.BraintreeApi;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+/**
+ * {@link com.braintreepayments.api.models.PaymentMethod} representing an Android Pay card.
+ * @see com.braintreepayments.api.models.PaymentMethod
+ */
 public class AndroidPayCard extends PaymentMethod implements Parcelable, Serializable {
 
     protected static final String PAYMENT_METHOD_TYPE = "AndroidPayCard";
