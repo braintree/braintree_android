@@ -915,25 +915,16 @@ public class Braintree {
      * @param data The {@link Intent} received in {@link Activity#onActivityResult(int, int, Intent)}
      */
     public void onActivityResult(Activity activity, int requestCode, int responseCode, Intent data) {
-        if (PayPalHelper.isPayPalIntent(data)) {
-            if (responseCode == Activity.RESULT_OK) {
+        if (responseCode == Activity.RESULT_OK && data != null) {
+            if (PayPalHelper.isPayPalIntent(data)) {
                 finishPayWithPayPal(activity, responseCode, data);
-            }
-        } else if (AndroidPay.isMaskedWalletResponse(data)) {
-            if (responseCode == Activity.RESULT_OK) {
-                performAndroidPayFullWalletRequest(activity, requestCode, null,
-                        getAndroidPayGoogleTransactionId(data));
-            }
-        } else if (AndroidPay.isFullWalletResponse(data)) {
-            if (responseCode == Activity.RESULT_OK) {
+            } else if (AndroidPay.isMaskedWalletResponse(data)) {
+                performAndroidPayFullWalletRequest(activity, requestCode, null, getAndroidPayGoogleTransactionId(data));
+            } else if (AndroidPay.isFullWalletResponse(data)) {
                 getNonceFromAndroidPayFullWalletResponse(responseCode, data);
-            }
-        } else if (VenmoAppSwitch.isVenmoAppSwitchResponse(data)) {
-            if (responseCode == Activity.RESULT_OK) {
+            } else if (VenmoAppSwitch.isVenmoAppSwitchResponse(data)) {
                 finishPayWithVenmo(responseCode, data);
-            }
-        } else if (ThreeDSecureAuthenticationResponse.isThreeDSecureAuthenticationResponse(data)) {
-            if (responseCode == Activity.RESULT_OK) {
+            } else if (ThreeDSecureAuthenticationResponse.isThreeDSecureAuthenticationResponse(data)) {
                 finishThreeDSecureVerification(responseCode, data);
             }
         }
