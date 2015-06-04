@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.1.2'
+        classpath 'com.android.tools.build:gradle:1.2.3'
         classpath 'org.rauschig:jarchivelib:0.6.0'
         classpath 'commons-io:commons-io:2.4'
         classpath files('libs/0.12.1-SNAPSHOT/gradle-plugin-0.12.1-SNAPSHOT.jar')
@@ -27,7 +27,7 @@ allprojects {
 
     ext {
         compileSdkVersion = 22
-        buildToolsVersion = '22'
+        buildToolsVersion = '22.0.1'
         minSdkVersion = 10
         targetSdkVersion = 22
         versionCode = 22
