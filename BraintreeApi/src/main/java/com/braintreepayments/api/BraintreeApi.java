@@ -153,10 +153,7 @@ public class BraintreeApi {
         return mVenmoAppSwitch.isAvailable();
     }
 
-    /**
-     * @return If Android Pay is enabled.
-     */
-    public boolean isAndroidPayEnabled() {
+    protected boolean isAndroidPayEnabled() {
         return (mConfiguration.getAndroidPay().isEnabled() &&
                 GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mContext) == ConnectionResult.SUCCESS);
     }
