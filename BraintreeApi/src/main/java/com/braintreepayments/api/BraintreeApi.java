@@ -198,14 +198,16 @@ public class BraintreeApi {
     /**
      * Start the Pay With PayPal flow. This will launch a new activity for the PayPal mobile SDK.
      * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     *   when {@link #startPayWithPayPal(android.app.Activity, int)} finishes.
+     *   when {@link #startPayWithPayPal(android.app.Activity, int, java.util.List)} finishes.
      * @param requestCode The request code associated with this start request. Will be returned in
+     * @param additionalScopes A {@link java.util.List} of additional scopes. Ex: 'address'
      * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      */
-    public void startPayWithPayPal(Activity activity, int requestCode) {
+    public void startPayWithPayPal(Activity activity, int requestCode, List<String> additionalScopes) {
         PayPalHelper.startPaypal(activity.getApplicationContext(), mConfiguration.getPayPal());
-        PayPalHelper.launchPayPal(activity, requestCode, mConfiguration.getPayPal());
+        PayPalHelper.launchPayPal(activity, requestCode, mConfiguration.getPayPal(), additionalScopes);
     }
+
 
     /**
      * Start the Pay With Venmo flow. This will app switch to the Venmo app.

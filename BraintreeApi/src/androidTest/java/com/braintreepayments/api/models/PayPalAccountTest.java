@@ -28,6 +28,12 @@ public class PayPalAccountTest extends AndroidTestCase {
         assertEquals("aaaaaa-bbbbbbb-109934023-1", payPalAccount.getNonce());
         assertEquals("paypalaccount@example.com", payPalAccount.getEmail());
         assertEquals("PayPal", payPalAccount.getTypeLabel());
+        assertEquals("123 Fake St.", payPalAccount.getBillingAddress().getStreetAddress());
+        assertEquals("Apt. 3", payPalAccount.getBillingAddress().getExtendedAddress());
+        assertEquals("Oakland", payPalAccount.getBillingAddress().getLocality());
+        assertEquals("CA", payPalAccount.getBillingAddress().getRegion());
+        assertEquals("94602", payPalAccount.getBillingAddress().getPostalCode());
+        assertEquals("US", payPalAccount.getBillingAddress().getCountryCodeAlpha2());
     }
 
     public void testGetEmailReturnsEmptyStringIfDetailsIsNull() {

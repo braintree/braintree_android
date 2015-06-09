@@ -7,6 +7,9 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 
 /**
@@ -21,12 +24,17 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
     @SerializedName("consentCode") private String mConsentCode;
     @SerializedName("correlationId") private String mCorrelationId;
     @SerializedName("details") private PayPalDetails mDetails;
+    private PostalAddress mBillingAddress;
 
     public PayPalAccount() {}
 
     protected void setEmail(String email) {
         mDetails = new PayPalDetails();
         mDetails.setEmail(email);
+    }
+
+    public PostalAddress getBillingAddress() {
+        return mBillingAddress;
     }
 
     protected void setConsentCode(String consentCode) {
@@ -75,7 +83,16 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
      * @return {@link com.braintreepayments.api.models.PayPalAccount} for use in payment method selection UIs.
      */
     public static PayPalAccount fromJson(String json) {
-        return new Gson().fromJson(json, PayPalAccount.class);
+        PayPalAccount payPalAccount = new Gson().fromJson(json, PayPalAccount.class);
+        try {
+            String accountAddressJson = new JSONObject(json).getJSONObject("details")
+                    .getJSONObject("payerInfo").getJSONObject("accountAddress").toString();
+            payPalAccount.mBillingAddress = new Gson().fromJson(accountAddressJson, PostalAddress.class);
+        } catch (JSONException ignored) {
+            // Absence of address info shouldn't block a payment method from being created
+        }
+
+        return payPalAccount;
     }
 
     @Override
@@ -136,5 +153,4 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
             public PayPalDetails[] newArray(int size) {return new PayPalDetails[size];}
         };
     }
-
 }

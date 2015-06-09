@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class PayPalHelper {
@@ -38,7 +39,8 @@ public class PayPalHelper {
         context.startService(buildPayPalServiceIntent(context, configuration));
     }
 
-    protected static void launchPayPal(Activity activity, int requestCode, com.braintreepayments.api.models.PayPalConfiguration configuration) {
+    protected static void launchPayPal(Activity activity, int requestCode, com.braintreepayments.api.models.PayPalConfiguration configuration,
+        List<String> additionalScopes) {
         Class klass;
         if (PayPalTouch.available(activity.getBaseContext(), sEnableSignatureVerification) &&
                 !configuration.getEnvironment().equals(OFFLINE) &&
@@ -48,14 +50,17 @@ public class PayPalHelper {
             klass = PayPalProfileSharingActivity.class;
         }
 
-        Intent intent = new Intent(activity, klass);
         Set<String> scopes = new HashSet<String>(
                 Arrays.asList(
-                    PayPalOAuthScopes.PAYPAL_SCOPE_EMAIL,
-                    PayPalOAuthScopes.PAYPAL_SCOPE_FUTURE_PAYMENTS)
+                        PayPalOAuthScopes.PAYPAL_SCOPE_EMAIL,
+                        PayPalOAuthScopes.PAYPAL_SCOPE_FUTURE_PAYMENTS)
         );
-        intent.putExtra(PayPalTouchActivity.EXTRA_REQUESTED_SCOPES, new PayPalOAuthScopes(scopes));
-        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, buildPayPalConfiguration(configuration));
+        if (additionalScopes != null) {
+            scopes.addAll(additionalScopes);
+        }
+        Intent intent = new Intent(activity, klass)
+            .putExtra(PayPalTouchActivity.EXTRA_REQUESTED_SCOPES, new PayPalOAuthScopes(scopes))
+            .putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, buildPayPalConfiguration(configuration));
         activity.startActivityForResult(intent, requestCode);
     }
 

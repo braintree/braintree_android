@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+* Add support for additional scopes during PayPal authorization
+  * A List of additional scopes can be passed to the `startPayWithPayPal` method.
+  * Specifically supporting the `address` scope
+  * PayPalAccount now has a `mBillingAddress` property that is set when an address is present. This property is of type `PostalAddress`.
+
 ## 1.5.1
 
 * Update PayPal SDK to 2.9.5
