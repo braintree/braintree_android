@@ -1,14 +1,11 @@
 package com.braintreepayments.api.dropin;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -341,13 +338,10 @@ public class BraintreePaymentActivity extends Activity implements
         StubbedView.LOADING_VIEW.show(this);
     }
 
-    @TargetApi(VERSION_CODES.HONEYCOMB)
     private void setActionBarUpEnabled(boolean enabled) {
-        if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
-            ActionBar actionBar = getActionBar();
-            if (actionBar != null) {
-                actionBar.setDisplayHomeAsUpEnabled(enabled);
-            }
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(enabled);
         }
     }
 
@@ -364,25 +358,20 @@ public class BraintreePaymentActivity extends Activity implements
         return clientToken;
     }
 
-    @SuppressLint("NewApi")
     private void customizeActionBar() {
-        if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
-            ActionBar actionBar = getActionBar();
-            if (actionBar != null) {
-                if (TextUtils.isEmpty(mCustomization.getActionBarTitle())) {
-                    actionBar.setTitle(getString(R.string.bt_default_action_bar_text));
-                } else {
-                    actionBar.setTitle(mCustomization.getActionBarTitle());
-                }
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            if (TextUtils.isEmpty(mCustomization.getActionBarTitle())) {
+                actionBar.setTitle(getString(R.string.bt_default_action_bar_text));
+            } else {
+                actionBar.setTitle(mCustomization.getActionBarTitle());
+            }
 
-                if (VERSION.SDK_INT >= VERSION_CODES.ICE_CREAM_SANDWICH) {
-                    if (mCustomization.getActionBarLogo() == 0) {
-                        actionBar.setLogo(new ColorDrawable(
-                                getResources().getColor(android.R.color.transparent)));
-                    } else {
-                        actionBar.setLogo(mCustomization.getActionBarLogo());
-                    }
-                }
+            if (mCustomization.getActionBarLogo() == 0) {
+                actionBar.setLogo(new ColorDrawable(
+                        getResources().getColor(android.R.color.transparent)));
+            } else {
+                actionBar.setLogo(mCustomization.getActionBarLogo());
             }
         }
     }
@@ -503,15 +492,11 @@ public class BraintreePaymentActivity extends Activity implements
             }
 
             View inflated = inflateOrFind(activity);
-            if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB_MR1) {
-                inflated.setAlpha(0f);
-                inflated.setVisibility(View.VISIBLE);
-                inflated.animate()
-                        .alpha(1f)
-                        .setDuration(getDuration(activity));
-            } else {
-                inflated.setVisibility(View.VISIBLE);
-            }
+            inflated.setAlpha(0f);
+            inflated.setVisibility(View.VISIBLE);
+            inflated.animate()
+                    .alpha(1f)
+                    .setDuration(getDuration(activity));
 
             mCurrentView = true;
 

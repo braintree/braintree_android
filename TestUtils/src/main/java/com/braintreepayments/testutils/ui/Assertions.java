@@ -1,8 +1,6 @@
 package com.braintreepayments.testutils.ui;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.test.espresso.NoMatchingViewException;
@@ -10,8 +8,6 @@ import android.support.test.espresso.ViewAssertion;
 import android.view.View;
 import android.widget.EditText;
 
-import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.HONEYCOMB_MR1;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
@@ -55,25 +51,11 @@ public class Assertions {
         };
     }
 
-    @TargetApi(HONEYCOMB_MR1)
     public static void assertBitmapsEqual(Drawable d1, Drawable d2) {
         if (d1 == null || d2 == null) {
             assertEquals(d1, d2);
         } else {
-            Bitmap b1 = ((BitmapDrawable) d1).getBitmap();
-            Bitmap b2 = ((BitmapDrawable) d2).getBitmap();
-            if (SDK_INT >= HONEYCOMB_MR1) {
-                assertTrue(b1.sameAs(b2));
-            } else {
-                assertEquals(b1.getHeight(), b2.getHeight());
-                assertEquals(b1.getWidth(), b2.getWidth());
-                for (int x = 0; x < b1.getWidth(); x++) {
-                    for (int y = 0; y < b1.getHeight(); y++) {
-                        assertEquals(b1.getPixel(x, y), b2.getPixel(x, y));
-                    }
-                }
-            }
+            assertTrue(((BitmapDrawable) d1).getBitmap().sameAs(((BitmapDrawable) d2).getBitmap()));
         }
     }
-
 }

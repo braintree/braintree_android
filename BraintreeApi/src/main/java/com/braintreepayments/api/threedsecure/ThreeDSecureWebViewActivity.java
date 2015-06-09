@@ -1,11 +1,8 @@
 package com.braintreepayments.api.threedsecure;
 
-import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Window;
@@ -93,21 +90,17 @@ public class ThreeDSecureWebViewActivity extends Activity {
         }
     }
 
-    @TargetApi(VERSION_CODES.HONEYCOMB)
     protected void setActionBarTitle(String title) {
         if (mActionBar != null) {
             mActionBar.setTitle(title);
         }
     }
 
-    @TargetApi(VERSION_CODES.HONEYCOMB)
     private void setupActionBar() {
-        if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB) {
-            mActionBar = getActionBar();
-            if (mActionBar != null) {
-                setActionBarTitle("");
-                mActionBar.setDisplayHomeAsUpEnabled(true);
-            }
+        mActionBar = getActionBar();
+        if (mActionBar != null) {
+            setActionBarTitle("");
+            mActionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 

@@ -1,11 +1,9 @@
 package com.braintreepayments.testutils.ui;
 
-import android.annotation.TargetApi;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build.VERSION_CODES;
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.view.View;
 import android.widget.TextView;
@@ -113,7 +111,6 @@ public class Matchers {
         };
     }
 
-    @TargetApi(VERSION_CODES.HONEYCOMB)
     public static Matcher<View> hasBackgroundResource(final int resourceId) {
         return new BoundedMatcher<View, View>(View.class) {
             private Drawable expectedDrawable = null;

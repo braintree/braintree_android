@@ -1,10 +1,8 @@
 package com.braintreepayments.api.dropin;
 
-import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.widget.Button;
@@ -544,10 +542,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         assertNotNull(paymentMethod.getNonce());
     }
 
-    @TargetApi(VERSION_CODES.HONEYCOMB)
     private boolean checkHomeAsUpEnabled(Activity activity) {
         return (activity.getActionBar().getDisplayOptions() & ActionBar.DISPLAY_HOME_AS_UP) ==
             ActionBar.DISPLAY_HOME_AS_UP;
     }
-
 }

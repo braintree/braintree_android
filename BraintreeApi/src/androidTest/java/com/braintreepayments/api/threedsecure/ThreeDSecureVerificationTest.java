@@ -1,9 +1,7 @@
 package com.braintreepayments.api.threedsecure;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
@@ -47,7 +45,6 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
         mBraintreeApi = new BraintreeApi(getInstrumentation().getContext(), mClientToken);
     }
 
-    @TargetApi(VERSION_CODES.HONEYCOMB)
     public void testReturnsWithStatusResultCanceledWhenUpIsPressed()
             throws ErrorWithResponse, BraintreeException, InterruptedException {
         Activity activity = startThreeDSecureTestActivity("4000000000000002");
