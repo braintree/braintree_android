@@ -120,7 +120,7 @@ ruby script/httpsd.rb /tmp/httpsd.pid
 ruby script/log_listener.rb &
 log_listener_pid=$!
 
-$android_path/gradlew --info --no-color runAllTests :BraintreeData:connectedAndroidTest :BraintreeApi:connectedAndroidTest
+$android_path/gradlew --info --continue --no-color runAllTests :BraintreeData:connectedAndroidTest :BraintreeApi:connectedAndroidTest
 test_return_code=$?
 
 cleanup_android
