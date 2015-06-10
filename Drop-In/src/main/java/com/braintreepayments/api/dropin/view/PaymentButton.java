@@ -172,8 +172,6 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
     }
 
     /**
-     * @deprecated Use {@link Braintree#onActivityResult(Activity, int, int, Intent)} instead.
-     *
      * Extracts payment information from activity results and posts {@link com.braintreepayments.api.models.PaymentMethod}s
      * or nonces to listeners as appropriate.
      *
@@ -181,7 +179,6 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
      * @param responseCode Result code from {@link Activity#onActivityResult(int, int, android.content.Intent)}
      * @param data {@link android.content.Intent} from {@link Activity#onActivityResult(int, int, android.content.Intent)}
      */
-    @Deprecated
     public void onActivityResult(int requestCode, int responseCode, Intent data) {
         if (requestCode == mRequestCode) {
             mBraintree.onActivityResult(mActivity, requestCode, responseCode, data);
