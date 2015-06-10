@@ -34,6 +34,7 @@ import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.WalletConstants;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -356,11 +357,13 @@ public class BraintreeApi {
     }
 
     protected AndroidPayCard getNonceFromAndroidPayFullWalletResponse(Intent data) throws JSONException {
-        if (data.hasExtra(WalletConstants.EXTRA_FULL_WALLET)) {
+        if (AndroidPay.isFullWalletResponse(data)) {
             FullWallet fullWallet = data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET);
-            String cardJson = new JSONObject(fullWallet.getPaymentMethodToken().getToken())
-                        .getJSONArray("androidPayCards").get(0).toString();
-            return new Gson().fromJson(cardJson, AndroidPayCard.class);
+            JSONArray androidPayCards = new JSONObject(fullWallet.getPaymentMethodToken().getToken())
+                    .getJSONArray("androidPayCards");
+            if (androidPayCards.length() > 0) {
+                return new Gson().fromJson(androidPayCards.getString(0), AndroidPayCard.class);
+            }
         }
 
         return null;
