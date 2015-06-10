@@ -57,7 +57,7 @@ public class AndroidPayCard extends PaymentMethod implements Parcelable, Seriali
         mDetails = in.readParcelable(AndroidPayCardDetails.class.getClassLoader());
         mNonce = in.readString();
         mDescription = in.readString();
-        mPaymentMethodOptions= (PaymentMethodOptions) in.readSerializable();
+        mPaymentMethodOptions = (PaymentMethodOptions) in.readSerializable();
         mSource = in.readString();
     }
 
