@@ -21,16 +21,6 @@
 
         <service android:name="com.paypal.android.sdk.payments.PayPalService"
             android:exported="false" />
-
-        <meta-data android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-        <receiver
-            android:name="com.google.android.gms.wallet.EnableWalletOptimizationReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.android.gms.wallet.ENABLE_WALLET_OPTIMIZATION" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>
