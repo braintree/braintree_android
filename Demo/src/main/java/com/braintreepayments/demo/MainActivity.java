@@ -22,11 +22,12 @@ import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
 import com.braintreepayments.api.Braintree.ErrorListener;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
-import com.braintreepayments.api.SignatureVerification;
+import com.braintreepayments.api.PayPalSignatureVerification;
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.Customization;
 import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.internal.VenmoSignatureVerification;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.demo.internal.ApiClient;
 import com.braintreepayments.demo.internal.ApiClientRequestInterceptor;
@@ -75,7 +76,8 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
 
         // Warning, signature verification is disabled for this demo only, you should never
         // do this as it opens a security hole
-        SignatureVerification.disableAppSwitchSignatureVerification();
+        PayPalSignatureVerification.disableAppSwitchSignatureVerification();
+        VenmoSignatureVerification.disableAppSwitchSignatureVerification();
 
         mNonceTextView = (TextView) findViewById(R.id.nonce);
         mDropInButton = (Button) findViewById(R.id.drop_in);

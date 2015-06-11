@@ -108,7 +108,7 @@ public class PayPalTest extends AndroidTestCase {
     }
 
     public void testIsPayPalIntentReturnsFalseForNonEmptyIntent() {
-        Intent intent = new Intent().putExtra(AppSwitch.EXTRA_PAYMENT_METHOD_NONCE, "nonce");
+        Intent intent = new Intent().putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE, "nonce");
         assertFalse(PayPal.isPayPalIntent(intent));
     }
 

@@ -7,8 +7,8 @@ import android.os.Parcelable;
 import android.test.AndroidTestCase;
 import android.view.View;
 
-import com.braintreepayments.api.AppSwitch;
 import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.Venmo;
 import com.braintreepayments.api.dropin.R;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.WalletConstants;
@@ -212,7 +212,7 @@ public class PaymentButtonTest extends AndroidTestCase {
         PaymentButton button = new PaymentButton(getContext());
 
         button.initialize(null, mBraintree, 500);
-        Intent intent = new Intent().putExtra(AppSwitch.EXTRA_PAYMENT_METHOD_NONCE, "");
+        Intent intent = new Intent().putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE, "");
         button.onActivityResult(500, Activity.RESULT_OK, intent);
         verify(mBraintree).onActivityResult(null, 500, Activity.RESULT_OK, intent);
     }
@@ -232,7 +232,7 @@ public class PaymentButtonTest extends AndroidTestCase {
         PaymentButton button = new PaymentButton(getContext());
         button.initialize(null, mBraintree);
 
-        Intent intent = new Intent().putExtra(AppSwitch.EXTRA_PAYMENT_METHOD_NONCE, "");
+        Intent intent = new Intent().putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE, "");
         button.onActivityResult(PaymentButton.REQUEST_CODE, Activity.RESULT_OK, intent);
         verify(mBraintree).onActivityResult(null, PaymentButton.REQUEST_CODE, Activity.RESULT_OK,
                 intent);

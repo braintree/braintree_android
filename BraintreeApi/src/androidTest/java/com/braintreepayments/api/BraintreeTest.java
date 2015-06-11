@@ -372,7 +372,7 @@ public class BraintreeTest extends AndroidTestCase {
     public void testStartPayWithVenmoSendsAnalyticsEventWhenUnavailable()
             throws AppSwitchNotAvailableException {
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        doThrow(new AppSwitchNotAvailableException()).when(braintreeApi).startPayWithVenmo(
+        doThrow(new AppSwitchNotAvailableException("")).when(braintreeApi).startPayWithVenmo(
                 any(Activity.class), anyInt());
 
         Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
@@ -396,8 +396,7 @@ public class BraintreeTest extends AndroidTestCase {
             public void writeToParcel(Parcel dest, int flags) {}
         };
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        when(braintreeApi.finishPayWithVenmo(eq(Activity.RESULT_OK), any(Intent.class))).thenReturn(
-                "nonce");
+        when(braintreeApi.finishPayWithVenmo(any(Intent.class))).thenReturn("nonce");
         when(braintreeApi.getPaymentMethod("nonce")).thenReturn(paymentMethod);
 
         Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
@@ -427,7 +426,7 @@ public class BraintreeTest extends AndroidTestCase {
             throws JSONException, BraintreeException, ErrorWithResponse {
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
         Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
-        when(braintreeApi.finishPayWithVenmo(eq(Activity.RESULT_OK), any(Intent.class))).thenReturn(
+        when(braintreeApi.finishPayWithVenmo(any(Intent.class))).thenReturn(
                 "nonce");
         when(braintreeApi.getPaymentMethod("nonce")).thenReturn(new Card());
 
@@ -448,7 +447,7 @@ public class BraintreeTest extends AndroidTestCase {
     public void testFinishPayWithVenmoDoesNothingOnNullBuilder() throws ConfigurationException {
         Intent intent = new Intent();
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        when(braintreeApi.finishPayWithVenmo(eq(Activity.RESULT_CANCELED), eq(intent))).
+        when(braintreeApi.finishPayWithVenmo(eq(intent))).
                 thenReturn(null);
 
         Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
@@ -981,7 +980,7 @@ public class BraintreeTest extends AndroidTestCase {
         doNothing().when(braintree).finishPayWithVenmo(anyInt(), any(Intent.class));
         int requestCode = 10;
         int responseCode = Activity.RESULT_OK;
-        Intent intent = new Intent().putExtra(AppSwitch.EXTRA_PAYMENT_METHOD_NONCE, "");
+        Intent intent = new Intent().putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE, "");
 
         braintree.onActivityResult(null, requestCode, responseCode, intent);
 

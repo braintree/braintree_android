@@ -58,7 +58,6 @@ public class BraintreeApi {
     private Configuration mConfiguration;
     private HttpRequest mHttpRequest;
 
-    private VenmoAppSwitch mVenmoAppSwitch;
     private AndroidPay mAndroidPay;
     private Object mBraintreeData;
 
@@ -86,7 +85,6 @@ public class BraintreeApi {
         mHttpRequest.setBaseUrl(mConfiguration.getClientApiUrl());
 
         mBraintreeData = null;
-        mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
     }
 
     protected BraintreeApi(Context context, ClientToken clientToken) {
@@ -113,7 +111,6 @@ public class BraintreeApi {
         }
 
         mBraintreeData = null;
-        mVenmoAppSwitch = new VenmoAppSwitch(mContext, mConfiguration);
     }
 
     protected boolean isSetup() {
@@ -125,7 +122,6 @@ public class BraintreeApi {
         mHttpRequest.setBaseUrl(mConfiguration.getClientApiUrl());
 
         mBraintreeData = null;
-        mVenmoAppSwitch = new VenmoAppSwitch(mContext, mConfiguration);
     }
 
     private Configuration getConfiguration() throws ErrorWithResponse, BraintreeException {
@@ -163,7 +159,7 @@ public class BraintreeApi {
      */
     @Deprecated
     public boolean isVenmoEnabled() {
-        return mVenmoAppSwitch.isAvailable();
+        return Venmo.isAvailable(mContext, mConfiguration);
     }
 
     protected boolean isAndroidPayEnabled() {
@@ -228,9 +224,12 @@ public class BraintreeApi {
      * @throws com.braintreepayments.api.exceptions.AppSwitchNotAvailableException If the Venmo app is
      * not available.
      */
-    public void startPayWithVenmo(Activity activity, int requestCode)
-            throws AppSwitchNotAvailableException {
-        mVenmoAppSwitch.launch(activity, requestCode);
+    public void startPayWithVenmo(Activity activity, int requestCode) throws AppSwitchNotAvailableException {
+        if (Venmo.isAvailable(mContext, mConfiguration)) {
+            activity.startActivityForResult(Venmo.getLaunchIntent(mConfiguration), requestCode);
+        } else {
+            throw new AppSwitchNotAvailableException("Venmo is not available");
+        }
     }
 
     protected PaymentMethodTokenizationParameters getAndroidPayTokenizationParameters() {
@@ -362,12 +361,11 @@ public class BraintreeApi {
     /**
      * Handles response from Venmo app after One Touch app switch.
      *
-     * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @return The nonce representing the Venmo payment method.
      */
-    public String finishPayWithVenmo(int resultCode, Intent data) {
-        return mVenmoAppSwitch.handleAppSwitchResponse(resultCode, data);
+    public String finishPayWithVenmo(Intent data) {
+        return Venmo.handleAppSwitchResponse(data);
     }
 
     protected AndroidPayCard getNonceFromAndroidPayFullWalletResponse(Intent data) throws JSONException {

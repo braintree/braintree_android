@@ -11,8 +11,9 @@ import android.util.Log;
 import android.view.View;
 
 import com.braintreepayments.api.Braintree;
-import com.braintreepayments.api.SignatureVerification;
+import com.braintreepayments.api.PayPalTestSignatureVerification;
 import com.braintreepayments.api.internal.HttpRequest;
+import com.braintreepayments.api.internal.VenmoTestSignatureVerification;
 import com.braintreepayments.testutils.ui.ViewHelper;
 
 import org.hamcrest.Matcher;
@@ -32,7 +33,8 @@ public class BraintreePaymentActivityTestCase extends
     @Override
     public void setUp() throws Exception {
         HttpRequest.DEBUG = true;
-        SignatureVerification.disableAppSwitchSignatureVerification();
+        PayPalTestSignatureVerification.disableAppSwitchSignatureVerification();
+        VenmoTestSignatureVerification.disableSignatureVerification();
         setFailureHandler(new ScreenshotFailureHandler(getInstrumentation(), this));
 
         KeyguardManager keyguardManager = (KeyguardManager)

@@ -615,14 +615,14 @@ public class Braintree {
      * @param data Intent returned from Pay With Venmo flow.
      */
     public synchronized void finishPayWithVenmo(int resultCode, Intent data) {
-        final String nonce = mBraintreeApi.finishPayWithVenmo(resultCode, data);
+        final String nonce = mBraintreeApi.finishPayWithVenmo(data);
         if (!TextUtils.isEmpty(nonce)) {
             mExecutorService.submit(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         PaymentMethod paymentMethod = mBraintreeApi.getPaymentMethod(nonce);
-                        paymentMethod.setSource(VenmoAppSwitch.VENMO_SOURCE);
+                        paymentMethod.setSource(Venmo.VENMO_SOURCE);
                         addPaymentMethodToCache(paymentMethod);
                         postCreatedMethodToListeners(paymentMethod);
                         postCreatedNonceToListeners(nonce);
@@ -947,7 +947,7 @@ public class Braintree {
                 performAndroidPayFullWalletRequest(activity, requestCode, null, getAndroidPayGoogleTransactionId(data));
             } else if (AndroidPay.isFullWalletResponse(data)) {
                 getNonceFromAndroidPayFullWalletResponse(responseCode, data);
-            } else if (VenmoAppSwitch.isVenmoAppSwitchResponse(data)) {
+            } else if (Venmo.isVenmoAppSwitchResponse(data)) {
                 finishPayWithVenmo(responseCode, data);
             } else if (ThreeDSecureAuthenticationResponse.isThreeDSecureAuthenticationResponse(data)) {
                 finishThreeDSecureVerification(responseCode, data);

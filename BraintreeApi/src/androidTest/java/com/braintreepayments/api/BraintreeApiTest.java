@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -65,17 +64,16 @@ public class BraintreeApiTest extends AndroidTestCase {
 
     public void testFinishPayWithVenmoReturnsANonce() {
         BraintreeApi braintreeApi = new BraintreeApi(mContext, new TestClientTokenBuilder().build());
-        Intent intent = new Intent().putExtra(AppSwitch.EXTRA_PAYMENT_METHOD_NONCE,
+        Intent intent = new Intent().putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE,
                 "payment method nonce");
 
-        assertEquals("payment method nonce", braintreeApi.finishPayWithVenmo(Activity.RESULT_OK,
-                intent));
+        assertEquals("payment method nonce", braintreeApi.finishPayWithVenmo(intent));
     }
 
-    public void testPayWithVenmoReturnsNullIfResultCodeNotOK() {
+    public void testPayWithVenmoReturnsNullIfIntentIsEmpty() {
         BraintreeApi braintreeApi = new BraintreeApi(mContext, new TestClientTokenBuilder().build());
 
-        assertNull(braintreeApi.finishPayWithVenmo(Activity.RESULT_CANCELED, new Intent()));
+        assertNull(braintreeApi.finishPayWithVenmo(new Intent()));
     }
 
     public void testGetPaymentMethodReturnsPaymentMethodFromNonce()

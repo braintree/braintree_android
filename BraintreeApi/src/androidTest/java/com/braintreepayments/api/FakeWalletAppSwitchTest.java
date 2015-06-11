@@ -1,21 +1,12 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.SystemClock;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
-import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.internal.SignatureVerification;
 
 public class FakeWalletAppSwitchTest extends AndroidTestCase {
-
-    private FakeWalletAppSwitch mFakeWalletAppSwitch;
-
-    @Override
-    public void setUp(){
-        mFakeWalletAppSwitch = new FakeWalletAppSwitch(getContext(), new Configuration());
-    }
 
     public void testIsAvailableReturnsFalseWhenAppNotInstalled() {
         if (!BuildConfig.RUN_ALL_TESTS) {
@@ -23,7 +14,7 @@ public class FakeWalletAppSwitchTest extends AndroidTestCase {
         }
 
         uninstallFakeWallet();
-        assertFalse(mFakeWalletAppSwitch.isAvailable());
+        assertFalse(checkSignature());
     }
 
     public void testIsAvailableReturnsTrueWhenSupportedAppIsInstalled() {
@@ -32,7 +23,7 @@ public class FakeWalletAppSwitchTest extends AndroidTestCase {
         }
 
         installFakeWallet();
-        assertTrue(mFakeWalletAppSwitch.isAvailable());
+        assertTrue(checkSignature());
     }
 
     private void installFakeWallet() {
@@ -45,45 +36,8 @@ public class FakeWalletAppSwitchTest extends AndroidTestCase {
         SystemClock.sleep(10000);
     }
 
-    private class FakeWalletAppSwitch extends AppSwitch {
-        public FakeWalletAppSwitch(Context context, Configuration configuration) {
-            super(context, configuration);
-        }
-
-        @Override
-        public String getPackage() {
-            return "com.braintreepayments.fake.wallet";
-        }
-
-        @Override
-        protected String getAppSwitchActivity() {
-            return "AppSwitchActivity";
-        }
-
-        @Override
-        public String getCertificateSubject() {
-            return "CN=Android Debug,O=Android,C=US";
-        }
-
-        @Override
-        public String getCertificateIssuer() {
-            return "CN=Android Debug,O=Android,C=US";
-        }
-
-        @Override
-        public int getPublicKeyHashCode() {
-            return 496242318;
-        }
-
-        @Override
-        public Intent getLaunchIntent() {
-            return super.getLaunchIntent()
-                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        }
-
-        @Override
-        public String handleAppSwitchResponse(int requestCode, Intent data) {
-            return data.getStringExtra(AppSwitch.EXTRA_PAYMENT_METHOD_NONCE);
-        }
+    private boolean checkSignature() {
+        return SignatureVerification.isSignatureValid(mContext, "com.braintreepayments.fake.wallet",
+                "CN=Android Debug,O=Android,C=US", "CN=Android Debug,O=Android,C=US", 496242318);
     }
 }
