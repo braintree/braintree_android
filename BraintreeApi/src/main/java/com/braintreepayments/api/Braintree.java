@@ -325,6 +325,10 @@ public class Braintree {
         return mBraintreeApi.isThreeDSecureEnabled();
     }
 
+    /**
+     * @return If Android Pay is supported and enabled in the current environment.
+     */
+    @Beta
     public boolean isAndroidPayEnabled() {
         return mBraintreeApi.isAndroidPayEnabled();
     }
