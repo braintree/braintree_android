@@ -941,7 +941,7 @@ public class Braintree {
      */
     public void onActivityResult(Activity activity, int requestCode, int responseCode, Intent data) {
         if (responseCode == Activity.RESULT_OK && data != null) {
-            if (PayPalHelper.isPayPalIntent(data)) {
+            if (PayPal.isPayPalIntent(data)) {
                 finishPayWithPayPal(activity, responseCode, data);
             } else if (AndroidPay.isMaskedWalletResponse(data)) {
                 performAndroidPayFullWalletRequest(activity, requestCode, null, getAndroidPayGoogleTransactionId(data));

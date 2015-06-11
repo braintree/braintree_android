@@ -15,14 +15,14 @@ import com.paypal.android.sdk.payments.PayPalTouchActivity;
 
 import static com.braintreepayments.api.TestUtils.getConfigurationFromFixture;
 
-public class PayPalHelperTest extends AndroidTestCase {
+public class PayPalTest extends AndroidTestCase {
 
     public void testBuildsOfflinePayPalConfiguration() {
         Configuration configuration = getConfigurationFromFixture(getContext(),
                 "configuration_with_offline_paypal.json");
 
         PayPalConfiguration payPalConfiguration =
-                PayPalHelper.buildPayPalConfiguration(configuration.getPayPal());
+                PayPal.buildPayPalConfiguration(configuration.getPayPal());
 
         assertTrue(payPalConfiguration.toString().contains("environment:mock"));
     }
@@ -32,7 +32,7 @@ public class PayPalHelperTest extends AndroidTestCase {
                 "configuration_with_live_paypal.json");
 
         PayPalConfiguration payPalConfiguration =
-                PayPalHelper.buildPayPalConfiguration(configuration.getPayPal());
+                PayPal.buildPayPalConfiguration(configuration.getPayPal());
 
         assertTrue(payPalConfiguration.toString().contains("environment:live"));
     }
@@ -42,7 +42,7 @@ public class PayPalHelperTest extends AndroidTestCase {
                 "configuration_with_custom_paypal.json");
 
         PayPalConfiguration payPalConfiguration =
-                PayPalHelper.buildPayPalConfiguration(configuration.getPayPal());
+                PayPal.buildPayPalConfiguration(configuration.getPayPal());
 
         assertTrue(payPalConfiguration.toString().contains("environment:custom"));
     }
@@ -51,7 +51,7 @@ public class PayPalHelperTest extends AndroidTestCase {
         Configuration configuration = getConfigurationFromFixture(getContext(),
                 "configuration_with_custom_paypal.json");
 
-        Intent intent = PayPalHelper.buildPayPalServiceIntent(getContext(), configuration.getPayPal());
+        Intent intent = PayPal.buildPayPalServiceIntent(getContext(), configuration.getPayPal());
 
         assertNotNull(intent.getParcelableExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION));
         assertEquals("https://braintree.paypal.com/v1/",
@@ -63,7 +63,7 @@ public class PayPalHelperTest extends AndroidTestCase {
         Configuration configuration = getConfigurationFromFixture(getContext(),
                 "configuration_with_offline_paypal.json");
 
-        Intent intent = PayPalHelper.buildPayPalServiceIntent(getContext(), configuration.getPayPal());
+        Intent intent = PayPal.buildPayPalServiceIntent(getContext(), configuration.getPayPal());
 
         assertNotNull(intent.getParcelableExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION));
         assertNull(intent.getStringExtra("com.paypal.android.sdk.baseEnvironmentUrl"));
@@ -74,7 +74,7 @@ public class PayPalHelperTest extends AndroidTestCase {
         Configuration configuration = getConfigurationFromFixture(getContext(),
                 "configuration_with_live_paypal.json");
 
-        Intent intent = PayPalHelper.buildPayPalServiceIntent(getContext(), configuration.getPayPal());
+        Intent intent = PayPal.buildPayPalServiceIntent(getContext(), configuration.getPayPal());
 
         assertNotNull(intent.getParcelableExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION));
         assertNull(intent.getStringExtra("com.paypal.android.sdk.baseEnvironmentUrl"));
@@ -83,7 +83,7 @@ public class PayPalHelperTest extends AndroidTestCase {
 
     public void testThrowsConfigurationExceptionWhenResultExtrasInvalidResultCodeReturned() {
         try {
-            PayPalHelper.getBuilderFromActivity(null,
+            PayPal.getBuilderFromActivity(null,
                     PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID, new Intent());
             fail("Expected a ConfigurationException but nothing was thrown");
         } catch (ConfigurationException e) {
@@ -92,28 +92,28 @@ public class PayPalHelperTest extends AndroidTestCase {
     }
 
     public void testReturnsNullWhenResultCodeIsNotExpected() throws ConfigurationException {
-        PayPalAccountBuilder payPalAccountBuilder = PayPalHelper.getBuilderFromActivity(null,
+        PayPalAccountBuilder payPalAccountBuilder = PayPal.getBuilderFromActivity(null,
                 Integer.MAX_VALUE, new Intent());
         assertNull(payPalAccountBuilder);
     }
 
     public void testIsPayPalIntentReturnsTrueForPayPalTouchIntent() {
         Intent intent = new Intent().putExtra(PayPalTouchActivity.EXTRA_LOGIN_CONFIRMATION, newParcelable());
-        assertTrue(PayPalHelper.isPayPalIntent(intent));
+        assertTrue(PayPal.isPayPalIntent(intent));
     }
 
     public void testIsPayPalIntentReturnsTrueForPayPalSDKIntent() {
         Intent intent = new Intent().putExtra(PayPalFuturePaymentActivity.EXTRA_RESULT_AUTHORIZATION, newParcelable());
-        assertTrue(PayPalHelper.isPayPalIntent(intent));
+        assertTrue(PayPal.isPayPalIntent(intent));
     }
 
     public void testIsPayPalIntentReturnsFalseForNonEmptyIntent() {
         Intent intent = new Intent().putExtra(AppSwitch.EXTRA_PAYMENT_METHOD_NONCE, "nonce");
-        assertFalse(PayPalHelper.isPayPalIntent(intent));
+        assertFalse(PayPal.isPayPalIntent(intent));
     }
 
     public void testIsPayPalIntentReturnsFalseForEmptyIntent() {
-        assertFalse(PayPalHelper.isPayPalIntent(new Intent()));
+        assertFalse(PayPal.isPayPalIntent(new Intent()));
     }
 
     private Parcelable newParcelable() {

@@ -215,10 +215,9 @@ public class BraintreeApi {
      * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      */
     public void startPayWithPayPal(Activity activity, int requestCode, List<String> additionalScopes) {
-        PayPalHelper.startPaypal(activity.getApplicationContext(), mConfiguration.getPayPal());
-        PayPalHelper.launchPayPal(activity, requestCode, mConfiguration.getPayPal(), additionalScopes);
+        PayPal.startPaypal(activity.getApplicationContext(), mConfiguration.getPayPal());
+        PayPal.launchPayPal(activity, requestCode, mConfiguration.getPayPal(), additionalScopes);
     }
-
 
     /**
      * Start the Pay With Venmo flow. This will app switch to the Venmo app.
@@ -302,8 +301,8 @@ public class BraintreeApi {
      */
     public PayPalAccountBuilder handlePayPalResponse(Activity activity, int resultCode, Intent data)
             throws ConfigurationException {
-        PayPalHelper.stopPaypalService(mContext);
-        return PayPalHelper.getBuilderFromActivity(activity, resultCode, data);
+        PayPal.stopPaypalService(mContext);
+        return PayPal.getBuilderFromActivity(activity, resultCode, data);
     }
 
     /**

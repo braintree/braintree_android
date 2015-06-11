@@ -24,13 +24,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class PayPalHelper {
+public class PayPal {
 
     private static final String OFFLINE = "offline";
 
     protected static boolean sEnableSignatureVerification = true;
 
-    private PayPalHelper() {
+    private PayPal() {
         throw new IllegalStateException("Non-instantiable class.");
     }
 
