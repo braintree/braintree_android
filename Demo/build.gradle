@@ -56,4 +56,5 @@ android {
 dependencies {
     compile 'com.squareup.okhttp:okhttp:2.3.0'
     compile project(':Drop-In')
+    compile 'com.google.android.gms:play-services-wallet:7.5.0'
 }
