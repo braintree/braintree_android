@@ -161,8 +161,12 @@ public class BraintreeApi {
     }
 
     protected boolean isAndroidPayEnabled() {
-        return (mConfiguration.getAndroidPay().isEnabled() &&
-                GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mContext) == ConnectionResult.SUCCESS);
+        try {
+            return (mConfiguration.getAndroidPay().isEnabled() &&
+                    GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mContext) == ConnectionResult.SUCCESS);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
