@@ -180,31 +180,32 @@ public class Braintree {
         return Executors.newSingleThreadExecutor().submit(new Runnable() {
             @Override
             public void run() {
-                final Braintree braintree;
-                if (sInstances.containsKey(clientToken)) {
-                    braintree = sInstances.get(clientToken);
-                } else {
-                    braintree = new Braintree(context, clientToken);
-                }
-
+                Braintree braintree = null;
                 Exception exception = null;
                 String errorMessage = null;
-                if (!braintree.isSetup()) {
-                    try {
-                        braintree.setup();
-                    } catch (Exception e) {
-                        exception = e;
-                        errorMessage = e.getMessage();
+                try {
+                    if (sInstances.containsKey(clientToken)) {
+                        braintree = sInstances.get(clientToken);
+                    } else {
+                        braintree = new Braintree(context, clientToken);
                     }
+
+                    if (!braintree.isSetup()) {
+                        braintree.setup();
+                    }
+                } catch (Exception e) {
+                    exception = e;
+                    errorMessage = e.getMessage();
                 }
 
+                final Braintree finalBraintree = braintree;
                 final String finalErrorMessage = errorMessage;
                 final Exception finalException = exception;
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
-                        if (braintree.isSetup()) {
-                            listener.onBraintreeSetupFinished(true, braintree, null, null);
+                        if (finalBraintree != null && finalBraintree.isSetup()) {
+                            listener.onBraintreeSetupFinished(true, finalBraintree, null, null);
                         } else {
                             listener.onBraintreeSetupFinished(false, null, finalErrorMessage,
                                     finalException);

@@ -27,6 +27,7 @@ import com.braintreepayments.test.TestListenerActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.WalletConstants;
+import com.google.gson.JsonSyntaxException;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 import com.paypal.android.sdk.payments.PayPalProfileSharingActivity;
 
@@ -117,6 +118,27 @@ public class BraintreeTest extends AndroidTestCase {
         Braintree braintree = new Braintree(clientToken, braintreeApi);
         Braintree.sInstances.put(clientToken, braintree);
         Braintree.setupHelper(mContext, clientToken, setupFinishedListener).get();
+
+        waitForMainThreadToFinish();
+        assertTrue(wasCalled.get());
+    }
+
+    public void testSetupReturnsAnErrorForNonJsonClientToken()
+            throws InterruptedException, ExecutionException {
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        BraintreeSetupFinishedListener setupFinishedListener = new BraintreeSetupFinishedListener() {
+            @Override
+            public void onBraintreeSetupFinished(boolean setupSuccessful, Braintree braintree,
+                    String errorMessage, Exception exception) {
+                assertFalse(setupSuccessful);
+                assertNull(braintree);
+                assertEquals("java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING at line 1 column 1 path $", errorMessage);
+                assertTrue(exception instanceof JsonSyntaxException);
+                wasCalled.set(true);
+            }
+        };
+
+        Braintree.setupHelper(mContext, "not-json!", setupFinishedListener).get();
 
         waitForMainThreadToFinish();
         assertTrue(wasCalled.get());
