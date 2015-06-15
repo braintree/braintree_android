@@ -3,15 +3,20 @@ package com.braintreepayments.demo;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
-import com.braintreepayments.api.Braintree.PaymentMethodNonceListener;
+import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.view.PaymentButton;
+import com.braintreepayments.api.models.PaymentMethod;
 import com.google.android.gms.wallet.Cart;
+import com.paypal.android.sdk.payments.PayPalOAuthScopes;
 
-public class PaymentButtonActivity extends Activity implements PaymentMethodNonceListener,
+import java.util.Arrays;
+
+public class PaymentButtonActivity extends Activity implements PaymentMethodCreatedListener,
         BraintreeSetupFinishedListener {
 
     private PaymentButton mPaymentButton;
@@ -38,6 +43,11 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodNonc
             boolean phoneNumberRequired = getIntent().getBooleanExtra("phoneNumberRequired", false);
             mPaymentButton.setAndroidPayOptions(cart, isBillingAgreement, shippingAddressRequired,
                     phoneNumberRequired);
+            boolean payPalAddressScopeRequested = getIntent().getBooleanExtra("payPalAddressScopeRequested", false);
+            if (payPalAddressScopeRequested) {
+                mPaymentButton.setAdditionalPayPalScopes(
+                        Arrays.asList(PayPalOAuthScopes.PAYPAL_SCOPE_ADDRESS));
+            }
             mPaymentButton.initialize(this, braintree);
         } else {
             Intent intent = new Intent()
@@ -48,9 +58,9 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodNonc
     }
 
     @Override
-    public void onPaymentMethodNonce(String paymentMethodNonce) {
+    public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
         setResult(RESULT_OK, new Intent()
-                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce));
+                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD, (Parcelable) paymentMethod));
         finish();
     }
 

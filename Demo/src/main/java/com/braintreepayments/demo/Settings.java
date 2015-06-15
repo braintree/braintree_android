@@ -65,6 +65,10 @@ public class Settings {
         return getPreferences(context).getBoolean("android_pay_require_phone_number", false);
     }
 
+    public static boolean isPayPalAddressScopeRequested(Context context) {
+        return getPreferences(context).getBoolean("paypal_request_address_scope", false);
+    }
+
     public static boolean isThreeDSecureEnabled(Context context) {
         return getPreferences(context).getBoolean("enable_three_d_secure", false);
     }

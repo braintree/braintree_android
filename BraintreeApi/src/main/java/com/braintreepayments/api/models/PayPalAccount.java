@@ -24,6 +24,8 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
     @SerializedName("consentCode") private String mConsentCode;
     @SerializedName("correlationId") private String mCorrelationId;
     @SerializedName("details") private PayPalDetails mDetails;
+
+    // This is intentionally not serialized because it's not used by the Gateway.
     private PostalAddress mBillingAddress;
 
     public PayPalAccount() {}
@@ -107,6 +109,7 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
         dest.writeString(mDescription);
         dest.writeSerializable(mPaymentMethodOptions);
         dest.writeString(mSource);
+        dest.writeParcelable(mBillingAddress, 0);
     }
 
     private PayPalAccount(Parcel in) {
@@ -117,6 +120,7 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
         mDescription = in.readString();
         mPaymentMethodOptions = (PaymentMethodOptions) in.readSerializable();
         mSource = in.readString();
+        mBillingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
     }
 
     public static final Creator<PayPalAccount> CREATOR = new Creator<PayPalAccount>() {

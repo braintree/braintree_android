@@ -21,12 +21,15 @@ import android.widget.TextView;
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
 import com.braintreepayments.api.Braintree.ErrorListener;
-import com.braintreepayments.api.Braintree.PaymentMethodNonceListener;
+import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
 import com.braintreepayments.api.SignatureVerification;
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.Customization;
 import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.models.PayPalAccount;
+import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.demo.internal.BraintreeHttpRequest;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
@@ -40,7 +43,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class MainActivity extends Activity implements PaymentMethodNonceListener, ErrorListener,
+public class MainActivity extends Activity implements PaymentMethodCreatedListener, ErrorListener,
         OnNavigationListener {
 
     private static final int DROP_IN_REQUEST = 100;
@@ -52,7 +55,7 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
      * Keys to store state on config changes.
      */
     private static final String KEY_CLIENT_TOKEN = "clientToken";
-    private static final String KEY_NONCE = "nonce";
+    private static final String KEY_PAYMENT_METHOD = "paymentMethod";
     private static final String KEY_ENVIRONMENT = "environment";
 
     private SharedPreferences mPrefs;
@@ -60,7 +63,7 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
 
     private String mClientToken;
     private Braintree mBraintree;
-    private String mNonce;
+    private PaymentMethod mPaymentMethod;
     private int mEnvironment;
 
     private TextView mNonceTextView;
@@ -94,8 +97,8 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
             if (savedInstanceState.containsKey(KEY_CLIENT_TOKEN)) {
                 setClientToken(savedInstanceState.getString(KEY_CLIENT_TOKEN));
             }
-            if (savedInstanceState.containsKey(KEY_NONCE)) {
-                setPaymentMethodNonce(savedInstanceState.getString(KEY_NONCE));
+            if (savedInstanceState.containsKey(KEY_PAYMENT_METHOD)) {
+                setPaymentMethod((PaymentMethod) savedInstanceState.getParcelable(KEY_PAYMENT_METHOD));
             }
             mEnvironment = savedInstanceState.getInt(KEY_ENVIRONMENT);
         } else {
@@ -113,8 +116,8 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
         if (mClientToken != null) {
             outState.putString(KEY_CLIENT_TOKEN, mClientToken);
         }
-        if (mNonce != null) {
-            outState.putString(KEY_NONCE, mNonce);
+        if (mPaymentMethod != null) {
+            outState.putParcelable(KEY_PAYMENT_METHOD, mPaymentMethod);
         }
         outState.putInt(KEY_ENVIRONMENT, mEnvironment);
     }
@@ -131,7 +134,8 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
                 .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken)
                 .putExtra(BraintreePaymentActivity.EXTRA_CUSTOMIZATION, customization)
                 .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
-                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, Settings.isAndroidPayBillingAgreement(this));
+                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT,
+                        Settings.isAndroidPayBillingAgreement(this));
 
         startActivityForResult(intent, DROP_IN_REQUEST);
     }
@@ -142,7 +146,8 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
                 .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
                 .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, Settings.isAndroidPayBillingAgreement(this))
                 .putExtra("shippingAddressRequired", Settings.isAndroidPayShippingAddressRequired(this))
-                .putExtra("phoneNumberRequired", Settings.isAndroidPayPhoneNumberRequired(this));
+                .putExtra("phoneNumberRequired", Settings.isAndroidPayPhoneNumberRequired(this))
+                .putExtra("payPalAddressScopeRequested", Settings.isPayPalAddressScopeRequested(this));
 
         startActivityForResult(intent, PAYMENT_BUTTON_REQUEST);
     }
@@ -153,14 +158,15 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
                 .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
                 .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, Settings.isAndroidPayBillingAgreement(this))
                 .putExtra("shippingAddressRequired", Settings.isAndroidPayShippingAddressRequired(this))
-                .putExtra("phoneNumberRequired", Settings.isAndroidPayPhoneNumberRequired(this));
+                .putExtra("phoneNumberRequired", Settings.isAndroidPayPhoneNumberRequired(this))
+                .putExtra("payPalAddressScopeRequested", Settings.isPayPalAddressScopeRequested(this));
 
         startActivityForResult(intent, CUSTOM_REQUEST);
     }
 
     public void createTransaction(View v) {
         Intent intent = new Intent(this, FinishedActivity.class)
-                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, mNonce);
+                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, mPaymentMethod.getNonce());
         startActivity(intent);
         resetState();
     }
@@ -179,8 +185,8 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
     }
 
     @Override
-    public void onPaymentMethodNonce(String paymentMethodNonce) {
-        setPaymentMethodNonce(paymentMethodNonce);
+    public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+        setPaymentMethod(paymentMethod);
         safelyCloseLoadingView();
     }
 
@@ -195,12 +201,12 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
             if (requestCode == THREE_D_SECURE_REQUEST) {
                 mBraintree.finishThreeDSecureVerification(resultCode, data);
             } else {
-                setPaymentMethodNonce(
-                        data.getStringExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE));
+                PaymentMethod paymentMethod = data.getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
+                setPaymentMethod(paymentMethod);
 
                 if (Settings.isThreeDSecureEnabled(this) && mBraintree.isThreeDSecureEnabled()) {
                     mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
-                    mBraintree.startThreeDSecureVerification(this, THREE_D_SECURE_REQUEST, mNonce, "1");
+                    mBraintree.startThreeDSecureVerification(this, THREE_D_SECURE_REQUEST, mPaymentMethod.getNonce(), "1");
                 } else {
                     mCreateTransactionButton.setEnabled(true);
                 }
@@ -257,7 +263,7 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
 
         mClientToken = null;
         mBraintree = null;
-        mNonce = null;
+        mPaymentMethod = null;
 
         getClientToken();
     }
@@ -282,9 +288,25 @@ public class MainActivity extends Activity implements PaymentMethodNonceListener
         enableButtons(true);
     }
 
-    private void setPaymentMethodNonce(String paymentMethodNonce) {
-        mNonce = paymentMethodNonce;
-        mNonceTextView.setText(getString(R.string.nonce) + ": " + paymentMethodNonce);
+    private void setPaymentMethod(PaymentMethod paymentMethod) {
+        String resultText = getString(R.string.nonce) + ": " + paymentMethod.getNonce();
+
+        if (paymentMethod instanceof PayPalAccount) {
+            PayPalAccount payPalAccount = (PayPalAccount) paymentMethod;
+            if (payPalAccount.getBillingAddress() != null) {
+                PostalAddress billingAddress = payPalAccount.getBillingAddress();
+                resultText += "\nAddress: " +
+                        billingAddress.getStreetAddress() + ", " +
+                        billingAddress.getExtendedAddress() + ", " +
+                        billingAddress.getLocality() + ", " +
+                        billingAddress.getRegion() + " " +
+                        billingAddress.getPostalCode() + ", " +
+                        billingAddress.getCountryCodeAlpha2();
+            }
+        }
+
+        mPaymentMethod = paymentMethod;
+        mNonceTextView.setText(resultText);
         mCreateTransactionButton.setEnabled(true);
     }
 

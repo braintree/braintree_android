@@ -12,7 +12,11 @@ import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.dropin.R;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.WalletConstants;
+import com.paypal.android.sdk.payments.PayPalOAuthScopes;
 import com.paypal.android.sdk.payments.PayPalTouchActivity;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -149,7 +153,19 @@ public class PaymentButtonTest extends AndroidTestCase {
 
         button.initialize(null, mBraintree);
         button.findViewById(R.id.bt_paypal_button).performClick();
-        verify(mBraintree).startPayWithPayPal(null, PaymentButton.REQUEST_CODE);
+        verify(mBraintree).startPayWithPayPal(null, PaymentButton.REQUEST_CODE, null);
+    }
+
+    public void testStartsPayWithPayPalWithAddressScope() {
+        when(mBraintree.isPayPalEnabled()).thenReturn(true);
+        when(mBraintree.isVenmoEnabled()).thenReturn(true);
+        PaymentButton button = new PaymentButton(getContext());
+
+        List<String> scopes = Arrays.asList(PayPalOAuthScopes.PAYPAL_SCOPE_ADDRESS);
+        button.setAdditionalPayPalScopes(scopes);
+        button.initialize(null, mBraintree);
+        button.findViewById(R.id.bt_paypal_button).performClick();
+        verify(mBraintree).startPayWithPayPal(null, PaymentButton.REQUEST_CODE, scopes);
     }
 
     public void testStartsPayWithVenmo() {

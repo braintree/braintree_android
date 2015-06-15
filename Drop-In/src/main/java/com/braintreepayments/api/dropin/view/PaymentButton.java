@@ -14,6 +14,8 @@ import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.dropin.R;
 import com.google.android.gms.wallet.Cart;
 
+import java.util.List;
+
 /**
  * Skinned button for launching flows other than basic credit card forms (Pay With PayPal, Pay With Venmo, etc.).
  * The button will intelligently display payment methods depending on their availability.
@@ -46,6 +48,8 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
     private boolean mIsBillingAgreement;
     private boolean mShippingAddressRequired;
     private boolean mPhoneNumberRequired;
+
+    private List<String> mAdditionalScopes;
 
     /**
      * Default request code to use when launching Pay With... flows.
@@ -157,10 +161,14 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
         mPhoneNumberRequired = phoneNumberRequired;
     }
 
+    public void setAdditionalPayPalScopes(List<String> additionalScopes) {
+        mAdditionalScopes = additionalScopes;
+    }
+
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.bt_paypal_button) {
-            mBraintree.startPayWithPayPal(mActivity, mRequestCode);
+            mBraintree.startPayWithPayPal(mActivity, mRequestCode, mAdditionalScopes);
         } else if (v.getId() == R.id.bt_venmo_button) {
             mBraintree.startPayWithVenmo(mActivity, mRequestCode);
         } else if (v.getId() == R.id.bt_android_pay_button) {
