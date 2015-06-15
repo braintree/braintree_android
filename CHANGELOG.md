@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 1.6.1
+
+* Fixes
+  * Fix `NoClassDefFoundError` in Drop-in and `PaymentButton` caused by optional dependency ([#34](https://github.com/braintree/braintree_android/issues/34))
+
 ## 1.6.0
 
 * Update PayPal SDK to 2.9.6
