@@ -64,8 +64,13 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         mSubmitButton = findView(R.id.bt_card_form_submit_button);
 
         mPaymentButton.setOnClickListener(this);
-        mPaymentButton.setAndroidPayOptions(mActivity.getAndroidPayCart(),
-                mActivity.getAndroidPayIsBillingAgreement(), false, false);
+
+        try {
+            mPaymentButton.setAndroidPayOptions(mActivity.getAndroidPayCart(),
+                    mActivity.getAndroidPayIsBillingAgreement(), false, false);
+        } catch (NoClassDefFoundError ignored) {
+        }
+
         mPaymentButton.initialize(mActivity, mBraintree);
 
         mCardForm.setRequiredFields(true, true, mBraintree.isCvvChallenegePresent(),

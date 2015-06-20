@@ -393,7 +393,7 @@ public class BraintreePaymentActivity extends Activity implements
         return customization;
     }
 
-    protected Cart getAndroidPayCart() {
+    protected Cart getAndroidPayCart() throws NoClassDefFoundError {
         return getIntent().getParcelableExtra(EXTRA_ANDROID_PAY_CART);
     }
 
