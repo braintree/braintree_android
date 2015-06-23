@@ -1,5 +1,13 @@
 # Braintree Android SDK Release Notes
 
+## 1.6.2
+
+* Update PayPal SDK to 2.9.7
+* Add support for additional PayPal scopes to `PaymentButton`
+* Fixes
+  * Return error instead of silently failing setup with bad client tokens
+  * Fix `NoClassDefFoundError` in Drop-in caused by optional dependency
+
 ## 1.6.1
 
 * Fixes
