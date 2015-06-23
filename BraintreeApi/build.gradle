@@ -108,7 +108,7 @@ task fullJar(type: Jar, dependsOn: releaseJar) {
     from zipTree(releaseJar.archivePath)
     from {
         configurations.compile.findAll {
-            it.getName() != paypalVersion
+            it.getName() != paypalVersion && !it.getName().startsWith("play-services") && !it.getName().startsWith("support")
         }.collect {
             it.isDirectory() ? null : zipTree(it)
         }
