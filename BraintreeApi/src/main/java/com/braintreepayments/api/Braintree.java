@@ -465,9 +465,9 @@ public class Braintree {
      * Starts the Pay With PayPal flow. This will launch a new activity for the PayPal mobile SDK.
      *
      * @param activity the {@link android.app.Activity} to receive the {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     *   when payWithPayPal finishes.
+     *                 when payWithPayPal finishes.
      * @param requestCode the request code associated with this start request. Will be returned
-     * in {@code onActivityResult}.
+     *                    in {@code onActivityResult}.
      */
     public void startPayWithPayPal(Activity activity, int requestCode) {
         startPayWithPayPal(activity, requestCode, null);
@@ -477,11 +477,12 @@ public class Braintree {
      * Starts the Pay With PayPal flow. This will launch a new activity for the PayPal mobile SDK.
      *
      * @param activity the {@link android.app.Activity} to receive the {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     *   when payWithPayPal finishes.
+     *                 when payWithPayPal finishes.
      * @param requestCode the request code associated with this start request. Will be returned
-     * @param additionalScopes A {@link java.util.List} of additional scopes. Ex: PayPalOAuthScopes.PAYPAL_SCOPE_ADDRESS.
-     * Acceptable scopes are defined in {@link com.paypal.android.sdk.payments.PayPalOAuthScopes}.
-     * in {@code onActivityResult}.
+     *                    in {@code onActivityResult}.
+     * @param additionalScopes A {@link java.util.List} of additional scopes.
+     *                         Ex: PayPalOAuthScopes.PAYPAL_SCOPE_ADDRESS. Acceptable scopes are
+     *                         defined in {@link com.paypal.android.sdk.payments.PayPalOAuthScopes}.
      */
     public void startPayWithPayPal(Activity activity, int requestCode, List<String> additionalScopes) {
         sendAnalyticsEvent("add-paypal.start");

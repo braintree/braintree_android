@@ -161,6 +161,13 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
         mPhoneNumberRequired = phoneNumberRequired;
     }
 
+    /**
+     * Set additional scopes to request when a user is authorizing PayPal.
+     *
+     * @param additionalScopes A {@link java.util.List} of additional scopes.
+     *                         Ex: PayPalOAuthScopes.PAYPAL_SCOPE_ADDRESS.
+     *                         Acceptable scopes are defined in {@link com.paypal.android.sdk.payments.PayPalOAuthScopes}.
+     */
     public void setAdditionalPayPalScopes(List<String> additionalScopes) {
         mAdditionalScopes = additionalScopes;
     }
