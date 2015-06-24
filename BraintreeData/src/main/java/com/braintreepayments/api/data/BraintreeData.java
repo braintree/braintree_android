@@ -57,7 +57,7 @@ public final class BraintreeData {
         String data = "{\"device_session_id\":\"" + mDeviceSessionId + "\"," +
                 "\"fraud_merchant_id\":\"" + mFraudMerchantId + "\"";
         if (mCorrelationId != null) {
-            data += ",\"correlation_id\": \"" + mCorrelationId + "\"}";
+            data += ",\"correlation_id\":\"" + mCorrelationId + "\"}";
         } else {
             data += "}";
         }

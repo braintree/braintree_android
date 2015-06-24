@@ -33,6 +33,7 @@ import com.google.android.gms.wallet.FullWallet;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.WalletConstants;
 import com.google.gson.Gson;
+import com.paypal.android.sdk.payments.PayPalConfiguration;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,7 +59,7 @@ public class BraintreeApi {
 
     private VenmoAppSwitch mVenmoAppSwitch;
     private AndroidPay mAndroidPay;
-    private BraintreeData mBraintreeData;
+    private Object mBraintreeData;
 
     /**
      * @deprecated Interactions should be done using {@link com.braintreepayments.api.Braintree}
@@ -530,8 +531,15 @@ public class BraintreeApi {
      * @see com.braintreepayments.api.data.BraintreeData
      */
     public String collectDeviceData(Activity activity, String merchantId, String collectorUrl) {
-        mBraintreeData = new BraintreeData(activity, merchantId, collectorUrl);
-        return mBraintreeData.collectDeviceData();
+        String deviceData;
+        try {
+            mBraintreeData = new BraintreeData(activity, merchantId, collectorUrl);
+            deviceData = ((BraintreeData) mBraintreeData).collectDeviceData();
+        } catch (NoClassDefFoundError e) {
+            deviceData = "{\"correlation_id\":\"" + PayPalConfiguration.getClientMetadataId(activity) + "\"}";
+        }
+
+        return deviceData;
     }
 
     private String versionedPath(String path) {
