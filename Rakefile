@@ -41,18 +41,21 @@ task :release => :lint do
   update_version(braintree_android_build_file, version)
 
   sh "./gradlew clean :BraintreeData:uploadArchives"
-  puts "BraintreeData was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
+  puts "BraintreeData was uploaded, press ENTER to release it"
   $stdin.gets
+  sh "./gradlew :BraintreeData:closeAndPromoteRepository"
 
   replace_string(braintree_api_build_file, "compile project(':BraintreeData')", "compile 'com.braintreepayments.api:data:#{version}'")
   sh "./gradlew clean :BraintreeApi:uploadArchives"
-  puts "BraintreeApi was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
+  puts "BraintreeApi was uploaded, press ENTER to release it"
   $stdin.gets
+  sh "./gradlew :BraintreeApi:closeAndPromoteRepository"
 
   replace_string(braintree_drop_in_build_file, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree-api:#{version}'")
   sh "./gradlew clean :Drop-In:uploadArchives"
-  puts "Drop-In was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
+  puts "Drop-In was uploaded, press ENTER to release it"
   $stdin.gets
+  sh "./gradlew :Drop-In:closeAndPromoteRepository"
 
   puts "Archives are uploaded! Committing and tagging #{version} and preparing for the next development iteration"
   sh "git commit -am 'Release #{version}'"

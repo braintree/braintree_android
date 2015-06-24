@@ -6,6 +6,9 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.2.3'
+
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
+
         classpath 'org.rauschig:jarchivelib:0.6.0'
         classpath 'commons-io:commons-io:2.4'
         classpath files('libs/0.12.1-SNAPSHOT/gradle-plugin-0.12.1-SNAPSHOT.jar')
@@ -23,6 +26,11 @@ allprojects {
     apply plugin: 'android-sdk-manager'
     sdkManager {
         emulatorVersion 'android-22'
+    }
+
+    apply plugin: 'io.codearte.nexus-staging'
+    nexusStaging {
+        packageGroup = "com.braintreepayments"
     }
 
     ext {
