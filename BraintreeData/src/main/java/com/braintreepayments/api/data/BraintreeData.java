@@ -16,7 +16,7 @@ public final class BraintreeData {
     private String mFraudMerchantId;
     private String mDeviceSessionId;
     private String mCorrelationId;
-    private DeviceCollector deviceCollector;
+    private DeviceCollector mDeviceCollector;
 
     /**
      * Creates a new BraintreeData instance for fraud detection.
@@ -39,9 +39,9 @@ public final class BraintreeData {
     public BraintreeData(Activity activity, String fraudMerchantId, String collectorUrl) {
         mFraudMerchantId = fraudMerchantId;
         mCorrelationId = getCorrelationId(activity);
-        deviceCollector = new DeviceCollector(activity);
-        deviceCollector.setMerchantId(mFraudMerchantId);
-        deviceCollector.setCollectorUrl(collectorUrl);
+        mDeviceCollector = new DeviceCollector(activity);
+        mDeviceCollector.setMerchantId(mFraudMerchantId);
+        mDeviceCollector.setCollectorUrl(collectorUrl);
     }
 
     /**
@@ -51,7 +51,7 @@ public final class BraintreeData {
     public String collectDeviceData() {
         if(mDeviceSessionId == null) {
             mDeviceSessionId = UUID.randomUUID().toString().replace("-", "");
-            deviceCollector.collect(mDeviceSessionId);
+            mDeviceCollector.collect(mDeviceSessionId);
         }
 
         String data = "{\"device_session_id\":\"" + mDeviceSessionId + "\"," +
