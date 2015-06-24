@@ -1,5 +1,12 @@
 # Braintree Android SDK Release Notes
 
+## 1.6.3
+
+* Improvements
+  * BraintreeData can now be optionally excluded
+* Fixes
+  * Remove optional dependency from full jar
+
 ## 1.6.2
 
 * Update PayPal SDK to 2.9.7

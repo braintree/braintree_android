@@ -38,7 +38,7 @@ allprojects {
         buildToolsVersion = '22.0.1'
         minSdkVersion = 10
         targetSdkVersion = 22
-        versionCode = 25
-        versionName = '1.6.2'
+        versionCode = 26
+        versionName = '1.6.3'
     }
 }
