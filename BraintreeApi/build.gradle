@@ -1,6 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
-apply plugin: 'signing'
 
 def paypalVersion = 'PayPalAndroidSDK-2.9.7.jar'
 
@@ -122,22 +120,9 @@ artifacts {
     archives fullJar
 }
 
-signing {
-    sign configurations.archives
-}
-
-def sonatypeUsername = System.properties.containsKey('sonatypeUsername') ? System.properties['sonatypeUsername'] : ''
-def sonatypePassword = System.properties.containsKey('sonatypePassword') ? System.properties['sonatypePassword'] : ''
-
 uploadArchives {
     repositories {
         mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
-            }
-
             pom.setArtifactId 'braintree-api'
 
             pom.project {
@@ -146,28 +131,6 @@ uploadArchives {
                 version = "${android.defaultConfig.versionName}"
                 packaging 'jar'
                 description 'This is Braintree\'s v.zero SDK for Android. Integrate this library to accept payments in your Android app.'
-                url 'https://github.com/braintree/braintree_android'
-
-                scm {
-                    url 'scm:git@github.com:braintree/braintree_android.git'
-                    connection 'scm:git@github.com:braintree/braintree_android.git'
-                    developerConnection 'scm:git@github.com:braintree/braintree_android.git'
-                }
-
-                developers {
-                    developer {
-                        id 'devs'
-                        name 'Braintree Payments'
-                    }
-                }
-
-                licenses {
-                    license {
-                        name 'MIT'
-                        url 'http://opensource.org/licenses/MIT'
-                        distribution 'repo'
-                    }
-                }
             }
 
             pom.whenConfigured { MavenPom pom ->

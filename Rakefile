@@ -2,10 +2,12 @@ require 'rake'
 
 task :default => :tests
 
+desc "Run Android lint on all modules"
 task :lint do
   sh "./gradlew clean lint"
 end
 
+desc "Run all Android tests"
 task :tests => :lint do
   output = `adb devices`
   if output.match(/device$/)
@@ -23,8 +25,27 @@ task :tests => :lint do
   end
 end
 
-task :release => :lint do
-  braintree_android_build_file = "build.gradle"
+desc "Publish current version as a SNAPSHOT"
+task :publish_snapshot => :tests do
+  abort("Version must contain '-SNAPSHOT'!") unless get_current_version.end_with?('-SNAPSHOT')
+
+  braintree_api_build_file = "BraintreeApi/build.gradle"
+  braintree_drop_in_build_file = "Drop-In/build.gradle"
+
+  sh "./gradlew clean :BraintreeData:uploadArchives"
+
+  replace_string(braintree_api_build_file, "compile project(':BraintreeData')", "compile 'com.braintreepayments.api:data:#{get_current_version}'")
+  sh "./gradlew clean :BraintreeApi:uploadArchives"
+
+  replace_string(braintree_drop_in_build_file, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree-api:#{get_current_version}'")
+  sh "./gradlew clean :Drop-In:uploadArchives"
+
+  replace_string(braintree_api_build_file, "compile 'com.braintreepayments.api:data:#{get_current_version}'", "compile project(':BraintreeData')")
+  replace_string(braintree_drop_in_build_file, "compile 'com.braintreepayments.api:braintree-api:#{get_current_version}'", "compile project(':BraintreeApi')")
+end
+
+desc "Interactive release to publish new version"
+task :release => :tests do
   braintree_api_build_file = "BraintreeApi/build.gradle"
   braintree_drop_in_build_file = "Drop-In/build.gradle"
 
@@ -37,8 +58,8 @@ task :release => :lint do
   puts "What version are you releasing? (x.x.x format)"
   version = $stdin.gets.chomp
 
-  increment_version_code(braintree_android_build_file)
-  update_version(braintree_android_build_file, version)
+  increment_version_code
+  update_version(version)
 
   sh "./gradlew clean :BraintreeData:uploadArchives"
   puts "BraintreeData was uploaded, press ENTER to release it"
@@ -83,9 +104,20 @@ task :release => :lint do
   $stdin.gets
 end
 
-def increment_version_code(filepath)
+def get_current_version
+  current_version = nil
+  File.foreach("build.gradle") do |line|
+    if match = line.match(/versionName = '(\d+\.\d+\.\d+(-SNAPSHOT)?)'/)
+      current_version = match.captures
+    end
+  end
+
+  return current_version[0]
+end
+
+def increment_version_code
   new_build_file = ""
-  File.foreach(filepath) do |line|
+  File.foreach("build.gradle") do |line|
     if line.match(/versionCode = (\d+)/)
       new_build_file += line.gsub(/versionCode = \d+/, "versionCode = #{$1.to_i + 1}")
     else
@@ -95,8 +127,8 @@ def increment_version_code(filepath)
   IO.write(filepath, new_build_file)
 end
 
-def update_version(filepath, version)
-  replace_string(filepath, /versionName = '\d+\.\d+\.\d+'/, "versionName = '#{version}'")
+def update_version(version)
+  replace_string("build.gradle", /versionName = '\d+\.\d+\.\d+(-SNAPSHOT)?'/, "versionName = '#{version}'")
 end
 
 def replace_string(filepath, string_to_replace, new_string)
