@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="bt_form_pay_with_card_header">PAY WITH A CARD</string>
+    <string name="bt_form_pay_with_card_header">Pay With a Card</string>
 
     <string name="bt_invalid_card">Card information is invalid</string>
 
@@ -9,7 +9,7 @@
     <string name="bt_add_new_payment_method">Add New Payment Method</string>
     <string name="bt_add_payment_method">Add Payment Method</string>
 
-    <string name="bt_default_submit_button_text">Purchase</string>
+    <string name="bt_default_submit_button_text">PURCHASE</string>
     <string name="bt_default_action_bar_text">Purchase</string>
 
     <!-- Note: %s is a place holder and should be left in translated strings -->

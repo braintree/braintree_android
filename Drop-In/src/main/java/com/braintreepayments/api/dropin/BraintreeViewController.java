@@ -37,7 +37,7 @@ public abstract class BraintreeViewController {
             submitText = mCustomization.getAmount() + " - " + submitText;
         }
 
-        return submitText;
+        return submitText.toUpperCase();
     }
 
     protected String getCustomizedCallToAction() {

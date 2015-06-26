@@ -9,7 +9,7 @@
     <string name="bt_add_new_payment_method">Nieuwe betaalmethode toevoegen</string>
     <string name="bt_add_payment_method">Betaalmethode toevoegen</string>
 
-    <string name="bt_default_submit_button_text">Aankoop</string>
+    <string name="bt_default_submit_button_text">AANKOOP</string>
     <string name="bt_default_action_bar_text">Aankoop</string>
 
     <!-- Note: %s is a place holder and should be left in translated strings -->

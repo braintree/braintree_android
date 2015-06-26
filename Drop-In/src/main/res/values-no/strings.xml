@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <resources>
-    <string name="bt_form_pay_with_card_header">BETAL MED ET KORT</string>
+    <string name="bt_form_pay_with_card_header">Betal Med Et Kort</string>
 
     <string name="bt_invalid_card">Kortopplysningene er ugyldige.</string>
 

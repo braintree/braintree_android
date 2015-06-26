@@ -9,7 +9,7 @@
     <string name="bt_add_new_payment_method">Dodaj now&#x105; form&#x119; p&#x142;atno&#x15B;ci</string>
     <string name="bt_add_payment_method">Dodaj form&#x119; p&#x142;atno&#x15B;ci</string>
 
-    <string name="bt_default_submit_button_text">Kupuj</string>
+    <string name="bt_default_submit_button_text">KUPUJ</string>
     <string name="bt_default_action_bar_text">Kupuj</string>
 
     <!-- Note: %s is a place holder and should be left in translated strings -->
