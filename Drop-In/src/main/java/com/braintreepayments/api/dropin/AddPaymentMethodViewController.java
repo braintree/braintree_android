@@ -73,7 +73,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
         mPaymentButton.initialize(mActivity, mBraintree);
 
-        mCardForm.setRequiredFields(true, true, mBraintree.isCvvChallenegePresent(),
+        mCardForm.setRequiredFields(mActivity, true, true, mBraintree.isCvvChallenegePresent(),
                 mBraintree.isPostalCodeChallengePresent(), getCustomizedCallToAction());
         mCardForm.setOnCardFormValidListener(this);
         mCardForm.setOnCardFormSubmitListener(this);
@@ -84,8 +84,6 @@ public class AddPaymentMethodViewController extends BraintreeViewController
     }
 
     private void restoreState(Bundle savedInstanceState) {
-        mCardForm.onRestoreInstanceState(savedInstanceState);
-
         if (savedInstanceState.containsKey(EXTRA_FORM_IS_SUBMITTING)) {
             mIsSubmitting = savedInstanceState.getBoolean(EXTRA_FORM_IS_SUBMITTING);
             if (mIsSubmitting) {
@@ -104,7 +102,6 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        mCardForm.onSaveInstanceState(outState);
         outState.putBoolean(EXTRA_FORM_IS_SUBMITTING, mIsSubmitting);
         outState.putBoolean(EXTRA_SUBMIT_BUTTON_ENABLED, mSubmitButton.isEnabled());
     }
