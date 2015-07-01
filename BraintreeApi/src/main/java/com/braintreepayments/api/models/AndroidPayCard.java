@@ -7,14 +7,12 @@ import com.braintreepayments.api.annotations.Beta;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
-
 /**
  * {@link com.braintreepayments.api.models.PaymentMethod} representing an Android Pay card.
  * @see com.braintreepayments.api.models.PaymentMethod
  */
 @Beta
-public class AndroidPayCard extends PaymentMethod implements Parcelable, Serializable {
+public class AndroidPayCard extends PaymentMethod implements Parcelable {
 
     protected static final String PAYMENT_METHOD_TYPE = "AndroidPayCard";
 
@@ -47,7 +45,7 @@ public class AndroidPayCard extends PaymentMethod implements Parcelable, Seriali
         dest.writeParcelable(mDetails, 0);
         dest.writeString(mNonce);
         dest.writeString(mDescription);
-        dest.writeSerializable(mPaymentMethodOptions);
+        dest.writeParcelable(mPaymentMethodOptions, 0);
         dest.writeString(mSource);
     }
 
@@ -57,7 +55,7 @@ public class AndroidPayCard extends PaymentMethod implements Parcelable, Seriali
         mDetails = in.readParcelable(AndroidPayCardDetails.class.getClassLoader());
         mNonce = in.readString();
         mDescription = in.readString();
-        mPaymentMethodOptions = (PaymentMethodOptions) in.readSerializable();
+        mPaymentMethodOptions = in.readParcelable(PaymentMethodOptions.class.getClassLoader());
         mSource = in.readString();
     }
 
@@ -69,7 +67,7 @@ public class AndroidPayCard extends PaymentMethod implements Parcelable, Seriali
         public AndroidPayCard[] newArray(int size) {return new AndroidPayCard[size];}
     };
 
-    private static class AndroidPayCardDetails implements Parcelable, Serializable {
+    private static class AndroidPayCardDetails implements Parcelable {
 
         @SerializedName("cardType") private String mCardType;
         @SerializedName("lastTwo") private String mLastTwo;

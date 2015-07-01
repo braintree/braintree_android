@@ -10,7 +10,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +22,7 @@ import java.util.Map;
  * PaymentMethod represents the common surface area of all payment methods, and can be handled by a
  * server interchangeably without special case logic.
  */
-public abstract class PaymentMethod implements Parcelable, Serializable {
+public abstract class PaymentMethod implements Parcelable {
 
     private static final String PAYMENT_METHOD_COLLECTION_KEY = "paymentMethods";
     private static final String PAYMENT_METHOD_TYPE_KEY = "type";

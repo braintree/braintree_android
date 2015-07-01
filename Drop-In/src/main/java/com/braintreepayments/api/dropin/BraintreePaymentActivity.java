@@ -34,7 +34,6 @@ import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.google.android.gms.wallet.Cart;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -279,8 +278,7 @@ public class BraintreePaymentActivity extends Activity implements
         mBraintree.sendAnalyticsEvent("sdk.exit.success");
 
         Intent resultIntent = new Intent();
-        // required to be Serializable for backwards compatibility
-        resultIntent.putExtra(EXTRA_PAYMENT_METHOD, (Serializable) paymentMethod);
+        resultIntent.putExtra(EXTRA_PAYMENT_METHOD, paymentMethod);
         resultIntent.putExtra(EXTRA_PAYMENT_METHOD_NONCE, paymentMethod.getNonce());
         setResult(RESULT_OK, resultIntent);
         finish();
@@ -377,10 +375,9 @@ public class BraintreePaymentActivity extends Activity implements
     }
 
     private Customization getCustomization() {
-        Customization customization = (Customization) getIntent().getSerializableExtra(EXTRA_CUSTOMIZATION);
+        Customization customization = getIntent().getParcelableExtra(EXTRA_CUSTOMIZATION);
         if (customization == null) {
-            customization = new CustomizationBuilder()
-                    .build();
+            customization = new CustomizationBuilder().build();
         }
         return customization;
     }

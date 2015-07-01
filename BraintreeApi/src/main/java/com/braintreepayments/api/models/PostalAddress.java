@@ -2,16 +2,13 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.os.Parcelable.Creator;
 
 import com.google.gson.annotations.SerializedName;
-
-import java.io.Serializable;
 
 /**
  * Used by {@link com.braintreepayments.api.models.PayPalAccount} to represent a billingAddress
  */
-public class PostalAddress implements Parcelable, Serializable {
+public class PostalAddress implements Parcelable {
 
     @SerializedName("street1") private String mStreetAddress;
     @SerializedName("street2") private String mExtendedAddress;

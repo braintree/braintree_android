@@ -10,14 +10,12 @@ import com.google.gson.annotations.SerializedName;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
-
 /**
  * {@link com.braintreepayments.api.models.PaymentMethod} representing a PayPal account.
  * @see {@link com.braintreepayments.api.models.Card}
  * @see {@link com.braintreepayments.api.models.PaymentMethod}
  */
-public class PayPalAccount extends PaymentMethod implements Parcelable, Serializable {
+public class PayPalAccount extends PaymentMethod implements Parcelable {
 
     protected static final String PAYMENT_METHOD_TYPE = "PayPalAccount";
 
@@ -107,7 +105,7 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
         dest.writeParcelable(mDetails, 0);
         dest.writeString(mNonce);
         dest.writeString(mDescription);
-        dest.writeSerializable(mPaymentMethodOptions);
+        dest.writeParcelable(mPaymentMethodOptions, 0);
         dest.writeString(mSource);
         dest.writeParcelable(mBillingAddress, 0);
     }
@@ -118,7 +116,7 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
         mDetails = in.readParcelable(PayPalDetails.class.getClassLoader());
         mNonce = in.readString();
         mDescription = in.readString();
-        mPaymentMethodOptions = (PaymentMethodOptions) in.readSerializable();
+        mPaymentMethodOptions = in.readParcelable(PaymentMethodOptions.class.getClassLoader());
         mSource = in.readString();
         mBillingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
     }
@@ -129,7 +127,7 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
         public PayPalAccount[] newArray(int size) {return new PayPalAccount[size];}
     };
 
-    private static class PayPalDetails implements Parcelable, Serializable {
+    private static class PayPalDetails implements Parcelable {
 
         @SerializedName("email") private String mEmail;
 

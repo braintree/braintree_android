@@ -97,9 +97,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForActivityToFinish(activity);
 
         Map<String, Object> result = getActivityResult(activity);
-        PaymentMethod response =
-                (PaymentMethod) ((Intent) result.get("resultData")).getSerializableExtra(
-                        BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
+        PaymentMethod response = ((Intent) result.get("resultData"))
+                        .getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
 
         assertEquals(Activity.RESULT_OK, result.get("resultCode"));
         assertNotNull(response.getNonce());
@@ -122,9 +121,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForActivityToFinish(activity);
 
         Map<String, Object> result = getActivityResult(activity);
-        PaymentMethod response =
-                (PaymentMethod) ((Intent) result.get("resultData")).getSerializableExtra(
-                        BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
+        PaymentMethod response = ((Intent) result.get("resultData"))
+                .getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
 
         assertEquals(Activity.RESULT_OK, result.get("resultCode"));
         assertNotNull(response.getNonce());
@@ -194,9 +192,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForActivityToFinish(activity);
 
         Map<String, Object> result = getActivityResult(activity);
-        PaymentMethod response =
-                (PaymentMethod) ((Intent) result.get("resultData")).getSerializableExtra(
-                        BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
+        PaymentMethod response = ((Intent) result.get("resultData"))
+                .getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
 
         assertEquals(Activity.RESULT_OK, result.get("resultCode"));
         assertNotNull(response.getNonce());
@@ -534,9 +531,8 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         waitForActivityToFinish(activity);
 
         Map<String, Object> result = getActivityResult(activity);
-        PaymentMethod paymentMethod =
-                (PaymentMethod) ((Intent) result.get("resultData")).getSerializableExtra(
-                        BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
+        PaymentMethod paymentMethod = ((Intent) result.get("resultData"))
+                .getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
 
         assertEquals(Activity.RESULT_OK, result.get("resultCode"));
         assertNotNull(paymentMethod.getNonce());

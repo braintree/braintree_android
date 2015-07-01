@@ -1,13 +1,14 @@
 package com.braintreepayments.api.dropin;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Class to contain view customizations. For use in instantiating {@link com.braintreepayments.api.dropin.BraintreePaymentActivity}.
  *
  * @see com.braintreepayments.api.dropin.Customization.CustomizationBuilder
  */
-public class Customization implements Serializable {
+public class Customization implements Parcelable {
 
     private String mActionBarTitle;
     private int mActionBarLogo;
@@ -63,6 +64,40 @@ public class Customization implements Serializable {
     protected void setAmount(String amount) {
         mAmount = amount;
     }
+
+    @Override
+    public int describeContents() { return 0; }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mActionBarTitle);
+        dest.writeInt(mActionBarLogo);
+        dest.writeString(mPrimaryDescription);
+        dest.writeString(mSecondaryDescription);
+        dest.writeString(mSubmitButtonText);
+        dest.writeString(mAmount);
+    }
+
+    public Customization() {}
+
+    protected Customization(Parcel in) {
+        mActionBarTitle = in.readString();
+        mActionBarLogo = in.readInt();
+        mPrimaryDescription = in.readString();
+        mSecondaryDescription = in.readString();
+        mSubmitButtonText = in.readString();
+        mAmount = in.readString();
+    }
+
+    public static final Creator<Customization> CREATOR = new Creator<Customization>() {
+        public Customization createFromParcel(Parcel source) {
+            return new Customization(source);
+        }
+
+        public Customization[] newArray(int size) {
+            return new Customization[size];
+        }
+    };
 
     /**
      * Builder for {@link com.braintreepayments.api.dropin.Customization} objects.

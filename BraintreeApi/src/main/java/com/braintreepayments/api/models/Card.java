@@ -7,14 +7,12 @@ import com.braintreepayments.api.annotations.Beta;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
-
 /**
  * {@link com.braintreepayments.api.models.PaymentMethod} representing a credit or debit card.
  * @see com.braintreepayments.api.models.PaymentMethod
  * @see com.braintreepayments.api.models.PayPalAccount
  */
-public class Card extends PaymentMethod implements Parcelable, Serializable {
+public class Card extends PaymentMethod implements Parcelable {
 
     protected static final String PAYMENT_METHOD_TYPE = "CreditCard";
 
@@ -106,7 +104,7 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
         dest.writeString(mCvv);
         dest.writeString(mNonce);
         dest.writeString(mDescription);
-        dest.writeSerializable(mPaymentMethodOptions);
+        dest.writeParcelable(mPaymentMethodOptions, 0);
         dest.writeString(mSource);
     }
 
@@ -121,7 +119,7 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
         mCvv = in.readString();
         mNonce = in.readString();
         mDescription = in.readString();
-        mPaymentMethodOptions = (PaymentMethodOptions) in.readSerializable();
+        mPaymentMethodOptions = in.readParcelable(PaymentMethodOptions.class.getClassLoader());
         mSource = in.readString();
     }
 
@@ -131,7 +129,7 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
         public Card[] newArray(int size) {return new Card[size];}
     };
 
-    private static class CardDetails implements Parcelable, Serializable {
+    private static class CardDetails implements Parcelable {
 
         @SerializedName("cardType") private String mCardType;
         @SerializedName("lastTwo") private String mLastTwo;
@@ -167,7 +165,7 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
         };
     }
 
-    protected static class BillingAddress implements Parcelable, Serializable {
+    protected static class BillingAddress implements Parcelable {
 
         @SerializedName("firstName") private String mFirstName;
         @SerializedName("lastName") private String mLastName;
