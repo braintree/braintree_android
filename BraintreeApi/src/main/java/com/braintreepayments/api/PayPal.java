@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.models.ClientToken;
@@ -234,8 +233,12 @@ public class PayPal {
         } else {
             environment = payPalConfiguration.getEnvironment();
         }
+        String clientId = payPalConfiguration.getClientId();
+        if (clientId == null && environment == AuthorizationRequest.ENVIRONMENT_MOCK) {
+            clientId = "FAKE-PAYPAL-CLIENT-ID";
+        }
         request.environment(environment);
-        request.clientId(payPalConfiguration.getClientId());
+        request.clientId(clientId);
         request.cancelUrl(context.getPackageName() + ".braintree", BraintreeBrowserSwitchActivity.X_CANCEL_HOST);
         request.successUrl(context.getPackageName() + ".braintree", BraintreeBrowserSwitchActivity.X_SUCCESS_HOST);
         return request;
@@ -246,7 +249,6 @@ public class PayPal {
 
         if (!configuration.isPayPalEnabled() ||
                 payPalConfiguration.getEnvironment() == null ||
-                payPalConfiguration.getClientId() == null ||
                 payPalConfiguration.getPrivacyUrl() == null ||
                 payPalConfiguration.getUserAgreementUrl() == null) {
             throw new ConfigurationException("PayPal is disabled or configuration is invalid");

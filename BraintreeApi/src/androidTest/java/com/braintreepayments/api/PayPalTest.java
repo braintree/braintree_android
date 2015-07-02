@@ -14,7 +14,6 @@ import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchActivity;
 
-//Todo update tests
 public class PayPalTest extends AndroidTestCase {
 
     public void testBuildsOfflinePayPalConfiguration() {

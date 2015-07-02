@@ -96,7 +96,8 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
     public String toJsonString() {
         JSONObject params = new JSONObject();
         try {
-            mOtcResponse.put("options", new JSONObject().put("validate", mPaymentMethodOptions.isValidate()));
+            Boolean isValidate = mPaymentMethodOptions != null && mPaymentMethodOptions.isValidate();
+            mOtcResponse.put("options", new JSONObject().put("validate", isValidate));
             params.put("paypal_account", mOtcResponse);
             params.put("correlation_id", mCorrelationId);
             params.put(PaymentMethod.Builder.METADATA_KEY, new JSONObject(new Gson()
