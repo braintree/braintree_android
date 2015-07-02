@@ -65,8 +65,6 @@ public class PayPal {
                     @Override
                     public void handleBrowserSwitchIntent(Intent intent) {
 
-                        Log.d(TAG, "Performing Browser Switch" + intent);
-
                         activity.startActivityForResult(
                                 new Intent(activity, BraintreeBrowserSwitchActivity.class)
                                         .setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
@@ -98,8 +96,6 @@ public class PayPal {
                 new BrowserSwitchAdapter() {
                     @Override
                     public void handleBrowserSwitchIntent(Intent intent) {
-
-                        Log.d(TAG, "Performing Browser Switch" + intent);
 
                         activity.startActivityForResult(
 
@@ -144,17 +140,11 @@ public class PayPal {
         ResultType resultType = result.getResultType();
         switch (resultType) {
             case Error:
-                Log.d(TAG, "Received a PayPal error response via browser switch: " +
-                        result.getError());
                 return null;
             case Cancel:
-                Log.d(TAG, "Received a PayPal cancel response via browser switch: " +
-                        result.getError());
                 return null;
             case Success:
                 JSONObject response = result.getResponse();
-                Log.d(TAG,
-                        "Received a PayPal response via browser switch: " + response);
 
                 JSONObject user = response.optJSONObject("user");
                 if (user != null) {
@@ -198,7 +188,6 @@ public class PayPal {
     public static boolean isPayPalIntent(Intent intent) {
         return intent.hasExtra(PayPalOneTouchActivity.EXTRA_ONE_TOUCH_RESULT);
     }
-
 
     /**
      * Set properties specific to an CheckoutRequest

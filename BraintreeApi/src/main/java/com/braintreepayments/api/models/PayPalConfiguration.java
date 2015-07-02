@@ -20,42 +20,42 @@ public class PayPalConfiguration {
      * @return the PayPal app display name.
      */
     public String getDisplayName() {
-        return null;
+        return mDisplayName;
     }
 
     /**
      * @return the PayPal app client id.
      */
     public String getClientId() {
-        return null;
+        return mClientId;
     }
 
     /**
      * @return the PayPal app privacy url.
      */
     public String getPrivacyUrl() {
-        return null;
+        return mPrivacyUrl;
     }
 
     /**
      * @return the PayPal app user agreement url.
      */
     public String getUserAgreementUrl() {
-        return null;
+        return mUserAgreementUrl;
     }
 
     /**
      * @return the url for custom PayPal environments.
      */
     public String getDirectBaseUrl() {
-        return null;
+        return mDirectBaseUrl + "/v1/";
     }
 
     /**
      * @return the current environment for PayPal.
      */
     public String getEnvironment() {
-        return null;
+        return mEnvironment;
     }
 
     /**

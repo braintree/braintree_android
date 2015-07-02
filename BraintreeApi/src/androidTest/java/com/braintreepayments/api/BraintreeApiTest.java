@@ -46,7 +46,6 @@ public class BraintreeApiTest extends AndroidTestCase {
 
     public void testThrowsConfigurationExceptionOnBadPayPalConfiguration()
             throws ErrorWithResponse, BraintreeException {
-
         Configuration configuration = mock(Configuration.class);
         BraintreeApi braintreeApi = new BraintreeApi(mContext, mock(ClientToken.class),
                 configuration, mock(HttpRequest.class));

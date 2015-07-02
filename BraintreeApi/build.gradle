@@ -1,5 +1,7 @@
 apply plugin: 'com.android.library'
 
+def paypalVersion = 'OneTouchCoreAndroid-1.0.8.jar'
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -26,9 +28,11 @@ dependencies {
     compile 'com.google.android.gms:play-services-wallet:[7.5.0,8.0.0)'
 
     compile project(':BraintreeData')
+    compile files('libs/' + paypalVersion)
+
     lintChecks project(path: ":Lint", configuration: "lintChecks")
+
     androidTestCompile project(':TestUtils')
-    compile files('libs/OneTouchCoreAndroid-1.0.8.jar')
 }
 
 task copyLintJar(type: Copy) {
@@ -85,35 +89,35 @@ task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
 }
 
-//task releaseJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompile) {
-//    from projectDir.path + '/build/intermediates/classes/release/'
-//    from {
-//        configurations.compile.findAll {
-//            it.getName() == paypalVersion
-//        }.collect {
-//            it.isDirectory() ? it : zipTree(it)
-//        }
-//    }
-//    exclude { details -> details.file.name.endsWith('.xml') }
-//}
-//
-//task fullJar(type: Jar, dependsOn: releaseJar) {
-//    classifier = 'full'
-//    from zipTree(releaseJar.archivePath)
-//    from {
-//        configurations.compile.findAll {
-//            it.getName() != paypalVersion && !it.getName().startsWith("play-services") && !it.getName().startsWith("support")
-//        }.collect {
-//            it.isDirectory() ? null : zipTree(it)
-//        }
-//    }
-//}
+task releaseJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompile) {
+    from projectDir.path + '/build/intermediates/classes/release/'
+    from {
+        configurations.compile.findAll {
+            it.getName() == paypalVersion
+        }.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    exclude { details -> details.file.name.endsWith('.xml') }
+}
+
+task fullJar(type: Jar, dependsOn: releaseJar) {
+    classifier = 'full'
+    from zipTree(releaseJar.archivePath)
+    from {
+        configurations.compile.findAll {
+            it.getName() != paypalVersion && !it.getName().startsWith("play-services") && !it.getName().startsWith("support")
+        }.collect {
+            it.isDirectory() ? null : zipTree(it)
+        }
+    }
+}
 
 artifacts {
     archives javadocsJar
     archives sourcesJar
-//    archives releaseJar
-//    archives fullJar
+    archives releaseJar
+    archives fullJar
 }
 
 uploadArchives {

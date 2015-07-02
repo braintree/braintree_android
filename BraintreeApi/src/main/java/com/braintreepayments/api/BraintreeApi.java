@@ -241,7 +241,6 @@ public class BraintreeApi {
         final PayPalPaymentResource payPalPaymentResource =
                 createPayPalPaymentResource(checkout.getAmount(), currencyCode, activity);
         if (payPalPaymentResource != null) {
-
             //OTC browser/app switching requires that it be run on the main thread
             activity.runOnUiThread(new Runnable() {
                 public void run() {
@@ -291,7 +290,6 @@ public class BraintreeApi {
         HttpResponse response = mHttpRequest.post(
                 versionedPath("paypal_hermes/create_payment_resource"),
                 parameters.toString());
-        Log.d("POST", response.getResponseBody());
 
         return PayPalPaymentResource.fromJson(response.getResponseBody());
 

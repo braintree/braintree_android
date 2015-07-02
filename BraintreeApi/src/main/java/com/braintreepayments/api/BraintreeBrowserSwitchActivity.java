@@ -7,8 +7,8 @@ import android.util.Log;
 
 public class BraintreeBrowserSwitchActivity extends Activity {
     public static final String X_CANCEL_HOST = "cancel";
-    public static final String X_SUCCESS_HOST = "success";
 
+    public static final String X_SUCCESS_HOST = "success";
 
     public static final String LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED =
             "com.braintreepayments.api.messages.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED";
@@ -39,8 +39,6 @@ public class BraintreeBrowserSwitchActivity extends Activity {
         super.onResume();
 
         if (mPaused) {
-            Log.d(TAG, "Resumed without a response. Canceling.");
-
             broadcastResult(null, Activity.RESULT_CANCELED);
 
             setResult(Activity.RESULT_CANCELED);
@@ -58,8 +56,6 @@ public class BraintreeBrowserSwitchActivity extends Activity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-
-        Log.d(TAG, "Received an intent: " + intent);
 
         broadcastResult(intent, Activity.RESULT_OK);
         finish();
