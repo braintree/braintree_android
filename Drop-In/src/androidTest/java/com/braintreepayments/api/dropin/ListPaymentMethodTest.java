@@ -16,13 +16,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.braintreepayments.api.BraintreeApi;
+import com.braintreepayments.api.TestUtils;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
-import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
+
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.Map;
@@ -200,10 +202,12 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withText("Choose Payment Method")).check(matches(isDisplayed()));
     }
 
-    public void testShowsAllPaymentMethodsInDialog() throws IOException, ErrorWithResponse {
+    public void testShowsAllPaymentMethodsInDialog() throws IOException, ErrorWithResponse,
+            JSONException {
         createAmex();
         SystemClock.sleep(1000);
-        mBraintreeApi.create(new PayPalAccountBuilder().authorizationCode("fake_auth_code"));
+
+        mBraintreeApi.create(TestUtils.fakePayPalAccountBuilder().validate(true));
         getActivity();
 
         waitForPaymentMethodList();

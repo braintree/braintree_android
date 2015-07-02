@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Base64;
+import android.util.Log;
 
 import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.data.BraintreeData;
@@ -24,6 +25,7 @@ import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
+import com.braintreepayments.api.models.PayPalPaymentResource;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.google.android.gms.common.ConnectionResult;
@@ -33,12 +35,13 @@ import com.google.android.gms.wallet.FullWallet;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.WalletConstants;
 import com.google.gson.Gson;
-import com.paypal.android.sdk.payments.PayPalConfiguration;
+import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -202,22 +205,103 @@ public class BraintreeApi {
 
     /**
      * Start the Pay With PayPal flow. This will launch a new activity for the PayPal mobile SDK.
+     *
      * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      *   when {@link #startPayWithPayPal(android.app.Activity, int, java.util.List)} finishes.
      * @param requestCode The request code associated with this start request. Will be returned in
      * @param additionalScopes A {@link java.util.List} of additional scopes. Ex: 'address'
      * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      */
-    public void startPayWithPayPal(Activity activity, int requestCode, List<String> additionalScopes) {
-        PayPalHelper.startPaypal(activity.getApplicationContext(), mConfiguration.getPayPal());
-        PayPalHelper.launchPayPal(activity, requestCode, mConfiguration.getPayPal(), additionalScopes);
+    public void startPayWithPayPal(Activity activity, int requestCode, List<String> additionalScopes) throws ConfigurationException {
+        PayPal.launchPayPal(activity, requestCode, mConfiguration, mClientToken, additionalScopes);
+    }
+
+    /**
+     * Start the Checkout With PayPal flow. This will create a payment resource with the specified
+     * amount and launch a new activity for the PayPal mobile SDK.
+     *
+     * @param activity The {@link android.app.Activity} to receive {@link
+     * android.app.Activity#onActivityResult(int, int, android.content.Intent)} when {@link
+     * #startPayWithPayPal(android.app.Activity, int)} finishes.
+     * @param requestCode The request code associated with this start request. Will be returned in
+     * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param checkout The PayPalCheckout object which must contain an amount.
+     *
+     */
+    public void startCheckoutWithPayPal(final Activity activity,
+            final int requestCode, PayPalCheckout checkout)
+            throws JSONException, BraintreeException, ErrorWithResponse {
+        PayPal.validatePayPalConfiguration(mConfiguration);
+
+        String currencyCode = checkout.getCurrencyCode();
+        if (currencyCode == null) {
+            currencyCode = mConfiguration.getPayPal().getCurrencyIsoCode();
+        }
+
+        final PayPalPaymentResource payPalPaymentResource =
+                createPayPalPaymentResource(checkout.getAmount(), currencyCode, activity);
+        if (payPalPaymentResource != null) {
+
+            //OTC browser/app switching requires that it be run on the main thread
+            activity.runOnUiThread(new Runnable() {
+                public void run() {
+                    try {
+                        PayPal.checkoutWithPayPal(payPalPaymentResource, activity, requestCode,
+                                mConfiguration);
+                    } catch (ConfigurationException ignored) { }
+                }
+            });
+
+        }
+
+    }
+
+    /**
+     * Create a PayPalPaymentResource on behalf of the merchant. To be used in the PayPal Checkout
+     * flow.
+     *
+     * @param amount The {@link java.math.BigDecimal} amount to use when creating the payment.
+     * @param currencyCode The {@link java.lang.String} to use as the currencyCode of the payment.
+     * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * when {@link #startPayWithVenmo(android.app.Activity, int)} finishes.x
+     * @return A {@link com.braintreepayments.api.models.PayPalPaymentResource} containing the redurectUrl
+     * which will be used by {@link com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore} for
+     * user authorization.
+     */
+    public PayPalPaymentResource createPayPalPaymentResource(BigDecimal amount, String currencyCode,
+            Activity activity)
+            throws JSONException, ErrorWithResponse, BraintreeException {
+
+        String clientId = PayPalOneTouchCore.getClientMetadataId(activity);
+        String returnUri =
+                PayPal.buildPayPalCheckoutConfiguration(null, activity, mConfiguration)
+                        .getSuccessUrl();
+        String cancelUri =
+                PayPal.buildPayPalCheckoutConfiguration(null, activity, mConfiguration)
+                        .getCancelUrl();
+
+        JSONObject parameters = new JSONObject()
+                .put("authorization_fingerprint", mClientToken.getAuthorizationFingerprint())
+                .put("amount", amount.toString())
+                .put("currency_iso_code", currencyCode)
+                .put("return_url", returnUri)
+                .put("cancel_url", cancelUri)
+                .put("correlation_id", clientId);
+
+        HttpResponse response = mHttpRequest.post(
+                versionedPath("paypal_hermes/create_payment_resource"),
+                parameters.toString());
+        Log.d("POST", response.getResponseBody());
+
+        return PayPalPaymentResource.fromJson(response.getResponseBody());
+
     }
 
 
     /**
      * Start the Pay With Venmo flow. This will app switch to the Venmo app.
      * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     * when {@link #startPayWithVenmo(android.app.Activity, int)} finishes.
+     * when {@link #startPayWithVenmo(android.app.Activity, int)} finishes.x
      * @param requestCode The request code associated with this start request. Will be returned in
      * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @throws com.braintreepayments.api.exceptions.AppSwitchNotAvailableException If the Venmo app is
@@ -295,8 +379,7 @@ public class BraintreeApi {
      */
     public PayPalAccountBuilder handlePayPalResponse(Activity activity, int resultCode, Intent data)
             throws ConfigurationException {
-        PayPalHelper.stopPaypalService(mContext);
-        return PayPalHelper.getBuilderFromActivity(activity, resultCode, data);
+        return PayPal.getBuilderFromActivity(activity, resultCode, data);
     }
 
     /**
@@ -320,7 +403,7 @@ public class BraintreeApi {
      */
     @Deprecated
     public PayPalAccount finishPayWithPayPal(int resultCode, Intent data)
-            throws BraintreeException, ErrorWithResponse {
+            throws BraintreeException, ErrorWithResponse, JSONException {
         PayPalAccountBuilder payPalAccountBuilder = handlePayPalResponse(null, resultCode, data);
         if (payPalAccountBuilder != null) {
             return create(payPalAccountBuilder);
@@ -344,7 +427,16 @@ public class BraintreeApi {
      */
     @Deprecated
     public PayPalAccount finishPayWithPayPal(Activity activity, int resultCode, Intent data)
-            throws BraintreeException, ErrorWithResponse {
+            throws BraintreeException, ErrorWithResponse, JSONException {
+        /*
+
+            @{  "correlation_id" : "CORRELATION,
+                "paypal_account": paypalParameters, //THESE ARE THE RAW PARAMS FROM THE REQUEST
+                "authorization_fingerprint": self.clientToken.authorizationFingerprint }
+
+         */
+
+
         PayPalAccountBuilder payPalAccountBuilder = handlePayPalResponse(activity, resultCode, data);
         if (payPalAccountBuilder != null) {
             return create(payPalAccountBuilder);
@@ -378,6 +470,20 @@ public class BraintreeApi {
 
     /**
      * Create a {@link com.braintreepayments.api.models.PaymentMethod} in the Braintree Gateway.
+     *  Todo
+     */
+    public <T extends PaymentMethod> T create(String apiPath, String params, PaymentMethod.Builder<T> paymentMethodBuilder)
+            throws ErrorWithResponse, BraintreeException {
+        HttpResponse response = mHttpRequest.post(
+                versionedPath(PAYMENT_METHOD_ENDPOINT + "/" + apiPath),
+                params);
+
+        return paymentMethodBuilder.fromJson(jsonForType(response.getResponseBody(),
+                paymentMethodBuilder.getApiResource()));
+    }
+
+    /**
+     * Create a {@link com.braintreepayments.api.models.PaymentMethod} in the Braintree Gateway.
      *
      * @param paymentMethodBuilder {@link com.braintreepayments.api.models.PaymentMethod.Builder} for the
      * {@link com.braintreepayments.api.models.PaymentMethod} to be created.
@@ -390,6 +496,7 @@ public class BraintreeApi {
      */
     public <T extends PaymentMethod> T create(PaymentMethod.Builder<T> paymentMethodBuilder)
             throws ErrorWithResponse, BraintreeException {
+
         HttpResponse response = mHttpRequest.post(
                 versionedPath(PAYMENT_METHOD_ENDPOINT + "/" + paymentMethodBuilder.getApiPath()),
                 paymentMethodBuilder.toJsonString());
@@ -413,7 +520,7 @@ public class BraintreeApi {
      * @see #create(com.braintreepayments.api.models.PaymentMethod.Builder)
      */
     public String tokenize(PaymentMethod.Builder paymentMethodBuilder)
-            throws BraintreeException, ErrorWithResponse {
+            throws BraintreeException, ErrorWithResponse, JSONException {
         PaymentMethod paymentMethod = create(paymentMethodBuilder.validate(false));
         return paymentMethod.getNonce();
     }
@@ -536,7 +643,8 @@ public class BraintreeApi {
             mBraintreeData = new BraintreeData(activity, merchantId, collectorUrl);
             deviceData = ((BraintreeData) mBraintreeData).collectDeviceData();
         } catch (NoClassDefFoundError e) {
-            deviceData = "{\"correlation_id\":\"" + PayPalConfiguration.getClientMetadataId(activity) + "\"}";
+            deviceData = "{\"correlation_id\":\"" +
+                    PayPalOneTouchCore.getClientMetadataId(activity) + "\"}";
         }
 
         return deviceData;

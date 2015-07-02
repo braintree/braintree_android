@@ -67,7 +67,7 @@ public final class BraintreeData {
     private String getCorrelationId(Activity activity) {
         try {
             Method method = getClass().getClassLoader()
-                    .loadClass("com.paypal.android.sdk.payments.PayPalConfiguration")
+                    .loadClass("com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore")
                     .getMethod("getClientMetadataId", Context.class);
             return (String) method.invoke(null, activity);
         } catch (Exception ignored) {

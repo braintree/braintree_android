@@ -19,7 +19,6 @@ import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.google.gson.Gson;
-import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 
 import org.json.JSONException;
 
@@ -47,19 +46,18 @@ public class BraintreeApiTest extends AndroidTestCase {
 
     public void testThrowsConfigurationExceptionOnBadPayPalConfiguration()
             throws ErrorWithResponse, BraintreeException {
+
         Configuration configuration = mock(Configuration.class);
         BraintreeApi braintreeApi = new BraintreeApi(mContext, mock(ClientToken.class),
                 configuration, mock(HttpRequest.class));
         boolean exceptionHappened = false;
 
         try {
-            braintreeApi.finishPayWithPayPal(null, PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID,
-                    new Intent());
+            braintreeApi.startPayWithPayPal(null, 1234, null);
             fail("Configuration exception not thrown");
         } catch (ConfigurationException e) {
             exceptionHappened = true;
         }
-
         assertTrue("Expected ConfigurationException was not thrown", exceptionHappened);
     }
 

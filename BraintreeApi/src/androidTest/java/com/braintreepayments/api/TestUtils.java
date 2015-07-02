@@ -10,7 +10,11 @@ import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.testutils.FixturesHelper;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -55,5 +59,11 @@ public class TestUtils {
             }
         });
         latch.await();
+    }
+
+    public static PayPalAccountBuilder fakePayPalAccountBuilder() throws JSONException {
+        return new PayPalAccountBuilder().OtcResponse(
+                new JSONObject(
+                        "{\"client\":{\"environment\":\"mock\",\"paypal_sdk_version\":\"1.0.8\",\"platform\":\"Android\",\"product_name\":\"OneTouchCore-Android\"},\"response\":{\"code\":\"fake_code\"},\"response_type\":\"authorization_code\",\"user\":{\"display_string\":\"scruff@mcgruff.com\"}}"));
     }
 }

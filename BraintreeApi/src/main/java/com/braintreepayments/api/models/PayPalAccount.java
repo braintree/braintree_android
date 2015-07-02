@@ -23,20 +23,40 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
 
     @SerializedName("consentCode") private String mConsentCode;
     @SerializedName("correlationId") private String mCorrelationId;
-    @SerializedName("details") private PayPalDetails mDetails;
 
-    // This is intentionally not serialized because it's not used by the Gateway.
+    // These are intentionally not serialized because they're not used by the Gateway.
     private PostalAddress mBillingAddress;
+    private PostalAddress mShippingAddress;
+    private String mFirstName;
+    private String mLastName;
+    private String mPhone;
+    private String mEmail;
+
 
     public PayPalAccount() {}
 
     protected void setEmail(String email) {
-        mDetails = new PayPalDetails();
-        mDetails.setEmail(email);
+        mEmail = email;
     }
 
     public PostalAddress getBillingAddress() {
         return mBillingAddress;
+    }
+
+    public PostalAddress getShippingAddress() {
+        return mShippingAddress;
+    }
+
+    public String getFirstName() {
+        return mFirstName;
+    }
+
+    public String getLastName() {
+        return mLastName;
+    }
+
+    public String getPhone() {
+        return mPhone;
     }
 
     protected void setConsentCode(String consentCode) {
@@ -51,11 +71,8 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
      * @return The email address associated with this PayPal account
      */
     public String getEmail() {
-        if (mDetails != null) {
-            return mDetails.getEmail();
-        } else {
-            return "";
-        }
+        if (mEmail == null) { return ""; }
+        return mEmail;
     }
 
     /**
@@ -85,14 +102,31 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
      * @return {@link com.braintreepayments.api.models.PayPalAccount} for use in payment method selection UIs.
      */
     public static PayPalAccount fromJson(String json) {
+
         PayPalAccount payPalAccount = new Gson().fromJson(json, PayPalAccount.class);
+
         try {
-            String accountAddressJson = new JSONObject(json).getJSONObject("details")
-                    .getJSONObject("payerInfo").getJSONObject("accountAddress").toString();
-            payPalAccount.mBillingAddress = new Gson().fromJson(accountAddressJson, PostalAddress.class);
-        } catch (JSONException ignored) {
-            // Absence of address info shouldn't block a payment method from being created
-        }
+            payPalAccount.mEmail = new JSONObject(json).optJSONObject("details")
+                    .optString("email"); // Allow for email outside payerInfo
+            JSONObject payerInfo = new JSONObject(json).optJSONObject("details")
+                    .optJSONObject("payerInfo");
+            if (payerInfo != null) {
+                JSONObject addressJson = payerInfo.optJSONObject("accountAddress");
+                payPalAccount.mBillingAddress = PostalAddress.addressFromJson(addressJson);
+                if (payPalAccount.mBillingAddress == null) {
+                    addressJson = payerInfo.optJSONObject("billingAddress");
+                    payPalAccount.mBillingAddress = PostalAddress.addressFromJson(addressJson);
+                }
+                addressJson = payerInfo.optJSONObject("shippingAddress");
+                payPalAccount.mShippingAddress = PostalAddress.addressFromJson(addressJson);
+                payPalAccount.mFirstName = payerInfo.optString("firstName");
+                payPalAccount.mLastName = payerInfo.optString("lastName");
+                payPalAccount.mPhone = payerInfo.optString("phone");
+                if (payPalAccount.mEmail == null) {
+                    payPalAccount.mEmail = payerInfo.optString("email");
+                }
+            }
+        } catch (JSONException ignored) { }
 
         return payPalAccount;
     }
@@ -104,23 +138,31 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mConsentCode);
         dest.writeString(mCorrelationId);
-        dest.writeParcelable(mDetails, 0);
         dest.writeString(mNonce);
         dest.writeString(mDescription);
         dest.writeSerializable(mPaymentMethodOptions);
         dest.writeString(mSource);
         dest.writeParcelable(mBillingAddress, 0);
+        dest.writeParcelable(mShippingAddress, 0);
+        dest.writeString(mFirstName);
+        dest.writeString(mLastName);
+        dest.writeString(mEmail);
+        dest.writeString(mPhone);
     }
 
     private PayPalAccount(Parcel in) {
         mConsentCode = in.readString();
         mCorrelationId = in.readString();
-        mDetails = in.readParcelable(PayPalDetails.class.getClassLoader());
         mNonce = in.readString();
         mDescription = in.readString();
         mPaymentMethodOptions = (PaymentMethodOptions) in.readSerializable();
         mSource = in.readString();
         mBillingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
+        mShippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
+        mFirstName = in.readString();
+        mLastName = in.readString();
+        mEmail = in.readString();
+        mPhone = in.readString();
     }
 
     public static final Creator<PayPalAccount> CREATOR = new Creator<PayPalAccount>() {
@@ -129,32 +171,4 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
         public PayPalAccount[] newArray(int size) {return new PayPalAccount[size];}
     };
 
-    private static class PayPalDetails implements Parcelable, Serializable {
-
-        @SerializedName("email") private String mEmail;
-
-        public PayPalDetails() {}
-
-        private String getEmail() {
-            return mEmail;
-        }
-
-        private void setEmail(String email) {
-            mEmail = email;
-        }
-
-        @Override
-        public int describeContents() { return 0; }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {dest.writeString(mEmail);}
-
-        private PayPalDetails(Parcel in) {mEmail = in.readString();}
-
-        public static final Creator<PayPalDetails> CREATOR = new Creator<PayPalDetails>() {
-            public PayPalDetails createFromParcel(Parcel source) {return new PayPalDetails(source);}
-
-            public PayPalDetails[] newArray(int size) {return new PayPalDetails[size];}
-        };
-    }
 }

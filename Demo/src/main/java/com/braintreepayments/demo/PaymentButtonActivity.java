@@ -8,11 +8,11 @@ import android.os.Parcelable;
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
+import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.view.PaymentButton;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.google.android.gms.wallet.Cart;
-import com.paypal.android.sdk.payments.PayPalOAuthScopes;
 
 import java.util.Arrays;
 
@@ -21,7 +21,7 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodCrea
 
     private PaymentButton mPaymentButton;
 
-    protected void onCreate(Bundle onSaveInstanceState) {
+   protected void onCreate(Bundle onSaveInstanceState) {
         super.onCreate(onSaveInstanceState);
         setContentView(R.layout.payment_button);
 
@@ -46,7 +46,7 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodCrea
             boolean payPalAddressScopeRequested = getIntent().getBooleanExtra("payPalAddressScopeRequested", false);
             if (payPalAddressScopeRequested) {
                 mPaymentButton.setAdditionalPayPalScopes(
-                        Arrays.asList(PayPalOAuthScopes.PAYPAL_SCOPE_ADDRESS));
+                        Arrays.asList(PayPal.SCOPE_ADDRESS));
             }
             mPaymentButton.initialize(this, braintree);
         } else {
@@ -55,6 +55,10 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodCrea
             setResult(RESULT_FIRST_USER, intent);
             finish();
         }
+    }
+
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override

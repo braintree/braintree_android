@@ -33,6 +33,10 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
 
     private int mActivePaymentMethod;
 
+    public void setPaymentMethodToActive() {
+        mPaymentMethodView.setPaymentMethodDetails(getActivePaymentMethod());
+    }
+    
     public SelectPaymentMethodViewController(BraintreePaymentActivity activity,
             Bundle savedInstanceState, View root, Braintree braintree, Customization customization) {
         super(activity, root, braintree, customization);

@@ -28,8 +28,7 @@ import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.WalletConstants;
 import com.google.gson.JsonSyntaxException;
-import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
-import com.paypal.android.sdk.payments.PayPalProfileSharingActivity;
+import com.paypal.android.sdk.onetouch.core.PayPalOneTouchActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -268,36 +267,6 @@ public class BraintreeTest extends AndroidTestCase {
         assertTrue(wasCalled.get());
     }
 
-    public void testPayPalConfigurationExceptionPostsToOnUnrecoverableError()
-            throws BraintreeException, InterruptedException, ErrorWithResponse {
-        Intent intent = new Intent();
-        BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        when(braintreeApi.handlePayPalResponse(any(Activity.class), eq(PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID), eq(intent)))
-                .thenThrow(new ConfigurationException("Test"));
-
-        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
-
-        final AtomicBoolean wasCalled = new AtomicBoolean(false);
-        braintree.addListener(new SimpleListener() {
-            @Override
-            public void onUnrecoverableError(Throwable error) {
-                assertTrue(error != null);
-                wasCalled.set(true);
-            }
-        });
-
-        braintree.finishPayWithPayPal(null, PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID,
-                intent);
-        SystemClock.sleep(50);
-        assertTrue(wasCalled.get());
-
-        wasCalled.set(false);
-        braintree.handlePayPalResponse(null, PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID,
-                intent);
-        SystemClock.sleep(50);
-        assertTrue(wasCalled.get());
-    }
-
     public void testStartPayWithPayPalSendsAnalyticsEvent() {
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
 
@@ -310,7 +279,7 @@ public class BraintreeTest extends AndroidTestCase {
     public void testFinishPayWithPayPalDoesNothingOnNullBuilder() throws ConfigurationException {
         Intent intent = new Intent();
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        when(braintreeApi.handlePayPalResponse(any(Activity.class), eq(PayPalFuturePaymentActivity.RESULT_CANCELED), eq(intent))).
+        when(braintreeApi.handlePayPalResponse(any(Activity.class), eq(Activity.RESULT_CANCELED), eq(intent))).
                 thenReturn(null);
 
         Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
@@ -343,7 +312,7 @@ public class BraintreeTest extends AndroidTestCase {
             }
         });
 
-        braintree.finishPayWithPayPal(null, PayPalFuturePaymentActivity.RESULT_CANCELED, intent);
+        braintree.finishPayWithPayPal(null, Activity.RESULT_CANCELED, intent);
         SystemClock.sleep(50);
 
         assertFalse("Expected no listeners to fire but one did fire", listenerWasCalled.get());
@@ -487,7 +456,7 @@ public class BraintreeTest extends AndroidTestCase {
     }
 
     public void testStartThreeDSecureVerificationPostsPaymentMethodToListenersWhenLookupReturnsACard()
-            throws InterruptedException, ErrorWithResponse, BraintreeException {
+            throws InterruptedException, ErrorWithResponse, BraintreeException, JSONException {
         String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
         BraintreeApi braintreeApi = new BraintreeApi(getContext(), clientToken);
         Braintree braintree = new Braintree(clientToken, braintreeApi);
@@ -918,7 +887,7 @@ public class BraintreeTest extends AndroidTestCase {
                 any(Intent.class));
         int requestCode = 10;
         int responseCode = Activity.RESULT_OK;
-        Intent intent = new Intent().putExtra(PayPalProfileSharingActivity.EXTRA_RESULT_AUTHORIZATION, "");
+        Intent intent = new Intent().putExtra(PayPalOneTouchActivity.EXTRA_ONE_TOUCH_RESULT, "");
 
         braintree.onActivityResult(null, requestCode, responseCode, intent);
 

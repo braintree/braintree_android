@@ -49,7 +49,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
 
     @TargetApi(VERSION_CODES.HONEYCOMB)
     public void testReturnsWithStatusResultCanceledWhenUpIsPressed()
-            throws ErrorWithResponse, BraintreeException, InterruptedException {
+            throws ErrorWithResponse, BraintreeException, InterruptedException, JSONException {
         Activity activity = startThreeDSecureTestActivity("4000000000000002");
 
         waitForView(withId(android.R.id.widget_frame));
@@ -62,7 +62,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
     }
 
     public void testReturnsWithStatusResultCanceledWhenBackIsPressedOnFirstPage()
-            throws ErrorWithResponse, BraintreeException {
+            throws ErrorWithResponse, BraintreeException, JSONException {
         Activity activity = startThreeDSecureTestActivity("4000000000000002");
 
         waitForView(withId(android.R.id.widget_frame));
@@ -79,7 +79,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
     }
 
     public void pendingReturnsWithStatusResultCanceledWhenUserGoesOnePageDeepAndPressesBackTwice()
-            throws ErrorWithResponse, BraintreeException {
+            throws ErrorWithResponse, BraintreeException, JSONException {
         Activity activity = startThreeDSecureTestActivity("4000000000000002");
 
         waitForView(withId(android.R.id.widget_frame));
@@ -123,7 +123,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
     }
 
     public void pendingRequestsAuthenticationWhenRequired()
-            throws ErrorWithResponse, BraintreeException {
+            throws ErrorWithResponse, BraintreeException, JSONException {
         Activity activity = startThreeDSecureTestActivity("4000000000000002");
 
         // Enter password and click submit
@@ -140,7 +140,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
     }
 
     public void pendingReturnsAnErrorWhenAuthenticationFails()
-            throws ErrorWithResponse, BraintreeException {
+            throws ErrorWithResponse, BraintreeException, JSONException {
         Activity activity = startThreeDSecureTestActivity("4000000000000028");
 
         // Enter password and click submit
@@ -158,7 +158,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
     }
 
     public void testReturnsASuccessfulAuthenticationWhenIssuerDoesNotParticipate()
-            throws ErrorWithResponse, BraintreeException {
+            throws ErrorWithResponse, BraintreeException, JSONException {
         Activity activity = startThreeDSecureTestActivity("4000000000000101");
 
         SystemClock.sleep(5000);
@@ -174,7 +174,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
     }
 
     public void pendingReturnsAFailedAuthenticationWhenSignatureVerificationFails()
-            throws ErrorWithResponse, BraintreeException {
+            throws ErrorWithResponse, BraintreeException, JSONException {
         Activity activity = startThreeDSecureTestActivity("4000000000000010");
 
         // Enter password and click submit
@@ -209,7 +209,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
     }
 
     public void pendingEarlyTerminationWhenCardinalReturnsError()
-            throws ErrorWithResponse, BraintreeException {
+            throws ErrorWithResponse, BraintreeException, JSONException {
         Activity activity = startThreeDSecureTestActivity("4000000000000093");
 
         // Enter password and click submit
@@ -227,7 +227,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
 
     /* helper */
     private Activity startThreeDSecureTestActivity(String cardNumber)
-            throws ErrorWithResponse, BraintreeException {
+            throws ErrorWithResponse, BraintreeException, JSONException {
         String nonce = mBraintreeApi.tokenize(new CardBuilder()
                 .cardNumber(cardNumber)
                 .expirationDate("12/30"));

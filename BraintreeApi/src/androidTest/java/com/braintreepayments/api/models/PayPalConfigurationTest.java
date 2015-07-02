@@ -19,6 +19,7 @@ public class PayPalConfigurationTest extends AndroidTestCase {
         assertEquals("http://www.example.com/user_agreement", payPalConfiguration.getUserAgreementUrl());
         assertEquals("http://localhost:9000/v1/", payPalConfiguration.getDirectBaseUrl());
         assertEquals("offline", payPalConfiguration.getEnvironment());
+        assertEquals("USD", payPalConfiguration.getCurrencyIsoCode());
     }
 
     public void testReportsPayPalNotEnabledWhenFlagged() {

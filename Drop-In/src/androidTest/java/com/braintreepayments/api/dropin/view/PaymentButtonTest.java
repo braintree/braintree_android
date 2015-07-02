@@ -9,11 +9,11 @@ import android.view.View;
 
 import com.braintreepayments.api.AppSwitch;
 import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.dropin.R;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.WalletConstants;
-import com.paypal.android.sdk.payments.PayPalOAuthScopes;
-import com.paypal.android.sdk.payments.PayPalTouchActivity;
+import com.paypal.android.sdk.onetouch.core.PayPalOneTouchActivity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -161,7 +161,7 @@ public class PaymentButtonTest extends AndroidTestCase {
         when(mBraintree.isVenmoEnabled()).thenReturn(true);
         PaymentButton button = new PaymentButton(getContext());
 
-        List<String> scopes = Arrays.asList(PayPalOAuthScopes.PAYPAL_SCOPE_ADDRESS);
+        List<String> scopes = Arrays.asList(PayPal.SCOPE_ADDRESS);
         button.setAdditionalPayPalScopes(scopes);
         button.initialize(null, mBraintree);
         button.findViewById(R.id.bt_paypal_button).performClick();
@@ -222,7 +222,8 @@ public class PaymentButtonTest extends AndroidTestCase {
         button.initialize(null, mBraintree);
 
         Intent intent = new Intent()
-                .putExtra(PayPalTouchActivity.EXTRA_LOGIN_CONFIRMATION, newParcelable());
+                .putExtra(PayPalOneTouchActivity.EXTRA_ONE_TOUCH_RESULT, newParcelable());
+
         button.onActivityResult(PaymentButton.REQUEST_CODE, Activity.RESULT_OK, intent);
         verify(mBraintree).onActivityResult(null, PaymentButton.REQUEST_CODE, Activity.RESULT_OK,
                 intent);

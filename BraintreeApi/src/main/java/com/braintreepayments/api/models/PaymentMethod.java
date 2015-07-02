@@ -14,7 +14,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Base class representing a method of payment for a customer.
@@ -145,15 +144,6 @@ public abstract class PaymentMethod implements Parcelable, Serializable {
          * @return A built {@link com.braintreepayments.api.models.PaymentMethod} appropriate to the builder's type.
          */
         public T build();
-
-        /**
-         * @deprecated Replaced by {@link com.braintreepayments.api.models.PaymentMethod.Builder#toJsonString()} in 1.0.7.
-         *
-         * Required for and handled by {@link com.braintreepayments.api.Braintree}. Not intended for general consumption.
-         * @return Serialized representation of {@link com.braintreepayments.api.models.PaymentMethod} for API use.
-         */
-        @Deprecated
-        public Map<String, Object> toJson();
 
         /**
          * Required for and handled by {@link com.braintreepayments.api.Braintree}. Not intended for general consumption.

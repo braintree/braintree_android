@@ -2,12 +2,12 @@ package com.braintreepayments.api.models;
 
 import android.content.Context;
 
-import com.braintreepayments.api.models.PaymentMethod.Builder;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import com.paypal.android.sdk.onetouch.core.Result;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Builder used to construct a {@link com.braintreepayments.api.models.PayPalAccount}
@@ -20,8 +20,10 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
     @SerializedName("authorizationCode") private String mAuthorizationCode;
     @SerializedName("correlationId") private String mCorrelationId;
     @SerializedName("options") private PaymentMethodOptions mPaymentMethodOptions;
+
     private String mIntegration = "custom";
     private String mSource;
+    private JSONObject mOtcResponse;
 
     /**
      * Used by PayPal wrappers to construct a {@link com.braintreepayments.api.models.PayPalAccount}.
@@ -45,13 +47,19 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
 
     /**
      * Used by PayPal wrappers to construct a {@link com.braintreepayments.api.models.PayPalAccount}.
+     *
      * @param correlationId Application correlation ID created by
      * {@link com.paypal.android.sdk.payments.PayPalConfiguration#getClientMetadataId(Context)}
      * to verify the payment.
      * @return {@link com.braintreepayments.api.models.PayPalAccountBuilder}
      */
     public PayPalAccountBuilder correlationId(String correlationId) {
-        mCorrelationId = correlationId;
+        this.mCorrelationId = correlationId;
+        return this;
+    }
+
+    public PayPalAccountBuilder OtcResponse(JSONObject OtcResponse) {
+        mOtcResponse = OtcResponse;
         return this;
     }
 
@@ -81,35 +89,33 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
         payPalAccount.setCorrelationId(mCorrelationId);
         payPalAccount.setOptions(mPaymentMethodOptions);
         payPalAccount.setSource(mSource);
-
         return payPalAccount;
     }
 
     @Override
-    public Map<String, Object> toJson() {
-        HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("paypalAccount", build());
-        params.put(Builder.METADATA_KEY, new Metadata(mIntegration, mSource));
-        return params;
-    }
-
-    @Override
     public String toJsonString() {
-        return new Gson().toJson(toJson());
+        JSONObject params = new JSONObject();
+        try {
+            mOtcResponse.put("options", new JSONObject().put("validate", mPaymentMethodOptions.isValidate()));
+            params.put("paypal_account", mOtcResponse);
+            params.put("correlation_id", mCorrelationId);
+            params.put(PaymentMethod.Builder.METADATA_KEY, new JSONObject(new Gson()
+                    .toJson(new Metadata(mIntegration, mSource))));
+        } catch (JSONException ignored) {}
+        return params.toString();
     }
 
     @Override
     public PayPalAccount fromJson(String json) {
         PayPalAccount payPalAccount = PayPalAccount.fromJson(json);
-        payPalAccount.setEmail(mEmail);
-
+        if (payPalAccount.getEmail() == null) {
+            payPalAccount.setEmail(mEmail);
+        }
         return payPalAccount;
     }
 
     @Override
-    public String getApiPath() {
-        return "paypal_accounts";
-    }
+    public String getApiPath() { return "paypal_accounts"; }
 
     @Override
     public String getApiResource() {

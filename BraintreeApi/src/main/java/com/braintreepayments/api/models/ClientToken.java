@@ -17,19 +17,21 @@ public class ClientToken {
 
     @SerializedName("configUrl") private String mConfigUrl;
     @SerializedName("authorizationFingerprint") private String mAuthorizationFingerprint;
+    private String mOriginalValue;
 
     /**
      * Create a new {@link ClientToken} instance from a client token
      *
-     * @param clientToken A client token from the Braintree Gateway
+     * @param _clientToken A client token from the Braintree Gateway
      * @return {@link ClientToken} instance
      */
-    public static ClientToken fromString(String clientToken) {
-        if (BASE_64_PATTERN.matcher(clientToken).matches()) {
-            clientToken = new String(Base64.decode(clientToken, Base64.DEFAULT));
+    public static ClientToken fromString(String _clientToken) {
+        if (BASE_64_PATTERN.matcher(_clientToken).matches()) {
+            _clientToken = new String(Base64.decode(_clientToken, Base64.DEFAULT));
         }
-
-        return new Gson().fromJson(clientToken, ClientToken.class);
+        ClientToken clientToken = new Gson().fromJson(_clientToken, ClientToken.class);
+        clientToken.mOriginalValue = _clientToken;
+        return clientToken;
     }
 
     /**
@@ -44,5 +46,12 @@ public class ClientToken {
      */
     public String getAuthorizationFingerprint() {
         return mAuthorizationFingerprint;
+    }
+
+    /**
+     * @return The original client token string
+     */
+    public String getOriginalValue() {
+        return mOriginalValue;
     }
 }

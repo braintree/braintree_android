@@ -8,6 +8,8 @@ import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
+import org.json.JSONException;
+
 import static com.braintreepayments.testutils.CardNumber.VISA;
 
 public class AddCardTest extends AndroidTestCase {
@@ -19,7 +21,7 @@ public class AddCardTest extends AndroidTestCase {
         mBraintreeApi = new BraintreeApi(getContext(), new TestClientTokenBuilder().build());
     }
 
-    public void testCanAddCard() throws ErrorWithResponse, BraintreeException {
+    public void testCanAddCard() throws ErrorWithResponse, BraintreeException, JSONException {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
                 .expirationMonth("01")
@@ -30,7 +32,8 @@ public class AddCardTest extends AndroidTestCase {
         assertNotNull(addedCard.getNonce());
     }
 
-    public void testCanTokenizeInvalidCard() throws ErrorWithResponse, BraintreeException {
+    public void testCanTokenizeInvalidCard()
+            throws ErrorWithResponse, BraintreeException, JSONException {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber("This is a credit card");
 
@@ -39,7 +42,7 @@ public class AddCardTest extends AndroidTestCase {
         assertNotNull(nonce);
     }
 
-    public void testThrowsErrorOnServerFailure() throws BraintreeException {
+    public void testThrowsErrorOnServerFailure() throws BraintreeException, JSONException {
         CardBuilder cardBuilder = new CardBuilder()
                 .expirationMonth("01");
 

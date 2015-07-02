@@ -10,9 +10,14 @@ import java.io.Serializable;
  */
 public class PaymentMethodOptions implements Serializable {
 
-    @SerializedName("validate") private boolean mValidate;
+    @SerializedName("validate") private boolean mValidate = false;
 
     public void setValidate(boolean validate) {
         mValidate = validate;
     }
+
+    public boolean isValidate() {
+        return mValidate;
+    }
+
 }
