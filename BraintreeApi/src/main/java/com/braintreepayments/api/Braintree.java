@@ -637,13 +637,30 @@ public class Braintree {
                     break;
                 case Cancel:
                     if (isAppSwitch && isCheckout) {
-                        sendAnalyticsEvent("paypal-single-payment.appswitch.canceled");
+                        if (result.getError() == null) {
+                            sendAnalyticsEvent("paypal-single-payment.appswitch.canceled");
+                        } else {
+                            sendAnalyticsEvent("paypal-single-payment.appswitch.canceled-with-error");
+                        }
                     } else if (isAppSwitch && !isCheckout) {
-                        sendAnalyticsEvent("paypal-future-payments.appswitch.canceled");
+                        if (result.getError() == null) {
+                            sendAnalyticsEvent("paypal-future-payments.appswitch.canceled");
+                        } else {
+                            sendAnalyticsEvent("paypal-future-payments.appswitch.canceled-with-error");
+                        }
                     } else if (!isAppSwitch && isCheckout) {
-                        sendAnalyticsEvent("paypal-single-payment.webswitch.canceled");
+                        if (result.getError() == null) {
+                            sendAnalyticsEvent("paypal-single-payment.webswitch.canceled");
+                        } else {
+                            sendAnalyticsEvent("paypal-single-payment.webswitch.canceled-with-error");
+                        }
                     } else if (!isAppSwitch && !isCheckout) {
-                        sendAnalyticsEvent("paypal-future-payments.webswitch.canceled");
+                        if (result.getError() == null) {
+                            sendAnalyticsEvent("paypal-future-payments.webswitch.canceled");
+                        } else {
+                            sendAnalyticsEvent("paypal-future-payments.webswitch.canceled-with-error");
+                        }
+
                     }
                     break;
                 case Success:
@@ -1069,8 +1086,7 @@ public class Braintree {
     }
 
     /**
-     * Helper method to {@link #create(PaymentMethod.Builder)} to make execution synchronous in
-     * testing.
+     * Helper method to {@link #create(PaymentMethod.Builder)} to make execution synchronous.
      */
     protected synchronized <T extends PaymentMethod> Future<?> createHelper(
             final PaymentMethod.Builder<T> paymentMethodBuilder) {
@@ -1081,7 +1097,11 @@ public class Braintree {
                     PaymentMethod createdPaymentMethod = mBraintreeApi.create(paymentMethodBuilder);
                     addPaymentMethodToCache(createdPaymentMethod);
                     if (paymentMethodBuilder.getClass() == PayPalAccountBuilder.class) {
-                        sendAnalyticsEvent("paypal-future-payments.tokenize.succeeded");
+                        if (PayPal.isCheckoutRequest()) {
+                            sendAnalyticsEvent("paypal-single-payment.tokenize.succeeded");
+                        } else {
+                            sendAnalyticsEvent("paypal-future-payments.tokenize.succeeded");
+                        }
                     }
                     postCreatedMethodToListeners(createdPaymentMethod);
                     postCreatedNonceToListeners(createdPaymentMethod.getNonce());
@@ -1089,7 +1109,11 @@ public class Braintree {
                     postUnrecoverableErrorToListeners(e);
                 } catch (ErrorWithResponse e) {
                     if (paymentMethodBuilder.getClass() == PayPalAccountBuilder.class) {
-                        sendAnalyticsEvent("paypal-future-payments.tokenize.failed");
+                        if (PayPal.isCheckoutRequest()) {
+                            sendAnalyticsEvent("paypal-single-payment.tokenize.failed");
+                        } else {
+                            sendAnalyticsEvent("paypal-future-payments.tokenize.failed");
+                        }
                     }
                     postRecoverableErrorToListeners(e);
                 }
