@@ -178,7 +178,7 @@ public class PayPal {
     }
 
     public static Boolean isCheckoutRequest() {
-        return sPendingRequest.getClass() == CheckoutRequest.class;
+        return sPendingRequest != null && sPendingRequest.getClass() == CheckoutRequest.class;
     }
 
     /**

@@ -16,7 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.braintreepayments.api.BraintreeApi;
-import com.braintreepayments.api.TestUtils;
+import com.braintreepayments.api.BraintreeTestUtils;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.Card;
@@ -207,7 +207,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         createAmex();
         SystemClock.sleep(1000);
 
-        mBraintreeApi.create(TestUtils.fakePayPalAccountBuilder().validate(true));
+        mBraintreeApi.create(BraintreeTestUtils.fakePayPalAccountBuilder().validate(true));
         getActivity();
 
         waitForPaymentMethodList();

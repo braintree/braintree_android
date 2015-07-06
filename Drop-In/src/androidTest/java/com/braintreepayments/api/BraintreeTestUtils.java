@@ -10,7 +10,11 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.models.ClientToken;
+import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import static com.braintreepayments.api.TestDependencyInjector.injectBraintree;
 import static org.mockito.Matchers.anyString;
@@ -125,5 +129,16 @@ public class BraintreeTestUtils {
     public static void verifySetupCalledOnBraintreeApi(BraintreeApi braintreeApi)
             throws ErrorWithResponse, BraintreeException {
         verify(braintreeApi).setup();
+    }
+
+    /**
+     *
+     * @return a PayPalAccountBuilder for testing
+     * @throws JSONException
+     */
+    public static PayPalAccountBuilder fakePayPalAccountBuilder() throws JSONException {
+        return new PayPalAccountBuilder().OtcResponse(
+                new JSONObject(
+                        "{\"client\":{\"environment\":\"mock\",\"paypal_sdk_version\":\"1.0.8\",\"platform\":\"Android\",\"product_name\":\"OneTouchCore-Android\"},\"response\":{\"code\":\"fake_code\"},\"response_type\":\"authorization_code\",\"user\":{\"display_string\":\"scruff@mcgruff.com\"}}"));
     }
 }

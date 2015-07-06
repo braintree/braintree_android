@@ -10,7 +10,7 @@ import android.view.KeyEvent;
 import android.widget.Button;
 
 import com.braintreepayments.api.BraintreeApi;
-import com.braintreepayments.api.TestUtils;
+import com.braintreepayments.api.BraintreeTestUtils;
 import com.braintreepayments.api.dropin.view.LoadingHeader;
 import com.braintreepayments.api.dropin.view.LoadingHeader.HeaderState;
 import com.braintreepayments.api.exceptions.BraintreeException;
@@ -495,7 +495,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
     private void createPayPal() throws JSONException {
         BraintreePaymentActivity activity = getActivity();
-        activity.getBraintree().create(TestUtils.fakePayPalAccountBuilder());
+        activity.getBraintree().create(BraintreeTestUtils.fakePayPalAccountBuilder());
     }
 
     @TargetApi(VERSION_CODES.HONEYCOMB)
