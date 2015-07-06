@@ -68,5 +68,5 @@ public class PayPalConfiguration {
     /**
      * @return the PayPal currency code.
      */
-    public String getCurrencyIsoCode() { return null; }
+    public String getCurrencyIsoCode() { return mCurrencyIsoCode; }
 }

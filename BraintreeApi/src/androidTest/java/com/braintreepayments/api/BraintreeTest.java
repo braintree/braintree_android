@@ -340,12 +340,8 @@ public class BraintreeTest extends AndroidTestCase {
                     verify(braintreeApi).sendAnalyticsEvent("custom.android.paypal-future-payments.appswitch.failed", "custom");
 
                 } catch (ConfigurationException ignored) {}
-
             }
         });
-
-
-
     }
 
     public void testStartPayWithVenmoSendsAnalyticsEvent() {
