@@ -4,12 +4,11 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.content.IntentFilter;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.data.BraintreeEnvironment;
@@ -22,7 +21,6 @@ import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
-import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
@@ -38,7 +36,6 @@ import com.paypal.android.sdk.onetouch.core.Result;
 import com.paypal.android.sdk.onetouch.core.ResultType;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -492,7 +489,6 @@ public class Braintree {
         startPayWithPayPal(activity, requestCode, null);
     }
 
-
     /**
      * Starts the Pay With PayPal flow with additional scopes. This will launch the PayPal app if installed or switch to
      * the browser for user authorization.
@@ -503,9 +499,8 @@ public class Braintree {
      *                    in {@code onActivityResult}.
      * @param additionalScopes A {@link java.util.List} of additional scopes.
      *                         Ex: PayPalOAuthScopes.PAYPAL_SCOPE_ADDRESS. Acceptable scopes are
-     *                         defined in {@link com.paypal.android.sdk.payments.PayPalOAuthScopes}.
+     *                         defined in {@link com.braintreepayments.api.PayPal}.
      */
-
     public void startPayWithPayPal(final Activity activity, final int requestCode, final List<String> additionalScopes) {
         mCurrentPayPalActivity = activity;
         sendAnalyticsEvent("paypal-otc.appswitch.initiate.started");
@@ -520,13 +515,6 @@ public class Braintree {
             postUnrecoverableErrorToListeners(e);
         }
     }
-
-    public void setupReceiver(Context context) {
-        BraintreeBroadcastManager.getInstance(context)
-                .registerReceiver(mBraintreeBroadcastReceiver, new IntentFilter(
-                        BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
-    }
-
 
     /**
      * Starts the Checkout With PayPal flow. This will launch the PayPal app if installed or switch to

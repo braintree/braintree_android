@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Base64;
-import android.util.Log;
 
 import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.data.BraintreeData;
@@ -222,7 +221,7 @@ public class BraintreeApi {
      *
      * @param activity The {@link android.app.Activity} to receive {@link
      * android.app.Activity#onActivityResult(int, int, android.content.Intent)} when {@link
-     * #startPayWithPayPal(android.app.Activity, int)} finishes.
+     * #startPayWithPayPal(android.app.Activity, int, java.util.List)} finishes.
      * @param requestCode The request code associated with this start request. Will be returned in
      * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @param checkout The PayPalCheckout object which must contain an amount.
@@ -426,14 +425,6 @@ public class BraintreeApi {
     @Deprecated
     public PayPalAccount finishPayWithPayPal(Activity activity, int resultCode, Intent data)
             throws BraintreeException, ErrorWithResponse, JSONException {
-        /*
-
-            @{  "correlation_id" : "CORRELATION,
-                "paypal_account": paypalParameters, //THESE ARE THE RAW PARAMS FROM THE REQUEST
-                "authorization_fingerprint": self.clientToken.authorizationFingerprint }
-
-         */
-
 
         PayPalAccountBuilder payPalAccountBuilder = handlePayPalResponse(activity, resultCode, data);
         if (payPalAccountBuilder != null) {
@@ -464,20 +455,6 @@ public class BraintreeApi {
         }
 
         return null;
-    }
-
-    /**
-     * Create a {@link com.braintreepayments.api.models.PaymentMethod} in the Braintree Gateway.
-     *  Todo
-     */
-    public <T extends PaymentMethod> T create(String apiPath, String params, PaymentMethod.Builder<T> paymentMethodBuilder)
-            throws ErrorWithResponse, BraintreeException {
-        HttpResponse response = mHttpRequest.post(
-                versionedPath(PAYMENT_METHOD_ENDPOINT + "/" + apiPath),
-                params);
-
-        return paymentMethodBuilder.fromJson(jsonForType(response.getResponseBody(),
-                paymentMethodBuilder.getApiResource()));
     }
 
     /**
