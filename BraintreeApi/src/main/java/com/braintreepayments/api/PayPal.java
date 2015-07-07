@@ -15,6 +15,7 @@ import com.paypal.android.sdk.onetouch.core.BrowserSwitchAdapter;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchActivity;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
+import com.paypal.android.sdk.onetouch.core.PerformRequestStatus;
 import com.paypal.android.sdk.onetouch.core.Request;
 import com.paypal.android.sdk.onetouch.core.Result;
 import com.paypal.android.sdk.onetouch.core.ResultType;
@@ -46,7 +47,7 @@ public class PayPal {
      * Browser switch. The user will then be prompted to verify their account and then return
      * automatically. A nonce will be created if authorization was successful.
      */
-    protected static void launchPayPal(final Activity activity, final int requestCode,
+    protected static PerformRequestStatus launchPayPal(final Activity activity, final int requestCode,
             Configuration configuration, ClientToken clientToken, final List<String> additionalScopes) throws ConfigurationException {
         sPendingRequest = buildPayPalAuthorizationConfiguration(activity, configuration, clientToken);
 
@@ -56,7 +57,7 @@ public class PayPal {
             }
         }
 
-        PayPalOneTouchCore.performRequest(activity,
+        return PayPalOneTouchCore.performRequest(activity,
                 sPendingRequest,
                 requestCode,
                 sEnableSignatureVerification,
@@ -80,7 +81,7 @@ public class PayPal {
      * switch. The user will then be prompted to verify their account and then return automatically.
      * A nonce will be created if authorization was successful.
      */
-    protected static void checkoutWithPayPal(PayPalPaymentResource payPalPaymentResource,
+    protected static PerformRequestStatus checkoutWithPayPal(PayPalPaymentResource payPalPaymentResource,
             final Activity activity, final int requestCode,
             com.braintreepayments.api.models.Configuration configuration) throws ConfigurationException {
 
@@ -88,7 +89,7 @@ public class PayPal {
                 buildPayPalCheckoutConfiguration(payPalPaymentResource.getRedirectUrl(), activity,
                         configuration);
 
-        PayPalOneTouchCore.performRequest(activity,
+        return PayPalOneTouchCore.performRequest(activity,
                 sPendingRequest,
                 requestCode,
                 sEnableSignatureVerification,
@@ -177,6 +178,9 @@ public class PayPal {
         return result;
     }
 
+    /**
+     * Check if the current/last request was a CheckoutRequest
+     */
     public static Boolean isCheckoutRequest() {
         return sPendingRequest != null && sPendingRequest.getClass() == CheckoutRequest.class;
     }

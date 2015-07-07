@@ -22,6 +22,7 @@ import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
+import com.braintreepayments.api.models.PayPalPaymentResource;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
@@ -32,6 +33,8 @@ import com.google.android.gms.wallet.MaskedWallet;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.WalletConstants;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchActivity;
+import com.paypal.android.sdk.onetouch.core.PerformRequestStatus;
+import com.paypal.android.sdk.onetouch.core.RequestTarget;
 import com.paypal.android.sdk.onetouch.core.Result;
 import com.paypal.android.sdk.onetouch.core.ResultType;
 
@@ -503,14 +506,14 @@ public class Braintree {
      */
     public void startPayWithPayPal(final Activity activity, final int requestCode, final List<String> additionalScopes) {
         mCurrentPayPalActivity = activity;
-        sendAnalyticsEvent("paypal-otc.appswitch.initiate.started");
         if (activity != null) {
             BraintreeBroadcastManager.getInstance(activity)
                     .registerReceiver(mBraintreeBroadcastReceiver, new IntentFilter(
                             BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
         }
         try {
-            mBraintreeApi.startPayWithPayPal(activity, requestCode, additionalScopes);
+            PerformRequestStatus requestStatus = mBraintreeApi.startPayWithPayPal(activity, requestCode, additionalScopes);
+            sendAnalyticsForPayPalPerformRequestStatus(requestStatus, false);
         } catch (BraintreeException e) {
             postUnrecoverableErrorToListeners(e);
         }
@@ -532,12 +535,31 @@ public class Braintree {
             @Override
             public void run() {
                 mCurrentPayPalActivity = activity;
-                sendAnalyticsEvent("paypal-otc.appswitch.initiate.started");
                 BraintreeBroadcastManager.getInstance(activity)
                         .registerReceiver(mBraintreeBroadcastReceiver, new IntentFilter(
                                 BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
+
                 try {
-                    mBraintreeApi.startCheckoutWithPayPal(activity, requestCode, checkout);
+
+                    final PayPalPaymentResource payPalPaymentResource = mBraintreeApi.createPayPalPaymentResource(
+                            checkout, activity);
+
+                    if (payPalPaymentResource != null) {
+                        //OTC browser/app switching requires that it be run on the main thread
+                        activity.runOnUiThread(new Runnable() {
+                            public void run() {
+                                try {
+                                    PerformRequestStatus requestStatus = mBraintreeApi.startCheckoutWithPayPal(activity,
+                                            requestCode, payPalPaymentResource);
+                                    sendAnalyticsForPayPalPerformRequestStatus(requestStatus, true);
+                                } catch (ConfigurationException e) {
+                                    sendAnalyticsForPayPalPerformRequestStatus(null, true);
+                                    postUnrecoverableErrorToListeners(e);
+                                }
+                            }
+                        });
+                    }
+
                 } catch (JSONException | BraintreeException e) {
                     postUnrecoverableErrorToListeners(e);
                 } catch (ErrorWithResponse errorWithResponse) {
@@ -545,6 +567,43 @@ public class Braintree {
                 }
             }
         });
+    }
+
+    /**
+     * Send analytics for PayPal app switching
+     * @param requestStatus the {@link PerformRequestStatus} returned by PayPal OTC
+     * @param isCheckout is this a single payment request
+     */
+    protected void sendAnalyticsForPayPalPerformRequestStatus(PerformRequestStatus requestStatus, Boolean isCheckout) {
+        if (isCheckout) {
+            if (requestStatus == null) {
+                sendAnalyticsEvent("paypal-single-payment.none.initiate.failed");
+            } else {
+                if (requestStatus.isSuccess() && requestStatus.getTarget() == RequestTarget.browser) {
+                    sendAnalyticsEvent("paypal-single-payment.webswitch.initiate.started");
+                } else if (!requestStatus.isSuccess() && requestStatus.getTarget() == RequestTarget.browser) {
+                    sendAnalyticsEvent("paypal-single-payment.webswitch.initiate.failed");
+                } else if (requestStatus.isSuccess() && requestStatus.getTarget() == RequestTarget.wallet) {
+                    sendAnalyticsEvent("paypal-single-payment.appswitch.initiate.started");
+                } else if (!requestStatus.isSuccess() && requestStatus.getTarget() == RequestTarget.wallet) {
+                    sendAnalyticsEvent("paypal-single-payment.appswitch.initiate.failed");
+                }
+            }
+        } else {
+            if (requestStatus == null) {
+                sendAnalyticsEvent("paypal-future-payments.none.initiate.failed");
+            } else {
+                if (requestStatus.isSuccess() && requestStatus.getTarget() == RequestTarget.browser) {
+                    sendAnalyticsEvent("paypal-future-payments.webswitch.initiate.started");
+                } else if (!requestStatus.isSuccess() && requestStatus.getTarget() == RequestTarget.browser) {
+                    sendAnalyticsEvent("paypal-future-payments.webswitch.initiate.failed");
+                } else if (requestStatus.isSuccess() && requestStatus.getTarget() == RequestTarget.wallet) {
+                    sendAnalyticsEvent("paypal-future-payments.appswitch.initiate.started");
+                } else if (!requestStatus.isSuccess() && requestStatus.getTarget() == RequestTarget.wallet) {
+                    sendAnalyticsEvent("paypal-future-payments.appswitch.initiate.failed");
+                }
+            }
+        }
     }
 
     /**

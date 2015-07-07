@@ -274,13 +274,13 @@ public class BraintreeTest extends AndroidTestCase {
         assertTrue(wasCalled.get());
     }
 
-    public void testStartPayWithPayPalSendsAnalyticsEvent() {
+    public void testStartPayWithPayPalSendsFailAnalyticsEventWhenActivityIsNull() {
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
 
         Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
         braintree.startPayWithPayPal(null, 1);
         SystemClock.sleep(50);
-        verify(braintreeApi).sendAnalyticsEvent("custom.android.paypal-otc.appswitch.initiate.started", "custom");
+        verify(braintreeApi).sendAnalyticsEvent("custom.android.paypal-future-payments.none.initiate.failed", "custom");
     }
 
     public void pendFinishPayWithPayPalSendsAnalyticsForErrorResult() throws ConfigurationException {

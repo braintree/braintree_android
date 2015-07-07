@@ -90,7 +90,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
         setupActivity();
         onView(withId(R.id.bt_paypal_button)).perform(click());
         sendKeys(KeyEvent.KEYCODE_BACK);
-        verify(mBraintree, times(1)).sendAnalyticsEvent("paypal-otc.appswitch.initiate.started");
+        verify(mBraintree, times(1)).sendAnalyticsEvent("paypal-future-payments.webswitch.initiate.started");
     }
 
     public void testAddsEventOnAddPayPalSucceeded() throws JSONException {

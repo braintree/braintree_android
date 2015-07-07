@@ -35,12 +35,12 @@ import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.WalletConstants;
 import com.google.gson.Gson;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
+import com.paypal.android.sdk.onetouch.core.PerformRequestStatus;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -211,8 +211,8 @@ public class BraintreeApi {
      * @param additionalScopes A {@link java.util.List} of additional scopes. Ex: 'address'
      * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      */
-    public void startPayWithPayPal(Activity activity, int requestCode, List<String> additionalScopes) throws ConfigurationException {
-        PayPal.launchPayPal(activity, requestCode, mConfiguration, mClientToken, additionalScopes);
+    public PerformRequestStatus startPayWithPayPal(Activity activity, int requestCode, List<String> additionalScopes) throws ConfigurationException {
+        return PayPal.launchPayPal(activity, requestCode, mConfiguration, mClientToken, additionalScopes);
     }
 
     /**
@@ -224,49 +224,29 @@ public class BraintreeApi {
      * #startPayWithPayPal(android.app.Activity, int, java.util.List)} finishes.
      * @param requestCode The request code associated with this start request. Will be returned in
      * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     * @param checkout The PayPalCheckout object which must contain an amount.
+     * @param payPalPaymentResource The {@link PayPalPaymentResource} containing the URL for the app switch
      *
      */
-    public void startCheckoutWithPayPal(final Activity activity,
-            final int requestCode, PayPalCheckout checkout)
-            throws JSONException, BraintreeException, ErrorWithResponse {
-        PayPal.validatePayPalConfiguration(mConfiguration);
+    public PerformRequestStatus startCheckoutWithPayPal(final Activity activity,
+            final int requestCode, final PayPalPaymentResource payPalPaymentResource)
+            throws ConfigurationException {
 
-        String currencyCode = checkout.getCurrencyCode();
-        if (currencyCode == null) {
-            currencyCode = mConfiguration.getPayPal().getCurrencyIsoCode();
-        }
-
-        final PayPalPaymentResource payPalPaymentResource =
-                createPayPalPaymentResource(checkout.getAmount(), currencyCode, activity);
-        if (payPalPaymentResource != null) {
-            //OTC browser/app switching requires that it be run on the main thread
-            activity.runOnUiThread(new Runnable() {
-                public void run() {
-                    try {
-                        PayPal.checkoutWithPayPal(payPalPaymentResource, activity, requestCode,
-                                mConfiguration);
-                    } catch (ConfigurationException ignored) { }
-                }
-            });
-
-        }
-
+        return PayPal.checkoutWithPayPal(payPalPaymentResource, activity, requestCode,
+                mConfiguration);
     }
 
     /**
      * Create a PayPalPaymentResource on behalf of the merchant. To be used in the PayPal Checkout
      * flow.
      *
-     * @param amount The {@link java.math.BigDecimal} amount to use when creating the payment.
-     * @param currencyCode The {@link java.lang.String} to use as the currencyCode of the payment.
+     * @param checkout A {@link PayPalCheckout} object containing an amount.
      * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * when {@link #startPayWithVenmo(android.app.Activity, int)} finishes.x
      * @return A {@link com.braintreepayments.api.models.PayPalPaymentResource} containing the redurectUrl
      * which will be used by {@link com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore} for
      * user authorization.
      */
-    public PayPalPaymentResource createPayPalPaymentResource(BigDecimal amount, String currencyCode,
+    public PayPalPaymentResource createPayPalPaymentResource(PayPalCheckout checkout,
             Activity activity)
             throws JSONException, ErrorWithResponse, BraintreeException {
 
@@ -278,9 +258,14 @@ public class BraintreeApi {
                 PayPal.buildPayPalCheckoutConfiguration(null, activity, mConfiguration)
                         .getCancelUrl();
 
+        String currencyCode = checkout.getCurrencyCode();
+        if (currencyCode == null) {
+            currencyCode = mConfiguration.getPayPal().getCurrencyIsoCode();
+        }
+
         JSONObject parameters = new JSONObject()
                 .put("authorization_fingerprint", mClientToken.getAuthorizationFingerprint())
-                .put("amount", amount.toString())
+                .put("amount", checkout.getAmount().toString())
                 .put("currency_iso_code", currencyCode)
                 .put("return_url", returnUri)
                 .put("cancel_url", cancelUri)
