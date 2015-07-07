@@ -1,10 +1,7 @@
 package com.braintreepayments.api.models;
 
-import android.content.Context;
-
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
-import com.paypal.android.sdk.onetouch.core.Result;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,7 +46,7 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
      * Used by PayPal wrappers to construct a {@link com.braintreepayments.api.models.PayPalAccount}.
      *
      * @param correlationId Application correlation ID created by
-     * {@link com.paypal.android.sdk.payments.PayPalConfiguration#getClientMetadataId(Context)}
+     * {@link com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore#getClientMetadataId(android.content.Context)}}
      * to verify the payment.
      * @return {@link com.braintreepayments.api.models.PayPalAccountBuilder}
      */

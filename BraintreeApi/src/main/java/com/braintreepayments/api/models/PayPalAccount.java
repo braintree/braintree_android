@@ -107,7 +107,7 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
 
         try {
             payPalAccount.mEmail = new JSONObject(json).optJSONObject("details")
-                    .optString("email"); // Allow for email outside payerInfo
+                    .optString("email", null); // Allow for email outside payerInfo
             JSONObject payerInfo = new JSONObject(json).optJSONObject("details")
                     .optJSONObject("payerInfo");
             if (payerInfo != null) {
@@ -123,7 +123,7 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
                 payPalAccount.mLastName = payerInfo.optString("lastName");
                 payPalAccount.mPhone = payerInfo.optString("phone");
                 if (payPalAccount.mEmail == null) {
-                    payPalAccount.mEmail = payerInfo.optString("email");
+                    payPalAccount.mEmail = payerInfo.optString("email", null);
                 }
             }
         } catch (JSONException ignored) { }
