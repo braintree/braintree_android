@@ -125,7 +125,7 @@ def increment_version_code
       new_build_file += line
     end
   end
-  IO.write(filepath, new_build_file)
+  IO.write('build.gradle', new_build_file)
 end
 
 def update_version(version)
