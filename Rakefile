@@ -65,16 +65,16 @@ task :release => :tests do
   puts "BraintreeData was uploaded, press ENTER to release it"
   $stdin.gets
   sh "./gradlew :BraintreeData:closeAndPromoteRepository"
-  puts "Sleeping for 60 seconds to allow promotion to finish"
-  sleep 60
+  puts "Sleeping for two minutes to allow promotion to finish"
+  sleep 120
 
   replace_string(braintree_api_build_file, "compile project(':BraintreeData')", "compile 'com.braintreepayments.api:data:#{version}'")
   sh "./gradlew clean :BraintreeApi:uploadArchives"
   puts "BraintreeApi was uploaded, press ENTER to release it"
   $stdin.gets
   sh "./gradlew :BraintreeApi:closeAndPromoteRepository"
-  puts "Sleeping for 60 seconds to allow promotion to finish"
-  sleep 60
+  puts "Sleeping for two minutes to allow promotion to finish"
+  sleep 120
 
   replace_string(braintree_drop_in_build_file, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree-api:#{version}'")
   sh "./gradlew clean :Drop-In:uploadArchives"
