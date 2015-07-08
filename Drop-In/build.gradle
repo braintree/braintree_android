@@ -19,7 +19,7 @@ android {
 
 dependencies {
     compile 'com.braintreepayments:card-form:2.0.1'
-    compile 'com.braintreepayments.api:braintree-api:1.6.4'
+    compile project(':BraintreeApi')
     compile 'com.google.android.gms:play-services-wallet:[7.5.0,8.0.0)'
 
     androidTestCompile project(':TestUtils')
