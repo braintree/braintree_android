@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.Window;
 
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
@@ -23,6 +24,7 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodCrea
 
     protected void onCreate(Bundle onSaveInstanceState) {
         super.onCreate(onSaveInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.payment_button);
 
         mPaymentButton = (PaymentButton) findViewById(R.id.payment_button);
@@ -66,8 +68,11 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodCrea
 
     @Override
     public void onActivityResult(int requestCode, int responseCode, Intent data) {
-        if (requestCode == PaymentButton.REQUEST_CODE) {
+        if (responseCode == RESULT_OK && requestCode == PaymentButton.REQUEST_CODE) {
+            setProgressBarIndeterminateVisibility(true);
             mPaymentButton.onActivityResult(requestCode, responseCode, data);
+        } else {
+            setProgressBarIndeterminateVisibility(false);
         }
     }
 }

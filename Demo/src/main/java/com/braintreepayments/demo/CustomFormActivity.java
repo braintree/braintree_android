@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 
 import com.braintreepayments.api.Braintree;
@@ -30,6 +31,7 @@ public class CustomFormActivity extends Activity implements PaymentMethodCreated
 
     protected void onCreate(Bundle onSaveInstanceState) {
         super.onCreate(onSaveInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.custom);
 
         mPaymentButton = (PaymentButton) findViewById(R.id.payment_button);
@@ -71,6 +73,8 @@ public class CustomFormActivity extends Activity implements PaymentMethodCreated
     }
 
     public void onPurchase(View v) {
+        setProgressBarIndeterminateVisibility(true);
+
         CardBuilder cardBuilder = new CardBuilder()
             .cardNumber(mCardNumber.getText().toString())
             .expirationDate(mExpirationDate.getText().toString());
@@ -94,8 +98,11 @@ public class CustomFormActivity extends Activity implements PaymentMethodCreated
 
     @Override
     public void onActivityResult(int requestCode, int responseCode, Intent data) {
-        if (requestCode == PaymentButton.REQUEST_CODE) {
+        if (responseCode == RESULT_OK && requestCode == PaymentButton.REQUEST_CODE) {
+            setProgressBarIndeterminateVisibility(true);
             mBraintree.onActivityResult(this, requestCode, responseCode, data);
+        } else {
+            setProgressBarIndeterminateVisibility(false);
         }
     }
 }
