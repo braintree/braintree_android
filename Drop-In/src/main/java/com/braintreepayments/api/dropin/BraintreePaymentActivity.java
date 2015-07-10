@@ -242,6 +242,7 @@ public class BraintreePaymentActivity extends Activity implements
     private void finishCreate() {
         mAddPaymentMethodViewController.endSubmit();
         initSelectPaymentMethodView();
+        mSelectPaymentMethodViewController.onPaymentMethodSelected(0);
     }
 
     @Override

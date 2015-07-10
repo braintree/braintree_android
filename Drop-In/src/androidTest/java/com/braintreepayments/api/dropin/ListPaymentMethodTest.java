@@ -41,6 +41,7 @@ import static com.braintreepayments.api.TestDependencyInjector.injectBraintree;
 import static com.braintreepayments.api.TestDependencyInjector.injectSlowBraintree;
 import static com.braintreepayments.api.utils.Assertions.assertSelectedPaymentMethodIs;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.onAddPaymentFormHeader;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodList;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
@@ -188,6 +189,19 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
                 .getDrawable(R.drawable.bt_amex)).getBitmap();
 
         assertTrue(expected.sameAs(actual));
+    }
+
+    public void testSetsCreatedPaymentMethodAsSelectedPaymentMethod()
+            throws IOException, ErrorWithResponse {
+        getActivity();
+        waitForPaymentMethodList();
+
+        assertSelectedPaymentMethodIs(R.string.bt_descriptor_visa);
+
+        onView(withText(R.string.bt_add_payment_method)).perform(click());
+        performPayPalAdd();
+
+        assertSelectedPaymentMethodIs(R.string.bt_descriptor_paypal);
     }
 
     public void testChangePaymentMethodShowsChooserDialog() throws IOException, ErrorWithResponse {
