@@ -10,6 +10,7 @@ import android.widget.EditText;
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
+import com.braintreepayments.api.Braintree.PaymentMethodNonceListener;
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.view.PaymentButton;
 import com.braintreepayments.api.models.CardBuilder;
@@ -20,7 +21,7 @@ import com.paypal.android.sdk.payments.PayPalOAuthScopes;
 import java.util.Collections;
 
 public class CustomFormActivity extends Activity implements PaymentMethodCreatedListener,
-        BraintreeSetupFinishedListener {
+        PaymentMethodNonceListener, BraintreeSetupFinishedListener {
 
     private Braintree mBraintree;
     private PaymentButton mPaymentButton;
@@ -81,6 +82,13 @@ public class CustomFormActivity extends Activity implements PaymentMethodCreated
     public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
         setResult(RESULT_OK, new Intent()
                 .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD, (Parcelable) paymentMethod));
+        finish();
+    }
+
+    @Override
+    public void onPaymentMethodNonce(String paymentMethodNonce) {
+        setResult(RESULT_OK, new Intent()
+                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce));
         finish();
     }
 
