@@ -17,7 +17,7 @@ import com.braintreepayments.api.models.PaymentMethod;
 import com.google.android.gms.wallet.Cart;
 import com.paypal.android.sdk.payments.PayPalOAuthScopes;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 public class CustomFormActivity extends Activity implements PaymentMethodCreatedListener,
         BraintreeSetupFinishedListener {
@@ -55,7 +55,8 @@ public class CustomFormActivity extends Activity implements PaymentMethodCreated
                     phoneNumberRequired);
             boolean payPalAddressScopeRequested = getIntent().getBooleanExtra("payPalAddressScopeRequested", false);
             if (payPalAddressScopeRequested) {
-                mPaymentButton.setAdditionalPayPalScopes(Arrays.asList(PayPalOAuthScopes.PAYPAL_SCOPE_ADDRESS));
+                mPaymentButton.setAdditionalPayPalScopes(
+                        Collections.singletonList(PayPalOAuthScopes.PAYPAL_SCOPE_ADDRESS));
             }
             mPaymentButton.initialize(this, mBraintree);
 
