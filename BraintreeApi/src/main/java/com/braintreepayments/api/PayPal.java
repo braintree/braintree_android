@@ -20,6 +20,7 @@ import com.paypal.android.sdk.onetouch.core.Request;
 import com.paypal.android.sdk.onetouch.core.Result;
 import com.paypal.android.sdk.onetouch.core.ResultType;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -49,7 +50,8 @@ public class PayPal {
      */
     protected static PerformRequestStatus launchPayPal(final Activity activity, final int requestCode,
             Configuration configuration, ClientToken clientToken, final List<String> additionalScopes) throws ConfigurationException {
-        sPendingRequest = buildPayPalAuthorizationConfiguration(activity, configuration, clientToken);
+        sPendingRequest = buildPayPalAuthorizationConfiguration(activity, configuration,
+                clientToken);
 
         if (additionalScopes != null) {
             for (String scope : additionalScopes) {
@@ -151,6 +153,19 @@ public class PayPal {
                     paypalAccountBuilder.email(user.optString(
                             "display_string"));
                 }
+
+                // Modify payload in 'mock' mode to scope the response
+                try {
+                    if (response.optJSONObject("client").optString("environment").equalsIgnoreCase(AuthorizationRequest.ENVIRONMENT_MOCK)
+                            && response.optJSONObject("response").optString("code") != null
+                            && !isCheckoutRequest()) {
+                        response.put("response", new JSONObject()
+                                .put("code", "fake-code:" + ((AuthorizationRequest)
+                                        sPendingRequest).getScopeString()));
+                    }
+                } catch (JSONException ignored) {}
+
+
                 paypalAccountBuilder.OtcResponse(response);
 
                 break;
@@ -159,6 +174,15 @@ public class PayPal {
         return paypalAccountBuilder;
     }
 
+    /**
+     * Used to retrieve the Result to send the correct analytics events
+     *
+     * @param context Activity that received the result.
+     * @param resultCode Result code returned in result.
+     * @param intent {@link Intent} returned in result.
+     * @return the {@link Result} of the OTC app/browser switch
+     * @throws ConfigurationException
+     */
     protected static Result getResultFromActivity(Context context, int resultCode,
             Intent intent) throws ConfigurationException {
 
@@ -248,6 +272,11 @@ public class PayPal {
         return request;
     }
 
+    /**
+     * Throws a {@link ConfigurationException} when the config is invalid
+     * @param configuration
+     * @throws ConfigurationException
+     */
     public static void validatePayPalConfiguration(Configuration configuration) throws ConfigurationException {
         PayPalConfiguration payPalConfiguration = configuration.getPayPal();
 
