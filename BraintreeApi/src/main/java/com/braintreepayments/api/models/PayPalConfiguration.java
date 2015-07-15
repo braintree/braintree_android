@@ -1,19 +1,61 @@
 package com.braintreepayments.api.models;
 
-import com.google.gson.annotations.SerializedName;
+import android.text.TextUtils;
+
+import org.json.JSONObject;
 
 /**
  * Contains the remote PayPal configuration for the Braintree SDK.
  */
 public class PayPalConfiguration {
 
-    @SerializedName("displayName") private String mDisplayName;
-    @SerializedName("clientId") private String mClientId;
-    @SerializedName("privacyUrl") private String mPrivacyUrl;
-    @SerializedName("userAgreementUrl") private String mUserAgreementUrl;
-    @SerializedName("directBaseUrl") private String mDirectBaseUrl;
-    @SerializedName("environment") private String mEnvironment;
-    @SerializedName("touchDisabled") private boolean mTouchDisabled;
+    private static final String DISPLAY_NAME_KEY = "displayName";
+    private static final String CLIENT_ID_KEY = "clientId";
+    private static final String PRIVACY_URL_KEY = "privacyUrl";
+    private static final String USER_AGREEMENT_URL_KEY = "userAgreementUrl";
+    private static final String DIRECT_BASE_URL_KEY = "directBaseUrl";
+    private static final String ENVIRONMENT_KEY = "environment";
+    private static final String TOUCH_DISABLED_KEY = "touchDisabled";
+
+    private String mDisplayName;
+    private String mClientId;
+    private String mPrivacyUrl;
+    private String mUserAgreementUrl;
+    private String mDirectBaseUrl;
+    private String mEnvironment;
+    private boolean mTouchDisabled;
+
+    /**
+     * Parse an {@link PayPalConfiguration} from json.
+     *
+     * @param json The {@link JSONObject} to parse.
+     * @return An {@link PayPalConfiguration} instance with data that was able to be parsed from
+     *         the {@link JSONObject}.
+     */
+    public static PayPalConfiguration fromJson(JSONObject json) {
+        if (json == null) {
+            json = new JSONObject();
+        }
+
+        PayPalConfiguration payPalConfiguration = new PayPalConfiguration();
+        payPalConfiguration.mDisplayName = json.optString(DISPLAY_NAME_KEY, null);
+        payPalConfiguration.mClientId = json.optString(CLIENT_ID_KEY, null);
+        payPalConfiguration.mPrivacyUrl = json.optString(PRIVACY_URL_KEY, null);
+        payPalConfiguration.mUserAgreementUrl = json.optString(USER_AGREEMENT_URL_KEY, null);
+        payPalConfiguration.mDirectBaseUrl = json.optString(DIRECT_BASE_URL_KEY, null);
+        payPalConfiguration.mEnvironment = json.optString(ENVIRONMENT_KEY, null);
+        payPalConfiguration.mTouchDisabled = json.optBoolean(TOUCH_DISABLED_KEY, true);
+
+        return payPalConfiguration;
+    }
+
+    /**
+     * @return {@code true} if PayPal is enabled, {@code false} otherwise.
+     */
+    public boolean isEnabled() {
+        return (!TextUtils.isEmpty(mDisplayName) && !TextUtils.isEmpty(mClientId) &&
+                !TextUtils.isEmpty(mPrivacyUrl) && !TextUtils.isEmpty(mUserAgreementUrl));
+    }
 
     /**
      * @return the PayPal app display name.
@@ -47,7 +89,7 @@ public class PayPalConfiguration {
      * @return the url for custom PayPal environments.
      */
     public String getDirectBaseUrl() {
-        return mDirectBaseUrl + "/v1/";
+        return (TextUtils.isEmpty(mDirectBaseUrl) ? null : mDirectBaseUrl + "/v1/");
     }
 
     /**
@@ -60,7 +102,7 @@ public class PayPalConfiguration {
     /**
      * @return {@code true} if PayPal touch is currently disabled, {@code false} otherwise.
      */
-    public boolean getTouchDisabled() {
+    public boolean isTouchDisabled() {
         return mTouchDisabled;
     }
 }

@@ -12,6 +12,8 @@ import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.FixturesHelper;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
@@ -27,7 +29,8 @@ public class TestUtils {
         System.setProperty("dexmaker.dexcache", context.getCacheDir().getPath());
     }
 
-    public static Configuration getConfigurationFromFixture(Context context, String fixture) {
+    public static Configuration getConfigurationFromFixture(Context context, String fixture)
+            throws JSONException {
         return Configuration.fromJson(FixturesHelper.stringFromFixture(context, fixture));
     }
 

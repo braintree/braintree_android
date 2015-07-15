@@ -15,6 +15,8 @@ import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
+import org.json.JSONException;
+
 import java.util.Map;
 
 import static com.braintreepayments.api.BraintreeTestUtils.postUnrecoverableErrorFromBraintree;
@@ -48,7 +50,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
         assertEquals("Mocked HTTP request", ((UnexpectedException) exception).getMessage());
     }
 
-    public void testReturnsDeveloperErrorOnAuthenticationException() {
+    public void testReturnsDeveloperErrorOnAuthenticationException() throws JSONException {
         setupActivityWithBraintree();
         AuthenticationException exception = new AuthenticationException();
         postUnrecoverableErrorFromBraintree(mBraintree, exception);
@@ -62,7 +64,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
                 .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE));
     }
 
-    public void testReturnsDeveloperErrorOnAuthorizationException() {
+    public void testReturnsDeveloperErrorOnAuthorizationException() throws JSONException {
         setupActivityWithBraintree();
         AuthorizationException exception = new AuthorizationException();
         postUnrecoverableErrorFromBraintree(mBraintree, exception);
@@ -76,7 +78,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
                 .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE));
     }
 
-    public void testReturnsDeveloperErrorOnUpgradeRequiredException() {
+    public void testReturnsDeveloperErrorOnUpgradeRequiredException() throws JSONException {
         setupActivityWithBraintree();
         UpgradeRequiredException exception = new UpgradeRequiredException();
         postUnrecoverableErrorFromBraintree(mBraintree, exception);
@@ -90,7 +92,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
                 .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE));
     }
 
-    public void testReturnsServerErrorOnServerException() {
+    public void testReturnsServerErrorOnServerException() throws JSONException {
         setupActivityWithBraintree();
         ServerException exception = new ServerException();
         postUnrecoverableErrorFromBraintree(mBraintree, exception);
@@ -104,7 +106,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
                 .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE));
     }
 
-    public void testReturnsServerUnavailableOnDownForMaintenanceException() {
+    public void testReturnsServerUnavailableOnDownForMaintenanceException() throws JSONException {
         setupActivityWithBraintree();
         DownForMaintenanceException exception = new DownForMaintenanceException();
         postUnrecoverableErrorFromBraintree(mBraintree, exception);
@@ -118,7 +120,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
                 .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE));
     }
 
-    public void testReturnsServerErrorOnUnexpectedException() {
+    public void testReturnsServerErrorOnUnexpectedException() throws JSONException {
         setupActivityWithBraintree();
         UnexpectedException exception = new UnexpectedException();
         postUnrecoverableErrorFromBraintree(mBraintree, exception);
@@ -132,7 +134,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
                 .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE));
     }
 
-    public void testReturnsUserCanceledOnBackButtonPress() {
+    public void testReturnsUserCanceledOnBackButtonPress() throws JSONException {
         setupActivityWithBraintree();
         sendKeys(KeyEvent.KEYCODE_BACK);
 
@@ -143,7 +145,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
     }
 
     /* helper */
-    private void setupActivityWithBraintree() {
+    private void setupActivityWithBraintree() throws JSONException {
         String clientToken = new TestClientTokenBuilder().build();
         mBraintree = injectBraintree(mContext, clientToken, clientToken);
         setClientTokenExtraForTest(this, clientToken);

@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
-import android.test.AndroidTestCase;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
@@ -8,29 +9,28 @@ import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
-public class AddPaypalAccountTest extends AndroidTestCase {
+import org.json.JSONException;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-    private BraintreeApi mBraintreeApi;
+import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static junit.framework.Assert.assertNotNull;
 
-    public void setUp() {
-        TestUtils.setUp(getContext());
-        mBraintreeApi = new BraintreeApi(getContext(), new TestClientTokenBuilder().withPayPal().build());
-    }
+@RunWith(AndroidJUnit4.class)
+public class AddPaypalAccountTest {
 
-    public void testCanAddPayPalAccount() throws ErrorWithResponse, BraintreeException {
+    @Test(timeout = 1000)
+    @SmallTest
+    public void create_AcceptsPayPalAccount() throws ErrorWithResponse, BraintreeException,
+            JSONException {
+        TestUtils.setUp(getTargetContext());
+        BraintreeApi mBraintreeApi = new BraintreeApi(getTargetContext(),
+                new TestClientTokenBuilder().withPayPal().build());
         PayPalAccountBuilder builder = new PayPalAccountBuilder()
-                .authorizationCode("test-authorization-code");
+                .consentCode("test-authorization-code");
 
         PayPalAccount account = mBraintreeApi.create(builder);
 
         assertNotNull(account.getNonce());
-    }
-
-    public void testCanTokenizePayPalAccount() throws ErrorWithResponse, BraintreeException {
-        PayPalAccountBuilder builder = new PayPalAccountBuilder();
-
-        String nonce = mBraintreeApi.tokenize(builder);
-
-        assertNotNull(nonce);
     }
 }

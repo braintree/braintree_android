@@ -1,10 +1,4 @@
 {
-    "lookup": {
-        "acsUrl": "https://acs-url/",
-        "md": "merchant-descriptor",
-        "termUrl": "https://term-url/",
-        "pareq": "pareq"
-    },
     "paymentMethod": {
         "type": "CreditCard",
         "nonce": "123456-12345-12345-a-adfa",
@@ -13,12 +7,17 @@
         "isLocked": false,
         "securityQuestions": [],
         "details": {
-            cardType => "Visa",
-            lastTwo => "11"
+            "cardType": "Visa",
+            "lastTwo": "11"
+        },
+        "threeDSecureInfo": {
+            "liabilityShifted": true,
+            "liabilityShiftPossible": true
         }
     },
     "threeDSecureInfo": {
         "liabilityShifted": true,
         "liabilityShiftPossible": true
-    }
+    },
+    "success": true
 }

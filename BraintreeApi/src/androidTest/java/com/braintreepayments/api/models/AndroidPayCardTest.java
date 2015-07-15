@@ -1,13 +1,23 @@
 package com.braintreepayments.api.models;
 
-import android.test.AndroidTestCase;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.SmallTest;
 
+import org.json.JSONException;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static junit.framework.Assert.assertEquals;
 
-public class AndroidPayCardTest extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+public class AndroidPayCardTest {
 
-    public void testCanCreateFromJson() {
-        String androidPayString = stringFromFixture(mContext, "payment_methods/android_pay_card.json");
+    @Test(timeout = 1000)
+    @SmallTest
+    public void testCanCreateFromJson() throws JSONException {
+        String androidPayString = stringFromFixture(getTargetContext(), "payment_methods/android_pay_card.json");
 
         AndroidPayCard androidPayCard = AndroidPayCard.fromJson(androidPayString);
 

@@ -12,6 +12,8 @@ import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
+import org.json.JSONException;
+
 import static com.braintreepayments.api.TestDependencyInjector.injectBraintree;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -33,7 +35,8 @@ public class BraintreeTestUtils {
      * @param clientToken
      */
     public static void setUpActivityTest(
-            ActivityInstrumentationTestCase2<BraintreePaymentActivity> testCase, String clientToken) {
+            ActivityInstrumentationTestCase2<BraintreePaymentActivity> testCase, String clientToken)
+            throws JSONException {
         injectBraintree(testCase.getInstrumentation().getContext(), clientToken,
                 clientToken);
         setClientTokenExtraForTest(testCase, clientToken);
@@ -99,7 +102,8 @@ public class BraintreeTestUtils {
      * @param clientToken
      * @return
      */
-    public static BraintreeApi getNotSetupBraintreeApi(Context context, String clientToken) {
+    public static BraintreeApi getNotSetupBraintreeApi(Context context, String clientToken)
+            throws JSONException {
         return new BraintreeApi(context, ClientToken.fromString(clientToken));
     }
 
@@ -123,7 +127,7 @@ public class BraintreeTestUtils {
      * @throws BraintreeException
      */
     public static void verifySetupCalledOnBraintreeApi(BraintreeApi braintreeApi)
-            throws ErrorWithResponse, BraintreeException {
+            throws ErrorWithResponse, BraintreeException, JSONException {
         verify(braintreeApi).setup();
     }
 }

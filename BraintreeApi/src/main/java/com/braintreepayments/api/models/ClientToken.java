@@ -2,8 +2,8 @@ package com.braintreepayments.api.models;
 
 import android.util.Base64;
 
-import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.regex.Pattern;
 
@@ -14,22 +14,29 @@ public class ClientToken {
 
     private static final Pattern BASE_64_PATTERN = Pattern.compile(
             "([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)");
+    private static final String CONFIG_URL_KEY = "configUrl";
+    private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorizationFingerprint";
 
-    @SerializedName("configUrl") private String mConfigUrl;
-    @SerializedName("authorizationFingerprint") private String mAuthorizationFingerprint;
+    private String mConfigUrl;
+    private String mAuthorizationFingerprint;
 
     /**
      * Create a new {@link ClientToken} instance from a client token
      *
-     * @param clientToken A client token from the Braintree Gateway
+     * @param clientTokenString A client token from the Braintree Gateway
      * @return {@link ClientToken} instance
      */
-    public static ClientToken fromString(String clientToken) {
-        if (BASE_64_PATTERN.matcher(clientToken).matches()) {
-            clientToken = new String(Base64.decode(clientToken, Base64.DEFAULT));
+    public static ClientToken fromString(String clientTokenString) throws JSONException {
+        if (BASE_64_PATTERN.matcher(clientTokenString).matches()) {
+            clientTokenString = new String(Base64.decode(clientTokenString, Base64.DEFAULT));
         }
 
-        return new Gson().fromJson(clientToken, ClientToken.class);
+        JSONObject jsonObject = new JSONObject(clientTokenString);
+        ClientToken clientToken = new ClientToken();
+        clientToken.mConfigUrl = jsonObject.getString(CONFIG_URL_KEY);
+        clientToken.mAuthorizationFingerprint = jsonObject.getString(AUTHORIZATION_FINGERPRINT_KEY);
+
+        return clientToken;
     }
 
     /**

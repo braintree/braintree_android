@@ -25,6 +25,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -32,10 +33,8 @@ import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.WalletConstants;
-import com.google.gson.Gson;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -71,15 +70,14 @@ public class BraintreeApi {
      * @param clientTokenString A client token obtained from a Braintree server side SDK.
      */
     @Deprecated
-    public BraintreeApi(Context context, String clientTokenString) {
+    public BraintreeApi(Context context, String clientTokenString) throws JSONException {
         Pattern pattern = Pattern.compile("([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)");
         if (pattern.matcher(clientTokenString).matches()) {
             clientTokenString = new String(Base64.decode(clientTokenString, Base64.DEFAULT));
         }
 
-        mClientToken = ClientToken.fromString(clientTokenString);
-
         mContext = context.getApplicationContext();
+        mClientToken = ClientToken.fromString(clientTokenString);
         mConfiguration = Configuration.fromJson(clientTokenString);
         mHttpRequest = new HttpRequest(mClientToken.getAuthorizationFingerprint());
         mHttpRequest.setBaseUrl(mConfiguration.getClientApiUrl());
@@ -93,7 +91,8 @@ public class BraintreeApi {
         mHttpRequest = new HttpRequest(mClientToken.getAuthorizationFingerprint());
     }
 
-    protected BraintreeApi(Context context, String clientTokenString, String configurationString) {
+    protected BraintreeApi(Context context, String clientTokenString, String configurationString)
+            throws JSONException {
         this(context, ClientToken.fromString(clientTokenString),
                 Configuration.fromJson(configurationString),
                 new HttpRequest(ClientToken.fromString(clientTokenString).getAuthorizationFingerprint()));
@@ -117,14 +116,15 @@ public class BraintreeApi {
         return mConfiguration != null;
     }
 
-    protected void setup() throws ErrorWithResponse, BraintreeException {
+    protected void setup() throws ErrorWithResponse, BraintreeException, JSONException {
         mConfiguration = getConfiguration();
         mHttpRequest.setBaseUrl(mConfiguration.getClientApiUrl());
 
         mBraintreeData = null;
     }
 
-    private Configuration getConfiguration() throws ErrorWithResponse, BraintreeException {
+    private Configuration getConfiguration()
+            throws ErrorWithResponse, BraintreeException, JSONException {
         String configUrl = Uri.parse(mClientToken.getConfigUrl())
                 .buildUpon()
                 .appendQueryParameter("configVersion", "3")
@@ -136,7 +136,7 @@ public class BraintreeApi {
 
     protected String getConfigurationString() {
         if (mConfiguration != null) {
-            return new Gson().toJson(mConfiguration);
+            return mConfiguration.toJson();
         } else {
             return null;
         }
@@ -288,14 +288,14 @@ public class BraintreeApi {
 
     /**
      * Handles response from PayPal and returns a PayPalAccountBuilder which must be then passed to
-     * {@link #create(com.braintreepayments.api.models.PaymentMethod.Builder)}. {@link #finishPayWithPayPal(android.app.Activity, int, android.content.Intent)}
-     * will call this and {@link #create(com.braintreepayments.api.models.PaymentMethod.Builder)} for you
+     * {@link #create(com.braintreepayments.api.models.PaymentMethodBuilder)}. {@link #finishPayWithPayPal(android.app.Activity, int, android.content.Intent)}
+     * will call this and {@link #create(com.braintreepayments.api.models.PaymentMethodBuilder)} for you
      * and may be a better option.
      *
      * @param activity The activity that received the result.
      * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     * @return {@link com.braintreepayments.api.models.PayPalAccountBuilder} ready to be sent to {@link #create(com.braintreepayments.api.models.PaymentMethod.Builder)}
+     * @return {@link com.braintreepayments.api.models.PayPalAccountBuilder} ready to be sent to {@link #create(com.braintreepayments.api.models.PaymentMethodBuilder)}
      * @throws ConfigurationException If PayPal credentials from the Braintree control panel are incorrect.
      */
     public PayPalAccountBuilder handlePayPalResponse(Activity activity, int resultCode, Intent data)
@@ -321,11 +321,11 @@ public class BraintreeApi {
      * @throws BraintreeException If an error not due to validation (server error, network issue, etc.) occurs
      * @throws ConfigurationException If PayPal credentials from the Braintree control panel are incorrect.
      *
-     * @see BraintreeApi#create(com.braintreepayments.api.models.PaymentMethod.Builder)
+     * @see BraintreeApi#create(com.braintreepayments.api.models.PaymentMethodBuilder)
      */
     @Deprecated
     public PayPalAccount finishPayWithPayPal(int resultCode, Intent data)
-            throws BraintreeException, ErrorWithResponse {
+            throws BraintreeException, ErrorWithResponse, JSONException {
         PayPalAccountBuilder payPalAccountBuilder = handlePayPalResponse(null, resultCode, data);
         if (payPalAccountBuilder != null) {
             return create(payPalAccountBuilder);
@@ -345,11 +345,11 @@ public class BraintreeApi {
      * @throws BraintreeException If an error not due to validation (server error, network issue, etc.) occurs
      * @throws ConfigurationException If PayPal credentials from the Braintree control panel are incorrect
      *
-     * @see BraintreeApi#create(com.braintreepayments.api.models.PaymentMethod.Builder)
+     * @see BraintreeApi#create(com.braintreepayments.api.models.PaymentMethodBuilder)
      */
     @Deprecated
     public PayPalAccount finishPayWithPayPal(Activity activity, int resultCode, Intent data)
-            throws BraintreeException, ErrorWithResponse {
+            throws BraintreeException, ErrorWithResponse, JSONException {
         PayPalAccountBuilder payPalAccountBuilder = handlePayPalResponse(activity, resultCode, data);
         if (payPalAccountBuilder != null) {
             return create(payPalAccountBuilder);
@@ -371,11 +371,7 @@ public class BraintreeApi {
     protected AndroidPayCard getNonceFromAndroidPayFullWalletResponse(Intent data) throws JSONException {
         if (AndroidPay.isFullWalletResponse(data)) {
             FullWallet fullWallet = data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET);
-            JSONArray androidPayCards = new JSONObject(fullWallet.getPaymentMethodToken().getToken())
-                    .getJSONArray("androidPayCards");
-            if (androidPayCards.length() > 0) {
-                return new Gson().fromJson(androidPayCards.getString(0), AndroidPayCard.class);
-            }
+            return AndroidPayCard.fromJson(fullWallet.getPaymentMethodToken().getToken());
         }
 
         return null;
@@ -384,23 +380,23 @@ public class BraintreeApi {
     /**
      * Create a {@link com.braintreepayments.api.models.PaymentMethod} in the Braintree Gateway.
      *
-     * @param paymentMethodBuilder {@link com.braintreepayments.api.models.PaymentMethod.Builder} for the
-     * {@link com.braintreepayments.api.models.PaymentMethod} to be created.
+     * @param paymentMethodBuilder {@link PaymentMethodBuilder} for the {@link PaymentMethod} to be created.
      * @param <T> {@link com.braintreepayments.api.models.PaymentMethod} or a subclass.
      * @return {@link com.braintreepayments.api.models.PaymentMethod}
-     * @throws ErrorWithResponse If creation fails validation
-     * @throws BraintreeException If an error not due to validation (server error, network issue, etc.) occurs
+     * @throws ErrorWithResponse If creation fails validation.
+     * @throws BraintreeException If an error not due to validation (server error, network issue, etc.) occurs.
+     * @throws JSONException If parsing of the response fails.
      *
-     * @see BraintreeApi#tokenize(com.braintreepayments.api.models.PaymentMethod.Builder)
+     * @see BraintreeApi#tokenize(PaymentMethodBuilder)
      */
-    public <T extends PaymentMethod> T create(PaymentMethod.Builder<T> paymentMethodBuilder)
-            throws ErrorWithResponse, BraintreeException {
+    @SuppressWarnings("unchecked")
+    public <T extends PaymentMethod> T create(PaymentMethodBuilder paymentMethodBuilder)
+            throws ErrorWithResponse, BraintreeException, JSONException {
         HttpResponse response = mHttpRequest.post(
                 versionedPath(PAYMENT_METHOD_ENDPOINT + "/" + paymentMethodBuilder.getApiPath()),
-                paymentMethodBuilder.toJsonString());
+                paymentMethodBuilder.build());
 
-        return paymentMethodBuilder.fromJson(jsonForType(response.getResponseBody(),
-                paymentMethodBuilder.getApiResource()));
+        return (T) paymentMethodBuilder.fromJsonResponse(response.getResponseBody());
     }
 
     /**
@@ -408,18 +404,19 @@ public class BraintreeApi {
      *
      * Tokenization functions like creating a {@link com.braintreepayments.api.models.PaymentMethod}, but
      * defers validation until a server library attempts to use the {@link com.braintreepayments.api.models.PaymentMethod}.
-     * Use {@link #tokenize(com.braintreepayments.api.models.PaymentMethod.Builder)} to handle validation errors
+     * Use {@link #tokenize(PaymentMethodBuilder)} to handle validation errors
      * on the server instead of on device.
      *
-     * @param paymentMethodBuilder The {@link com.braintreepayments.api.models.PaymentMethod.Builder} to tokenize
+     * @param paymentMethodBuilder The {@link com.braintreepayments.api.models.PaymentMethodBuilder} to tokenize
      * @return A nonce that can be used by a server library to create a transaction with the Braintree gateway.
      * @throws BraintreeException
      * @throws ErrorWithResponse
-     * @see #create(com.braintreepayments.api.models.PaymentMethod.Builder)
+     * @see #create(com.braintreepayments.api.models.PaymentMethodBuilder)
      */
-    public String tokenize(PaymentMethod.Builder paymentMethodBuilder)
-            throws BraintreeException, ErrorWithResponse {
-        PaymentMethod paymentMethod = create(paymentMethodBuilder.validate(false));
+    public String tokenize(PaymentMethodBuilder paymentMethodBuilder)
+            throws BraintreeException, ErrorWithResponse, JSONException {
+        paymentMethodBuilder.validate(false);
+        PaymentMethod paymentMethod = create(paymentMethodBuilder);
         return paymentMethod.getNonce();
     }
 
@@ -500,13 +497,10 @@ public class BraintreeApi {
      */
     public void sendAnalyticsEvent(String event, String integrationType) {
         if (mConfiguration.isAnalyticsEnabled()) {
-            AnalyticsRequest analyticsRequest = new AnalyticsRequest(mContext, event, integrationType);
-
             try {
-                mHttpRequest.post(mConfiguration.getAnalytics().getUrl(), analyticsRequest.toJson());
-            } catch (BraintreeException ignored) {
-                // Analytics failures should not interrupt normal application activity
-            } catch (ErrorWithResponse ignored) {
+                mHttpRequest.post(mConfiguration.getAnalytics().getUrl(),
+                        AnalyticsRequest.newRequest(mContext, event, integrationType));
+            } catch (BraintreeException | ErrorWithResponse | JSONException ignored) {
                 // Analytics failures should not interrupt normal application activity
             }
         }
@@ -549,16 +543,5 @@ public class BraintreeApi {
 
     private String versionedPath(String path) {
         return "/v1/" + path;
-    }
-
-    private String jsonForType(String response, String type) throws ServerException {
-        JSONObject responseJson;
-        try {
-            responseJson = new JSONObject(response);
-            return responseJson.getJSONArray(type)
-                    .get(0).toString();
-        } catch (JSONException e) {
-            throw new ServerException("Parsing server response failed");
-        }
     }
 }

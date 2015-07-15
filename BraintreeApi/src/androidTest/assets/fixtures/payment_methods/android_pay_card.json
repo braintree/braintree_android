@@ -1,9 +1,13 @@
 {
-  "type": "AndroidPayCard",
-  "nonce": "fake-android-pay-nonce",
-  "description": "Android Pay",
-  "details": {
-    "cardType": "Visa",
-    "lastTwo": "11"
-  }
+  "androidPayCards": [
+    {
+      "type": "AndroidPayCard",
+      "nonce": "fake-android-pay-nonce",
+      "description": "Android Pay",
+      "details": {
+        "cardType": "Visa",
+        "lastTwo": "11"
+      }
+    }
+  ]
 }

@@ -17,7 +17,6 @@ import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
 import com.braintreepayments.api.Braintree.ErrorListener;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodsUpdatedListener;
-import com.braintreepayments.api.Venmo;
 import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
 import com.braintreepayments.api.dropin.view.PaymentButton;
 import com.braintreepayments.api.exceptions.AuthenticationException;
@@ -207,10 +206,7 @@ public class BraintreePaymentActivity extends Activity implements
     @Override
     public void onPaymentMethodCreated(final PaymentMethod paymentMethod) {
         if (paymentMethod instanceof Card) {
-            if(paymentMethod.getSource() != null &&
-                    paymentMethod.getSource().equals(Venmo.VENMO_SOURCE)) {
-                finishCreate();
-            } else {
+            if (StubbedView.CARD_FORM.mCurrentView) {
                 mBraintree.sendAnalyticsEvent("add-card.success");
 
                 mAddPaymentMethodViewController.showSuccess();
@@ -225,6 +221,8 @@ public class BraintreePaymentActivity extends Activity implements
                         });
                     }
                 }, 1, TimeUnit.SECONDS);
+            } else {
+                finishCreate();
             }
         } else if (paymentMethod instanceof PayPalAccount) {
             mBraintree.sendAnalyticsEvent("add-paypal.success");

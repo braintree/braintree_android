@@ -4,7 +4,6 @@ Summary
 The Braintree SDK uses code from the following libraries:
 
  * [PayPal Android SDK](https://github.com/paypal/paypal-android-sdk/)
- * Google [Gson](https://code.google.com/p/google-gson/)
  * [Mockito](https://github.com/mockito/mockito)
  * [Dexmaker](https://code.google.com/p/dexmaker/)
  * [SDK Manager Plugin](https://github.com/JakeWharton/sdk-manager-plugin)
@@ -39,8 +38,6 @@ PayPal Android SDK, BSD License
     The views and conclusions contained in the software and documentation are those
     of the authors and should not be interpreted as representing official policies,
     either expressed or implied, of the FreeBSD Project.
-
-Google Gson, [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)
 
 Mockito, MIT License
     The MIT License

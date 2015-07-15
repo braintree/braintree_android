@@ -7,10 +7,12 @@ import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.BraintreeApi;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.cardform.view.ErrorEditText;
 import com.braintreepayments.testutils.CardNumber;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
+
+import org.json.JSONException;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -34,7 +36,7 @@ import static org.mockito.Mockito.verify;
 public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
 
     public void testMarksFieldsAsErrorWhenSubmitButtonIsClicked()
-            throws ErrorWithResponse, BraintreeException {
+            throws ErrorWithResponse, BraintreeException, JSONException {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         BraintreeApi api = spy(new BraintreeApi(mContext, clientToken));
         injectBraintree(clientToken, api);
@@ -55,10 +57,10 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
         assertTrue(cvv.isError());
         assertTrue(postalCode.isError());
 
-        verify(api, never()).create((PaymentMethod.Builder) anyObject());
+        verify(api, never()).create((PaymentMethodBuilder) anyObject());
     }
 
-    public void testShowsSubmitButtonAsDisabledWhenAFieldBecomesInvalid() {
+    public void testShowsSubmitButtonAsDisabledWhenAFieldBecomesInvalid() throws JSONException {
         setUpActivityTest(this, new TestClientTokenBuilder().build());
         getActivity();
 
@@ -80,7 +82,7 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testSubmitsToServerWhenFieldsPassClientValidation()
-            throws ErrorWithResponse, BraintreeException {
+            throws ErrorWithResponse, BraintreeException, JSONException {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         Braintree braintree = spy(injectBraintree(mContext, clientToken, clientToken));
         injectBraintree(clientToken, braintree);
@@ -95,6 +97,6 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
         onView(withHint("Postal Code")).perform(typeText("12345"));
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
-        verify(braintree).create(any(PaymentMethod.Builder.class));
+        verify(braintree).create(any(PaymentMethodBuilder.class));
     }
 }

@@ -22,6 +22,7 @@ import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
@@ -89,8 +90,7 @@ public class Braintree {
     /**
      * onPaymentMethodCreated will be called with a {@link com.braintreepayments.api.models.PaymentMethod}
      * as a callback when
-     * {@link Braintree#create(com.braintreepayments.api.models.PaymentMethod.Builder)}
-     * is called
+     * {@link Braintree#create(com.braintreepayments.api.models.PaymentMethodBuilder)} is called
      */
     public static interface PaymentMethodCreatedListener extends Listener {
         void onPaymentMethodCreated(PaymentMethod paymentMethod);
@@ -98,8 +98,8 @@ public class Braintree {
 
     /**
      * onPaymentMethodNonce will be called as a callback with a nonce when
-     * {@link Braintree#create(com.braintreepayments.api.models.PaymentMethod.Builder)}
-     * or {@link Braintree#tokenize(com.braintreepayments.api.models.PaymentMethod.Builder)}
+     * {@link Braintree#create(com.braintreepayments.api.models.PaymentMethodBuilder)}
+     * or {@link Braintree#tokenize(com.braintreepayments.api.models.PaymentMethodBuilder)}
      * is called
      */
     public static interface PaymentMethodNonceListener extends Listener {
@@ -150,7 +150,7 @@ public class Braintree {
      *         may return the same {@link com.braintreepayments.api.Braintree} instance.
      */
     @Deprecated
-    public static Braintree getInstance(Context context, String clientToken) {
+    public static Braintree getInstance(Context context, String clientToken) throws JSONException {
         if (sInstances.containsKey(clientToken)) {
             return sInstances.get(clientToken);
         } else {
@@ -226,7 +226,7 @@ public class Braintree {
         sInstances.put(mClientTokenKey, this);
     }
 
-    protected Braintree(Context context, String clientToken) {
+    protected Braintree(Context context, String clientToken) throws JSONException {
         mBraintreeApi = new BraintreeApi(context.getApplicationContext(),
                 ClientToken.fromString(clientToken));
         mExecutorService = Executors.newSingleThreadExecutor();
@@ -239,7 +239,7 @@ public class Braintree {
         return mBraintreeApi.isSetup();
     }
 
-    private void setup() throws ErrorWithResponse, BraintreeException {
+    private void setup() throws ErrorWithResponse, BraintreeException, JSONException {
         mBraintreeApi.setup();
     }
 
@@ -281,8 +281,12 @@ public class Braintree {
         if (braintree != null && braintree.isSetup()) {
             return braintree;
         } else if (!TextUtils.isEmpty(clientToken) && !TextUtils.isEmpty(configuration)) {
-            return new Braintree(clientToken,
-                    new BraintreeApi(context.getApplicationContext(), clientToken, configuration));
+            try {
+                return new Braintree(clientToken,
+                        new BraintreeApi(context.getApplicationContext(), clientToken, configuration));
+            } catch (JSONException e) {
+                return null;
+            }
         } else {
             return null;
         }
@@ -493,8 +497,8 @@ public class Braintree {
 
     /**
      * Handles response from PayPal and returns a PayPalAccountBuilder which must be then passed to
-     * {@link #create(com.braintreepayments.api.models.PaymentMethod.Builder)}. {@link #finishPayWithPayPal(android.app.Activity, int, android.content.Intent)}
-     * will call this and {@link #create(com.braintreepayments.api.models.PaymentMethod.Builder)} for you
+     * {@link #create(com.braintreepayments.api.models.PaymentMethodBuilder)}. {@link #finishPayWithPayPal(android.app.Activity, int, android.content.Intent)}
+     * will call this and {@link #create(com.braintreepayments.api.models.PaymentMethodBuilder)} for you
      * and may be a better option.
      *
      * Sends a {@link com.braintreepayments.api.exceptions.ConfigurationException} to
@@ -505,7 +509,7 @@ public class Braintree {
      * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @return {@link com.braintreepayments.api.models.PayPalAccountBuilder} ready to be sent to
-     * {@link #create(com.braintreepayments.api.models.PaymentMethod.Builder)} or null if a
+     * {@link #create(com.braintreepayments.api.models.PaymentMethodBuilder)} or null if a
      * {@link com.braintreepayments.api.models.PayPalAccountBuilder} could not be created
      */
     public PayPalAccountBuilder handlePayPalResponse(Activity activity, int resultCode, Intent data) {
@@ -622,7 +626,6 @@ public class Braintree {
                 public void run() {
                     try {
                         PaymentMethod paymentMethod = mBraintreeApi.getPaymentMethod(nonce);
-                        paymentMethod.setSource(Venmo.VENMO_SOURCE);
                         addPaymentMethodToCache(paymentMethod);
                         postCreatedMethodToListeners(paymentMethod);
                         postCreatedNonceToListeners(nonce);
@@ -832,7 +835,7 @@ public class Braintree {
                 try {
                     String nonce = mBraintreeApi.tokenize(cardBuilder);
                     startThreeDSecureVerification(activity, requestCode, nonce, amount);
-                } catch (BraintreeException e) {
+                } catch (BraintreeException | JSONException e) {
                     postUnrecoverableErrorToListeners(e);
                 } catch (ErrorWithResponse errorWithResponse) {
                     postRecoverableErrorToListeners(errorWithResponse);
@@ -969,22 +972,21 @@ public class Braintree {
      * {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)} will be called
      * with the {@link com.braintreepayments.api.exceptions.BraintreeException} that occurred.
      *
-     * @param paymentMethodBuilder {@link com.braintreepayments.api.models.PaymentMethod.Builder} for the
+     * @param paymentMethodBuilder {@link com.braintreepayments.api.models.PaymentMethodBuilder} for the
      * {@link com.braintreepayments.api.models.PaymentMethod} to be created.
      * @param <T> {@link com.braintreepayments.api.models.PaymentMethod} or a subclass.
-     * @see #tokenize(com.braintreepayments.api.models.PaymentMethod.Builder)
+     * @see #tokenize(com.braintreepayments.api.models.PaymentMethodBuilder)
      */
-    public synchronized <T extends PaymentMethod> void create(
-            PaymentMethod.Builder<T> paymentMethodBuilder) {
+    public synchronized <T extends PaymentMethod> void create(PaymentMethodBuilder paymentMethodBuilder) {
         createHelper(paymentMethodBuilder);
     }
 
     /**
-     * Helper method to {@link #create(PaymentMethod.Builder)} to make execution synchronous in
+     * Helper method to {@link #create(PaymentMethodBuilder)} to make execution synchronous in
      * testing.
      */
     protected synchronized <T extends PaymentMethod> Future<?> createHelper(
-            final PaymentMethod.Builder<T> paymentMethodBuilder) {
+            final PaymentMethodBuilder paymentMethodBuilder) {
         return mExecutorService.submit(new Runnable() {
             @Override
             public void run() {
@@ -994,7 +996,7 @@ public class Braintree {
 
                     postCreatedMethodToListeners(createdPaymentMethod);
                     postCreatedNonceToListeners(createdPaymentMethod.getNonce());
-                } catch (BraintreeException e) {
+                } catch (BraintreeException | JSONException e) {
                     postUnrecoverableErrorToListeners(e);
                 } catch (ErrorWithResponse e) {
                     postRecoverableErrorToListeners(e);
@@ -1009,34 +1011,34 @@ public class Braintree {
      *
      * Tokenization functions like creating a {@link com.braintreepayments.api.models.PaymentMethod}, but
      * defers validation until a server library attempts to use the {@link com.braintreepayments.api.models.PaymentMethod}.
-     * Use {@link #tokenize(com.braintreepayments.api.models.PaymentMethod.Builder)} to handle validation errors
+     * Use {@link #tokenize(com.braintreepayments.api.models.PaymentMethodBuilder)} to handle validation errors
      * on the server instead of on device.
      *
      * If a network or server error occurs, {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)}
      * will be called with the {@link com.braintreepayments.api.exceptions.BraintreeException} that occurred.
      *
-     * @param paymentMethodBuilder {@link com.braintreepayments.api.models.PaymentMethod.Builder} for the
+     * @param paymentMethodBuilder {@link com.braintreepayments.api.models.PaymentMethodBuilder} for the
      * {@link com.braintreepayments.api.models.PaymentMethod} to be created.
-     * @see #create(com.braintreepayments.api.models.PaymentMethod.Builder)
+     * @see #create(com.braintreepayments.api.models.PaymentMethodBuilder)
      */
     public synchronized <T extends PaymentMethod> void tokenize(
-            PaymentMethod.Builder<T> paymentMethodBuilder) {
+            PaymentMethodBuilder paymentMethodBuilder) {
         tokenizeHelper(paymentMethodBuilder);
     }
 
     /**
-     * Helper method to {@link #tokenize(PaymentMethod.Builder)} to make execution synchronous in
+     * Helper method to {@link #tokenize(PaymentMethodBuilder)} to make execution synchronous in
      * testing.
      */
     protected synchronized <T extends PaymentMethod> Future<?> tokenizeHelper(
-            final PaymentMethod.Builder<T> paymentMethodBuilder) {
+            final PaymentMethodBuilder paymentMethodBuilder) {
         return mExecutorService.submit(new Runnable() {
             @Override
             public void run() {
                 try {
                     String nonce = mBraintreeApi.tokenize(paymentMethodBuilder);
                     postCreatedNonceToListeners(nonce);
-                } catch (BraintreeException e) {
+                } catch (BraintreeException | JSONException e) {
                     postUnrecoverableErrorToListeners(e);
                 } catch (ErrorWithResponse e) {
                     postRecoverableErrorToListeners(e);

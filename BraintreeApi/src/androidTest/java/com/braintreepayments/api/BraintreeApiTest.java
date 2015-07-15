@@ -17,7 +17,6 @@ import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
-import com.google.gson.Gson;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 
 import org.json.JSONException;
@@ -45,7 +44,7 @@ public class BraintreeApiTest extends AndroidTestCase {
     }
 
     public void testThrowsConfigurationExceptionOnBadPayPalConfiguration()
-            throws ErrorWithResponse, BraintreeException {
+            throws ErrorWithResponse, BraintreeException, JSONException {
         Configuration configuration = mock(Configuration.class);
         BraintreeApi braintreeApi = new BraintreeApi(mContext, mock(ClientToken.class),
                 configuration, mock(HttpRequest.class));
@@ -62,7 +61,7 @@ public class BraintreeApiTest extends AndroidTestCase {
         assertTrue("Expected ConfigurationException was not thrown", exceptionHappened);
     }
 
-    public void testFinishPayWithVenmoReturnsANonce() {
+    public void testFinishPayWithVenmoReturnsANonce() throws JSONException {
         BraintreeApi braintreeApi = new BraintreeApi(mContext, new TestClientTokenBuilder().build());
         Intent intent = new Intent().putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE,
                 "payment method nonce");
@@ -70,7 +69,7 @@ public class BraintreeApiTest extends AndroidTestCase {
         assertEquals("payment method nonce", braintreeApi.finishPayWithVenmo(intent));
     }
 
-    public void testPayWithVenmoReturnsNullIfIntentIsEmpty() {
+    public void testPayWithVenmoReturnsNullIfIntentIsEmpty() throws JSONException {
         BraintreeApi braintreeApi = new BraintreeApi(mContext, new TestClientTokenBuilder().build());
 
         assertNull(braintreeApi.finishPayWithVenmo(new Intent()));
@@ -118,7 +117,8 @@ public class BraintreeApiTest extends AndroidTestCase {
         verify(httpRequest, never()).post(anyString(), anyString());
     }
 
-    public void testAnalyticsEventsAreSentToServer() throws ErrorWithResponse, BraintreeException {
+    public void testAnalyticsEventsAreSentToServer()
+            throws ErrorWithResponse, BraintreeException, JSONException {
         final AtomicInteger requestCount = new AtomicInteger(0);
         final AtomicInteger responseCode = new AtomicInteger(0);
 
@@ -171,14 +171,15 @@ public class BraintreeApiTest extends AndroidTestCase {
                 "braintree:sdkVersion"));
     }
 
-    public void testGetConfigurationReturnsConfigurationAsAString() {
-        Configuration configuration = Configuration.fromJson(new TestClientTokenBuilder().build());
+    public void testGetConfigurationReturnsConfigurationAsAString() throws JSONException {
+        String originalConfiguration = new TestClientTokenBuilder().build();
+        Configuration configuration = Configuration.fromJson(originalConfiguration);
         BraintreeApi braintreeApi = new BraintreeApi(mContext, mock(ClientToken.class), configuration,
                 mock(HttpRequest.class));
 
         String configurationString = braintreeApi.getConfigurationString();
 
-        assertEquals(new Gson().toJson(configuration), configurationString);
+        assertEquals(originalConfiguration, configurationString);
     }
 
     public void testGetConfigurationReturnsNullIfConfigurationIsNull() {

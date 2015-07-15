@@ -7,6 +7,8 @@ import android.test.AndroidTestCase;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
+import org.json.JSONException;
+
 public class VenmoTest extends AndroidTestCase {
 
     public void testGetPackage() {
@@ -31,7 +33,7 @@ public class VenmoTest extends AndroidTestCase {
         assertEquals(-129711843, Venmo.PUBLIC_KEY_HASH_CODE);
     }
 
-    public void testLaunchIntent() {
+    public void testLaunchIntent() throws JSONException {
         Intent intent =
                 Venmo.getLaunchIntent(Configuration.fromJson(new TestClientTokenBuilder().build()));
 
@@ -41,21 +43,21 @@ public class VenmoTest extends AndroidTestCase {
                 Venmo.EXTRA_MERCHANT_ID));
     }
 
-    public void testIntentIncludesVenmoEnvironment() {
+    public void testIntentIncludesVenmoEnvironment() throws JSONException {
         Intent intent = Venmo.getLaunchIntent(
                 Configuration.fromJson(new TestClientTokenBuilder().withOfflineVenmo().build()));
 
         assertTrue(intent.getBooleanExtra(Venmo.EXTRA_OFFLINE, false));
     }
 
-    public void testIntentIncludesLiveVenmoEnvironment() {
+    public void testIntentIncludesLiveVenmoEnvironment() throws JSONException {
         Intent intent = Venmo.getLaunchIntent(
                 Configuration.fromJson(new TestClientTokenBuilder().withLiveVenmo().build()));
 
         assertFalse(intent.getBooleanExtra(Venmo.EXTRA_OFFLINE, true));
     }
 
-    public void testIsUnavailableWhenVenmoIsOff() {
+    public void testIsUnavailableWhenVenmoIsOff() throws JSONException {
         Configuration configuration = Configuration.fromJson(new TestClientTokenBuilder().build());
         assertFalse(Venmo.isAvailable(mContext, configuration));
         assertFalse(Venmo.getLaunchIntent(configuration).hasExtra(Venmo.EXTRA_OFFLINE));

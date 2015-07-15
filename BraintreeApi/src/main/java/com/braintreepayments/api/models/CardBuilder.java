@@ -1,27 +1,38 @@
 package com.braintreepayments.api.models;
 
-import com.braintreepayments.api.models.Card.BillingAddress;
-import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
- * Builder used to construct a {@link com.braintreepayments.api.models.Card}
- * @see com.braintreepayments.api.models.Card
- * @see com.braintreepayments.api.models.PaymentMethod.Builder
+ * Builder used to construct a card tokenization request.
  */
-public class CardBuilder implements PaymentMethod.Builder<Card> {
+public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
 
-    @SerializedName("creditCard") private Card mCard;
-    private BillingAddress mBillingAddress = null;
-    private String mIntegration = "custom";
-    private String mSource = "form";
+    private static final String CREDIT_CARD_KEY = "creditCard";
+    private static final String NUMBER_KEY = "number";
+    private static final String CVV_KEY = "cvv";
+    private static final String EXPIRATION_MONTH_KEY = "expirationMonth";
+    private static final String EXPIRATION_YEAR_KEY = "expirationYear";
+    private static final String EXPIRATION_DATE_KEY = "expirationDate";
+    private static final String BILLING_ADDRESS_KEY = "billingAddress";
+    private static final String FIRST_NAME_KEY = "firstName";
+    private static final String LAST_NAME_KEY = "lastName";
+    private static final String COUNTRY_NAME_KEY = "countryName";
+    private static final String LOCALITY_KEY = "locality";
+    private static final String POSTAL_CODE_KEY = "postalCode";
+    private static final String REGION_KEY = "region";
+    private static final String STREET_ADDRESS_KEY = "streetAddress";
+
+    private final JSONObject mBillingAddressJsonObject;
 
     public CardBuilder() {
-        mCard = new Card();
-        mCard.setSource(mSource);
+        super();
+
+        mBillingAddressJsonObject = new JSONObject();
+
+        try {
+            mJson.put(CREDIT_CARD_KEY, mPaymentMethodJson);
+        } catch (JSONException ignored) {}
     }
 
     /**
@@ -29,7 +40,10 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
      * @return {@link com.braintreepayments.api.models.CardBuilder}
      */
     public CardBuilder cardNumber(String number) {
-        mCard.setCardNumber(number);
+        try {
+            mPaymentMethodJson.put(NUMBER_KEY, number);
+        } catch (JSONException ignored) {}
+
         return this;
     }
 
@@ -38,7 +52,10 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
      * @return {@link com.braintreepayments.api.models.CardBuilder}
      */
     public CardBuilder cvv(String cvv) {
-        mCard.setCvv(cvv);
+        try {
+            mPaymentMethodJson.put(CVV_KEY, cvv);
+        } catch (JSONException ignored) {}
+
         return this;
     }
 
@@ -47,7 +64,10 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
      * @return {@link com.braintreepayments.api.models.CardBuilder}
      */
     public CardBuilder expirationMonth(String expirationMonth) {
-        mCard.setExpirationMonth(expirationMonth);
+        try {
+            mPaymentMethodJson.put(EXPIRATION_MONTH_KEY, expirationMonth);
+        } catch (JSONException ignored) {}
+
         return this;
     }
 
@@ -56,7 +76,10 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
      * @return {@link com.braintreepayments.api.models.CardBuilder}
      */
     public CardBuilder expirationYear(String expirationYear) {
-        mCard.setExpirationYear(expirationYear);
+        try {
+            mPaymentMethodJson.put(EXPIRATION_YEAR_KEY, expirationYear);
+        } catch (JSONException ignored) {}
+
         return this;
     }
 
@@ -66,16 +89,11 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
      * @return {@link com.braintreepayments.api.models.CardBuilder}
      */
     public CardBuilder expirationDate(String expirationDate) {
-        mCard.setExpirationDate(expirationDate);
-        return this;
-    }
+        try {
+            mPaymentMethodJson.put(EXPIRATION_DATE_KEY, expirationDate);
+        } catch (JSONException ignored) {}
 
-    private BillingAddress getBillingAddress() {
-        if (mBillingAddress == null) {
-            mBillingAddress = new BillingAddress();
-            mCard.setBillingAddress(mBillingAddress);
-        }
-        return mBillingAddress;
+        return this;
     }
 
     /**
@@ -83,7 +101,10 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
      * @return {@link com.braintreepayments.api.models.CardBuilder}
      */
     public CardBuilder firstName(String firstName) {
-        getBillingAddress().setFirstName(firstName);
+        try {
+            mBillingAddressJsonObject.put(FIRST_NAME_KEY, firstName);
+            mPaymentMethodJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
+        } catch (JSONException ignored) {}
         return this;
     }
 
@@ -92,7 +113,10 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
      * @return {@link com.braintreepayments.api.models.CardBuilder}
      */
     public CardBuilder lastName(String lastName) {
-        getBillingAddress().setLastName(lastName);
+        try {
+            mBillingAddressJsonObject.put(LAST_NAME_KEY, lastName);
+            mPaymentMethodJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
+        } catch (JSONException ignored) {}
         return this;
     }
 
@@ -101,7 +125,10 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
      * @return {@link com.braintreepayments.api.models.CardBuilder}
      */
     public CardBuilder countryName(String countryName) {
-        getBillingAddress().setCountryName(countryName);
+        try {
+            mBillingAddressJsonObject.put(COUNTRY_NAME_KEY, countryName);
+            mPaymentMethodJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
+        } catch (JSONException ignored) {}
         return this;
     }
 
@@ -110,7 +137,10 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
      * @return {@link com.braintreepayments.api.models.CardBuilder}
      */
     public CardBuilder locality(String locality) {
-        getBillingAddress().setLocality(locality);
+        try {
+            mBillingAddressJsonObject.put(LOCALITY_KEY, locality);
+            mPaymentMethodJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
+        } catch (JSONException ignored) {}
         return this;
     }
 
@@ -119,7 +149,10 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
      * @return {@link com.braintreepayments.api.models.CardBuilder}
      */
     public CardBuilder postalCode(String postalCode) {
-        getBillingAddress().setPostalCode(postalCode);
+        try {
+            mBillingAddressJsonObject.put(POSTAL_CODE_KEY, postalCode);
+            mPaymentMethodJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
+        } catch (JSONException ignored) {}
         return this;
     }
 
@@ -128,7 +161,10 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
      * @return {@link com.braintreepayments.api.models.CardBuilder}
      */
     public CardBuilder region(String region) {
-        getBillingAddress().setRegion(region);
+        try {
+            mBillingAddressJsonObject.put(REGION_KEY, region);
+            mPaymentMethodJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
+        } catch (JSONException ignored) {}
         return this;
     }
 
@@ -137,61 +173,21 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
      * @return {@link com.braintreepayments.api.models.CardBuilder}
      */
     public CardBuilder streetAddress(String streetAddress) {
-        getBillingAddress().setStreetAddress(streetAddress);
+        try {
+            mBillingAddressJsonObject.put(STREET_ADDRESS_KEY, streetAddress);
+            mPaymentMethodJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
+        } catch (JSONException ignored) {}
         return this;
     }
 
     @Override
-    public CardBuilder validate(boolean validate) {
-        PaymentMethodOptions options = new PaymentMethodOptions();
-        options.setValidate(validate);
-        mCard.setOptions(options);
-        return this;
-    }
-
-    @Override
-    public CardBuilder integration(String integration) {
-        mIntegration = integration;
-        return this;
-    }
-
-    @Override
-    public CardBuilder source(String source) {
-        mSource = source;
-        mCard.setSource(mSource);
-        return this;
-    }
-
-    @Override
-    public Card build() {
-        return mCard;
-    }
-
-    @Override
-    public Map<String, Object> toJson() {
-        HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("creditCard", build());
-        params.put(PaymentMethod.Builder.METADATA_KEY, new Metadata(mIntegration, mSource));
-        return params;
-    }
-
-    @Override
-    public String toJsonString() {
-        return new Gson().toJson(toJson());
-    }
-
-    @Override
-    public Card fromJson(String json) {
-        return Card.fromJson(json);
+    @SuppressWarnings("unchecked")
+    public <K extends PaymentMethod> K fromJsonResponse(String json) throws JSONException {
+        return (K) Card.fromJson(json);
     }
 
     @Override
     public String getApiPath() {
         return "credit_cards";
-    }
-
-    @Override
-    public String getApiResource() {
-        return "creditCards";
     }
 }

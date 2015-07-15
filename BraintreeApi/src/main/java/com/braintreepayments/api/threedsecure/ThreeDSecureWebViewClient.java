@@ -23,7 +23,7 @@ public class ThreeDSecureWebViewClient extends WebViewClient {
         if (url.contains("html/authentication_complete_frame")) {
             view.stopLoading();
 
-            String authResponseJson = (Uri.parse(url).getQueryParameter("auth_response"));
+            String authResponseJson = Uri.parse(url).getQueryParameter("auth_response");
             mActivity.finishWithResult(
                     ThreeDSecureAuthenticationResponse.fromJson(authResponseJson));
         } else {

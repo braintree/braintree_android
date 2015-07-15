@@ -1,26 +1,39 @@
 package com.braintreepayments.api.models;
 
-import android.test.AndroidTestCase;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.SmallTest;
 
-import com.braintreepayments.testutils.FixturesHelper;
 import com.braintreepayments.api.TestUtils;
+import com.braintreepayments.testutils.FixturesHelper;
 
+import org.json.JSONException;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-public class PayPalAccountTest extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+public class PayPalAccountTest {
 
-    @Override
+    @Before
     public void setUp() {
-        TestUtils.setUp(getContext());
+        TestUtils.setUp(getTargetContext());
     }
 
-    public void testPayPalAccountTypeIsPayPal() {
+    @Test(timeout = 1000)
+    @SmallTest
+    public void payPalAccountTypeIsPayPal() {
         assertEquals("PayPal", new PayPalAccount().getTypeLabel());
     }
 
-    public void testPayPalParsesFromJson() {
-        String paypalString = FixturesHelper.stringFromFixture(getContext(),
+    @Test(timeout = 1000)
+    @SmallTest
+    public void fromJson_parsesResponse() throws JSONException {
+        String paypalString = FixturesHelper.stringFromFixture(getTargetContext(),
                 "payment_methods/paypal.json");
         PayPalAccount payPalAccount = PayPalAccount.fromJson(paypalString);
 
@@ -36,12 +49,9 @@ public class PayPalAccountTest extends AndroidTestCase {
         assertEquals("US", payPalAccount.getBillingAddress().getCountryCodeAlpha2());
     }
 
-    public void testGetEmailReturnsEmptyStringIfDetailsIsNull() {
-        PayPalAccount payPalAccount = new PayPalAccount();
-        assertEquals("", payPalAccount.getEmail());
-    }
-
-    public void testDescriptionUsesGetEmailIfDescriptionIsPayPalAndEmailIsNotEmpty() {
+    @Test(timeout = 1000)
+    @SmallTest
+    public void getDescription_usesGetEmailIfDescriptionIsPayPalAndEmailIsNotEmpty() {
         PayPalAccount payPalAccount = spy(new PayPalAccount());
         payPalAccount.mDescription = "PayPal";
         when(payPalAccount.getEmail()).thenReturn("test_email_address");

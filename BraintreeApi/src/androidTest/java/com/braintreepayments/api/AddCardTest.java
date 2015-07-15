@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
-import android.test.AndroidTestCase;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.MediumTest;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
@@ -8,18 +9,32 @@ import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
-import static com.braintreepayments.testutils.CardNumber.VISA;
+import org.json.JSONException;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class AddCardTest extends AndroidTestCase {
+import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static com.braintreepayments.testutils.CardNumber.VISA;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.fail;
+
+@RunWith(AndroidJUnit4.class)
+public class AddCardTest {
 
     private BraintreeApi mBraintreeApi;
 
-    public void setUp() {
-        TestUtils.setUp(getContext());
-        mBraintreeApi = new BraintreeApi(getContext(), new TestClientTokenBuilder().build());
+    @Before
+    public void setUp() throws JSONException {
+        TestUtils.setUp(getTargetContext());
+        mBraintreeApi = new BraintreeApi(getTargetContext(), new TestClientTokenBuilder().build());
     }
 
-    public void testCanAddCard() throws ErrorWithResponse, BraintreeException {
+    @Test(timeout = 10000)
+    @MediumTest
+    public void canAddCard() throws ErrorWithResponse, BraintreeException, JSONException {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
                 .expirationMonth("01")
@@ -30,7 +45,10 @@ public class AddCardTest extends AndroidTestCase {
         assertNotNull(addedCard.getNonce());
     }
 
-    public void testCanTokenizeInvalidCard() throws ErrorWithResponse, BraintreeException {
+    @Test(timeout = 10000)
+    @MediumTest
+    public void canTokenizeInvalidCard()
+            throws ErrorWithResponse, BraintreeException, JSONException {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber("This is a credit card");
 
@@ -39,7 +57,9 @@ public class AddCardTest extends AndroidTestCase {
         assertNotNull(nonce);
     }
 
-    public void testThrowsErrorOnServerFailure() throws BraintreeException {
+    @Test(timeout = 10000)
+    @MediumTest
+    public void throwsErrorOnServerFailure() throws BraintreeException, JSONException {
         CardBuilder cardBuilder = new CardBuilder()
                 .expirationMonth("01");
 

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
@@ -44,7 +45,7 @@ public class PayPal {
         Class klass;
         if (PayPalTouch.available(activity.getBaseContext(), sEnableSignatureVerification) &&
                 !configuration.getEnvironment().equals(OFFLINE) &&
-                !configuration.getTouchDisabled()) {
+                !configuration.isTouchDisabled()) {
             klass = PayPalTouchActivity.class;
         } else {
             klass = PayPalProfileSharingActivity.class;
@@ -69,16 +70,19 @@ public class PayPal {
     }
 
     /**
-     * Used to create a {@link com.braintreepayments.api.models.PayPalAccountBuilder} from an activity
-     * response. Not necessary to use, {@link com.braintreepayments.api.Braintree#finishPayWithPayPal(android.app.Activity, int, android.content.Intent)}
+     * Used to create a {@link PayPalAccountBuilder} from an activity response. Not necessary to use,
+     * {@link com.braintreepayments.api.Braintree#finishPayWithPayPal(android.app.Activity, int, android.content.Intent)}
      * does this for you.
+     *
      * @param activity Activity that received the result.
      * @param resultCode Result code returned in result.
      * @param data {@link Intent} returned in result.
-     * @return {@link com.braintreepayments.api.models.PayPalAccountBuilder} or null if
-     * resultCode is not {@link android.app.Activity#RESULT_OK} or {@link com.paypal.android.sdk.payments.PayPalProfileSharingActivity#RESULT_EXTRAS_INVALID}
+     * @return {@link PayPalAccountBuilder} or null if resultCode is not
+     * {@link android.app.Activity#RESULT_OK} or
+     * {@link com.paypal.android.sdk.payments.PayPalProfileSharingActivity#RESULT_EXTRAS_INVALID}
      * @throws ConfigurationException if resultCode is {@link com.paypal.android.sdk.payments.PayPalProfileSharingActivity#RESULT_EXTRAS_INVALID}
      */
+    @Nullable
     public static PayPalAccountBuilder getBuilderFromActivity(Activity activity, int resultCode, Intent data) throws ConfigurationException {
         if (resultCode == Activity.RESULT_OK) {
             PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder();
@@ -99,22 +103,13 @@ public class PayPal {
                 }
 
                 paypalAccountBuilder
-                        .authorizationCode(paypalTouchResponse.optString("authorization_code"))
+                        .consentCode(paypalTouchResponse.optString("authorization_code"))
                         .source("paypal-app");
-                paypalAccountBuilder.email(paypalTouchResponse.optString("email"));
             } else {
                 PayPalAuthorization authorization = data.getParcelableExtra(
                         PayPalProfileSharingActivity.EXTRA_RESULT_AUTHORIZATION);
-                paypalAccountBuilder.authorizationCode(authorization.getAuthorizationCode())
+                paypalAccountBuilder.consentCode(authorization.getAuthorizationCode())
                         .source("paypal-sdk");
-                try {
-                    String email = authorization.toJSONObject()
-                            .getJSONObject("user")
-                            .getString("display_string");
-                    paypalAccountBuilder.email(email);
-                } catch (JSONException e) {
-                    // If email was not included, don't set it
-                }
             }
 
             return paypalAccountBuilder;

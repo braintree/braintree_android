@@ -1,35 +1,66 @@
 package com.braintreepayments.api.models;
 
-import android.text.TextUtils;
-
 import com.braintreepayments.api.annotations.Beta;
-import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Contains the remote configuration for the Braintree Android SDK.
  */
 public class Configuration {
 
-    @SerializedName("clientApiUrl") private String mClientApiUrl;
-    @SerializedName("challenges") private String[] mChallenges;
-    @SerializedName("paypalEnabled") private boolean mPaypalEnabled;
-    @SerializedName("paypal") private PayPalConfiguration mPayPalConfiguration;
-    @SerializedName("androidPay") private AndroidPayConfiguration mAndroidPayConfiguration;
-    @SerializedName("venmo") private String mVenmo;
-    @SerializedName("threeDSecureEnabled") private boolean mThreeDSecureEnabled;
-    @SerializedName("merchantId") private String mMerchantId;
-    @SerializedName("merchantAccountId") private String mMerchantAccountId;
-    @SerializedName("analytics") private AnalyticsConfiguration mAnalyticsConfiguration;
+    private static final String CLIENT_API_URL_KEY = "clientApiUrl";
+    private static final String CHALLENGES_KEY = "challenges";
+    private static final String PAYPAL_ENABLED_KEY = "paypalEnabled";
+    private static final String PAYPAL_KEY = "paypal";
+    private static final String ANDROID_PAY_KEY = "androidPay";
+    private static final String VENMO_KEY = "venmo";
+    private static final String THREE_D_SECURE_ENABLED_KEY = "threeDSecureEnabled";
+    private static final String MERCHANT_ID_KEY = "merchantId";
+    private static final String MERCHANT_ACCOUNT_ID_KEY = "merchantAccountId";
+    private static final String ANALTICS_KEY = "analytics";
+
+    private String mConfigurationString;
+    private String mClientApiUrl;
+    private String[] mChallenges;
+    private boolean mPaypalEnabled;
+    private PayPalConfiguration mPayPalConfiguration;
+    private AndroidPayConfiguration mAndroidPayConfiguration;
+    private String mVenmo;
+    private boolean mThreeDSecureEnabled;
+    private String mMerchantId;
+    private String mMerchantAccountId;
+    private AnalyticsConfiguration mAnalyticsConfiguration;
 
     /**
      * Creates a new {@link com.braintreepayments.api.models.Configuration} instance from a json string.
      *
-     * @param configuration The json configuration string from Braintree.
+     * @param configurationString The json configuration string from Braintree.
      * @return {@link com.braintreepayments.api.models.Configuration} instance.
      */
-    public static Configuration fromJson(String configuration) {
-        return new Gson().fromJson(configuration, Configuration.class);
+    public static Configuration fromJson(String configurationString) throws JSONException {
+        Configuration configuration = new Configuration();
+        configuration.mConfigurationString = configurationString;
+        JSONObject json = new JSONObject(configurationString);
+
+        configuration.mClientApiUrl = json.getString(CLIENT_API_URL_KEY);
+        configuration.mChallenges = parseJsonChallenges(json.optJSONArray(CHALLENGES_KEY));
+        configuration.mPaypalEnabled = json.optBoolean(PAYPAL_ENABLED_KEY, false);
+        configuration.mPayPalConfiguration = PayPalConfiguration.fromJson(json.optJSONObject(PAYPAL_KEY));
+        configuration.mAndroidPayConfiguration = AndroidPayConfiguration.fromJson(json.optJSONObject(ANDROID_PAY_KEY));
+        configuration.mVenmo = json.optString(VENMO_KEY, null);
+        configuration.mThreeDSecureEnabled = json.optBoolean(THREE_D_SECURE_ENABLED_KEY, false);
+        configuration.mMerchantId = json.getString(MERCHANT_ID_KEY);
+        configuration.mMerchantAccountId = json.optString(MERCHANT_ACCOUNT_ID_KEY, null);
+        configuration.mAnalyticsConfiguration = AnalyticsConfiguration.fromJson(json.optJSONObject(ANALTICS_KEY));
+
+        return configuration;
+    }
+
+    public String toJson() {
+        return mConfigurationString;
     }
 
     /**
@@ -57,7 +88,7 @@ public class Configuration {
      * @return {@code true} if PayPal is enabled, {@code false} otherwise.
      */
     public boolean isPayPalEnabled() {
-        return (mPaypalEnabled && mPayPalConfiguration != null);
+        return (mPaypalEnabled && mPayPalConfiguration.isEnabled());
     }
 
     /**
@@ -72,7 +103,7 @@ public class Configuration {
      */
     @Beta
     public AndroidPayConfiguration getAndroidPay() {
-        return (mAndroidPayConfiguration == null ? new AndroidPayConfiguration() : mAndroidPayConfiguration);
+        return mAndroidPayConfiguration;
     }
 
     /**
@@ -114,7 +145,7 @@ public class Configuration {
      * @return {@code true} if analytics are enabled, {@code false} otherwise.
      */
     public boolean isAnalyticsEnabled() {
-        return (mAnalyticsConfiguration != null && !TextUtils.isEmpty(mAnalyticsConfiguration.getUrl()));
+        return mAnalyticsConfiguration.isEnabled();
     }
 
     /**
@@ -125,14 +156,25 @@ public class Configuration {
     }
 
     private boolean isChallengePresent(String requestedChallenge) {
-        if (mChallenges != null && mChallenges.length > 0) {
-            for (String challenge : mChallenges) {
-                if (challenge.equals(requestedChallenge)) {
-                    return true;
-                }
+        for (String challenge : mChallenges) {
+            if (challenge.equals(requestedChallenge)) {
+                return true;
             }
         }
 
         return false;
+    }
+
+    private static String[] parseJsonChallenges(JSONArray jsonArray) {
+        if (jsonArray == null) {
+            return new String[0];
+        }
+
+        String[] challenges = new String[jsonArray.length()];
+        for (int i = 0; i < jsonArray.length(); i++) {
+            challenges[i] = jsonArray.optString(i, "");
+        }
+
+        return challenges;
     }
 }

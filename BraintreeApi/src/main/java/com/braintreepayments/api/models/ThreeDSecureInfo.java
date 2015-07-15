@@ -4,7 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.braintreepayments.api.annotations.Beta;
-import com.google.gson.annotations.SerializedName;
+
+import org.json.JSONObject;
 
 /**
  * A class to contain 3D Secure information about the current
@@ -13,10 +14,23 @@ import com.google.gson.annotations.SerializedName;
 @Beta
 public class ThreeDSecureInfo implements Parcelable {
 
-    @SerializedName("liabilityShifted") private boolean mLiabilityShifted;
-    @SerializedName("liabilityShiftPossible") private boolean mLiabilityShiftPossible;
+    private static final String LIABILITY_SHIFTED_KEY = "liabilityShifted";
+    private static final String LIABILITY_SHIFT_POSSIBLE_KEY = "liabilityShiftPossible";
 
-    public ThreeDSecureInfo() {}
+    private boolean mLiabilityShifted;
+    private boolean mLiabilityShiftPossible;
+
+    protected static ThreeDSecureInfo fromJson(JSONObject json) {
+        if (json == null) {
+            json = new JSONObject();
+        }
+
+        ThreeDSecureInfo threeDSecureInfo = new ThreeDSecureInfo();
+        threeDSecureInfo.mLiabilityShifted = json.optBoolean(LIABILITY_SHIFTED_KEY);
+        threeDSecureInfo.mLiabilityShiftPossible = json.optBoolean(LIABILITY_SHIFT_POSSIBLE_KEY);
+
+        return threeDSecureInfo;
+    }
 
     /**
      * @return If the 3D Secure liability shift has occurred for the current
@@ -34,8 +48,12 @@ public class ThreeDSecureInfo implements Parcelable {
         return mLiabilityShiftPossible;
     }
 
+    public ThreeDSecureInfo() {}
+
     @Override
-    public int describeContents() { return 0; }
+    public int describeContents() {
+        return 0;
+    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
@@ -53,7 +71,8 @@ public class ThreeDSecureInfo implements Parcelable {
             return new ThreeDSecureInfo(source);
         }
 
-        public ThreeDSecureInfo[] newArray(int size) {return new ThreeDSecureInfo[size];}
+        public ThreeDSecureInfo[] newArray(int size) {
+            return new ThreeDSecureInfo[size];
+        }
     };
 }
-

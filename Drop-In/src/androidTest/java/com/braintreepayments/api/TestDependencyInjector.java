@@ -10,6 +10,8 @@ import com.braintreepayments.api.internal.HttpResponse;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 
+import org.json.JSONException;
+
 /**
  * Test utility class used to inject pre-configured instances of {@link Braintree} for use in
  * specific test cases.
@@ -25,7 +27,7 @@ public class TestDependencyInjector {
      * @param delay
      */
     public static void injectSlowBraintree(Context context, String clientTokenString,
-            final long delay) {
+            final long delay) throws JSONException {
         ClientToken clientToken = ClientToken.fromString(clientTokenString);
         Configuration configuration = Configuration.fromJson(clientTokenString);
         HttpRequest httpRequest = new HttpRequest(clientToken.getAuthorizationFingerprint()) {
@@ -59,7 +61,7 @@ public class TestDependencyInjector {
      * @param delay
      */
     public static void injectSlowNonSetupBraintree(Context context, String clientTokenString,
-            final long delay) {
+            final long delay) throws JSONException {
         ClientToken clientToken = ClientToken.fromString(clientTokenString);
         HttpRequest httpRequest = new HttpRequest(clientToken.getAuthorizationFingerprint()) {
             @Override
@@ -108,7 +110,7 @@ public class TestDependencyInjector {
      * @return
      */
     public static Braintree injectBraintree(Context context, String clientTokenString,
-            String configurationString) {
+            String configurationString) throws JSONException {
         ClientToken clientToken = ClientToken.fromString(clientTokenString);
         Configuration configuration = Configuration.fromJson(configurationString);
         HttpRequest httpRequest = new HttpRequest(clientToken.getAuthorizationFingerprint());

@@ -11,6 +11,8 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
+import org.json.JSONException;
+
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
@@ -65,7 +67,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         }
     }
 
-    public void testAddPaymentViewIsRestoredOnRotation() {
+    public void testAddPaymentViewIsRestoredOnRotation() throws JSONException {
         if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
             return;
         }
@@ -90,7 +92,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testAddPaymentViewIsResumedOnRotationWhenThereAreExistingPaymentMethods()
-            throws ErrorWithResponse, BraintreeException {
+            throws ErrorWithResponse, BraintreeException, JSONException {
         if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
             return;
         }
@@ -116,7 +118,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testSelectPaymentViewIsRestoredOnRotation()
-            throws InterruptedException, ErrorWithResponse, BraintreeException {
+            throws InterruptedException, ErrorWithResponse, BraintreeException, JSONException {
         if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
             return;
         }
@@ -149,7 +151,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         assertSelectedPaymentMethodIs(R.string.bt_descriptor_visa);
     }
 
-    public void testDoesntReloadPaymentMethodsOnRotate() {
+    public void testDoesntReloadPaymentMethodsOnRotate() throws JSONException {
         if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
             return;
         }
@@ -169,7 +171,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         verify(braintree, times(1)).getPaymentMethods();
     }
 
-    public void testWhenRotatingDeviceWhileLoadingSendsEventToNewActivity() {
+    public void testWhenRotatingDeviceWhileLoadingSendsEventToNewActivity() throws JSONException {
         if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
             return;
         }
@@ -183,7 +185,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         waitForAddPaymentFormHeader();
     }
 
-    public void testCardFieldsStillDisabledDuringSubmitOnRotation() {
+    public void testCardFieldsStillDisabledDuringSubmitOnRotation() throws JSONException {
         if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
             return;
         }
@@ -206,7 +208,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         onView(withId(R.id.bt_card_form_card_number)).check(matches(not(isEnabled())));
     }
 
-    public void testSubmitButtonIsDisabledDuringSubmitOnRotate() {
+    public void testSubmitButtonIsDisabledDuringSubmitOnRotate() throws JSONException {
         if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
             return;
         }
@@ -228,7 +230,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         onView(withId(R.id.bt_card_form_submit_button)).check(matches(not(isEnabled())));
     }
 
-    public void testSubmittingStateIsPersistedAcrossRotations() {
+    public void testSubmittingStateIsPersistedAcrossRotations() throws JSONException {
         if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
             return;
         }
@@ -254,7 +256,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         onView(withId(R.id.bt_header_loading_spinner)).check(matches(isDisplayed()));
     }
 
-    public void testSubmitButtonIsBlueAfterRotationIfFieldsAreValid() {
+    public void testSubmitButtonIsBlueAfterRotationIfFieldsAreValid() throws JSONException {
         if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
             return;
         }
@@ -276,7 +278,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
                 matches(hasBackgroundResource(R.drawable.bt_submit_button_background)));
     }
 
-    public void testCardFormCreatesAPaymentMethodInLandscape() {
+    public void testCardFormCreatesAPaymentMethodInLandscape() throws JSONException {
         if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
             return;
         }

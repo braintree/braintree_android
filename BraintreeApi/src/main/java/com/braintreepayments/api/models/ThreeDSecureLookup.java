@@ -4,8 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.braintreepayments.api.annotations.Beta;
-import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,34 +14,47 @@ import org.json.JSONObject;
 @Beta
 public class ThreeDSecureLookup implements Parcelable {
 
-    @SerializedName("card") private Card mCard;
-    @SerializedName("acsUrl") private String mAcsUrl;
-    @SerializedName("md") private String mMd;
-    @SerializedName("termUrl") private String mTermUrl;
-    @SerializedName("pareq") private String mPareq;
+    private static final String PAYMENT_METHOD_KEY = "paymentMethod";
+    private static final String LOOKUP_KEY = "lookup";
+    private static final String ACS_URL_KEY = "acsUrl";
+    private static final String MD_KEY = "md";
+    private static final String TERM_URL_KEY = "termUrl";
+    private static final String PA_REQ_KEY = "pareq";
 
-    public ThreeDSecureLookup() {}
+    private Card mCard;
+    private String mAcsUrl;
+    private String mMd;
+    private String mTermUrl;
+    private String mPareq;
 
     /**
-     * Used to parse a response from the Braintree Gateway to be used for 3D Secure
+     * Used to parse a response from the Braintree Gateway to be used for 3D Secure.
      *
-     * @param jsonString The json response from the Braintree Gateway 3D Secure lookup route
+     * @param jsonString The json response from the Braintree Gateway 3D Secure lookup route.
      * @return The {@link com.braintreepayments.api.models.ThreeDSecureLookup} to use when
-     *         performing 3D Secure authentication
-     * @throws JSONException when parsing fails
+     *         performing 3D Secure authentication.
+     * @throws JSONException when parsing fails.
      */
     public static ThreeDSecureLookup fromJson(String jsonString) throws JSONException {
         JSONObject json = new JSONObject(jsonString);
 
-        Gson gson = new Gson();
+        ThreeDSecureLookup lookup = new ThreeDSecureLookup();
 
-        Card card = gson.fromJson(json.getJSONObject("paymentMethod").toString(), Card.class);
-        card.setThreeDSecureInfo(gson.fromJson(json.getJSONObject("threeDSecureInfo").toString(),
-                ThreeDSecureInfo.class));
-
-        ThreeDSecureLookup lookup = gson.fromJson(json.getJSONObject("lookup").toString(),
-                ThreeDSecureLookup.class);
+        Card card = new Card();
+        card.fromJson(json.getJSONObject(PAYMENT_METHOD_KEY));
         lookup.mCard = card;
+
+        JSONObject lookupJson = json.getJSONObject(LOOKUP_KEY);
+
+        if (lookupJson.isNull(ACS_URL_KEY)) {
+            lookup.mAcsUrl = null;
+        } else {
+            lookup.mAcsUrl = lookupJson.getString(ACS_URL_KEY);
+        }
+
+        lookup.mMd = lookupJson.getString(MD_KEY);
+        lookup.mTermUrl = lookupJson.getString(TERM_URL_KEY);
+        lookup.mPareq = lookupJson.getString(PA_REQ_KEY);
 
         return lookup;
     }
@@ -85,6 +96,8 @@ public class ThreeDSecureLookup implements Parcelable {
     public String getPareq() {
         return mPareq;
     }
+
+    public ThreeDSecureLookup() {}
 
     @Override
     public int describeContents() {

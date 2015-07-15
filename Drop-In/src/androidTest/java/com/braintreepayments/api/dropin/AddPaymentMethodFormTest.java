@@ -2,6 +2,8 @@ package com.braintreepayments.api.dropin;
 
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
+import org.json.JSONException;
+
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -12,7 +14,7 @@ import static org.hamcrest.CoreMatchers.not;
 
 public class AddPaymentMethodFormTest extends BraintreePaymentActivityTestCase {
 
-    public void testCvvAndPostalCodeFieldsAreShownIfChallengesArePresent() {
+    public void testCvvAndPostalCodeFieldsAreShownIfChallengesArePresent() throws JSONException {
         String clientToken = new TestClientTokenBuilder().build();
         setUpActivityTest(this, clientToken);
 
@@ -23,7 +25,8 @@ public class AddPaymentMethodFormTest extends BraintreePaymentActivityTestCase {
         onView(withId(R.id.bt_card_form_postal_code)).check(matches(isDisplayed()));
     }
 
-    public void testCvvAndPostalCodeFieldsAreNotShownIfChallengesAreNotPresent() {
+    public void testCvvAndPostalCodeFieldsAreNotShownIfChallengesAreNotPresent()
+            throws JSONException {
         String clientToken = new TestClientTokenBuilder()
                 .withoutCvvChallenge()
                 .withoutPostalCodeChallenge()

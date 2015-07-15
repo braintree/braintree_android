@@ -1,20 +1,22 @@
 package com.braintreepayments.api.models;
 
-import android.test.AndroidTestCase;
-
-import com.braintreepayments.testutils.FixturesHelper;
-import com.google.gson.Gson;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.SmallTest;
 
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public class PostalAddressTest extends AndroidTestCase {
+import static junit.framework.Assert.assertEquals;
 
-    public void testCanCreatePostalAddressFromJson() throws JSONException {
-        String accountAddressJson = FixturesHelper.stringFromFixture(getContext(),
-                "payment_methods/paypal_address.json");
+@RunWith(AndroidJUnit4.class)
+public class PostalAddressTest {
 
-        PostalAddress postalAddress = new Gson().fromJson(accountAddressJson, PostalAddress.class);
+    @Test(timeout = 1000)
+    @SmallTest
+    public void constructsCorrectly() throws JSONException {
+        PostalAddress postalAddress =
+                new PostalAddress("123 Fake St.", "Apt. 3", "Oakland", "CA", "94602", "US");
 
         assertEquals("123 Fake St.", postalAddress.getStreetAddress());
         assertEquals("Apt. 3", postalAddress.getExtendedAddress());
@@ -22,19 +24,5 @@ public class PostalAddressTest extends AndroidTestCase {
         assertEquals("CA", postalAddress.getRegion());
         assertEquals("94602", postalAddress.getPostalCode());
         assertEquals("US", postalAddress.getCountryCodeAlpha2());
-    }
-
-    public void testCanPostalAddressHandleMissingFieldsInJson() throws JSONException {
-        String accountAddressJson = FixturesHelper.stringFromFixture(getContext(),
-                "random_json.json");
-
-        PostalAddress postalAddress = new Gson().fromJson(accountAddressJson, PostalAddress.class);
-
-        assertNull(postalAddress.getStreetAddress());
-        assertNull(postalAddress.getExtendedAddress());
-        assertNull(postalAddress.getLocality());
-        assertNull(postalAddress.getRegion());
-        assertNull(postalAddress.getPostalCode());
-        assertNull(postalAddress.getCountryCodeAlpha2());
     }
 }
