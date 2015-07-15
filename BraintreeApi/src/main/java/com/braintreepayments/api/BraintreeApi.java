@@ -263,13 +263,32 @@ public class BraintreeApi {
             currencyCode = mConfiguration.getPayPal().getCurrencyIsoCode();
         }
 
+        JSONObject experienceProfile = new JSONObject();
+        experienceProfile.put("no_shipping", !checkout.getEnableShippingAddress());
+        experienceProfile.put("address_override", checkout.getAddressOverride());
+
+        if (checkout.getLocaleCode() != null) {
+            experienceProfile.put("locale_code", checkout.getLocaleCode());
+        }
+
         JSONObject parameters = new JSONObject()
                 .put("authorization_fingerprint", mClientToken.getAuthorizationFingerprint())
                 .put("amount", checkout.getAmount().toString())
                 .put("currency_iso_code", currencyCode)
                 .put("return_url", returnUri)
                 .put("cancel_url", cancelUri)
+                .put("experience_profile", experienceProfile)
                 .put("correlation_id", clientId);
+
+        if (checkout.getAddressOverride() && checkout.getShippingAddress() != null) {
+            parameters.put("line1", checkout.getShippingAddress().getStreetAddress());
+            parameters.put("line2", checkout.getShippingAddress().getExtendedAddress());
+            parameters.put("city", checkout.getShippingAddress().getLocality());
+            parameters.put("state", checkout.getShippingAddress().getRegion());
+            parameters.put("postal_code", checkout.getShippingAddress().getPostalCode());
+            parameters.put("country_code", checkout.getShippingAddress().getCountryCodeAlpha2());
+            parameters.put("recipient_name", checkout.getShippingAddress().getRecipientName());
+        }
 
         HttpResponse response = mHttpRequest.post(
                 versionedPath("paypal_hermes/create_payment_resource"),

@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import com.braintreepayments.api.models.PostalAddress;
+
 import java.math.BigDecimal;
 
 /**
@@ -13,7 +15,10 @@ public class PayPalCheckout {
 
     private BigDecimal amount;
     private String currencyCode;
+    private String localeCode;
     private Boolean enableShippingAddress;
+    private Boolean addressOverride;
+    private PostalAddress shippingAddress;
 
     /**
      * Constructs a description of a PayPal checkout for passing into {@link com.braintreepayments.api.Braintree#startCheckoutWithPayPal(android.app.Activity, int, PayPalCheckout)} The amount to present to the user for approval.
@@ -27,6 +32,17 @@ public class PayPalCheckout {
      */
     public PayPalCheckout(BigDecimal amount) {
         super();
+        this.amount = amount;
+        this.enableShippingAddress = true;
+        this.addressOverride = false;
+    }
+
+    /**
+     * The approximate amount of the transaction.
+     *
+     * @param amount The desired amount
+     */
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
@@ -42,16 +58,45 @@ public class PayPalCheckout {
     }
 
     /**
-     * Whether to use a custom shipping address.
+     * Whether to request the shippingAddress and return it.
      *
-     * @param enableShippingAddress Whether to use a custom shipping address
+     * @param enableShippingAddress Whether to request the shippingAddress and return it.
      */
     public void setEnableShippingAddress(Boolean enableShippingAddress) {
         this.enableShippingAddress = enableShippingAddress;
     }
 
-    protected BigDecimal getAmount() { return this.amount; }
-    protected String getCurrencyCode() { return this.currencyCode; }
-    protected Boolean getEnableShippingAddress() { return this.enableShippingAddress; }
+    /**
+     * Whether to use a custom locale code.
+     *
+     * @param localeCode Whether to use a custom locale code.
+     */
+    public void setLocaleCode(String localeCode) {
+        this.localeCode = localeCode;
+    }
 
+    /**
+     * Whether to use a custom shipping address - be sure to set a shippingAddress
+     *
+     * @param addressOverride Whether to use a custom shipping address
+     */
+    public void setAddressOverride(Boolean addressOverride) {
+        this.addressOverride = addressOverride;
+    }
+
+    /**
+     * A custom shipping address to be used for the checkout flow. Be sure to set addressOverride.
+     *
+     * @param shippingAddress a custom {@link PostalAddress}
+     */
+    public void setShippingAddress(PostalAddress shippingAddress) {
+        this.shippingAddress = shippingAddress;
+    }
+
+    public BigDecimal getAmount() { return this.amount; }
+    public String getCurrencyCode() { return this.currencyCode; }
+    public Boolean getEnableShippingAddress() { return this.enableShippingAddress; }
+    public Boolean getAddressOverride() { return addressOverride; }
+    public PostalAddress getShippingAddress() { return shippingAddress; }
+    public String getLocaleCode() { return localeCode; }
 }
