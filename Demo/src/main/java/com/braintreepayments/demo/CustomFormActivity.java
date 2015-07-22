@@ -98,6 +98,13 @@ public class CustomFormActivity extends Activity implements PaymentMethodCreated
     }
 
     @Override
+    public void onPaymentMethodNonce(String paymentMethodNonce) {
+        setResult(RESULT_OK, new Intent()
+                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce));
+        finish();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int responseCode, Intent data) {
         if (responseCode == RESULT_OK && requestCode == PaymentButton.REQUEST_CODE) {
             setProgressBarIndeterminateVisibility(true);

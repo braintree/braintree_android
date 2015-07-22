@@ -248,10 +248,6 @@ public class BraintreePaymentActivity extends Activity implements
         return mBraintree;
     }
 
-    public Braintree getBraintree() {
-        return mBraintree;
-    }
-
     @Override
     public void onUnrecoverableError(Throwable throwable) {
         // Falling back to add payment method if getPaymentMethods fails
