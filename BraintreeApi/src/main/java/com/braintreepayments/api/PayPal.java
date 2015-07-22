@@ -233,7 +233,8 @@ public class PayPal {
         if (approvalUrl != null) {
             pairingId = Uri.parse(approvalUrl).getQueryParameter("token");
         }
-        return populateCommonData(new CheckoutRequest(pairingId), context, configuration)
+        return populateCommonData(new CheckoutRequest(), context, configuration)
+                .pairingId(pairingId)
                 .approvalURL(approvalUrl);
     }
 
