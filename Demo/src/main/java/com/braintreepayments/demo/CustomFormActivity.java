@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
+import com.braintreepayments.api.Braintree.PaymentMethodNonceListener;
 import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.view.PaymentButton;
@@ -17,10 +19,10 @@ import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.google.android.gms.wallet.Cart;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 public class CustomFormActivity extends Activity implements PaymentMethodCreatedListener,
-        BraintreeSetupFinishedListener {
+        PaymentMethodNonceListener, BraintreeSetupFinishedListener {
 
     private Braintree mBraintree;
     private PaymentButton mPaymentButton;
@@ -29,6 +31,7 @@ public class CustomFormActivity extends Activity implements PaymentMethodCreated
 
     protected void onCreate(Bundle onSaveInstanceState) {
         super.onCreate(onSaveInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.custom);
 
         mPaymentButton = (PaymentButton) findViewById(R.id.payment_button);
@@ -55,7 +58,8 @@ public class CustomFormActivity extends Activity implements PaymentMethodCreated
                     phoneNumberRequired);
             boolean payPalAddressScopeRequested = getIntent().getBooleanExtra("payPalAddressScopeRequested", false);
             if (payPalAddressScopeRequested) {
-                mPaymentButton.setAdditionalPayPalScopes(Arrays.asList(PayPal.SCOPE_ADDRESS));
+                mPaymentButton.setAdditionalPayPalScopes(
+                        Collections.singletonList(PayPal.SCOPE_ADDRESS));
             }
             mPaymentButton.initialize(this, mBraintree);
 
@@ -69,6 +73,8 @@ public class CustomFormActivity extends Activity implements PaymentMethodCreated
     }
 
     public void onPurchase(View v) {
+        setProgressBarIndeterminateVisibility(true);
+
         CardBuilder cardBuilder = new CardBuilder()
             .cardNumber(mCardNumber.getText().toString())
             .expirationDate(mExpirationDate.getText().toString());
@@ -79,14 +85,25 @@ public class CustomFormActivity extends Activity implements PaymentMethodCreated
     @Override
     public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
         setResult(RESULT_OK, new Intent()
-                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD, (Parcelable) paymentMethod));
+                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD,
+                        (Parcelable) paymentMethod));
+        finish();
+    }
+
+    @Override
+    public void onPaymentMethodNonce(String paymentMethodNonce) {
+        setResult(RESULT_OK, new Intent()
+                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce));
         finish();
     }
 
     @Override
     public void onActivityResult(int requestCode, int responseCode, Intent data) {
-        if (requestCode == PaymentButton.REQUEST_CODE) {
+        if (responseCode == RESULT_OK && requestCode == PaymentButton.REQUEST_CODE) {
+            setProgressBarIndeterminateVisibility(true);
             mBraintree.onActivityResult(this, requestCode, responseCode, data);
+        } else {
+            setProgressBarIndeterminateVisibility(false);
         }
     }
 }

@@ -250,7 +250,6 @@ public class BraintreeApi {
             Activity activity)
             throws JSONException, ErrorWithResponse, BraintreeException {
 
-        String clientId = PayPalOneTouchCore.getClientMetadataId(activity);
         String returnUri =
                 PayPal.buildPayPalCheckoutConfiguration(null, activity, mConfiguration)
                         .getSuccessUrl();
@@ -278,7 +277,7 @@ public class BraintreeApi {
                 .put("return_url", returnUri)
                 .put("cancel_url", cancelUri)
                 .put("experience_profile", experienceProfile)
-                .put("correlation_id", clientId);
+                .put("correlation_id", ""); // don't send clientMetadataId when creating the payment resource
 
         if (checkout.getAddressOverride() && checkout.getShippingAddress() != null) {
             parameters.put("line1", checkout.getShippingAddress().getStreetAddress());

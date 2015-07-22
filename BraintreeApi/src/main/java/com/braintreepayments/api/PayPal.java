@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.models.ClientToken;
@@ -38,6 +39,7 @@ public class PayPal {
 
     protected static boolean sEnableSignatureVerification = true;
     private static Request sPendingRequest;
+    private static PerformRequestStatus sPendingRequestStatus;
 
     private PayPal() {
         throw new IllegalStateException("Non-instantiable class.");
@@ -59,7 +61,7 @@ public class PayPal {
             }
         }
 
-        return PayPalOneTouchCore.performRequest(activity,
+        sPendingRequestStatus =  PayPalOneTouchCore.performRequest(activity,
                 sPendingRequest,
                 requestCode,
                 sEnableSignatureVerification,
@@ -76,6 +78,7 @@ public class PayPal {
 
                     }
                 });
+        return sPendingRequestStatus;
     }
 
     /**
@@ -91,7 +94,7 @@ public class PayPal {
                 buildPayPalCheckoutConfiguration(payPalPaymentResource.getRedirectUrl(), activity,
                         configuration);
 
-        return PayPalOneTouchCore.performRequest(activity,
+        sPendingRequestStatus = PayPalOneTouchCore.performRequest(activity,
                 sPendingRequest,
                 requestCode,
                 sEnableSignatureVerification,
@@ -109,6 +112,7 @@ public class PayPal {
 
                     }
                 });
+        return sPendingRequestStatus;
     }
 
     /**
@@ -130,7 +134,7 @@ public class PayPal {
         }
 
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
-                .correlationId(PayPalOneTouchCore.getClientMetadataId(context));
+                .correlationId(sPendingRequestStatus.getClientMetadataId());
 
         Result result = getResultFromActivity(context, resultCode, intent);
         if (intent.hasExtra(PayPalOneTouchActivity.EXTRA_ONE_TOUCH_RESULT)) {
@@ -225,7 +229,11 @@ public class PayPal {
 
         validatePayPalConfiguration(configuration);
 
-        return populateCommonData(new CheckoutRequest(context), context, configuration)
+        String pairingId = null;
+        if (approvalUrl != null) {
+            pairingId = Uri.parse(approvalUrl).getQueryParameter("token");
+        }
+        return populateCommonData(new CheckoutRequest(pairingId), context, configuration)
                 .approvalURL(approvalUrl);
     }
 

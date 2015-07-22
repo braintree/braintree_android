@@ -1,5 +1,12 @@
 # Braintree Android SDK Release Notes
 
+## 1.6.4
+
+* Update PayPal SDK to 2.9.8
+* Improvements
+  * Follow Android convention around button and text casing in Drop-in
+  * Update android-card-form to [2.0.1](https://github.com/braintree/android-card-form/blob/master/CHANGELOG.md#201)
+
 ## 1.6.3
 
 * Improvements
