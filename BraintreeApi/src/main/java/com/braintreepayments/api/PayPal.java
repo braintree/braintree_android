@@ -210,7 +210,7 @@ public class PayPal {
      * Check if the current/last request was a CheckoutRequest
      */
     public static Boolean isCheckoutRequest() {
-        return sPendingRequest != null && sPendingRequest.getClass() == CheckoutRequest.class;
+        return sPendingRequest != null && sPendingRequest instanceof CheckoutRequest;
     }
 
     /**

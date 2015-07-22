@@ -8,14 +8,11 @@ import org.json.JSONObject;
  *
  * Currently used by checkoutWithPayPal to create a payment before the user authorizes it.
  */
-
 public class PayPalPaymentResource {
-
 
     private String redirectUrl;
 
     public PayPalPaymentResource() {}
-
 
     public PayPalPaymentResource redirectUrl(String redirectUrl) {
         this.redirectUrl = redirectUrl;
@@ -42,5 +39,4 @@ public class PayPalPaymentResource {
 
         return payPalPaymentResource;
     }
-
 }

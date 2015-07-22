@@ -51,7 +51,7 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
      * @return {@link com.braintreepayments.api.models.PayPalAccountBuilder}
      */
     public PayPalAccountBuilder correlationId(String correlationId) {
-        this.mCorrelationId = correlationId;
+        mCorrelationId = correlationId;
         return this;
     }
 
@@ -113,7 +113,9 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
     }
 
     @Override
-    public String getApiPath() { return "paypal_accounts"; }
+    public String getApiPath() {
+        return "paypal_accounts";
+    }
 
     @Override
     public String getApiResource() {

@@ -22,7 +22,7 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodCrea
 
     private PaymentButton mPaymentButton;
 
-   protected void onCreate(Bundle onSaveInstanceState) {
+    protected void onCreate(Bundle onSaveInstanceState) {
         super.onCreate(onSaveInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.payment_button);
@@ -57,10 +57,6 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodCrea
             setResult(RESULT_FIRST_USER, intent);
             finish();
         }
-    }
-
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     @Override

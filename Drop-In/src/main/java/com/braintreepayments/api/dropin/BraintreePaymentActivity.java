@@ -244,6 +244,7 @@ public class BraintreePaymentActivity extends Activity implements
         mSelectPaymentMethodViewController.onPaymentMethodSelected(0);
     }
 
+    // Used by tests such as testFinishesActivityWithErrorIfANonCreditCardErrorIsReturned and others
     public Braintree getBraintree() {
         return mBraintree;
     }

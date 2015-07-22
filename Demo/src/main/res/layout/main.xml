@@ -36,10 +36,11 @@
         android:onClick="launchCustom"
         android:enabled="false" />
 
-    <Button android:id="@+id/checkout" android:layout_width="match_parent"
+    <Button
+        android:id="@+id/checkout" android:layout_width="match_parent"
         android:layout_height="wrap_content" android:text="@string/paypal_checkout"
-        android:onClick="launchCheckout" android:enabled="false"
-        />
+        android:onClick="launchCheckout" android:enabled="false" />
+
     <Button
         android:id="@+id/create_transaction"
         android:layout_width="match_parent"

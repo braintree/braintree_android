@@ -31,7 +31,6 @@ public class PayPalCheckout {
      * determined by setCurrencyCode). For example, "1.20" corresponds to one dollar and twenty cents.
      */
     public PayPalCheckout(BigDecimal amount) {
-        super();
         this.amount = amount;
         this.enableShippingAddress = true;
         this.addressOverride = false;

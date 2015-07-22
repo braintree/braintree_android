@@ -32,7 +32,6 @@ public class PayPalAccount extends PaymentMethod implements Parcelable, Serializ
     private String mPhone;
     private String mEmail;
 
-
     public PayPalAccount() {}
 
     protected void setEmail(String email) {

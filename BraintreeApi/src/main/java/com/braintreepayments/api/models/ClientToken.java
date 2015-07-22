@@ -17,20 +17,23 @@ public class ClientToken {
 
     @SerializedName("configUrl") private String mConfigUrl;
     @SerializedName("authorizationFingerprint") private String mAuthorizationFingerprint;
+
+    // Used by buildPayPalAuthorizationConfiguration because
+    // Future Payments browser switch requires client token.
     private String mOriginalValue;
 
     /**
-     * Create a new {@link ClientToken} instance from a client token
+     * Create a new {@link ClientToken} instance from a client token.
      *
-     * @param _clientToken A client token from the Braintree Gateway
+     * @param clientTokenString A client token from the Braintree Gateway
      * @return {@link ClientToken} instance
      */
-    public static ClientToken fromString(String _clientToken) {
-        if (BASE_64_PATTERN.matcher(_clientToken).matches()) {
-            _clientToken = new String(Base64.decode(_clientToken, Base64.DEFAULT));
+    public static ClientToken fromString(String clientTokenString) {
+        if (BASE_64_PATTERN.matcher(clientTokenString).matches()) {
+            clientTokenString = new String(Base64.decode(clientTokenString, Base64.DEFAULT));
         }
-        ClientToken clientToken = new Gson().fromJson(_clientToken, ClientToken.class);
-        clientToken.mOriginalValue = _clientToken;
+        ClientToken clientToken = new Gson().fromJson(clientTokenString, ClientToken.class);
+        clientToken.mOriginalValue = clientTokenString;
         return clientToken;
     }
 
@@ -42,14 +45,14 @@ public class ClientToken {
     }
 
     /**
-     * @return The authorizationFingerprint for the current session
+     * @return The authorizationFingerprint for the current session.
      */
     public String getAuthorizationFingerprint() {
         return mAuthorizationFingerprint;
     }
 
     /**
-     * @return The original client token string
+     * @return The original client token string.
      */
     public String getOriginalValue() {
         return mOriginalValue;

@@ -173,7 +173,6 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
         mBraintree.startCheckoutWithPayPal(MainActivity.this, PAYPAL_CHECKOUT_REQUEST, checkout);
     }
 
-
     public void createTransaction(View v) {
         Intent intent = new Intent(this, FinishedActivity.class)
                 .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, mNonce);
