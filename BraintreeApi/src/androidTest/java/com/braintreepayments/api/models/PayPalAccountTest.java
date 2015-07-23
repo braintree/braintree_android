@@ -36,6 +36,20 @@ public class PayPalAccountTest extends AndroidTestCase {
         assertEquals("US", payPalAccount.getBillingAddress().getCountryCodeAlpha2());
     }
 
+    public void testPayPalParsesEmailNestedInDetailsFromJson() {
+        String paypalString = FixturesHelper.stringFromFixture(getContext(),
+                "payment_methods/paypal.json");
+        PayPalAccount payPalAccount = PayPalAccount.fromJson(paypalString);
+        assertEquals("paypalaccount@example.com", payPalAccount.getEmail());
+    }
+
+    public void testPayPalParsesEmailNestedInPayerInfoFromJson() {
+        String paypalString = FixturesHelper.stringFromFixture(getContext(),
+                "payment_methods/paypal_email_nested_in_payer_info.json");
+        PayPalAccount payPalAccount = PayPalAccount.fromJson(paypalString);
+        assertEquals("paypal_email_nested_in_payer_info@example.com", payPalAccount.getEmail());
+    }
+
     public void testGetEmailReturnsEmptyStringIfDetailsIsNull() {
         PayPalAccount payPalAccount = new PayPalAccount();
         assertEquals("", payPalAccount.getEmail());

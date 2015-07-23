@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.dropin.R;
 import com.google.android.gms.wallet.Cart;
 

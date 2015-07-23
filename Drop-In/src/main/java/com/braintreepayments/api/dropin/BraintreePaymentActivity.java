@@ -189,7 +189,7 @@ public class BraintreePaymentActivity extends Activity implements
             }
         } else {
             if (resultCode == RESULT_CANCELED) {
-                mBraintree.sendAnalyticsEvent("add-paypal.user-canceled");
+                //do nothing
             }
             if (requestCode == PaymentButton.REQUEST_CODE) {
                 showAddPaymentMethodView();
@@ -231,7 +231,6 @@ public class BraintreePaymentActivity extends Activity implements
                 }, 1, TimeUnit.SECONDS);
             }
         } else if (paymentMethod instanceof PayPalAccount) {
-            mBraintree.sendAnalyticsEvent("add-paypal.success");
             finishCreate();
         } else if (paymentMethod instanceof AndroidPayCard) {
             mBraintree.sendAnalyticsEvent("add-android-pay.success");
@@ -242,6 +241,12 @@ public class BraintreePaymentActivity extends Activity implements
     private void finishCreate() {
         mAddPaymentMethodViewController.endSubmit();
         initSelectPaymentMethodView();
+        mSelectPaymentMethodViewController.onPaymentMethodSelected(0);
+    }
+
+    // Used by tests such as testFinishesActivityWithErrorIfANonCreditCardErrorIsReturned and others
+    public Braintree getBraintree() {
+        return mBraintree;
     }
 
     @Override
@@ -312,6 +317,8 @@ public class BraintreePaymentActivity extends Activity implements
         if (mSelectPaymentMethodViewController == null) {
             mSelectPaymentMethodViewController = new SelectPaymentMethodViewController(this,
                     mSavedInstanceState, selectMethodView, mBraintree, mCustomization);
+        } else {
+            mSelectPaymentMethodViewController.setPaymentMethodToActive();
         }
 
         setActionBarUpEnabled(false);

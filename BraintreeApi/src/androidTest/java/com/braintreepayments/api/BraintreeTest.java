@@ -2,7 +2,10 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcel;
 import android.os.SystemClock;
 import android.test.AndroidTestCase;
@@ -28,8 +31,10 @@ import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.WalletConstants;
 import com.google.gson.JsonSyntaxException;
-import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
-import com.paypal.android.sdk.payments.PayPalProfileSharingActivity;
+import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
+import com.paypal.android.sdk.onetouch.core.PayPalOneTouchActivity;
+import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
+import com.paypal.android.sdk.onetouch.core.Result;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,6 +54,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -268,85 +274,74 @@ public class BraintreeTest extends AndroidTestCase {
         assertTrue(wasCalled.get());
     }
 
-    public void testPayPalConfigurationExceptionPostsToOnUnrecoverableError()
-            throws BraintreeException, InterruptedException, ErrorWithResponse {
-        Intent intent = new Intent();
-        BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        when(braintreeApi.handlePayPalResponse(any(Activity.class), eq(PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID), eq(intent)))
-                .thenThrow(new ConfigurationException("Test"));
-
-        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
-
-        final AtomicBoolean wasCalled = new AtomicBoolean(false);
-        braintree.addListener(new SimpleListener() {
-            @Override
-            public void onUnrecoverableError(Throwable error) {
-                assertTrue(error != null);
-                wasCalled.set(true);
-            }
-        });
-
-        braintree.finishPayWithPayPal(null, PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID,
-                intent);
-        SystemClock.sleep(50);
-        assertTrue(wasCalled.get());
-
-        wasCalled.set(false);
-        braintree.handlePayPalResponse(null, PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID,
-                intent);
-        SystemClock.sleep(50);
-        assertTrue(wasCalled.get());
-    }
-
-    public void testStartPayWithPayPalSendsAnalyticsEvent() {
+    public void testStartPayWithPayPalSendsFailAnalyticsEventWhenActivityIsNull() {
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
 
         Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
         braintree.startPayWithPayPal(null, 1);
         SystemClock.sleep(50);
-        verify(braintreeApi).sendAnalyticsEvent("custom.android.add-paypal.start", "custom");
+        verify(braintreeApi).sendAnalyticsEvent("custom.android.paypal-future-payments.none.initiate.failed", "custom");
     }
 
-    public void testFinishPayWithPayPalDoesNothingOnNullBuilder() throws ConfigurationException {
-        Intent intent = new Intent();
-        BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        when(braintreeApi.handlePayPalResponse(any(Activity.class), eq(PayPalFuturePaymentActivity.RESULT_CANCELED), eq(intent))).
-                thenReturn(null);
+    public void pendFinishPayWithPayPalSendsAnalyticsForErrorResult() throws ConfigurationException {
 
-        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
-
-        final AtomicBoolean listenerWasCalled = new AtomicBoolean(false);
-        braintree.addListener(new SimpleListener() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
-            public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
-                listenerWasCalled.set(true);
-            }
+            public void run() {
 
-            @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                listenerWasCalled.set(true);
-            }
 
-            @Override
-            public void onPaymentMethodNonce(String paymentMethodNonce) {
-                listenerWasCalled.set(true);
-            }
+                try {
+                    Intent intent = new Intent();
 
-            @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                listenerWasCalled.set(true);
-            }
+                    Result errorResult = PayPalOneTouchCore.handleBrowserResponse(getContext(),
+                            Uri.parse("http://www.google.com"), new AuthorizationRequest(getContext()));
 
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
-                listenerWasCalled.set(true);
+                    when(PayPal.getResultFromActivity((Activity) isNull(), eq(Activity.RESULT_OK),
+                            any(Intent.class))).thenReturn(errorResult);
+
+                    BraintreeApi braintreeApi = mock(BraintreeApi.class);
+                    when(braintreeApi.handlePayPalResponse((Activity) isNull(), eq(Activity.RESULT_OK), any(Intent.class))).
+                            thenReturn(null);
+
+                    Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
+
+                    final AtomicBoolean listenerWasCalled = new AtomicBoolean(false);
+                    braintree.addListener(new SimpleListener() {
+                        @Override
+                        public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
+                            listenerWasCalled.set(true);
+                        }
+
+                        @Override
+                        public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+                            listenerWasCalled.set(true);
+                        }
+
+                        @Override
+                        public void onPaymentMethodNonce(String paymentMethodNonce) {
+                            listenerWasCalled.set(true);
+                        }
+
+                        @Override
+                        public void onUnrecoverableError(Throwable throwable) {
+                            listenerWasCalled.set(true);
+                        }
+
+                        @Override
+                        public void onRecoverableError(ErrorWithResponse error) {
+                            listenerWasCalled.set(true);
+                        }
+                    });
+
+                    braintree.finishPayWithPayPal(null, Activity.RESULT_OK, intent);
+                    SystemClock.sleep(50);
+
+                    assertFalse("Expected no listeners to fire but one did fire", listenerWasCalled.get());
+                    verify(braintreeApi).sendAnalyticsEvent("custom.android.paypal-future-payments.appswitch.failed", "custom");
+
+                } catch (ConfigurationException ignored) {}
             }
         });
-
-        braintree.finishPayWithPayPal(null, PayPalFuturePaymentActivity.RESULT_CANCELED, intent);
-        SystemClock.sleep(50);
-
-        assertFalse("Expected no listeners to fire but one did fire", listenerWasCalled.get());
     }
 
     public void testStartPayWithVenmoSendsAnalyticsEvent() {
@@ -487,7 +482,7 @@ public class BraintreeTest extends AndroidTestCase {
     }
 
     public void testStartThreeDSecureVerificationPostsPaymentMethodToListenersWhenLookupReturnsACard()
-            throws InterruptedException, ErrorWithResponse, BraintreeException {
+            throws InterruptedException, ErrorWithResponse, BraintreeException, JSONException {
         String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
         BraintreeApi braintreeApi = new BraintreeApi(getContext(), clientToken);
         Braintree braintree = new Braintree(clientToken, braintreeApi);
@@ -918,7 +913,7 @@ public class BraintreeTest extends AndroidTestCase {
                 any(Intent.class));
         int requestCode = 10;
         int responseCode = Activity.RESULT_OK;
-        Intent intent = new Intent().putExtra(PayPalProfileSharingActivity.EXTRA_RESULT_AUTHORIZATION, "");
+        Intent intent = new Intent().putExtra(PayPalOneTouchActivity.EXTRA_ONE_TOUCH_RESULT, "");
 
         braintree.onActivityResult(null, requestCode, responseCode, intent);
 

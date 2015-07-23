@@ -9,11 +9,11 @@ import android.view.Window;
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
+import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.view.PaymentButton;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.google.android.gms.wallet.Cart;
-import com.paypal.android.sdk.payments.PayPalOAuthScopes;
 
 import java.util.Collections;
 
@@ -48,7 +48,7 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodCrea
             boolean payPalAddressScopeRequested = getIntent().getBooleanExtra("payPalAddressScopeRequested", false);
             if (payPalAddressScopeRequested) {
                 mPaymentButton.setAdditionalPayPalScopes(
-                        Collections.singletonList(PayPalOAuthScopes.PAYPAL_SCOPE_ADDRESS));
+                        Collections.singletonList(PayPal.SCOPE_ADDRESS));
             }
             mPaymentButton.initialize(this, braintree);
         } else {

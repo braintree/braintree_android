@@ -11,16 +11,9 @@
         <activity android:name="com.braintreepayments.api.dropin.BraintreePaymentActivity" />
 
         <activity android:name="com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity" />
-
-        <activity android:name="com.paypal.android.sdk.payments.PayPalProfileSharingActivity" />
-        <activity android:name="com.paypal.android.sdk.payments.ProfileSharingConsentActivity" />
-        <activity android:name="com.paypal.android.sdk.payments.FuturePaymentInfoActivity" />
-        <activity android:name="com.paypal.android.sdk.payments.LoginActivity" />
-        <activity android:name="com.paypal.android.sdk.payments.PayPalTouchActivity"
+        <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity" />
+        <activity android:name="com.paypal.android.sdk.onetouch.core.PayPalOneTouchActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-
-        <service android:name="com.paypal.android.sdk.payments.PayPalService"
-            android:exported="false" />
     </application>
 
 </manifest>

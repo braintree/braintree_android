@@ -5,8 +5,9 @@ import android.test.AndroidTestCase;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.PayPalAccount;
-import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
+
+import org.json.JSONException;
 
 public class AddPaypalAccountTest extends AndroidTestCase {
 
@@ -17,19 +18,17 @@ public class AddPaypalAccountTest extends AndroidTestCase {
         mBraintreeApi = new BraintreeApi(getContext(), new TestClientTokenBuilder().withFakePayPal().build());
     }
 
-    public void testCanAddPayPalAccount() throws ErrorWithResponse, BraintreeException {
-        PayPalAccountBuilder builder = new PayPalAccountBuilder()
-                .authorizationCode("test-authorization-code");
+    public void testCanAddPayPalAccount()
+            throws ErrorWithResponse, BraintreeException, JSONException {
 
-        PayPalAccount account = mBraintreeApi.create(builder);
+        PayPalAccount account = mBraintreeApi.create(TestUtils.fakePayPalAccountBuilder().validate(true));
 
         assertNotNull(account.getNonce());
     }
 
-    public void testCanTokenizePayPalAccount() throws ErrorWithResponse, BraintreeException {
-        PayPalAccountBuilder builder = new PayPalAccountBuilder();
-
-        String nonce = mBraintreeApi.tokenize(builder);
+    public void testCanTokenizePayPalAccount()
+            throws ErrorWithResponse, BraintreeException, JSONException {
+        String nonce = mBraintreeApi.tokenize(TestUtils.fakePayPalAccountBuilder());
 
         assertNotNull(nonce);
     }

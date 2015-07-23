@@ -34,19 +34,25 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.google.android.gms.wallet.Cart;
+import com.google.android.gms.wallet.LineItem;
+import com.braintreepayments.api.PayPalCheckout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import java.math.BigDecimal;
 
 import java.io.IOException;
 
 public class MainActivity extends Activity implements PaymentMethodCreatedListener, ErrorListener,
-        OnNavigationListener {
+    OnNavigationListener {
 
     private static final int DROP_IN_REQUEST = 100;
     private static final int PAYMENT_BUTTON_REQUEST = 200;
     private static final int CUSTOM_REQUEST = 300;
     private static final int THREE_D_SECURE_REQUEST = 400;
+    private static final int PAYPAL_CHECKOUT_REQUEST = 500;
+
 
     /**
      * Keys to store state on config changes.
@@ -66,6 +72,7 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     private Button mDropInButton;
     private Button mPaymentButtonButton;
     private Button mCustomButton;
+    private Button mCheckoutButton;
     private Button mCreateTransactionButton;
     private ProgressDialog mLoading;
 
@@ -86,6 +93,7 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
         mDropInButton = (Button) findViewById(R.id.drop_in);
         mPaymentButtonButton = (Button) findViewById(R.id.payment_button);
         mCustomButton = (Button) findViewById(R.id.custom);
+        mCheckoutButton = (Button) findViewById(R.id.checkout);
         mCreateTransactionButton = (Button) findViewById(R.id.create_transaction);
 
         if (savedInstanceState != null) {
@@ -158,6 +166,11 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
                 .putExtra("payPalAddressScopeRequested", Settings.isPayPalAddressScopeRequested(this));
 
         startActivityForResult(intent, CUSTOM_REQUEST);
+    }
+
+    public void launchCheckout(View v) {
+        PayPalCheckout checkout = new PayPalCheckout(BigDecimal.ONE);
+        mBraintree.startCheckoutWithPayPal(MainActivity.this, PAYPAL_CHECKOUT_REQUEST, checkout);
     }
 
     public void createTransaction(View v) {
@@ -321,6 +334,7 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
         mDropInButton.setEnabled(enable);
         mPaymentButtonButton.setEnabled(enable);
         mCustomButton.setEnabled(enable);
+        mCheckoutButton.setEnabled(enable);
     }
 
     private void safelyCloseLoadingView() {

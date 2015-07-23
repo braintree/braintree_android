@@ -9,13 +9,19 @@ import org.json.JSONObject;
 
 public class PayPalAccountBuilderTest extends TestCase {
 
-    private static final String PAYPAL_KEY = "paypalAccount";
+    private static final String PAYPAL_KEY = "paypal_account";
 
     public void testBuildsAPayPalAccountCorrectly() throws JSONException {
+        JSONObject otcResponse = new JSONObject(
+                "{\"client\":{\"environment\":\"OneTouchCore-Android\",\"paypal_sdk_version\":" +
+                        "\"1.0.4\",\"platform\":\"Android\",\"product_name\":\"OneTouchCore-Android\"}," +
+                        "\"response\":{\"code\":\"test_auth_code\"},\"response_type\":\"code\"," +
+                        "\"user\":{\"display_string\":\"test_email\"}}");
+
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
                 .email("test_email")
                 .correlationId("correlation_id")
-                .authorizationCode("test_auth_code")
+                .OtcResponse(otcResponse)
                 .source("paypal-sdk");
 
         JSONObject json = new JSONObject(paypalAccountBuilder.toJsonString());
@@ -23,17 +29,26 @@ public class PayPalAccountBuilderTest extends TestCase {
         JSONObject jsonMetadata = json.getJSONObject(Builder.METADATA_KEY);
 
         assertNull(jsonAccount.opt("details"));
-        assertEquals("test_auth_code", jsonAccount.getString("consentCode"));
-        assertEquals("correlation_id", jsonAccount.getString("correlationId"));
+        assertEquals("test_auth_code", jsonAccount.getJSONObject("response").getString("code"));
+        assertEquals("correlation_id", json.getString("correlation_id"));
         assertEquals("custom", jsonMetadata.getString("integration"));
         assertEquals("paypal-sdk", jsonMetadata.getString("source"));
     }
 
     public void testUsesCorrectInfoForMetadata() throws JSONException {
-        PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder()
+        JSONObject otcResponse = new JSONObject(
+                "{\"client\":{\"environment\":\"OneTouchCore-Android\",\"paypal_sdk_version\":" +
+                        "\"1.0.4\",\"platform\":\"Android\",\"product_name\":\"OneTouchCore-Android\"}," +
+                        "\"response\":{\"code\":\"test_auth_code\"},\"response_type\":\"code\"," +
+                        "\"user\":{\"display_string\":\"test_email\"}}");
+
+        PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
+                .email("test_email")
+                .correlationId("correlation_id")
+                .OtcResponse(otcResponse)
                 .source("paypal-app");
 
-        JSONObject metadata = new JSONObject(payPalAccountBuilder.toJsonString()).getJSONObject(
+        JSONObject metadata = new JSONObject(paypalAccountBuilder.toJsonString()).getJSONObject(
                 Builder.METADATA_KEY);
 
         assertEquals("custom", metadata.getString("integration"));
@@ -41,28 +56,35 @@ public class PayPalAccountBuilderTest extends TestCase {
     }
 
     public void testSetsIntegrationMethod() throws JSONException {
-        PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder().integration("test-integration");
+        JSONObject otcResponse = new JSONObject(
+                "{\"client\":{\"environment\":\"OneTouchCore-Android\",\"paypal_sdk_version\":" +
+                        "\"1.0.4\",\"platform\":\"Android\",\"product_name\":\"OneTouchCore-Android\"}," +
+                        "\"response\":{\"code\":\"test_auth_code\"},\"response_type\":\"code\"," +
+                        "\"user\":{\"display_string\":\"test_email\"}}");
 
-        JSONObject metadata = new JSONObject(payPalAccountBuilder.toJsonString()).getJSONObject(Builder.METADATA_KEY);
+        PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
+                .integration("test-integration")
+                .email("test_email")
+                .correlationId("correlation_id")
+                .OtcResponse(otcResponse)
+                .source("paypal-sdk");
+
+        JSONObject metadata = new JSONObject(paypalAccountBuilder.toJsonString())
+                .getJSONObject(Builder.METADATA_KEY);
 
         assertEquals("test-integration", metadata.getString("integration"));
     }
 
     public void testIncludesValidateOptionWhenSet() throws JSONException {
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
+                .OtcResponse(new JSONObject())
                 .validate(true);
 
-        JSONObject builtAccount = new JSONObject(paypalAccountBuilder.toJsonString()).getJSONObject(PAYPAL_KEY);
+        JSONObject builtAccount =
+                new JSONObject(paypalAccountBuilder.toJsonString()).getJSONObject(PAYPAL_KEY);
 
         assertEquals(true, builtAccount.getJSONObject("options").getBoolean("validate"));
     }
 
-    public void testDoesNotIncludeEmptyObjectsWhenSerializing() throws JSONException {
-        PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder();
-
-        JSONObject builtAccount = new JSONObject(payPalAccountBuilder.toJsonString()).getJSONObject(PAYPAL_KEY);
-
-        assertFalse(builtAccount.keys().hasNext());
-    }
 
 }

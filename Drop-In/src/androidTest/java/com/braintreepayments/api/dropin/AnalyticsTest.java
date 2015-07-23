@@ -1,6 +1,7 @@
 package com.braintreepayments.api.dropin;
 
 import android.app.Activity;
+import android.os.SystemClock;
 import android.view.KeyEvent;
 
 import com.braintreepayments.api.Braintree;
@@ -9,6 +10,8 @@ import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
 import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
+
+import org.json.JSONException;
 
 import java.util.Map;
 
@@ -21,7 +24,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static com.braintreepayments.api.BraintreeTestUtils.setClientTokenExtraForTest;
 import static com.braintreepayments.api.TestDependencyInjector.injectBraintree;
 import static com.braintreepayments.api.TestDependencyInjector.injectSlowNonSetupBraintree;
-import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.CardNumber.VISA;
@@ -87,17 +89,15 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
     public void testAddsEventOnAddPayPalStarted() {
         setupActivity();
         onView(withId(R.id.bt_paypal_button)).perform(click());
-        waitForView(withHint("Email"));
         sendKeys(KeyEvent.KEYCODE_BACK);
-
-        verify(mBraintree, times(1)).sendAnalyticsEvent("add-paypal.start");
+        verify(mBraintree, times(1)).sendAnalyticsEvent("paypal-future-payments.webswitch.initiate.started");
     }
 
-    public void testAddsEventOnAddPayPalSucceeded() {
+    public void testAddsEventOnAddPayPalSucceeded() throws JSONException {
         setupActivity();
-        performPayPalAdd();
-
-        verify(mBraintree, times(1)).sendAnalyticsEvent("add-paypal.success");
+        mBraintree.create(BraintreeTestUtils.fakePayPalAccountBuilder());
+        SystemClock.sleep(3000); // This timer is to allow the request to complete
+        verify(mBraintree, times(1)).sendAnalyticsEvent("paypal-future-payments.tokenize.succeeded");
     }
 
     public void testAddsEventOnSDKExitWithSuccess() {

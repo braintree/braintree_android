@@ -16,13 +16,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.braintreepayments.api.BraintreeApi;
+import com.braintreepayments.api.BraintreeTestUtils;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
-import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
+
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.Map;
@@ -41,6 +43,7 @@ import static com.braintreepayments.api.TestDependencyInjector.injectBraintree;
 import static com.braintreepayments.api.TestDependencyInjector.injectSlowBraintree;
 import static com.braintreepayments.api.utils.Assertions.assertSelectedPaymentMethodIs;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.onAddPaymentFormHeader;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodList;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
@@ -190,6 +193,19 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         assertTrue(expected.sameAs(actual));
     }
 
+    public void testSetsCreatedPaymentMethodAsSelectedPaymentMethod()
+            throws IOException, ErrorWithResponse {
+        getActivity();
+        waitForPaymentMethodList();
+
+        assertSelectedPaymentMethodIs(R.string.bt_descriptor_visa);
+
+        onView(withText(R.string.bt_add_payment_method)).perform(click());
+        performPayPalAdd();
+
+        assertSelectedPaymentMethodIs(R.string.bt_descriptor_paypal);
+    }
+
     public void testChangePaymentMethodShowsChooserDialog() throws IOException, ErrorWithResponse {
         createAmex();
         getActivity();
@@ -200,10 +216,12 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         onView(withText("Choose Payment Method")).check(matches(isDisplayed()));
     }
 
-    public void testShowsAllPaymentMethodsInDialog() throws IOException, ErrorWithResponse {
+    public void testShowsAllPaymentMethodsInDialog() throws IOException, ErrorWithResponse,
+            JSONException {
         createAmex();
         SystemClock.sleep(1000);
-        mBraintreeApi.create(new PayPalAccountBuilder().authorizationCode("fake_auth_code"));
+
+        mBraintreeApi.create(BraintreeTestUtils.fakePayPalAccountBuilder().validate(true));
         getActivity();
 
         waitForPaymentMethodList();

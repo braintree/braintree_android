@@ -14,6 +14,7 @@ public class PayPalConfiguration {
     @SerializedName("directBaseUrl") private String mDirectBaseUrl;
     @SerializedName("environment") private String mEnvironment;
     @SerializedName("touchDisabled") private boolean mTouchDisabled;
+    @SerializedName("currencyIsoCode") private String mCurrencyIsoCode;
 
     /**
      * @return the PayPal app display name.
@@ -63,4 +64,9 @@ public class PayPalConfiguration {
     public boolean getTouchDisabled() {
         return mTouchDisabled;
     }
+
+    /**
+     * @return the PayPal currency code.
+     */
+    public String getCurrencyIsoCode() { return mCurrencyIsoCode; }
 }

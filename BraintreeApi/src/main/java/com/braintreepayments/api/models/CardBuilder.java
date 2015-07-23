@@ -168,16 +168,12 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
     }
 
     @Override
-    public Map<String, Object> toJson() {
-        HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("creditCard", build());
-        params.put(PaymentMethod.Builder.METADATA_KEY, new Metadata(mIntegration, mSource));
-        return params;
-    }
-
-    @Override
     public String toJsonString() {
-        return new Gson().toJson(toJson());
+        HashMap<String, Object> cardJson = new HashMap<>();
+        cardJson.put("creditCard", build());
+        cardJson.put(PaymentMethod.Builder.METADATA_KEY, new Metadata(mIntegration, mSource));
+
+        return new Gson().toJson(cardJson);
     }
 
     @Override
