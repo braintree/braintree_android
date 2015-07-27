@@ -368,5 +368,4 @@ import java.io.UnsupportedEncodingException;
             throw new BraintreeSslException(e);
         }
     }
-
 }

@@ -10,20 +10,23 @@ import com.braintreepayments.testutils.TestClientTokenBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class BraintreeApiWithActivityTest extends ActivityInstrumentationTestCase2<TestActivity> {
+import static com.braintreepayments.api.BraintreeTestUtils.getBraintree;
 
-    public BraintreeApiWithActivityTest() {
+public class BraintreeWithActivityTest extends ActivityInstrumentationTestCase2<TestActivity> {
+
+    public BraintreeWithActivityTest() {
         super(TestActivity.class);
     }
 
-    public void testCollectDeviceDataIncludesPayPalCorrelationId() throws JSONException {
-        BraintreeApi braintreeApi = new BraintreeApi(getInstrumentation().getContext(), new TestClientTokenBuilder().build());
+    public void testCollectDeviceDataIncludesPayPalCorrelationId()
+            throws JSONException, InterruptedException {
+        Braintree braintree = getBraintree(getInstrumentation().getContext(),
+                new TestClientTokenBuilder().build());
         Activity activity = getActivity();
 
-        String deviceData = braintreeApi.collectDeviceData(activity, BraintreeEnvironment.QA);
+        String deviceData = braintree.collectDeviceData(activity, BraintreeEnvironment.QA);
 
         JSONObject json = new JSONObject(deviceData);
         assertNotNull(json.getString("correlation_id"));
     }
-
 }

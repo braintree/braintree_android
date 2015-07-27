@@ -1,18 +1,18 @@
 package com.braintreepayments.api.models;
 
+import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 
-@RunWith(JUnit4.class)
+@RunWith(AndroidJUnit4.class)
 public class PayPalAccountBuilderTest {
 
     private static final String PAYPAL_KEY = "paypalAccount";

@@ -121,8 +121,8 @@ public class BraintreePaymentActivity extends Activity implements
         if (mBraintree != null) {
             init();
         } else {
-            Braintree.setup(this, getClientToken(), this);
             showLoadingView();
+            Braintree.setup(this, getClientToken(), this);
         }
     }
 

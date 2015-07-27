@@ -5,7 +5,6 @@ import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 
 import com.braintreepayments.api.Braintree;
-import com.braintreepayments.api.BraintreeApi;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.CardBuilder;
@@ -20,8 +19,9 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static com.braintreepayments.api.BraintreeTestUtils.setClientTokenExtraForTest;
-import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
+import static com.braintreepayments.api.DropInTestUtils.create;
+import static com.braintreepayments.api.DropInTestUtils.setClientTokenExtraForTest;
+import static com.braintreepayments.api.DropInTestUtils.setUpActivityTest;
 import static com.braintreepayments.api.TestDependencyInjector.injectBraintree;
 import static com.braintreepayments.api.TestDependencyInjector.injectSlowBraintree;
 import static com.braintreepayments.api.utils.Assertions.assertSelectedPaymentMethodIs;
@@ -92,18 +92,18 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testAddPaymentViewIsResumedOnRotationWhenThereAreExistingPaymentMethods()
-            throws ErrorWithResponse, BraintreeException, JSONException {
+            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
         if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
             return;
         }
 
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         setUpActivityTest(this, clientToken);
-        BraintreeApi api = new BraintreeApi(mContext, clientToken);
-        api.create(new CardBuilder()
-                .cardNumber(VISA)
-                .expirationMonth("02")
-                .expirationYear("18"));
+        create(injectBraintree(mContext, clientToken),
+                new CardBuilder()
+                        .cardNumber(VISA)
+                        .expirationMonth("02")
+                        .expirationYear("18"));
 
         getActivity();
         waitForPaymentMethodList();
@@ -124,15 +124,15 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         }
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         setUpActivityTest(this, clientToken);
-        BraintreeApi api = new BraintreeApi(mContext, clientToken);
-        api.create(new CardBuilder()
+        Braintree braintree = injectBraintree(mContext, clientToken);
+        create(braintree, new CardBuilder()
                 .cardNumber(VISA)
                 .expirationMonth("02")
                 .expirationYear("18"));
 
         SystemClock.sleep(1000);
 
-        api.create(new CardBuilder()
+        create(braintree, new CardBuilder()
                 .cardNumber(AMEX)
                 .expirationMonth("02")
                 .expirationYear("18"));
@@ -236,7 +236,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         }
 
         String clientToken = new TestClientTokenBuilder().build();
-        injectSlowBraintree(mContext, clientToken, THREE_SECONDS);
+        injectSlowBraintree(mContext, clientToken, FOUR_SECONDS);
         setClientTokenExtraForTest(this, clientToken);
 
         getActivity();

@@ -7,21 +7,21 @@ import android.view.KeyEvent;
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.AuthorizationException;
-import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
+import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 import org.json.JSONException;
 
 import java.util.Map;
 
-import static com.braintreepayments.api.BraintreeTestUtils.postUnrecoverableErrorFromBraintree;
-import static com.braintreepayments.api.BraintreeTestUtils.setClientTokenExtraForTest;
-import static com.braintreepayments.api.BraintreeTestUtils.unexpectedExceptionThrowingApi;
+import static com.braintreepayments.api.DropInTestUtils.postUnrecoverableErrorFromBraintree;
+import static com.braintreepayments.api.DropInTestUtils.setBraintreeHttpClient;
+import static com.braintreepayments.api.DropInTestUtils.setClientTokenExtraForTest;
 import static com.braintreepayments.api.TestDependencyInjector.injectBraintree;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
@@ -33,10 +33,26 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
     private Braintree mBraintree;
     private BraintreePaymentActivity mActivity;
 
-    public void testReturnsServerErrorOnSetupException()
-            throws ErrorWithResponse, BraintreeException {
-        injectBraintree("test_client_token", unexpectedExceptionThrowingApi(mContext));
-        setClientTokenExtraForTest(this, "test_client_token");
+    public void testReturnsServerErrorOnSetupException() throws JSONException {
+        String clientToken = new TestClientTokenBuilder().build();
+        Braintree braintree = injectBraintree(mContext, clientToken, null);
+        setBraintreeHttpClient(braintree, new BraintreeHttpClient("") {
+            @Override
+            public void get(String path, HttpResponseCallback callback) {
+                if (callback != null) {
+                    callback.failure(new UnexpectedException("Mock HTTP request"));
+                }
+            }
+
+            @Override
+            public void post(String path, String data, HttpResponseCallback callback) {
+                if (callback != null) {
+                    callback.failure(new UnexpectedException("Mock HTTP request"));
+                }
+            }
+        });
+
+        setClientTokenExtraForTest(this, clientToken);
         mActivity = getActivity();
 
         waitForActivityToFinish(mActivity);
@@ -47,7 +63,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestCase {
         assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_ERROR,
                 result.get("resultCode"));
         assertTrue(exception instanceof UnexpectedException);
-        assertEquals("Mocked HTTP request", ((UnexpectedException) exception).getMessage());
+        assertEquals("Mock HTTP request", ((UnexpectedException) exception).getMessage());
     }
 
     public void testReturnsDeveloperErrorOnAuthenticationException() throws JSONException {

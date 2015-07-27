@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -11,24 +12,59 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
+import com.paypal.android.sdk.payments.PayPalProfileSharingActivity;
 import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PayPalTouchActivity;
 
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
+
+import java.util.Collections;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static com.braintreepayments.api.TestUtils.getConfigurationFromFixture;
+import static com.braintreepayments.api.BraintreeTestUtils.getConfigurationFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 @RunWith(AndroidJUnit4.class)
 public class PayPalTest {
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void startPayPalService_stopsAndStartsService() throws JSONException {
+        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
+                "configuration_with_offline_paypal.json");
+        Context context = mock(Context.class);
+
+        PayPal.startPaypalService(context, configuration.getPayPal());
+
+        InOrder order = inOrder(context);
+        order.verify(context).stopService(any(Intent.class));
+        order.verify(context).startService(any(Intent.class));
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void getLaunchIntent_returnsCorrectIntent() throws JSONException {
+        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
+                "configuration_with_offline_paypal.json");
+
+        Intent intent = PayPal.getLaunchIntent(getTargetContext(), configuration.getPayPal(),
+                Collections.singletonList("address"));
+
+        assertEquals(PayPalProfileSharingActivity.class.getName(), intent.getComponent().getClassName());
+        assertTrue(intent.hasExtra(PayPalTouchActivity.EXTRA_REQUESTED_SCOPES));
+        assertTrue(intent.hasExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION));
+    }
 
     @Test(timeout = 1000)
     @SmallTest

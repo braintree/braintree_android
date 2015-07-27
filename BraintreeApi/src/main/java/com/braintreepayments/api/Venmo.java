@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.support.annotation.Nullable;
 
 import com.braintreepayments.api.internal.SignatureVerification;
 import com.braintreepayments.api.models.Configuration;
@@ -42,6 +43,7 @@ public class Venmo {
      * @param data the {@link Intent} returned in {@link android.app.Activity#onActivityResult(int, int, Intent)}
      * @return the {@link String} nonce, or {@code null}.
      */
+    @Nullable
     protected static String handleAppSwitchResponse(Intent data) {
         if (data != null) {
             return data.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);

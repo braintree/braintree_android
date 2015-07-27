@@ -96,7 +96,7 @@ public abstract class PaymentMethodBuilder<T> {
         return "custom";
     }
 
-    public abstract <K extends PaymentMethod> K fromJsonResponse(String json) throws JSONException;
-
     public abstract String getApiPath();
+
+    public abstract String getResponsePaymentMethodType();
 }

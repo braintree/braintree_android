@@ -9,7 +9,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.braintreepayments.api.annotations.Beta;
-import com.braintreepayments.api.internal.HttpRequest;
+import com.braintreepayments.api.internal.BraintreeHttpClient;
 
 @Beta
 @SuppressLint("SetJavaScriptEnabled")
@@ -42,7 +42,7 @@ public class ThreeDSecureWebView extends WebView {
         setId(android.R.id.widget_frame);
 
         WebSettings settings = getSettings();
-        settings.setUserAgentString(HttpRequest.getUserAgent());
+        settings.setUserAgentString(BraintreeHttpClient.USER_AGENT);
         settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         settings.setSupportMultipleWindows(true);
         settings.setJavaScriptEnabled(true);

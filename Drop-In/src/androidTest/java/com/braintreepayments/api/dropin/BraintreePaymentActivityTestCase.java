@@ -12,7 +12,7 @@ import android.view.View;
 
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.PayPalTestSignatureVerification;
-import com.braintreepayments.api.internal.HttpRequest;
+import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.internal.VenmoTestSignatureVerification;
 import com.braintreepayments.testutils.ui.ViewHelper;
 
@@ -32,7 +32,7 @@ public class BraintreePaymentActivityTestCase extends
     @SuppressWarnings("deprecation")
     @Override
     public void setUp() throws Exception {
-        HttpRequest.DEBUG = true;
+        BraintreeHttpClient.DEBUG = true;
         PayPalTestSignatureVerification.disableAppSwitchSignatureVerification();
         VenmoTestSignatureVerification.disableSignatureVerification();
         setFailureHandler(new ScreenshotFailureHandler(getInstrumentation(), this));

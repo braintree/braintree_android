@@ -21,12 +21,6 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
         } catch (JSONException ignored) {}
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public <K extends PaymentMethod> K fromJsonResponse(String json) throws JSONException {
-        return (K) PayPalAccount.fromJson(json);
-    }
-
     /**
      * Used by PayPal wrappers to construct a request to create a PayPal account.
      *
@@ -59,6 +53,11 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
 
     @Override
     public String getApiPath() {
-        return "paypal_accounts";
+        return "payment_methods/paypal_accounts";
+    }
+
+    @Override
+    public String getResponsePaymentMethodType() {
+        return PayPalAccount.PAYMENT_METHOD_TYPE;
     }
 }

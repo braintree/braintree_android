@@ -7,15 +7,14 @@ import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.widget.Button;
 
-import com.braintreepayments.api.BraintreeApi;
+import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.dropin.view.LoadingHeader;
 import com.braintreepayments.api.dropin.view.LoadingHeader.HeaderState;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.internal.HttpRequest;
-import com.braintreepayments.api.internal.HttpResponse;
+import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Card;
-import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethod;
@@ -35,10 +34,9 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static com.braintreepayments.api.BraintreeTestUtils.getNotSetupBraintreeApi;
-import static com.braintreepayments.api.BraintreeTestUtils.setClientTokenExtraForTest;
-import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
-import static com.braintreepayments.api.BraintreeTestUtils.verifySetupCalledOnBraintreeApi;
+import static com.braintreepayments.api.DropInTestUtils.setBraintreeHttpClient;
+import static com.braintreepayments.api.DropInTestUtils.setClientTokenExtraForTest;
+import static com.braintreepayments.api.DropInTestUtils.setUpActivityTest;
 import static com.braintreepayments.api.TestDependencyInjector.injectBraintree;
 import static com.braintreepayments.api.TestDependencyInjector.injectSlowBraintree;
 import static com.braintreepayments.api.utils.Assertions.assertSelectedPaymentMethodIs;
@@ -63,9 +61,6 @@ import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
 import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
 import static org.hamcrest.CoreMatchers.not;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.spy;
 
 public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
@@ -108,31 +103,6 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         assertEquals(Activity.RESULT_OK, result.get("resultCode"));
         assertNotNull(response.getNonce());
         assertEquals("11", ((Card) response).getLastTwo());
-    }
-
-    public void testCreatesAPaymentMethodUsingConfigurationEndpoint()
-            throws ErrorWithResponse, BraintreeException, JSONException {
-        String clientToken = new TestClientTokenBuilder().build();
-        BraintreeApi braintreeApi = spy(getNotSetupBraintreeApi(mContext, clientToken));
-        injectBraintree(clientToken, braintreeApi);
-        setClientTokenExtraForTest(this, clientToken);
-        BraintreePaymentActivity activity = getActivity();
-
-        waitForAddPaymentFormHeader();
-        onView(withId(R.id.bt_card_form_card_number)).perform(typeText(VISA));
-        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("0619"));
-        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
-
-        waitForActivityToFinish(activity);
-
-        Map<String, Object> result = getActivityResult(activity);
-        PaymentMethod response = ((Intent) result.get("resultData"))
-                .getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
-
-        assertEquals(Activity.RESULT_OK, result.get("resultCode"));
-        assertNotNull(response.getNonce());
-        assertEquals("11", ((Card) response).getLastTwo());
-        verifySetupCalledOnBraintreeApi(braintreeApi);
     }
 
     public void testPayPalCreatesAPaymentMethodWithACustomer() throws JSONException {
@@ -182,11 +152,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         setUpActivityTest(this, clientToken);
         BraintreePaymentActivity activity = getActivity();
 
-        waitForAddPaymentFormHeader();
-        onView(withHint("Card Number")).perform(typeText(VISA));
-        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
-        onView(withHint("CVV")).perform(typeText("123"), closeSoftKeyboard());
-        onView(withHint("Postal Code")).perform(typeText("12345"));
+        fillInCardForm(mContext);
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
         Button submitButton = (Button) activity.findViewById(R.id.bt_card_form_submit_button);
@@ -229,16 +195,24 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testFinishesActivityWithErrorIfANonCreditCardErrorIsReturned()
-            throws ErrorWithResponse, BraintreeException, JSONException {
-        String clientToken = new TestClientTokenBuilder().withPayPal().build();
-        BraintreeApi braintreeApi = spy(new BraintreeApi(mContext, clientToken));
-        doThrow(new ErrorWithResponse(422, "{}")).when(braintreeApi)
-                .create(any(PaymentMethodBuilder.class));
-        injectBraintree(clientToken, braintreeApi);
+            throws JSONException {
+        String clientToken = new TestClientTokenBuilder().build();
+        Braintree braintree = new Braintree(mContext, clientToken) {
+            @Override
+            public void create(PaymentMethodBuilder paymentMethodBuilder) {
+                postExceptionToListeners(new ErrorWithResponse(422, "{}"));
+            }
+        };
+        injectBraintree(clientToken, braintree);
         setClientTokenExtraForTest(this, clientToken);
         Activity activity = getActivity();
 
-        fillInOfflinePayPal();
+        waitForAddPaymentFormHeader();
+        onView(withHint(mContext.getString(R.string.bt_form_hint_card_number)))
+                .perform(typeText(VISA), closeSoftKeyboard());
+        onView(withHint(mContext.getString(R.string.bt_form_hint_expiration)))
+                .perform(typeText("0619"), closeSoftKeyboard());
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
         waitForActivityToFinish(activity);
         Map<String, Object> result = getActivityResult(activity);
@@ -286,11 +260,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         setClientTokenExtraForTest(this, clientToken);
         getActivity();
 
-        waitForAddPaymentFormHeader();
-        onView(withHint("Card Number")).perform(typeText(VISA));
-        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
-        onView(withHint("CVV")).perform(typeText("123"), closeSoftKeyboard());
-        onView(withHint("Postal Code")).perform(typeText("12345"));
+        fillInCardForm(mContext);
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
         onView(withId(R.id.bt_header_container)).check(matches(isDisplayed()));
@@ -335,14 +305,22 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     public void testDisplaysAnErrorWhenCardNumberFailsOnServer()
             throws BraintreeException, ErrorWithResponse, JSONException {
         String clientToken = new TestClientTokenBuilder().build();
-        BraintreeApi braintreeApi = spy(new BraintreeApi(mContext, clientToken));
-        doThrow(new ErrorWithResponse(422, stringFromFixture(mContext, "errors/card_number_error_response.json")))
-                .when(braintreeApi).create(any(PaymentMethodBuilder.class));
-        injectBraintree(clientToken, braintreeApi);
+        Braintree braintree = new Braintree(mContext, clientToken) {
+            @Override
+            public void create(PaymentMethodBuilder paymentMethodBuilder) {
+                postExceptionToListeners(new ErrorWithResponse(422,
+                        stringFromFixture(mContext, "errors/card_number_error_response.json")));
+            }
+        };
+        injectBraintree(clientToken, braintree);
         setClientTokenExtraForTest(this, clientToken);
         BraintreePaymentActivity activity = getActivity();
 
-        fillInCardForm(mContext);
+        waitForAddPaymentFormHeader();
+        onView(withHint(mContext.getString(R.string.bt_form_hint_card_number)))
+                .perform(typeText(VISA), closeSoftKeyboard());
+        onView(withHint(mContext.getString(R.string.bt_form_hint_expiration)))
+                .perform(typeText("0619"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
         waitForView(withId(R.id.bt_card_form_submit_button), isEnabled());
@@ -362,11 +340,14 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
                 .withoutCvvChallenge()
                 .withoutPostalCodeChallenge()
                 .build();
-        BraintreeApi expirationFailBraintreeApi = spy(new BraintreeApi(mContext, clientToken));
-        doThrow(new ErrorWithResponse(422, stringFromFixture(mContext, "errors/expiration_date_error_response.json")))
-                .when(expirationFailBraintreeApi)
-                .create(any(CardBuilder.class));
-        injectBraintree(clientToken, expirationFailBraintreeApi);
+        Braintree braintree = new Braintree(mContext, clientToken) {
+            @Override
+            public void create(PaymentMethodBuilder paymentMethodBuilder) {
+                postExceptionToListeners(new ErrorWithResponse(422,
+                        stringFromFixture(mContext, "errors/expiration_date_error_response.json")));
+            }
+        };
+        injectBraintree(clientToken, braintree);
         setClientTokenExtraForTest(this, clientToken);
         BraintreePaymentActivity activity = getActivity();
 
@@ -412,26 +393,24 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         String clientTokenString = new TestClientTokenBuilder().build();
         ClientToken clientToken = ClientToken.fromString(clientTokenString);
         Configuration configuration = Configuration.fromJson(clientTokenString);
-        HttpRequest request = new HttpRequest(clientToken.getAuthorizationFingerprint()) {
+        Braintree braintree = injectBraintree(mContext, clientTokenString, clientTokenString);
+        BraintreeHttpClient request = new BraintreeHttpClient(clientToken.getAuthorizationFingerprint()) {
             @Override
-            public HttpResponse post(String url, String params)
-                    throws ErrorWithResponse, BraintreeException {
-                if(url.contains("credit_cards")) {
-                    throw new ErrorWithResponse(422, stringFromFixture(mContext, "error_response.json"));
+            public void post(String path, String data, HttpResponseCallback callback) {
+                if(path.contains("credit_cards")) {
+                    callback.failure(
+                            new ErrorWithResponse(422, stringFromFixture(mContext, "error_response.json")));
                 } else {
-                    return super.post(url, params);
+                    super.post(path, data, callback);
                 }
             }
         };
         request.setBaseUrl(configuration.getClientApiUrl());
-        injectBraintree(mContext, clientTokenString, clientToken, configuration, request);
+        setBraintreeHttpClient(braintree, request);
         setClientTokenExtraForTest(this, clientTokenString);
         BraintreePaymentActivity activity = getActivity();
 
-        waitForView(withId(R.id.bt_card_form_card_number)).perform(typeText(VISA));
-        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
-        onView(withHint("CVV")) .perform(typeText("123"), closeSoftKeyboard());
-        onView(withHint("Postal Code")).perform(typeText("12345"));
+        fillInCardForm(mContext);
 
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
         waitForActivityToFinish(activity);

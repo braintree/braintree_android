@@ -2,6 +2,7 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcelable;
 import android.support.annotation.CallSuper;
+import android.support.annotation.Nullable;
 
 import com.braintreepayments.api.exceptions.ServerException;
 
@@ -67,43 +68,80 @@ public abstract class PaymentMethod implements Parcelable {
      *
      * @param paymentMethodsString Json-formatted String containing a list of {@link com.braintreepayments.api.models.PaymentMethod}s
      * @return List of {@link com.braintreepayments.api.models.PaymentMethod}s contained in paymentMethodsString
-     * @throws ServerException if parsing JSON fails
+     * @throws JSONException
      */
-    public static List<PaymentMethod> parsePaymentMethods(String paymentMethodsString) throws ServerException {
-        try {
-            JSONArray paymentMethods = new JSONObject(paymentMethodsString).getJSONArray(PAYMENT_METHOD_COLLECTION_KEY);
+    public static List<PaymentMethod> parsePaymentMethods(String paymentMethodsString)
+            throws JSONException {
+        JSONArray paymentMethods = new JSONObject(paymentMethodsString).getJSONArray(PAYMENT_METHOD_COLLECTION_KEY);
 
-            if (paymentMethods == null) {
-                return Collections.emptyList();
+        if (paymentMethods == null) {
+            return Collections.emptyList();
+        }
+
+        List<PaymentMethod> paymentMethodsList = new ArrayList<>();
+        JSONObject json;
+        PaymentMethod paymentMethod;
+        for(int i = 0; i < paymentMethods.length(); i++) {
+            json = paymentMethods.getJSONObject(i);
+            paymentMethod = parsePaymentMethod(json, json.getString(PAYMENT_METHOD_TYPE_KEY));
+            if (paymentMethod != null) {
+                paymentMethodsList.add(paymentMethod);
             }
+        }
 
-            List<PaymentMethod> paymentMethodsList = new ArrayList<>();
-            JSONObject paymentMethod;
-            for(int i = 0; i < paymentMethods.length(); i++) {
-                paymentMethod = paymentMethods.getJSONObject(i);
+        return paymentMethodsList;
+    }
 
-                switch (paymentMethod.getString(PAYMENT_METHOD_TYPE_KEY)) {
-                    case Card.PAYMENT_METHOD_TYPE:
-                        Card card = new Card();
-                        card.fromJson(paymentMethod);
-                        paymentMethodsList.add(card);
-                        break;
-                    case PayPalAccount.PAYMENT_METHOD_TYPE:
-                        PayPalAccount payPalAccount = new PayPalAccount();
-                        payPalAccount.fromJson(paymentMethod);
-                        paymentMethodsList.add(payPalAccount);
-                        break;
-                    case AndroidPayCard.PAYMENT_METHOD_TYPE:
-                        AndroidPayCard androidPayCard = new AndroidPayCard();
-                        androidPayCard.fromJson(paymentMethod);
-                        paymentMethodsList.add(androidPayCard);
-                        break;
+    /**
+     * Parses a {@link PaymentMethod} from json.
+     *
+     * @param json {@link String} representation of a {@link PaymentMethod}.
+     * @param type The {@link String} type of the {@link PaymentMethod}.
+     * @return {@link PaymentMethod}
+     * @throws JSONException
+     */
+    @Nullable
+    public static PaymentMethod parsePaymentMethod(String json, String type) throws JSONException {
+        return parsePaymentMethod(new JSONObject(json), type);
+    }
+
+    /**
+     * Parses a {@link PaymentMethod} from json.
+     *
+     * @param json {@link JSONObject} representation of a {@link PaymentMethod}.
+     * @param type The {@link String} type of the {@link PaymentMethod}.
+     * @return {@link PaymentMethod}
+     * @throws JSONException
+     */
+    @Nullable
+    public static PaymentMethod parsePaymentMethod(JSONObject json, String type) throws JSONException {
+        switch (type) {
+            case Card.PAYMENT_METHOD_TYPE:
+                if (json.has(Card.API_RESOURCE_KEY)) {
+                    return Card.fromJson(json.toString());
+                } else {
+                    Card card = new Card();
+                    card.fromJson(json);
+                    return card;
                 }
-            }
-
-            return paymentMethodsList;
-        } catch (JSONException e) {
-            throw new ServerException("Parsing server response failed");
+            case PayPalAccount.PAYMENT_METHOD_TYPE:
+                if (json.has(PayPalAccount.API_RESOURCE_KEY)) {
+                    return PayPalAccount.fromJson(json.toString());
+                } else {
+                    PayPalAccount payPalAccount = new PayPalAccount();
+                    payPalAccount.fromJson(json);
+                    return payPalAccount;
+                }
+            case AndroidPayCard.PAYMENT_METHOD_TYPE:
+                if (json.has(AndroidPayCard.API_RESOURCE_KEY)) {
+                    return AndroidPayCard.fromJson(json.toString());
+                } else {
+                    AndroidPayCard androidPayCard = new AndroidPayCard();
+                    androidPayCard.fromJson(json);
+                    return androidPayCard;
+                }
+            default:
+                return null;
         }
     }
 }

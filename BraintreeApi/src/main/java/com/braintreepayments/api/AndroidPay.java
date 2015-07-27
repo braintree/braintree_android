@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.WorkerThread;
 
 import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.exceptions.UnexpectedException;
@@ -131,6 +132,7 @@ public class AndroidPay {
      * @return A connected instance of {@link GoogleApiClient}
      * @throws UnexpectedException
      */
+    @WorkerThread
     private GoogleApiClient getConnectedApiClient(Context context) throws UnexpectedException {
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(context)

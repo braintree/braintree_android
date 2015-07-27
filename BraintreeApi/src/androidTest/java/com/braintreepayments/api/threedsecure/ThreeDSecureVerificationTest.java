@@ -6,22 +6,27 @@ import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.KeyEvent;
 
-import com.braintreepayments.api.BraintreeApi;
+import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
-import com.braintreepayments.api.models.ThreeDSecureLookup;
+import com.braintreepayments.api.test.AbstractBraintreeListener;
 import com.braintreepayments.api.test.ThreeDSecureAuthenticationTestActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 import org.json.JSONException;
 
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static com.braintreepayments.api.BraintreeTestUtils.getBraintree;
+import static com.braintreepayments.api.BraintreeTestUtils.tokenize;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
@@ -32,7 +37,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
     private static final String TEST_AMOUNT = "5";
 
     private String mClientToken;
-    private BraintreeApi mBraintreeApi;
+    private Braintree mBraintree;
 
     public ThreeDSecureVerificationTest() {
         super(ThreeDSecureAuthenticationTestActivity.class);
@@ -42,7 +47,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
     protected void setUp() throws Exception {
         super.setUp();
         mClientToken = new TestClientTokenBuilder().withThreeDSecure().build();
-        mBraintreeApi = new BraintreeApi(getInstrumentation().getContext(), mClientToken);
+        mBraintree = getBraintree(getInstrumentation().getContext(), mClientToken);
     }
 
     public void testReturnsWithStatusResultCanceledWhenUpIsPressed()
@@ -59,7 +64,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
     }
 
     public void testReturnsWithStatusResultCanceledWhenBackIsPressedOnFirstPage()
-            throws ErrorWithResponse, BraintreeException, JSONException {
+            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
         Activity activity = startThreeDSecureTestActivity("4000000000000002");
 
         waitForView(withId(android.R.id.widget_frame));
@@ -76,7 +81,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
     }
 
     public void pendingReturnsWithStatusResultCanceledWhenUserGoesOnePageDeepAndPressesBackTwice()
-            throws ErrorWithResponse, BraintreeException, JSONException {
+            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
         Activity activity = startThreeDSecureTestActivity("4000000000000002");
 
         waitForView(withId(android.R.id.widget_frame));
@@ -95,32 +100,52 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
     }
 
     public void testDoesALookupAndReturnsACardAndANullACSUrlWhenAuthenticationIsNotRequired()
-            throws ErrorWithResponse, BraintreeException, JSONException {
-        String nonce = mBraintreeApi.tokenize(new CardBuilder()
-                .cardNumber("4000000000000051")
-                .expirationDate("12/20"));
+            throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        mBraintree.addListener(new AbstractBraintreeListener() {
+            @Override
+            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+                Card card = (Card) paymentMethod;
 
-        ThreeDSecureLookup threeDSecureLookup = mBraintreeApi.threeDSecureLookup(nonce, TEST_AMOUNT);
+                assertEquals("51", card.getLastTwo());
+                assertTrue(card.getThreeDSecureInfo().isLiabilityShifted());
+                assertTrue(card.getThreeDSecureInfo().isLiabilityShiftPossible());
 
-        assertEquals("51", threeDSecureLookup.getCard().getLastTwo());
-        assertTrue(threeDSecureLookup.getCard().getThreeDSecureInfo().isLiabilityShifted());
-        assertTrue(threeDSecureLookup.getCard().getThreeDSecureInfo().isLiabilityShiftPossible());
-        assertNull(threeDSecureLookup.getAcsUrl());
+                latch.countDown();
+            }
+        });
+
+        mBraintree.startThreeDSecureVerification(null, 0,
+                new CardBuilder()
+                        .cardNumber("4000000000000051")
+                        .expirationDate("12/20"),
+                TEST_AMOUNT);
+
+        latch.await();
     }
 
     public void testDoesALookupAndReturnsACardWhenThereIsALookupError()
-            throws ErrorWithResponse, BraintreeException, JSONException {
-        String nonce = mBraintreeApi.tokenize(new CardBuilder()
-                .cardNumber("4000000000000077")
-                .expirationDate("12/20"));
+            throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        mBraintree.addListener(new AbstractBraintreeListener() {
+            @Override
+            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+                assertEquals("77", ((Card) paymentMethod).getLastTwo());
+                latch.countDown();
+            }
+        });
 
-        ThreeDSecureLookup threeDSecureLookup = mBraintreeApi.threeDSecureLookup(nonce, TEST_AMOUNT);
+        mBraintree.startThreeDSecureVerification(null, 0,
+                new CardBuilder()
+                        .cardNumber("4000000000000077")
+                        .expirationDate("12/20"),
+                TEST_AMOUNT);
 
-        assertEquals("77", threeDSecureLookup.getCard().getLastTwo());
+        latch.await();
     }
 
     public void pendingRequestsAuthenticationWhenRequired()
-            throws ErrorWithResponse, BraintreeException, JSONException {
+            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
         Activity activity = startThreeDSecureTestActivity("4000000000000002");
 
         // Enter password and click submit
@@ -137,7 +162,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
     }
 
     public void pendingReturnsAnErrorWhenAuthenticationFails()
-            throws ErrorWithResponse, BraintreeException, JSONException {
+            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
         Activity activity = startThreeDSecureTestActivity("4000000000000028");
 
         // Enter password and click submit
@@ -155,7 +180,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
     }
 
     public void testReturnsASuccessfulAuthenticationWhenIssuerDoesNotParticipate()
-            throws ErrorWithResponse, BraintreeException, JSONException {
+            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
         Activity activity = startThreeDSecureTestActivity("4000000000000101");
 
         SystemClock.sleep(7000);
@@ -171,7 +196,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
     }
 
     public void pendingReturnsAFailedAuthenticationWhenSignatureVerificationFails()
-            throws ErrorWithResponse, BraintreeException, JSONException {
+            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
         Activity activity = startThreeDSecureTestActivity("4000000000000010");
 
         // Enter password and click submit
@@ -189,7 +214,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
     }
 
     public void pendingWhenIssuerIsDown()
-            throws ErrorWithResponse, BraintreeException, JSONException {
+            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
         Activity activity = startThreeDSecureTestActivity("4000000000000036");
 
         // Click continue
@@ -206,7 +231,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
     }
 
     public void pendingEarlyTerminationWhenCardinalReturnsError()
-            throws ErrorWithResponse, BraintreeException, JSONException {
+            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
         Activity activity = startThreeDSecureTestActivity("4000000000000093");
 
         // Enter password and click submit
@@ -224,8 +249,8 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
 
     /* helper */
     private Activity startThreeDSecureTestActivity(String cardNumber)
-            throws ErrorWithResponse, BraintreeException, JSONException {
-        String nonce = mBraintreeApi.tokenize(new CardBuilder()
+            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
+        String nonce = tokenize(mBraintree, new CardBuilder()
                 .cardNumber(cardNumber)
                 .expirationDate("12/30"));
         Intent intent = new Intent()

@@ -15,8 +15,8 @@ import org.json.JSONObject;
 public class PayPalAccount extends PaymentMethod implements Parcelable {
 
     protected static final String PAYMENT_METHOD_TYPE = "PayPalAccount";
+    protected static final String API_RESOURCE_KEY = "paypalAccounts";
 
-    private static final String API_RESOURCE_KEY = "paypalAccounts";
     private static final String DETAILS_KEY = "details";
     private static final String EMAIL_KEY = "email";
     private static final String PAYER_INFO_KEY = "payerInfo";

@@ -31,19 +31,16 @@ public class PayPal {
 
     protected static boolean sEnableSignatureVerification = true;
 
-    private PayPal() {
-        throw new IllegalStateException("Non-instantiable class.");
-    }
-
-    protected static void startPaypal(Context context, com.braintreepayments.api.models.PayPalConfiguration configuration) {
+    protected static void startPaypalService(Context context,
+            com.braintreepayments.api.models.PayPalConfiguration configuration) {
         stopPaypalService(context);
         context.startService(buildPayPalServiceIntent(context, configuration));
     }
 
-    protected static void launchPayPal(Activity activity, int requestCode, com.braintreepayments.api.models.PayPalConfiguration configuration,
+    protected static Intent getLaunchIntent(Context context, com.braintreepayments.api.models.PayPalConfiguration configuration,
         List<String> additionalScopes) {
         Class klass;
-        if (PayPalTouch.available(activity.getBaseContext(), sEnableSignatureVerification) &&
+        if (PayPalTouch.available(context, sEnableSignatureVerification) &&
                 !configuration.getEnvironment().equals(OFFLINE) &&
                 !configuration.isTouchDisabled()) {
             klass = PayPalTouchActivity.class;
@@ -59,10 +56,10 @@ public class PayPal {
         if (additionalScopes != null) {
             scopes.addAll(additionalScopes);
         }
-        Intent intent = new Intent(activity, klass)
+
+        return new Intent(context, klass)
             .putExtra(PayPalTouchActivity.EXTRA_REQUESTED_SCOPES, new PayPalOAuthScopes(scopes))
             .putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, buildPayPalConfiguration(configuration));
-        activity.startActivityForResult(intent, requestCode);
     }
 
     protected static void stopPaypalService(Context context) {

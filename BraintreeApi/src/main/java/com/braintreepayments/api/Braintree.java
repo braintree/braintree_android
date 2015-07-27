@@ -7,32 +7,45 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
+import android.util.Base64;
 
 import com.braintreepayments.api.annotations.Beta;
+import com.braintreepayments.api.data.BraintreeData;
 import com.braintreepayments.api.data.BraintreeEnvironment;
 import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
+import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.interfaces.PaymentMethodResponseCallback;
+import com.braintreepayments.api.internal.BraintreeHttpClient;
+import com.braintreepayments.api.models.AnalyticsRequest;
 import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
+import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
 import com.google.android.gms.wallet.MaskedWallet;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.WalletConstants;
+import com.paypal.android.sdk.payments.PayPalConfiguration;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -43,14 +56,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.regex.Pattern;
 
 public class Braintree {
 
     private static final String KEY_CLIENT_TOKEN = "com.braintreepayments.api.KEY_CLIENT_TOKEN";
     private static final String KEY_CONFIGURATION =  "com.braintreepayments.api.KEY_CONFIGURATION";
+
+    private static final String PAYMENT_METHOD_ENDPOINT = "payment_methods";
 
     protected static final Map<String, Braintree> sInstances = new HashMap<String, Braintree>();
     protected static final String INTEGRATION_DROPIN = "dropin";
@@ -60,13 +74,13 @@ public class Braintree {
      * (either directly or indirectly) can be registered with
      * {@link #addListener(com.braintreepayments.api.Braintree.Listener)}.
      */
-    private static interface Listener {}
+    private interface Listener {}
 
     /**
      * Interface that defines the response for
      * {@link com.braintreepayments.api.Braintree#setup(android.content.Context, String, com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener)}
      */
-    public static interface BraintreeSetupFinishedListener {
+    public interface BraintreeSetupFinishedListener {
         /**
          * @param setupSuccessful {@code true} if setup was successful, {@code false} otherwise.
          * @param braintree the {@link com.braintreepayments.api.Braintree} instance or {@code null}
@@ -83,7 +97,7 @@ public class Braintree {
      * onPaymentMethodsUpdate will be called with a list of {@link com.braintreepayments.api.models.PaymentMethod}s
      * as a callback when {@link Braintree#getPaymentMethods()} is called
      */
-    public static interface PaymentMethodsUpdatedListener extends Listener {
+    public interface PaymentMethodsUpdatedListener extends Listener {
         void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods);
     }
 
@@ -92,7 +106,7 @@ public class Braintree {
      * as a callback when
      * {@link Braintree#create(com.braintreepayments.api.models.PaymentMethodBuilder)} is called
      */
-    public static interface PaymentMethodCreatedListener extends Listener {
+    public interface PaymentMethodCreatedListener extends Listener {
         void onPaymentMethodCreated(PaymentMethod paymentMethod);
     }
 
@@ -102,7 +116,7 @@ public class Braintree {
      * or {@link Braintree#tokenize(com.braintreepayments.api.models.PaymentMethodBuilder)}
      * is called
      */
-    public static interface PaymentMethodNonceListener extends Listener {
+    public interface PaymentMethodNonceListener extends Listener {
         void onPaymentMethodNonce(String paymentMethodNonce);
     }
 
@@ -110,20 +124,13 @@ public class Braintree {
      * onUnrecoverableError will be called where there is an exception that cannot be handled.
      * onRecoverableError will be called on data validation errors
      */
-    public static interface ErrorListener extends Listener {
+    public interface ErrorListener extends Listener {
         void onUnrecoverableError(Throwable throwable);
         void onRecoverableError(ErrorWithResponse error);
     }
 
-    private final ExecutorService mExecutorService;
-    private final BraintreeApi mBraintreeApi;
     private String mIntegrationType;
     private String mClientTokenKey;
-
-    /**
-     * {@link Handler} to deliver events to listeners; events are always delivered on the main thread.
-     */
-    private final Handler mListenerHandler = new Handler(Looper.getMainLooper());
 
     private final List<ListenerCallback> mCallbackQueue = new LinkedList<ListenerCallback>();
     private boolean mListenersLocked = false;
@@ -135,29 +142,14 @@ public class Braintree {
 
     private List<PaymentMethod> mCachedPaymentMethods;
 
-    /**
-     * @deprecated Use the asynchronous
-     * {@link com.braintreepayments.api.Braintree#setup(android.content.Context, String, com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener)}
-     * instead.
-     *
-     * Obtain an instance of {@link Braintree}. If multiple calls are made with the same {@code
-     * clientToken}, you may get the same instance returned.
-     *
-     * @param context
-     * @param clientToken A client token obtained from a Braintree server SDK.
-     * @return {@link com.braintreepayments.api.Braintree} instance. Repeated called to
-     *         {@link #getInstance(android.content.Context, String)} with the same {@code clientToken}
-     *         may return the same {@link com.braintreepayments.api.Braintree} instance.
-     */
-    @Deprecated
-    public static Braintree getInstance(Context context, String clientToken) throws JSONException {
-        if (sInstances.containsKey(clientToken)) {
-            return sInstances.get(clientToken);
-        } else {
-            return new Braintree(clientToken,
-                    new BraintreeApi(context.getApplicationContext(), clientToken));
-        }
-    }
+    private Context mContext;
+    private ClientToken mClientToken;
+    private Configuration mConfiguration;
+    @VisibleForTesting
+    protected BraintreeHttpClient mHttpClient;
+
+    private Object mBraintreeData;
+    private AndroidPay mAndroidPay;
 
     /**
      * Called to begin the setup of {@link Braintree}. Once setup is complete the supplied
@@ -170,77 +162,79 @@ public class Braintree {
      * @param listener The listener to notify when setup is complete, or fails.
      */
     public static void setup(Context context, String clientToken, BraintreeSetupFinishedListener listener) {
-        setupHelper(context, clientToken, listener);
-    }
-
-    /**
-     * Helper method to
-     * {@link #setup(android.content.Context, String, com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener)}
-     * to make execution synchronous in testing.
-     */
-    protected static Future<?> setupHelper(final Context context, final String clientToken, final BraintreeSetupFinishedListener listener) {
-        return Executors.newSingleThreadExecutor().submit(new Runnable() {
-            @Override
-            public void run() {
-                Braintree braintree = null;
-                Exception exception = null;
-                String errorMessage = null;
-                try {
-                    if (sInstances.containsKey(clientToken)) {
-                        braintree = sInstances.get(clientToken);
-                    } else {
-                        braintree = new Braintree(context, clientToken);
-                    }
-
-                    if (!braintree.isSetup()) {
-                        braintree.setup();
-                    }
-                } catch (Exception e) {
-                    exception = e;
-                    errorMessage = e.getMessage();
-                }
-
-                final Braintree finalBraintree = braintree;
-                final String finalErrorMessage = errorMessage;
-                final Exception finalException = exception;
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (finalBraintree != null && finalBraintree.isSetup()) {
-                            listener.onBraintreeSetupFinished(true, finalBraintree, null, null);
-                        } else {
-                            listener.onBraintreeSetupFinished(false, null, finalErrorMessage,
-                                    finalException);
-                        }
-                    }
-                });
+        try {
+            Braintree braintree;
+            if (sInstances.containsKey(clientToken)) {
+                braintree = sInstances.get(clientToken);
+            } else {
+                braintree = new Braintree(context, clientToken);
             }
-        });
+
+            if (!braintree.isSetup()) {
+                braintree.setup(listener);
+            } else {
+                listener.onBraintreeSetupFinished(true, braintree, null, null);
+            }
+        } catch (JSONException e) {
+            listener.onBraintreeSetupFinished(false, null, e.getMessage(), e);
+        }
     }
 
-    protected Braintree(String clientToken, BraintreeApi braintreeApi) {
-        mBraintreeApi = braintreeApi;
-        mExecutorService = Executors.newSingleThreadExecutor();
-        mIntegrationType = "custom";
-        mClientTokenKey = clientToken;
-        sInstances.put(mClientTokenKey, this);
+    protected Braintree(Context context, String clientTokenString) throws JSONException {
+        this(context, clientTokenString, null);
     }
 
-    protected Braintree(Context context, String clientToken) throws JSONException {
-        mBraintreeApi = new BraintreeApi(context.getApplicationContext(),
-                ClientToken.fromString(clientToken));
-        mExecutorService = Executors.newSingleThreadExecutor();
+    protected Braintree(Context context, String clientTokenString, String configurationString)
+            throws JSONException {
+        Pattern pattern = Pattern.compile(
+                "([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)");
+        if (pattern.matcher(clientTokenString).matches()) {
+            clientTokenString = new String(Base64.decode(clientTokenString, Base64.DEFAULT));
+        }
+
+        mContext = context.getApplicationContext();
+        mClientToken = ClientToken.fromString(clientTokenString);
+        mHttpClient = new BraintreeHttpClient(mClientToken.getAuthorizationFingerprint());
+
+        if (configurationString != null) {
+            mConfiguration = Configuration.fromJson(configurationString);
+            mHttpClient.setBaseUrl(mConfiguration.getClientApiUrl());
+        }
+
         mIntegrationType = "custom";
-        mClientTokenKey = clientToken;
+        mClientTokenKey = clientTokenString;
         sInstances.put(mClientTokenKey, this);
     }
 
     private boolean isSetup() {
-        return mBraintreeApi.isSetup();
+        return mConfiguration != null;
     }
 
-    private void setup() throws ErrorWithResponse, BraintreeException, JSONException {
-        mBraintreeApi.setup();
+    private void setup(final BraintreeSetupFinishedListener listener) {
+        String configUrl = Uri.parse(mClientToken.getConfigUrl())
+                .buildUpon()
+                .appendQueryParameter("configVersion", "3")
+                .build()
+                .toString();
+
+        mHttpClient.get(configUrl, new HttpResponseCallback() {
+            @Override
+            public void success(String responseBody) {
+                try {
+                    mConfiguration = Configuration.fromJson(responseBody);
+                    mHttpClient.setBaseUrl(mConfiguration.getClientApiUrl());
+
+                    listener.onBraintreeSetupFinished(true, Braintree.this, null, null);
+                } catch (JSONException e) {
+                    listener.onBraintreeSetupFinished(false, null, e.getMessage(), e);
+                }
+            }
+
+            @Override
+            public void failure(Exception exception) {
+                listener.onBraintreeSetupFinished(false, null, exception.getMessage(), exception);
+            }
+        });
     }
 
     protected String analyticsPrefix() {
@@ -259,7 +253,7 @@ public class Braintree {
      */
     public void onSaveInstanceState(Bundle outState) {
         outState.putString(KEY_CLIENT_TOKEN, mClientTokenKey);
-        outState.putString(KEY_CONFIGURATION, mBraintreeApi.getConfigurationString());
+        outState.putString(KEY_CONFIGURATION, mConfiguration.toJson());
     }
 
     /**
@@ -282,8 +276,7 @@ public class Braintree {
             return braintree;
         } else if (!TextUtils.isEmpty(clientToken) && !TextUtils.isEmpty(configuration)) {
             try {
-                return new Braintree(clientToken,
-                        new BraintreeApi(context.getApplicationContext(), clientToken, configuration));
+                return new Braintree(context.getApplicationContext(), clientToken, configuration);
             } catch (JSONException e) {
                 return null;
             }
@@ -310,50 +303,56 @@ public class Braintree {
     }
 
     /**
-     * Checks if PayPal is enabled and supported.
-     * @return {@code true} if PayPal is enabled and supported, {@code false} otherwise.
+     * @return {@code true} if PayPal is enabled and supported in the current environment,
+     *         {@code false} otherwise.
      */
     public boolean isPayPalEnabled() {
-        return mBraintreeApi.isPayPalEnabled();
+        return mConfiguration.isPayPalEnabled();
     }
 
     /**
-     * @return If Venmo app switch is supported and enabled in the current environment
+     * @return {@code true} if Venmo app switch is supported and enabled in the current environment,
+     *         {@code false} otherwise.
      */
     public boolean isVenmoEnabled() {
-        return mBraintreeApi.isVenmoEnabled();
+        return Venmo.isAvailable(mContext, mConfiguration);
     }
 
     /**
-     * @return If 3D Secure is supported and enabled for the current merchant account
+     * @return {@code true} if 3D Secure is supported and enabled for the current merchant account,
+     *         {@code false} otherwise.
      */
     @Beta
     public boolean isThreeDSecureEnabled() {
-        return mBraintreeApi.isThreeDSecureEnabled();
+        return mConfiguration.isThreeDSecureEnabled();
     }
 
     /**
-     * @return If Android Pay is supported and enabled in the current environment.
+     * @return {@code true} if Android Pay is supported and enabled in the current environment,
+     *         {@code false} otherwise.
      */
     @Beta
     public boolean isAndroidPayEnabled() {
-        return mBraintreeApi.isAndroidPayEnabled();
+        try {
+            return (mConfiguration.getAndroidPay().isEnabled() &&
+                    GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mContext) == ConnectionResult.SUCCESS);
+        } catch (NoClassDefFoundError e) {
+            return false;
+        }
     }
 
     /**
-     * Checks if cvv is required when add a new card
      * @return {@code true} if cvv is required to add a new card, {@code false} otherwise.
      */
     public boolean isCvvChallenegePresent() {
-        return mBraintreeApi.isCvvChallengePresent();
+        return mConfiguration.isCvvChallengePresent();
     }
 
     /**
-     * Checks if postal code is required to add a new card
      * @return {@code true} if postal code is required to add a new card {@code false} otherwise.
      */
     public boolean isPostalCodeChallengePresent() {
-        return mBraintreeApi.isPostalCodeChallengePresent();
+        return mConfiguration.isPostalCodeChallengePresent();
     }
 
     /**
@@ -362,7 +361,7 @@ public class Braintree {
      *
      * @param listener the listener to add.
      */
-    public synchronized <T extends Listener> void addListener(final T listener) {
+    public <T extends Listener> void addListener(final T listener) {
         if (listener instanceof PaymentMethodsUpdatedListener) {
             mUpdatedListeners.add((PaymentMethodsUpdatedListener) listener);
         }
@@ -385,7 +384,7 @@ public class Braintree {
      *
      * @param listener the listener to remove.
      */
-    public synchronized <T extends Listener> void removeListener(T listener) {
+    public <T extends Listener> void removeListener(T listener) {
         if (listener instanceof PaymentMethodsUpdatedListener) {
             mUpdatedListeners.remove(listener);
         }
@@ -410,7 +409,7 @@ public class Braintree {
      *
      * @param activity The {@link Activity} that is being resumed.
      */
-    public synchronized void onResume(Activity activity) {
+    public void onResume(Activity activity) {
         if (activity instanceof Listener) {
             addListener((Listener) activity);
         }
@@ -426,54 +425,55 @@ public class Braintree {
      *
      * @param activity The {@link Activity} that is being paused.
      */
-    public synchronized void onPause(Activity activity) {
+    public void onPause(Activity activity) {
         lockListeners();
         if (activity instanceof Listener) {
             removeListener((Listener) activity);
         }
-        mBraintreeApi.disconnectGoogleApiClient();
+
+        if (mAndroidPay != null) {
+            mAndroidPay.disconnect();
+        }
     }
 
     /**
-     * Retrieves the current list of {@link com.braintreepayments.api.models.PaymentMethod} for this device and client token.
+     * Retrieves the current list of {@link PaymentMethod} for this device and client token.
      *
-     * When finished, the {@link java.util.List} of {@link com.braintreepayments.api.models.PaymentMethod}s
-     * will be sent to {@link Braintree.PaymentMethodsUpdatedListener#onPaymentMethodsUpdated(java.util.List)}.
+     * When finished, the {@link java.util.List} of {@link PaymentMethod}s will be sent to
+     * {@link Braintree.PaymentMethodsUpdatedListener#onPaymentMethodsUpdated(java.util.List)}.
      *
      * If a network or server error occurs, {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)}
      * will be called with the {@link com.braintreepayments.api.exceptions.BraintreeException} that occurred.
      */
-    public synchronized void getPaymentMethods() {
-        getPaymentMethodsHelper();
-    }
+    public void getPaymentMethods() {
+        mHttpClient.get(versionedPath(PAYMENT_METHOD_ENDPOINT),
+                new HttpResponseCallback() {
+                    @Override
+                    public void success(String responseBody) {
+                        try {
+                            List<PaymentMethod> paymentMethods =
+                                    PaymentMethod.parsePaymentMethods(responseBody);
+                            mCachedPaymentMethods = paymentMethods;
+                            postPaymentMethodsToListeners(paymentMethods);
+                        } catch (JSONException e) {
+                            postExceptionToListeners(e);
+                        }
+                    }
 
-    /**
-     * Helper method to {@link #getPaymentMethods()} to make execution synchronous in testing.
-     */
-    protected synchronized Future<?> getPaymentMethodsHelper() {
-        return mExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    List<PaymentMethod> paymentMethods = mBraintreeApi.getPaymentMethods();
-                    mCachedPaymentMethods = paymentMethods;
-                    postPaymentMethodsToListeners(paymentMethods);
-                } catch (BraintreeException e) {
-                    postUnrecoverableErrorToListeners(e);
-                } catch (ErrorWithResponse e) {
-                    postRecoverableErrorToListeners(e);
-                }
-            }
-        });
+                    @Override
+                    public void failure(Exception exception) {
+                        postExceptionToListeners(exception);
+                    }
+                });
     }
 
     /**
      * Starts the Pay With PayPal flow. This will launch a new activity for the PayPal mobile SDK.
      *
-     * @param activity the {@link android.app.Activity} to receive the {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     *                 when payWithPayPal finishes.
+     * @param activity the {@link Activity} to receive the {@link Activity#onActivityResult(int, int, Intent)}
+     *                 when pay with PayPal finishes.
      * @param requestCode the request code associated with this start request. Will be returned
-     *                    in {@code onActivityResult}.
+     *                  {@link Activity#onActivityResult(int, int, Intent)}
      */
     public void startPayWithPayPal(Activity activity, int requestCode) {
         startPayWithPayPal(activity, requestCode, null);
@@ -482,60 +482,27 @@ public class Braintree {
     /**
      * Starts the Pay With PayPal flow. This will launch a new activity for the PayPal mobile SDK.
      *
-     * @param activity the {@link android.app.Activity} to receive the {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     *                 when payWithPayPal finishes.
+     * @param activity the {@link Activity} to receive the {@link Activity#onActivityResult(int, int, Intent)}
+     *                 when pay with PayPal finishes.
      * @param requestCode the request code associated with this start request. Will be returned
-     *                    in {@code onActivityResult}.
-     * @param additionalScopes A {@link java.util.List} of additional scopes.
+     *                 {@link Activity#onActivityResult(int, int, Intent)}
+     * @param additionalScopes A {@link List} of additional scopes.
      *                         Ex: PayPalOAuthScopes.PAYPAL_SCOPE_ADDRESS. Acceptable scopes are
      *                         defined in {@link com.paypal.android.sdk.payments.PayPalOAuthScopes}.
      */
     public void startPayWithPayPal(Activity activity, int requestCode, List<String> additionalScopes) {
         sendAnalyticsEvent("add-paypal.start");
-        mBraintreeApi.startPayWithPayPal(activity, requestCode, additionalScopes);
+        PayPal.startPaypalService(mContext, mConfiguration.getPayPal());
+        activity.startActivityForResult(
+                PayPal.getLaunchIntent(mContext, mConfiguration.getPayPal(), additionalScopes),
+                requestCode);
     }
 
     /**
-     * Handles response from PayPal and returns a PayPalAccountBuilder which must be then passed to
-     * {@link #create(com.braintreepayments.api.models.PaymentMethodBuilder)}. {@link #finishPayWithPayPal(android.app.Activity, int, android.content.Intent)}
-     * will call this and {@link #create(com.braintreepayments.api.models.PaymentMethodBuilder)} for you
-     * and may be a better option.
-     *
-     * Sends a {@link com.braintreepayments.api.exceptions.ConfigurationException} to
-     * {@link com.braintreepayments.api.Braintree.ErrorListener#onUnrecoverableError(Throwable)}
-     * if PayPal credentials from the Braintree control panel are incorrect.
-     *
-     * @param activity The activity that received the result.
-     * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     * @return {@link com.braintreepayments.api.models.PayPalAccountBuilder} ready to be sent to
-     * {@link #create(com.braintreepayments.api.models.PaymentMethodBuilder)} or null if a
-     * {@link com.braintreepayments.api.models.PayPalAccountBuilder} could not be created
-     */
-    public PayPalAccountBuilder handlePayPalResponse(Activity activity, int resultCode, Intent data) {
-        try {
-            return mBraintreeApi.handlePayPalResponse(activity, resultCode, data);
-        } catch (ConfigurationException e) {
-            postUnrecoverableErrorToListeners(e);
-        }
-
-        return null;
-    }
-
-    /**
-     * @deprecated Use {@link com.braintreepayments.api.Braintree#finishPayWithPayPal(android.app.Activity, int, android.content.Intent)}
-     * instead.
-     *
-     * This method should *not* be used, it does not include a Application Correlation ID.
-     * PayPal uses the Application Correlation ID to verify that the payment is originating from
-     * a valid, user-consented device+application. This helps reduce fraud and decrease declines.
-     * PayPal does not provide any loss protection for transactions that do not correctly supply
-     * an Application Correlation ID.
-     *
      * Method to finish Pay With PayPal flow. Create a {@link com.braintreepayments.api.models.PayPalAccount}.
      *
      * The {@link com.braintreepayments.api.models.PayPalAccount} will be sent to
-     * {@link Braintree.PaymentMethodCreatedListener#onPaymentMethodCreated(com.braintreepayments.api.models.PaymentMethod)}
+     * {@link Braintree.PaymentMethodCreatedListener#onPaymentMethodCreated(PaymentMethod)}
      * and the nonce will be sent to
      * {@link Braintree.PaymentMethodNonceListener#onPaymentMethodNonce(String)}.
      *
@@ -543,105 +510,95 @@ public class Braintree {
      * {@link Braintree.ErrorListener#onRecoverableError(com.braintreepayments.api.exceptions.ErrorWithResponse)} or
      * {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)} as appropriate.
      *
+     * @param activity the calling {@link Activity}.
      * @param resultCode Result code from the Pay With PayPal flow.
-     * @param data Intent returned from Pay With PayPal flow.
+     * @param data {@link Intent} returned from Pay With PayPal flow.
      */
-    @Deprecated
-    public synchronized void finishPayWithPayPal(int resultCode, Intent data) {
+    public void finishPayWithPayPal(Activity activity, int resultCode, Intent data) {
         try {
-            PayPalAccountBuilder payPalAccountBuilder = mBraintreeApi.handlePayPalResponse(null, resultCode, data);
+            PayPal.stopPaypalService(mContext);
+            PayPalAccountBuilder payPalAccountBuilder = PayPal.getBuilderFromActivity(activity, resultCode, data);
             if (payPalAccountBuilder != null) {
                 create(payPalAccountBuilder);
             }
         } catch (ConfigurationException e) {
-            postUnrecoverableErrorToListeners(e);
-        }
-    }
-
-    /**
-     * Method to finish Pay With PayPal flow. Create a {@link com.braintreepayments.api.models.PayPalAccount}.
-     *
-     * The {@link com.braintreepayments.api.models.PayPalAccount} will be sent to
-     * {@link Braintree.PaymentMethodCreatedListener#onPaymentMethodCreated(com.braintreepayments.api.models.PaymentMethod)}
-     * and the nonce will be sent to
-     * {@link Braintree.PaymentMethodNonceListener#onPaymentMethodNonce(String)}.
-     *
-     * If an error occurs, the exception that occurred will be sent to
-     * {@link Braintree.ErrorListener#onRecoverableError(com.braintreepayments.api.exceptions.ErrorWithResponse)} or
-     * {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)} as appropriate.
-     *
-     * @param resultCode Result code from the Pay With PayPal flow.
-     * @param data Intent returned from Pay With PayPal flow.
-     */
-    public synchronized void finishPayWithPayPal(Activity activity, int resultCode, Intent data) {
-        try {
-            PayPalAccountBuilder payPalAccountBuilder = mBraintreeApi.handlePayPalResponse(activity,
-                    resultCode, data);
-            if (payPalAccountBuilder != null) {
-                create(payPalAccountBuilder);
-            }
-        } catch (ConfigurationException e) {
-            postUnrecoverableErrorToListeners(e);
+            postExceptionToListeners(e);
         }
     }
 
     /**
      * Start the Pay With Venmo flow. This will app switch to the Venmo app.
      *
+     * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to
+     * {@link com.braintreepayments.api.Braintree.ErrorListener#onUnrecoverableError(Throwable)}.
+     *
      * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     * when {@link #startPayWithVenmo(android.app.Activity, int)} finishes.
+     *        when {@link #startPayWithVenmo(android.app.Activity, int)} finishes.
      * @param requestCode The request code associated with this start request. Will be returned in
-     * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     *                    {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      */
     public void startPayWithVenmo(Activity activity, int requestCode) {
-        try {
-            mBraintreeApi.startPayWithVenmo(activity, requestCode);
-            sendAnalyticsEvent("add-venmo.start");
-        } catch (AppSwitchNotAvailableException e) {
+        sendAnalyticsEvent("add-venmo.start");
+        if (isVenmoEnabled()) {
+            activity.startActivityForResult(Venmo.getLaunchIntent(mConfiguration), requestCode);
+        } else {
             sendAnalyticsEvent("add-venmo.unavailable");
-            postUnrecoverableErrorToListeners(e);
+            postExceptionToListeners(new AppSwitchNotAvailableException("Venmo is not available"));
         }
     }
 
     /**
-     * Method to finish Pay With Venmo flow. Create a {@link com.braintreepayments.api.models.PaymentMethod}.
+     * Method to finish the Pay With Venmo flow. Create a {@link PaymentMethod}.
      *
-     * The {@link com.braintreepayments.api.models.PaymentMethod} will be sent to
-     * {@link Braintree.PaymentMethodCreatedListener#onPaymentMethodCreated(com.braintreepayments.api.models.PaymentMethod)}
+     * The {@link PaymentMethod} will be sent to
+     * {@link Braintree.PaymentMethodCreatedListener#onPaymentMethodCreated(PaymentMethod)}}
      * and the nonce will be sent to
      * {@link Braintree.PaymentMethodNonceListener#onPaymentMethodNonce(String)}.
      *
      * If an error occurs, the exception that occurred will be sent to
-     * {@link Braintree.ErrorListener#onRecoverableError(com.braintreepayments.api.exceptions.ErrorWithResponse)} or
+     * {@link Braintree.ErrorListener#onRecoverableError(ErrorWithResponse)} or
      * {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)} as appropriate.
      *
      * @param resultCode Result code from the Pay With Venmo flow.
-     * @param data Intent returned from Pay With Venmo flow.
+     * @param data {@link Intent} returned from Pay With Venmo flow in {@link Activity#onActivityResult(int, int, Intent)}
      */
-    public synchronized void finishPayWithVenmo(int resultCode, Intent data) {
-        final String nonce = mBraintreeApi.finishPayWithVenmo(data);
-        if (!TextUtils.isEmpty(nonce)) {
-            mExecutorService.submit(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        PaymentMethod paymentMethod = mBraintreeApi.getPaymentMethod(nonce);
-                        addPaymentMethodToCache(paymentMethod);
-                        postCreatedMethodToListeners(paymentMethod);
-                        postCreatedNonceToListeners(nonce);
-                        sendAnalyticsEvent("venmo-app.success");
-                    } catch (BraintreeException e) {
-                        postUnrecoverableErrorToListeners(e);
-                    } catch (JSONException e) {
-                        postUnrecoverableErrorToListeners(e);
-                    } catch (ErrorWithResponse errorWithResponse) {
-                        postRecoverableErrorToListeners(errorWithResponse);
-                    }
-                }
-            });
-        } else {
+    public void finishPayWithVenmo(int resultCode, Intent data) {
+        final String nonce = Venmo.handleAppSwitchResponse(data);
+
+        if (TextUtils.isEmpty(nonce)) {
             sendAnalyticsEvent("venmo-app.fail");
+            return;
         }
+
+        mHttpClient.get(versionedPath(PAYMENT_METHOD_ENDPOINT + "/" + nonce),
+                new HttpResponseCallback() {
+                    @Override
+                    public void success(String responseBody) {
+                        try {
+                            List<PaymentMethod> paymentMethodsList =
+                                    PaymentMethod.parsePaymentMethods(responseBody);
+                            if (paymentMethodsList.size() == 1) {
+                                sendAnalyticsEvent("venmo-app.success");
+
+                                PaymentMethod paymentMethod = paymentMethodsList.get(0);
+                                addPaymentMethodToCache(paymentMethod);
+                                postCreatedMethodToListeners(paymentMethod);
+                                postCreatedNonceToListeners(nonce);
+                            } else {
+                                failure(new ServerException(
+                                        "Unexpected payment method response format."));
+                            }
+                        } catch (JSONException e) {
+                            failure(e);
+                        }
+                    }
+
+                    @Override
+                    public void failure(Exception exception) {
+                        sendAnalyticsEvent("venmo-app.fail");
+                        postExceptionToListeners(exception);
+                    }
+                });
     }
 
     /**
@@ -657,7 +614,11 @@ public class Braintree {
      */
     @Beta
     public PaymentMethodTokenizationParameters getAndroidPayTokenizationParameters() {
-        return mBraintreeApi.getAndroidPayTokenizationParameters();
+        if (mAndroidPay == null) {
+            mAndroidPay = new AndroidPay(mConfiguration);
+        }
+
+        return mAndroidPay.getTokenizationParameters();
     }
 
     /**
@@ -691,7 +652,7 @@ public class Braintree {
      * @param cart The cart representation with price and optionally items.
      */
     @Beta
-    public synchronized void performAndroidPayMaskedWalletRequest(Activity activity, int requestCode, Cart cart) {
+    public void performAndroidPayMaskedWalletRequest(Activity activity, int requestCode, Cart cart) {
         performAndroidPayMaskedWalletRequest(activity, requestCode, cart, false, false, false);
     }
 
@@ -707,19 +668,36 @@ public class Braintree {
      * @param phoneNumberRequired {@code true} if this request requires a phone number, {@code false} otherwise.
      */
     @Beta
-    public synchronized void performAndroidPayMaskedWalletRequest(final Activity activity,
+    public void performAndroidPayMaskedWalletRequest(final Activity activity,
             final int requestCode, final Cart cart, final boolean isBillingAgreement, final boolean shippingAddressRequired,
             final boolean phoneNumberRequired) {
-        mExecutorService.submit(new Runnable() {
+        Executors.newSingleThreadExecutor().submit(new Runnable() {
             @Override
             public void run() {
                 try {
-                    mBraintreeApi.performAndroidPayMaskedWalletRequest(activity, requestCode, cart,
-                            isBillingAgreement, shippingAddressRequired, phoneNumberRequired);
-                } catch (InvalidArgumentException e) {
-                    postUnrecoverableErrorToListeners(e);
-                } catch (UnexpectedException e) {
-                    postUnrecoverableErrorToListeners(e);
+                    if (isBillingAgreement && cart != null) {
+                        throw new InvalidArgumentException(
+                                "The cart must be null when isBillingAgreement is true");
+                    } else if (!isBillingAgreement && cart == null) {
+                        throw new InvalidArgumentException(
+                                "Cart cannot be null unless isBillingAgreement is true");
+                    }
+
+                    if (mAndroidPay == null) {
+                        mAndroidPay = new AndroidPay(mConfiguration);
+                    }
+
+                    mAndroidPay.setCart(cart);
+                    mAndroidPay
+                            .performMaskedWalletRequest(activity, requestCode, isBillingAgreement,
+                                    shippingAddressRequired, phoneNumberRequired);
+                } catch (InvalidArgumentException | UnexpectedException e) {
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            postExceptionToListeners(e);
+                        }
+                    });
                 }
             }
         });
@@ -734,16 +712,25 @@ public class Braintree {
      * @param googleTransactionId The transaction id of the {@link MaskedWallet} to change.
      */
     @Beta
-    public synchronized void performAndroidPayChangeMaskedWalletRequest(final Activity activity,
+    public void performAndroidPayChangeMaskedWalletRequest(final Activity activity,
             final int requestCode, final String googleTransactionId) {
-        mExecutorService.submit(new Runnable() {
+        Executors.newSingleThreadExecutor().submit(new Runnable() {
             @Override
             public void run() {
                 try {
-                    mBraintreeApi.performAndroidPayChangeMaskedWalletRequest(activity, requestCode,
+                    if (mAndroidPay == null) {
+                        mAndroidPay = new AndroidPay(mConfiguration);
+                    }
+
+                    mAndroidPay.performChangeMaskedWalletRequest(activity, requestCode,
                             googleTransactionId);
-                } catch (UnexpectedException e) {
-                    postUnrecoverableErrorToListeners(e);
+                } catch (final UnexpectedException e) {
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            postExceptionToListeners(e);
+                        }
+                    });
                 }
             }
         });
@@ -759,16 +746,29 @@ public class Braintree {
      * @param googleTransactionId The transaction id from the {@link MaskedWallet}.
      */
     @Beta
-    public synchronized void performAndroidPayFullWalletRequest(final Activity activity,
+    public void performAndroidPayFullWalletRequest(final Activity activity,
             final int requestCode, final Cart cart, final String googleTransactionId) {
-        mExecutorService.submit(new Runnable() {
+        Executors.newSingleThreadExecutor().submit(new Runnable() {
             @Override
             public void run() {
                 try {
-                    mBraintreeApi.performAndroidPayFullWalletRequest(activity, requestCode, cart,
-                            googleTransactionId);
-                } catch (UnexpectedException e) {
-                    postUnrecoverableErrorToListeners(e);
+                    if (mAndroidPay == null) {
+                        mAndroidPay = new AndroidPay(mConfiguration);
+                    }
+
+                    if (cart != null) {
+                        mAndroidPay.setCart(cart);
+                    }
+
+                    mAndroidPay
+                            .performFullWalletRequest(activity, requestCode, googleTransactionId);
+                } catch (final UnexpectedException e) {
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            postExceptionToListeners(e);
+                        }
+                    });
                 }
             }
         });
@@ -781,20 +781,26 @@ public class Braintree {
      * @param data The {@link Intent} containing the {@link FullWallet}.
      */
     @Beta
-    public synchronized void getNonceFromAndroidPayFullWalletResponse(int resultCode, Intent data) {
+    public void getNonceFromAndroidPayFullWalletResponse(int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             try {
-                mBraintreeApi.disconnectGoogleApiClient();
+                if (mAndroidPay != null) {
+                    mAndroidPay.disconnect();
+                }
 
-                AndroidPayCard androidPayCard =
-                        mBraintreeApi.getNonceFromAndroidPayFullWalletResponse(data);
-                if (androidPayCard != null) {
-                    addPaymentMethodToCache(androidPayCard);
-                    postCreatedMethodToListeners(androidPayCard);
-                    postCreatedNonceToListeners(androidPayCard.getNonce());
+                if (AndroidPay.isFullWalletResponse(data)) {
+                    FullWallet fullWallet = data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET);
+                    AndroidPayCard androidPayCard = AndroidPayCard.fromJson(
+                            fullWallet.getPaymentMethodToken().getToken());
+
+                    if (androidPayCard != null) {
+                        addPaymentMethodToCache(androidPayCard);
+                        postCreatedMethodToListeners(androidPayCard);
+                        postCreatedNonceToListeners(androidPayCard.getNonce());
+                    }
                 }
             } catch (JSONException e) {
-                postUnrecoverableErrorToListeners(e);
+                postExceptionToListeners(e);
             }
         }
     }
@@ -818,28 +824,27 @@ public class Braintree {
      * Transactions created with this nonce will be 3D Secure, and benefit from the appropriate
      * liability shift if authentication is successful or fail with a 3D Secure failure.
      *
-     * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     *                 when {@link #startThreeDSecureVerification(android.app.Activity, int, String, String)} finishes.
-     * @param requestCode The request code associated with this start request.
-     *                    Will be returned in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param activity The {@link Activity} to receive {@link Activity#onActivityResult(int, int, Intent)}
+     *                 when {@link #startThreeDSecureVerification(Activity, int, String, String)} finishes.
+     * @param requestCode The request code associated with this start request,
+     *                    returned in {@link Activity#onActivityResult(int, int, Intent)}.
      * @param cardBuilder The cardBuilder created from raw details. Will be tokenized before
      *                    the 3D Secure verification if performed.
      * @param amount The amount of the transaction in the current merchant account's currency
      */
     @Beta
-    public synchronized void startThreeDSecureVerification(final Activity activity,
+    public void startThreeDSecureVerification(final Activity activity,
             final int requestCode, final CardBuilder cardBuilder, final String amount) {
-        mExecutorService.submit(new Runnable() {
+        tokenize(cardBuilder, new PaymentMethodResponseCallback() {
             @Override
-            public void run() {
-                try {
-                    String nonce = mBraintreeApi.tokenize(cardBuilder);
-                    startThreeDSecureVerification(activity, requestCode, nonce, amount);
-                } catch (BraintreeException | JSONException e) {
-                    postUnrecoverableErrorToListeners(e);
-                } catch (ErrorWithResponse errorWithResponse) {
-                    postRecoverableErrorToListeners(errorWithResponse);
-                }
+            public void success(PaymentMethod paymentMethod) {
+                startThreeDSecureVerification(activity, requestCode, paymentMethod.getNonce(),
+                        amount);
+            }
+
+            @Override
+            public void failure(Exception exception) {
+                postExceptionToListeners(exception);
             }
         });
     }
@@ -863,39 +868,55 @@ public class Braintree {
      * Transactions created with this nonce will be 3D Secure, and benefit from the appropriate
      * liability shift if authentication is successful or fail with a 3D Secure failure.
      *
-     * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     *                 when {@link #startThreeDSecureVerification(android.app.Activity, int, String, String)} finishes.
-     * @param requestCode The request code associated with this start request.
-     *                    Will be returned in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     * @param nonce The nonce that represents a card to perform a 3D Secure verification against
-     * @param amount The amount of the transaction in the current merchant account's currency
+     * @param activity The {@link Activity} to receive {@link Activity#onActivityResult(int, int, Intent)}
+     *                 when {@link #startThreeDSecureVerification(Activity, int, String, String)} finishes.
+     * @param requestCode The request code associated with this start request,
+     *                    returned in {@link Activity#onActivityResult(int, int, Intent)}.
+     * @param nonce The nonce that represents a card to perform a 3D Secure verification against.
+     * @param amount The amount of the transaction in the current merchant account's currency.
      */
     @Beta
-    public synchronized void startThreeDSecureVerification(final Activity activity,
-            final int requestCode, final String nonce, final String amount) {
-        mExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ThreeDSecureLookup threeDSecureLookup = mBraintreeApi.threeDSecureLookup(nonce,
-                            amount);
-                    if (threeDSecureLookup.getAcsUrl() != null) {
-                        Intent intent = new Intent(activity, ThreeDSecureWebViewActivity.class)
-                                .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup);
-                        activity.startActivityForResult(intent, requestCode);
-                    } else {
-                        postCreatedMethodToListeners(threeDSecureLookup.getCard());
-                        postCreatedNonceToListeners(threeDSecureLookup.getCard().getNonce());
-                    }
-                } catch (BraintreeException e) {
-                    postUnrecoverableErrorToListeners(e);
-                } catch (JSONException e) {
-                    postUnrecoverableErrorToListeners(e);
-                } catch (ErrorWithResponse errorWithResponse) {
-                    postRecoverableErrorToListeners(errorWithResponse);
-                }
-            }
-        });
+    public void startThreeDSecureVerification(final Activity activity, final int requestCode,
+            final String nonce, final String amount) {
+        try {
+            JSONObject params = new JSONObject()
+                    .put("merchantAccountId", mConfiguration.getMerchantAccountId())
+                    .put("amount", amount);
+
+            mHttpClient.post(
+                    versionedPath(PAYMENT_METHOD_ENDPOINT + "/" + nonce + "/three_d_secure/lookup"),
+                    params.toString(),
+                    new HttpResponseCallback() {
+                        @Override
+                        public void success(String responseBody) {
+                            try {
+                                ThreeDSecureLookup threeDSecureLookup =
+                                        ThreeDSecureLookup.fromJson(responseBody);
+                                if (threeDSecureLookup.getAcsUrl() != null) {
+                                    Intent intent =
+                                            new Intent(activity, ThreeDSecureWebViewActivity.class)
+                                                    .putExtra(
+                                                            ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_LOOKUP,
+                                                            threeDSecureLookup);
+                                    activity.startActivityForResult(intent, requestCode);
+                                } else {
+                                    postCreatedMethodToListeners(threeDSecureLookup.getCard());
+                                    postCreatedNonceToListeners(
+                                            threeDSecureLookup.getCard().getNonce());
+                                }
+                            } catch (JSONException e) {
+                                postExceptionToListeners(e);
+                            }
+                        }
+
+                        @Override
+                        public void failure(Exception exception) {
+                            postExceptionToListeners(exception);
+                        }
+                    });
+        } catch (JSONException e) {
+            postExceptionToListeners(e);
+        }
     }
 
     /**
@@ -918,7 +939,7 @@ public class Braintree {
      * @see #startThreeDSecureVerification(android.app.Activity, int, String, String)
      */
     @Beta
-    public synchronized void finishThreeDSecureVerification(int resultCode, Intent data) {
+    public void finishThreeDSecureVerification(int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             ThreeDSecureAuthenticationResponse authenticationResponse =
                     data.getParcelableExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT);
@@ -926,9 +947,10 @@ public class Braintree {
                 postCreatedMethodToListeners(authenticationResponse.getCard());
                 postCreatedNonceToListeners(authenticationResponse.getCard().getNonce());
             } else if (authenticationResponse.getException() != null) {
-                postUnrecoverableErrorToListeners(new BraintreeException(authenticationResponse.getException()));
+                postExceptionToListeners(new BraintreeException(authenticationResponse.getException()));
             } else {
-                postRecoverableErrorToListeners(new ErrorWithResponse(422, authenticationResponse.getErrors()));
+                postExceptionToListeners(
+                        new ErrorWithResponse(422, authenticationResponse.getErrors()));
             }
         }
     }
@@ -947,7 +969,8 @@ public class Braintree {
             if (PayPal.isPayPalIntent(data)) {
                 finishPayWithPayPal(activity, responseCode, data);
             } else if (AndroidPay.isMaskedWalletResponse(data)) {
-                performAndroidPayFullWalletRequest(activity, requestCode, null, getAndroidPayGoogleTransactionId(data));
+                performAndroidPayFullWalletRequest(activity, requestCode, null,
+                        getAndroidPayGoogleTransactionId(data));
             } else if (AndroidPay.isFullWalletResponse(data)) {
                 getNonceFromAndroidPayFullWalletResponse(responseCode, data);
             } else if (Venmo.isVenmoAppSwitchResponse(data)) {
@@ -961,103 +984,68 @@ public class Braintree {
     /**
      * Create a {@link com.braintreepayments.api.models.PaymentMethod} in the Braintree Gateway.
      *
-     * On completion, returns the {@link com.braintreepayments.api.models.PaymentMethod} to
-     * {@link Braintree.PaymentMethodCreatedListener#onPaymentMethodCreated(com.braintreepayments.api.models.PaymentMethod)} and nonce to
-     * {@link Braintree.PaymentMethodNonceListener#onPaymentMethodNonce(String)}.
+     * On completion, returns the {@link PaymentMethod} to
+     * {@link Braintree.PaymentMethodCreatedListener#onPaymentMethodCreated(PaymentMethod)} and
+     * nonce to {@link Braintree.PaymentMethodNonceListener#onPaymentMethodNonce(String)}.
      *
-     * If creation fails validation, {@link Braintree.ErrorListener#onRecoverableError(com.braintreepayments.api.exceptions.ErrorWithResponse)}
-     * will be called with the resulting {@link com.braintreepayments.api.exceptions.ErrorWithResponse}.
+     * If creation fails validation, {@link Braintree.ErrorListener#onRecoverableError(ErrorWithResponse)}
+     * will be called with the resulting {@link ErrorWithResponse}.
      *
      * If an error not due to validation (server error, network issue, etc.) occurs,
      * {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)} will be called
      * with the {@link com.braintreepayments.api.exceptions.BraintreeException} that occurred.
      *
-     * @param paymentMethodBuilder {@link com.braintreepayments.api.models.PaymentMethodBuilder} for the
-     * {@link com.braintreepayments.api.models.PaymentMethod} to be created.
-     * @param <T> {@link com.braintreepayments.api.models.PaymentMethod} or a subclass.
-     * @see #tokenize(com.braintreepayments.api.models.PaymentMethodBuilder)
+     * @param paymentMethodBuilder {@link PaymentMethodBuilder} for the {@link PaymentMethod}
+     *        to be created.
      */
-    public synchronized <T extends PaymentMethod> void create(PaymentMethodBuilder paymentMethodBuilder) {
-        createHelper(paymentMethodBuilder);
+    public void create(final PaymentMethodBuilder paymentMethodBuilder) {
+        create(paymentMethodBuilder, null);
+    }
+
+    private void create(final PaymentMethodBuilder paymentMethodBuilder, final PaymentMethodResponseCallback callback) {
+        mHttpClient.post(versionedPath(paymentMethodBuilder.getApiPath()),
+                paymentMethodBuilder.build(), new HttpResponseCallback() {
+                    @Override
+                    public void success(String responseBody) {
+                        try {
+                            PaymentMethod paymentMethod =
+                                    PaymentMethod.parsePaymentMethod(responseBody,
+                                            paymentMethodBuilder.getResponsePaymentMethodType());
+                            postPaymentMethod(paymentMethod, callback);
+                        } catch (JSONException e) {
+                            postExceptionToListeners(e);
+                        }
+                    }
+
+                    @Override
+                    public void failure(Exception exception) {
+                        postExceptionToListeners(exception);
+                    }
+                });
     }
 
     /**
-     * Helper method to {@link #create(PaymentMethodBuilder)} to make execution synchronous in
-     * testing.
-     */
-    protected synchronized <T extends PaymentMethod> Future<?> createHelper(
-            final PaymentMethodBuilder paymentMethodBuilder) {
-        return mExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    PaymentMethod createdPaymentMethod = mBraintreeApi.create(paymentMethodBuilder);
-                    addPaymentMethodToCache(createdPaymentMethod);
-
-                    postCreatedMethodToListeners(createdPaymentMethod);
-                    postCreatedNonceToListeners(createdPaymentMethod.getNonce());
-                } catch (BraintreeException | JSONException e) {
-                    postUnrecoverableErrorToListeners(e);
-                } catch (ErrorWithResponse e) {
-                    postRecoverableErrorToListeners(e);
-                }
-            }
-        });
-    }
-
-    /**
-     * Tokenizes a {@link com.braintreepayments.api.models.PaymentMethod} and returns a nonce in
+     * Tokenizes a {@link PaymentMethod} and returns a nonce in
      * {@link Braintree.PaymentMethodNonceListener#onPaymentMethodNonce(String)}.
      *
-     * Tokenization functions like creating a {@link com.braintreepayments.api.models.PaymentMethod}, but
-     * defers validation until a server library attempts to use the {@link com.braintreepayments.api.models.PaymentMethod}.
-     * Use {@link #tokenize(com.braintreepayments.api.models.PaymentMethodBuilder)} to handle validation errors
-     * on the server instead of on device.
+     * Tokenization functions like creating a {@link PaymentMethod}, but defers validation until a
+     * server library attempts to use the {@link PaymentMethod}. Use
+     * {@link #tokenize(PaymentMethodBuilder)} to handle validation errors on the server instead of
+     * on device.
      *
      * If a network or server error occurs, {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)}
-     * will be called with the {@link com.braintreepayments.api.exceptions.BraintreeException} that occurred.
+     * will be called with the {@link BraintreeException} that occurred.
      *
-     * @param paymentMethodBuilder {@link com.braintreepayments.api.models.PaymentMethodBuilder} for the
-     * {@link com.braintreepayments.api.models.PaymentMethod} to be created.
-     * @see #create(com.braintreepayments.api.models.PaymentMethodBuilder)
+     * @param paymentMethodBuilder {@link PaymentMethodBuilder} for the {@link PaymentMethod}
+     *        to be created.
      */
-    public synchronized <T extends PaymentMethod> void tokenize(
-            PaymentMethodBuilder paymentMethodBuilder) {
-        tokenizeHelper(paymentMethodBuilder);
+    public void tokenize(PaymentMethodBuilder paymentMethodBuilder) {
+        tokenize(paymentMethodBuilder, null);
     }
 
-    /**
-     * Helper method to {@link #tokenize(PaymentMethodBuilder)} to make execution synchronous in
-     * testing.
-     */
-    protected synchronized <T extends PaymentMethod> Future<?> tokenizeHelper(
-            final PaymentMethodBuilder paymentMethodBuilder) {
-        return mExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String nonce = mBraintreeApi.tokenize(paymentMethodBuilder);
-                    postCreatedNonceToListeners(nonce);
-                } catch (BraintreeException | JSONException e) {
-                    postUnrecoverableErrorToListeners(e);
-                } catch (ErrorWithResponse e) {
-                    postRecoverableErrorToListeners(e);
-                }
-            }
-        });
-    }
-
-    /**
-     * @deprecated Use {@link #sendAnalyticsEvent(String)} instead.
-     *
-     * Sends analytics event to send to the Braintree analytics service. Used internally and by Drop-In.
-     * @param event Name of event to be sent.
-     * @param integrationType The type of integration used. Should be "custom" for those directly
-     *                        using {@link Braintree} or {@link BraintreeApi} without Drop-In
-     */
-    @Deprecated
-    public synchronized void sendAnalyticsEvent(String event, String integrationType) {
-        sendAnalyticsEventHelper(event, integrationType);
+    private void tokenize(PaymentMethodBuilder paymentMethodBuilder, PaymentMethodResponseCallback callback) {
+        paymentMethodBuilder.validate(false);
+        create(paymentMethodBuilder, callback);
     }
 
     /**
@@ -1065,20 +1053,13 @@ public class Braintree {
      *
      * @param eventFragment Event to be sent.
      */
-    public synchronized void sendAnalyticsEvent(String eventFragment) {
-        sendAnalyticsEventHelper(analyticsPrefix() + "." + eventFragment, getIntegrationType());
-    }
-
-    /**
-     * Helper method to {@link #sendAnalyticsEvent(String, String)} to make execution synchronous in testing.
-     */
-    protected synchronized Future<?> sendAnalyticsEventHelper(final String event, final String integrationType) {
-        return mExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                mBraintreeApi.sendAnalyticsEvent(event, integrationType);
-            }
-        });
+    public void sendAnalyticsEvent(String eventFragment) {
+        if (mConfiguration.isAnalyticsEnabled()) {
+            mHttpClient.post(mConfiguration.getAnalytics().getUrl(),
+                    AnalyticsRequest.newRequest(mContext, analyticsPrefix() + "." + eventFragment,
+                            getIntegrationType()),
+                    null);
+        }
     }
 
     /**
@@ -1090,7 +1071,8 @@ public class Braintree {
      * @see com.braintreepayments.api.data.BraintreeData
      */
     public String collectDeviceData(Activity activity, BraintreeEnvironment environment) {
-        return mBraintreeApi.collectDeviceData(activity, environment);
+        return collectDeviceData(activity, environment.getMerchantId(),
+                environment.getCollectorUrl());
     }
 
     /**
@@ -1104,7 +1086,16 @@ public class Braintree {
      * @see com.braintreepayments.api.data.BraintreeData
      */
     public String collectDeviceData(Activity activity, String merchantId, String collectorUrl) {
-        return mBraintreeApi.collectDeviceData(activity, merchantId, collectorUrl);
+        String deviceData;
+        try {
+            mBraintreeData = new BraintreeData(activity, merchantId, collectorUrl);
+            deviceData = ((BraintreeData) mBraintreeData).collectDeviceData();
+        } catch (NoClassDefFoundError e) {
+            deviceData = "{\"correlation_id\":\"" + PayPalConfiguration
+                    .getClientMetadataId(activity) + "\"}";
+        }
+
+        return deviceData;
     }
 
     private void addPaymentMethodToCache(PaymentMethod paymentMethod) {
@@ -1114,18 +1105,24 @@ public class Braintree {
         mCachedPaymentMethods.add(0, paymentMethod);
     }
 
-    private synchronized void postPaymentMethodsToListeners(List<PaymentMethod> paymentMethods) {
+    private void postPaymentMethod(PaymentMethod paymentMethod, PaymentMethodResponseCallback callback) {
+        if (callback != null) {
+            callback.success(paymentMethod);
+        } else {
+            addPaymentMethodToCache(paymentMethod);
+
+            postCreatedMethodToListeners(paymentMethod);
+            postCreatedNonceToListeners(paymentMethod.getNonce());
+        }
+    }
+
+    private void postPaymentMethodsToListeners(List<PaymentMethod> paymentMethods) {
         final List<PaymentMethod> paymentMethodsSafe = Collections.unmodifiableList(paymentMethods);
         postOrQueueCallback(new ListenerCallback() {
             @Override
             public void execute() {
                 for (final PaymentMethodsUpdatedListener listener : mUpdatedListeners) {
-                    mListenerHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onPaymentMethodsUpdated(paymentMethodsSafe);
-                        }
-                    });
+                    listener.onPaymentMethodsUpdated(paymentMethodsSafe);
                 }
             }
 
@@ -1136,17 +1133,12 @@ public class Braintree {
         });
     }
 
-    private synchronized void postCreatedMethodToListeners(final PaymentMethod paymentMethod) {
+    private void postCreatedMethodToListeners(final PaymentMethod paymentMethod) {
         postOrQueueCallback(new ListenerCallback() {
             @Override
             public void execute() {
                 for (final PaymentMethodCreatedListener listener : mCreatedListeners) {
-                    mListenerHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onPaymentMethodCreated(paymentMethod);
-                        }
-                    });
+                    listener.onPaymentMethodCreated(paymentMethod);
                 }
             }
 
@@ -1157,17 +1149,12 @@ public class Braintree {
         });
     }
 
-    private synchronized void postCreatedNonceToListeners(final String nonce) {
+    private void postCreatedNonceToListeners(final String nonce) {
         postOrQueueCallback(new ListenerCallback() {
             @Override
             public void execute() {
                 for (final PaymentMethodNonceListener listener : mNonceListeners) {
-                    mListenerHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onPaymentMethodNonce(nonce);
-                        }
-                    });
+                    listener.onPaymentMethodNonce(nonce);
                 }
             }
 
@@ -1178,46 +1165,36 @@ public class Braintree {
         });
     }
 
-    protected synchronized void postUnrecoverableErrorToListeners(final Throwable throwable) {
-        postOrQueueCallback(new ListenerCallback() {
-            @Override
-            public void execute() {
-                for (final ErrorListener listener : mErrorListeners) {
-                    mListenerHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onUnrecoverableError(throwable);
-                        }
-                    });
+    protected void postExceptionToListeners(final Exception exception) {
+        if (exception instanceof ErrorWithResponse) {
+            postOrQueueCallback(new ListenerCallback() {
+                @Override
+                public void execute() {
+                    for (final ErrorListener listener : mErrorListeners) {
+                        listener.onRecoverableError((ErrorWithResponse) exception);
+                    }
                 }
-            }
 
-            @Override
-            public boolean hasListeners() {
-                return !mErrorListeners.isEmpty();
-            }
-        });
-    }
-
-    private synchronized void postRecoverableErrorToListeners(final ErrorWithResponse error) {
-        postOrQueueCallback(new ListenerCallback() {
-            @Override
-            public void execute() {
-                for (final ErrorListener listener : mErrorListeners) {
-                    mListenerHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onRecoverableError(error);
-                        }
-                    });
+                @Override
+                public boolean hasListeners() {
+                    return !mErrorListeners.isEmpty();
                 }
-            }
+            });
+        } else {
+            postOrQueueCallback(new ListenerCallback() {
+                @Override
+                public void execute() {
+                    for (final ErrorListener listener : mErrorListeners) {
+                        listener.onUnrecoverableError(exception);
+                    }
+                }
 
-            @Override
-            public boolean hasListeners() {
-                return !mErrorListeners.isEmpty();
-            }
-        });
+                @Override
+                public boolean hasListeners() {
+                    return !mErrorListeners.isEmpty();
+                }
+            });
+        }
     }
 
     protected void postOrQueueCallback(ListenerCallback callback) {
@@ -1233,7 +1210,7 @@ public class Braintree {
      * same as {@code getCachedPaymentMethods() == 0}. If this instance has never attempted to
      * retrieve the payment methods, this will return {@code false}
      */
-    public synchronized boolean hasCachedCards() {
+    public boolean hasCachedCards() {
         return mCachedPaymentMethods != null;
     }
 
@@ -1241,7 +1218,7 @@ public class Braintree {
      * @return Unmodifiable list of previously retrieved {@link com.braintreepayments.api.models.PaymentMethod}.
      * If no attempts have been made, an empty list is returned.
      */
-    public synchronized List<PaymentMethod> getCachedPaymentMethods() {
+    public List<PaymentMethod> getCachedPaymentMethods() {
         if (mCachedPaymentMethods == null) {
             return Collections.emptyList();
         }
@@ -1258,7 +1235,7 @@ public class Braintree {
      * (or wherever you add a listener).
      * @see #unlockListeners()
      */
-    public synchronized void lockListeners() {
+    public void lockListeners() {
         mListenersLocked = true;
     }
 
@@ -1267,7 +1244,7 @@ public class Braintree {
      * this acts as a noop.
      * @see #lockListeners()
      */
-    public synchronized void unlockListeners() {
+    public void unlockListeners() {
         mListenersLocked = false;
         List<ListenerCallback> callbackQueue = new ArrayList<ListenerCallback>();
         callbackQueue.addAll(mCallbackQueue);
@@ -1279,8 +1256,12 @@ public class Braintree {
         }
     }
 
-    protected static interface ListenerCallback {
+    protected interface ListenerCallback {
         void execute();
         boolean hasListeners();
+    }
+
+    private String versionedPath(String path) {
+        return "/v1/" + path;
     }
 }

@@ -1,0 +1,21 @@
+{
+  "type": "PayPalAccount",
+  "nonce": "aaaaaa-bbbbbbb-109934023-1",
+  "description": "with email paypalaccount@example.com",
+  "isDefault": false,
+  "isLocked": false,
+  "securityQuestions": [],
+  "details": {
+    "email": "paypalaccount@example.com",
+    "payerInfo": {
+      "accountAddress": {
+        "street1": "123 Fake St.",
+        "street2": "Apt. 3",
+        "city": "Oakland",
+        "state": "CA",
+        "postalCode": "94602",
+        "country": "US"
+      }
+    }
+  }
+}

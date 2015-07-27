@@ -17,7 +17,7 @@ public class AndroidPayCardTest {
     @Test(timeout = 1000)
     @SmallTest
     public void testCanCreateFromJson() throws JSONException {
-        String androidPayString = stringFromFixture(getTargetContext(), "payment_methods/android_pay_card.json");
+        String androidPayString = stringFromFixture(getTargetContext(), "payment_methods/android_pay_card_response.json");
 
         AndroidPayCard androidPayCard = AndroidPayCard.fromJson(androidPayString);
 

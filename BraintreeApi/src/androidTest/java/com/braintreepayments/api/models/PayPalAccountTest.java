@@ -3,7 +3,7 @@ package com.braintreepayments.api.models;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 
-import com.braintreepayments.api.TestUtils;
+import com.braintreepayments.api.BraintreeTestUtils;
 import com.braintreepayments.testutils.FixturesHelper;
 
 import org.json.JSONException;
@@ -21,7 +21,7 @@ public class PayPalAccountTest {
 
     @Before
     public void setUp() {
-        TestUtils.setUp(getTargetContext());
+        BraintreeTestUtils.setUp(getTargetContext());
     }
 
     @Test(timeout = 1000)
@@ -34,7 +34,7 @@ public class PayPalAccountTest {
     @SmallTest
     public void fromJson_parsesResponse() throws JSONException {
         String paypalString = FixturesHelper.stringFromFixture(getTargetContext(),
-                "payment_methods/paypal.json");
+                "payment_methods/paypal_account_response.json");
         PayPalAccount payPalAccount = PayPalAccount.fromJson(paypalString);
 
         assertEquals("with email paypalaccount@example.com", payPalAccount.getDescription());

@@ -7,7 +7,7 @@ import android.os.SystemClock;
 import android.view.KeyEvent;
 
 import com.braintreepayments.api.Braintree;
-import com.braintreepayments.api.BraintreeTestUtils;
+import com.braintreepayments.api.DropInTestUtils;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
 import com.braintreepayments.api.exceptions.ServerException;
@@ -23,7 +23,7 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
-import static com.braintreepayments.api.BraintreeTestUtils.setClientTokenExtraForTest;
+import static com.braintreepayments.api.DropInTestUtils.setClientTokenExtraForTest;
 import static com.braintreepayments.api.TestDependencyInjector.injectBraintree;
 import static com.braintreepayments.api.TestDependencyInjector.injectSlowNonSetupBraintree;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInCardForm;
@@ -136,7 +136,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     public void testAddsEventOnSDKExitWithDeveloperError() throws JSONException {
         setupActivity();
-        BraintreeTestUtils
+        DropInTestUtils
                 .postUnrecoverableErrorFromBraintree(mBraintree, new AuthenticationException());
         waitForActivityToFinish(mActivity);
 
@@ -145,7 +145,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     public void testAddsEventOnSDKExitWithServerError() throws JSONException {
         setupActivity();
-        BraintreeTestUtils.postUnrecoverableErrorFromBraintree(mBraintree, new ServerException());
+        DropInTestUtils.postUnrecoverableErrorFromBraintree(mBraintree, new ServerException());
         waitForActivityToFinish(mActivity);
 
         verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.exit.server-error");
@@ -153,7 +153,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     public void testAddsEventOnSDKExitWithServerUnavailableError() throws JSONException {
         setupActivity();
-        BraintreeTestUtils
+        DropInTestUtils
                 .postUnrecoverableErrorFromBraintree(mBraintree, new DownForMaintenanceException());
         waitForActivityToFinish(mActivity);
 

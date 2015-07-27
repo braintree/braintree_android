@@ -16,8 +16,8 @@ import org.json.JSONObject;
 public class AndroidPayCard extends PaymentMethod implements Parcelable {
 
     protected static final String PAYMENT_METHOD_TYPE = "AndroidPayCard";
+    protected static final String API_RESOURCE_KEY = "androidPayCards";
 
-    private static final String API_RESOURCE_KEY = "androidPayCards";
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
     private static final String LAST_TWO_KEY = "lastTwo";

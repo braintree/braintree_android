@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.provider.Settings.Secure;
+import android.support.annotation.Nullable;
 
 import com.braintreepayments.api.BuildConfig;
 
@@ -55,17 +56,20 @@ public class AnalyticsRequest {
      * @param event the analytics event to record.
      * @param integrationType the current method of integrations used.
      * @return {@link String} representation of the request.
-     * @throws JSONException thrown if there was an error building the request.
      */
-    public static String newRequest(Context context, String event, String integrationType)
-            throws JSONException {
-        JSONArray events = new JSONArray()
-                .put(0, new JSONObject().put(KIND_KEY, event));
+    @Nullable
+    public static String newRequest(Context context, String event, String integrationType) {
+        try {
+            JSONArray events = new JSONArray()
+                    .put(0, new JSONObject().put(KIND_KEY, event));
 
-        return new JSONObject()
-                .put(ANALYTICS_KEY, events)
-                .put(META_KEY, getMetadata(context, integrationType))
-                .toString();
+            return new JSONObject()
+                    .put(ANALYTICS_KEY, events)
+                    .put(META_KEY, getMetadata(context, integrationType))
+                    .toString();
+        } catch (JSONException e) {
+            return null;
+        }
     }
 
     private static JSONObject getMetadata(Context context, String integrationType)

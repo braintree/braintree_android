@@ -19,7 +19,7 @@ public class CardTest {
     @SmallTest
     public void canCreateCardFromJson() throws JSONException {
         String cardString = FixturesHelper.stringFromFixture(getTargetContext(),
-                "payment_methods/visa_credit_card.json");
+                "payment_methods/visa_credit_card_response.json");
 
         Card card = Card.fromJson(cardString);
 

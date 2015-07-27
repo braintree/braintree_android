@@ -14,8 +14,8 @@ import org.json.JSONObject;
 public class Card extends PaymentMethod implements Parcelable {
 
     protected static final String PAYMENT_METHOD_TYPE = "CreditCard";
+    protected static final String API_RESOURCE_KEY = "creditCards";
 
-    private static final String API_RESOURCE_KEY = "creditCards";
     private static final String THREE_D_SECURE_INFO_KEY = "threeDSecureInfo";
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";

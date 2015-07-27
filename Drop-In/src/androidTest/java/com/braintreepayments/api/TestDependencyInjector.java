@@ -3,20 +3,73 @@ package com.braintreepayments.api;
 import android.content.Context;
 import android.os.SystemClock;
 
-import com.braintreepayments.api.exceptions.BraintreeException;
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.internal.HttpRequest;
-import com.braintreepayments.api.internal.HttpResponse;
+import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
+import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 
 import org.json.JSONException;
+
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Test utility class used to inject pre-configured instances of {@link Braintree} for use in
  * specific test cases.
  */
 public class TestDependencyInjector {
+
+    /**
+     * Inject a mocked or already setup Braintree for use in Drop-In.
+     *
+     * @param clientToken
+     * @param braintree
+     */
+    public static void injectBraintree(String clientToken, Braintree braintree) {
+        Braintree.sInstances.put(clientToken, braintree);
+    }
+
+    /**
+     * Create and setup {@link Braintree} synchronously for test.
+     *
+     * @param context
+     * @param clientToken
+     * @return {@link Braintree}
+     */
+    public static Braintree injectBraintree(Context context, String clientToken)
+            throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final Braintree[] setupBraintree = new Braintree[1];
+        Braintree.setup(context, clientToken, new BraintreeSetupFinishedListener() {
+            @Override
+            public void onBraintreeSetupFinished(boolean setupSuccessful, Braintree braintree,
+                    String errorMessage, Exception exception) {
+                if (setupSuccessful) {
+                    setupBraintree[0] = braintree;
+                    latch.countDown();
+                }
+            }
+        });
+
+        latch.await();
+
+        return setupBraintree[0];
+    }
+
+    /**
+     * Create a setup {@link Braintree}.
+     *
+     * @param context
+     * @param clientToken
+     * @param configuration
+     * @return {@link Braintree}
+     * @throws JSONException
+     */
+    public static Braintree injectBraintree(Context context, String clientToken, String configuration)
+            throws JSONException {
+        return new Braintree(context, clientToken, configuration);
+    }
+
 
     /**
      * Inject an instance of Braintree that will use the supplied client token as configuration
@@ -30,23 +83,12 @@ public class TestDependencyInjector {
             final long delay) throws JSONException {
         ClientToken clientToken = ClientToken.fromString(clientTokenString);
         Configuration configuration = Configuration.fromJson(clientTokenString);
-        HttpRequest httpRequest = new HttpRequest(clientToken.getAuthorizationFingerprint()) {
-            @Override
-            public HttpResponse get(String url) throws BraintreeException, ErrorWithResponse {
-                SystemClock.sleep(delay);
-                return super.get(url);
-            }
 
-            @Override
-            public HttpResponse post(String url, String params)
-                    throws BraintreeException, ErrorWithResponse {
-                SystemClock.sleep(delay);
-                return super.post(url, params);
-            }
-        };
+        BraintreeHttpClient httpRequest = getSlowHttpRequest(clientToken, delay);
         httpRequest.setBaseUrl(configuration.getClientApiUrl());
 
-        injectBraintree(context, clientTokenString, clientToken, configuration, httpRequest);
+        Braintree braintree = new Braintree(context, clientTokenString, clientTokenString);
+        braintree.mHttpClient = httpRequest;
     }
 
     /**
@@ -63,75 +105,43 @@ public class TestDependencyInjector {
     public static void injectSlowNonSetupBraintree(Context context, String clientTokenString,
             final long delay) throws JSONException {
         ClientToken clientToken = ClientToken.fromString(clientTokenString);
-        HttpRequest httpRequest = new HttpRequest(clientToken.getAuthorizationFingerprint()) {
+        BraintreeHttpClient httpRequest = getSlowHttpRequest(clientToken, delay);
+
+        Braintree braintree = new Braintree(context, clientTokenString);
+        braintree.mHttpClient = httpRequest;
+    }
+
+    private static BraintreeHttpClient getSlowHttpRequest(ClientToken clientToken, final long delay) {
+        return new BraintreeHttpClient(clientToken.getAuthorizationFingerprint()) {
             @Override
-            public HttpResponse get(String url) throws BraintreeException, ErrorWithResponse {
-                SystemClock.sleep(delay);
-                return super.get(url);
+            public void get(final String path, final HttpResponseCallback callback) {
+                mThreadPool.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        SystemClock.sleep(delay);
+                        callGet(path, callback);
+                    }
+                });
+            }
+
+            private void callGet(String path, HttpResponseCallback callback) {
+                super.get(path, callback);
             }
 
             @Override
-            public HttpResponse post(String url, String params)
-                    throws BraintreeException, ErrorWithResponse {
-                SystemClock.sleep(delay);
-                return super.post(url, params);
+            public void post(final String path, final String data, final HttpResponseCallback callback) {
+                mThreadPool.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        SystemClock.sleep(delay);
+                        callPost(path, data, callback);
+                    }
+                });
+            }
+
+            private void callPost(String path, String data, HttpResponseCallback callback) {
+                super.post(path, data, callback);
             }
         };
-
-        injectBraintree(context, clientTokenString, clientToken, null, httpRequest);
-    }
-
-    /**
-     * Inject a mocked or already setup Braintree for use in Drop-In.
-     *
-     * @param clientToken
-     * @param braintree
-     */
-    public static void injectBraintree(String clientToken, Braintree braintree) {
-        Braintree.sInstances.put(clientToken, braintree);
-    }
-
-    /**
-     * Inject an instance of Braintree that will use the supplied BraintreeApi
-     *
-     * @param clientToken
-     * @param braintreeApi
-     */
-    public static void injectBraintree(String clientToken, BraintreeApi braintreeApi) {
-        new Braintree(clientToken, braintreeApi);
-    }
-
-    /**
-     * Convenience method to inject an instance of Braintree that will use the supplied configuration.
-     *
-     * @param context
-     * @param clientTokenString
-     * @param configurationString
-     * @return
-     */
-    public static Braintree injectBraintree(Context context, String clientTokenString,
-            String configurationString) throws JSONException {
-        ClientToken clientToken = ClientToken.fromString(clientTokenString);
-        Configuration configuration = Configuration.fromJson(configurationString);
-        HttpRequest httpRequest = new HttpRequest(clientToken.getAuthorizationFingerprint());
-        httpRequest.setBaseUrl(configuration.getClientApiUrl());
-
-        return injectBraintree(context, clientTokenString, clientToken, configuration, httpRequest);
-    }
-
-    /**
-     * Inject an instance of Braintree that will use the supplied configuration.
-     *
-     * @param context
-     * @param clientTokenString
-     * @param clientToken
-     * @param configuration
-     * @param httpRequest
-     * @return
-     */
-    public static Braintree injectBraintree(Context context, String clientTokenString,
-            ClientToken clientToken, Configuration configuration, HttpRequest httpRequest) {
-        return new Braintree(clientTokenString,
-                new BraintreeApi(context, clientToken, configuration, httpRequest));
     }
 }

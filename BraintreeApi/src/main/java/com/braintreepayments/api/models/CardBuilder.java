@@ -181,13 +181,12 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <K extends PaymentMethod> K fromJsonResponse(String json) throws JSONException {
-        return (K) Card.fromJson(json);
+    public String getApiPath() {
+        return "payment_methods/credit_cards";
     }
 
     @Override
-    public String getApiPath() {
-        return "credit_cards";
+    public String getResponsePaymentMethodType() {
+        return Card.PAYMENT_METHOD_TYPE;
     }
 }
