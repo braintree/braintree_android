@@ -3,7 +3,7 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.test.AndroidTestCase;
 
-import com.braintreepayments.testutils.FixturesHelper;
+import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 
 public class ThreeDSecureLookupTest extends AndroidTestCase {
 
@@ -11,8 +11,7 @@ public class ThreeDSecureLookupTest extends AndroidTestCase {
 
     @Override
     protected void setUp() throws Exception {
-        mLookup = ThreeDSecureLookup.fromJson(FixturesHelper.stringFromFixture(getContext(),
-                "three_d_secure/lookup_response.json"));
+        mLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response.json"));
     }
 
     public void testCanInstantiateFromJsonString() {

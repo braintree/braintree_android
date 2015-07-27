@@ -1,15 +1,16 @@
 package com.braintreepayments.api;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 
-import com.braintreepayments.api.exceptions.ConfigurationException;
+import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PayPalAccountBuilder;
+import com.braintreepayments.api.test.TestActivity;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 import com.paypal.android.sdk.payments.PayPalProfileSharingActivity;
@@ -17,32 +18,51 @@ import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PayPalTouchActivity;
 
 import org.json.JSONException;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
 import java.util.Collections;
+import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static com.braintreepayments.api.BraintreeTestUtils.getConfigurationFromFixture;
+import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
+import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @RunWith(AndroidJUnit4.class)
 public class PayPalTest {
 
+    @Rule
+    public final ActivityTestRule<TestActivity> mActivityTestRule =
+            new ActivityTestRule<>(TestActivity.class);
+
+    private Activity mActivity;
+
+    @Before
+    public void setUp() {
+        mActivity = mActivityTestRule.getActivity();
+    }
+
     @Test(timeout = 1000)
     @SmallTest
     public void startPayPalService_stopsAndStartsService() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_offline_paypal.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_offline_paypal.json"));
         Context context = mock(Context.class);
 
         PayPal.startPaypalService(context, configuration.getPayPal());
@@ -54,23 +74,68 @@ public class PayPalTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void getLaunchIntent_returnsCorrectIntent() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_offline_paypal.json");
+    public void authorizeAccount_startsPayPal() throws JSONException {
+        ArgumentCaptor<Intent> launchIntentCaptor = ArgumentCaptor.forClass(Intent.class);
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_offline_paypal.json"));
+        BraintreeFragment fragment = getMockFragment(mActivity, configuration);
+        doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
 
-        Intent intent = PayPal.getLaunchIntent(getTargetContext(), configuration.getPayPal(),
-                Collections.singletonList("address"));
+        PayPal.authorizeAccount(fragment);
 
-        assertEquals(PayPalProfileSharingActivity.class.getName(), intent.getComponent().getClassName());
+        verify(fragment).startActivityForResult(launchIntentCaptor.capture(),
+                eq(PayPal.PAYPAL_AUTHORIZATION_REQUEST_CODE));
+        Intent intent = launchIntentCaptor.getValue();
+        assertEquals(PayPalProfileSharingActivity.class.getName(),
+                intent.getComponent().getClassName());
         assertTrue(intent.hasExtra(PayPalTouchActivity.EXTRA_REQUESTED_SCOPES));
+        String paypalScopes = intent.getParcelableExtra(PayPalTouchActivity.EXTRA_REQUESTED_SCOPES)
+                .toString();
+        assertTrue(paypalScopes.contains("https://uri.paypal.com/services/payments/futurepayments"));
+        assertTrue(paypalScopes.contains("email"));
         assertTrue(intent.hasExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION));
     }
 
     @Test(timeout = 1000)
     @SmallTest
+    public void authorizeAccount_includesAdditionalScopes() throws JSONException {
+        ArgumentCaptor<Intent> launchIntentCaptor = ArgumentCaptor.forClass(Intent.class);
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_offline_paypal.json"));
+        BraintreeFragment fragment = getMockFragment(mActivity, configuration);
+        doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
+
+        PayPal.authorizeAccount(fragment, Collections.singletonList("address"));
+
+        verify(fragment).startActivityForResult(launchIntentCaptor.capture(),
+                eq(PayPal.PAYPAL_AUTHORIZATION_REQUEST_CODE));
+        String paypalScopes =
+                launchIntentCaptor.getValue().getParcelableExtra(PayPalTouchActivity.EXTRA_REQUESTED_SCOPES)
+                .toString();
+        assertTrue(paypalScopes.contains("https://uri.paypal.com/services/payments/futurepayments"));
+        assertTrue(paypalScopes.contains("email"));
+        assertTrue(paypalScopes.contains("address"));
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void authorizeAccount_sendsAnalyticsEvent() throws JSONException, InterruptedException {
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_offline_paypal.json"));
+        BraintreeFragment fragment = getMockFragment(mActivity, configuration);
+        doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
+
+        PayPal.authorizeAccount(fragment);
+
+        verify(fragment).sendAnalyticsEvent("add-paypal.start");
+    }
+
+
+    @Test(timeout = 1000)
+    @SmallTest
     public void buildPayPalConfiguration_buildsOfflinePayPalConfiguration() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_offline_paypal.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_offline_paypal.json"));
 
         PayPalConfiguration payPalConfiguration =
                 PayPal.buildPayPalConfiguration(configuration.getPayPal());
@@ -81,8 +146,8 @@ public class PayPalTest {
     @Test(timeout = 1000)
     @SmallTest
     public void buildPayPalConfiguration_buildsLivePayPalConfiguration() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_live_paypal.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_live_paypal.json"));
 
         PayPalConfiguration payPalConfiguration =
                 PayPal.buildPayPalConfiguration(configuration.getPayPal());
@@ -93,8 +158,8 @@ public class PayPalTest {
     @Test(timeout = 1000)
     @SmallTest
     public void buildPayPalConfiguration_buildsCustomPayPalConfiguration() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_custom_paypal.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_custom_paypal.json"));
 
         PayPalConfiguration payPalConfiguration =
                 PayPal.buildPayPalConfiguration(configuration.getPayPal());
@@ -106,10 +171,11 @@ public class PayPalTest {
     @SmallTest
     public void buildPayPalServiceIntent_buildsIntentWithCustomStageUrlAndSslVerificationOffForCustomEnvironment()
             throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_custom_paypal.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_custom_paypal.json"));
 
-        Intent intent = PayPal.buildPayPalServiceIntent(getTargetContext(), configuration.getPayPal());
+        Intent intent = PayPal.buildPayPalServiceIntent(getTargetContext(),
+                configuration.getPayPal());
 
         assertNotNull(intent.getParcelableExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION));
         assertEquals("https://braintree.paypal.com/v1/",
@@ -120,10 +186,11 @@ public class PayPalTest {
     @Test(timeout = 1000)
     @SmallTest
     public void buildPayPalServiceIntent_doesNotAddExtrasToIntentForOffline() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_offline_paypal.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_offline_paypal.json"));
 
-        Intent intent = PayPal.buildPayPalServiceIntent(getTargetContext(), configuration.getPayPal());
+        Intent intent = PayPal.buildPayPalServiceIntent(getTargetContext(),
+                configuration.getPayPal());
 
         assertNotNull(intent.getParcelableExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION));
         assertNull(intent.getStringExtra("com.paypal.android.sdk.baseEnvironmentUrl"));
@@ -133,10 +200,11 @@ public class PayPalTest {
     @Test(timeout = 1000)
     @SmallTest
     public void buildPayPalServiceIntent_doesNotAddExtrasToIntentForLive() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_live_paypal.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_live_paypal.json"));
 
-        Intent intent = PayPal.buildPayPalServiceIntent(getTargetContext(), configuration.getPayPal());
+        Intent intent = PayPal.buildPayPalServiceIntent(getTargetContext(),
+                configuration.getPayPal());
 
         assertNotNull(intent.getParcelableExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION));
         assertNull(intent.getStringExtra("com.paypal.android.sdk.baseEnvironmentUrl"));
@@ -145,61 +213,25 @@ public class PayPalTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void getBuilderFromActivity_throwsConfigurationExceptionWhenResultExtrasInvalidResultCodeReturned() {
-        try {
-            PayPal.getBuilderFromActivity(null,
-                    PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID, new Intent());
-            fail("Expected a ConfigurationException but nothing was thrown");
-        } catch (ConfigurationException e) {
-            assertEquals("Result extras were invalid", e.getMessage());
-        }
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void getBuilderFromActivity_returnsNullWhenResultCodeIsNotExpected() throws ConfigurationException {
-        PayPalAccountBuilder payPalAccountBuilder = PayPal.getBuilderFromActivity(null,
-                Integer.MAX_VALUE, new Intent());
-        assertNull(payPalAccountBuilder);
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void isPayPalIntent_returnsTrueForPayPalTouchIntent() {
-        Intent intent = new Intent().putExtra(PayPalTouchActivity.EXTRA_LOGIN_CONFIRMATION, newParcelable());
-        assertTrue(PayPal.isPayPalIntent(intent));
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void isPayPalIntent_returnsTrueForPayPalSDKIntent() {
-        Intent intent = new Intent().putExtra(PayPalFuturePaymentActivity.EXTRA_RESULT_AUTHORIZATION, newParcelable());
-        assertTrue(PayPal.isPayPalIntent(intent));
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void isPayPalIntent_returnsFalseForNonEmptyIntent() {
-        Intent intent = new Intent().putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE, "nonce");
-        assertFalse(PayPal.isPayPalIntent(intent));
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void isPayPalIntent_returnsFalseForEmptyIntent() {
-        assertFalse(PayPal.isPayPalIntent(new Intent()));
-    }
-
-    private Parcelable newParcelable() {
-        return new Parcelable() {
+    public void onActivityResult_postsConfigurationExceptionWhenResultExtrasInvalidResultCodeReturned()
+            throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
+        fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public int describeContents() {
-                return 0;
+            public void onUnrecoverableError(Throwable throwable) {
+                assertEquals("PayPal result extras were invalid", throwable.getMessage());
+                latch.countDown();
             }
 
             @Override
-            public void writeToParcel(Parcel dest, int flags) {
+            public void onRecoverableError(ErrorWithResponse error) {
             }
-        };
+        });
+
+        PayPal.onActivityResult(fragment, PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID,
+                new Intent());
+
+        latch.await();
     }
 }

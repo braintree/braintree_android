@@ -3,13 +3,11 @@ package com.braintreepayments.api.models;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 
-import com.braintreepayments.testutils.FixturesHelper;
-
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
@@ -18,8 +16,7 @@ public class CardTest {
     @Test(timeout = 1000)
     @SmallTest
     public void canCreateCardFromJson() throws JSONException {
-        String cardString = FixturesHelper.stringFromFixture(getTargetContext(),
-                "payment_methods/visa_credit_card_response.json");
+        String cardString = stringFromFixture("payment_methods/visa_credit_card_response.json");
 
         Card card = Card.fromJson(cardString);
 

@@ -1,108 +1,130 @@
 package com.braintreepayments.api.threedsecure;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.SystemClock;
-import android.test.ActivityInstrumentationTestCase2;
-import android.view.KeyEvent;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.LargeTest;
+import android.test.suitebuilder.annotation.MediumTest;
 
-import com.braintreepayments.api.Braintree;
-import com.braintreepayments.api.exceptions.BraintreeException;
+import com.braintreepayments.api.BraintreeFragment;
+import com.braintreepayments.api.ThreeDSecure;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.interfaces.BraintreeErrorListener;
+import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
-import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
-import com.braintreepayments.api.test.AbstractBraintreeListener;
-import com.braintreepayments.api.test.ThreeDSecureAuthenticationTestActivity;
+import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
-import org.json.JSONException;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
-import static com.braintreepayments.api.BraintreeTestUtils.getBraintree;
-import static com.braintreepayments.api.BraintreeTestUtils.tokenize;
+import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
 import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
-public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCase2<ThreeDSecureAuthenticationTestActivity> {
+@RunWith(AndroidJUnit4.class)
+public class ThreeDSecureVerificationTest {
 
-    private static final String TEST_AMOUNT = "5";
+    private static final String TEST_AMOUNT = "1";
 
-    private String mClientToken;
-    private Braintree mBraintree;
+    @Rule
+    public final ActivityTestRule<TestActivity> mActivityTestRule =
+            new ActivityTestRule<>(TestActivity.class);
 
-    public ThreeDSecureVerificationTest() {
-        super(ThreeDSecureAuthenticationTestActivity.class);
+    private Activity mActivity;
+    private CountDownLatch mCountDownLatch;
+    private BraintreeFragment mFragment;
+
+    @Before
+    public void setUp() {
+        mActivity = mActivityTestRule.getActivity();
+        String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
+        mFragment = getFragment(mActivity, clientToken);
+        mCountDownLatch = new CountDownLatch(1);
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        mClientToken = new TestClientTokenBuilder().withThreeDSecure().build();
-        mBraintree = getBraintree(getInstrumentation().getContext(), mClientToken);
-    }
-
-    public void testReturnsWithStatusResultCanceledWhenUpIsPressed()
-            throws ErrorWithResponse, BraintreeException, InterruptedException, JSONException {
-        Activity activity = startThreeDSecureTestActivity("4000000000000002");
+//    @Test(timeout = 30000)
+//    @LargeTest
+    public void performVerification_returnsWithStatusResultCanceledWhenUpIsPressed() {
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber("4000000000000002")
+                .expirationDate("12/30");
+        ThreeDSecure.performVerification(mFragment, cardBuilder, TEST_AMOUNT);
 
         waitForView(withId(android.R.id.widget_frame));
         onView(withContentDescription("Navigate up")).perform(click());
 
-        waitForActivityToFinish(activity);
-        Map<String, Object> result = getActivityResult(activity);
+        waitForActivityToFinish(mActivity);
+        Map<String, Object> result = getActivityResult(mActivity);
 
         assertEquals(Activity.RESULT_CANCELED, result.get("resultCode"));
     }
 
-    public void testReturnsWithStatusResultCanceledWhenBackIsPressedOnFirstPage()
-            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
-        Activity activity = startThreeDSecureTestActivity("4000000000000002");
+//    @Test(timeout = 30000)
+//    @LargeTest
+    public void performVerification_returnsWithStatusResultCanceledWhenBackIsPressedOnFirstPage() {
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber("4000000000000002")
+                .expirationDate("12/30");
+        ThreeDSecure.performVerification(mFragment, cardBuilder, TEST_AMOUNT);
 
         waitForView(withId(android.R.id.widget_frame));
 
         // wait for page to load
         SystemClock.sleep(7000);
 
-        sendKeys(KeyEvent.KEYCODE_BACK);
+        pressBack();
 
-        waitForActivityToFinish(activity);
-        Map<String, Object> result = getActivityResult(activity);
+        waitForActivityToFinish(mActivity);
+        Map<String, Object> result = getActivityResult(mActivity);
 
         assertEquals(Activity.RESULT_CANCELED, result.get("resultCode"));
     }
 
-    public void pendingReturnsWithStatusResultCanceledWhenUserGoesOnePageDeepAndPressesBackTwice()
-            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
-        Activity activity = startThreeDSecureTestActivity("4000000000000002");
+//    @Test(timeout = 30000)
+//    @LargeTest
+    public void performVerification_returnsWithStatusResultCanceledWhenUserGoesOnePageDeepAndPressesBackTwice() {
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber("4000000000000002")
+                .expirationDate("12/30");
+        ThreeDSecure.performVerification(mFragment, cardBuilder, TEST_AMOUNT);
 
         waitForView(withId(android.R.id.widget_frame));
 
         // wait for page to load and click a link
         SystemClock.sleep(10000);
 
-        sendKeys(KeyEvent.KEYCODE_BACK);
+        pressBack();
         SystemClock.sleep(2000);
-        sendKeys(KeyEvent.KEYCODE_BACK);
+        pressBack();
 
-        waitForActivityToFinish(activity);
-        Map<String, Object> result = getActivityResult(activity);
+        waitForActivityToFinish(mActivity);
+        Map<String, Object> result = getActivityResult(mActivity);
 
         assertEquals(Activity.RESULT_CANCELED, result.get("resultCode"));
     }
 
-    public void testDoesALookupAndReturnsACardAndANullACSUrlWhenAuthenticationIsNotRequired()
+    @Test(timeout = 10000)
+    @MediumTest
+    public void performVerification_doesALookupAndReturnsACardAndANullACSUrlWhenAuthenticationIsNotRequired()
             throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
-        mBraintree.addListener(new AbstractBraintreeListener() {
+        mFragment.addListener(new PaymentMethodCreatedListener() {
             @Override
             public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
                 Card card = (Card) paymentMethod;
@@ -111,155 +133,187 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
                 assertTrue(card.getThreeDSecureInfo().isLiabilityShifted());
                 assertTrue(card.getThreeDSecureInfo().isLiabilityShiftPossible());
 
-                latch.countDown();
+                mCountDownLatch.countDown();
             }
         });
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber("4000000000000051")
+                .expirationDate("12/20");
 
-        mBraintree.startThreeDSecureVerification(null, 0,
-                new CardBuilder()
-                        .cardNumber("4000000000000051")
-                        .expirationDate("12/20"),
-                TEST_AMOUNT);
+        ThreeDSecure.performVerification(mFragment, cardBuilder, TEST_AMOUNT);
 
-        latch.await();
+        mCountDownLatch.await();
     }
 
-    public void testDoesALookupAndReturnsACardWhenThereIsALookupError()
+    @Test(timeout = 10000)
+    @MediumTest
+    public void performVerification_doesALookupAndReturnsACardWhenThereIsALookupError()
             throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
-        mBraintree.addListener(new AbstractBraintreeListener() {
+        mFragment.addListener(new PaymentMethodCreatedListener() {
             @Override
             public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
                 assertEquals("77", ((Card) paymentMethod).getLastTwo());
-                latch.countDown();
+                mCountDownLatch.countDown();
             }
         });
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber("4000000000000077")
+                .expirationDate("12/20");
 
-        mBraintree.startThreeDSecureVerification(null, 0,
-                new CardBuilder()
-                        .cardNumber("4000000000000077")
-                        .expirationDate("12/20"),
-                TEST_AMOUNT);
+        ThreeDSecure.performVerification(mFragment, cardBuilder, TEST_AMOUNT);
 
-        latch.await();
+        mCountDownLatch.await();
     }
 
-    public void pendingRequestsAuthenticationWhenRequired()
-            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
-        Activity activity = startThreeDSecureTestActivity("4000000000000002");
+//    @Test(timeout = 30000)
+//    @LargeTest
+    public void performVerification_requestsAuthenticationWhenRequired()
+            throws InterruptedException {
+        mFragment.addListener(new PaymentMethodCreatedListener() {
+            @Override
+            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+                Card card = (Card) paymentMethod;
+
+                assertEquals("02", card.getLastTwo());
+                assertTrue(card.getThreeDSecureInfo().isLiabilityShifted());
+                assertTrue(card.getThreeDSecureInfo().isLiabilityShiftPossible());
+
+                mCountDownLatch.countDown();
+            }
+        });
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber("4000000000000002")
+                .expirationDate("12/30");
+        ThreeDSecure.performVerification(mFragment, cardBuilder, TEST_AMOUNT);
 
         // Enter password and click submit
         SystemClock.sleep(10000);
 
-        waitForActivityToFinish(activity);
-        Map<String, Object> result = getActivityResult(activity);
-        ThreeDSecureAuthenticationResponse threeDSecureResponse = ((Intent) result.get("resultData"))
-                .getParcelableExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT);
-
-        assertEquals(Activity.RESULT_OK, result.get("resultCode"));
-        assertTrue(threeDSecureResponse.isSuccess());
-        assertEquals("02", threeDSecureResponse.getCard().getLastTwo());
+        mCountDownLatch.await();
     }
 
-    public void pendingReturnsAnErrorWhenAuthenticationFails()
-            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
-        Activity activity = startThreeDSecureTestActivity("4000000000000028");
+//    @Test(timeout = 30000)
+//    @LargeTest
+    public void performVerification_returnsAnErrorWhenAuthenticationFails()
+            throws InterruptedException {
+        mFragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onUnrecoverableError(Throwable throwable) {}
 
-        // Enter password and click submit
+            @Override
+            public void onRecoverableError(ErrorWithResponse error) {
+                assertEquals("Failed to authenticate, please try a different form of payment",
+                        error.getMessage());
+                mCountDownLatch.countDown();
+            }
+        });
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber("4000000000000028")
+                .expirationDate("12/30");
+        ThreeDSecure.performVerification(mFragment, cardBuilder, TEST_AMOUNT);
+
+        // Enter password and click submit, click continue on following page
         SystemClock.sleep(20000);
 
-        waitForActivityToFinish(activity);
-        Map<String, Object> result = getActivityResult(activity);
-        ThreeDSecureAuthenticationResponse threeDSecureResponse = ((Intent) result.get("resultData"))
-                .getParcelableExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT);
-        ErrorWithResponse errors = new ErrorWithResponse(0, threeDSecureResponse.getErrors());
-
-        assertEquals(Activity.RESULT_OK, result.get("resultCode"));
-        assertFalse(threeDSecureResponse.isSuccess());
-        assertEquals("Failed to authenticate, please try a different form of payment", errors.getMessage());
+        mCountDownLatch.await();
     }
 
-    public void testReturnsASuccessfulAuthenticationWhenIssuerDoesNotParticipate()
-            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
-        Activity activity = startThreeDSecureTestActivity("4000000000000101");
+    @Test(timeout = 30000)
+    @LargeTest
+    public void performVerification_returnsASuccessfulAuthenticationWhenIssuerDoesNotParticipate()
+            throws InterruptedException {
+        mFragment.addListener(new PaymentMethodCreatedListener() {
+            @Override
+            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+                Card card = (Card) paymentMethod;
+                assertEquals("01", card.getLastTwo());
+                assertTrue(card.getThreeDSecureInfo().isLiabilityShifted());
+                assertTrue(card.getThreeDSecureInfo().isLiabilityShiftPossible());
 
-        SystemClock.sleep(7000);
+                mCountDownLatch.countDown();
+            }
+        });
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber("4000000000000101")
+                .expirationDate("12/30");
 
-        waitForActivityToFinish(activity);
-        Map<String, Object> result = getActivityResult(activity);
-        ThreeDSecureAuthenticationResponse threeDSecureResponse = ((Intent) result.get("resultData"))
-                .getParcelableExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT);
+        ThreeDSecure.performVerification(mFragment, cardBuilder, TEST_AMOUNT);
 
-        assertEquals(Activity.RESULT_OK, result.get("resultCode"));
-        assertTrue(threeDSecureResponse.isSuccess());
-        assertEquals("01", threeDSecureResponse.getCard().getLastTwo());
+        mCountDownLatch.await();
     }
 
-    public void pendingReturnsAFailedAuthenticationWhenSignatureVerificationFails()
-            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
-        Activity activity = startThreeDSecureTestActivity("4000000000000010");
+//    @Test(timeout = 30000)
+//    @LargeTest
+    public void performVerification_returnsAFailedAuthenticationWhenSignatureVerificationFails()
+            throws InterruptedException {
+        mFragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onUnrecoverableError(Throwable throwable) {}
+
+            @Override
+            public void onRecoverableError(ErrorWithResponse error) {
+                assertEquals("Failed to authenticate, please try a different form of payment",
+                        error.getMessage());
+                mCountDownLatch.countDown();
+            }
+        });
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber("4000000000000010")
+                .expirationDate("12/30");
+        ThreeDSecure.performVerification(mFragment, cardBuilder, TEST_AMOUNT);
 
         // Enter password and click submit
         SystemClock.sleep(10000);
 
-        waitForActivityToFinish(activity);
-        Map<String, Object> result = getActivityResult(activity);
-        ThreeDSecureAuthenticationResponse threeDSecureResponse = ((Intent) result.get("resultData"))
-                .getParcelableExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT);
-        ErrorWithResponse errors = new ErrorWithResponse(0, threeDSecureResponse.getErrors());
-
-        assertEquals(Activity.RESULT_OK, result.get("resultCode"));
-        assertFalse(threeDSecureResponse.isSuccess());
-        assertEquals("Failed to authenticate, please try a different form of payment", errors.getMessage());
+        mCountDownLatch.await();
     }
 
-    public void pendingWhenIssuerIsDown()
-            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
-        Activity activity = startThreeDSecureTestActivity("4000000000000036");
+//    @Test(timeout = 30000)
+//    @LargeTest
+    public void performVerification_returnsAnUnexpectedErrorWhenIssuerIsDown() throws InterruptedException {
+        mFragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onUnrecoverableError(Throwable throwable) {}
+
+            @Override
+            public void onRecoverableError(ErrorWithResponse error) {
+                assertEquals("An unexpected error occurred", error.getMessage());
+                mCountDownLatch.countDown();
+            }
+        });
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber("4000000000000036")
+                .expirationDate("12/30");
+        ThreeDSecure.performVerification(mFragment, cardBuilder, TEST_AMOUNT);
 
         // Click continue
         SystemClock.sleep(10000);
 
-        waitForActivityToFinish(activity);
-        Map<String, Object> result = getActivityResult(activity);
-        ThreeDSecureAuthenticationResponse threeDSecureResponse = ((Intent) result.get("resultData"))
-                .getParcelableExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT);
-
-        assertEquals(Activity.RESULT_OK, result.get("resultCode"));
-        assertFalse(threeDSecureResponse.isSuccess());
-        assertNull(threeDSecureResponse.getCard());
+        mCountDownLatch.await();
     }
 
-    public void pendingEarlyTerminationWhenCardinalReturnsError()
-            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
-        Activity activity = startThreeDSecureTestActivity("4000000000000093");
+//    @Test(timeout = 30000)
+//    @LargeTest
+    public void performVerification_returnsAnErrorWhenCardinalReturnsError()
+            throws InterruptedException {
+        mFragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onUnrecoverableError(Throwable throwable) {}
+
+            @Override
+            public void onRecoverableError(ErrorWithResponse error) {
+                assertEquals("An unexpected error occurred", error.getMessage());
+                mCountDownLatch.countDown();
+            }
+        });
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber("4000000000000093")
+                .expirationDate("12/30");
+        ThreeDSecure.performVerification(mFragment, cardBuilder, TEST_AMOUNT);
 
         // Enter password and click submit
         SystemClock.sleep(10000);
 
-        waitForActivityToFinish(activity);
-        Map<String, Object> result = getActivityResult(activity);
-        ThreeDSecureAuthenticationResponse threeDSecureResponse = ((Intent) result.get("resultData"))
-                .getParcelableExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT);
-
-        assertEquals(Activity.RESULT_OK, result.get("resultCode"));
-        assertFalse(threeDSecureResponse.isSuccess());
-        assertNull(threeDSecureResponse.getCard());
+        mCountDownLatch.await();
     }
-
-    /* helper */
-    private Activity startThreeDSecureTestActivity(String cardNumber)
-            throws ErrorWithResponse, BraintreeException, JSONException, InterruptedException {
-        String nonce = tokenize(mBraintree, new CardBuilder()
-                .cardNumber(cardNumber)
-                .expirationDate("12/30"));
-        Intent intent = new Intent()
-                .putExtra(ThreeDSecureAuthenticationTestActivity.EXTRA_CLIENT_TOKEN, mClientToken)
-                .putExtra(ThreeDSecureAuthenticationTestActivity.EXTRA_NONCE, nonce)
-                .putExtra(ThreeDSecureAuthenticationTestActivity.EXTRA_AMOUNT, TEST_AMOUNT);
-        setActivityIntent(intent);
-
-        return getActivity();
-    }
-
 }

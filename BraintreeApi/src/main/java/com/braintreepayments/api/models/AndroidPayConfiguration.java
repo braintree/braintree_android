@@ -1,6 +1,10 @@
 package com.braintreepayments.api.models;
 
+import android.content.Context;
+
 import com.braintreepayments.api.annotations.Beta;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.json.JSONObject;
 
@@ -42,10 +46,17 @@ public class AndroidPayConfiguration {
     }
 
     /**
-     * @return {@code true} if Android Pay is enabled, {@code false} otherwise.
+     * @return {@code true} if Android Pay is enabled and supported in the current environment,
+     *         {@code false} otherwise.
      */
-    public boolean isEnabled() {
-        return mEnabled;
+    public boolean isEnabled(Context context) {
+        try {
+            return mEnabled &&
+                    GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) ==
+                            ConnectionResult.SUCCESS;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**

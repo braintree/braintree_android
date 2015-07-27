@@ -2,13 +2,12 @@ package com.braintreepayments.api.exceptions;
 
 import android.test.AndroidTestCase;
 
-import com.braintreepayments.testutils.FixturesHelper;
+import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 
 public class ErrorsWithResponseTest extends AndroidTestCase {
 
     public void testParsesErrorsCorrectly() {
-        String response = FixturesHelper.stringFromFixture(getContext(),
-                "errors/credit_card_error_response.json");
+        String response = stringFromFixture("errors/credit_card_error_response.json");
 
         ErrorWithResponse errorWithResponse = new ErrorWithResponse(422, response);
 
@@ -26,8 +25,7 @@ public class ErrorsWithResponseTest extends AndroidTestCase {
     }
 
     public void testHandlesTopLevelErrors() {
-        String topLevelError = FixturesHelper.stringFromFixture(getContext(),
-                "errors/auth_fingerprint_error.json");
+        String topLevelError = stringFromFixture("errors/auth_fingerprint_error.json");
 
         ErrorWithResponse errorWithResponse = new ErrorWithResponse(422, topLevelError);
 
@@ -36,8 +34,7 @@ public class ErrorsWithResponseTest extends AndroidTestCase {
     }
 
     public void testCanHandleMultipleCategories() {
-        String errors = FixturesHelper.stringFromFixture(getContext(),
-                "errors/complex_error_response.json");
+        String errors = stringFromFixture("errors/complex_error_response.json");
 
         ErrorWithResponse errorWithResponse = new ErrorWithResponse(422, errors);
 
@@ -48,7 +45,7 @@ public class ErrorsWithResponseTest extends AndroidTestCase {
     }
 
     public void testDoesNotBlowUpParsingBadJson() {
-        String badJson = FixturesHelper.stringFromFixture(mContext, "random_json.json");
+        String badJson = stringFromFixture("random_json.json");
 
         ErrorWithResponse errorWithResponse = new ErrorWithResponse(422, badJson);
 

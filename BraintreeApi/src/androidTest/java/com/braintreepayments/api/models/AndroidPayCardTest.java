@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 
@@ -17,7 +16,7 @@ public class AndroidPayCardTest {
     @Test(timeout = 1000)
     @SmallTest
     public void testCanCreateFromJson() throws JSONException {
-        String androidPayString = stringFromFixture(getTargetContext(), "payment_methods/android_pay_card_response.json");
+        String androidPayString = stringFromFixture("payment_methods/android_pay_card_response.json");
 
         AndroidPayCard androidPayCard = AndroidPayCard.fromJson(androidPayString);
 

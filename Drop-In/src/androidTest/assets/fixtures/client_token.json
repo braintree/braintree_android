@@ -1,0 +1,5 @@
+{
+    "configUrl": "client_api_configuration_url",
+    "authorizationFingerprint": "authorization_fingerprint",
+    "merchantId": "integration_merchant_id"
+}

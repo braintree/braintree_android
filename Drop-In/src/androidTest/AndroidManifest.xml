@@ -1,6 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.braintreepayments.api.dropin.test">
 
-    <application android:theme="@android:style/Theme.Holo.Light" />
+    <application
+        android:theme="@android:style/Theme.Holo.Light">
+
+        <!--suppress AndroidDomInspection -->
+        <activity android:name="com.braintreepayments.api.BraintreePaymentTestActivity" />
+
+        <!--suppress AndroidDomInspection -->
+        <activity android:name="com.braintreepayments.api.test.TestActivity" />
+    </application>
 
 </manifest>

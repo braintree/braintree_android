@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static com.braintreepayments.api.BraintreeTestUtils.getConfigurationFromFixture;
+import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -27,20 +27,20 @@ public class ConfigurationTest {
     @Test(timeout = 1000, expected = JSONException.class)
     @SmallTest
     public void fromJson_throwsForRandomJson() throws JSONException {
-        getConfigurationFromFixture(getTargetContext(), "random_json.json");
+        Configuration.fromJson(stringFromFixture("random_json.json"));
     }
 
     @Test(timeout = 1000, expected = JSONException.class)
     @SmallTest
     public void fromJson_throwsWhenNoClientApiUrlPresent() throws JSONException {
-        getConfigurationFromFixture(getTargetContext(), "configuration_without_client_api_url.json");
+        Configuration.fromJson(stringFromFixture("configuration_without_client_api_url.json"));
     }
 
     @Test(timeout = 1000)
     @SmallTest
     public void fromJson_parsesClientApiUrlFromToken() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_client_api_url.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_client_api_url.json"));
 
         assertEquals("client_api_url", configuration.getClientApiUrl());
     }
@@ -48,8 +48,8 @@ public class ConfigurationTest {
     @Test(timeout = 1000)
     @SmallTest
     public void fromJson_handlesAbsentChallenges() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_without_challenge.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_without_challenge.json"));
 
         assertFalse(configuration.isCvvChallengePresent());
         assertFalse(configuration.isPostalCodeChallengePresent());
@@ -58,8 +58,8 @@ public class ConfigurationTest {
     @Test(timeout = 1000)
     @SmallTest
     public void fromJson_parsesSingleChallengeFromToken() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_cvv_challenge.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_cvv_challenge.json"));
 
         assertTrue(configuration.isCvvChallengePresent());
         assertFalse(configuration.isPostalCodeChallengePresent());
@@ -68,8 +68,8 @@ public class ConfigurationTest {
     @Test(timeout = 1000)
     @SmallTest
     public void fromJson_parsesAllChallengesFromToken() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_multiple_challenges.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_multiple_challenges.json"));
 
         assertTrue(configuration.isCvvChallengePresent());
         assertTrue(configuration.isPostalCodeChallengePresent());
@@ -78,14 +78,14 @@ public class ConfigurationTest {
     @Test(timeout = 1000, expected = JSONException.class)
     @SmallTest
     public void fromJson_throwsWhenNoMerchantIdPresent() throws JSONException {
-        getConfigurationFromFixture(getTargetContext(), "configuration_without_merchant_id.json");
+        Configuration.fromJson(stringFromFixture("configuration_without_merchant_id.json"));
     }
 
     @Test(timeout = 1000)
     @SmallTest
     public void fromJson_parsesMerchantIdFromToken() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_merchant_id.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_merchant_id.json"));
 
         assertEquals("integration_merchant_id", configuration.getMerchantId());
     }
@@ -93,8 +93,8 @@ public class ConfigurationTest {
     @Test(timeout = 1000)
     @SmallTest
     public void fromJson_parsesMerchantAccountIdFromToken() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_merchant_account_id.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_merchant_account_id.json"));
 
         assertEquals("integration_merchant_account_id", configuration.getMerchantAccountId());
     }
@@ -102,8 +102,8 @@ public class ConfigurationTest {
     @Test(timeout = 1000)
     @SmallTest
     public void returnsOffIfVenmoIsNull() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_null_venmo.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_null_venmo.json"));
 
         assertEquals("off", configuration.getVenmoState());
     }
@@ -111,8 +111,8 @@ public class ConfigurationTest {
     @Test(timeout = 1000)
     @SmallTest
     public void returnsVenmoStatus() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_offline_venmo.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_offline_venmo.json"));
 
         assertEquals("offline", configuration.getVenmoState());
     }
@@ -120,8 +120,8 @@ public class ConfigurationTest {
     @Test(timeout = 1000)
     @SmallTest
     public void reportsThreeDSecureEnabledWhenEnabled() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_three_d_secure.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_three_d_secure.json"));
 
         assertTrue(configuration.isThreeDSecureEnabled());
     }
@@ -129,8 +129,8 @@ public class ConfigurationTest {
     @Test(timeout = 1000)
     @SmallTest
     public void reportsThreeDSecureDisabledWhenAbsent() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_no_three_d_secure.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_no_three_d_secure.json"));
 
         assertFalse(configuration.isThreeDSecureEnabled());
     }
@@ -138,11 +138,11 @@ public class ConfigurationTest {
     @Test(timeout = 1000)
     @SmallTest
     public void returnsNewAndroidPayConfigurationWhenAndroidPayIsNull() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_without_android_pay.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_without_android_pay.json"));
 
         assertNotNull(configuration.getAndroidPay());
-        assertFalse(configuration.getAndroidPay().isEnabled());
+        assertFalse(configuration.getAndroidPay().isEnabled(getTargetContext()));
         assertNull(configuration.getAndroidPay().getDisplayName());
         assertNull(configuration.getAndroidPay().getEnvironment());
     }

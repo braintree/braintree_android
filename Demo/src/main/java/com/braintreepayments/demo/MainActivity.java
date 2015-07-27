@@ -18,15 +18,16 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.braintreepayments.api.Braintree;
-import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
-import com.braintreepayments.api.Braintree.ErrorListener;
-import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
+import com.braintreepayments.api.BraintreeFragment;
+import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.PayPalSignatureVerification;
-import com.braintreepayments.api.dropin.BraintreePaymentActivity;
+import com.braintreepayments.api.ThreeDSecure;
 import com.braintreepayments.api.dropin.Customization;
 import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.interfaces.BraintreeErrorListener;
+import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.internal.VenmoSignatureVerification;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.demo.internal.ApiClient;
@@ -41,13 +42,12 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 @SuppressWarnings("com.braintreepayments.beta")
-public class MainActivity extends Activity implements PaymentMethodCreatedListener, ErrorListener,
-        OnNavigationListener {
+public class MainActivity extends Activity implements PaymentMethodCreatedListener,
+        BraintreeErrorListener, OnNavigationListener {
 
     private static final int DROP_IN_REQUEST = 100;
     private static final int PAYMENT_BUTTON_REQUEST = 200;
     private static final int CUSTOM_REQUEST = 300;
-    private static final int THREE_D_SECURE_REQUEST = 400;
 
     /**
      * Keys to store state on config changes.
@@ -57,7 +57,7 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     private static final String KEY_ENVIRONMENT = "environment";
 
     private String mClientToken;
-    private Braintree mBraintree;
+    private BraintreeFragment mBraintreeFragment;
     private String mNonce;
     private int mEnvironment;
 
@@ -137,10 +137,12 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
         Intent intent = new Intent(this, PaymentButtonActivity.class)
                 .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken)
                 .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
-                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, Settings.isAndroidPayBillingAgreement(this))
+                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT,
+                        Settings.isAndroidPayBillingAgreement(this))
                 .putExtra("shippingAddressRequired", Settings.isAndroidPayShippingAddressRequired(this))
                 .putExtra("phoneNumberRequired", Settings.isAndroidPayPhoneNumberRequired(this))
-                .putExtra("payPalAddressScopeRequested", Settings.isPayPalAddressScopeRequested(this));
+                .putExtra("payPalAddressScopeRequested", Settings.isPayPalAddressScopeRequested(
+                        this));
 
         startActivityForResult(intent, PAYMENT_BUTTON_REQUEST);
     }
@@ -160,9 +162,12 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
 
     public void createTransaction(View v) {
         Intent intent = new Intent(this, FinishedActivity.class)
-                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, mNonce);
+                .putExtra(FinishedActivity.EXTRA_PAYMENT_METHOD_NONCE, mNonce);
         startActivity(intent);
-        resetState();
+
+        mCreateTransactionButton.setEnabled(false);
+        mNonceTextView.setText("");
+        mNonce = null;
     }
 
     @Override
@@ -186,33 +191,19 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // required due to the conflicting Braintree instances in this unusual integration
-        if (mBraintree != null) {
-            mBraintree.unlockListeners();
-        }
+        super.onActivityResult(requestCode, resultCode, data);
 
         safelyCloseLoadingView();
 
         if (resultCode == RESULT_OK) {
-            if (requestCode == THREE_D_SECURE_REQUEST) {
-                mBraintree.finishThreeDSecureVerification(resultCode, data);
+            PaymentMethod paymentMethod = data.getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
+            displayNonce(paymentMethod.getNonce());
+
+            if (Settings.isThreeDSecureEnabled(this)) {
+                mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
+                ThreeDSecure.performVerification(mBraintreeFragment, mNonce, "1");
             } else {
-                if (data.hasExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD)) {
-                    PaymentMethod paymentMethod = data.getParcelableExtra(
-                            BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
-                    displayNonce(paymentMethod.getNonce());
-                } else {
-                    displayNonce(data.getStringExtra(
-                            BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE));
-                }
-
-
-                if (Settings.isThreeDSecureEnabled(this) && mBraintree.isThreeDSecureEnabled()) {
-                    mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
-                    mBraintree.startThreeDSecureVerification(this, THREE_D_SECURE_REQUEST, mNonce, "1");
-                } else {
-                    mCreateTransactionButton.setEnabled(true);
-                }
+                mCreateTransactionButton.setEnabled(true);
             }
         } else if (resultCode != RESULT_CANCELED) {
             safelyCloseLoadingView();
@@ -252,8 +243,12 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
         mCreateTransactionButton.setEnabled(false);
         mNonceTextView.setText("");
 
+        if (mBraintreeFragment != null) {
+            getFragmentManager().beginTransaction().remove(mBraintreeFragment).commit();
+        }
+
         mClientToken = null;
-        mBraintree = null;
+        mBraintreeFragment = null;
         mNonce = null;
 
         getClientToken();
@@ -261,22 +256,12 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
 
     private void setClientToken(String clientToken) {
         mClientToken = clientToken;
-        Braintree.setup(MainActivity.this, mClientToken, new BraintreeSetupFinishedListener() {
-            @Override
-            public void onBraintreeSetupFinished(boolean setupSuccessful,
-                    Braintree braintree,
-                    String errorMessage, Exception exception) {
-                if (setupSuccessful) {
-                    mBraintree = braintree;
-                    mBraintree.addListener(MainActivity.this);
-                    enableButtons(true);
-                } else {
-                    showDialog(errorMessage);
-                }
-            }
-        });
-
-        enableButtons(true);
+        try {
+            mBraintreeFragment = BraintreeFragment.newInstance(this, mClientToken);
+            enableButtons(true);
+        } catch (InvalidArgumentException e) {
+            showDialog("Client token was invalid: " + e.getMessage());
+        }
     }
 
     private void displayNonce(String nonce) {

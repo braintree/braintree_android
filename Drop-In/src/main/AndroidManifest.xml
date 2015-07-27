@@ -8,7 +8,7 @@
     <application
         android:supportsRtl="true"
         tools:ignore="UnusedAttribute">
-        <activity android:name="com.braintreepayments.api.dropin.BraintreePaymentActivity" />
+        <activity android:name="com.braintreepayments.api.BraintreePaymentActivity" />
 
         <activity android:name="com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity" />
 

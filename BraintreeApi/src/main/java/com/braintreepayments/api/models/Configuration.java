@@ -85,7 +85,8 @@ public class Configuration {
     }
 
     /**
-     * @return {@code true} if PayPal is enabled, {@code false} otherwise.
+     * @return {@code true} if PayPal is enabled and supported in the current environment,
+     *         {@code false} otherwise.
      */
     public boolean isPayPalEnabled() {
         return (mPaypalEnabled && mPayPalConfiguration.isEnabled());
@@ -120,7 +121,8 @@ public class Configuration {
     }
 
     /**
-     * @return {@code true} if 3D Secure is enabled, {@code false} otherwise.
+     * @return {@code true} if 3D Secure is enabled and supported for the current merchant account,
+     *         {@code false} otherwise.
      */
     @Beta
     public boolean isThreeDSecureEnabled() {

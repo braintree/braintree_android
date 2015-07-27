@@ -7,7 +7,7 @@
     android:paddingRight="10dp"
     android:paddingTop="40dp">
 
-    <com.braintreepayments.api.dropin.view.PaymentButton
+    <com.braintreepayments.api.PaymentButton
         android:id="@+id/payment_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

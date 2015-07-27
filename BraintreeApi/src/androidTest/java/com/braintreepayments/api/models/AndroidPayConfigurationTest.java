@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static com.braintreepayments.api.BraintreeTestUtils.getConfigurationFromFixture;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -22,12 +21,12 @@ public class AndroidPayConfigurationTest {
     @Test(timeout = 1000)
     @SmallTest
     public void parsesAndroidPayConfigurationFromToken() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_android_pay.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_android_pay.json"));
 
         AndroidPayConfiguration androidPayConfiguration = configuration.getAndroidPay();
 
-        assertTrue(androidPayConfiguration.isEnabled());
+        assertTrue(androidPayConfiguration.isEnabled(getTargetContext()));
         assertEquals("google-auth-fingerprint", androidPayConfiguration.getGoogleAuthorizationFingerprint());
         assertEquals("Android Pay Merchant", androidPayConfiguration.getDisplayName());
         assertEquals("sandbox", androidPayConfiguration.getEnvironment());
@@ -36,12 +35,12 @@ public class AndroidPayConfigurationTest {
     @Test(timeout = 1000)
     @SmallTest
     public void fromJson_parsesConfiguration() throws JSONException {
-        JSONObject json = new JSONObject(stringFromFixture(getTargetContext(), "configuration_with_android_pay.json"))
+        JSONObject json = new JSONObject(stringFromFixture("configuration_with_android_pay.json"))
                 .getJSONObject("androidPay");
 
         AndroidPayConfiguration androidPayConfiguration = AndroidPayConfiguration.fromJson(json);
 
-        assertTrue(androidPayConfiguration.isEnabled());
+        assertTrue(androidPayConfiguration.isEnabled(getTargetContext()));
         assertEquals("google-auth-fingerprint", androidPayConfiguration.getGoogleAuthorizationFingerprint());
         assertEquals("Android Pay Merchant", androidPayConfiguration.getDisplayName());
         assertEquals("sandbox", androidPayConfiguration.getEnvironment());
@@ -52,7 +51,7 @@ public class AndroidPayConfigurationTest {
     public void fromJson_returnsNewAndroidPayConfigurationWithDefaultValuesWhenJSONObjectIsNull() {
         AndroidPayConfiguration androidPayConfiguration = AndroidPayConfiguration.fromJson(null);
 
-        assertFalse(androidPayConfiguration.isEnabled());
+        assertFalse(androidPayConfiguration.isEnabled(getTargetContext()));
         assertNull(androidPayConfiguration.getGoogleAuthorizationFingerprint());
         assertNull(androidPayConfiguration.getDisplayName());
         assertNull(androidPayConfiguration.getEnvironment());
@@ -63,7 +62,7 @@ public class AndroidPayConfigurationTest {
     public void fromJson_returnsNewAndroidPayConfigurationWithDefaultValuesWhenNoDataIsPresent() {
         AndroidPayConfiguration androidPayConfiguration = AndroidPayConfiguration.fromJson(new JSONObject());
 
-        assertFalse(androidPayConfiguration.isEnabled());
+        assertFalse(androidPayConfiguration.isEnabled(getTargetContext()));
         assertNull(androidPayConfiguration.getGoogleAuthorizationFingerprint());
         assertNull(androidPayConfiguration.getDisplayName());
         assertNull(androidPayConfiguration.getEnvironment());

@@ -28,7 +28,7 @@ public class AnalyticsRequestTest {
 
         JSONObject json = new JSONObject(analyticsRequest);
 
-        assertEquals("analytics_event", json.getJSONArray("analytics").getJSONObject(0).getString("kind"));
+        assertEquals("TEST.android.analytics_event", json.getJSONArray("analytics").getJSONObject(0).getString("kind"));
     }
 
     @Test(timeout = 1000)

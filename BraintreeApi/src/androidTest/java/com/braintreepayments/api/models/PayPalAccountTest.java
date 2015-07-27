@@ -3,26 +3,17 @@ package com.braintreepayments.api.models;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 
-import com.braintreepayments.api.BraintreeTestUtils;
-import com.braintreepayments.testutils.FixturesHelper;
-
 import org.json.JSONException;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class PayPalAccountTest {
-
-    @Before
-    public void setUp() {
-        BraintreeTestUtils.setUp(getTargetContext());
-    }
 
     @Test(timeout = 1000)
     @SmallTest
@@ -33,8 +24,7 @@ public class PayPalAccountTest {
     @Test(timeout = 1000)
     @SmallTest
     public void fromJson_parsesResponse() throws JSONException {
-        String paypalString = FixturesHelper.stringFromFixture(getTargetContext(),
-                "payment_methods/paypal_account_response.json");
+        String paypalString = stringFromFixture("payment_methods/paypal_account_response.json");
         PayPalAccount payPalAccount = PayPalAccount.fromJson(paypalString);
 
         assertEquals("with email paypalaccount@example.com", payPalAccount.getDescription());

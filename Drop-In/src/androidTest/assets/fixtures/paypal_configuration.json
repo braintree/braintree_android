@@ -1,0 +1,10 @@
+{
+  "displayName": "paypal_merchant",
+  "clientId": "paypal_client_id",
+  "privacyUrl": "http://www.example.com/privacy",
+  "userAgreementUrl": "http://www.example.com/user_agreement",
+  "baseUrl": "http://localhost:9000",
+  "directBaseUrl": "http://localhost:9000",
+  "environment": "offline",
+  "touchDisabled": true
+}

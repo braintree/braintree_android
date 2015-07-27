@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--<style name="bt_base_textview">-->
+        <!--<item name="android:textSize">@dimen/bt_input_text_size</item>-->
+    <!--</style>-->
+
     <style name="bt_base_textview_bold">
         <item name="android:textSize">@dimen/bt_default_text_size</item>
         <item name="android:textStyle">bold</item>

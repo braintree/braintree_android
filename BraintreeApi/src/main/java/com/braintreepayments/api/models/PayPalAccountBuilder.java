@@ -53,7 +53,7 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
 
     @Override
     public String getApiPath() {
-        return "payment_methods/paypal_accounts";
+        return "paypal_accounts";
     }
 
     @Override

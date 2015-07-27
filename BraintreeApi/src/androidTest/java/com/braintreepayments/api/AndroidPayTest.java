@@ -1,53 +1,46 @@
 package com.braintreepayments.api;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.Configuration;
-import com.google.android.gms.wallet.WalletConstants;
+import com.braintreepayments.api.test.TestActivity;
 
-import junit.framework.TestCase;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
+import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AndroidPayTest extends TestCase {
+@RunWith(AndroidJUnit4.class)
+public class AndroidPayTest {
 
-    public void testGetTokenizationParametersReturnsCorrectParameters() {
+    @Rule
+    public final ActivityTestRule<TestActivity> mActivityTestRule =
+            new ActivityTestRule<>(TestActivity.class);
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void getTokenizationParameters_returnsCorrectParameters() {
         AndroidPayConfiguration androidPayConfiguration = mock(AndroidPayConfiguration.class);
         when(androidPayConfiguration.getGoogleAuthorizationFingerprint()).thenReturn("google-auth-fingerprint");
         Configuration configuration = mock(Configuration.class);
         when(configuration.getMerchantId()).thenReturn("android-pay-merchant-id");
         when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
+        BraintreeFragment fragment = getMockFragment(mActivityTestRule.getActivity(), configuration);
 
-        AndroidPay androidPay = new AndroidPay(configuration);
-        Bundle tokenizationParameters = androidPay.getTokenizationParameters().getParameters();
+        Bundle tokenizationParameters = AndroidPay.getTokenizationParameters(fragment).getParameters();
 
         assertEquals("braintree", tokenizationParameters.getString("gateway"));
         assertEquals(configuration.getMerchantId(), tokenizationParameters.getString("braintree:merchantId"));
         assertEquals(androidPayConfiguration.getGoogleAuthorizationFingerprint(), tokenizationParameters.getString("braintree:authorizationFingerprint"));
         assertEquals("v1", tokenizationParameters.getString("braintree:apiVersion"));
         assertEquals(BuildConfig.VERSION_NAME, tokenizationParameters.getString("braintree:sdkVersion"));
-    }
-
-    public void testIsMaskedWalletResponseReturnsTrueForMaskedWalletResponses() {
-        Intent intent = new Intent().putExtra(WalletConstants.EXTRA_MASKED_WALLET, "");
-
-        assertTrue(AndroidPay.isMaskedWalletResponse(intent));
-    }
-
-    public void testIsMaskedWalletResponseReturnsFalseForNonMaskedWalletResponses() {
-        assertFalse(AndroidPay.isMaskedWalletResponse(new Intent()));
-    }
-
-    public void testIsFullWalletResponseReturnsTrueForFullWalletResponses() {
-        Intent intent = new Intent().putExtra(WalletConstants.EXTRA_FULL_WALLET, "");
-
-        assertTrue(AndroidPay.isFullWalletResponse(intent));
-    }
-
-    public void testIsFullWalletResponseReturnsFalseForNonFullWalletResponses() {
-        assertFalse(AndroidPay.isFullWalletResponse(new Intent()));
     }
 }

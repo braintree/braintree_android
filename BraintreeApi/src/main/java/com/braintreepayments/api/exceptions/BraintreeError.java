@@ -1,5 +1,7 @@
 package com.braintreepayments.api.exceptions;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import org.json.JSONArray;
@@ -9,7 +11,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BraintreeError {
+public class BraintreeError implements Parcelable {
 
     private static final String FIELD_KEY = "field";
     private static final String MESSAGE_KEY = "message";
@@ -93,5 +95,35 @@ public class BraintreeError {
         return "BraintreeError for " + mField + ": " + mMessage + " -> " +
                 (mFieldErrors != null ? mFieldErrors.toString() : "");
     }
+
+    public BraintreeError() {}
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mField);
+        dest.writeString(mMessage);
+        dest.writeTypedList(mFieldErrors);
+    }
+
+    protected BraintreeError(Parcel in) {
+        mField = in.readString();
+        mMessage = in.readString();
+        mFieldErrors = in.createTypedArrayList(BraintreeError.CREATOR);
+    }
+
+    public static final Creator<BraintreeError> CREATOR = new Creator<BraintreeError>() {
+        public BraintreeError createFromParcel(Parcel source) {
+            return new BraintreeError(source);
+        }
+
+        public BraintreeError[] newArray(int size) {
+            return new BraintreeError[size];
+        }
+    };
 }
 

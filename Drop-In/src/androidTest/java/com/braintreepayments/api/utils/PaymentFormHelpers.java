@@ -1,12 +1,13 @@
 package com.braintreepayments.api.utils;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.support.test.espresso.PerformException;
 import android.support.test.espresso.ViewInteraction;
+import android.util.Log;
 import android.view.View;
 
-import com.braintreepayments.api.dropin.BraintreePaymentActivity;
+import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.R;
 import com.braintreepayments.api.dropin.view.LoadingHeader;
 import com.braintreepayments.api.dropin.view.LoadingHeader.HeaderState;
@@ -37,21 +38,28 @@ import static junit.framework.Assert.assertNotNull;
 
 public class PaymentFormHelpers {
 
-    public static void fillInCardForm(Context context) {
+    private static final String TAG = PaymentFormHelpers.class.getSimpleName();
+
+    public static void fillInCardForm() {
         waitForAddPaymentFormHeader();
 
-        onView(withHint(context.getString(R.string.bt_form_hint_card_number)))
+        onView(withHint(R.string.bt_form_hint_card_number))
                 .perform(typeText(VISA), closeSoftKeyboard());
-        onView(withHint(context.getString(R.string.bt_form_hint_expiration)))
+        onView(withHint(R.string.bt_form_hint_expiration))
                 .perform(typeText("0619"), closeSoftKeyboard());
-        onView(withHint(context.getString(R.string.bt_form_hint_cvv)))
-                .perform(typeText("123"), closeSoftKeyboard());
-        onView(withHint(context.getString(R.string.bt_form_hint_postal_code)))
-                .perform(typeText("12345"), closeSoftKeyboard());
+
+        try {
+            onView(withHint(R.string.bt_form_hint_cvv))
+                    .perform(typeText("123"), closeSoftKeyboard());
+            onView(withHint(R.string.bt_form_hint_postal_code))
+                    .perform(typeText("12345"), closeSoftKeyboard());
+        } catch (PerformException e) {
+            Log.i(TAG, e.getMessage());
+        }
     }
 
     public static void addCardAndAssertSuccess(Activity activity) {
-        fillInCardForm(activity);
+        fillInCardForm();
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
         waitForView(withId(R.id.bt_header_status_icon));

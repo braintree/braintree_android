@@ -1,19 +1,19 @@
 package com.braintreepayments.testutils;
 
-import android.content.Context;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
+import static android.support.test.InstrumentationRegistry.getTargetContext;
+
 public class FixturesHelper {
     public static final String FIXTURES_PATH = "fixtures/";
 
-    public static String stringFromFixture(Context context, String fixtureFilename) {
+    public static String stringFromFixture(String fixtureFilename) {
         try {
-            InputStream is = context.getResources().getAssets()
+            InputStream is = getTargetContext().getResources().getAssets()
                     .open(FIXTURES_PATH + fixtureFilename);
 
             BufferedReader reader =

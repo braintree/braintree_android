@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.exceptions.ConfigurationException;
+import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.interfaces.PaymentMethodResponseCallback;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
+import com.braintreepayments.api.models.PaymentMethod;
 import com.paypal.android.sdk.payments.PayPalAuthorization;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
 import com.paypal.android.sdk.payments.PayPalOAuthScopes;
@@ -25,67 +28,80 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Class containing PayPal specific logic.
+ */
 public class PayPal {
+
+    public static final int PAYPAL_AUTHORIZATION_REQUEST_CODE = 13591;
 
     private static final String OFFLINE = "offline";
 
     protected static boolean sEnableSignatureVerification = true;
 
-    protected static void startPaypalService(Context context,
-            com.braintreepayments.api.models.PayPalConfiguration configuration) {
-        stopPaypalService(context);
-        context.startService(buildPayPalServiceIntent(context, configuration));
-    }
-
-    protected static Intent getLaunchIntent(Context context, com.braintreepayments.api.models.PayPalConfiguration configuration,
-        List<String> additionalScopes) {
-        Class klass;
-        if (PayPalTouch.available(context, sEnableSignatureVerification) &&
-                !configuration.getEnvironment().equals(OFFLINE) &&
-                !configuration.isTouchDisabled()) {
-            klass = PayPalTouchActivity.class;
-        } else {
-            klass = PayPalProfileSharingActivity.class;
-        }
-
-        Set<String> scopes = new HashSet<String>(
-                Arrays.asList(
-                        PayPalOAuthScopes.PAYPAL_SCOPE_EMAIL,
-                        PayPalOAuthScopes.PAYPAL_SCOPE_FUTURE_PAYMENTS)
-        );
-        if (additionalScopes != null) {
-            scopes.addAll(additionalScopes);
-        }
-
-        return new Intent(context, klass)
-            .putExtra(PayPalTouchActivity.EXTRA_REQUESTED_SCOPES, new PayPalOAuthScopes(scopes))
-            .putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, buildPayPalConfiguration(configuration));
-    }
-
-    protected static void stopPaypalService(Context context) {
-        context.stopService(new Intent(context, PayPalService.class));
+    /**
+     * Starts the Pay With PayPal flow. This will launch a new activity in the PayPal mobile SDK,
+     * or if available start the PayPal Wallet app.
+     *
+     * @param fragment {@link BraintreeFragment}
+     */
+    public static void authorizeAccount(BraintreeFragment fragment) {
+        authorizeAccount(fragment, null);
     }
 
     /**
-     * Used to create a {@link PayPalAccountBuilder} from an activity response. Not necessary to use,
-     * {@link com.braintreepayments.api.Braintree#finishPayWithPayPal(android.app.Activity, int, android.content.Intent)}
-     * does this for you.
+     * Starts the Pay With PayPal flow. This will launch a new activity in the PayPal mobile SDK,
+     * or if available start the PayPal Wallet app.
      *
-     * @param activity Activity that received the result.
-     * @param resultCode Result code returned in result.
-     * @param data {@link Intent} returned in result.
-     * @return {@link PayPalAccountBuilder} or null if resultCode is not
-     * {@link android.app.Activity#RESULT_OK} or
-     * {@link com.paypal.android.sdk.payments.PayPalProfileSharingActivity#RESULT_EXTRAS_INVALID}
-     * @throws ConfigurationException if resultCode is {@link com.paypal.android.sdk.payments.PayPalProfileSharingActivity#RESULT_EXTRAS_INVALID}
+     * @param fragment {@link BraintreeFragment}
+     * @param additionalScopes A {@link List} of additional scopes.
+     *                         Ex: PayPalOAuthScopes.PAYPAL_SCOPE_ADDRESS. Acceptable scopes are
+     *                         defined in {@link com.paypal.android.sdk.payments.PayPalOAuthScopes}.
      */
-    @Nullable
-    public static PayPalAccountBuilder getBuilderFromActivity(Activity activity, int resultCode, Intent data) throws ConfigurationException {
+    public static void authorizeAccount(final BraintreeFragment fragment, final List<String> additionalScopes) {
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched() {
+                fragment.sendAnalyticsEvent("add-paypal.start");
+
+                com.braintreepayments.api.models.PayPalConfiguration configuration =
+                        fragment.getConfiguration().getPayPal();
+
+                startPaypalService(fragment.getContext(), configuration);
+
+                Class klass;
+                if (PayPalTouch.available(fragment.getContext(), sEnableSignatureVerification) &&
+                        !configuration.getEnvironment().equals(OFFLINE) &&
+                        !configuration.isTouchDisabled()) {
+                    klass = PayPalTouchActivity.class;
+                } else {
+                    klass = PayPalProfileSharingActivity.class;
+                }
+
+                Set<String> scopes = new HashSet<>(
+                        Arrays.asList(PayPalOAuthScopes.PAYPAL_SCOPE_EMAIL,
+                                PayPalOAuthScopes.PAYPAL_SCOPE_FUTURE_PAYMENTS));
+                if (additionalScopes != null) {
+                    scopes.addAll(additionalScopes);
+                }
+
+                Intent intent = new Intent(fragment.getContext(), klass)
+                        .putExtra(PayPalTouchActivity.EXTRA_REQUESTED_SCOPES,
+                                new PayPalOAuthScopes(scopes))
+                        .putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION,
+                                buildPayPalConfiguration(configuration));
+
+                fragment.startActivityForResult(intent, PAYPAL_AUTHORIZATION_REQUEST_CODE);
+            }
+        });
+    }
+
+    protected static void onActivityResult(final BraintreeFragment fragment, int resultCode, Intent data) {
+        PayPal.stopPaypalService(fragment.getContext());
+
         if (resultCode == Activity.RESULT_OK) {
             PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder();
-            if (activity != null) {
-                paypalAccountBuilder.correlationId(PayPalConfiguration.getClientMetadataId(activity));
-            }
+            paypalAccountBuilder.correlationId(PayPalConfiguration.getClientMetadataId(fragment.getContext()));
 
             PayPalTouchConfirmation paypalTouchConfirmation = data.getParcelableExtra(
                     PayPalTouchActivity.EXTRA_LOGIN_CONFIRMATION);
@@ -95,13 +111,13 @@ public class PayPal {
                     paypalTouchResponse = paypalTouchConfirmation
                             .toJSONObject()
                             .getJSONObject("response");
-                } catch (JSONException ignored) {
-                    return null;
+                    paypalAccountBuilder
+                            .consentCode(paypalTouchResponse.optString("authorization_code"))
+                            .source("paypal-app");
+                } catch (JSONException e) {
+                    fragment.postCallback(e);
+                    return;
                 }
-
-                paypalAccountBuilder
-                        .consentCode(paypalTouchResponse.optString("authorization_code"))
-                        .source("paypal-app");
             } else {
                 PayPalAuthorization authorization = data.getParcelableExtra(
                         PayPalProfileSharingActivity.EXTRA_RESULT_AUTHORIZATION);
@@ -109,37 +125,38 @@ public class PayPal {
                         .source("paypal-sdk");
             }
 
-            return paypalAccountBuilder;
+            PaymentMethodTokenization.tokenize(fragment, paypalAccountBuilder,
+                    new PaymentMethodResponseCallback() {
+                        @Override
+                        public void success(PaymentMethod paymentMethod) {
+                            fragment.postCallback(paymentMethod);
+                        }
+
+                        @Override
+                        public void failure(Exception exception) {
+                            fragment.postCallback(exception);
+                        }
+                    });
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            fragment.sendAnalyticsEvent("add-paypal.user-canceled");
         } else if (resultCode == PayPalProfileSharingActivity.RESULT_EXTRAS_INVALID) {
-            throw new ConfigurationException("Result extras were invalid");
+            fragment.postCallback(new ConfigurationException("PayPal result extras were invalid"));
         }
-
-        return null;
     }
 
-    /**
-     * Checks whether or not an {@link android.content.Intent} was generated by a Pay with PayPal flow.
-     * Used to differentiate {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     * responses for PayPal and other payment methods.
-     *
-     * @param data {@link android.content.Intent} to be checked
-     * @return {@code true} if the {@link android.content.Intent} contains PayPal data,
-     *         {@code false} if the {@link android.content.Intent} does not contain PayPal data.
-     */
-    public static boolean isPayPalIntent(Intent data) {
-        return (data.hasExtra(PayPalTouchActivity.EXTRA_LOGIN_CONFIRMATION) ||
-                data.hasExtra(PayPalProfileSharingActivity.EXTRA_RESULT_AUTHORIZATION));
-    }
-
+    @VisibleForTesting
     protected static PayPalConfiguration buildPayPalConfiguration(com.braintreepayments.api.models.PayPalConfiguration configuration) {
         PayPalConfiguration paypalConfiguration = new PayPalConfiguration();
-
-        if (configuration.getEnvironment().equals("live")) {
-            paypalConfiguration.environment(PayPalConfiguration.ENVIRONMENT_PRODUCTION);
-        } else if (configuration.getEnvironment().equals("offline")) {
-            paypalConfiguration.environment(PayPalConfiguration.ENVIRONMENT_NO_NETWORK);
-        } else {
-            paypalConfiguration.environment(configuration.getEnvironment());
+        switch (configuration.getEnvironment()) {
+            case "live":
+                paypalConfiguration.environment(PayPalConfiguration.ENVIRONMENT_PRODUCTION);
+                break;
+            case "offline":
+                paypalConfiguration.environment(PayPalConfiguration.ENVIRONMENT_NO_NETWORK);
+                break;
+            default:
+                paypalConfiguration.environment(configuration.getEnvironment());
+                break;
         }
 
         return paypalConfiguration
@@ -149,6 +166,18 @@ public class PayPal {
                 .merchantPrivacyPolicyUri(Uri.parse(configuration.getPrivacyUrl()));
     }
 
+    @VisibleForTesting
+    protected static void startPaypalService(Context context,
+            com.braintreepayments.api.models.PayPalConfiguration configuration) {
+        stopPaypalService(context);
+        context.startService(buildPayPalServiceIntent(context, configuration));
+    }
+
+    private static void stopPaypalService(Context context) {
+        context.stopService(new Intent(context, PayPalService.class));
+    }
+
+    @VisibleForTesting
     protected static Intent buildPayPalServiceIntent(Context context, com.braintreepayments.api.models.PayPalConfiguration configuration) {
         Intent intent = new Intent(context, PayPalService.class);
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, buildPayPalConfiguration(configuration));

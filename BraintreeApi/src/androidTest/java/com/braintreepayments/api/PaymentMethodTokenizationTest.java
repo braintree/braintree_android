@@ -1,0 +1,198 @@
+package com.braintreepayments.api;
+
+import android.app.Activity;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.MediumTest;
+import android.test.suitebuilder.annotation.SmallTest;
+
+import com.braintreepayments.api.exceptions.BraintreeException;
+import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.exceptions.UnexpectedException;
+import com.braintreepayments.api.interfaces.BraintreeErrorListener;
+import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
+import com.braintreepayments.api.interfaces.PaymentMethodResponseCallback;
+import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
+import com.braintreepayments.api.internal.BraintreeHttpClient;
+import com.braintreepayments.api.models.AndroidPayCard;
+import com.braintreepayments.api.models.Card;
+import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.models.PayPalAccountBuilder;
+import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.test.TestActivity;
+import com.braintreepayments.testutils.TestClientTokenBuilder;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+
+import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
+import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
+import static com.braintreepayments.testutils.CardNumber.VISA;
+import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@RunWith(AndroidJUnit4.class)
+public class PaymentMethodTokenizationTest {
+
+    @Rule
+    public final ActivityTestRule<TestActivity> mActivityTestRule =
+            new ActivityTestRule<>(TestActivity.class);
+
+    private Activity mActivity;
+
+    @Before
+    public void setUp() {
+        mActivity = mActivityTestRule.getActivity();
+    }
+
+    @Test(timeout = 10000)
+    @MediumTest
+    public void getPaymentMethods_returnsAnEmptyListIfEmpty() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        BraintreeFragment fragment = getFragment(mActivity, new TestClientTokenBuilder().build());
+        fragment.addListener(new PaymentMethodsUpdatedListener() {
+            @Override
+            public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
+                assertEquals(0, paymentMethods.size());
+                latch.countDown();
+            }
+        });
+
+        PaymentMethodTokenization.getPaymentMethods(fragment);
+
+        latch.await();
+    }
+
+    @Test(timeout = 10000)
+    @MediumTest
+    public void getPaymentMethods_throwsAnError() throws ErrorWithResponse,
+            BraintreeException, InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
+        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient("") {
+            @Override
+            public void get(String path, HttpResponseCallback callback) {
+                callback.failure(new UnexpectedException("Mock"));
+            }
+        });
+        fragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onUnrecoverableError(Throwable throwable) {
+                assertTrue(throwable instanceof UnexpectedException);
+                assertEquals("Mock", throwable.getMessage());
+                latch.countDown();
+            }
+
+            @Override
+            public void onRecoverableError(ErrorWithResponse error) {}
+        });
+
+        PaymentMethodTokenization.getPaymentMethods(fragment);
+
+        latch.await();
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void getPaymentMethods_fetchesPaymentMethods()
+            throws InvalidArgumentException, InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
+        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient("") {
+            @Override
+            public void get(String path, HttpResponseCallback callback) {
+                callback.success(stringFromFixture("payment_methods/get_payment_methods_response.json"));
+            }
+        });
+        fragment.addListener(new PaymentMethodsUpdatedListener() {
+            @Override
+            public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
+                assertEquals(3, paymentMethods.size());
+                assertEquals("11", ((Card) paymentMethods.get(0)).getLastTwo());
+                assertEquals("PayPal", paymentMethods.get(1).getTypeLabel());
+                assertEquals("11", ((AndroidPayCard) paymentMethods.get(2)).getLastTwo());
+
+                assertEquals(3, paymentMethods.size());
+                latch.countDown();
+            }
+        });
+
+        PaymentMethodTokenization.getPaymentMethods(fragment);
+
+        latch.await();
+    }
+
+    @Test(timeout = 10000)
+    @MediumTest
+    public void getPaymentMethods_getsPaymentMethodsFromServer()
+            throws InterruptedException, InvalidArgumentException {
+        final CountDownLatch createLatch = new CountDownLatch(1);
+        final CountDownLatch getLatch = new CountDownLatch(1);
+        final String clientToken = new TestClientTokenBuilder().build();
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, clientToken);
+        fragment.addListener(new PaymentMethodCreatedListener() {
+            @Override
+            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+                createLatch.countDown();
+            }
+        });
+        fragment.addListener(new PaymentMethodsUpdatedListener() {
+            @Override
+            public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
+                assertEquals(1, paymentMethods.size());
+                assertEquals("11", ((Card) paymentMethods.get(0)).getLastTwo());
+                getLatch.countDown();
+            }
+        });
+
+        CardTokenizer.tokenize(fragment, new CardBuilder()
+                .cardNumber(VISA)
+                .expirationMonth("04")
+                .expirationYear("17"));
+
+        createLatch.await();
+
+        PaymentMethodTokenization.getPaymentMethods(fragment);
+
+        getLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    @MediumTest
+    public void tokenize_acceptsAPayPalAccount() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        BraintreeFragment fragment = getFragment(mActivity, new TestClientTokenBuilder().withPayPal().build());
+        PayPalAccountBuilder paypalAccountBuilder =
+                new PayPalAccountBuilder().consentCode("test-authorization-code");
+
+        PaymentMethodTokenization.tokenize(fragment, paypalAccountBuilder,
+                new PaymentMethodResponseCallback() {
+                    @Override
+                    public void success(PaymentMethod paymentMethod) {
+                        assertNotNull(paymentMethod.getNonce());
+                        assertEquals("PayPal", paymentMethod.getTypeLabel());
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void failure(Exception exception) {
+                        fail(exception.getMessage());
+                    }
+                });
+
+        latch.await();
+    }
+}

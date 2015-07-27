@@ -38,7 +38,7 @@ public class BraintreeHttpClientTestUtils {
         } while (true);
     }
 
-    public static BraintreeHttpClient requestWithExpectedResponse(int responseCode, String response)
+    public static BraintreeHttpClient clientWithExpectedResponse(int responseCode, String response)
             throws IOException, ErrorWithResponse {
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(connection.getOutputStream()).thenReturn(mock(OutputStream.class));
@@ -48,22 +48,22 @@ public class BraintreeHttpClientTestUtils {
         when(connection.getErrorStream()).thenReturn(streamFromString(response))
             .thenReturn(streamFromString(response));
 
-        BraintreeHttpClient httpRequest = spy(new BraintreeHttpClient(null));
-        doReturn(connection).when(httpRequest).init(anyString());
+        BraintreeHttpClient httpClient = spy(new BraintreeHttpClient(null));
+        doReturn(connection).when(httpClient).init(anyString());
 
-        return httpRequest;
+        return httpClient;
     }
 
-    public static BraintreeHttpClient requestWithExpectedException(Throwable throwable)
+    public static BraintreeHttpClient clientWithExpectedException(Throwable throwable)
             throws IOException {
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(connection.getOutputStream()).thenReturn(mock(OutputStream.class));
         when(connection.getResponseCode()).thenThrow(throwable);
 
-        BraintreeHttpClient httpRequest = spy(new BraintreeHttpClient(null));
-        doReturn(connection).when(httpRequest).init(anyString());
+        BraintreeHttpClient httpClient = spy(new BraintreeHttpClient(null));
+        doReturn(connection).when(httpClient).init(anyString());
 
-        return httpRequest;
+        return httpClient;
     }
 
     public static InputStream streamFromString(String string) throws UnsupportedEncodingException {

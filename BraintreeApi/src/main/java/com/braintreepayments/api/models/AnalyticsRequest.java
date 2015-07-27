@@ -53,13 +53,14 @@ public class AnalyticsRequest {
      * Build a new analytics request.
      *
      * @param context
-     * @param event the analytics event to record.
+     * @param eventFragment the analytics event to record.
      * @param integrationType the current method of integrations used.
      * @return {@link String} representation of the request.
      */
     @Nullable
-    public static String newRequest(Context context, String event, String integrationType) {
+    public static String newRequest(Context context, String eventFragment, String integrationType) {
         try {
+            String event = integrationType + ".android." + eventFragment;
             JSONArray events = new JSONArray()
                     .put(0, new JSONObject().put(KIND_KEY, event));
 

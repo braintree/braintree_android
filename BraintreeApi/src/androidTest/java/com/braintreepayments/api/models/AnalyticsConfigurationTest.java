@@ -8,8 +8,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static com.braintreepayments.api.BraintreeTestUtils.getConfigurationFromFixture;
+import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -22,8 +21,8 @@ public class AnalyticsConfigurationTest {
     @Test(timeout = 1000)
     @SmallTest
     public void parsesAnalyticsConfigurationFromToken() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_with_analytics.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_analytics.json"));
 
         assertTrue(configuration.isAnalyticsEnabled());
         assertTrue(configuration.getAnalytics().isEnabled());
@@ -80,8 +79,8 @@ public class AnalyticsConfigurationTest {
     @Test(timeout = 1000)
     @SmallTest
     public void reportsAnalyticsDisabledWhenNoAnalyticsPresent() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                "configuration_without_analytics.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_without_analytics.json"));
 
         assertFalse(configuration.isAnalyticsEnabled());
         assertFalse(configuration.getAnalytics().isEnabled());
@@ -90,8 +89,8 @@ public class AnalyticsConfigurationTest {
     @Test(timeout = 1000)
     @SmallTest
     public void reportsAnalyticsDisabledWhenUrlIsEmpty() throws JSONException {
-        Configuration configuration = getConfigurationFromFixture(getTargetContext(),
-                        "configuration_with_empty_analytics_url.json");
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_empty_analytics_url.json"));
 
         assertNotNull(configuration.getAnalytics());
         assertEquals("", configuration.getAnalytics().getUrl());

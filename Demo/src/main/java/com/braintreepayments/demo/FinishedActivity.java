@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
-import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.view.SecureLoadingProgressBar;
 import com.braintreepayments.demo.internal.ApiClient;
 import com.braintreepayments.demo.internal.ApiClientRequestInterceptor;
@@ -20,6 +19,8 @@ import retrofit.client.Response;
 @SuppressWarnings("com.braintreepayments.beta")
 public class FinishedActivity extends Activity {
 
+    public static final String EXTRA_PAYMENT_METHOD_NONCE = "nonce";
+
     private SecureLoadingProgressBar mLoadingSpinner;
 
     @Override
@@ -28,8 +29,7 @@ public class FinishedActivity extends Activity {
         setContentView(R.layout.finished);
         mLoadingSpinner = (SecureLoadingProgressBar) findViewById(R.id.loading_spinner);
 
-        sendNonceToServer(
-                getIntent().getStringExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE));
+        sendNonceToServer(getIntent().getStringExtra(EXTRA_PAYMENT_METHOD_NONCE));
     }
 
     private void sendNonceToServer(String nonce) {

@@ -19,6 +19,7 @@ public class ClientToken {
 
     private String mConfigUrl;
     private String mAuthorizationFingerprint;
+    private String mClientTokenString;
 
     /**
      * Create a new {@link ClientToken} instance from a client token
@@ -33,6 +34,7 @@ public class ClientToken {
 
         JSONObject jsonObject = new JSONObject(clientTokenString);
         ClientToken clientToken = new ClientToken();
+        clientToken.mClientTokenString = clientTokenString;
         clientToken.mConfigUrl = jsonObject.getString(CONFIG_URL_KEY);
         clientToken.mAuthorizationFingerprint = jsonObject.getString(AUTHORIZATION_FINGERPRINT_KEY);
 
@@ -44,6 +46,13 @@ public class ClientToken {
      */
     public String getConfigUrl() {
         return mConfigUrl;
+    }
+
+    /**
+     * @return The original Client token string, can be used for serialization
+     */
+    public String toJson() {
+        return mClientTokenString;
     }
 
     /**

@@ -182,7 +182,7 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
 
     @Override
     public String getApiPath() {
-        return "payment_methods/credit_cards";
+        return "credit_cards";
     }
 
     @Override

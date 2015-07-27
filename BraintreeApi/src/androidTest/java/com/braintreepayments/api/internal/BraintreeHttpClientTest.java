@@ -25,9 +25,8 @@ import java.net.HttpURLConnection;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static com.braintreepayments.api.internal.BraintreeHttpClientTestUtils.requestWithExpectedException;
-import static com.braintreepayments.api.internal.BraintreeHttpClientTestUtils.requestWithExpectedResponse;
+import static com.braintreepayments.api.internal.BraintreeHttpClientTestUtils.clientWithExpectedException;
+import static com.braintreepayments.api.internal.BraintreeHttpClientTestUtils.clientWithExpectedResponse;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -167,7 +166,7 @@ public class BraintreeHttpClientTest {
     @SmallTest
     public void successCallbacksHappenOnMainThread()
             throws IOException, ErrorWithResponse, InterruptedException {
-        BraintreeHttpClient httpClient = requestWithExpectedResponse(200, "");
+        BraintreeHttpClient httpClient = clientWithExpectedResponse(200, "");
         final CountDownLatch countDownLatch = new CountDownLatch(2);
 
         httpClient.get("/", new HttpResponseCallback() {
@@ -202,7 +201,7 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     @SmallTest
     public void failureCallbacksHappenOnMainThread() throws InterruptedException, IOException {
-        BraintreeHttpClient httpClient = requestWithExpectedException(new IOException());
+        BraintreeHttpClient httpClient = clientWithExpectedException(new IOException());
         final CountDownLatch countDownLatch = new CountDownLatch(2);
 
         httpClient.get("/", new HttpResponseCallback() {
@@ -236,18 +235,17 @@ public class BraintreeHttpClientTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void throwsIOExceptionWhenHttpRequestBlowsUp()
-            throws IOException, InterruptedException {
-        BraintreeHttpClient httpClient = requestWithExpectedException(new IOException());
+    public void throwsIOExceptionWhenHttpRequestBlowsUp() throws IOException, InterruptedException {
+        BraintreeHttpClient httpClient = clientWithExpectedException(new IOException());
 
         assertExceptionIsThrown(httpClient, IOException.class, null);
     }
 
     @Test(timeout = 1000)
     @SmallTest
-    public void throwsServerErrorWhenServerReturns500() throws IOException,
-            InterruptedException, ErrorWithResponse {
-        BraintreeHttpClient httpClient = requestWithExpectedResponse(500, "");
+    public void throwsServerErrorWhenServerReturns500() throws IOException, InterruptedException,
+            ErrorWithResponse {
+        BraintreeHttpClient httpClient = clientWithExpectedResponse(500, "");
 
         assertExceptionIsThrown(httpClient, ServerException.class, null);
     }
@@ -256,7 +254,7 @@ public class BraintreeHttpClientTest {
     @SmallTest
     public void throwsDownForMaintenanceWhenServerIsDown()
             throws IOException, InterruptedException, ErrorWithResponse {
-        BraintreeHttpClient httpClient = requestWithExpectedResponse(503, "");
+        BraintreeHttpClient httpClient = clientWithExpectedResponse(503, "");
 
         assertExceptionIsThrown(httpClient, DownForMaintenanceException.class, null);
     }
@@ -265,7 +263,7 @@ public class BraintreeHttpClientTest {
     @SmallTest
     public void throwsUpgradeRequiredExceptionOn426()
             throws IOException, InterruptedException, ErrorWithResponse {
-        BraintreeHttpClient httpClient = requestWithExpectedResponse(426, "");
+        BraintreeHttpClient httpClient = clientWithExpectedResponse(426, "");
 
         assertExceptionIsThrown(httpClient, UpgradeRequiredException.class, null);
     }
@@ -274,7 +272,7 @@ public class BraintreeHttpClientTest {
     @SmallTest
     public void throwsAuthenticationExceptionOn401()
             throws IOException, InterruptedException, ErrorWithResponse {
-        BraintreeHttpClient httpClient = requestWithExpectedResponse(401, "");
+        BraintreeHttpClient httpClient = clientWithExpectedResponse(401, "");
 
         assertExceptionIsThrown(httpClient, AuthenticationException.class, null);
     }
@@ -283,7 +281,7 @@ public class BraintreeHttpClientTest {
     @SmallTest
     public void throwsAuthorizationExceptionOn403()
             throws IOException, InterruptedException, ErrorWithResponse {
-        BraintreeHttpClient httpClient = requestWithExpectedResponse(403, "");
+        BraintreeHttpClient httpClient = clientWithExpectedResponse(403, "");
 
         assertExceptionIsThrown(httpClient, AuthorizationException.class, null);
     }
@@ -292,8 +290,8 @@ public class BraintreeHttpClientTest {
     @SmallTest
     public void throwsErrorWithResponseOn422()
             throws IOException, InterruptedException, ErrorWithResponse {
-        BraintreeHttpClient httpClient = requestWithExpectedResponse(422,
-                stringFromFixture(getTargetContext(), "error_response.json"));
+        BraintreeHttpClient httpClient = clientWithExpectedResponse(422,
+                stringFromFixture("error_response.json"));
 
         assertExceptionIsThrown(httpClient, ErrorWithResponse.class, "There was an error");
     }
@@ -302,7 +300,7 @@ public class BraintreeHttpClientTest {
     @SmallTest
     public void throwsUnknownExceptionOnUnrecognizedStatusCode()
             throws IOException, InterruptedException, ErrorWithResponse {
-        BraintreeHttpClient httpClient = requestWithExpectedResponse(418, "");
+        BraintreeHttpClient httpClient = clientWithExpectedResponse(418, "");
 
         assertExceptionIsThrown(httpClient, UnexpectedException.class, null);
     }

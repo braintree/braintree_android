@@ -1,5 +1,7 @@
 package com.braintreepayments.api.exceptions;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import org.json.JSONException;
@@ -15,7 +17,7 @@ import java.util.List;
  *
  *  ErrorWithResponse parses the server's error response and exposes the errors.
  */
-public class ErrorWithResponse extends Exception {
+public class ErrorWithResponse extends Exception implements Parcelable {
 
     private static final String ERROR_KEY = "error";
     private static final String MESSAGE_KEY = "message";
@@ -97,4 +99,34 @@ public class ErrorWithResponse extends Exception {
         return "ErrorWithResponse (" + mStatusCode + "): " + mMessage + "\n" +
                 mFieldErrors.toString();
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mStatusCode);
+        dest.writeString(mMessage);
+        dest.writeString(mOriginalResponse);
+        dest.writeTypedList(mFieldErrors);
+    }
+
+    protected ErrorWithResponse(Parcel in) {
+        mStatusCode = in.readInt();
+        mMessage = in.readString();
+        mOriginalResponse = in.readString();
+        mFieldErrors = in.createTypedArrayList(BraintreeError.CREATOR);
+    }
+
+    public static final Creator<ErrorWithResponse> CREATOR = new Creator<ErrorWithResponse>() {
+        public ErrorWithResponse createFromParcel(Parcel source) {
+            return new ErrorWithResponse(source);
+        }
+
+        public ErrorWithResponse[] newArray(int size) {
+            return new ErrorWithResponse[size];
+        }
+    };
 }
