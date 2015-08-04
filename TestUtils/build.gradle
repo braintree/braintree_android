@@ -15,10 +15,6 @@ android {
         versionName rootProject.ext.versionName
     }
 
-    packagingOptions {
-        exclude 'LICENSE.txt'
-    }
-
     lintOptions {
         disable 'InvalidPackage'
     }

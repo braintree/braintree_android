@@ -35,10 +35,6 @@ android {
         }
     }
 
-    packagingOptions {
-        exclude 'LICENSE.txt'
-    }
-
     lintOptions {
         // Caused by Okio in OkHttp, should not fail lint
         warning 'InvalidPackage'
