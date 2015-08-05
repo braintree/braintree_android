@@ -68,8 +68,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         try {
             mPaymentButton.setAndroidPayOptions(mActivity.getAndroidPayCart(),
                     mActivity.getAndroidPayIsBillingAgreement(), false, false);
-        } catch (NoClassDefFoundError ignored) {
-        }
+        } catch (NoClassDefFoundError ignored) {}
 
         mPaymentButton.initialize(mActivity, mBraintree);
 

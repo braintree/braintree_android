@@ -165,7 +165,7 @@ public class BraintreeApi {
         try {
             return (mConfiguration.getAndroidPay().isEnabled() &&
                     GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mContext) == ConnectionResult.SUCCESS);
-        } catch (Exception e) {
+        } catch (NoClassDefFoundError e) {
             return false;
         }
     }
