@@ -1,5 +1,13 @@
 # Braintree Android SDK Release Notes
 
+## 1.6.5
+
+* Update PayPal SDK to 2.9.10
+* Fixes
+  * Fix incorrect custom integration in demo app
+  * Fix incorrect selected payment method in Drop-in after creating a new payment method
+  * Fix `NoClassDefFoundError` crash in Drop-in
+
 ## 1.6.4
 
 * Update PayPal SDK to 2.9.8
