@@ -50,7 +50,7 @@ task :release => :tests do
   braintree_drop_in_build_file = "Drop-In/build.gradle"
 
   last_version = `git tag | tail -1`.chomp
-  puts "Changes since #{last_version}:"
+  puts "\nChanges since #{last_version}:"
   sh "git log --pretty=format:\"%h %ad%x20%s%x20%x28%an%x29\" --date=short #{last_version}.."
   puts "Please update your CHANGELOG.md. Press ENTER when you are done"
   $stdin.gets
@@ -64,25 +64,34 @@ task :release => :tests do
   sh "./gradlew clean :BraintreeData:uploadArchives"
   puts "BraintreeData was uploaded, press ENTER to release it"
   $stdin.gets
-  sh "./gradlew :BraintreeData:closeAndPromoteRepository"
-  puts "Sleeping for two minutes to allow promotion to finish"
-  sleep 120
+  sh "./gradlew :BraintreeData:closeRepository"
+  puts "Sleeping for one minute to allow closing to finish"
+  sleep 60
+  sh "./gradlew :BraintreeData:promoteRepository"
+  puts "Sleeping for five minutes to allow promotion to finish"
+  sleep 300
 
   replace_string(braintree_api_build_file, "compile project(':BraintreeData')", "compile 'com.braintreepayments.api:data:#{version}'")
   sh "./gradlew clean :BraintreeApi:uploadArchives"
   puts "BraintreeApi was uploaded, press ENTER to release it"
   $stdin.gets
-  sh "./gradlew :BraintreeApi:closeAndPromoteRepository"
-  puts "Sleeping for two minutes to allow promotion to finish"
-  sleep 120
+  sh "./gradlew :BraintreeApi:closeRepository"
+  puts "Sleeping for one minute to allow closing to finish"
+  sleep 60
+  sh "./gradlew :BraintreeApi:promoteRepository"
+  puts "Sleeping for five minutes to allow promotion to finish"
+  sleep 300
 
   replace_string(braintree_drop_in_build_file, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree-api:#{version}'")
   sh "./gradlew clean :Drop-In:uploadArchives"
   puts "Drop-In was uploaded, press ENTER to release it"
   $stdin.gets
-  sh "./gradlew :Drop-In:closeAndPromoteRepository"
+  sh "./gradlew :Drop-In:closeRepository"
+  puts "Sleeping for one minute to allow closing to finish"
+  sleep 60
+  sh "./gradlew :Drop-In:promoteRepository"
 
-  puts "Archives are uploaded! Committing and tagging #{version} and preparing for the next development iteration"
+  puts "\nArchives are uploaded! Committing and tagging #{version} and preparing for the next development iteration"
   sh "git commit -am 'Release #{version}'"
   sh "git tag #{version} -am '#{version}'"
 
@@ -91,17 +100,17 @@ task :release => :tests do
   update_version("#{version}-SNAPSHOT")
   sh "git commit -am 'Prepare for development'"
 
-  puts "Done. Commits and tags have been created. If everything appears to be in order, hit ENTER to push."
+  puts "\nDone. Commits and tags have been created. If everything appears to be in order, hit ENTER to push."
   $stdin.gets
 
   sh "git push origin master #{version}"
 
-  puts "Pushed to GHE! Press ENTER to push to public Github."
+  puts "\nPushed to GHE! Press ENTER to push to public Github."
   $stdin.gets
 
   sh "git push github master #{version}"
 
-  puts "Update client_releases.yml in the docs. Press ENTER when done."
+  puts "\nUpdate client_releases.yml in the docs. Press ENTER when done."
   $stdin.gets
 end
 
