@@ -120,10 +120,10 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
 
     public void launchDropIn(View v) {
         Customization customization = new CustomizationBuilder()
-                .primaryDescription("Cart")
+                .primaryDescription(getString(R.string.cart))
                 .secondaryDescription("1 Item")
                 .amount("$1.00")
-                .submitButtonText("Buy")
+                .submitButtonText(getString(R.string.buy))
                 .build();
 
         Intent intent = new Intent(this, BraintreePaymentActivity.class)
