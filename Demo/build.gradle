@@ -9,6 +9,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
     signingConfigs {
@@ -35,11 +36,6 @@ android {
         }
     }
 
-    lintOptions {
-        // Caused by Okio in OkHttp, should not fail lint
-        warning 'InvalidPackage'
-    }
-
     buildTypes {
         release {
             minifyEnabled true
@@ -54,7 +50,10 @@ android {
 }
 
 dependencies {
-    compile 'com.squareup.okhttp:okhttp:2.3.0'
-    compile project(':Drop-In')
+    compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.google.android.gms:play-services-wallet:7.5.0'
+
+    compile project(':Drop-In')
+
+    testCompile 'com.android.support.test.espresso:espresso-core:2.2'
 }

@@ -10,6 +10,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,19 +28,18 @@ import com.braintreepayments.api.dropin.Customization;
 import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.PaymentMethod;
-import com.braintreepayments.demo.internal.BraintreeHttpRequest;
+import com.braintreepayments.demo.internal.ApiClient;
+import com.braintreepayments.demo.internal.ApiClientRequestInterceptor;
+import com.braintreepayments.demo.models.ClientToken;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.LineItem;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
-import java.io.IOException;
-
+@SuppressWarnings("com.braintreepayments.beta")
 public class MainActivity extends Activity implements PaymentMethodCreatedListener, ErrorListener,
         OnNavigationListener {
 
@@ -54,8 +54,6 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     private static final String KEY_CLIENT_TOKEN = "clientToken";
     private static final String KEY_NONCE = "nonce";
     private static final String KEY_ENVIRONMENT = "environment";
-
-    private OkHttpClient mHttpClient;
 
     private String mClientToken;
     private Braintree mBraintree;
@@ -74,9 +72,6 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
-        mHttpClient = new OkHttpClient();
-        mHttpClient.networkInterceptors().add(new BraintreeHttpRequest());
 
         // Warning, signature verification is disabled for this demo only, you should never
         // do this as it opens a security hole
@@ -155,7 +150,8 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
                 .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, Settings.isAndroidPayBillingAgreement(this))
                 .putExtra("shippingAddressRequired", Settings.isAndroidPayShippingAddressRequired(this))
                 .putExtra("phoneNumberRequired", Settings.isAndroidPayPhoneNumberRequired(this))
-                .putExtra("payPalAddressScopeRequested", Settings.isPayPalAddressScopeRequested(this));
+                .putExtra("payPalAddressScopeRequested",
+                        Settings.isPayPalAddressScopeRequested(this));
 
         startActivityForResult(intent, CUSTOM_REQUEST);
     }
@@ -223,42 +219,30 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     }
 
     private void getClientToken() {
-        Request getClientTokenRequest = new Request.Builder()
-                .url(Settings.getClientTokenUrl(this))
-                .build();
-
-        mHttpClient.newCall(getClientTokenRequest).enqueue(new Callback() {
-            @Override
-            public void onResponse(final Response response) throws IOException {
-                final String responseBody = response.body().string();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (response.isSuccessful()) {
-                            try {
-                                setClientToken(
-                                        new JSONObject(responseBody).getString("client_token"));
-                            } catch (JSONException e) {
-                                showDialog("Unable to decode client token");
+        new RestAdapter.Builder()
+                .setEndpoint(Settings.getEnvironmentUrl(this))
+                .setRequestInterceptor(new ApiClientRequestInterceptor())
+                .build()
+                .create(ApiClient.class)
+                .getClientToken(Settings.getCustomerId(this),
+                        Settings.getThreeDSecureMerchantAccountId(this),
+                        new Callback<ClientToken>() {
+                            @Override
+                            public void success(ClientToken clientToken, Response response) {
+                                if (TextUtils.isEmpty(clientToken.getClientToken())) {
+                                    showDialog("Client token was empty");
+                                } else {
+                                    setClientToken(clientToken.getClientToken());
+                                }
                             }
-                        } else {
-                            showDialog("Unable to get a client token. Response Code: " +
-                                    response.code() + " Response body: " + responseBody);
-                        }
-                    }
-                });
-            }
 
-            @Override
-            public void onFailure(Request request, final IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showDialog("Unable to get a client token. Error:" + e.getMessage());
-                    }
-                });
-            }
-        });
+                            @Override
+                            public void failure(RetrofitError error) {
+                                showDialog("Unable to get a client token. Response Code: " +
+                                        error.getResponse().getStatus() + " Response body: " +
+                                        error.getResponse().getBody());
+                            }
+                        });
     }
 
     private void resetState() {

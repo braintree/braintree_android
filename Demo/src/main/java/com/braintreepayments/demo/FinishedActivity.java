@@ -2,23 +2,22 @@ package com.braintreepayments.demo;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.view.SecureLoadingProgressBar;
-import com.braintreepayments.demo.internal.BraintreeHttpRequest;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import com.braintreepayments.demo.internal.ApiClient;
+import com.braintreepayments.demo.internal.ApiClientRequestInterceptor;
+import com.braintreepayments.demo.models.Transaction;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
-import java.io.IOException;
-
+@SuppressWarnings("com.braintreepayments.beta")
 public class FinishedActivity extends Activity {
 
     private SecureLoadingProgressBar mLoadingSpinner;
@@ -34,55 +33,37 @@ public class FinishedActivity extends Activity {
     }
 
     private void sendNonceToServer(String nonce) {
-        OkHttpClient httpClient = new OkHttpClient();
-        httpClient.networkInterceptors().add(new BraintreeHttpRequest());
+        ApiClient apiClient = new RestAdapter.Builder()
+                .setEndpoint(Settings.getEnvironmentUrl(this))
+                .setRequestInterceptor(new ApiClientRequestInterceptor())
+                .build()
+                .create(ApiClient.class);
 
-        FormEncodingBuilder params = new FormEncodingBuilder();
-        params.add("nonce", nonce);
+        String merchantAccountId = null;
+        boolean requireThreeDSecure = false;
         if (Settings.isThreeDSecureEnabled(this)) {
-            if (Settings.getEnvironment(this) == 1) {
-                params.add("merchant_account_id", "test_AIB");
-            }
-
-            params.add("requireThreeDSecure", String.valueOf(Settings.isThreeDSecureRequired(this)));
+            merchantAccountId = Settings.getThreeDSecureMerchantAccountId(this);
+            requireThreeDSecure = Settings.isThreeDSecureRequired(this);
         }
 
-        Request request = new Request.Builder()
-                .url(Settings.getEnvironmentUrl(this) + "/nonce/transaction")
-                .post(params.build())
-                .build();
-
-        httpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onResponse(final Response response) throws IOException {
-                runOnUiThread(new Runnable() {
+        apiClient.createTransaction(nonce, merchantAccountId, requireThreeDSecure,
+                new Callback<Transaction>() {
                     @Override
-                    public void run() {
-                        if (response.isSuccessful()) {
-                            try {
-                                showMessage(new JSONObject(response.body().string()).optString("message"));
-                            } catch (JSONException e) {
-                                showMessage(e.getMessage());
-                            } catch (IOException e) {
-                                showMessage(e.getMessage());
-                            }
+                    public void success(Transaction transaction, Response response) {
+                        if (TextUtils.isEmpty(transaction.getMessage())) {
+                            showMessage("Message was empty");
                         } else {
-                            showMessage("Server responded with a non 200 response code.");
+                            showMessage(transaction.getMessage());
                         }
                     }
-                });
-            }
 
-            @Override
-            public void onFailure(Request request, final IOException e) {
-                runOnUiThread(new Runnable() {
                     @Override
-                    public void run() {
-                        showMessage(e.getMessage());
+                    public void failure(RetrofitError error) {
+                        showMessage("Unable to create a transaction. Response Code: " +
+                                error.getResponse().getStatus() + " Response body: " +
+                                error.getResponse().getBody());
                     }
                 });
-            }
-        });
     }
 
     private void showMessage(String message) {
