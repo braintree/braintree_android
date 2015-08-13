@@ -107,6 +107,10 @@ public class BraintreeApi {
         mConfiguration = configuration;
         mHttpRequest = requestor;
 
+        if (configuration != null) {
+            mHttpRequest.setBaseUrl(configuration.getClientApiUrl());
+        }
+
         mBraintreeData = null;
         mVenmoAppSwitch = new VenmoAppSwitch(mContext, mConfiguration);
     }

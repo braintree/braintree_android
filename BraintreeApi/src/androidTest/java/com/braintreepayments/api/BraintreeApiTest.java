@@ -159,7 +159,7 @@ public class BraintreeApiTest extends AndroidTestCase {
         when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
 
         BraintreeApi braintreeApi =
-                new BraintreeApi(mContext, mock(ClientToken.class), configuration, null);
+                new BraintreeApi(mContext, mock(ClientToken.class), configuration, mock(HttpRequest.class));
         Bundle tokenizationParameters =
                 braintreeApi.getAndroidPayTokenizationParameters().getParameters();
 
