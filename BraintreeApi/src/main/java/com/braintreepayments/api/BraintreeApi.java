@@ -214,7 +214,8 @@ public class BraintreeApi {
      */
     public void startPayWithPayPal(Activity activity, int requestCode, List<String> additionalScopes) {
         PayPalHelper.startPaypal(activity.getApplicationContext(), mConfiguration.getPayPal());
-        PayPalHelper.launchPayPal(activity, requestCode, mConfiguration.getPayPal(), additionalScopes);
+        PayPalHelper.launchPayPal(activity, requestCode, mConfiguration.getPayPal(),
+                additionalScopes);
     }
 
 
@@ -369,10 +370,16 @@ public class BraintreeApi {
 
     protected AndroidPayCard getNonceFromAndroidPayFullWalletResponse(Intent data) throws JSONException {
         if (AndroidPay.isFullWalletResponse(data)) {
-            FullWallet fullWallet = data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET);
-            JSONArray androidPayCards = new JSONObject(fullWallet.getPaymentMethodToken().getToken())
-                    .getJSONArray("androidPayCards");
-            if (androidPayCards.length() > 0) {
+            JSONObject response = new JSONObject(((FullWallet) data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET))
+                    .getPaymentMethodToken()
+                    .getToken());
+            JSONArray androidPayCards;
+            try {
+                androidPayCards = response.getJSONArray("androidPayCards");
+            } catch (JSONException e) {
+                androidPayCards = response.getJSONArray("androidPayNetworkTokens");
+            }
+            if (androidPayCards != null && androidPayCards.length() > 0) {
                 return new Gson().fromJson(androidPayCards.getString(0), AndroidPayCard.class);
             }
         }
