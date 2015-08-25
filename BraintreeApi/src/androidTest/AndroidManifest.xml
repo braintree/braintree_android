@@ -3,8 +3,5 @@
     <application>
         <!--suppress AndroidDomInspection -->
         <activity android:name=".test.TestActivity" />
-
-        <!--suppress AndroidDomInspection -->
-        <activity android:name=".test.ThreeDSecureAuthenticationTestActivity" />
     </application>
 </manifest>
