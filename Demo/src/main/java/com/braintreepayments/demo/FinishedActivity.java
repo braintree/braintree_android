@@ -33,37 +33,37 @@ public class FinishedActivity extends Activity {
     }
 
     private void sendNonceToServer(String nonce) {
+        Callback<Transaction> callback = new Callback<Transaction>() {
+            @Override
+            public void success(Transaction transaction, Response response) {
+                if (TextUtils.isEmpty(transaction.getMessage())) {
+                    showMessage("Message was empty");
+                } else {
+                    showMessage(transaction.getMessage());
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                showMessage("Unable to create a transaction. Response Code: " +
+                        error.getResponse().getStatus() + " Response body: " +
+                        error.getResponse().getBody());
+            }
+        };
+
         ApiClient apiClient = new RestAdapter.Builder()
                 .setEndpoint(Settings.getEnvironmentUrl(this))
                 .setRequestInterceptor(new ApiClientRequestInterceptor())
                 .build()
                 .create(ApiClient.class);
 
-        String merchantAccountId = null;
-        boolean requireThreeDSecure = false;
-        if (Settings.isThreeDSecureEnabled(this)) {
-            merchantAccountId = Settings.getThreeDSecureMerchantAccountId(this);
-            requireThreeDSecure = Settings.isThreeDSecureRequired(this);
+        if (Settings.isThreeDSecureEnabled(this) && Settings.isThreeDSecureRequired(this)) {
+            apiClient.createTransaction(nonce, Settings.getThreeDSecureMerchantAccountId(this), true, callback);
+        } else if (Settings.isThreeDSecureEnabled(this)) {
+            apiClient.createTransaction(nonce, Settings.getThreeDSecureMerchantAccountId(this), callback);
+        } else {
+            apiClient.createTransaction(nonce, callback);
         }
-
-        apiClient.createTransaction(nonce, merchantAccountId, requireThreeDSecure,
-                new Callback<Transaction>() {
-                    @Override
-                    public void success(Transaction transaction, Response response) {
-                        if (TextUtils.isEmpty(transaction.getMessage())) {
-                            showMessage("Message was empty");
-                        } else {
-                            showMessage(transaction.getMessage());
-                        }
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        showMessage("Unable to create a transaction. Response Code: " +
-                                error.getResponse().getStatus() + " Response body: " +
-                                error.getResponse().getBody());
-                    }
-                });
     }
 
     private void showMessage(String message) {
