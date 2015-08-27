@@ -3,6 +3,7 @@ package com.braintreepayments.api.internal;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.braintreepayments.api.BuildConfig;
@@ -51,16 +52,20 @@ public class BraintreeHttpClient {
     private static final String UTF_8 = "UTF-8";
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorizationFingerprint";
 
-    protected final MonitoredThreadPoolExecutor mThreadPool;
+    protected final MonitoredThreadPoolExecutor mThreadPool = MonitoredThreadPoolExecutor.newCachedThreadPool();
 
     private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
+    private String mClientKey;
     private String mAuthorizationFingerprint;
     private String mBaseUrl;
     private int mConnectTimeout = 30000; // 30 seconds
     private int mReadTimeout = 60000; // 60 seconds
 
-    public BraintreeHttpClient(String authorizationFingerprint) {
-        mThreadPool = MonitoredThreadPoolExecutor.newCachedThreadPool();
+    public void setClientKey(String clientKey) {
+        mClientKey = (clientKey == null) ? "" : clientKey;
+    }
+
+    public void setAuthorizationFingerprint(String authorizationFingerprint) {
         mAuthorizationFingerprint = (authorizationFingerprint == null) ? "" : authorizationFingerprint;
     }
 
@@ -98,9 +103,13 @@ public class BraintreeHttpClient {
                 } else {
                     uri = Uri.parse(mBaseUrl + path);
                 }
-                uri = uri.buildUpon()
-                        .appendQueryParameter(AUTHORIZATION_FINGERPRINT_KEY, mAuthorizationFingerprint)
-                        .build();
+
+                if (!TextUtils.isEmpty(mAuthorizationFingerprint)) {
+                    uri = uri.buildUpon()
+                            .appendQueryParameter(AUTHORIZATION_FINGERPRINT_KEY,
+                                    mAuthorizationFingerprint)
+                            .build();
+                }
 
                 HttpURLConnection connection = null;
                 try {
@@ -132,9 +141,14 @@ public class BraintreeHttpClient {
             public void run() {
                 HttpURLConnection connection = null;
                 try {
-                    String payload = new JSONObject(data)
-                            .put(AUTHORIZATION_FINGERPRINT_KEY, mAuthorizationFingerprint)
-                            .toString();
+                    String payload;
+                    if (!TextUtils.isEmpty(mAuthorizationFingerprint)) {
+                        payload = new JSONObject(data)
+                                .put(AUTHORIZATION_FINGERPRINT_KEY, mAuthorizationFingerprint)
+                                .toString();
+                    } else {
+                       payload = data;
+                    }
 
                     if (path.startsWith("http")) {
                         connection = init(path);
@@ -152,7 +166,9 @@ public class BraintreeHttpClient {
 
                     handleResponse(connection, callback);
                 } catch (IOException | JSONException e) {
-                    postCallbackOnMainThread(callback, e);
+                    if (callback != null) {
+                        postCallbackOnMainThread(callback, e);
+                    }
                 } finally {
                     if (connection != null) {
                         connection.disconnect();
@@ -174,6 +190,11 @@ public class BraintreeHttpClient {
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("User-Agent", USER_AGENT);
         connection.setRequestProperty("Accept-Language", Locale.getDefault().getLanguage());
+
+        if (!TextUtils.isEmpty(mClientKey)) {
+            connection.setRequestProperty("Client-Key", mClientKey);
+        }
+
         connection.setConnectTimeout(mConnectTimeout);
         connection.setReadTimeout(mReadTimeout);
 
@@ -202,7 +223,11 @@ public class BraintreeHttpClient {
                 postCallbackOnMainThread(callback, new AuthenticationException());
                 break;
             case HTTP_FORBIDDEN:
-                postCallbackOnMainThread(callback, new AuthorizationException());
+                responseBody = readStream(connection.getErrorStream());
+                log("Received error response body: " + responseBody);
+                String errorMessage = new ErrorWithResponse(responseCode, responseBody).getMessage();
+
+                postCallbackOnMainThread(callback, new AuthorizationException(errorMessage));
                 break;
             case 422: // HTTP_UNPROCESSABLE_ENTITY
                 responseBody = readStream(connection.getErrorStream());

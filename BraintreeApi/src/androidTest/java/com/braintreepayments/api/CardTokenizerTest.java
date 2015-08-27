@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.testutils.CardNumber.VISA;
+import static com.braintreepayments.testutils.TestClientKey.CLIENT_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
@@ -46,6 +47,26 @@ public class CardTokenizerTest {
     @Test(timeout = 10000)
     @MediumTest
     public void tokenize_tokenizesACard() throws InvalidArgumentException, InterruptedException {
+        mBraintreeFragment.addListener(new PaymentMethodCreatedListener() {
+            @Override
+            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+                assertEquals("11", ((Card) paymentMethod).getLastTwo());
+                mCountDownLatch.countDown();
+            }
+        });
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber(VISA)
+                .expirationDate("08/20");
+
+        CardTokenizer.tokenize(mBraintreeFragment, cardBuilder);
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    @MediumTest
+    public void tokenize_tokenizesACardWithAClientKey() throws InvalidArgumentException, InterruptedException {
+        mBraintreeFragment = BraintreeFragment.newInstance(mActivityTestRule.getActivity(), CLIENT_KEY);
         mBraintreeFragment.addListener(new PaymentMethodCreatedListener() {
             @Override
             public void onPaymentMethodCreated(PaymentMethod paymentMethod) {

@@ -48,7 +48,7 @@ public class BraintreeHttpClientTestUtils {
         when(connection.getErrorStream()).thenReturn(streamFromString(response))
             .thenReturn(streamFromString(response));
 
-        BraintreeHttpClient httpClient = spy(new BraintreeHttpClient(null));
+        BraintreeHttpClient httpClient = spy(new BraintreeHttpClient());
         doReturn(connection).when(httpClient).init(anyString());
 
         return httpClient;
@@ -60,7 +60,7 @@ public class BraintreeHttpClientTestUtils {
         when(connection.getOutputStream()).thenReturn(mock(OutputStream.class));
         when(connection.getResponseCode()).thenThrow(throwable);
 
-        BraintreeHttpClient httpClient = spy(new BraintreeHttpClient(null));
+        BraintreeHttpClient httpClient = spy(new BraintreeHttpClient());
         doReturn(connection).when(httpClient).init(anyString());
 
         return httpClient;

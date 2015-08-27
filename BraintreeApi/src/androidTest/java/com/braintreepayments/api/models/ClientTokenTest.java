@@ -11,10 +11,10 @@ import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
+@SmallTest
 public class ClientTokenTest {
 
     @Test(timeout = 1000)
-    @SmallTest
     public void fromString_deserializesClientToken() throws JSONException {
         ClientToken clientToken = ClientToken.fromString(stringFromFixture("client_token.json"));
 
@@ -23,7 +23,6 @@ public class ClientTokenTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void fromString_canDeserializeFromBase64String() throws JSONException {
         ClientToken clientToken = ClientToken.fromString(
                 stringFromFixture("base_64_client_token.txt"));
@@ -33,7 +32,6 @@ public class ClientTokenTest {
     }
 
     @Test(timeout = 1000, expected = JSONException.class)
-    @SmallTest
     public void fromString_throwsJSONExceptionWhenGivenRandomJson() throws JSONException {
         ClientToken.fromString(stringFromFixture("random_json.json"));
     }

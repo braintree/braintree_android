@@ -40,6 +40,7 @@ import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentM
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static com.braintreepayments.testutils.TestClientKey.CLIENT_KEY;
 import static com.braintreepayments.testutils.ui.Matchers.withHint;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.ViewHelper.FIFTEEN_SECONDS;
@@ -66,6 +67,11 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
     @Test(timeout = 30000)
     public void cardFormCreatesAPaymentMethodWithACustomer() {
         addCardAndAssertSuccess(getActivity(new TestClientTokenBuilder().build()));
+    }
+
+    @Test(timeout = 30000)
+    public void cardFormCreatesAPaymentMethodWithAClientKey() {
+        addCardAndAssertSuccess(getActivity(CLIENT_KEY));
     }
 
     @Test(timeout = 30000)

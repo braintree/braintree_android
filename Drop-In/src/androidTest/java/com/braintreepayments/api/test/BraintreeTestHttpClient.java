@@ -21,9 +21,7 @@ public class BraintreeTestHttpClient extends BraintreeHttpClient {
     private Intent mIntent;
     private long mDelay;
 
-    public BraintreeTestHttpClient(String authorizationFingerprint, Intent intent) {
-        super(authorizationFingerprint);
-
+    public BraintreeTestHttpClient(Intent intent) {
         BraintreeHttpClient.DEBUG = true;
 
         mIntent = intent;

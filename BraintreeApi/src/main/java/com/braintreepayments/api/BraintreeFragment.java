@@ -23,6 +23,7 @@ import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.AnalyticsRequest;
+import com.braintreepayments.api.models.ClientKey;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethod;
@@ -47,10 +48,12 @@ import java.util.Queue;
 public class BraintreeFragment extends Fragment {
 
     public static final String EXTRA_CLIENT_TOKEN = "com.braintreepayments.api.EXTRA_CLIENT_TOKEN";
+    public static final String EXTRA_CLIENT_KEY = "com.braintreepayments.api.EXTRA_CLIENT_KEY";
     public static final String EXTRA_INTEGRATION_TYPE = "com.braintreepayments.api.EXTRA_INTEGRATION_TYPE";
     public static final String TAG = "com.braintreepayments.api.BraintreeFragment";
 
     private Context mContext;
+    private ClientKey mClientKey;
     private ClientToken mClientToken;
     private Configuration mConfiguration;
 
@@ -97,14 +100,21 @@ public class BraintreeFragment extends Fragment {
         if (braintreeFragment == null) {
             braintreeFragment = new BraintreeFragment();
             Bundle bundle = new Bundle();
+
             try {
-                bundle.putString(EXTRA_CLIENT_TOKEN, ClientToken.fromString(clientToken).toJson());
-                bundle.putString(EXTRA_INTEGRATION_TYPE, integrationType);
-                braintreeFragment.setArguments(bundle);
-                fm.beginTransaction().add(braintreeFragment, TAG).commit();
-            } catch (JSONException e) {
-                throw new InvalidArgumentException("Client token was invalid json. " + e.getMessage());
+                bundle.putString(EXTRA_CLIENT_KEY, ClientKey.fromString(clientToken).getClientKey());
+            } catch (InvalidArgumentException e) {
+                try {
+                    bundle.putString(EXTRA_CLIENT_TOKEN,
+                            ClientToken.fromString(clientToken).toJson());
+                } catch (JSONException e1) {
+                    throw new InvalidArgumentException("Client key or client token was invalid.");
+                }
             }
+
+            bundle.putString(EXTRA_INTEGRATION_TYPE, integrationType);
+            braintreeFragment.setArguments(bundle);
+            fm.beginTransaction().add(braintreeFragment, TAG).commit();
         }
 
         return braintreeFragment;
@@ -115,21 +125,27 @@ public class BraintreeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-        mContext = getActivity().getApplicationContext();
+        if (mHttpClient == null) {
+            mHttpClient = new BraintreeHttpClient();
+        }
 
         try {
-            mIntegrationType = getArguments().getString(EXTRA_INTEGRATION_TYPE);
-            mClientToken = ClientToken.fromString(getArguments().getString(EXTRA_CLIENT_TOKEN));
-
-            if (mHttpClient == null) {
-                mHttpClient = new BraintreeHttpClient(mClientToken.getAuthorizationFingerprint());
+            if (getArguments().containsKey(EXTRA_CLIENT_KEY)) {
+                mClientKey = ClientKey.fromString(getArguments().getString(EXTRA_CLIENT_KEY));
+                mHttpClient.setClientKey(mClientKey.getClientKey());
+            } else {
+                mClientToken = ClientToken.fromString(getArguments().getString(EXTRA_CLIENT_TOKEN));
+                mHttpClient.setAuthorizationFingerprint(mClientToken.getAuthorizationFingerprint());
             }
-
-            fetchConfiguration();
-            sendAnalyticsEvent("sdk.initialized");
-        } catch (JSONException ignored) {
+        } catch (InvalidArgumentException | JSONException ignored) {
             // already checked in BraintreeFragment.newInstance
         }
+
+        mContext = getActivity().getApplicationContext();
+        mIntegrationType = getArguments().getString(EXTRA_INTEGRATION_TYPE);
+
+        fetchConfiguration();
+        sendAnalyticsEvent("sdk.initialized");
     }
 
     @Override
@@ -341,7 +357,14 @@ public class BraintreeFragment extends Fragment {
 
     @VisibleForTesting
     protected void fetchConfiguration() {
-        String configUrl = Uri.parse(mClientToken.getConfigUrl())
+        String configUrl;
+        if (mClientKey != null) {
+            configUrl = mClientKey.getConfigUrl();
+        } else {
+            configUrl = mClientToken.getConfigUrl();
+        }
+
+        configUrl = Uri.parse(configUrl)
                 .buildUpon()
                 .appendQueryParameter("configVersion", "3")
                 .build()

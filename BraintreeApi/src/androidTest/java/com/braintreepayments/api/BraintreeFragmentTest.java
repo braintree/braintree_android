@@ -40,6 +40,7 @@ import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static com.braintreepayments.testutils.TestClientKey.CLIENT_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -75,7 +76,15 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void newInstance_returnsABraintreeFragment() throws InvalidArgumentException {
+    public void newInstance_returnsABraintreeFragmentFromAClientKey() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, CLIENT_KEY);
+
+        assertNotNull(fragment);
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void newInstance_returnsABraintreeFragmentFromAClientToken() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, mClientToken);
 
         assertNotNull(fragment);
@@ -83,8 +92,14 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 1000, expected = InvalidArgumentException.class)
     @SmallTest
+    public void newInstance_throwsAnExceptionForABadClientKey() throws InvalidArgumentException {
+        BraintreeFragment.newInstance(mActivity, "test_key_merchant");
+    }
+
+    @Test(timeout = 1000, expected = InvalidArgumentException.class)
+    @SmallTest
     public void newInstance_throwsAnExceptionForABadClientToken() throws InvalidArgumentException {
-        BraintreeFragment.newInstance(mActivity, "not json");
+        BraintreeFragment.newInstance(mActivity, "{}");
     }
 
     @Test(timeout = 1000)
@@ -104,6 +119,36 @@ public class BraintreeFragmentTest {
         BraintreeFragment fragment = getFragment(mActivity, mClientToken);
 
         assertEquals("custom", fragment.mIntegrationType);
+    }
+
+    @Test(timeout = 10000)
+    @MediumTest
+    public void fetchConfiguration_worksWithAClientKey() throws InterruptedException {
+        final BraintreeFragment fragment = getFragment(mActivity, CLIENT_KEY);
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched() {
+                assertNotNull(fragment.getConfiguration());
+                mCountDownLatch.countDown();
+            }
+        });
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    @MediumTest
+    public void fetchConfiguration_worksWithAClientToken() throws InterruptedException {
+        final BraintreeFragment fragment = getFragment(mActivity, mClientToken);
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched() {
+                assertNotNull(fragment.getConfiguration());
+                mCountDownLatch.countDown();
+            }
+        });
+
+        mCountDownLatch.await();
     }
 
     @Test(timeout = 1000)
@@ -338,6 +383,19 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 1000)
     @SmallTest
+    public void postCallback_addsPaymentMethodToBeginningOfCache() {
+        BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
+        assertEquals(0, fragment.getCachedPaymentMethods().size());
+
+        fragment.postCallback(new Card());
+        fragment.postCallback(new PayPalAccount());
+
+        assertEquals(2, fragment.getCachedPaymentMethods().size());
+        assertTrue(fragment.getCachedPaymentMethods().get(0) instanceof PayPalAccount);
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
     public void postCallback_setsBooleanForFetchedPaymentMethods() {
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
         assertFalse(fragment.hasFetchedPaymentMethods());
@@ -494,24 +552,24 @@ public class BraintreeFragmentTest {
         Configuration configuration = Configuration.fromJson(clientToken);
         BraintreeFragment fragment = spy(getFragment(mActivity, clientToken));
         when(fragment.getConfiguration()).thenReturn(configuration);
-        BraintreeHttpClient httpClient =
-                new BraintreeHttpClient(ClientToken.fromString(clientToken).getAuthorizationFingerprint()) {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient() {
+            @Override
+            public void post(String url, String params,
+                    final HttpResponseCallback callback) {
+                super.post(url, params, new HttpResponseCallback() {
                     @Override
-                    public void post(String url, String params,
-                            final HttpResponseCallback callback) {
-                        super.post(url, params, new HttpResponseCallback() {
-                            @Override
-                            public void success(String responseBody) {
-                                mCountDownLatch.countDown();
-                            }
-
-                            @Override
-                            public void failure(Exception exception) {
-                                fail("Request failure: " + exception.getMessage());
-                            }
-                        });
+                    public void success(String responseBody) {
+                        mCountDownLatch.countDown();
                     }
-                };
+
+                    @Override
+                    public void failure(Exception exception) {
+                        fail("Request failure: " + exception.getMessage());
+                    }
+                });
+            }
+        };
+        httpClient.setAuthorizationFingerprint(ClientToken.fromString(clientToken).getAuthorizationFingerprint());
         httpClient.setBaseUrl(configuration.getClientApiUrl());
         when(fragment.getHttpClient()).thenReturn(httpClient);
 

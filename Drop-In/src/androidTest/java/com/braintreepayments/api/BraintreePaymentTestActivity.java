@@ -21,10 +21,9 @@ public class BraintreePaymentTestActivity extends BraintreePaymentActivity {
 
     @Override
     protected BraintreeFragment getBraintreeFragment() throws InvalidArgumentException {
-        BraintreeTestHttpClient httpClient = null;
+        BraintreeTestHttpClient httpClient = spy(new BraintreeTestHttpClient(getIntent()));
         try {
-            httpClient = spy(new BraintreeTestHttpClient(
-                    ClientToken.fromString(getClientToken()).getAuthorizationFingerprint(), getIntent()));
+            httpClient.setAuthorizationFingerprint(ClientToken.fromString(getClientToken()).getAuthorizationFingerprint());
         } catch (JSONException ignored) {}
 
         BraintreeFragment fragment = super.getBraintreeFragment();

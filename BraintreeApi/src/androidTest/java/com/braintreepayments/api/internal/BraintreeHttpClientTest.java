@@ -29,7 +29,10 @@ import static com.braintreepayments.api.internal.BraintreeHttpClientTestUtils.cl
 import static com.braintreepayments.api.internal.BraintreeHttpClientTestUtils.clientWithExpectedResponse;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
@@ -45,8 +48,68 @@ public class BraintreeHttpClientTest {
 
     @Test(timeout = 1000)
     @SmallTest
+    public void sendsClientKeyWhenPresent() throws IOException {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient();
+        httpClient.setClientKey("client_key");
+
+        HttpURLConnection connection = httpClient.init("http://example.com/");
+
+        assertEquals("client_key", connection.getRequestProperty("Client-Key"));
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void doesNotSendClientKeyWhenNotPresent() throws IOException {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient();
+
+        HttpURLConnection connection = httpClient.init("http://example.com/");
+
+        assertNull(connection.getRequestProperty("Client-Key"));
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void get_includesAuthorizationFingerprintWhenPresent()
+            throws IOException, InterruptedException {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient() {
+            @Override
+            protected HttpURLConnection init(String url) throws IOException {
+                assertTrue(url.contains("auth-fingerprint"));
+                mCountDownLatch.countDown();
+
+                return super.init(url);
+            }
+        };
+        httpClient.setAuthorizationFingerprint("auth-fingerprint");
+
+        httpClient.get("/", null);
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void get_doesNotIncludeAuthorizationFingerprintWhenNotPresent()
+            throws IOException, InterruptedException {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient() {
+            @Override
+            protected HttpURLConnection init(String url) throws IOException {
+                assertFalse(url.contains("authorizationFingerprint"));
+                mCountDownLatch.countDown();
+
+                return super.init(url);
+            }
+        };
+
+        httpClient.get("/", null);
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
     public void sendsUserAgent() throws IOException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(null);
+        BraintreeHttpClient httpClient = new BraintreeHttpClient();
 
         HttpURLConnection connection = httpClient.init("http://example.com/");
 
@@ -57,7 +120,7 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     @SmallTest
     public void sendsAcceptLanguageHeader() throws IOException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(null);
+        BraintreeHttpClient httpClient = new BraintreeHttpClient();
 
         HttpURLConnection connection = httpClient.init("http://example.com/");
 
@@ -68,7 +131,7 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     @SmallTest
     public void sendsContentType() throws IOException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(null);
+        BraintreeHttpClient httpClient = new BraintreeHttpClient();
 
         HttpURLConnection connection = httpClient.init("http://example.com/");
 
@@ -78,7 +141,7 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     @SmallTest
     public void setsDefaultConnectTimeoutOf30Seconds() throws IOException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(null);
+        BraintreeHttpClient httpClient = new BraintreeHttpClient();
 
         HttpURLConnection connection = httpClient.init("http://example.com/");
 
@@ -88,7 +151,7 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     @SmallTest
     public void setDefaultReadTimeoutOf60Seconds() throws IOException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(null);
+        BraintreeHttpClient httpClient = new BraintreeHttpClient();
 
         HttpURLConnection connection = httpClient.init("http://example.com/");
 
@@ -98,7 +161,7 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     @SmallTest
     public void throwsErrorWhenBaseUrlIsNotSet() throws InterruptedException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(null);
+        BraintreeHttpClient httpClient = new BraintreeHttpClient();
 
         httpClient.get("/", new HttpResponseCallback() {
             @Override
@@ -108,7 +171,7 @@ public class BraintreeHttpClientTest {
 
             @Override
             public void failure(Exception exception) {
-                assertEquals("Protocol not found: null/?authorizationFingerprint=", exception.getMessage());
+                assertEquals("Protocol not found: null/", exception.getMessage());
                 mCountDownLatch.countDown();
             }
         });
@@ -119,7 +182,7 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     @SmallTest
     public void throwsErrorWhenURLIsNull() throws InterruptedException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(null);
+        BraintreeHttpClient httpClient = new BraintreeHttpClient();
         httpClient.setBaseUrl(null);
 
         httpClient.get("/", new HttpResponseCallback() {
@@ -130,7 +193,7 @@ public class BraintreeHttpClientTest {
 
             @Override
             public void failure(Exception exception) {
-                assertEquals("Protocol not found: /?authorizationFingerprint=",
+                assertEquals("Protocol not found: /",
                         exception.getMessage());
                 mCountDownLatch.countDown();
             }
@@ -142,7 +205,7 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     @SmallTest
     public void throwsErrorWhenURLIsEmpty() throws InterruptedException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(null);
+        BraintreeHttpClient httpClient = new BraintreeHttpClient();
         httpClient.setBaseUrl("");
 
         httpClient.get("/", new HttpResponseCallback() {
@@ -153,7 +216,7 @@ public class BraintreeHttpClientTest {
 
             @Override
             public void failure(Exception exception) {
-                assertEquals("Protocol not found: /?authorizationFingerprint=",
+                assertEquals("Protocol not found: /",
                         exception.getMessage());
                 mCountDownLatch.countDown();
             }
@@ -281,9 +344,9 @@ public class BraintreeHttpClientTest {
     @SmallTest
     public void throwsAuthorizationExceptionOn403()
             throws IOException, InterruptedException, ErrorWithResponse {
-        BraintreeHttpClient httpClient = clientWithExpectedResponse(403, "");
+        BraintreeHttpClient httpClient = clientWithExpectedResponse(403, stringFromFixture("error_response.json"));
 
-        assertExceptionIsThrown(httpClient, AuthorizationException.class, null);
+        assertExceptionIsThrown(httpClient, AuthorizationException.class, "There was an error");
     }
 
     @Test(timeout = 1000)
@@ -308,7 +371,7 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 5000)
     @MediumTest
     public void getRequestSslCertificateSuccessfulInSandbox() throws InterruptedException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(null);
+        BraintreeHttpClient httpClient = new BraintreeHttpClient();
         httpClient.setBaseUrl("https://api.sandbox.braintreegateway.com");
 
         httpClient.get("/wellness", new HttpResponseCallback() {
@@ -330,7 +393,7 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 5000)
     @MediumTest
     public void getRequestSslCertificateSuccessfulInProduction() throws InterruptedException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(null);
+        BraintreeHttpClient httpClient = new BraintreeHttpClient();
         httpClient.setBaseUrl("https://api.braintreegateway.com");
 
         httpClient.get("/wellness", new HttpResponseCallback() {
@@ -356,7 +419,7 @@ public class BraintreeHttpClientTest {
             return;
         }
 
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(null);
+        BraintreeHttpClient httpClient = new BraintreeHttpClient();
         httpClient.setBaseUrl("https://" + EnvironmentHelper.getLocalhostIp() + ":9443");
 
         httpClient.get("/", new HttpResponseCallback() {

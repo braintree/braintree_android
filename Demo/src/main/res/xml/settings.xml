@@ -2,6 +2,28 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
+        android:title="@string/authorization">
+
+        <CheckBoxPreference
+            android:key="client_key"
+            android:title="@string/client_key"
+            android:summary="@string/client_key_summary"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/customer">
+
+        <EditTextPreference
+            android:key="customer"
+            android:title="@string/customer"
+            android:summary="@string/customer_summary"
+            android:defaultValue="" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/android_pay">
 
         <CheckBoxPreference
@@ -49,17 +71,6 @@
             android:title="@string/require_three_d_secure"
             android:summary="@string/require_three_d_secure_summary"
             android:defaultValue="true" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/customer">
-
-        <EditTextPreference
-            android:key="customer"
-            android:title="@string/customer"
-            android:summary="@string/customer_summary"
-            android:defaultValue="" />
 
     </PreferenceCategory>
 

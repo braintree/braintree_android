@@ -12,15 +12,18 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
 
+import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Card;
+import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.test.TestActivity;
+import com.braintreepayments.testutils.CardNumber;
 
 import org.json.JSONException;
 import org.junit.Before;
@@ -34,9 +37,12 @@ import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
+import static com.braintreepayments.api.BraintreeFragmentTestUtils.tokenize;
 import static com.braintreepayments.api.internal.SignatureVerificationTestUtils.disableSignatureVerification;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static com.braintreepayments.testutils.TestClientKey.CLIENT_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -208,7 +214,7 @@ public class VenmoTest {
     @SmallTest
     public void onActivityResult_postsPaymentMethodOnSuccess() throws InterruptedException {
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
-        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient("") {
+        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient() {
             @Override
             public void get(String path, HttpResponseCallback callback) {
                 callback.success(stringFromFixture("payment_methods/get_payment_method_card_response.json"));
@@ -235,10 +241,11 @@ public class VenmoTest {
     @SmallTest
     public void onActivityResult_sendsAnalyticsEventOnSuccess() {
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
-        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient("") {
+        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient() {
             @Override
             public void get(String path, HttpResponseCallback callback) {
-                callback.success(stringFromFixture("payment_methods/get_payment_method_card_response.json"));
+                callback.success(
+                        stringFromFixture("payment_methods/get_payment_method_card_response.json"));
             }
         });
         Intent intent = new Intent().putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE,
@@ -276,7 +283,7 @@ public class VenmoTest {
     @SmallTest
     public void onActivityResult_postsExceptionToListener() throws InterruptedException {
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
-        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient("") {
+        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient() {
             @Override
             public void get(String path, HttpResponseCallback callback) {
                 callback.failure(new Exception("Nonce not found"));
@@ -317,7 +324,7 @@ public class VenmoTest {
     @SmallTest
     public void onActivityResult_sendsAnalyticsEventOnFailure() {
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
-        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient("") {
+        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient() {
             @Override
             public void get(String path, HttpResponseCallback callback) {
                 callback.failure(new Exception());
@@ -328,5 +335,32 @@ public class VenmoTest {
         Venmo.onActivityResult(fragment, Activity.RESULT_OK, intent);
 
         verify(fragment).sendAnalyticsEvent("venmo-app.fail");
+    }
+
+    @Test(timeout = 10000)
+    @MediumTest
+    public void onActivityResult_failsWhenUsingClientKey() throws InterruptedException {
+        BraintreeFragment fragment = getFragment(mActivity, CLIENT_KEY);
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber(CardNumber.VISA)
+                .expirationDate("08/19");
+        Card card = tokenize(fragment, cardBuilder);
+        Intent intent = new Intent().putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE, card.getNonce());
+        final CountDownLatch latch = new CountDownLatch(1);
+        fragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onUnrecoverableError(Throwable throwable) {
+                assertTrue(throwable instanceof AuthorizationException);
+                assertEquals("Client key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions", throwable.getMessage());
+                latch.countDown();
+            }
+
+            @Override
+            public void onRecoverableError(ErrorWithResponse error) {}
+        });
+
+        Venmo.onActivityResult(fragment, Activity.RESULT_OK, intent);
+
+        latch.await();
     }
 }
