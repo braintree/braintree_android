@@ -139,6 +139,10 @@ uploadArchives {
                     if (it.artifactId == 'play-services-wallet') {
                         it.optional = true
                     }
+
+                    if (it.artifactId == 'data') {
+                        it.optional = true
+                    }
                 }
             }
         }
