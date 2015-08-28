@@ -41,15 +41,20 @@ public class AndroidPay {
      */
     @Beta
     public static PaymentMethodTokenizationParameters getTokenizationParameters(BraintreeFragment fragment) {
-        return PaymentMethodTokenizationParameters.newBuilder()
+        PaymentMethodTokenizationParameters.Builder parameters = PaymentMethodTokenizationParameters.newBuilder()
                 .setPaymentMethodTokenizationType(PaymentMethodTokenizationType.PAYMENT_GATEWAY)
                 .addParameter("gateway", "braintree")
                 .addParameter("braintree:merchantId", fragment.getConfiguration().getMerchantId())
                 .addParameter("braintree:authorizationFingerprint",
                         fragment.getConfiguration().getAndroidPay().getGoogleAuthorizationFingerprint())
                 .addParameter("braintree:apiVersion", "v1")
-                .addParameter("braintree:sdkVersion", BuildConfig.VERSION_NAME)
-                .build();
+                .addParameter("braintree:sdkVersion", BuildConfig.VERSION_NAME);
+
+        if (fragment.getClientKey() != null) {
+            parameters.addParameter("braintree:clientKey", fragment.getClientKey().getClientKey());
+        }
+
+        return parameters.build();
     }
 
     /**

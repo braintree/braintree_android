@@ -445,6 +445,10 @@ public class BraintreeFragment extends Fragment {
         return mContext;
     }
 
+    protected ClientKey getClientKey() {
+        return mClientKey;
+    }
+
     protected Configuration getConfiguration() {
         return mConfiguration;
     }

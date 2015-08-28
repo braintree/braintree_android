@@ -79,7 +79,7 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodCrea
 
     @Override
     public void onClick(View v) {
-        setProgressBarIndeterminateVisibility(true);
+        setProgressBarIndeterminate(true);
     }
 
     @Override

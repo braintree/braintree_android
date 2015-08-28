@@ -202,6 +202,14 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 1000)
     @SmallTest
+    public void getClientKey_returnsClientKey() throws InvalidArgumentException {
+        BraintreeFragment fragment = getFragment(mActivity, CLIENT_KEY);
+
+        assertEquals(CLIENT_KEY, fragment.getClientKey().getClientKey());
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
     public void getConfiguration_returnsConfiguration()
             throws InterruptedException, InvalidArgumentException {
         final BraintreeFragment fragment = getFragment(mActivity, mClientToken);
