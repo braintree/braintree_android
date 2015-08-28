@@ -210,6 +210,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
     }
 
     private void verifyAnalyticsEvent(String event) {
+        AnalyticsManager.flushEvents(mFragment);
         verify(mFragment.getHttpClient(), times(1)).post(
                 eq(mFragment.getConfiguration().getAnalytics().getUrl()),
                 contains(event),

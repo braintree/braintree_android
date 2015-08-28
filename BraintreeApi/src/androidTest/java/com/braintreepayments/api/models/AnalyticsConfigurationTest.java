@@ -24,7 +24,6 @@ public class AnalyticsConfigurationTest {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_analytics.json"));
 
-        assertTrue(configuration.isAnalyticsEnabled());
         assertTrue(configuration.getAnalytics().isEnabled());
         assertEquals("analytics_url", configuration.getAnalytics().getUrl());
     }
@@ -82,7 +81,6 @@ public class AnalyticsConfigurationTest {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_without_analytics.json"));
 
-        assertFalse(configuration.isAnalyticsEnabled());
         assertFalse(configuration.getAnalytics().isEnabled());
     }
 
@@ -94,7 +92,6 @@ public class AnalyticsConfigurationTest {
 
         assertNotNull(configuration.getAnalytics());
         assertEquals("", configuration.getAnalytics().getUrl());
-        assertFalse(configuration.isAnalyticsEnabled());
         assertFalse(configuration.getAnalytics().isEnabled());
     }
 }

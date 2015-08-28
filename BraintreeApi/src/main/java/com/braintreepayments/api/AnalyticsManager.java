@@ -1,4 +1,4 @@
-package com.braintreepayments.api.internal;
+package com.braintreepayments.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -10,12 +10,8 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.provider.Settings.Secure;
-import android.support.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.BuildConfig;
-import com.braintreepayments.api.models.AnalyticsConfiguration;
-import com.braintreepayments.api.models.ClientKey;
-import com.braintreepayments.api.models.ClientToken;
+import com.braintreepayments.api.interfaces.ConfigurationListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +26,7 @@ import java.util.UUID;
 /**
  * Centralized location for caching, queuing, and sending Analytics events
  */
-public class AnalyticsManager {
+class AnalyticsManager {
 
     private static final String ANALYTICS_KEY = "analytics";
     private static final String KIND_KEY = "kind";
@@ -55,49 +51,8 @@ public class AnalyticsManager {
 
     private static final int REQUEST_THRESHOLD = 5;
 
-    private static Context sContext;
-    private static AnalyticsConfiguration sAnalyticConfiguration;
+    private static ArrayList<AnalyticsRequest> sRequestQueue = new ArrayList<>();
     private static JSONObject sCachedMetadata;
-
-    @VisibleForTesting
-    protected static BraintreeHttpClient sHttpClient;
-
-    private static ArrayList<AnalyticsRequest> sRequestQueue;
-
-    private AnalyticsManager() {}
-
-    /**
-     * Setup {@link AnalyticsManager}.
-     *
-     * @param context
-     * @param analyticsConfiguration {@link AnalyticsConfiguration}
-     * @param clientToken {@link ClientToken}
-     */
-    public static void setup(Context context, AnalyticsConfiguration analyticsConfiguration,
-            ClientToken clientToken) {
-        setup(context, analyticsConfiguration);
-        sHttpClient = new BraintreeHttpClient(clientToken);
-    }
-
-    /**
-     * Setup {@link AnalyticsManager}.
-     *
-     * @param context
-     * @param analyticsConfiguration {@link AnalyticsConfiguration}
-     * @param clientKey {@link ClientKey}
-     */
-    public static void setup(Context context, AnalyticsConfiguration analyticsConfiguration,
-            ClientKey clientKey) {
-        setup(context, analyticsConfiguration);
-        sHttpClient = new BraintreeHttpClient(clientKey);
-    }
-
-    private static void setup(Context context, AnalyticsConfiguration analyticsConfiguration) {
-        sContext = context;
-        sAnalyticConfiguration = analyticsConfiguration;
-        sRequestQueue = new ArrayList<>();
-        sCachedMetadata = populateCachedMetadata();
-    }
 
     /**
      * Queue or send analytics request with integration type and event.
@@ -105,36 +60,46 @@ public class AnalyticsManager {
      * @param integrationType The current method of integration used.
      * @param eventFragment The analytics event to record.
      */
-    public static void sendRequest(String integrationType, String eventFragment) {
-        if (sHttpClient == null || sAnalyticConfiguration == null || !sAnalyticConfiguration.isEnabled()) {
-            return;
-        }
+    static void sendRequest(final BraintreeFragment fragment, final String integrationType, final String eventFragment) {
+        final AnalyticsRequest request = new AnalyticsRequest(integrationType, eventFragment);
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched() {
+                if (!fragment.getConfiguration().getAnalytics().isEnabled()) {
+                    return;
+                }
 
-        AnalyticsRequest request = new AnalyticsRequest(integrationType, eventFragment);
-        sRequestQueue.add(request);
+                sRequestQueue.add(request);
 
-        if (sRequestQueue.size() >= REQUEST_THRESHOLD) {
-            processRequests();
-            sRequestQueue.clear();
-        }
+                if (sRequestQueue.size() >= REQUEST_THRESHOLD) {
+                    processRequests(fragment);
+                }
+            }
+        });
     }
 
     /**
      * Batch and send remaining analytics events even if batch size has not been reached.
      */
-    public static void flushEvents() {
-        if (sHttpClient != null && sAnalyticConfiguration != null && sAnalyticConfiguration.isEnabled()) {
-            processRequests();
-        }
+    static void flushEvents(final BraintreeFragment fragment) {
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched() {
+                if (fragment.getConfiguration().getAnalytics().isEnabled()) {
+                    processRequests(fragment);
+                }
+            }
+        });
     }
 
-    private static void processRequests() {
+    private static void processRequests(BraintreeFragment fragment) {
         if (sRequestQueue.size() == 0) {
             return;
         }
 
         ArrayList<AnalyticsRequest> requests = new ArrayList<>();
         requests.addAll(sRequestQueue);
+        sRequestQueue.clear();
 
         try {
             JSONArray events = new JSONArray();
@@ -147,48 +112,56 @@ public class AnalyticsManager {
                 } catch (JSONException ignored) {}
             }
 
-            JSONObject fullMetaData = generateRequestBody(requests.get(0).getIntegrationType());
+            JSONObject fullMetaData = generateRequestBody(fragment.getContext(),
+                    requests.get(0).getIntegrationType());
 
             String requestBody = new JSONObject()
                     .put(ANALYTICS_KEY, events)
                     .put(META_KEY, fullMetaData)
                     .toString();
 
-            sHttpClient.post(sAnalyticConfiguration.getUrl(), requestBody, null);
+            fragment.getHttpClient().post(fragment.getConfiguration().getAnalytics().getUrl(),
+                    requestBody, null);
         } catch (JSONException ignored) {}
     }
 
-    private static JSONObject generateRequestBody(String integrationType) throws JSONException {
+    private static JSONObject generateRequestBody(Context context, String integrationType)
+            throws JSONException {
+        if (sCachedMetadata == null) {
+            sCachedMetadata = populateCachedMetadata(context);
+        }
+
         return new JSONObject(sCachedMetadata.toString())
-                .put(DEVICE_NETWORK_TYPE_KEY, getNetworkType())
+                .put(DEVICE_NETWORK_TYPE_KEY, getNetworkType(context))
                 .put(INTEGRATION_TYPE_KEY, integrationType)
-                .put(USER_INTERFACE_ORIENTATION_KEY, getUserOrientation());
+                .put(USER_INTERFACE_ORIENTATION_KEY, getUserOrientation(context));
     }
 
-    private static JSONObject populateCachedMetadata() {
+    private static JSONObject populateCachedMetadata(Context context) {
         JSONObject meta = new JSONObject();
         try {
             meta.put(PLATFORM_KEY, "Android")
                     .put(PLATFORM_VERSION_KEY, Integer.toString(VERSION.SDK_INT))
                     .put(SDK_VERSION_KEY, BuildConfig.VERSION_NAME)
-                    .put(MERCHANT_APP_ID_KEY, sContext.getPackageName())
-                    .put(MERCHANT_APP_NAME_KEY, getAppName(getApplicationInfo(), sContext.getPackageManager()))
-                    .put(MERCHANT_APP_VERSION_KEY, getAppVersion())
+                    .put(MERCHANT_APP_ID_KEY, context.getPackageName())
+                    .put(MERCHANT_APP_NAME_KEY,
+                            getAppName(getApplicationInfo(context), context.getPackageManager()))
+                    .put(MERCHANT_APP_VERSION_KEY, getAppVersion(context))
                     .put(DEVICE_ROOTED_KEY, isDeviceRooted())
                     .put(DEVICE_MANUFACTURER_KEY, Build.MANUFACTURER)
                     .put(DEVICE_MODEL_KEY, Build.MODEL)
-                    .put(ANDROID_ID_KEY, Secure.getString(sContext.getContentResolver(), Secure.ANDROID_ID))
-                    .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY, getUUID())
+                    .put(ANDROID_ID_KEY, Secure.getString(context.getContentResolver(), Secure.ANDROID_ID))
+                    .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY, getUUID(context))
                     .put(IS_SIMULATOR_KEY, detectEmulator());
         } catch (JSONException ignored) {}
 
         return meta;
     }
 
-    private static ApplicationInfo getApplicationInfo() {
+    private static ApplicationInfo getApplicationInfo(Context context) {
         ApplicationInfo applicationInfo;
-        String packageName = sContext.getPackageName();
-        PackageManager packageManager = sContext.getPackageManager();
+        String packageName = context.getPackageName();
+        PackageManager packageManager = context.getPackageManager();
         try {
             applicationInfo = packageManager.getApplicationInfo(packageName, 0);
         } catch (NameNotFoundException e) {
@@ -207,10 +180,10 @@ public class AnalyticsManager {
         }
     }
 
-    private static String getAppVersion() {
+    private static String getAppVersion(Context context) {
         try {
-            return sContext.getPackageManager()
-                    .getPackageInfo(sContext.getPackageName(), 0).versionName;
+            return context.getPackageManager()
+                    .getPackageInfo(context.getPackageName(), 0).versionName;
         } catch (NameNotFoundException e) {
             return "VersionUnknown";
         }
@@ -244,15 +217,15 @@ public class AnalyticsManager {
         return Boolean.toString(check1 || check2 || check3);
     }
 
-    private static String getNetworkType() {
+    private static String getNetworkType(Context context) {
         ConnectivityManager connectivityManager =
-                (ConnectivityManager) sContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         return connectivityManager.getActiveNetworkInfo().getTypeName();
     }
 
-    private static String getUUID() {
+    private static String getUUID(Context context) {
         SharedPreferences prefs =
-                sContext.getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE);
+                context.getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE);
 
         String uuid = prefs.getString(BRAINTREE_UUID_KEY, null);
         if (uuid == null) {
@@ -274,8 +247,8 @@ public class AnalyticsManager {
         }
     }
 
-    private static String getUserOrientation() {
-        int orientation = sContext.getResources().getConfiguration().orientation;
+    private static String getUserOrientation(Context context) {
+        int orientation = context.getResources().getConfiguration().orientation;
         switch (orientation) {
             case Configuration.ORIENTATION_PORTRAIT:
                 return "Portrait";

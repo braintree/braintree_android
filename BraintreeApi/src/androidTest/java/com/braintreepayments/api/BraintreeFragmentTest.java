@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
-import android.os.SystemClock;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.MediumTest;
@@ -16,9 +15,8 @@ import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
-import com.braintreepayments.api.internal.AnalyticsManager;
-import com.braintreepayments.api.internal.AnalyticsManagerTestUtils;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
+import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
@@ -184,7 +182,9 @@ public class BraintreeFragmentTest {
         fragment.addListener(new ConfigurationErrorListener() {
             @Override
             public void onConfigurationError(Throwable throwable) {
-                assertEquals("Protocol not found: nullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint", throwable.getMessage());
+                assertEquals(
+                        "Protocol not found: nullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint",
+                        throwable.getMessage());
                 mCountDownLatch.countDown();
             }
         });
@@ -532,11 +532,12 @@ public class BraintreeFragmentTest {
         when(fragment.getConfiguration()).thenReturn(configuration);
         BraintreeHttpClient httpClient = new BraintreeHttpClient(ClientToken.fromString(clientToken)) {
             @Override
-            public void post(String url, String params,
+            public void post(String url, final String params,
                     final HttpResponseCallback callback) {
                 super.post(url, params, new HttpResponseCallback() {
                     @Override
                     public void success(String responseBody) {
+                        assertTrue(params.contains("analytics.event"));
                         mCountDownLatch.countDown();
                     }
 
@@ -547,10 +548,10 @@ public class BraintreeFragmentTest {
                 });
             }
         };
-        AnalyticsManagerTestUtils.setHttpClient(httpClient);
+        when(fragment.getHttpClient()).thenReturn(httpClient);
 
-        fragment.sendAnalyticsEvent("event");
-        AnalyticsManager.flushEvents();
+        fragment.sendAnalyticsEvent("analytics.event");
+        AnalyticsManager.flushEvents(fragment);
 
         mCountDownLatch.await();
     }
@@ -558,25 +559,20 @@ public class BraintreeFragmentTest {
     @Test(timeout = 10000)
     @MediumTest
     public void onPause_flushesAnalyticsEvents() throws JSONException {
-        String clientToken = new TestClientTokenBuilder().withAnalytics().build();
-        Configuration configuration = Configuration.fromJson(clientToken);
-        BraintreeFragment fragment = getFragment(mActivity, clientToken);
-        final BraintreeHttpClient analyticsHttpClient = mock(BraintreeHttpClient.class);
-        fragment.waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched() {
-                AnalyticsManagerTestUtils.setHttpClient(analyticsHttpClient);
-            }
-        });
+        AnalyticsConfiguration analyticsConfiguration = mock(AnalyticsConfiguration.class);
+        when(analyticsConfiguration.isEnabled()).thenReturn(true);
+        when(analyticsConfiguration.getUrl()).thenReturn("analytics_url");
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(analyticsConfiguration);
+        BraintreeFragment fragment = getMockFragment(mActivity, configuration);
+        BraintreeHttpClient httpClient = mock(BraintreeHttpClient.class);
+        when(fragment.getHttpClient()).thenReturn(httpClient);
 
         fragment.sendAnalyticsEvent("event");
-        SystemClock.sleep(2000);
         fragment.onPause();
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(analyticsHttpClient)
-                .post(eq(configuration.getAnalytics().getUrl()), captor.capture(),
-                        isNull(HttpResponseCallback.class));
+        verify(httpClient).post(eq("analytics_url"), captor.capture(), isNull(HttpResponseCallback.class));
         assertTrue(new JSONObject(captor.getValue()).getJSONArray("analytics").length() < 5);
     }
 }

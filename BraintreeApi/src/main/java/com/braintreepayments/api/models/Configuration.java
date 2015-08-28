@@ -144,13 +144,6 @@ public class Configuration {
     }
 
     /**
-     * @return {@code true} if analytics are enabled, {@code false} otherwise.
-     */
-    public boolean isAnalyticsEnabled() {
-        return mAnalyticsConfiguration.isEnabled();
-    }
-
-    /**
      * @return instance of {@link com.braintreepayments.api.models.AnalyticsConfiguration}.
      */
     public AnalyticsConfiguration getAnalytics() {

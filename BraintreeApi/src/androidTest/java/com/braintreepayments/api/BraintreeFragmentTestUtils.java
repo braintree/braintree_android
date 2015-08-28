@@ -45,6 +45,29 @@ public class BraintreeFragmentTestUtils {
     }
 
     /**
+     * Get a {@link org.mockito.Spy} {@link BraintreeFragment} with the given {@link Configuration}.
+     *
+     * @param activity
+     * @param clientToken
+     * @param configuration
+     * @return
+     */
+    public static BraintreeFragment getMockFragment(Activity activity, String clientToken, Configuration configuration) {
+        try {
+            BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity, clientToken));
+            doNothing().when(fragment).fetchConfiguration();
+            when(fragment.getContext()).thenReturn(getTargetContext());
+            when(fragment.getConfiguration()).thenReturn(configuration);
+            getInstrumentation().waitForIdleSync();
+
+            return fragment;
+        } catch (InvalidArgumentException e) {
+            fail(e.getMessage());
+            return new BraintreeFragment();
+        }
+    }
+
+    /**
      * Get a {@link BraintreeFragment} using the given ClientToken.
      *
      * @param activity

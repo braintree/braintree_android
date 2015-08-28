@@ -21,7 +21,6 @@ import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
-import com.braintreepayments.api.internal.AnalyticsManager;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.ClientKey;
 import com.braintreepayments.api.models.ClientToken;
@@ -125,7 +124,6 @@ public class BraintreeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-
         try {
             if (getArguments().containsKey(EXTRA_CLIENT_KEY)) {
                 mClientKey = ClientKey.fromString(getArguments().getString(EXTRA_CLIENT_KEY));
@@ -168,7 +166,7 @@ public class BraintreeFragment extends Fragment {
     public void onPause() {
         super.onPause();
 
-        AnalyticsManager.flushEvents();
+        AnalyticsManager.flushEvents(this);
 
         if (getActivity() instanceof BraintreeListener) {
             removeListener((BraintreeListener) getActivity());
@@ -275,12 +273,7 @@ public class BraintreeFragment extends Fragment {
     }
 
     protected void sendAnalyticsEvent(final String eventFragment) {
-        waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched() {
-                AnalyticsManager.sendRequest(mIntegrationType, eventFragment);
-            }
-        });
+        AnalyticsManager.sendRequest(this, mIntegrationType, eventFragment);
     }
 
     protected void postCallback(final PaymentMethod paymentMethod) {
@@ -374,12 +367,6 @@ public class BraintreeFragment extends Fragment {
                 try {
                     mConfiguration = Configuration.fromJson(responseBody);
                     getHttpClient().setBaseUrl(mConfiguration.getClientApiUrl());
-
-                    if (mClientKey != null) {
-                        AnalyticsManager.setup(mContext, mConfiguration.getAnalytics(), mClientKey);
-                    } else if (mClientToken != null) {
-                        AnalyticsManager.setup(mContext, mConfiguration.getAnalytics(), mClientToken);
-                    }
 
                     postOrQueueCallback(new QueuedCallback() {
                         @Override

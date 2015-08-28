@@ -9,6 +9,7 @@ import android.view.View;
 
 import com.braintreepayments.api.dropin.R;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalConfiguration;
@@ -242,6 +243,9 @@ public class PaymentButtonTest {
         Configuration configuration = mock(Configuration.class);
         when(configuration.getMerchantId()).thenReturn("merchant-id");
         when(configuration.getVenmoState()).thenReturn("offline");
+
+        AnalyticsConfiguration analyticsConfiguration = mock(AnalyticsConfiguration.class);
+        when(configuration.getAnalytics()).thenReturn(analyticsConfiguration);
 
         PayPalConfiguration paypalConfiguration = PayPalConfiguration.fromJson(
                 new JSONObject(stringFromFixture("paypal_configuration.json")));

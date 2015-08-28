@@ -19,6 +19,7 @@ import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
+import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientKey;
@@ -161,7 +162,7 @@ public class VenmoTest {
     @SmallTest
     public void performAppSwitch_appSwitchesWithVenmoLaunchIntent() {
         ArgumentCaptor<Intent> launchIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        Configuration configuration = mock(Configuration.class);
+        Configuration configuration = getConfiguration();
         when(configuration.getVenmoState()).thenReturn("offline");
         BraintreeFragment fragment = getMockFragment(mActivity, configuration);
         doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
@@ -189,7 +190,7 @@ public class VenmoTest {
     @Test(timeout = 1000)
     @MediumTest
     public void performAppSwitch_sendsAnalyticsEvent() {
-        Configuration configuration = mock(Configuration.class);
+        Configuration configuration = getConfiguration();
         when(configuration.getVenmoState()).thenReturn("off");
         BraintreeFragment fragment = getMockFragment(mActivity, configuration);
 
@@ -201,7 +202,7 @@ public class VenmoTest {
     @Test(timeout = 1000)
     @SmallTest
     public void performAppSwitch_sendsAnalyticsEventWhenUnavailable() {
-        Configuration configuration = mock(Configuration.class);
+        Configuration configuration = getConfiguration();
         when(configuration.getVenmoState()).thenReturn("off");
         BraintreeFragment fragment = getMockFragment(mActivity, configuration);
 
@@ -216,7 +217,7 @@ public class VenmoTest {
     @SmallTest
     public void onActivityResult_postsPaymentMethodOnSuccess()
             throws InterruptedException, InvalidArgumentException {
-        BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
+        BraintreeFragment fragment = getMockFragment(mActivity, getConfiguration());
         when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
             @Override
             public void get(String path, HttpResponseCallback callback) {
@@ -243,14 +244,16 @@ public class VenmoTest {
     @Test(timeout = 1000)
     @SmallTest
     public void onActivityResult_sendsAnalyticsEventOnSuccess() throws InvalidArgumentException {
-        BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
-        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
-            @Override
-            public void get(String path, HttpResponseCallback callback) {
-                callback.success(
-                        stringFromFixture("payment_methods/get_payment_method_card_response.json"));
-            }
-        });
+        BraintreeFragment fragment = getMockFragment(mActivity, getConfiguration());
+        when(fragment.getHttpClient()).thenReturn(
+                new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
+                    @Override
+                    public void get(String path, HttpResponseCallback callback) {
+                        callback.success(
+                                stringFromFixture(
+                                        "payment_methods/get_payment_method_card_response.json"));
+                    }
+                });
         Intent intent = new Intent().putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE,
                 "123456-12345-12345-a-adfa");
 
@@ -263,7 +266,7 @@ public class VenmoTest {
     @SmallTest
     public void onActivityResult_postsExceptionToListenerWhenNoNonceIsPresent()
             throws InterruptedException {
-        BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
+        BraintreeFragment fragment = getMockFragment(mActivity, getConfiguration());
         final CountDownLatch latch = new CountDownLatch(1);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
@@ -286,7 +289,7 @@ public class VenmoTest {
     @SmallTest
     public void onActivityResult_postsExceptionToListener()
             throws InterruptedException, InvalidArgumentException {
-        BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
+        BraintreeFragment fragment = getMockFragment(mActivity, getConfiguration());
         when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
             @Override
             public void get(String path, HttpResponseCallback callback) {
@@ -317,7 +320,7 @@ public class VenmoTest {
     @Test(timeout = 1000)
     @SmallTest
     public void onActivityResult_sendsAnalyticsEventMissingNonce() {
-        BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
+        BraintreeFragment fragment = getMockFragment(mActivity, getConfiguration());
 
         Venmo.onActivityResult(fragment, Activity.RESULT_OK, new Intent());
 
@@ -327,7 +330,7 @@ public class VenmoTest {
     @Test(timeout = 1000)
     @SmallTest
     public void onActivityResult_sendsAnalyticsEventOnFailure() throws InvalidArgumentException {
-        BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
+        BraintreeFragment fragment = getMockFragment(mActivity, getConfiguration());
         when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
             @Override
             public void get(String path, HttpResponseCallback callback) {
@@ -366,5 +369,14 @@ public class VenmoTest {
         Venmo.onActivityResult(fragment, Activity.RESULT_OK, intent);
 
         latch.await();
+    }
+
+    private Configuration getConfiguration() {
+        AnalyticsConfiguration analyticsConfiguration = mock(AnalyticsConfiguration.class);
+        when(analyticsConfiguration.isEnabled()).thenReturn(true);
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(analyticsConfiguration);
+
+        return configuration;
     }
 }
