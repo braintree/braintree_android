@@ -44,7 +44,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestRunner {
                 .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE);
         assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_DEVELOPER_ERROR, result.get("resultCode"));
         assertTrue(exception instanceof InvalidArgumentException);
-        assertEquals("Client token was invalid json. Value no-json of type java.lang.String cannot be converted to JSONObject",
+        assertEquals("Client key or client token was invalid.",
                 ((InvalidArgumentException) exception).getMessage());
     }
 

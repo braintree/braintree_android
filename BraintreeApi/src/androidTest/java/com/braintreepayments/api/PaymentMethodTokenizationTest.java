@@ -19,6 +19,7 @@ import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.ClientKey;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
@@ -81,10 +82,10 @@ public class PaymentMethodTokenizationTest {
     @Test(timeout = 10000)
     @MediumTest
     public void getPaymentMethods_throwsAnError() throws ErrorWithResponse,
-            BraintreeException, InterruptedException {
+            BraintreeException, InterruptedException, InvalidArgumentException {
         final CountDownLatch latch = new CountDownLatch(1);
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
-        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient() {
+        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
             @Override
             public void get(String path, HttpResponseCallback callback) {
                 callback.failure(new UnexpectedException("Mock"));
@@ -113,7 +114,7 @@ public class PaymentMethodTokenizationTest {
             throws InvalidArgumentException, InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
-        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient() {
+        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
             @Override
             public void get(String path, HttpResponseCallback callback) {
                 callback.success(

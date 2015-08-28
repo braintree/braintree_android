@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
+import android.os.SystemClock;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.MediumTest;
@@ -15,8 +16,9 @@ import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
+import com.braintreepayments.api.internal.AnalyticsManager;
+import com.braintreepayments.api.internal.AnalyticsManagerTestUtils;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
-import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
@@ -26,10 +28,12 @@ import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,12 +50,9 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.contains;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
-import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -160,7 +161,9 @@ public class BraintreeFragmentTest {
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onUnrecoverableError(Throwable throwable) {
-                assertEquals("Protocol not found: nullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint", throwable.getMessage());
+                assertEquals(
+                        "Protocol not found: nullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint",
+                        throwable.getMessage());
                 mCountDownLatch.countDown();
             }
 
@@ -511,39 +514,6 @@ public class BraintreeFragmentTest {
         assertTrue(run.get());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
-    public void sendAnalyticsEvent_sendsAnalyticsIfEnabled() {
-        AnalyticsConfiguration analyticsConfiguration = mock(AnalyticsConfiguration.class);
-        when(analyticsConfiguration.getUrl()).thenReturn("analytics_url");
-        Configuration configuration = mock(Configuration.class);
-        when(configuration.isAnalyticsEnabled()).thenReturn(true);
-        when(configuration.getAnalytics()).thenReturn(analyticsConfiguration);
-        BraintreeFragment fragment = getMockFragment(mActivity, configuration);
-        BraintreeHttpClient httpClient = mock(BraintreeHttpClient.class);
-        when(fragment.getHttpClient()).thenReturn(httpClient);
-
-        fragment.sendAnalyticsEvent("very.important.analytics-payload");
-
-        verify(httpClient).post(matches("analytics_url"),
-                contains("very.important.analytics-payload"), isNull(HttpResponseCallback.class));
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void sendAnalyticsEvent_noopsIfDisabled() {
-        Configuration configuration = mock(Configuration.class);
-        when(configuration.isAnalyticsEnabled()).thenReturn(false);
-        BraintreeFragment fragment = getMockFragment(mActivity, configuration);
-        BraintreeHttpClient httpClient = mock(BraintreeHttpClient.class);
-        when(fragment.getHttpClient()).thenReturn(httpClient);
-
-        fragment.sendAnalyticsEvent("event");
-
-        verify(httpClient, never()).post(anyString(), anyString(),
-                isNull(HttpResponseCallback.class));
-    }
-
     @Test(timeout = 10000)
     @MediumTest
     public void sendAnalyticsEvent_sendsEventsToServer() throws InterruptedException,
@@ -552,7 +522,7 @@ public class BraintreeFragmentTest {
         Configuration configuration = Configuration.fromJson(clientToken);
         BraintreeFragment fragment = spy(getFragment(mActivity, clientToken));
         when(fragment.getConfiguration()).thenReturn(configuration);
-        BraintreeHttpClient httpClient = new BraintreeHttpClient() {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(ClientToken.fromString(clientToken)) {
             @Override
             public void post(String url, String params,
                     final HttpResponseCallback callback) {
@@ -569,12 +539,36 @@ public class BraintreeFragmentTest {
                 });
             }
         };
-        httpClient.setAuthorizationFingerprint(ClientToken.fromString(clientToken).getAuthorizationFingerprint());
-        httpClient.setBaseUrl(configuration.getClientApiUrl());
-        when(fragment.getHttpClient()).thenReturn(httpClient);
+        AnalyticsManagerTestUtils.setHttpClient(httpClient);
 
         fragment.sendAnalyticsEvent("event");
+        AnalyticsManager.flushEvents();
 
         mCountDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    @MediumTest
+    public void onPause_flushesAnalyticsEvents() throws JSONException {
+        String clientToken = new TestClientTokenBuilder().withAnalytics().build();
+        Configuration configuration = Configuration.fromJson(clientToken);
+        BraintreeFragment fragment = getFragment(mActivity, clientToken);
+        final BraintreeHttpClient analyticsHttpClient = mock(BraintreeHttpClient.class);
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched() {
+                AnalyticsManagerTestUtils.setHttpClient(analyticsHttpClient);
+            }
+        });
+
+        fragment.sendAnalyticsEvent("event");
+        SystemClock.sleep(2000);
+        fragment.onPause();
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(analyticsHttpClient)
+                .post(eq(configuration.getAnalytics().getUrl()), captor.capture(),
+                        isNull(HttpResponseCallback.class));
+        assertTrue(new JSONObject(captor.getValue()).getJSONArray("analytics").length() < 5);
     }
 }

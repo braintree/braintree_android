@@ -21,8 +21,8 @@ import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
+import com.braintreepayments.api.internal.AnalyticsManager;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
-import com.braintreepayments.api.models.AnalyticsRequest;
 import com.braintreepayments.api.models.ClientKey;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
@@ -125,17 +125,18 @@ public class BraintreeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-        if (mHttpClient == null) {
-            mHttpClient = new BraintreeHttpClient();
-        }
 
         try {
             if (getArguments().containsKey(EXTRA_CLIENT_KEY)) {
                 mClientKey = ClientKey.fromString(getArguments().getString(EXTRA_CLIENT_KEY));
-                mHttpClient.setClientKey(mClientKey.getClientKey());
+                if (mHttpClient == null) {
+                    mHttpClient = new BraintreeHttpClient(mClientKey);
+                }
             } else {
                 mClientToken = ClientToken.fromString(getArguments().getString(EXTRA_CLIENT_TOKEN));
-                mHttpClient.setAuthorizationFingerprint(mClientToken.getAuthorizationFingerprint());
+                if (mHttpClient == null) {
+                    mHttpClient = new BraintreeHttpClient(mClientToken);
+                }
             }
         } catch (InvalidArgumentException | JSONException ignored) {
             // already checked in BraintreeFragment.newInstance
@@ -166,6 +167,8 @@ public class BraintreeFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+
+        AnalyticsManager.flushEvents();
 
         if (getActivity() instanceof BraintreeListener) {
             removeListener((BraintreeListener) getActivity());
@@ -275,12 +278,7 @@ public class BraintreeFragment extends Fragment {
         waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched() {
-                if (getConfiguration().isAnalyticsEnabled()) {
-                    getHttpClient().post(getConfiguration().getAnalytics().getUrl(),
-                            AnalyticsRequest
-                                    .newRequest(getContext(), eventFragment, mIntegrationType),
-                            null);
-                }
+                AnalyticsManager.sendRequest(mIntegrationType, eventFragment);
             }
         });
     }
@@ -376,6 +374,13 @@ public class BraintreeFragment extends Fragment {
                 try {
                     mConfiguration = Configuration.fromJson(responseBody);
                     getHttpClient().setBaseUrl(mConfiguration.getClientApiUrl());
+
+                    if (mClientKey != null) {
+                        AnalyticsManager.setup(mContext, mConfiguration.getAnalytics(), mClientKey);
+                    } else if (mClientToken != null) {
+                        AnalyticsManager.setup(mContext, mConfiguration.getAnalytics(), mClientToken);
+                    }
+
                     postOrQueueCallback(new QueuedCallback() {
                         @Override
                         public boolean shouldRun() {

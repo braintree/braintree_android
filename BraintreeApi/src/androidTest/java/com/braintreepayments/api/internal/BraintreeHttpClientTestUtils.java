@@ -3,6 +3,8 @@ package com.braintreepayments.api.internal;
 import android.os.SystemClock;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.models.ClientKey;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -11,6 +13,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 
+import static com.braintreepayments.testutils.TestClientKey.CLIENT_KEY;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -39,7 +42,7 @@ public class BraintreeHttpClientTestUtils {
     }
 
     public static BraintreeHttpClient clientWithExpectedResponse(int responseCode, String response)
-            throws IOException, ErrorWithResponse {
+            throws IOException, ErrorWithResponse, InvalidArgumentException {
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(connection.getOutputStream()).thenReturn(mock(OutputStream.class));
         when(connection.getResponseCode()).thenReturn(responseCode);
@@ -48,19 +51,19 @@ public class BraintreeHttpClientTestUtils {
         when(connection.getErrorStream()).thenReturn(streamFromString(response))
             .thenReturn(streamFromString(response));
 
-        BraintreeHttpClient httpClient = spy(new BraintreeHttpClient());
+        BraintreeHttpClient httpClient = spy(new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)));
         doReturn(connection).when(httpClient).init(anyString());
 
         return httpClient;
     }
 
     public static BraintreeHttpClient clientWithExpectedException(Throwable throwable)
-            throws IOException {
+            throws IOException, InvalidArgumentException {
         HttpURLConnection connection = mock(HttpURLConnection.class);
         when(connection.getOutputStream()).thenReturn(mock(OutputStream.class));
         when(connection.getResponseCode()).thenThrow(throwable);
 
-        BraintreeHttpClient httpClient = spy(new BraintreeHttpClient());
+        BraintreeHttpClient httpClient = spy(new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)));
         doReturn(connection).when(httpClient).init(anyString());
 
         return httpClient;

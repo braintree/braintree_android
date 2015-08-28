@@ -15,6 +15,8 @@ import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.models.ClientKey;
+import com.braintreepayments.api.models.ClientToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,12 +63,12 @@ public class BraintreeHttpClient {
     private int mConnectTimeout = 30000; // 30 seconds
     private int mReadTimeout = 60000; // 60 seconds
 
-    public void setClientKey(String clientKey) {
-        mClientKey = (clientKey == null) ? "" : clientKey;
+    public BraintreeHttpClient(ClientKey clientKey) {
+        mClientKey = clientKey.getClientKey();
     }
 
-    public void setAuthorizationFingerprint(String authorizationFingerprint) {
-        mAuthorizationFingerprint = (authorizationFingerprint == null) ? "" : authorizationFingerprint;
+    public BraintreeHttpClient(ClientToken clientToken) {
+        mAuthorizationFingerprint = clientToken.getAuthorizationFingerprint();
     }
 
     public void setBaseUrl(String baseUrl) {
@@ -166,9 +168,7 @@ public class BraintreeHttpClient {
 
                     handleResponse(connection, callback);
                 } catch (IOException | JSONException e) {
-                    if (callback != null) {
-                        postCallbackOnMainThread(callback, e);
-                    }
+                    postCallbackOnMainThread(callback, e);
                 } finally {
                     if (connection != null) {
                         connection.disconnect();
@@ -251,6 +251,10 @@ public class BraintreeHttpClient {
     }
 
     private void postCallbackOnMainThread(final HttpResponseCallback callback, final String response) {
+        if (callback == null) {
+            return;
+        }
+
         mMainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -260,6 +264,10 @@ public class BraintreeHttpClient {
     }
 
     private void postCallbackOnMainThread(final HttpResponseCallback callback, final Exception exception) {
+        if (callback == null) {
+            return;
+        }
+
         mMainThreadHandler.post(new Runnable() {
             @Override
             public void run() {

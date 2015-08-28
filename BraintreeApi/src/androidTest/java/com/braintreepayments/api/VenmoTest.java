@@ -14,12 +14,14 @@ import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.ClientKey;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.test.TestActivity;
@@ -212,9 +214,10 @@ public class VenmoTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void onActivityResult_postsPaymentMethodOnSuccess() throws InterruptedException {
+    public void onActivityResult_postsPaymentMethodOnSuccess()
+            throws InterruptedException, InvalidArgumentException {
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
-        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient() {
+        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
             @Override
             public void get(String path, HttpResponseCallback callback) {
                 callback.success(stringFromFixture("payment_methods/get_payment_method_card_response.json"));
@@ -239,9 +242,9 @@ public class VenmoTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void onActivityResult_sendsAnalyticsEventOnSuccess() {
+    public void onActivityResult_sendsAnalyticsEventOnSuccess() throws InvalidArgumentException {
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
-        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient() {
+        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
             @Override
             public void get(String path, HttpResponseCallback callback) {
                 callback.success(
@@ -281,9 +284,10 @@ public class VenmoTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void onActivityResult_postsExceptionToListener() throws InterruptedException {
+    public void onActivityResult_postsExceptionToListener()
+            throws InterruptedException, InvalidArgumentException {
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
-        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient() {
+        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
             @Override
             public void get(String path, HttpResponseCallback callback) {
                 callback.failure(new Exception("Nonce not found"));
@@ -322,9 +326,9 @@ public class VenmoTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void onActivityResult_sendsAnalyticsEventOnFailure() {
+    public void onActivityResult_sendsAnalyticsEventOnFailure() throws InvalidArgumentException {
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
-        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient() {
+        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
             @Override
             public void get(String path, HttpResponseCallback callback) {
                 callback.failure(new Exception());
