@@ -457,7 +457,7 @@ public class BraintreeFragment extends Fragment {
      * for Android Pay. This instance will be automatically disconnected in
      * {@link Fragment#onPause()} and automatically connected in {@link Fragment#onResume()}.
      *
-     * Connection failed and connection suspended errors will be send to
+     * Connection failed and connection suspended errors will be sent to
      * {@link BraintreeErrorListener#onUnrecoverableError(Throwable)}.
      *
      * @return {@link GoogleApiClient}.
