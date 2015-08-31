@@ -47,13 +47,6 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
     private BraintreeFragment mFragment;
     private BraintreePaymentActivity mActivity;
 
-//new TestClientTokenBuilder()
-//                .withCvvVerification()
-//                .withFakePayPal()
-//                .withAnalytics()
-//                .build()
-//        waitForAddPaymentFormHeader();
-
     @Test(timeout = 30000)
     public void addsEventOnSDKInitialized() {
         setupActivity(new TestClientTokenBuilder().withAnalytics().build());
