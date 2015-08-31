@@ -1,12 +1,22 @@
 package com.braintreepayments.api.exceptions;
 
-import android.test.AndroidTestCase;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.SmallTest;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 
-public class ErrorsWithResponseTest extends AndroidTestCase {
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-    public void testParsesErrorsCorrectly() {
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
+
+@RunWith(AndroidJUnit4.class)
+public class ErrorsWithResponseTest {
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void parsesErrorsCorrectly() {
         String response = stringFromFixture("errors/credit_card_error_response.json");
 
         ErrorWithResponse errorWithResponse = new ErrorWithResponse(422, response);
@@ -24,7 +34,9 @@ public class ErrorsWithResponseTest extends AndroidTestCase {
                 errorWithResponse.errorFor("creditCard").errorFor("expirationYear").getMessage());
     }
 
-    public void testHandlesTopLevelErrors() {
+    @Test(timeout = 1000)
+    @SmallTest
+    public void handlesTopLevelErrors() {
         String topLevelError = stringFromFixture("errors/auth_fingerprint_error.json");
 
         ErrorWithResponse errorWithResponse = new ErrorWithResponse(422, topLevelError);
@@ -33,7 +45,9 @@ public class ErrorsWithResponseTest extends AndroidTestCase {
         assertEquals(1, errorWithResponse.getFieldErrors().size());
     }
 
-    public void testCanHandleMultipleCategories() {
+    @Test(timeout = 1000)
+    @SmallTest
+    public void canHandleMultipleCategories() {
         String errors = stringFromFixture("errors/complex_error_response.json");
 
         ErrorWithResponse errorWithResponse = new ErrorWithResponse(422, errors);
@@ -44,7 +58,9 @@ public class ErrorsWithResponseTest extends AndroidTestCase {
         assertEquals(0, errorWithResponse.errorFor("customer").getFieldErrors().size());
     }
 
-    public void testDoesNotBlowUpParsingBadJson() {
+    @Test(timeout = 1000)
+    @SmallTest
+    public void doesNotBlowUpParsingBadJson() {
         String badJson = stringFromFixture("random_json.json");
 
         ErrorWithResponse errorWithResponse = new ErrorWithResponse(422, badJson);

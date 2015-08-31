@@ -23,17 +23,6 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
     private String mException;
 
     /**
-     * Checks the given {@link Intent} to see if it contains a {@link ThreeDSecureAuthenticationResponse}.
-     *
-     * @param intent The {@link Intent} to check.
-     * @return {@code true} is the {@link Intent} contains a {@link ThreeDSecureWebViewActivity#EXTRA_THREE_D_SECURE_RESULT},
-     *         {@code false} otherwise.
-     */
-    public static boolean isThreeDSecureAuthenticationResponse(Intent intent) {
-        return intent.hasExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT);
-    }
-
-    /**
      * Used to parse a response from the Braintree Gateway to be used for 3D Secure.
      *
      * @param jsonString The json response from the Braintree Gateway 3D Secure authentication route.

@@ -1,15 +1,26 @@
 package com.braintreepayments.api.models;
 
 import android.os.Parcel;
-import android.test.AndroidTestCase;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
-public class ThreeDSecureAuthenticationResponseTest extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+public class ThreeDSecureAuthenticationResponseTest {
 
-    public void testCanInstantiateFromJsonString() {
+    @Test(timeout = 1000)
+    @SmallTest
+    public void fromJson_parsesCorrectly() {
         ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
                 stringFromFixture("three_d_secure/authentication_response.json"));
 
@@ -19,7 +30,9 @@ public class ThreeDSecureAuthenticationResponseTest extends AndroidTestCase {
         assertTrue(authResponse.isSuccess());
     }
 
-    public void testCanInstantiateFromAnExceptionMessage() {
+    @Test(timeout = 1000)
+    @SmallTest
+    public void fromException_parsesCorrectly() {
         ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse
                 .fromException("Error!");
 
@@ -27,7 +40,9 @@ public class ThreeDSecureAuthenticationResponseTest extends AndroidTestCase {
         assertEquals("Error!", authResponse.getException());
     }
 
-    public void testCanInstantiateFromJsonErrorString() {
+    @Test(timeout = 1000)
+    @SmallTest
+    public void getErrors_returnsErrorString() {
         ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
                 stringFromFixture("three_d_secure/authentication_response_with_error.json"));
         ErrorWithResponse errors = new ErrorWithResponse(0, authResponse.getErrors());
@@ -37,7 +52,9 @@ public class ThreeDSecureAuthenticationResponseTest extends AndroidTestCase {
         assertEquals("Failed to authenticate, please try a different form of payment", errors.getMessage());
     }
 
-    public void testCanBeSerialized() {
+    @Test(timeout = 1000)
+    @SmallTest
+    public void isParcelable() {
         ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
                 stringFromFixture("three_d_secure/authentication_response.json"));
         Parcel parcel = Parcel.obtain();
@@ -55,7 +72,9 @@ public class ThreeDSecureAuthenticationResponseTest extends AndroidTestCase {
         assertEquals(authResponse.getException(), parsedAuthResponse.getException());
     }
 
-    public void testExceptionsAreSerialized() {
+    @Test(timeout = 1000)
+    @SmallTest
+    public void exceptionsAreParcelable() {
         ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse
                 .fromException("Error!");
         Parcel parcel = Parcel.obtain();

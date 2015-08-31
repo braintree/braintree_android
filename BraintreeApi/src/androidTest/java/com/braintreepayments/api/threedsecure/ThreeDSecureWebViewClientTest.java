@@ -1,12 +1,16 @@
 package com.braintreepayments.api.threedsecure;
 
 import android.net.http.SslError;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.SmallTest;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -14,27 +18,32 @@ import static org.mockito.Mockito.stub;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class ThreeDSecureWebViewClientTest extends TestCase {
+@RunWith(AndroidJUnit4.class)
+public class ThreeDSecureWebViewClientTest {
 
     private ThreeDSecureWebViewActivity mActivity;
     private WebView mWebView;
     private ThreeDSecureWebViewClient mWebViewClient;
 
-    @Override
-    protected void setUp() {
+    @Before
+    public void setUp() {
         mActivity = mock(ThreeDSecureWebViewActivity.class);
         mWebView = mock(WebView.class);
         mWebViewClient = new ThreeDSecureWebViewClient(mActivity);
     }
 
-    public void testOnPageStartedCallsFinishOnLastPage() {
+    @Test(timeout = 1000)
+    @SmallTest
+    public void onPageStarted_callsFinishOnLastPage() {
         mWebViewClient.onPageStarted(mWebView, "http://test.com/html/authentication_complete_frame?auth_response={}", null);
 
         verify(mWebView, times(1)).stopLoading();
         verify(mActivity, times(1)).finishWithResult(any(ThreeDSecureAuthenticationResponse.class));
     }
 
-    public void testOnPageFinishedSetsTheActivityTitle() {
+    @Test(timeout = 1000)
+    @SmallTest
+    public void onPageFinished_setsTheActivityTitle() {
         stub(mWebView.getTitle()).toReturn("TEST");
 
         mWebViewClient.onPageFinished(mWebView, null);
@@ -42,14 +51,18 @@ public class ThreeDSecureWebViewClientTest extends TestCase {
         verify(mActivity, times(1)).setActionBarTitle("TEST");
     }
 
-    public void testOnReceievedErrorCallsFinish() {
+    @Test(timeout = 1000)
+    @SmallTest
+    public void onReceievedError_callsFinish() {
         mWebViewClient.onReceivedError(mWebView, 0, "TEST", "");
 
         verify(mWebView, times(1)).stopLoading();
         verify(mActivity, times(1)).finishWithResult(any(ThreeDSecureAuthenticationResponse.class));
     }
 
-    public void testOnReceivedSslErrorCallsFinish() {
+    @Test(timeout = 1000)
+    @SmallTest
+    public void onReceivedSslError_callsFinish() {
         SslErrorHandler handler = mock(SslErrorHandler.class);
         mWebViewClient.onReceivedSslError(mWebView, handler, mock(SslError.class));
 

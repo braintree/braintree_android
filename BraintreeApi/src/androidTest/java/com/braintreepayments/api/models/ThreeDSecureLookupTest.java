@@ -1,20 +1,31 @@
 package com.braintreepayments.api.models;
 
 import android.os.Parcel;
-import android.test.AndroidTestCase;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.SmallTest;
+
+import org.json.JSONException;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
-public class ThreeDSecureLookupTest extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+public class ThreeDSecureLookupTest {
 
     private ThreeDSecureLookup mLookup;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws JSONException {
         mLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response.json"));
     }
 
-    public void testCanInstantiateFromJsonString() {
+    @Test(timeout = 1000)
+    @SmallTest
+    public void fromJson_parsesCorrectly() {
         assertEquals("https://acs-url/", mLookup.getAcsUrl());
         assertEquals("merchant-descriptor", mLookup.getMd());
         assertEquals("https://term-url/", mLookup.getTermUrl());
@@ -25,7 +36,9 @@ public class ThreeDSecureLookupTest extends AndroidTestCase {
         assertTrue(mLookup.getCard().getThreeDSecureInfo().isLiabilityShiftPossible());
     }
 
-    public void testCanBeSerialized() {
+    @Test(timeout = 1000)
+    @SmallTest
+    public void isParcelable() {
         Parcel parcel = Parcel.obtain();
         mLookup.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -43,5 +56,4 @@ public class ThreeDSecureLookupTest extends AndroidTestCase {
         assertEquals(mLookup.getCard().getThreeDSecureInfo().isLiabilityShiftPossible(),
                 parsedLookup.getCard().getThreeDSecureInfo().isLiabilityShiftPossible());
     }
-
 }
