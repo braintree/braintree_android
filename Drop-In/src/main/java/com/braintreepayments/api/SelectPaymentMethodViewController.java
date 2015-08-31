@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.braintreepayments.api.dropin.*;
+import com.braintreepayments.api.dropin.Customization;
 import com.braintreepayments.api.dropin.adapters.PaymentMethodListAdapter;
 import com.braintreepayments.api.dropin.adapters.PaymentMethodListAdapter.PaymentMethodSelectedListener;
 import com.braintreepayments.api.dropin.view.PaymentMethodView;

@@ -6,7 +6,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ScrollView;
 
-import com.braintreepayments.api.dropin.*;
+import com.braintreepayments.api.dropin.Customization;
 import com.braintreepayments.api.dropin.view.LoadingHeader;
 import com.braintreepayments.api.exceptions.BraintreeError;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
