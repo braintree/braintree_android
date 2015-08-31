@@ -151,8 +151,10 @@ public class AnalyticsManagerTest {
     @Test(timeout = 1000)
     public void newRequest_sendsCorrectMetaData() throws JSONException {
         setup();
-        String uuid = getTargetContext().getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE)
-                .getString("braintreeUUID", null);
+        String uuid = "testuuid";
+        getTargetContext().getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE).edit()
+                .putString("braintreeUUID", uuid)
+                .commit();
 
         AnalyticsManager.sendRequest(mFragment, "custom", "some-interesting-event");
         AnalyticsManager.flushEvents(mFragment);
