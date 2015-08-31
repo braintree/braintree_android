@@ -17,6 +17,10 @@ import java.util.UUID;
  */
 public class Fraud {
 
+    private static final String DEVICE_SESSION_ID_KEY = "device_session_id";
+    private static final String FRAUD_MERCHANT_ID_KEY = "fraud_merchant_id";
+    private static final String CORRELATION_ID_KEY = "correlation_id";
+
     @VisibleForTesting
     protected enum BraintreeEnvironment {
         SANDBOX("https://assets.braintreegateway.com/sandbox/data/logo.htm"),
@@ -86,13 +90,13 @@ public class Fraud {
             });
 
             String deviceSessionId = UUID.randomUUID().toString().replace("-", "");
-            deviceData.put("device_session_id", deviceSessionId);
-            deviceData.put("fraud_merchant_id", merchantId);
+            deviceData.put(DEVICE_SESSION_ID_KEY, deviceSessionId);
+            deviceData.put(FRAUD_MERCHANT_ID_KEY, merchantId);
             deviceCollector.collect(deviceSessionId);
         } catch (NoClassDefFoundError | JSONException ignored) {}
 
         try {
-            deviceData.put("correlation_id",
+            deviceData.put(CORRELATION_ID_KEY,
                     PayPalConfiguration.getClientMetadataId(fragment.getContext()));
         } catch (JSONException ignored) {}
 
