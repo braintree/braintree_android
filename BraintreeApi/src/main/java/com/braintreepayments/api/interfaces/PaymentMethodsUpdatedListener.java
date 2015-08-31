@@ -5,6 +5,9 @@ import com.braintreepayments.api.models.PaymentMethod;
 
 import java.util.List;
 
+/**
+ * Interface that defines callbacks to be called when existing {@link PaymentMethod}s are fetched.
+ */
 public interface PaymentMethodsUpdatedListener extends BraintreeListener {
 
     /**

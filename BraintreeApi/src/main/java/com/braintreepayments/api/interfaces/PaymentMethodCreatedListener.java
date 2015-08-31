@@ -2,6 +2,9 @@ package com.braintreepayments.api.interfaces;
 
 import com.braintreepayments.api.models.PaymentMethod;
 
+/**
+ * Interface that defines callbacks to be called when {@link PaymentMethod}s are created.
+ */
 public interface PaymentMethodCreatedListener extends BraintreeListener {
 
     /**
