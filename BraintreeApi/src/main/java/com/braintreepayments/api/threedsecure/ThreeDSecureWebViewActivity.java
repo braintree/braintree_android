@@ -15,15 +15,8 @@ import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Stack;
 
 @Beta
@@ -53,20 +46,21 @@ public class ThreeDSecureWebViewActivity extends Activity {
         mThreeDSecureWebViews = new Stack<ThreeDSecureWebView>();
         mRootView = ((FrameLayout) findViewById(android.R.id.content));
 
-        List<NameValuePair> params = new LinkedList<NameValuePair>();
-        params.add(new BasicNameValuePair("PaReq", threeDSecureLookup.getPareq()));
-        params.add(new BasicNameValuePair("MD", threeDSecureLookup.getMd()));
-        params.add(new BasicNameValuePair("TermUrl", threeDSecureLookup.getTermUrl()));
-        ByteArrayOutputStream encodedParams = new ByteArrayOutputStream();
+        StringBuilder params = new StringBuilder();
         try {
-            new UrlEncodedFormEntity(params, HTTP.UTF_8).writeTo(encodedParams);
-        } catch (IOException e) {
+            params.append("PaReq=");
+            params.append(URLEncoder.encode(threeDSecureLookup.getPareq(), "UTF-8"));
+            params.append("&MD=");
+            params.append(URLEncoder.encode(threeDSecureLookup.getMd(), "UTF-8"));
+            params.append("&TermUrl=");
+            params.append(URLEncoder.encode(threeDSecureLookup.getTermUrl(), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
             finish();
         }
 
         ThreeDSecureWebView webView = new ThreeDSecureWebView(this);
         webView.init(this);
-        webView.postUrl(threeDSecureLookup.getAcsUrl(), encodedParams.toByteArray());
+        webView.postUrl(threeDSecureLookup.getAcsUrl(), params.toString().getBytes());
         pushNewWebView(webView);
     }
 
