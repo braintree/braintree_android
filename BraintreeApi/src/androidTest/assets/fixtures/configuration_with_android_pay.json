@@ -6,6 +6,12 @@
     "enabled": true,
     "displayName": "Android Pay Merchant",
     "environment": "sandbox",
-    "googleAuthorizationFingerprint": "google-auth-fingerprint"
+    "googleAuthorizationFingerprint": "google-auth-fingerprint",
+    "supportedNetworks": [
+      "visa",
+      "mastercard",
+      "amex",
+      "discover"
+    ]
   }
 }

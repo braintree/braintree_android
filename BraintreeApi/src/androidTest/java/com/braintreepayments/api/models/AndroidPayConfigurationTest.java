@@ -30,6 +30,10 @@ public class AndroidPayConfigurationTest {
         assertEquals("google-auth-fingerprint", androidPayConfiguration.getGoogleAuthorizationFingerprint());
         assertEquals("Android Pay Merchant", androidPayConfiguration.getDisplayName());
         assertEquals("sandbox", androidPayConfiguration.getEnvironment());
+        assertEquals("visa", androidPayConfiguration.getSupportedNetworks()[0]);
+        assertEquals("mastercard", androidPayConfiguration.getSupportedNetworks()[1]);
+        assertEquals("amex", androidPayConfiguration.getSupportedNetworks()[2]);
+        assertEquals("discover", androidPayConfiguration.getSupportedNetworks()[3]);
     }
 
     @Test(timeout = 1000)
@@ -44,6 +48,10 @@ public class AndroidPayConfigurationTest {
         assertEquals("google-auth-fingerprint", androidPayConfiguration.getGoogleAuthorizationFingerprint());
         assertEquals("Android Pay Merchant", androidPayConfiguration.getDisplayName());
         assertEquals("sandbox", androidPayConfiguration.getEnvironment());
+        assertEquals("visa", androidPayConfiguration.getSupportedNetworks()[0]);
+        assertEquals("mastercard", androidPayConfiguration.getSupportedNetworks()[1]);
+        assertEquals("amex", androidPayConfiguration.getSupportedNetworks()[2]);
+        assertEquals("discover", androidPayConfiguration.getSupportedNetworks()[3]);
     }
 
     @Test(timeout = 1000)
@@ -55,6 +63,7 @@ public class AndroidPayConfigurationTest {
         assertNull(androidPayConfiguration.getGoogleAuthorizationFingerprint());
         assertNull(androidPayConfiguration.getDisplayName());
         assertNull(androidPayConfiguration.getEnvironment());
+        assertEquals(0, androidPayConfiguration.getSupportedNetworks().length);
     }
 
     @Test(timeout = 1000)
@@ -66,5 +75,6 @@ public class AndroidPayConfigurationTest {
         assertNull(androidPayConfiguration.getGoogleAuthorizationFingerprint());
         assertNull(androidPayConfiguration.getDisplayName());
         assertNull(androidPayConfiguration.getEnvironment());
+        assertEquals(0, androidPayConfiguration.getSupportedNetworks().length);
     }
 }

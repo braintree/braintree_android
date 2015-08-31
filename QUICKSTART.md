@@ -99,6 +99,16 @@ and wait for the callback.
 AndroidPay.getTokenizationParameters(braintreeFragment)
 ```
 
+### Get Allowed Card Networks
+
+**Note:** Allowed card networks can only be acquired after configuration has been
+fetched from Braintree. To wait until configuration has been fetched, implement `ConfigurationListener`
+and wait for the callback.
+
+```java
+AndroidPay.getAllowedCardNetworks(braintreeFragment)
+```
+
 ### Tokenize an Android Pay `FullWallet`
 
 ```java

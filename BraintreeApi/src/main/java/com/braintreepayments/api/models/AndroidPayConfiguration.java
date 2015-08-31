@@ -6,6 +6,8 @@ import com.braintreepayments.api.annotations.Beta;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -18,11 +20,13 @@ public class AndroidPayConfiguration {
     private static final String GOOGLE_AUTHORIZATION_FINGERPRINT_KEY = "googleAuthorizationFingerprint";
     private static final String ENVIRONMENT_KEY = "environment";
     private static final String DISPLAY_NAME_KEY = "displayName";
+    private static final String SUPPORTED_NETWORKS_KEY = "supportedNetworks";
 
     private boolean mEnabled;
     private String mGoogleAuthorizationFingerprint;
     private String mEnvironment;
     private String mDisplayName;
+    private String[] mSupportedNetworks;
 
     /**
      * Parse an {@link AndroidPayConfiguration} from json.
@@ -38,9 +42,22 @@ public class AndroidPayConfiguration {
 
         AndroidPayConfiguration androidPayConfiguration = new AndroidPayConfiguration();
         androidPayConfiguration.mEnabled = json.optBoolean(ENABLED_KEY, false);
-        androidPayConfiguration.mGoogleAuthorizationFingerprint = json.optString(GOOGLE_AUTHORIZATION_FINGERPRINT_KEY, null);
+        androidPayConfiguration.mGoogleAuthorizationFingerprint = json.optString(
+                GOOGLE_AUTHORIZATION_FINGERPRINT_KEY, null);
         androidPayConfiguration.mEnvironment = json.optString(ENVIRONMENT_KEY, null);
         androidPayConfiguration.mDisplayName = json.optString(DISPLAY_NAME_KEY, null);
+
+        JSONArray supportedNetworks = json.optJSONArray(SUPPORTED_NETWORKS_KEY);
+        if (supportedNetworks != null) {
+            androidPayConfiguration.mSupportedNetworks = new String[supportedNetworks.length()];
+            for (int i = 0; i < supportedNetworks.length(); i++) {
+                try {
+                    androidPayConfiguration.mSupportedNetworks[i] = supportedNetworks.getString(i);
+                } catch (JSONException ignored) {}
+            }
+        } else {
+            androidPayConfiguration.mSupportedNetworks = new String[0];
+        }
 
         return androidPayConfiguration;
     }
@@ -78,5 +95,12 @@ public class AndroidPayConfiguration {
      */
     public String getDisplayName() {
         return mDisplayName;
+    }
+
+    /**
+     * @return a list of supported card networks for Android Pay.
+     */
+    public String[] getSupportedNetworks() {
+        return mSupportedNetworks;
     }
 }

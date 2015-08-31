@@ -255,6 +255,7 @@ public class PaymentButtonTest {
         when(androidPayConfiguration.getDisplayName()).thenReturn("Test");
         when(androidPayConfiguration.getGoogleAuthorizationFingerprint()).thenReturn(
                 "google-auth-fingerprint");
+        when(androidPayConfiguration.getSupportedNetworks()).thenReturn(new String[0]);
         when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
 
         Activity activity = mActivityTestRule.getActivity();

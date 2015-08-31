@@ -466,7 +466,7 @@ public class BraintreeFragment extends Fragment {
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                     .addApi(Wallet.API, new Wallet.WalletOptions.Builder()
-                            .setEnvironment(AndroidPay.getEnvironment(getConfiguration()))
+                            .setEnvironment(AndroidPay.getEnvironment(getConfiguration().getAndroidPay()))
                             .setTheme(WalletConstants.THEME_LIGHT)
                             .build())
                     .build();
