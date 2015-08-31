@@ -11,9 +11,9 @@ import org.json.JSONException;
 
 import java.util.List;
 
-public class PaymentMethodTokenization {
+class PaymentMethodTokenization {
 
-    protected static final String PAYMENT_METHOD_ENDPOINT = "payment_methods";
+    static final String PAYMENT_METHOD_ENDPOINT = "payment_methods";
 
     /**
      * Retrieves the current list of {@link PaymentMethod} for the current customer.
@@ -23,7 +23,7 @@ public class PaymentMethodTokenization {
      *
      * @param fragment {@link BraintreeFragment}
      */
-    public static void getPaymentMethods(final BraintreeFragment fragment) {
+    static void getPaymentMethods(final BraintreeFragment fragment) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched() {
@@ -65,7 +65,7 @@ public class PaymentMethodTokenization {
      * @param paymentMethodBuilder {@link PaymentMethodBuilder} for the {@link PaymentMethod}
      *        to be created.
      */
-    protected static void tokenize(final BraintreeFragment fragment, final PaymentMethodBuilder paymentMethodBuilder,
+    static void tokenize(final BraintreeFragment fragment, final PaymentMethodBuilder paymentMethodBuilder,
             final PaymentMethodResponseCallback callback) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
@@ -96,7 +96,7 @@ public class PaymentMethodTokenization {
         });
     }
 
-    protected static String versionedPath(String path) {
+    static String versionedPath(String path) {
         return "/v1/" + path;
     }
 }
