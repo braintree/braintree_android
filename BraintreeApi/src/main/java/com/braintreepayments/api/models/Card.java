@@ -3,8 +3,6 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.braintreepayments.api.annotations.Beta;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -74,7 +72,6 @@ public class Card extends PaymentMethod implements Parcelable {
      * @return The 3D Secure info for the current {@link com.braintreepayments.api.models.Card} or
      * {@code null}
      */
-    @Beta
     public ThreeDSecureInfo getThreeDSecureInfo() {
         return mThreeDSecureInfo;
     }

@@ -2,7 +2,6 @@ package com.braintreepayments.api.models;
 
 import android.content.Context;
 
-import com.braintreepayments.api.annotations.Beta;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -13,7 +12,6 @@ import org.json.JSONObject;
 /**
  * Contains the remote Android Pay configuration for the Braintree SDK.
  */
-@Beta
 public class AndroidPayConfiguration {
 
     private static final String ENABLED_KEY = "enabled";

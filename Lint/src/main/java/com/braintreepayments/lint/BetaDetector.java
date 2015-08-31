@@ -14,7 +14,7 @@ import com.android.tools.lint.detector.api.Severity;
 import com.android.tools.lint.detector.api.Speed;
 import com.android.tools.lint.detector.api.TextFormat;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import lombok.ast.AstVisitor;
@@ -24,25 +24,9 @@ import lombok.ast.Node;
 
 public class BetaDetector extends Detector implements JavaScanner {
 
-    private static final List<String> METHODS = Arrays.asList(
-            "isThreeDSecureEnabled",
-            "startThreeDSecureVerification",
-            "finishThreeDSecureVerification",
-            "getThreeDSecureInfo",
-            "isAndroidPayEnabled",
-            "isMaskedWalletResponse",
-            "isFullWalletResponse",
-            "getAndroidPayTokenizationParameters",
-            "getAndroidPayGoogleTransactionId",
-            "performAndroidPayMaskedWalletRequest",
-            "performAndroidPayChangeMaskedWalletRequest",
-            "performAndroidPayFullWalletRequest",
-            "getNonceFromAndroidPayFullWalletResponse",
-            "getAndroidPay"
-    );
+    private static final List<String> METHODS = Collections.emptyList();
 
-    private static final Implementation IMPLEMENTATION = new Implementation(
-            BetaDetector.class,
+    private static final Implementation IMPLEMENTATION = new Implementation(BetaDetector.class,
             Scope.JAVA_FILE_SCOPE);
 
     public static final Issue ISSUE = Issue.create(

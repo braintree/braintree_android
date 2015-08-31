@@ -3,8 +3,6 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.braintreepayments.api.annotations.Beta;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,7 +10,6 @@ import org.json.JSONObject;
  * {@link com.braintreepayments.api.models.PaymentMethod} representing an Android Pay card.
  * @see com.braintreepayments.api.models.PaymentMethod
  */
-@Beta
 public class AndroidPayCard extends PaymentMethod implements Parcelable {
 
     protected static final String PAYMENT_METHOD_TYPE = "AndroidPayCard";

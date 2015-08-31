@@ -3,15 +3,12 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.braintreepayments.api.annotations.Beta;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * Class to parse and contain 3D Secure lookup params
  */
-@Beta
 public class ThreeDSecureLookup implements Parcelable {
 
     private static final String PAYMENT_METHOD_KEY = "paymentMethod";

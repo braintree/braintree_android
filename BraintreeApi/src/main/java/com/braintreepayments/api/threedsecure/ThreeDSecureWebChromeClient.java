@@ -4,9 +4,6 @@ import android.os.Message;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
-import com.braintreepayments.api.annotations.Beta;
-
-@Beta
 public class ThreeDSecureWebChromeClient extends WebChromeClient {
 
     private ThreeDSecureWebViewActivity mActivity;

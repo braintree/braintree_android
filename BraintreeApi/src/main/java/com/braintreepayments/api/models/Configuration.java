@@ -1,7 +1,5 @@
 package com.braintreepayments.api.models;
 
-import com.braintreepayments.api.annotations.Beta;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -102,7 +100,6 @@ public class Configuration {
     /**
      * @return instance of {@link AndroidPayConfiguration}.
      */
-    @Beta
     public AndroidPayConfiguration getAndroidPay() {
         return mAndroidPayConfiguration;
     }
@@ -124,7 +121,6 @@ public class Configuration {
      * @return {@code true} if 3D Secure is enabled and supported for the current merchant account,
      *         {@code false} otherwise.
      */
-    @Beta
     public boolean isThreeDSecureEnabled() {
         return mThreeDSecureEnabled;
     }

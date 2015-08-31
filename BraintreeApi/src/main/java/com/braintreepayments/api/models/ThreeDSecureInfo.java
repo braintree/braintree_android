@@ -3,15 +3,12 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.braintreepayments.api.annotations.Beta;
-
 import org.json.JSONObject;
 
 /**
  * A class to contain 3D Secure information about the current
  * {@link com.braintreepayments.api.models.Card}
  */
-@Beta
 public class ThreeDSecureInfo implements Parcelable {
 
     private static final String LIABILITY_SHIFTED_KEY = "liabilityShifted";

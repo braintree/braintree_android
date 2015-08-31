@@ -16,7 +16,6 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-@SuppressWarnings("com.braintreepayments.beta")
 public class FinishedActivity extends Activity {
 
     public static final String EXTRA_PAYMENT_METHOD_NONCE = "nonce";

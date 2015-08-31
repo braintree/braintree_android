@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
@@ -47,7 +46,6 @@ public class ThreeDSecure {
      *                    the 3D Secure verification if performed.
      * @param amount The amount of the transaction in the current merchant account's currency
      */
-    @Beta
     public static void performVerification(final BraintreeFragment fragment, final CardBuilder cardBuilder, final String amount) {
         PaymentMethodTokenization.tokenize(fragment, cardBuilder, new PaymentMethodResponseCallback() {
             @Override
@@ -86,7 +84,6 @@ public class ThreeDSecure {
      * @param nonce The nonce that represents a card to perform a 3D Secure verification against.
      * @param amount The amount of the transaction in the current merchant account's currency.
      */
-    @Beta
     public static void performVerification(final BraintreeFragment fragment, final String nonce,
             final String amount) {
         fragment.waitForConfiguration(new ConfigurationListener() {

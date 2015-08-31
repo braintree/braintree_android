@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-@SuppressWarnings("com.braintreepayments.beta")
 public class Settings {
 
     protected static final String ENVIRONMENT = "environment";

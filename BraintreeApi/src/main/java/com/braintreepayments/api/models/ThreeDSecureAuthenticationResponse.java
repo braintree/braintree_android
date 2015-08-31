@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
 
 import org.json.JSONException;
@@ -13,7 +12,6 @@ import org.json.JSONObject;
 /**
  * Class to parse and contain 3D Secure authentication responses
  */
-@Beta
 public class ThreeDSecureAuthenticationResponse implements Parcelable {
 
     private static final String PAYMENT_METHOD_KEY = "paymentMethod";

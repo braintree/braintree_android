@@ -41,7 +41,6 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-@SuppressWarnings("com.braintreepayments.beta")
 public class MainActivity extends Activity implements PaymentMethodCreatedListener,
         BraintreeErrorListener, OnNavigationListener {
 

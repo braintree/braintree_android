@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
@@ -26,7 +25,6 @@ import java.util.Collection;
 /**
  * Class containing Android Pay specific logic.
  */
-@Beta
 public class AndroidPay {
 
     protected static final int ANDROID_PAY_MASKED_WALLET_REQUEST_CODE = 13489;
@@ -49,7 +47,6 @@ public class AndroidPay {
      * @param fragment {@link BraintreeFragment}
      * @return the {@link PaymentMethodTokenizationParameters}
      */
-    @Beta
     public static PaymentMethodTokenizationParameters getTokenizationParameters(BraintreeFragment fragment) {
         PaymentMethodTokenizationParameters.Builder parameters = PaymentMethodTokenizationParameters.newBuilder()
                 .setPaymentMethodTokenizationType(PaymentMethodTokenizationType.PAYMENT_GATEWAY)
@@ -108,7 +105,6 @@ public class AndroidPay {
      * @param wallet a {@link FullWallet} from the Intent in
      *          {@link Activity#onActivityResult(int, int, Intent)}
      */
-    @Beta
     public static void tokenize(BraintreeFragment fragment, FullWallet wallet) {
         try {
             fragment.postCallback(AndroidPayCard.fromJson(wallet.getPaymentMethodToken().getToken()));
