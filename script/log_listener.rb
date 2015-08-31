@@ -13,7 +13,7 @@ def setup
 end
 
 def handle_screenshot_request(screenshot_name)
-  puts `adb shell screencap -p | perl -pe 's/\\x0D\\x0A/\\x0A/g' > failed_test_screenshots/#{screenshot_name}.png`
+  `adb shell screencap -p | perl -pe 's/\\x0D\\x0A/\\x0A/g' > failed_test_screenshots/#{screenshot_name}.png`
 end
 
 def handle_command_request(command)
@@ -31,7 +31,6 @@ def run
     PTY.spawn("adb logcat | grep -E #{get_filter}") do |stdin, stdout, pid|
       begin
         stdin.each do |line|
-          puts line
           if line.include?("request_screenshot")
             handle_screenshot_request(line.split(':')[1].strip)
           elsif line.include?("request_command")
