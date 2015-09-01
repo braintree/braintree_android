@@ -24,8 +24,11 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.test.TestActivity;
+import com.braintreepayments.testutils.FixturesHelper;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -199,11 +202,14 @@ public class PaymentMethodTokenizationTest {
 
     @Test(timeout = 10000)
     @MediumTest
-    public void tokenize_acceptsAPayPalAccount() throws InterruptedException {
+    public void tokenize_acceptsAPayPalAccount() throws InterruptedException, JSONException {
         final CountDownLatch latch = new CountDownLatch(1);
+        JSONObject otcJson = new JSONObject(FixturesHelper.stringFromFixture("paypal_otc_response.json"));
         BraintreeFragment fragment = getFragment(mActivity, new TestClientTokenBuilder().withPayPal().build());
         PayPalAccountBuilder paypalAccountBuilder =
-                new PayPalAccountBuilder().consentCode("test-authorization-code");
+                new PayPalAccountBuilder()
+                        .oneTouchCoreData(otcJson)
+                        .clientMetadataId("client-metadata-id");
 
         PaymentMethodTokenization.tokenize(fragment, paypalAccountBuilder,
                 new PaymentMethodResponseCallback() {
@@ -225,11 +231,12 @@ public class PaymentMethodTokenizationTest {
 
     @Test(timeout = 10000)
     @MediumTest
-    public void tokenize_tokenizesAPayPalAccountWithAClientKey() throws InterruptedException {
+    public void tokenize_tokenizesAPayPalAccountWithAClientKey() throws InterruptedException, JSONException {
         final CountDownLatch latch = new CountDownLatch(1);
+        JSONObject otcJson = new JSONObject(FixturesHelper.stringFromFixture("paypal_otc_response.json"));
         BraintreeFragment fragment = getFragment(mActivity, CLIENT_KEY);
         PayPalAccountBuilder paypalAccountBuilder =
-                new PayPalAccountBuilder().consentCode("test-authorization-code");
+                new PayPalAccountBuilder().oneTouchCoreData(otcJson);
 
         PaymentMethodTokenization.tokenize(fragment, paypalAccountBuilder,
                 new PaymentMethodResponseCallback() {

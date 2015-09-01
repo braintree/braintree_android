@@ -1,0 +1,15 @@
+{
+  "client": {
+    "environment": "OneTouchCore-Android",
+    "paypal_sdk_version": "1.0.4",
+    "platform": "Android",
+    "product_name": "OneTouchCore-Android"
+  },
+  "response": {
+    "code": "test_auth_code"
+  },
+  "response_type": "code",
+  "user": {
+    "display_string": "test_email"
+  }
+}

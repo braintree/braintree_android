@@ -21,8 +21,7 @@ public class PayPalAccountBuilderTest {
     @SmallTest
     public void build_correctlyBuildsAPayPalAccount() throws JSONException {
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
-                .correlationId("correlation_id")
-                .consentCode("test_auth_code")
+                .clientMetadataId("correlation_id")
                 .source("paypal-sdk");
 
         String json = paypalAccountBuilder.build();
