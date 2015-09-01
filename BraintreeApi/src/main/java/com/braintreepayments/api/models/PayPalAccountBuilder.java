@@ -3,6 +3,9 @@ package com.braintreepayments.api.models;
 import android.content.Context;
 
 import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Iterator;
 
 /**
  * Builder used to construct a PayPal account tokenization request
@@ -10,7 +13,6 @@ import org.json.JSONException;
 public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuilder> {
 
     private static final String PAYPAL_ACCOUNT_KEY = "paypalAccount";
-    private static final String CONSENT_CODE_KEY = "consentCode";
     private static final String CORRELATION_ID_KEY = "correlationId";
 
     public PayPalAccountBuilder() {
@@ -24,12 +26,13 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
     /**
      * Used by PayPal wrappers to construct a request to create a PayPal account.
      *
-     * @param consentCode consent code returned by PayPal SDK.
+     * @param clientMetadataId Application clientMetadataId created by
+     * {@link com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore#getClientMetadataId(Context)}.
      * @return {@link PayPalAccountBuilder}
      */
-    public PayPalAccountBuilder consentCode(String consentCode) {
+    public PayPalAccountBuilder clientMetadataId(String clientMetadataId) {
         try {
-            mPaymentMethodJson.put(CONSENT_CODE_KEY, consentCode);
+            mPaymentMethodJson.put(CORRELATION_ID_KEY, clientMetadataId);
         } catch (JSONException ignored) {}
 
         return this;
@@ -38,16 +41,18 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
     /**
      * Used by PayPal wrappers to construct a request to create a PayPal account.
      *
-     * @param correlationId Application correlation ID created by
-     * {@link com.paypal.android.sdk.payments.PayPalConfiguration#getClientMetadataId(Context)}
-     * to verify the payment.
+     * @note Merge the OTC data into the payment method json.
+     * @param otcData The data provided by OneTouchCore.
      * @return {@link PayPalAccountBuilder}
      */
-    public PayPalAccountBuilder correlationId(String correlationId) {
+    public PayPalAccountBuilder oneTouchCoreData(JSONObject otcData) {
         try {
-            mPaymentMethodJson.put(CORRELATION_ID_KEY, correlationId);
+            Iterator<String> otcKeyIterator = otcData.keys();
+            while(otcKeyIterator.hasNext()){
+                String otcKey = otcKeyIterator.next();
+                mPaymentMethodJson.put(otcKey, otcData.get(otcKey));
+            }
         } catch (JSONException ignored) {}
-
         return this;
     }
 

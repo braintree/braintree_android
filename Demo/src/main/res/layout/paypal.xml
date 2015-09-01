@@ -3,53 +3,56 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
+    android:gravity="bottom"
     android:padding="10dp">
 
     <TextView
-        android:id="@+id/nonce"
+        android:id="@+id/log"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="30dp" />
+        android:paddingBottom="10dp"
+        android:scrollbars="vertical"
+        android:singleLine="false"
+        />
 
     <Button
-        android:id="@+id/drop_in"
+        android:id="@+id/paypal_future_payment_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/drop_in"
-        android:onClick="launchDropIn"
+        android:text="@string/paypal_future_payment"
+        android:onClick="launchFuturePayment"
         android:enabled="false" />
 
     <Button
-        android:id="@+id/paypal"
+        android:id="@+id/paypal_future_payment_address_scope_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/paypal_button"
-        android:onClick="launchPayPal"
+        android:text="@string/paypal_future_payment_address_scope"
+        android:onClick="launchFuturePaymentAddressScope"
         android:enabled="false" />
 
     <Button
-        android:id="@+id/payment_button"
+        android:id="@+id/paypal_single_payment_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/payment_button"
-        android:onClick="launchPaymentButton"
+        android:text="@string/paypal_single_payment"
+        android:onClick="launchSinglePayment"
         android:enabled="false" />
 
     <Button
-        android:id="@+id/custom"
+        android:id="@+id/paypal_billing_agreement_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/custom"
-        android:onClick="launchCustom"
+        android:text="@string/paypal_billing_agreement"
+        android:onClick="launchBillingAgreement"
         android:enabled="false" />
 
     <Button
-        android:id="@+id/create_transaction"
+        android:id="@+id/cancel_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/create_transaction"
-        android:onClick="createTransaction"
+        android:text="Cancel"
+        android:onClick="cancelFinish"
         android:enabled="false" />
 
 </LinearLayout>

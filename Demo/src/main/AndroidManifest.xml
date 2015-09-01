@@ -19,9 +19,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <data android:scheme="${applicationId}.braintree" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+        </activity>
         <activity android:name=".SettingsActivity" android:label="@string/options" />
         <activity android:name=".PaymentButtonActivity" android:label="@string/buy" />
         <activity android:name=".CustomFormActivity" android:label="@string/buy" />
         <activity android:name=".FinishedActivity" android:label="@string/purchase_complete" />
+        <activity android:name=".PayPalActivity" android:label="@string/paypal" />
     </application>
 </manifest>

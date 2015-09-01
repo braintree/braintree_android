@@ -47,6 +47,8 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     private static final int DROP_IN_REQUEST = 100;
     private static final int PAYMENT_BUTTON_REQUEST = 200;
     private static final int CUSTOM_REQUEST = 300;
+    private static final int PAYPAL_REQUEST = 400;
+
 
     /**
      * Keys to store state on config changes.
@@ -62,6 +64,7 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
 
     private TextView mNonceTextView;
     private Button mDropInButton;
+    private Button mPayPalButton;
     private Button mPaymentButtonButton;
     private Button mCustomButton;
     private Button mCreateTransactionButton;
@@ -80,6 +83,7 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
 
         mNonceTextView = (TextView) findViewById(R.id.nonce);
         mDropInButton = (Button) findViewById(R.id.drop_in);
+        mPayPalButton = (Button) findViewById(R.id.paypal);
         mPaymentButtonButton = (Button) findViewById(R.id.payment_button);
         mCustomButton = (Button) findViewById(R.id.custom);
         mCreateTransactionButton = (Button) findViewById(R.id.create_transaction);
@@ -138,6 +142,18 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
         }
 
         startActivityForResult(intent, DROP_IN_REQUEST);
+    }
+
+    public void launchPayPal(View v){
+        Intent intent = PayPalActivity.createIntent(this);
+
+        if (Settings.useClientKey(this)) {
+            intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, Settings.getEnvironmentClientKey(this));
+        } else {
+            intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken);
+        }
+
+        startActivityForResult(intent, PAYPAL_REQUEST);
     }
 
     public void launchPaymentButton(View v) {
@@ -215,7 +231,6 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
         if (resultCode == RESULT_OK) {
             PaymentMethod paymentMethod = data.getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
             displayNonce(paymentMethod.getNonce());
-
             if (Settings.isThreeDSecureEnabled(this)) {
                 mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
                 ThreeDSecure.performVerification(mBraintreeFragment, mNonce, "1");
@@ -317,6 +332,7 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
 
     private void enableButtons(boolean enable) {
         mDropInButton.setEnabled(enable);
+        mPayPalButton.setEnabled(enable);
         mPaymentButtonButton.setEnabled(enable);
         mCustomButton.setEnabled(enable);
     }

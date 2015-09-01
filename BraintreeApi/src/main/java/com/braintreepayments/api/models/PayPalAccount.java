@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 /**
  * {@link com.braintreepayments.api.models.PaymentMethod} representing a PayPal account.
+ *
  * @see {@link com.braintreepayments.api.models.Card}
  * @see {@link com.braintreepayments.api.models.PaymentMethod}
  */
@@ -21,15 +22,21 @@ public class PayPalAccount extends PaymentMethod implements Parcelable {
     private static final String EMAIL_KEY = "email";
     private static final String PAYER_INFO_KEY = "payerInfo";
     private static final String ACCOUNT_ADDRESS_KEY = "accountAddress";
-    private static final String STREET_ADDRESS_KEY = "street1";
-    private static final String EXTENDED_ADDRESS_KEY = "street2";
-    private static final String LOCALITY_KEY = "city";
-    private static final String COUNTRY_CODE_ALPHA_2_KEY = "country";
-    private static final String POSTAL_CODE_KEY = "postalCode";
-    private static final String REGION_KEY = "state";
+    private static final String SHIPPING_ADDRESS_KEY = "shippingAddress";
+    private static final String BILLING_ADDRESS_KEY = "billingAddress";
+    private static final String FIRST_NAME_KEY = "firstName";
+    private static final String LAST_NAME_KEY = "lastName";
+    private static final String PHONE_KEY = "phone";
+    private static final String PAYER_ID_KEY = "payer_id";
 
-    private String mEmail;
+    private String mClientMetadataId;
     private PostalAddress mBillingAddress;
+    private PostalAddress mShippingAddress;
+    private String mFirstName;
+    private String mLastName;
+    private String mPhone;
+    private String mEmail;
+    private String mPayerId;
 
     /**
      * Convert an API response to a {@link PayPalAccount}.
@@ -43,27 +50,35 @@ public class PayPalAccount extends PaymentMethod implements Parcelable {
         return payPalAccount;
     }
 
+    /**
+     * Generates a {@link PayPalAccount} from the {@link JSONObject}.
+     *
+     * @param json {@link JSONObject} that holds properties for {@link PayPalAccount}.
+     * @throws JSONException
+     */
     protected void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
 
         JSONObject details = json.getJSONObject(DETAILS_KEY);
-        mEmail = details.getString(EMAIL_KEY);
+        mEmail = details.optString(EMAIL_KEY, null);
 
         try {
-            JSONObject accountAddress = details
-                    .getJSONObject(PAYER_INFO_KEY)
-                    .getJSONObject(ACCOUNT_ADDRESS_KEY);
-            String streetAddress = accountAddress.optString(STREET_ADDRESS_KEY, null);
-            String extendedAddress = accountAddress.optString(EXTENDED_ADDRESS_KEY, null);
-            String locality = accountAddress.optString(LOCALITY_KEY, null);
-            String region = accountAddress.optString(REGION_KEY, null);
-            String postalCode = accountAddress.optString(POSTAL_CODE_KEY, null);
-            String countryCodeAlpha2 = accountAddress.optString(COUNTRY_CODE_ALPHA_2_KEY, null);
-            mBillingAddress = new PostalAddress(streetAddress, extendedAddress,
-                    locality, region, postalCode, countryCodeAlpha2);
-        } catch (JSONException e) {
-            mBillingAddress = new PostalAddress();
-        }
+            JSONObject payerInfo = details.getJSONObject(PAYER_INFO_KEY);
+            JSONObject billingAddress = payerInfo.has(ACCOUNT_ADDRESS_KEY) ? payerInfo.optJSONObject(ACCOUNT_ADDRESS_KEY) : payerInfo.optJSONObject(BILLING_ADDRESS_KEY);
+            JSONObject shippingAddress = payerInfo.optJSONObject(SHIPPING_ADDRESS_KEY);
+
+            mBillingAddress = PostalAddress.fromJson(billingAddress);
+            mShippingAddress = PostalAddress.fromJson(shippingAddress);
+
+            mFirstName = payerInfo.optString(FIRST_NAME_KEY);
+            mLastName = payerInfo.optString(LAST_NAME_KEY);
+            mPhone = payerInfo.optString(PHONE_KEY);
+            mPayerId = payerInfo.optString(PAYER_ID_KEY);
+
+            if(mEmail == null) {
+                mEmail = payerInfo.optString(EMAIL_KEY, null);
+            }
+        } catch (JSONException ignored) {}
     }
 
     /**
@@ -101,6 +116,56 @@ public class PayPalAccount extends PaymentMethod implements Parcelable {
         return mBillingAddress;
     }
 
+    /**
+     * @return The shipping address of the user provided by checkout flows.
+     */
+    public PostalAddress getShippingAddress() {
+        return mShippingAddress;
+    }
+
+    /**
+     * @return The first name associated with the PayPal account.
+     */
+    public String getFirstName() {
+        return mFirstName;
+    }
+
+    /**
+     * @return The last name associated with the PayPal account.
+     */
+    public String getLastName() {
+        return mLastName;
+    }
+
+    /**
+     * @return The phone number associated with the PayPal account.
+     */
+    public String getPhone() {
+        return mPhone;
+    }
+
+    /**
+     * @return The ClientMetadataId associated with this transaction.
+     */
+    public String getClientMetadataId(){
+        return mClientMetadataId;
+    }
+
+    /**
+     * @return The Payer ID provided in checkout flows.
+     */
+    public String getPayerId(){
+        return mPayerId;
+    }
+
+    /**
+     * Sets the ClientMetadataId after the app switch
+     * @param clientMetadataId - Client Metadata Id
+     */
+    protected void setClientMetadataId(String clientMetadataId) {
+        mClientMetadataId = clientMetadataId;
+    }
+
     public PayPalAccount() {}
 
     @Override
@@ -110,17 +175,29 @@ public class PayPalAccount extends PaymentMethod implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mClientMetadataId);
         dest.writeString(mNonce);
         dest.writeString(mDescription);
-        dest.writeString(mEmail);
         dest.writeParcelable(mBillingAddress, flags);
+        dest.writeParcelable(mShippingAddress, flags);
+        dest.writeString(mFirstName);
+        dest.writeString(mLastName);
+        dest.writeString(mEmail);
+        dest.writeString(mPhone);
+        dest.writeString(mPayerId);
     }
 
     private PayPalAccount(Parcel in) {
+        mClientMetadataId = in.readString();
         mNonce = in.readString();
         mDescription = in.readString();
-        mEmail = in.readString();
         mBillingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
+        mShippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
+        mFirstName = in.readString();
+        mLastName = in.readString();
+        mEmail = in.readString();
+        mPhone = in.readString();
+        mPayerId = in.readString();
     }
 
     public static final Creator<PayPalAccount> CREATOR = new Creator<PayPalAccount>() {

@@ -12,6 +12,7 @@ import com.braintreepayments.api.AndroidPay;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.CardTokenizer;
+import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.PaymentButton;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
@@ -23,7 +24,6 @@ import com.google.android.gms.wallet.FullWalletRequest;
 import com.google.android.gms.wallet.MaskedWallet;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
-import com.paypal.android.sdk.payments.PayPalOAuthScopes;
 
 import java.util.Collections;
 
@@ -68,7 +68,7 @@ public class CustomFormActivity extends Activity implements PaymentMethodCreated
         boolean payPalAddressScopeRequested = getIntent().getBooleanExtra("payPalAddressScopeRequested", false);
         if (payPalAddressScopeRequested) {
             paymentButton.setAdditionalPayPalScopes(
-                    Collections.singletonList(PayPalOAuthScopes.PAYPAL_SCOPE_ADDRESS));
+                    Collections.singletonList(PayPal.SCOPE_ADDRESS));
         }
 
         paymentButton.initialize(mBraintreeFragment);

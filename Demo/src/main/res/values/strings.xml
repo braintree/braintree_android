@@ -7,6 +7,7 @@
     <string name="settings">Settings</string>
     <string name="nonce">Nonce</string>
     <string name="drop_in">Drop-In</string>
+    <string name="paypal_button">@string/paypal</string>
     <string name="payment_button">Payment Button</string>
     <string name="custom">Custom</string>
     <string name="create_transaction">Create a Transaction</string>
@@ -46,4 +47,8 @@
     <string name="enable_three_d_secure_summary">3D Secure will automatically be run on all Card payment methods</string>
     <string name="require_three_d_secure">Require 3D Secure</string>
     <string name="require_three_d_secure_summary">Requires a successful authentication for 3D Secure transactions</string>
+    <string name="paypal_future_payment">Future Payment</string>
+    <string name="paypal_future_payment_address_scope">Future Payment (Address Scope)</string>
+    <string name="paypal_single_payment">Single Payment</string>
+    <string name="paypal_billing_agreement">Billing Agreement</string>
 </resources>

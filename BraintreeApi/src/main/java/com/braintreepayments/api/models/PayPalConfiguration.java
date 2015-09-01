@@ -16,6 +16,8 @@ public class PayPalConfiguration {
     private static final String DIRECT_BASE_URL_KEY = "directBaseUrl";
     private static final String ENVIRONMENT_KEY = "environment";
     private static final String TOUCH_DISABLED_KEY = "touchDisabled";
+    private static final String CURRENCY_ISO_CODE_KEY = "currencyIsoCode";
+    private static final String BILLING_AGREEMENT_KEY = "billingAgreementsEnabled";
 
     private String mDisplayName;
     private String mClientId;
@@ -24,6 +26,8 @@ public class PayPalConfiguration {
     private String mDirectBaseUrl;
     private String mEnvironment;
     private boolean mTouchDisabled;
+    private String mCurrencyIsoCode;
+    private boolean mUseBillingAgreement;
 
     /**
      * Parse an {@link PayPalConfiguration} from json.
@@ -45,6 +49,8 @@ public class PayPalConfiguration {
         payPalConfiguration.mDirectBaseUrl = json.optString(DIRECT_BASE_URL_KEY, null);
         payPalConfiguration.mEnvironment = json.optString(ENVIRONMENT_KEY, null);
         payPalConfiguration.mTouchDisabled = json.optBoolean(TOUCH_DISABLED_KEY, true);
+        payPalConfiguration.mCurrencyIsoCode = json.optString(CURRENCY_ISO_CODE_KEY, null);
+        payPalConfiguration.mUseBillingAgreement = json.optBoolean(BILLING_AGREEMENT_KEY, false);
 
         return payPalConfiguration;
     }
@@ -104,5 +110,19 @@ public class PayPalConfiguration {
      */
     public boolean isTouchDisabled() {
         return mTouchDisabled;
+    }
+
+    /**
+     * @return the PayPal currency code.
+     */
+    public String getCurrencyIsoCode() {
+        return mCurrencyIsoCode;
+    }
+
+    /**
+     * @return if billing agreements are enabled.
+     */
+    public boolean getUseBillingAgreement() {
+        return mUseBillingAgreement;
     }
 }

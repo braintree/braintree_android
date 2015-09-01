@@ -5,7 +5,7 @@ import android.support.annotation.VisibleForTesting;
 import com.devicecollector.DeviceCollector;
 import com.devicecollector.DeviceCollector.ErrorCode;
 import com.devicecollector.DeviceCollector.StatusListener;
-import com.paypal.android.sdk.payments.PayPalConfiguration;
+import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -96,8 +96,7 @@ public class Fraud {
         } catch (NoClassDefFoundError | JSONException ignored) {}
 
         try {
-            deviceData.put(CORRELATION_ID_KEY,
-                    PayPalConfiguration.getClientMetadataId(fragment.getContext()));
+            deviceData.put(CORRELATION_ID_KEY, PayPalOneTouchCore.getClientMetadataId(fragment.getContext()));
         } catch (JSONException ignored) {}
 
         return deviceData.toString();
