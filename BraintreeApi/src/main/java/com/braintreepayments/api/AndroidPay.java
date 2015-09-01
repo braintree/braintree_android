@@ -108,8 +108,10 @@ public class AndroidPay {
     public static void tokenize(BraintreeFragment fragment, FullWallet wallet) {
         try {
             fragment.postCallback(AndroidPayCard.fromJson(wallet.getPaymentMethodToken().getToken()));
+            fragment.sendAnalyticsEvent("android-pay.nonce-received");
         } catch (JSONException e) {
             fragment.postCallback(e);
+            fragment.sendAnalyticsEvent("android-pay.failed");
         }
     }
 
@@ -127,11 +129,15 @@ public class AndroidPay {
     protected static void performMaskedWalletRequest(BraintreeFragment fragment, Cart cart,
             boolean isBillingAgreement, boolean shippingAddressRequired,
             boolean phoneNumberRequired, int requestCode) {
+        fragment.sendAnalyticsEvent("android-pay.selected");
+
         if (isBillingAgreement && cart != null) {
+            fragment.sendAnalyticsEvent("android-pay.failed");
             fragment.postCallback(new InvalidArgumentException(
                     "The cart must be null when isBillingAgreement is true"));
             return;
         } else if (!isBillingAgreement && cart == null) {
+            fragment.sendAnalyticsEvent("android-pay.failed");
             fragment.postCallback(new InvalidArgumentException(
                     "Cart cannot be null unless isBillingAgreement is true"));
             return;
@@ -153,6 +159,8 @@ public class AndroidPay {
 
         Wallet.Payments.loadMaskedWallet(fragment.getGoogleApiClient(),
                 maskedWalletRequestBuilder.build(), requestCode);
+
+        fragment.sendAnalyticsEvent("android-pay.started");
     }
 
     /**
@@ -180,6 +188,7 @@ public class AndroidPay {
             boolean isBillingAgreement, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             if (data.hasExtra(WalletConstants.EXTRA_MASKED_WALLET)) {
+                fragment.sendAnalyticsEvent("android-pay.authorized");
                 String googleTransactionId =
                         ((MaskedWallet) data.getParcelableExtra(WalletConstants.EXTRA_MASKED_WALLET))
                         .getGoogleTransactionId();
@@ -188,6 +197,10 @@ public class AndroidPay {
                 tokenize(fragment,
                         (FullWallet) data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET));
             }
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            fragment.sendAnalyticsEvent("android-pay.canceled");
+        } else {
+            fragment.sendAnalyticsEvent("android-pay.failed");
         }
     }
 

@@ -217,7 +217,7 @@ public class PaymentButtonTest {
 
         mPaymentButton.findViewById(R.id.bt_venmo_button).performClick();
 
-        verify(fragment).sendAnalyticsEvent("add-venmo.start");
+        verify(fragment).sendAnalyticsEvent("venmo.selected");
     }
 
     @Test(timeout = 1000)

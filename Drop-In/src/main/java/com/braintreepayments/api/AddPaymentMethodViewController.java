@@ -25,8 +25,9 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         implements OnClickListener, OnCardFormSubmitListener, OnCardFormValidListener,
         OnCardFormFieldFocusedListener {
 
-    private static final String EXTRA_FORM_IS_SUBMITTING = "com.braintreepayments.api.dropin.EXTRA_FORM_IS_SUBMITTING";
-    private static final String EXTRA_SUBMIT_BUTTON_ENABLED = "com.braintreepayments.api.dropin.EXTRA_SUBMIT_BUTTON_ENABLED";
+    private static final String EXTRA_FORM_IS_SUBMITTING = "com.braintreepayments.dropin.EXTRA_FORM_IS_SUBMITTING";
+    private static final String EXTRA_SUBMIT_BUTTON_ENABLED = "com.braintreepayments.dropin.EXTRA_SUBMIT_BUTTON_ENABLED";
+    private static final String EXTRA_FOCUS_EVENT_SENT = "com.braintreepayments.dropin.EXTRA_FOCUS_EVENT_SENT";
 
     private static final String INTEGRATION_METHOD = "dropin";
 
@@ -43,6 +44,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
     private ScrollView mScrollView;
 
     private boolean mIsSubmitting;
+    private boolean mFocusEventSent;
 
     public AddPaymentMethodViewController(BraintreePaymentActivity activity,
             Bundle savedInstanceState, View root, BraintreeFragment braintreeFragment,
@@ -96,6 +98,8 @@ public class AddPaymentMethodViewController extends BraintreeViewController
             mSubmitButton.setEnabled(savedInstanceState.getBoolean(EXTRA_SUBMIT_BUTTON_ENABLED));
         }
 
+        mFocusEventSent = savedInstanceState.getBoolean(EXTRA_FOCUS_EVENT_SENT);
+
         if (mCardForm.isValid()) {
             setEnabledSubmitButtonStyle();
         }
@@ -105,6 +109,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
     public void onSaveInstanceState(Bundle outState) {
         outState.putBoolean(EXTRA_FORM_IS_SUBMITTING, mIsSubmitting);
         outState.putBoolean(EXTRA_SUBMIT_BUTTON_ENABLED, mSubmitButton.isEnabled());
+        outState.putBoolean(EXTRA_FOCUS_EVENT_SENT, mFocusEventSent);
     }
 
     @Override
@@ -116,9 +121,11 @@ public class AddPaymentMethodViewController extends BraintreeViewController
             if (mCardForm.isValid()) {
                 startSubmit();
                 CardTokenizer.tokenize(mBraintreeFragment, getCardBuilder());
+                mBraintreeFragment.sendAnalyticsEvent("card.form.submitted.succeeded");
             } else {
                 mCardForm.validate();
                 setDisabledSubmitButtonStyle();
+                mBraintreeFragment.sendAnalyticsEvent("card.form.submitted.failed");
             }
         }
     }
@@ -139,6 +146,11 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
     @Override
     public void onCardFormFieldFocused(final View field) {
+        if (!mFocusEventSent) {
+            mBraintreeFragment.sendAnalyticsEvent("card.form.focused");
+            mFocusEventSent = true;
+        }
+
         mScrollView.postDelayed(new Runnable() {
             public void run() {
                 mScrollView.smoothScrollTo(0, field.getTop());

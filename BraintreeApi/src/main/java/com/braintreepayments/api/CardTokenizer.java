@@ -32,11 +32,13 @@ public class CardTokenizer {
                             @Override
                             public void success(PaymentMethod paymentMethod) {
                                 fragment.postCallback(paymentMethod);
+                                fragment.sendAnalyticsEvent("card.nonce-received");
                             }
 
                             @Override
                             public void failure(Exception exception) {
                                 fragment.postCallback(exception);
+                                fragment.sendAnalyticsEvent("card.nonce-failed");
                             }
                         });
             }

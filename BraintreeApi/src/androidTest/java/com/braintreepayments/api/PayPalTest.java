@@ -9,6 +9,7 @@ import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
+import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.TestActivity;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
@@ -43,6 +44,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class PayPalTest {
@@ -127,9 +129,8 @@ public class PayPalTest {
 
         PayPal.authorizeAccount(fragment);
 
-        verify(fragment).sendAnalyticsEvent("add-paypal.start");
+        verify(fragment).sendAnalyticsEvent("paypal.selected");
     }
-
 
     @Test(timeout = 1000)
     @SmallTest
@@ -216,7 +217,11 @@ public class PayPalTest {
     public void onActivityResult_postsConfigurationExceptionWhenResultExtrasInvalidResultCodeReturned()
             throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
+        AnalyticsConfiguration analyticsConfiguration = mock(AnalyticsConfiguration.class);
+        when(analyticsConfiguration.isEnabled()).thenReturn(true);
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(analyticsConfiguration);
+        BraintreeFragment fragment = getMockFragment(mActivity, configuration);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onUnrecoverableError(Throwable throwable) {

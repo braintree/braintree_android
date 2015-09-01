@@ -59,11 +59,11 @@ public class PayPal {
      *                         defined in {@link com.paypal.android.sdk.payments.PayPalOAuthScopes}.
      */
     public static void authorizeAccount(final BraintreeFragment fragment, final List<String> additionalScopes) {
+        fragment.sendAnalyticsEvent("paypal.selected");
+
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched() {
-                fragment.sendAnalyticsEvent("add-paypal.start");
-
                 com.braintreepayments.api.models.PayPalConfiguration configuration =
                         fragment.getConfiguration().getPayPal();
 
@@ -74,6 +74,8 @@ public class PayPal {
                         !configuration.getEnvironment().equals(OFFLINE) &&
                         !configuration.isTouchDisabled()) {
                     klass = PayPalTouchActivity.class;
+
+                    fragment.sendAnalyticsEvent("paypal.app-switch.started");
                 } else {
                     klass = PayPalProfileSharingActivity.class;
                 }
@@ -100,6 +102,8 @@ public class PayPal {
         PayPal.stopPaypalService(fragment.getContext());
 
         if (resultCode == Activity.RESULT_OK) {
+            fragment.sendAnalyticsEvent("paypal.app-switch.authorized");
+
             PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder();
             paypalAccountBuilder.correlationId(PayPalConfiguration.getClientMetadataId(fragment.getContext()));
 
@@ -114,6 +118,8 @@ public class PayPal {
                     paypalAccountBuilder
                             .consentCode(paypalTouchResponse.optString("authorization_code"))
                             .source("paypal-app");
+
+                    fragment.sendAnalyticsEvent("paypal.app-switch.authorized");
                 } catch (JSONException e) {
                     fragment.postCallback(e);
                     return;
@@ -130,6 +136,7 @@ public class PayPal {
                         @Override
                         public void success(PaymentMethod paymentMethod) {
                             fragment.postCallback(paymentMethod);
+                            fragment.sendAnalyticsEvent("paypal.nonce-received");
                         }
 
                         @Override
@@ -138,7 +145,7 @@ public class PayPal {
                         }
                     });
         } else if (resultCode == Activity.RESULT_CANCELED) {
-            fragment.sendAnalyticsEvent("add-paypal.user-canceled");
+            // TODO: send analytics event for browser or app-switch cancel
         } else if (resultCode == PayPalProfileSharingActivity.RESULT_EXTRAS_INVALID) {
             fragment.postCallback(new ConfigurationException("PayPal result extras were invalid"));
         }

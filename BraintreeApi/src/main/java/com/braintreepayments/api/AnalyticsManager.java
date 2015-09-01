@@ -272,7 +272,7 @@ class AnalyticsManager {
         }
 
         public String getEvent() {
-            return mIntegrationType + ".android." + mEvent;
+            return "android." + mIntegrationType + "." + mEvent;
         }
 
         public long getTimestamp() {

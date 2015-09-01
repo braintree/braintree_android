@@ -1,19 +1,27 @@
 package com.braintreepayments.api;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.internal.BraintreeHttpClient;
+import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.TestActivity;
+import com.google.android.gms.wallet.Cart;
+import com.google.android.gms.wallet.MaskedWallet;
+import com.google.android.gms.wallet.WalletConstants;
 import com.google.android.gms.wallet.WalletConstants.CardNetwork;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 
 import java.util.Collection;
 
@@ -22,7 +30,9 @@ import static com.braintreepayments.testutils.TestClientKey.CLIENT_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
@@ -48,7 +58,8 @@ public class AndroidPayTest {
         assertEquals(configuration.getMerchantId(), tokenizationParameters.getString("braintree:merchantId"));
         assertEquals(androidPayConfiguration.getGoogleAuthorizationFingerprint(), tokenizationParameters.getString("braintree:authorizationFingerprint"));
         assertEquals("v1", tokenizationParameters.getString("braintree:apiVersion"));
-        assertEquals(BuildConfig.VERSION_NAME, tokenizationParameters.getString("braintree:sdkVersion"));
+        assertEquals(BuildConfig.VERSION_NAME,
+                tokenizationParameters.getString("braintree:sdkVersion"));
     }
 
     @Test(timeout = 1000)
@@ -103,5 +114,89 @@ public class AndroidPayTest {
         assertTrue(allowedCardNetworks.contains(CardNetwork.MASTERCARD));
         assertTrue(allowedCardNetworks.contains(CardNetwork.AMEX));
         assertTrue(allowedCardNetworks.contains(CardNetwork.DISCOVER));
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void performMaskedWalletRequest_sendsAnalyticsEvent() {
+        BraintreeFragment fragment = getSetupFragment();
+
+        AndroidPay.performMaskedWalletRequest(fragment, null, true, false, false, 0);
+
+        InOrder order = inOrder(fragment);
+        order.verify(fragment).sendAnalyticsEvent("android-pay.selected");
+        order.verify(fragment).sendAnalyticsEvent("android-pay.started");
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void performMaskedWalletRequest_sendsAnalyticsEventForCartAndBillingAgreement() {
+        BraintreeFragment fragment = getSetupFragment();
+
+        AndroidPay.performMaskedWalletRequest(fragment, Cart.newBuilder().build(), true, false,
+                false, 0);
+
+        verify(fragment).sendAnalyticsEvent("android-pay.failed");
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void performMaskedWalletRequest_sendsAnalyticsEventForNoCartOrBillingAgreement() {
+        BraintreeFragment fragment = getSetupFragment();
+
+        AndroidPay.performMaskedWalletRequest(fragment, null, false, false, false, 0);
+
+        verify(fragment).sendAnalyticsEvent("android-pay.failed");
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void onActivityResult_sendsAnalyticsEventOnCancel() {
+        BraintreeFragment fragment = getSetupFragment();
+
+        AndroidPay.onActivityResult(fragment, null, false, Activity.RESULT_CANCELED, new Intent());
+
+        verify(fragment).sendAnalyticsEvent("android-pay.canceled");
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void onActivityResult_sendsAnalyticsEventOnNonOkOrCanceledResult() {
+        BraintreeFragment fragment = getSetupFragment();
+
+        AndroidPay.onActivityResult(fragment, null, false, Activity.RESULT_FIRST_USER, new Intent());
+
+        verify(fragment).sendAnalyticsEvent("android-pay.failed");
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void onActivityResult_sendsAnalyticsEventOnMaskedWalletResponse() {
+        BraintreeFragment fragment = getSetupFragment();
+        Intent intent = new Intent()
+                .putExtra(WalletConstants.EXTRA_MASKED_WALLET, MaskedWallet.zzCh().build());
+
+        AndroidPay.onActivityResult(fragment, null, false, Activity.RESULT_OK, intent);
+
+        verify(fragment).sendAnalyticsEvent("android-pay.authorized");
+    }
+
+    /* helpers */
+    private BraintreeFragment getSetupFragment() {
+        AndroidPayConfiguration androidPayConfiguration = mock(AndroidPayConfiguration.class);
+        when(androidPayConfiguration.getGoogleAuthorizationFingerprint()).thenReturn(
+                "google-auth-fingerprint");
+        when(androidPayConfiguration.getSupportedNetworks()).thenReturn(new String[] { "visa", "mastercard", "amex", "discover" });
+        AnalyticsConfiguration analyticsConfiguration = mock(AnalyticsConfiguration.class);
+        when(analyticsConfiguration.isEnabled()).thenReturn(true);
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.getMerchantId()).thenReturn("android-pay-merchant-id");
+        when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
+        when(configuration.getAnalytics()).thenReturn(analyticsConfiguration);
+
+        BraintreeFragment fragment = getMockFragment(mActivityTestRule.getActivity(), configuration);
+        when(fragment.getHttpClient()).thenReturn(mock(BraintreeHttpClient.class));
+
+        return fragment;
     }
 }

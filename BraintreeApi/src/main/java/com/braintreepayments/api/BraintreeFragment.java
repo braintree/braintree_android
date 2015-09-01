@@ -90,10 +90,12 @@ public class BraintreeFragment extends Fragment {
         FragmentManager fm = activity.getFragmentManager();
 
         String integrationType = "custom";
-        if (activity.getClass().getCanonicalName()
-                .equals("com.braintreepayments.api.BraintreePaymentActivity")) {
-            integrationType = "dropin";
-        }
+        try {
+            if (Class.forName("com.braintreepayments.api.BraintreePaymentActivity")
+                    .isInstance(activity)) {
+                integrationType = "dropin";
+            }
+        } catch (ClassNotFoundException ignored) {}
 
         BraintreeFragment braintreeFragment = (BraintreeFragment) fm.findFragmentByTag(TAG);
         if (braintreeFragment == null) {
@@ -130,11 +132,13 @@ public class BraintreeFragment extends Fragment {
                 if (mHttpClient == null) {
                     mHttpClient = new BraintreeHttpClient(mClientKey);
                 }
+                sendAnalyticsEvent("started.client-key");
             } else {
                 mClientToken = ClientToken.fromString(getArguments().getString(EXTRA_CLIENT_TOKEN));
                 if (mHttpClient == null) {
                     mHttpClient = new BraintreeHttpClient(mClientToken);
                 }
+                sendAnalyticsEvent("started.client-token");
             }
         } catch (InvalidArgumentException | JSONException ignored) {
             // already checked in BraintreeFragment.newInstance
@@ -144,7 +148,6 @@ public class BraintreeFragment extends Fragment {
         mIntegrationType = getArguments().getString(EXTRA_INTEGRATION_TYPE);
 
         fetchConfiguration();
-        sendAnalyticsEvent("sdk.initialized");
     }
 
     @Override

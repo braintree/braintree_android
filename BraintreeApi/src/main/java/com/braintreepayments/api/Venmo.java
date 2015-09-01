@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -80,15 +81,17 @@ public class Venmo {
      * @param fragment {@link BraintreeFragment}
      */
     public static void authorize(final BraintreeFragment fragment) {
+        fragment.sendAnalyticsEvent("venmo.selected");
+
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched() {
-                fragment.sendAnalyticsEvent("add-venmo.start");
                 if (isAvailable(fragment.getContext(), fragment.getConfiguration())) {
                     fragment.startActivityForResult(Venmo.getLaunchIntent(fragment.getConfiguration()),
                             VENMO_REQUEST_CODE);
+                    fragment.sendAnalyticsEvent("venmo.app-switch.started");
                 } else {
-                    fragment.sendAnalyticsEvent("add-venmo.unavailable");
+                    fragment.sendAnalyticsEvent("venmo.app-switch.failed");
                     fragment.postCallback(new AppSwitchNotAvailableException("Venmo is not available"));
                 }
             }
@@ -96,38 +99,47 @@ public class Venmo {
     }
 
     protected static void onActivityResult(final BraintreeFragment fragment, int resultCode, Intent data) {
-        final String nonce = data.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
+        if (resultCode == Activity.RESULT_OK) {
+            final String nonce = data.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
 
-        if (TextUtils.isEmpty(nonce)) {
-            fragment.sendAnalyticsEvent("venmo-app.fail.missing-nonce");
-            fragment.postCallback(new UnexpectedException("No nonce present in response from Venmo app"));
-            return;
-        }
+            if (TextUtils.isEmpty(nonce)) {
+                fragment.sendAnalyticsEvent("venmo.app-switch.failed");
+                fragment.postCallback(
+                        new UnexpectedException("No nonce present in response from Venmo app"));
+                return;
+            }
 
-        fragment.getHttpClient().get(versionedPath(PAYMENT_METHOD_ENDPOINT + "/" + nonce),
-                new HttpResponseCallback() {
-                    @Override
-                    public void success(String responseBody) {
-                        try {
-                            List<PaymentMethod> paymentMethodsList =
-                                    PaymentMethod.parsePaymentMethods(responseBody);
-                            if (paymentMethodsList.size() == 1) {
-                                fragment.sendAnalyticsEvent("venmo-app.success");
-                                fragment.postCallback(paymentMethodsList.get(0));
-                            } else {
-                                fragment.postCallback(new ServerException(
-                                        "Unexpected payment method response format."));
+            fragment.sendAnalyticsEvent("venmo.app-switch.authorized");
+
+            fragment.getHttpClient().get(versionedPath(PAYMENT_METHOD_ENDPOINT + "/" + nonce),
+                    new HttpResponseCallback() {
+                        @Override
+                        public void success(String responseBody) {
+                            try {
+                                List<PaymentMethod> paymentMethodsList =
+                                        PaymentMethod.parsePaymentMethods(responseBody);
+                                if (paymentMethodsList.size() == 1) {
+                                    fragment.postCallback(paymentMethodsList.get(0));
+                                    fragment.sendAnalyticsEvent("venmo.app-switch.nonce-received");
+                                } else {
+                                    fragment.postCallback(new ServerException(
+                                            "Unexpected payment method response format."));
+                                    fragment.sendAnalyticsEvent("venmo.app-switch.failed");
+                                }
+                            } catch (JSONException e) {
+                                fragment.postCallback(e);
+                                fragment.sendAnalyticsEvent("venmo.app-switch.failed");
                             }
-                        } catch (JSONException e) {
-                            fragment.postCallback(e);
                         }
-                    }
 
-                    @Override
-                    public void failure(Exception exception) {
-                        fragment.sendAnalyticsEvent("venmo-app.fail");
-                        fragment.postCallback(exception);
-                    }
-                });
+                        @Override
+                        public void failure(Exception exception) {
+                            fragment.postCallback(exception);
+                            fragment.sendAnalyticsEvent("venmo.app-switch.failed");
+                        }
+                    });
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            fragment.sendAnalyticsEvent("venmo.app-switch.canceled");
+        }
     }
 }

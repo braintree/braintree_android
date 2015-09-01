@@ -105,7 +105,7 @@ public class AnalyticsManagerTest {
                 isNull(HttpResponseCallback.class));
         JSONObject json = new JSONObject(captor.getValue());
         assertEquals(5, json.getJSONArray("analytics").length());
-        assertEquals("custom.android.some-interesting-event",
+        assertEquals("android.custom.some-interesting-event",
                 json.getJSONArray("analytics").getJSONObject(0).get("kind"));
     }
 

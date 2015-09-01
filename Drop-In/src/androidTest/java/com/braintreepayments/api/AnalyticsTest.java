@@ -21,8 +21,6 @@ import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInCardForm;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
@@ -52,17 +50,36 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
         setupActivity(new TestClientTokenBuilder().withAnalytics().build());
         waitForAddPaymentFormHeader();
 
-        verifyAnalyticsEvent("sdk.initialized");
+        verifyAnalyticsEvent("dropin.appeared");
     }
 
     @Test(timeout = 30000)
     public void addsEventOnAddCardStarted() {
         setupActivity(new TestClientTokenBuilder().withAnalytics().build());
 
-        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_header)).check(
-                matches(isDisplayed()));
+        waitForView(withId(R.id.bt_card_form_card_number)).perform(click());
 
-        verifyAnalyticsEvent("add-card.start");
+        verifyAnalyticsEvent("dropin.card.form.focused");
+    }
+
+    @Test(timeout = 30000)
+    public void addsEventOnLocalCardValidationSuccess() {
+        setupActivity(new TestClientTokenBuilder().withAnalytics().build());
+        waitForAddPaymentFormHeader();
+
+        fillInCardForm();
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
+
+        verifyAnalyticsEvent("dropin.card.form.submitted.succeeded");
+    }
+
+    @Test(timeout = 30000)
+    public void addsEventOnLocalCardValidationFailure() {
+        setupActivity(new TestClientTokenBuilder().withAnalytics().build());
+
+        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
+
+        verifyAnalyticsEvent("dropin.card.form.submitted.failed");
     }
 
     @Test(timeout = 30000)
@@ -73,7 +90,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
         waitForActivityToFinish(mActivity);
 
-        verifyAnalyticsEvent("add-card.success");
+        verifyAnalyticsEvent("card.nonce-received");
     }
 
     @Test(timeout = 30000)
@@ -109,7 +126,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_paypal_button)).perform(click());
         waitForView(withHint("Email"));
 
-        verifyAnalyticsEvent("add-paypal.start");
+        verifyAnalyticsEvent("paypal.selected");
     }
 
     @Test(timeout = 30000)

@@ -51,6 +51,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.inOrder;
@@ -165,6 +166,7 @@ public class VenmoTest {
         Configuration configuration = getConfiguration();
         when(configuration.getVenmoState()).thenReturn("offline");
         BraintreeFragment fragment = getMockFragment(mActivity, configuration);
+        doNothing().when(fragment).sendAnalyticsEvent(anyString());
         doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
         ActivityInfo activityInfo = new ActivityInfo();
         activityInfo.packageName = "com.venmo";
@@ -193,10 +195,36 @@ public class VenmoTest {
         Configuration configuration = getConfiguration();
         when(configuration.getVenmoState()).thenReturn("off");
         BraintreeFragment fragment = getMockFragment(mActivity, configuration);
+        when(fragment.getHttpClient()).thenReturn(mock(BraintreeHttpClient.class));
 
         Venmo.authorize(fragment);
 
-        verify(fragment).sendAnalyticsEvent("add-venmo.start");
+        verify(fragment).sendAnalyticsEvent("venmo.selected");
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void performAppSwitch_sendsAnalyticsEventWhenStarted() {
+        Configuration configuration = getConfiguration();
+        when(configuration.getVenmoState()).thenReturn("offline");
+        BraintreeFragment fragment = getMockFragment(mActivity, configuration);
+        doNothing().when(fragment).sendAnalyticsEvent(anyString());
+        doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
+        ActivityInfo activityInfo = new ActivityInfo();
+        activityInfo.packageName = "com.venmo";
+        ResolveInfo resolveInfo = new ResolveInfo();
+        resolveInfo.activityInfo = activityInfo;
+        PackageManager packageManager = mock(PackageManager.class);
+        when(packageManager.queryIntentActivities(any(Intent.class), anyInt()))
+                .thenReturn(Collections.singletonList(resolveInfo));
+        Context context = mock(Context.class);
+        when(context.getPackageManager()).thenReturn(packageManager);
+        when(fragment.getContext()).thenReturn(context);
+        disableSignatureVerification();
+
+        Venmo.authorize(fragment);
+
+        verify(fragment).sendAnalyticsEvent("venmo.app-switch.started");
     }
 
     @Test(timeout = 1000)
@@ -205,12 +233,13 @@ public class VenmoTest {
         Configuration configuration = getConfiguration();
         when(configuration.getVenmoState()).thenReturn("off");
         BraintreeFragment fragment = getMockFragment(mActivity, configuration);
+        when(fragment.getHttpClient()).thenReturn(mock(BraintreeHttpClient.class));
 
         Venmo.authorize(fragment);
 
         InOrder order = inOrder(fragment);
-        order.verify(fragment).sendAnalyticsEvent("add-venmo.start");
-        order.verify(fragment).sendAnalyticsEvent("add-venmo.unavailable");
+        order.verify(fragment).sendAnalyticsEvent("venmo.selected");
+        order.verify(fragment).sendAnalyticsEvent("venmo.app-switch.failed");
     }
 
     @Test(timeout = 1000)
@@ -218,12 +247,14 @@ public class VenmoTest {
     public void onActivityResult_postsPaymentMethodOnSuccess()
             throws InterruptedException, InvalidArgumentException {
         BraintreeFragment fragment = getMockFragment(mActivity, getConfiguration());
-        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
-            @Override
-            public void get(String path, HttpResponseCallback callback) {
-                callback.success(stringFromFixture("payment_methods/get_payment_method_card_response.json"));
-            }
-        });
+        when(fragment.getHttpClient()).thenReturn(
+                new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
+                    @Override
+                    public void get(String path, HttpResponseCallback callback) {
+                        callback.success(stringFromFixture(
+                                "payment_methods/get_payment_method_card_response.json"));
+                    }
+                });
         final CountDownLatch latch = new CountDownLatch(1);
         fragment.addListener(new PaymentMethodCreatedListener() {
             @Override
@@ -259,7 +290,9 @@ public class VenmoTest {
 
         Venmo.onActivityResult(fragment, Activity.RESULT_OK, intent);
 
-        verify(fragment).sendAnalyticsEvent("venmo-app.success");
+        InOrder order = inOrder(fragment);
+        order.verify(fragment).sendAnalyticsEvent("venmo.app-switch.authorized");
+        order.verify(fragment).sendAnalyticsEvent("venmo.app-switch.nonce-received");
     }
 
     @Test(timeout = 1000)
@@ -319,29 +352,42 @@ public class VenmoTest {
 
     @Test(timeout = 1000)
     @SmallTest
+    public void onActivityResult_sendsAnalyticsEventOnCancel() {
+        BraintreeFragment fragment = getMockFragment(mActivity, getConfiguration());
+
+        Venmo.onActivityResult(fragment, Activity.RESULT_CANCELED, new Intent());
+
+        verify(fragment).sendAnalyticsEvent("venmo.app-switch.canceled");
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
     public void onActivityResult_sendsAnalyticsEventMissingNonce() {
         BraintreeFragment fragment = getMockFragment(mActivity, getConfiguration());
 
         Venmo.onActivityResult(fragment, Activity.RESULT_OK, new Intent());
 
-        verify(fragment).sendAnalyticsEvent("venmo-app.fail.missing-nonce");
+        verify(fragment).sendAnalyticsEvent("venmo.app-switch.failed");
     }
 
     @Test(timeout = 1000)
     @SmallTest
     public void onActivityResult_sendsAnalyticsEventOnFailure() throws InvalidArgumentException {
         BraintreeFragment fragment = getMockFragment(mActivity, getConfiguration());
-        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
-            @Override
-            public void get(String path, HttpResponseCallback callback) {
-                callback.failure(new Exception());
-            }
-        });
+        when(fragment.getHttpClient()).thenReturn(
+                new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
+                    @Override
+                    public void get(String path, HttpResponseCallback callback) {
+                        callback.failure(new Exception());
+                    }
+                });
         Intent intent = new Intent().putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE, "nonce");
 
         Venmo.onActivityResult(fragment, Activity.RESULT_OK, intent);
 
-        verify(fragment).sendAnalyticsEvent("venmo-app.fail");
+        InOrder order = inOrder(fragment);
+        order.verify(fragment).sendAnalyticsEvent("venmo.app-switch.authorized");
+        order.verify(fragment).sendAnalyticsEvent("venmo.app-switch.failed");
     }
 
     @Test(timeout = 10000)

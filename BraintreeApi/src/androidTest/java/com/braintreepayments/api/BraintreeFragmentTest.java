@@ -41,6 +41,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
+import static com.braintreepayments.api.BraintreeFragmentTestUtils.verifyAnalyticsEvent;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestClientKey.CLIENT_KEY;
 import static junit.framework.Assert.assertEquals;
@@ -118,6 +119,34 @@ public class BraintreeFragmentTest {
         BraintreeFragment fragment = getFragment(mActivity, mClientToken);
 
         assertEquals("custom", fragment.mIntegrationType);
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void sendsAnalyticsEventForClientKey() {
+        AnalyticsConfiguration analyticsConfiguration = mock(AnalyticsConfiguration.class);
+        when(analyticsConfiguration.isEnabled()).thenReturn(true);
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(analyticsConfiguration);
+        BraintreeFragment fragment = getMockFragment(mActivity, CLIENT_KEY, configuration);
+        BraintreeHttpClient httpClient = mock(BraintreeHttpClient.class);
+        when(fragment.getHttpClient()).thenReturn(httpClient);
+
+        verifyAnalyticsEvent(fragment, "started.client-key");
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void sendsAnalyticsEventForClientToken() {
+        AnalyticsConfiguration analyticsConfiguration = mock(AnalyticsConfiguration.class);
+        when(analyticsConfiguration.isEnabled()).thenReturn(true);
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(analyticsConfiguration);
+        BraintreeFragment fragment = getMockFragment(mActivity, configuration);
+        BraintreeHttpClient httpClient = mock(BraintreeHttpClient.class);
+        when(fragment.getHttpClient()).thenReturn(httpClient);
+
+        verifyAnalyticsEvent(fragment, "started.client-token");
     }
 
     @Test(timeout = 10000)

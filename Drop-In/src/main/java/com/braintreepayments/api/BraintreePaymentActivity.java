@@ -15,6 +15,7 @@ import android.view.ViewStub;
 
 import com.braintreepayments.api.dropin.Customization;
 import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
+import com.braintreepayments.api.dropin.R;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
@@ -33,7 +34,6 @@ import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.google.android.gms.wallet.Cart;
-import com.braintreepayments.api.dropin.R;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -136,7 +136,10 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
 
     @Override
     public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
-        mHavePaymentMethodsBeenReceived.set(true);
+        if (!mHavePaymentMethodsBeenReceived.get()) {
+            mBraintreeFragment.sendAnalyticsEvent("appeared");
+            mHavePaymentMethodsBeenReceived.set(true);
+        }
 
         if (paymentMethods.size() == 0) {
             showAddPaymentMethodView();
@@ -149,8 +152,6 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
     public void onPaymentMethodCreated(final PaymentMethod paymentMethod) {
         if (paymentMethod instanceof Card) {
             if (StubbedView.CARD_FORM.mCurrentView) {
-                mBraintreeFragment.sendAnalyticsEvent("add-card.success");
-
                 mAddPaymentMethodViewController.showSuccess();
                 Executors.newScheduledThreadPool(1).schedule(new Runnable() {
                     @Override
@@ -205,6 +206,7 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
         // Falling back to add payment method if getPaymentMethods fails
         if (StubbedView.LOADING_VIEW.mCurrentView && !mHavePaymentMethodsBeenReceived.get() &&
                 mBraintreeFragment.getConfiguration() != null) {
+            mBraintreeFragment.sendAnalyticsEvent("appeared");
             mHavePaymentMethodsBeenReceived.set(true);
             showAddPaymentMethodView();
         } else {
@@ -275,8 +277,6 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
     }
 
     protected void showAddPaymentMethodView() {
-        mBraintreeFragment.sendAnalyticsEvent("add-card.start");
-
         initAddPaymentMethodView(StubbedView.CARD_FORM.show(this));
 
         if (mBraintreeFragment.getCachedPaymentMethods().size() > 0) {
