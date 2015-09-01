@@ -3,6 +3,7 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -10,16 +11,23 @@ import org.json.JSONObject;
  */
 public class PostalAddress implements Parcelable {
 
-    private static final String RECIPIENT_NAME_KEY = "recipientName";
-    private static final String STREET_ADDRESS_KEY = "street1";
-    private static final String EXTENDED_ADDRESS_KEY = "street2";
-    private static final String LOCALITY_KEY = "city";
-    private static final String COUNTRY_CODE_ALPHA_2_KEY = "country";
-    private static final String POSTAL_CODE_KEY = "postalCode";
-    private static final String REGION_KEY = "state";
-    private static final String LINE_1_KEY = "line1";
-    private static final String LINE_2_KEY = "line2";
-    private static final String COUNTRY_CODE_KEY = "countryCode";
+    public static final String RECIPIENT_NAME_KEY = "recipientName";
+    public static final String STREET_ADDRESS_KEY = "street1";
+    public static final String EXTENDED_ADDRESS_KEY = "street2";
+    public static final String LOCALITY_KEY = "city";
+    public static final String COUNTRY_CODE_ALPHA_2_KEY = "country";
+    public static final String POSTAL_CODE_KEY = "postalCode";
+    public static final String REGION_KEY = "state";
+    public static final String LINE_1_KEY = "line1";
+    public static final String LINE_2_KEY = "line2";
+    public static final String COUNTRY_CODE_KEY = "countryCode";
+
+    /**
+     * Used by {@link #toJson()}
+     */
+    public static final String COUNTRY_CODE_UNDERSCORE_KEY = "country_code";
+    public static final String POSTAL_CODE_UNDERSCORE_KEY = "postal_code";
+    public static final String RECIPIENT_NAME_UNDERSCORE_KEY = "recipient_name";
 
     private String mRecipientName;
     private String mStreetAddress;
@@ -137,4 +145,19 @@ public class PostalAddress implements Parcelable {
         return new PostalAddress(streetAddress, extendedAddress,
                 locality, region, postalCode, countryCodeAlpha2, recipientName);
     }
+
+    public JSONObject toJson(){
+        JSONObject json = new JSONObject();
+        try {
+            json.putOpt(LINE_1_KEY, getStreetAddress());
+            json.putOpt(LINE_2_KEY, getExtendedAddress());
+            json.putOpt(LOCALITY_KEY, getLocality());
+            json.putOpt(REGION_KEY, getRegion());
+            json.putOpt(POSTAL_CODE_UNDERSCORE_KEY, getPostalCode());
+            json.putOpt(COUNTRY_CODE_UNDERSCORE_KEY, getCountryCodeAlpha2());
+            json.putOpt(RECIPIENT_NAME_UNDERSCORE_KEY, getRecipientName());
+        } catch (JSONException e){}
+        return json;
+    }
+
 }

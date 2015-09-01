@@ -19,6 +19,7 @@ import com.braintreepayments.api.models.PayPalCheckout;
 import com.braintreepayments.api.models.PayPalConfiguration;
 import com.braintreepayments.api.models.PayPalPaymentResource;
 import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PostalAddress;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.BrowserSwitchAdapter;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
@@ -50,6 +51,18 @@ public class PayPal {
     protected static boolean sEnableSignatureVerification = true;
 
     private static final String PAYLOAD_KEY_CLIENT_TOKEN = "client_token";
+    private static final String SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement";
+    private static final String CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource";
+    private static final String NO_SHIPPING_KEY = "no_shipping";
+    private static final String ADDRESS_OVERRIDE_KEY = "address_override";
+    private static final String LOCALE_CODE_KEY = "locale_code";
+    private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
+    private static final String RETURN_URL_KEY = "return_url";
+    private static final String CANCEL_URL_KEY = "cancel_url";
+    private static final String EXPERIENCE_PROFILE_KEY = "experience_profile";
+    private static final String AMOUNT_KEY = "amount";
+    private static final String CURRENCY_ISO_CODE_KEY = "currency_iso_code";
+    private static final String PAYLOAD_CLIENT_TOKEN_KEY = "client_token";
 
     private static Request sPendingRequest;
     private static PerformRequestStatus sPendingRequestStatus;
@@ -224,11 +237,12 @@ public class PayPal {
             @Override
             public void failure(Exception ignored) {
                 //Do nothing, for now
-                ErrorWithResponse ex = (ErrorWithResponse)ignored;
+                ErrorWithResponse ex = (ErrorWithResponse) ignored;
                 try {
                     JSONObject response = new JSONObject(ex.getErrorResponse());
                     String debugId = response.getJSONObject("error").getString("debugId");
-                    Log.d("PayPal", "Unable to generate URL for PayPal app switch. DebugId: " + debugId);
+                    Log.d("PayPal",
+                            "Unable to generate URL for PayPal app switch. DebugId: " + debugId);
                 } catch (JSONException e) {
                     Log.d("PayPal", "Unable to generate URL for PayPal app switch.");
                 }
@@ -269,37 +283,41 @@ public class PayPal {
         }
 
         JSONObject experienceProfile = new JSONObject();
-        experienceProfile.put("no_shipping", !checkout.getEnableShippingAddress());
-        experienceProfile.put("address_override", checkout.getAddressOverride());
+        experienceProfile.put(NO_SHIPPING_KEY, !checkout.getEnableShippingAddress());
+        experienceProfile.put(ADDRESS_OVERRIDE_KEY, checkout.getAddressOverride());
 
         if (checkout.getLocaleCode() != null) {
-            experienceProfile.put("locale_code", checkout.getLocaleCode());
+            experienceProfile.put(LOCALE_CODE_KEY, checkout.getLocaleCode());
         }
 
         String authorizationFingerprint = fragment.getClientToken().getAuthorizationFingerprint();
         JSONObject parameters = new JSONObject()
-                .put("authorization_fingerprint", authorizationFingerprint)
-                .put("return_url", request.getSuccessUrl())
-                .put("cancel_url", request.getCancelUrl())
-                .put("experience_profile", experienceProfile);
+                .put(AUTHORIZATION_FINGERPRINT_KEY, authorizationFingerprint)
+                .put(RETURN_URL_KEY, request.getSuccessUrl())
+                .put(CANCEL_URL_KEY, request.getCancelUrl())
+                .put(EXPERIENCE_PROFILE_KEY, experienceProfile);
 
         if (!isBillingAgreement) {
-            parameters.put("amount", checkout.getAmount().toString())
-                    .put("currency_iso_code", currencyCode);
+            parameters.put(AMOUNT_KEY, checkout.getAmount().toString())
+                    .put(CURRENCY_ISO_CODE_KEY, currencyCode);
         }
 
         if (checkout.getAddressOverride() && checkout.getShippingAddress() != null) {
-            parameters.put("line1", checkout.getShippingAddress().getStreetAddress());
-            parameters.put("line2", checkout.getShippingAddress().getExtendedAddress());
-            parameters.put("city", checkout.getShippingAddress().getLocality());
-            parameters.put("state", checkout.getShippingAddress().getRegion());
-            parameters.put("postal_code", checkout.getShippingAddress().getPostalCode());
-            parameters.put("country_code", checkout.getShippingAddress().getCountryCodeAlpha2());
-            parameters.put("recipient_name", checkout.getShippingAddress().getRecipientName());
+            PostalAddress shippingAddress = checkout.getShippingAddress();
+            parameters.put(PostalAddress.LINE_1_KEY, shippingAddress.getStreetAddress());
+            parameters.put(PostalAddress.LINE_2_KEY, shippingAddress.getExtendedAddress());
+            parameters.put(PostalAddress.LOCALITY_KEY, shippingAddress.getLocality());
+            parameters.put(PostalAddress.REGION_KEY, shippingAddress.getRegion());
+            parameters
+                    .put(PostalAddress.POSTAL_CODE_UNDERSCORE_KEY, shippingAddress.getPostalCode());
+            parameters.put(PostalAddress.COUNTRY_CODE_UNDERSCORE_KEY,
+                    shippingAddress.getCountryCodeAlpha2());
+            parameters.put(PostalAddress.RECIPIENT_NAME_UNDERSCORE_KEY,
+                    shippingAddress.getRecipientName());
         }
 
-        String apiUrl = isBillingAgreement ? "paypal_hermes/setup_billing_agreement" :
-                "paypal_hermes/create_payment_resource";
+        String apiUrl = isBillingAgreement ? SETUP_BILLING_AGREEMENT_ENDPOINT :
+                CREATE_SINGLE_PAYMENT_ENDPOINT;
         String versionedPath = "/v1/" + apiUrl;
         fragment.getHttpClient().post(
                 versionedPath,
@@ -360,7 +378,8 @@ public class PayPal {
                     }
                     break;
             }
-        } catch (ConfigurationException ignored) {}
+        } catch (ConfigurationException ignored) {
+        }
     }
 
     /**
@@ -424,7 +443,8 @@ public class PayPal {
                                 .put("code", "fake-code:" + ((AuthorizationRequest)
                                         sPendingRequest).getScopeString()));
                     }
-                } catch (JSONException ignored) {}
+                } catch (JSONException ignored) {
+                }
 
                 paypalAccountBuilder.oneTouchCoreData(response);
                 break;
@@ -505,7 +525,7 @@ public class PayPal {
                 .userAgreementUrl(payPalConfiguration.getUserAgreementUrl())
                 .withScopeValue(SCOPE_FUTURE_PAYMENTS)
                 .withScopeValue(SCOPE_EMAIL)
-                .withAdditionalPayloadAttribute(PAYLOAD_KEY_CLIENT_TOKEN,
+                .withAdditionalPayloadAttribute(PAYLOAD_CLIENT_TOKEN_KEY,
                         clientKeyString);
     }
 
