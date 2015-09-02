@@ -15,6 +15,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.TestActivity;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.MaskedWallet;
+import com.google.android.gms.wallet.MaskedWallet.Builder;
 import com.google.android.gms.wallet.WalletConstants;
 import com.google.android.gms.wallet.WalletConstants.CardNetwork;
 
@@ -23,6 +24,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
@@ -173,8 +176,10 @@ public class AndroidPayTest {
     @SmallTest
     public void onActivityResult_sendsAnalyticsEventOnMaskedWalletResponse() {
         BraintreeFragment fragment = getSetupFragment();
+
+        MaskedWallet wallet = createMaskedWallet();
         Intent intent = new Intent()
-                .putExtra(WalletConstants.EXTRA_MASKED_WALLET, MaskedWallet.zzCh().build());
+                .putExtra(WalletConstants.EXTRA_MASKED_WALLET, wallet);
 
         AndroidPay.onActivityResult(fragment, null, false, Activity.RESULT_OK, intent);
 
@@ -198,5 +203,28 @@ public class AndroidPayTest {
         when(fragment.getHttpClient()).thenReturn(mock(BraintreeHttpClient.class));
 
         return fragment;
+    }
+
+    private MaskedWallet createMaskedWallet() {
+        Class maskedWalletClass = MaskedWallet.class;
+        try {
+            Constructor<MaskedWallet> constructor =
+                    maskedWalletClass.getDeclaredConstructor(new Class[0]);
+            constructor.setAccessible(true);
+            MaskedWallet wallet = constructor.newInstance(new Object[0]);
+
+            Builder builder = wallet.newBuilderFrom(wallet);
+            builder.setGoogleTransactionId("braintree-android-pay-test");
+            return builder.build();
+        } catch (NoSuchMethodException e) {
+            return null;
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
