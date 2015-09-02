@@ -9,7 +9,7 @@ import android.test.suitebuilder.annotation.SmallTest;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
-import com.braintreepayments.api.interfaces.ConfigurationErrorListener;
+import com.braintreepayments.api.interfaces.ConfigurationFetchedErrorListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
@@ -208,7 +208,7 @@ public class BraintreeFragmentTest {
             throws InvalidArgumentException, InterruptedException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity,
                 stringFromFixture("client_token_with_bad_config_url.json"));
-        fragment.addListener(new ConfigurationErrorListener() {
+        fragment.addListener(new ConfigurationFetchedErrorListener() {
             @Override
             public void onConfigurationError(Throwable throwable) {
                 assertEquals(

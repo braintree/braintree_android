@@ -15,7 +15,7 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreeListener;
-import com.braintreepayments.api.interfaces.ConfigurationErrorListener;
+import com.braintreepayments.api.interfaces.ConfigurationFetchedErrorListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
@@ -65,7 +65,7 @@ public class BraintreeFragment extends Fragment {
     private boolean mHasFetchedPaymentMethods = false;
 
     private ConfigurationListener mConfigurationListener;
-    private ConfigurationErrorListener mConfigurationErrorListener;
+    private ConfigurationFetchedErrorListener mConfigurationErrorListener;
     private BraintreeCancelListener mCancelListener;
     private PaymentMethodsUpdatedListener mPaymentMethodsUpdatedListener;
     private PaymentMethodCreatedListener mPaymentMethodCreatedListener;
@@ -221,8 +221,8 @@ public class BraintreeFragment extends Fragment {
             mConfigurationListener = (ConfigurationListener) listener;
         }
 
-        if (listener instanceof ConfigurationErrorListener) {
-            mConfigurationErrorListener = (ConfigurationErrorListener) listener;
+        if (listener instanceof ConfigurationFetchedErrorListener) {
+            mConfigurationErrorListener = (ConfigurationFetchedErrorListener) listener;
         }
 
         if (listener instanceof BraintreeCancelListener) {
@@ -254,7 +254,7 @@ public class BraintreeFragment extends Fragment {
             mConfigurationListener = null;
         }
 
-        if (listener instanceof ConfigurationErrorListener) {
+        if (listener instanceof ConfigurationFetchedErrorListener) {
             mConfigurationErrorListener = null;
         }
 
