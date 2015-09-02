@@ -6,8 +6,7 @@ import android.os.Bundle;
 
 /**
  * Helper Activity that will send a Broadcast {@link Intent} once the browser switch completes.
- * This is a workaround for a known issue in API 19 where {@link Activity#startActivityForResult(Intent, int)}
- * is not called after the browser switch completes.
+ * This is a workaround for activities that are singleTop or singleTask.
  *
  * Steps that this Activity takes are:
  * <ol>

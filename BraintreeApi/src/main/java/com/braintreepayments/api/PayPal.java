@@ -43,9 +43,20 @@ public class PayPal {
 
     public static final int PAYPAL_AUTHORIZATION_REQUEST_CODE = 13591;
 
-    // Supported scopes for PayPal authorization
+    /**
+     * PayPal Scope for Future Payments. Always enabled for the future payments flow.
+     */
     public static final String SCOPE_FUTURE_PAYMENTS = "https://uri.paypal.com/services/payments/futurepayments";
+
+    /**
+     * PayPal Scope for email. Always enabled for the future payments flow.
+     */
     public static final String SCOPE_EMAIL = "email";
+
+    /**
+     * PayPal Scope for obtaining the accounts address. Optional, can be specified in the optional
+     * scopes when using {@link #authorizeAccount(BraintreeFragment, List)}.
+     */
     public static final String SCOPE_ADDRESS = "address";
 
     protected static boolean sEnableSignatureVerification = true;
@@ -92,25 +103,21 @@ public class PayPal {
     public static void authorizeAccount(final BraintreeFragment fragment, final List<String> additionalScopes) {
         fragment.sendAnalyticsEvent("paypal.selected");
 
-        /*
-         * Use billing agreements if enabled, we are moving away from Future Payment flow
-         */
         if (fragment.getConfiguration().getPayPal().getUseBillingAgreement()) {
             PayPalCheckout checkout = new PayPalCheckout();
             billingAgreement(fragment, checkout);
             return;
         }
 
-        if (fragment != null) {
-            sBraintreeFragmentBroadcastReceiver.setFragment(fragment);
-            BraintreeBroadcastManager.getInstance(fragment.getActivity())
-                    .registerReceiver(sBraintreeFragmentBroadcastReceiver, new IntentFilter(
-                            BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
-        }
+        sBraintreeFragmentBroadcastReceiver.setFragment(fragment);
+        BraintreeBroadcastManager.getInstance(fragment.getContext())
+                .registerReceiver(sBraintreeFragmentBroadcastReceiver, new IntentFilter(
+                        BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
+
         try {
             sPendingRequest = buildPayPalAuthorizationConfiguration(fragment.getActivity(),
-                            fragment.getConfiguration(),
-                            fragment.getClientToken().toJson());
+                    fragment.getConfiguration(),
+                    fragment.getClientToken().toJson());
 
             if (additionalScopes != null) {
                 for (String scope : additionalScopes) {
@@ -163,7 +170,7 @@ public class PayPal {
      */
     public static void checkout(BraintreeFragment fragment, PayPalCheckout checkout) {
         if (checkout.getAmount() == null) {
-            throw new RuntimeException("An amount MUST be specified for the Single Payment flow.");
+            fragment.postCallback(new BraintreeException("An amount MUST be specified for the Single Payment flow."));
         }
         PayPal.checkout(fragment, checkout, false);
     }
@@ -180,7 +187,7 @@ public class PayPal {
     private static void checkout(final BraintreeFragment fragment, final PayPalCheckout checkout,
             final boolean isBillingAgreement) {
         sBraintreeFragmentBroadcastReceiver.setFragment(fragment);
-        BraintreeBroadcastManager.getInstance(fragment.getActivity())
+        BraintreeBroadcastManager.getInstance(fragment.getContext())
                 .registerReceiver(sBraintreeFragmentBroadcastReceiver, new IntentFilter(
                         BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
 
@@ -192,58 +199,55 @@ public class PayPal {
                     paypalPaymentResource = PayPalPaymentResource.fromJson(responseBody);
                 } catch (JSONException e) {
                     // If the PayPalPaymentResource is unable to be loaded, return.
+                    fragment.postCallback(e);
                     Log.d("PayPal", "Unable to parse URL for PayPal app switch.");
                     return;
                 }
-                //OTC browser/app switching requires that it be run on the main thread
-                fragment.getActivity().runOnUiThread(new Runnable() {
-                    public void run() {
-                        try {
-                            sPendingRequest =
-                                    buildPayPalCheckoutConfiguration(
-                                            paypalPaymentResource.getRedirectUrl(),
-                                            fragment.getActivity(),
-                                            fragment.getConfiguration());
+                try {
+                    sPendingRequest =
+                            buildPayPalCheckoutConfiguration(
+                                    paypalPaymentResource.getRedirectUrl(),
+                                    fragment.getActivity(),
+                                    fragment.getConfiguration());
 
-                            sPendingRequestStatus =
-                                    PayPalOneTouchCore.performRequest(fragment.getActivity(),
-                                            sPendingRequest,
-                                            PAYPAL_AUTHORIZATION_REQUEST_CODE,
-                                            sEnableSignatureVerification,
-                                            new BrowserSwitchAdapter() {
-                                                @Override
-                                                public void handleBrowserSwitchIntent(
-                                                        Intent intent) {
-                                                    fragment.getActivity().startActivityForResult(
-                                                            new Intent(fragment.getActivity(),
-                                                                    BraintreeBrowserSwitchActivity.class)
-                                                                    .setFlags(
-                                                                            Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                                                                    .putExtra(
-                                                                            BraintreeBrowserSwitchActivity.EXTRA_INTENT,
-                                                                            intent),
-                                                            PAYPAL_AUTHORIZATION_REQUEST_CODE);
-                                                }
-                                            });
+                    sPendingRequestStatus =
+                            PayPalOneTouchCore.performRequest(fragment.getActivity(),
+                                    sPendingRequest,
+                                    PAYPAL_AUTHORIZATION_REQUEST_CODE,
+                                    sEnableSignatureVerification,
+                                    new BrowserSwitchAdapter() {
+                                        @Override
+                                        public void handleBrowserSwitchIntent(
+                                                Intent intent) {
+                                            fragment.getActivity().startActivityForResult(
+                                                    new Intent(fragment.getActivity(),
+                                                            BraintreeBrowserSwitchActivity.class)
+                                                            .setFlags(
+                                                                    Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                                                            .putExtra(
+                                                                    BraintreeBrowserSwitchActivity.EXTRA_INTENT,
+                                                                    intent),
+                                                    PAYPAL_AUTHORIZATION_REQUEST_CODE);
+                                        }
+                                    });
 
-                            sendAnalyticsForPayPalPerformRequestStatus(fragment,
-                                    sPendingRequestStatus, true);
-                        } catch (ConfigurationException ignored) {
-                        }
-                    }
-                });
+                    sendAnalyticsForPayPalPerformRequestStatus(fragment,
+                            sPendingRequestStatus, true);
+                } catch (ConfigurationException e) {
+                    fragment.postCallback(e);
+                }
             }
 
             @Override
-            public void failure(Exception ignored) {
-                //Do nothing, for now
-                ErrorWithResponse ex = (ErrorWithResponse) ignored;
+            public void failure(Exception e) {
+                fragment.postCallback(e);
+                ErrorWithResponse ex = (ErrorWithResponse) e;
                 try {
                     JSONObject response = new JSONObject(ex.getErrorResponse());
                     String debugId = response.getJSONObject("error").getString("debugId");
                     Log.d("PayPal",
                             "Unable to generate URL for PayPal app switch. DebugId: " + debugId);
-                } catch (JSONException e) {
+                } catch (JSONException jsonException) {
                     Log.d("PayPal", "Unable to generate URL for PayPal app switch.");
                 }
             }
@@ -251,12 +255,8 @@ public class PayPal {
 
         try {
             createPayPalPaymentResource(fragment, checkout, isBillingAgreement, callback);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (ErrorWithResponse errorWithResponse) {
-            errorWithResponse.printStackTrace();
-        } catch (BraintreeException e) {
-            e.printStackTrace();
+        } catch (JSONException|ErrorWithResponse|BraintreeException ex) {
+            fragment.postCallback(ex);
         }
     }
 

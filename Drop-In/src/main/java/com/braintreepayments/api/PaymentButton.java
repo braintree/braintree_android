@@ -126,7 +126,7 @@ public class PaymentButton extends RelativeLayout implements ConfigurationFetche
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.bt_paypal_button) {
-            PayPal.authorize(mBraintreeFragment, mAdditionalScopes);
+            PayPal.authorizeAccount(mBraintreeFragment, mAdditionalScopes);
         } else if (v.getId() == R.id.bt_venmo_button) {
             Venmo.authorize(mBraintreeFragment);
         } else if (v.getId() == R.id.bt_android_pay_button) {

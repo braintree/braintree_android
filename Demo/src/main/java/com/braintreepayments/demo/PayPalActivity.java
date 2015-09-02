@@ -91,7 +91,7 @@ public class PayPalActivity extends Activity implements PaymentMethodCreatedList
      * Kicks off a PayPal future payment.
      */
     public void launchFuturePayment(View v) {
-        PayPal.authorize(mBraintreeFragment);
+        PayPal.authorizeAccount(mBraintreeFragment);
     }
 
     /**
@@ -99,7 +99,7 @@ public class PayPalActivity extends Activity implements PaymentMethodCreatedList
      */
     public void launchFuturePaymentAddressScope(View v) {
         List<String> additionalScopes = Collections.singletonList(PayPal.SCOPE_ADDRESS);
-        PayPal.authorize(mBraintreeFragment, additionalScopes);
+        PayPal.authorizeAccount(mBraintreeFragment, additionalScopes);
     }
 
     /**
