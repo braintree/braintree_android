@@ -1,27 +1,22 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Configuration;
-import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.provider.Settings.Secure;
 
 import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.utils.DeviceUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.UUID;
 
 /**
  * Centralized location for caching, queuing, and sending Analytics events
@@ -47,7 +42,6 @@ class AnalyticsManager {
     private static final String IS_SIMULATOR_KEY = "isSimulator";
     private static final String INTEGRATION_TYPE_KEY = "integrationType";
     private static final String USER_INTERFACE_ORIENTATION_KEY = "userInterfaceOrientation";
-    private static final String BRAINTREE_UUID_KEY = "braintreeUUID";
 
     private static final int REQUEST_THRESHOLD = 5;
 
@@ -63,8 +57,9 @@ class AnalyticsManager {
     static void sendRequest(final BraintreeFragment fragment, final String integrationType, final String eventFragment) {
         final AnalyticsRequest request = new AnalyticsRequest(integrationType, eventFragment);
         fragment.waitForConfiguration(new ConfigurationListener() {
+
             @Override
-            public void onConfigurationFetched() {
+            public void onConfigurationFetched(Configuration config) {
                 if (!fragment.getConfiguration().getAnalytics().isEnabled()) {
                     return;
                 }
@@ -84,7 +79,7 @@ class AnalyticsManager {
     static void flushEvents(final BraintreeFragment fragment) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
-            public void onConfigurationFetched() {
+            public void onConfigurationFetched(Configuration configuration) {
                 if (fragment.getConfiguration().getAnalytics().isEnabled()) {
                     processRequests(fragment);
                 }
@@ -132,9 +127,9 @@ class AnalyticsManager {
         }
 
         return new JSONObject(sCachedMetadata.toString())
-                .put(DEVICE_NETWORK_TYPE_KEY, getNetworkType(context))
+                .put(DEVICE_NETWORK_TYPE_KEY, DeviceUtils.getNetworkType(context))
                 .put(INTEGRATION_TYPE_KEY, integrationType)
-                .put(USER_INTERFACE_ORIENTATION_KEY, getUserOrientation(context));
+                .put(USER_INTERFACE_ORIENTATION_KEY, DeviceUtils.getUserOrientation(context));
     }
 
     private static JSONObject populateCachedMetadata(Context context) {
@@ -145,14 +140,15 @@ class AnalyticsManager {
                     .put(SDK_VERSION_KEY, BuildConfig.VERSION_NAME)
                     .put(MERCHANT_APP_ID_KEY, context.getPackageName())
                     .put(MERCHANT_APP_NAME_KEY,
-                            getAppName(getApplicationInfo(context), context.getPackageManager()))
-                    .put(MERCHANT_APP_VERSION_KEY, getAppVersion(context))
-                    .put(DEVICE_ROOTED_KEY, isDeviceRooted())
+                            DeviceUtils.getAppName(getApplicationInfo(context),
+                                    context.getPackageManager()))
+                    .put(MERCHANT_APP_VERSION_KEY, DeviceUtils.getAppVersion(context))
+                    .put(DEVICE_ROOTED_KEY, DeviceUtils.isDeviceRooted())
                     .put(DEVICE_MANUFACTURER_KEY, Build.MANUFACTURER)
                     .put(DEVICE_MODEL_KEY, Build.MODEL)
                     .put(ANDROID_ID_KEY, Secure.getString(context.getContentResolver(), Secure.ANDROID_ID))
-                    .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY, getUUID(context))
-                    .put(IS_SIMULATOR_KEY, detectEmulator());
+                    .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY, DeviceUtils.getUUID(context))
+                    .put(IS_SIMULATOR_KEY, DeviceUtils.detectEmulator());
         } catch (JSONException ignored) {}
 
         return meta;
@@ -169,94 +165,6 @@ class AnalyticsManager {
         }
 
         return applicationInfo;
-    }
-
-    private static String getAppName(ApplicationInfo applicationInfo,
-            PackageManager packageManager) {
-        if (applicationInfo != null) {
-            return (String) packageManager.getApplicationLabel(applicationInfo);
-        } else {
-            return "ApplicationNameUnknown";
-        }
-    }
-
-    private static String getAppVersion(Context context) {
-        try {
-            return context.getPackageManager()
-                    .getPackageInfo(context.getPackageName(), 0).versionName;
-        } catch (NameNotFoundException e) {
-            return "VersionUnknown";
-        }
-    }
-
-    private static String isDeviceRooted() {
-        String buildTags = android.os.Build.TAGS;
-        boolean check1 = buildTags != null && buildTags.contains("test-keys");
-
-        boolean check2;
-        try {
-            File file = new File("/system/app/Superuser.apk");
-            check2 = file.exists();
-        } catch (Exception e) {
-            check2 = false;
-        }
-
-        boolean check3;
-        try {
-            Process process = Runtime.getRuntime().exec(new String[]{"/system/xbin/which", "su"});
-            BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            if (in.readLine() != null) {
-                check3 = true;
-            } else {
-                check3 = false;
-            }
-        } catch (Exception e) {
-            check3 = false;
-        }
-
-        return Boolean.toString(check1 || check2 || check3);
-    }
-
-    private static String getNetworkType(Context context) {
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        return connectivityManager.getActiveNetworkInfo().getTypeName();
-    }
-
-    private static String getUUID(Context context) {
-        SharedPreferences prefs =
-                context.getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE);
-
-        String uuid = prefs.getString(BRAINTREE_UUID_KEY, null);
-        if (uuid == null) {
-            uuid = UUID.randomUUID().toString().replace("-", "");
-            prefs.edit().putString(BRAINTREE_UUID_KEY, uuid).apply();
-        }
-
-        return uuid;
-    }
-
-    private static String detectEmulator() {
-        if ("google_sdk".equalsIgnoreCase(Build.PRODUCT) ||
-                "sdk".equalsIgnoreCase(Build.PRODUCT) ||
-                "Genymotion".equalsIgnoreCase(Build.MANUFACTURER) ||
-                Build.FINGERPRINT.contains("generic")) {
-            return "true";
-        } else {
-            return "false";
-        }
-    }
-
-    private static String getUserOrientation(Context context) {
-        int orientation = context.getResources().getConfiguration().orientation;
-        switch (orientation) {
-            case Configuration.ORIENTATION_PORTRAIT:
-                return "Portrait";
-            case Configuration.ORIENTATION_LANDSCAPE:
-                return "Landscape";
-            default:
-                return "Unknown";
-        }
     }
 
     private static class AnalyticsRequest {

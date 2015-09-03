@@ -4,6 +4,7 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodResponseCallback;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethod;
 
 public class CardTokenizer {
@@ -26,7 +27,7 @@ public class CardTokenizer {
     public static void tokenize(final BraintreeFragment fragment, final CardBuilder cardBuilder) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
-            public void onConfigurationFetched() {
+            public void onConfigurationFetched(Configuration configuration) {
                 PaymentMethodTokenization.tokenize(fragment, cardBuilder,
                         new PaymentMethodResponseCallback() {
                             @Override

@@ -155,8 +155,8 @@ public class BraintreeFragmentTest {
         final BraintreeFragment fragment = getFragment(mActivity, CLIENT_KEY);
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
-            public void onConfigurationFetched() {
-                assertNotNull(fragment.getConfiguration());
+            public void onConfigurationFetched(Configuration configuration) {
+                assertNotNull(configuration);
                 mCountDownLatch.countDown();
             }
         });
@@ -170,8 +170,8 @@ public class BraintreeFragmentTest {
         final BraintreeFragment fragment = getFragment(mActivity, mClientToken);
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
-            public void onConfigurationFetched() {
-                assertNotNull(fragment.getConfiguration());
+            public void onConfigurationFetched(Configuration configuration) {
+                assertNotNull(configuration);
                 mCountDownLatch.countDown();
             }
         });
@@ -244,9 +244,9 @@ public class BraintreeFragmentTest {
         final BraintreeFragment fragment = getFragment(mActivity, mClientToken);
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
-            public void onConfigurationFetched() {
+            public void onConfigurationFetched(Configuration configuration) {
                 assertEquals("integration2_merchant_id",
-                        fragment.getConfiguration().getMerchantId());
+                        configuration.getMerchantId());
                 mCountDownLatch.countDown();
             }
         });
@@ -400,8 +400,8 @@ public class BraintreeFragmentTest {
         final BraintreeFragment fragment = getFragment(mActivity, mClientToken);
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
-            public void onConfigurationFetched() {
-                assertNotNull(fragment.getConfiguration());
+            public void onConfigurationFetched(Configuration configuration) {
+                assertNotNull(configuration);
                 mCountDownLatch.countDown();
             }
         });

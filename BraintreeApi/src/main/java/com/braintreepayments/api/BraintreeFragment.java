@@ -379,7 +379,7 @@ public class BraintreeFragment extends Fragment {
 
                         @Override
                         public void run() {
-                            mConfigurationListener.onConfigurationFetched();
+                            mConfigurationListener.onConfigurationFetched(getConfiguration());
                         }
                     });
                     flushCallbacks();
@@ -426,7 +426,7 @@ public class BraintreeFragment extends Fragment {
 
             @Override
             public void run() {
-                listener.onConfigurationFetched();
+                listener.onConfigurationFetched(getConfiguration());
             }
         });
     }

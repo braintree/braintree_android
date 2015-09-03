@@ -9,6 +9,7 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodResponseCallback;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
@@ -88,10 +89,10 @@ public class ThreeDSecure {
             final String amount) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
-            public void onConfigurationFetched() {
+            public void onConfigurationFetched(Configuration configuration) {
                 try {
                     JSONObject params = new JSONObject()
-                            .put("merchantAccountId", fragment.getConfiguration().getMerchantAccountId())
+                            .put("merchantAccountId", configuration.getMerchantAccountId())
                             .put("amount", amount);
 
                     fragment.getHttpClient().post(PaymentMethodTokenization.versionedPath(

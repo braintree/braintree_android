@@ -7,6 +7,7 @@ import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
+import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethod;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class TestListenerActivity extends Activity implements PaymentMethodCreat
     }
 
     @Override
-    public void onConfigurationFetched() {
+    public void onConfigurationFetched(Configuration configuration) {
     }
 
     @Override

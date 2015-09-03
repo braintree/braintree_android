@@ -4,6 +4,7 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodResponseCallback;
+import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 
@@ -26,7 +27,7 @@ class PaymentMethodTokenization {
     static void getPaymentMethods(final BraintreeFragment fragment) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
-            public void onConfigurationFetched() {
+            public void onConfigurationFetched(Configuration configuration) {
                 fragment.getHttpClient().get(versionedPath(PAYMENT_METHOD_ENDPOINT),
                         new HttpResponseCallback() {
                             @Override
@@ -69,7 +70,7 @@ class PaymentMethodTokenization {
             final PaymentMethodResponseCallback callback) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
-            public void onConfigurationFetched() {
+            public void onConfigurationFetched(Configuration configuration) {
                 fragment.getHttpClient().post(PaymentMethodTokenization.versionedPath(
                                 PaymentMethodTokenization.PAYMENT_METHOD_ENDPOINT + "/" +
                                         paymentMethodBuilder.getApiPath()),
