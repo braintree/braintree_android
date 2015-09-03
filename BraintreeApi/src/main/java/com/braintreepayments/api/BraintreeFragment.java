@@ -59,7 +59,7 @@ public class BraintreeFragment extends Fragment {
     @VisibleForTesting
     protected BraintreeHttpClient mHttpClient;
 
-    private Object mGoogleApiClient;
+    private GoogleApiClient mGoogleApiClient;
     private Queue<QueuedCallback> mCallbackQueue = new ArrayDeque<>();
     private List<PaymentMethod> mCachedPaymentMethods = new ArrayList<>();
     private boolean mHasFetchedPaymentMethods = false;
@@ -161,7 +161,7 @@ public class BraintreeFragment extends Fragment {
         flushCallbacks();
 
         if (mGoogleApiClient != null) {
-            ((GoogleApiClient) mGoogleApiClient).connect();
+            mGoogleApiClient.connect();
         }
     }
 
@@ -176,7 +176,7 @@ public class BraintreeFragment extends Fragment {
         }
 
         if (mGoogleApiClient != null) {
-            ((GoogleApiClient) mGoogleApiClient).disconnect();
+            mGoogleApiClient.disconnect();
         }
     }
 
@@ -478,10 +478,8 @@ public class BraintreeFragment extends Fragment {
                     .build();
         }
 
-        GoogleApiClient googleApiClient = (GoogleApiClient) mGoogleApiClient;
-
-        if (!googleApiClient.isConnected() && !googleApiClient.isConnecting()) {
-            googleApiClient.registerConnectionCallbacks(new ConnectionCallbacks() {
+        if (!mGoogleApiClient.isConnected() && !mGoogleApiClient.isConnecting()) {
+            mGoogleApiClient.registerConnectionCallbacks(new ConnectionCallbacks() {
                 @Override
                 public void onConnected(Bundle bundle) {}
 
@@ -491,16 +489,16 @@ public class BraintreeFragment extends Fragment {
                 }
             });
 
-            googleApiClient.registerConnectionFailedListener(new OnConnectionFailedListener() {
+            mGoogleApiClient.registerConnectionFailedListener(new OnConnectionFailedListener() {
                 @Override
                 public void onConnectionFailed(ConnectionResult connectionResult) {
                     postCallback(new GoogleApiClientException("Connection failed: " + connectionResult.getErrorCode()));
                 }
             });
 
-            googleApiClient.connect();
+            mGoogleApiClient.connect();
         }
 
-        return googleApiClient;
+        return mGoogleApiClient;
     }
 }
