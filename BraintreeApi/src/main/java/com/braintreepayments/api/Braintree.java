@@ -1012,6 +1012,8 @@ public class Braintree {
         if (responseCode == Activity.RESULT_OK && data != null) {
             if (PayPalHelper.isPayPalIntent(data)) {
                 finishPayWithPayPal(activity, responseCode, data);
+            } else if (Coinbase.canParseResponse(activity, data)) {
+                finishPayWithCoinbase(responseCode, data);
             } else if (AndroidPay.isMaskedWalletResponse(data)) {
                 performAndroidPayFullWalletRequest(activity, requestCode, null, getAndroidPayGoogleTransactionId(data));
             } else if (AndroidPay.isFullWalletResponse(data)) {

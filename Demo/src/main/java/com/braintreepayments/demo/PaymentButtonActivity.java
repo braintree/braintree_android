@@ -46,6 +46,7 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodCrea
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.payment_button);
 
+        // Register the BroadcastReceiver for Coinbase browser switch
         BraintreeBroadcastManager.getInstance(this).registerReceiver(mBrowserSwitchReceiver,
                 new IntentFilter(
                         BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
