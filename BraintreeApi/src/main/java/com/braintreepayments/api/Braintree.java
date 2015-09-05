@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -22,7 +23,6 @@ import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.CoinbaseAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
-import com.braintreepayments.api.models.SetupResult;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
@@ -61,10 +61,6 @@ public class Braintree {
      * {@link #addListener(com.braintreepayments.api.Braintree.Listener)}.
      */
     private static interface Listener {}
-
-    public static interface BraintreeSetupFinishedListener {
-        void onBraintreeSetupFinished(SetupResult setupResult);
-    }
 
     /**
      * Interface that defines the response for
@@ -139,30 +135,6 @@ public class Braintree {
     private final Set<ErrorListener> mErrorListeners = new HashSet<ErrorListener>();
 
     private List<PaymentMethod> mCachedPaymentMethods;
-
-    /**
-     * @deprecated Use the asynchronous
-     * {@link com.braintreepayments.api.Braintree#setup(android.content.Context, String, com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener)}
-     * instead.
-     *
-     * Obtain an instance of {@link Braintree}. If multiple calls are made with the same {@code
-     * clientToken}, you may get the same instance returned.
-     *
-     * @param context
-     * @param clientToken A client token obtained from a Braintree server SDK.
-     * @return {@link com.braintreepayments.api.Braintree} instance. Repeated called to
-     *         {@link #getInstance(android.content.Context, String)} with the same {@code clientToken}
-     *         may return the same {@link com.braintreepayments.api.Braintree} instance.
-     */
-    @Deprecated
-    public static Braintree getInstance(Context context, String clientToken) {
-        if (sInstances.containsKey(clientToken)) {
-            return sInstances.get(clientToken);
-        } else {
-            return new Braintree(clientToken,
-                    new BraintreeApi(context.getApplicationContext(), clientToken));
-        }
-    }
 
     /**
      * Called to begin the setup of {@link Braintree}. Once setup is complete the supplied
@@ -248,21 +220,8 @@ public class Braintree {
         mBraintreeApi.setup();
     }
 
-    protected Braintree(Context context, String clientToken) {
-        mBraintreeApi = new BraintreeApi(context.getApplicationContext(),
-                ClientToken.fromString(clientToken));
-        mExecutorService = Executors.newSingleThreadExecutor();
-        mIntegrationType = "custom";
-        sInstances.put(clientToken, this);
-    }
 
-    private boolean isSetup() {
-        return mBraintreeApi.isSetup();
-    }
 
-    private void setup() throws ErrorWithResponse, BraintreeException {
-        mBraintreeApi.setup();
-    }
 
     protected String analyticsPrefix() {
         return mIntegrationType + ".android";

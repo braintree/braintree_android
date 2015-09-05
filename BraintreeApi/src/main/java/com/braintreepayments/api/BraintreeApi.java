@@ -131,6 +131,7 @@ public class BraintreeApi {
 
         mBraintreeData = null;
         mVenmoAppSwitch = new VenmoAppSwitch(mContext, mConfiguration);
+        mCoinbase = new Coinbase(mContext, mConfiguration);
     }
 
     private Configuration getConfiguration() throws ErrorWithResponse, BraintreeException {

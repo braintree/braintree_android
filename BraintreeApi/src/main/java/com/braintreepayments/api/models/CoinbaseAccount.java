@@ -72,18 +72,18 @@ public class CoinbaseAccount extends PaymentMethod implements Parcelable, Serial
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.mAccessCode);
         dest.writeParcelable(this.mDetails, 0);
-        dest.writeString(this.nonce);
-        dest.writeString(this.description);
-        dest.writeSerializable(this.options);
+        dest.writeString(this.mNonce);
+        dest.writeString(this.mDescription);
+        dest.writeSerializable(this.mPaymentMethodOptions);
         dest.writeString(this.mSource);
     }
 
     private CoinbaseAccount(Parcel in) {
         this.mAccessCode = in.readString();
         this.mDetails = in.readParcelable(CoinbaseAccountDetails.class.getClassLoader());
-        this.nonce = in.readString();
-        this.description = in.readString();
-        this.options = (PaymentMethodOptions) in.readSerializable();
+        this.mNonce = in.readString();
+        this.mDescription = in.readString();
+        this.mPaymentMethodOptions = (PaymentMethodOptions) in.readSerializable();
         this.mSource = in.readString();
     }
 
