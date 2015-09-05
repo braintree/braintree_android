@@ -2,35 +2,39 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.SystemClock;
 import android.test.AndroidTestCase;
 
+import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
 import com.braintreepayments.api.Braintree.ErrorListener;
 import com.braintreepayments.api.Braintree.ListenerCallback;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodNonceListener;
 import com.braintreepayments.api.Braintree.PaymentMethodsUpdatedListener;
 import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
+import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
-import com.braintreepayments.api.models.CoinbaseAccount;
-import com.braintreepayments.api.models.PayPalAccount;
-import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
+import com.braintreepayments.test.TestListenerActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
+import com.google.android.gms.wallet.Cart;
+import com.google.android.gms.wallet.WalletConstants;
+import com.google.gson.JsonSyntaxException;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
+import com.paypal.android.sdk.payments.PayPalProfileSharingActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -43,14 +47,17 @@ import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class BraintreeTest extends AndroidTestCase {
@@ -67,6 +74,74 @@ public class BraintreeTest extends AndroidTestCase {
         String clientToken = new TestClientTokenBuilder().build();
         mBraintreeApi = new BraintreeApi(getContext(), clientToken);
         mBraintree = new Braintree(clientToken, mBraintreeApi);
+    }
+
+    public void testSetupIsSuccessful() throws ExecutionException, InterruptedException {
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        BraintreeSetupFinishedListener setupFinishedListener = new BraintreeSetupFinishedListener() {
+            @Override
+            public void onBraintreeSetupFinished(boolean setupSuccessful, Braintree braintree,
+                    String errorMessage, Exception exception) {
+                assertTrue(setupSuccessful);
+                assertNotNull(braintree);
+                assertNull(errorMessage);
+                assertNull(exception);
+                wasCalled.set(true);
+            }
+        };
+
+        Braintree.setupHelper(mContext, new TestClientTokenBuilder().build(), setupFinishedListener)
+                .get();
+
+        waitForMainThreadToFinish();
+        assertTrue(wasCalled.get());
+    }
+
+    public void testSetupReturnsAnError()
+            throws ExecutionException, InterruptedException, ErrorWithResponse, BraintreeException {
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        BraintreeSetupFinishedListener setupFinishedListener = new BraintreeSetupFinishedListener() {
+            @Override
+            public void onBraintreeSetupFinished(boolean setupSuccessful, Braintree braintree,
+                    String errorMessage, Exception exception) {
+                assertFalse(setupSuccessful);
+                assertNull(braintree);
+                assertEquals("Error!", errorMessage);
+                assertTrue(exception instanceof AuthenticationException);
+                wasCalled.set(true);
+            }
+        };
+
+        String clientToken = new TestClientTokenBuilder().build();
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        doThrow(new AuthenticationException("Error!")).when(braintreeApi).setup();
+        Braintree braintree = new Braintree(clientToken, braintreeApi);
+        Braintree.sInstances.put(clientToken, braintree);
+        Braintree.setupHelper(mContext, clientToken, setupFinishedListener).get();
+
+        waitForMainThreadToFinish();
+        assertTrue(wasCalled.get());
+    }
+
+    public void testSetupReturnsAnErrorForNonJsonClientToken()
+            throws InterruptedException, ExecutionException {
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        BraintreeSetupFinishedListener setupFinishedListener = new BraintreeSetupFinishedListener() {
+            @Override
+            public void onBraintreeSetupFinished(boolean setupSuccessful, Braintree braintree,
+                    String errorMessage, Exception exception) {
+                assertFalse(setupSuccessful);
+                assertNull(braintree);
+                assertEquals("java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING at line 1 column 1 path $", errorMessage);
+                assertTrue(exception instanceof JsonSyntaxException);
+                wasCalled.set(true);
+            }
+        };
+
+        Braintree.setupHelper(mContext, "not-json!", setupFinishedListener).get();
+
+        waitForMainThreadToFinish();
+        assertTrue(wasCalled.get());
     }
 
     public void testCreateAsync()
@@ -98,15 +173,6 @@ public class BraintreeTest extends AndroidTestCase {
         waitForMainThreadToFinish();
         assertTrue(paymentMethodCreatedCalled.get());
         assertTrue(paymentMethodNonceCalled.get());
-    }
-
-    public void testCreateAddsPaymentMethodsToCache()
-            throws ExecutionException, InterruptedException {
-        createCardSync(mBraintree);
-
-        waitForMainThreadToFinish();
-        assertEquals("Payment method was not added to the cache", 1, mBraintree.getCachedPaymentMethods().size());
-        assertEquals("11", ((Card) mBraintree.getCachedPaymentMethods().get(0)).getLastTwo());
     }
 
     public void testTokenizePostsNonceToListeners() throws ExecutionException, InterruptedException {
@@ -220,12 +286,14 @@ public class BraintreeTest extends AndroidTestCase {
             }
         });
 
-        braintree.finishPayWithPayPal(null, PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID, intent);
+        braintree.finishPayWithPayPal(null, PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID,
+                intent);
         SystemClock.sleep(50);
         assertTrue(wasCalled.get());
 
         wasCalled.set(false);
-        braintree.handlePayPalResponse(null, PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID, intent);
+        braintree.handlePayPalResponse(null, PayPalFuturePaymentActivity.RESULT_EXTRAS_INVALID,
+                intent);
         SystemClock.sleep(50);
         assertTrue(wasCalled.get());
     }
@@ -237,24 +305,6 @@ public class BraintreeTest extends AndroidTestCase {
         braintree.startPayWithPayPal(null, 1);
         SystemClock.sleep(50);
         verify(braintreeApi).sendAnalyticsEvent("custom.android.add-paypal.start", "custom");
-    }
-
-    public void testFinishPayWithPayPalAddsPaymentMethodToCache()
-            throws ErrorWithResponse, BraintreeException {
-        final PayPalAccount payPalAccount = mock(PayPalAccount.class);
-        when(payPalAccount.getNonce()).thenReturn("paypal-nonce");
-        BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        when(braintreeApi.handlePayPalResponse(any(Activity.class), eq(Activity.RESULT_OK), any(Intent.class)))
-                .thenReturn(new PayPalAccountBuilder());
-        when(braintreeApi.create(any(PayPalAccountBuilder.class))).thenReturn(payPalAccount);
-        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
-
-        braintree.finishPayWithPayPal(null, Activity.RESULT_OK, new Intent());
-        SystemClock.sleep(50);
-
-        List<PaymentMethod> paymentMethods = braintree.getCachedPaymentMethods();
-        assertEquals("PayPal payment methods should be added to the cache", 1, paymentMethods.size());
-        assertEquals("paypal-nonce", paymentMethods.get(0).getNonce());
     }
 
     public void testFinishPayWithPayPalDoesNothingOnNullBuilder() throws ConfigurationException {
@@ -321,7 +371,8 @@ public class BraintreeTest extends AndroidTestCase {
     public void testStartPayWithVenmoSendsAnalyticsEventWhenUnavailable()
             throws AppSwitchNotAvailableException {
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        doThrow(new AppSwitchNotAvailableException()).when(braintreeApi).startPayWithVenmo(any(Activity.class), anyInt());
+        doThrow(new AppSwitchNotAvailableException()).when(braintreeApi).startPayWithVenmo(
+                any(Activity.class), anyInt());
 
         Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
         braintree.startPayWithVenmo(null, 1);
@@ -371,44 +422,12 @@ public class BraintreeTest extends AndroidTestCase {
         assertTrue(paymentMethodListenerCalled.get());
     }
 
-    public void testFinishPayWithVenmoAddPaymentMethodToCache()
-            throws JSONException, BraintreeException, ErrorWithResponse {
-        final PaymentMethod paymentMethod = new PaymentMethod() {
-            @Override
-            public String getNonce() {
-                return "venmo-nonce";
-            }
-
-            @Override
-            public String getTypeLabel() {
-                return "Payment Method";
-            }
-
-            @Override
-            public int describeContents() { return 0; }
-
-            @Override
-            public void writeToParcel(Parcel dest, int flags) {}
-        };
-        BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        when(braintreeApi.finishPayWithVenmo(eq(Activity.RESULT_OK), any(Intent.class)))
-                .thenReturn("venmo-nonce");
-        when(braintreeApi.getPaymentMethod("venmo-nonce")).thenReturn(paymentMethod);
-        Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
-
-        braintree.finishPayWithVenmo(Activity.RESULT_OK, new Intent());
-        SystemClock.sleep(50);
-
-        List<PaymentMethod> paymentMethods = braintree.getCachedPaymentMethods();
-        assertEquals("Created payment methods should be added to the cache", 1, paymentMethods.size());
-        assertEquals("venmo-nonce", paymentMethods.get(0).getNonce());
-    }
-
     public void testFinishPayWithVenmoSendsAnalyticsEventOnSuccess()
             throws JSONException, BraintreeException, ErrorWithResponse {
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
         Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
-        when(braintreeApi.finishPayWithVenmo(eq(Activity.RESULT_OK), any(Intent.class))).thenReturn("nonce");
+        when(braintreeApi.finishPayWithVenmo(eq(Activity.RESULT_OK), any(Intent.class))).thenReturn(
+                "nonce");
         when(braintreeApi.getPaymentMethod("nonce")).thenReturn(new Card());
 
         braintree.finishPayWithVenmo(Activity.RESULT_OK, new Intent());
@@ -465,173 +484,6 @@ public class BraintreeTest extends AndroidTestCase {
         SystemClock.sleep(50);
 
         assertFalse("Expected no listeners to fire but one did fire", listenerWasCalled.get());
-    }
-
-    public void testStartPayWithCoinbaseStartsCoinbase() throws UnsupportedEncodingException {
-        BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        when(braintreeApi.isCoinbaseEnabled()).thenReturn(true);
-        Braintree braintree = new Braintree("client-token", braintreeApi);
-
-        braintree.startPayWithCoinbase(mock(Activity.class), 0);
-
-        verify(braintreeApi).startPayWithCoinbase((Activity) anyObject(), anyInt());
-
-    }
-
-    public void testStartPayWithCoinbasePostsAnUnrecoverableErrorForEncodingExceptions()
-            throws UnsupportedEncodingException {
-        BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        when(braintreeApi.isCoinbaseEnabled()).thenReturn(true);
-        doThrow(new UnsupportedEncodingException()).when(braintreeApi).startPayWithCoinbase(
-                (Activity) anyObject(), anyInt());
-        Braintree braintree = new Braintree("client-token", braintreeApi);
-        final AtomicBoolean wasCalled = new AtomicBoolean(false);
-        braintree.addListener(new SimpleListener() {
-            @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                if (throwable instanceof UnsupportedEncodingException) {
-                    wasCalled.set(true);
-                }
-            }
-        });
-
-        braintree.startPayWithCoinbase(mock(Activity.class), 0);
-        SystemClock.sleep(50);
-
-        verify(braintreeApi).sendAnalyticsEvent("custom.android.coinbase.initiate.started", "custom");
-        verify(braintreeApi).sendAnalyticsEvent("custom.android.coinbase.initiate.exception", "custom");
-        assertTrue("Listener was never called with UnsupportedEncodingException", wasCalled.get());
-    }
-
-    public void testStartPayWithCoinbasePostsAnUnrecoverableErrorWhenCoinbaseNotEnabled() {
-        BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        when(braintreeApi.isCoinbaseEnabled()).thenReturn(false);
-        Braintree braintree = new Braintree("client-token", braintreeApi);
-        final AtomicBoolean wasCalled = new AtomicBoolean(false);
-        braintree.addListener(new SimpleListener() {
-            @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                if (throwable instanceof AppSwitchNotAvailableException) {
-                    wasCalled.set(true);
-                }
-            }
-        });
-
-        braintree.startPayWithCoinbase(mock(Activity.class), 0);
-        SystemClock.sleep(50);
-        verify(braintreeApi).sendAnalyticsEvent("custom.android.coinbase.initiate.started", "custom");
-        verify(braintreeApi).sendAnalyticsEvent("custom.android.coinbase.initiate.unavailable", "custom");
-        assertTrue("Listener was never called with AppSwitchNotAvailableException", wasCalled.get());
-    }
-
-    public void testStartPayWithCoinbasePostsAnUnrecoverableErrorWhenCreatingTheIntentFails()
-            throws UnsupportedEncodingException {
-        BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        when(braintreeApi.isCoinbaseEnabled()).thenReturn(true);
-        when(braintreeApi.startPayWithCoinbase((Activity) anyObject(), anyInt())).thenReturn(false);
-        Braintree braintree = new Braintree("client-token", braintreeApi);
-        final AtomicBoolean wasCalled = new AtomicBoolean(false);
-        braintree.addListener(new SimpleListener() {
-            @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                assertEquals(AppSwitchNotAvailableException.class, throwable.getClass());
-                wasCalled.set(true);
-            }
-        });
-
-        braintree.startPayWithCoinbase(mock(Activity.class), 0);
-        SystemClock.sleep(50);
-
-        assertTrue("Listener was never called with AppSwitchNotAvailableException", wasCalled.get());
-    }
-
-    public void testFinishPayWithCoinbasePostsAPaymentMethod()
-            throws ErrorWithResponse, BraintreeException {
-        final CoinbaseAccount coinbaseAccount = mock(CoinbaseAccount.class);
-        when(coinbaseAccount.getNonce()).thenReturn("coinbase-nonce");
-        BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        when(braintreeApi.finishPayWithCoinbase(anyInt(), (Intent) anyObject())).thenReturn(coinbaseAccount);
-        Braintree braintree = new Braintree("client-token", braintreeApi);
-        final AtomicBoolean paymentMethodCalled = new AtomicBoolean(false);
-        final AtomicBoolean paymentMethodNonceCalled = new AtomicBoolean(false);
-        braintree.addListener(new SimpleListener() {
-            @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                assertEquals(coinbaseAccount, paymentMethod);
-                paymentMethodCalled.set(true);
-            }
-
-            @Override
-            public void onPaymentMethodNonce(String paymentMethodNonce) {
-                assertEquals("coinbase-nonce", paymentMethodNonce);
-                paymentMethodNonceCalled.set(true);
-            }
-        });
-
-        braintree.finishPayWithCoinbase(0, new Intent());
-        SystemClock.sleep(50);
-
-        assertTrue("onPaymentMethodCreated should have been called", paymentMethodCalled.get());
-        assertTrue("onPaymentMethodNonce should have been called", paymentMethodNonceCalled.get());
-    }
-
-    public void testFinishPayWithCoinbaseAddsPaymentMethodToCache()
-            throws ErrorWithResponse, BraintreeException {
-        final CoinbaseAccount coinbaseAccount = mock(CoinbaseAccount.class);
-        when(coinbaseAccount.getNonce()).thenReturn("coinbase-nonce");
-        BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        when(braintreeApi.finishPayWithCoinbase(anyInt(), (Intent) anyObject())).thenReturn(coinbaseAccount);
-        Braintree braintree = new Braintree("client-token", braintreeApi);
-
-        braintree.finishPayWithCoinbase(0, new Intent());
-        SystemClock.sleep(50);
-
-        List<PaymentMethod> paymentMethods = braintree.getCachedPaymentMethods();
-
-        assertEquals("Coinbase accounts should be added to cached payment methods on create", 1, paymentMethods.size());
-        assertEquals("coinbase-nonce", paymentMethods.get(0).getNonce());
-    }
-
-    public void testFinishPayWithCoinbasePostsAnUnrecoverableError()
-            throws ErrorWithResponse, BraintreeException {
-        BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        doThrow(new BraintreeException()).when(braintreeApi)
-                .finishPayWithCoinbase(anyInt(), (Intent) anyObject());
-        Braintree braintree = new Braintree("client-token", braintreeApi);
-        final AtomicBoolean wasCalled = new AtomicBoolean(false);
-        braintree.addListener(new SimpleListener() {
-            @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                assertEquals(BraintreeException.class, throwable.getClass());
-                wasCalled.set(true);
-            }
-        });
-
-        braintree.finishPayWithCoinbase(0, new Intent());
-        SystemClock.sleep(50);
-
-        assertTrue("onUnrecoverableError was not called", wasCalled.get());
-    }
-
-    public void testFinishPayWithCoinbasePostsARecoverableError()
-            throws ErrorWithResponse, BraintreeException {
-        BraintreeApi braintreeApi = mock(BraintreeApi.class);
-        doThrow(new ErrorWithResponse(0, "{}")).when(braintreeApi)
-                .finishPayWithCoinbase(anyInt(), (Intent) anyObject());
-        Braintree braintree = new Braintree("client-token", braintreeApi);
-        final AtomicBoolean wasCalled = new AtomicBoolean(false);
-        braintree.addListener(new SimpleListener() {
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
-                assertEquals(ErrorWithResponse.class, error.getClass());
-                wasCalled.set(true);
-            }
-        });
-
-        braintree.finishPayWithCoinbase(0, new Intent());
-        SystemClock.sleep(50);
-
-        assertTrue("onRecoverableError was not called", wasCalled.get());
     }
 
     public void testStartThreeDSecureVerificationPostsPaymentMethodToListenersWhenLookupReturnsACard()
@@ -1058,6 +910,152 @@ public class BraintreeTest extends AndroidTestCase {
         verify(braintreeApi, never()).sendAnalyticsEvent(anyString(), anyString());
         braintree.sendAnalyticsEventHelper("event", "TEST").get();
         verify(braintreeApi, times(1)).sendAnalyticsEvent("event", "TEST");
+    }
+
+    public void testOnActivityResultHandlesPayPalResults() {
+        Braintree braintree = spy(mBraintree);
+        doNothing().when(braintree).finishPayWithPayPal(any(Activity.class), anyInt(),
+                any(Intent.class));
+        int requestCode = 10;
+        int responseCode = Activity.RESULT_OK;
+        Intent intent = new Intent().putExtra(PayPalProfileSharingActivity.EXTRA_RESULT_AUTHORIZATION, "");
+
+        braintree.onActivityResult(null, requestCode, responseCode, intent);
+
+        verify(braintree).finishPayWithPayPal(null, responseCode, intent);
+    }
+
+    public void testOnActivityResultHandlesAndroidPayMaskedWalletResults() {
+        int requestCode = 10;
+        int responseCode = Activity.RESULT_OK;
+        Intent intent = new Intent().putExtra(WalletConstants.EXTRA_MASKED_WALLET, "");
+
+        Braintree braintree = spy(mBraintree);
+        doReturn(null).when(braintree).getAndroidPayGoogleTransactionId(intent);
+        doNothing().when(braintree).performAndroidPayFullWalletRequest(any(Activity.class),
+                anyInt(), any(Cart.class), anyString());
+
+        braintree.onActivityResult(null, requestCode, responseCode, intent);
+
+        verify(braintree).performAndroidPayFullWalletRequest(null, requestCode, null, null);
+    }
+
+    public void testOnActivityResultHandlesAndroidPayFullWalletResults() {
+        int requestCode = 10;
+        int responseCode = Activity.RESULT_OK;
+        Intent intent = new Intent().putExtra(WalletConstants.EXTRA_FULL_WALLET, "");
+
+        Braintree braintree = spy(mBraintree);
+        doNothing().when(braintree).getNonceFromAndroidPayFullWalletResponse(Activity.RESULT_OK,
+                intent);
+
+        braintree.onActivityResult(null, requestCode, responseCode, intent);
+
+        verify(braintree).getNonceFromAndroidPayFullWalletResponse(responseCode, intent);
+    }
+
+    public void testOnActivityResultHandlesVenmoResults() {
+        Braintree braintree = spy(mBraintree);
+        doNothing().when(braintree).finishPayWithVenmo(anyInt(), any(Intent.class));
+        int requestCode = 10;
+        int responseCode = Activity.RESULT_OK;
+        Intent intent = new Intent().putExtra(AppSwitch.EXTRA_PAYMENT_METHOD_NONCE, "");
+
+        braintree.onActivityResult(null, requestCode, responseCode, intent);
+
+        verify(braintree).finishPayWithVenmo(responseCode, intent);
+    }
+
+    public void testOnActivityResultHandlesThreeDSecureResults() {
+        Braintree braintree = spy(mBraintree);
+        doNothing().when(braintree).finishThreeDSecureVerification(anyInt(), any(Intent.class));
+        int requestCode = 10;
+        int responseCode = Activity.RESULT_OK;
+        Intent intent = new Intent().putExtra(
+                ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT, "");
+
+        braintree.onActivityResult(null, requestCode, responseCode, intent);
+
+        verify(braintree).finishThreeDSecureVerification(responseCode, intent);
+    }
+
+    public void testOnActivityResultDoesNothingForUnknownActivity() {
+        Braintree braintree = spy(mBraintree);
+        int requestCode = 10;
+        int resultCode = Activity.RESULT_OK;
+        Intent intent = new Intent();
+
+        braintree.onActivityResult(null, requestCode, resultCode, intent);
+
+        verify(braintree).onActivityResult(null, requestCode, resultCode, intent);
+        verifyNoMoreInteractions(braintree);
+    }
+
+    public void testOnResumeAddsListenersAndUnlocksListeners() {
+        Braintree braintree = spy(new Braintree(null, mock(BraintreeApi.class)));
+        Activity listenerActivity = mock(TestListenerActivity.class);
+
+        braintree.onResume(listenerActivity);
+
+        verify(braintree).addListener((PaymentMethodNonceListener) listenerActivity);
+        verify(braintree).unlockListeners();
+    }
+
+    public void testOnPauseLocksListenersAndRemovesListeners() {
+        Braintree braintree = spy(new Braintree(null, mock(BraintreeApi.class)));
+        Activity listenerActivity = mock(TestListenerActivity.class);
+
+        braintree.onPause(listenerActivity);
+
+        verify(braintree).lockListeners();
+        verify(braintree).removeListener((PaymentMethodNonceListener) listenerActivity);
+    }
+
+    public void testOnPauseDisconnectsGoogleApiClient() {
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        Braintree braintree = new Braintree(null, braintreeApi);
+
+        braintree.onPause(null);
+
+        verify(braintreeApi).disconnectGoogleApiClient();
+    }
+
+    public void testOnSaveInstanceStateAddsClientTokenAndConfigurationToBundle() {
+        BraintreeApi braintreeApi = mock(BraintreeApi.class);
+        when(braintreeApi.getConfigurationString()).thenReturn("configuration-string");
+        Braintree braintree = new Braintree("client-token", braintreeApi);
+        Bundle bundle = new Bundle();
+
+        braintree.onSaveInstanceState(bundle);
+
+        assertEquals("client-token", bundle.getString("com.braintreepayments.api.KEY_CLIENT_TOKEN"));
+        assertEquals("configuration-string",
+                bundle.getString("com.braintreepayments.api.KEY_CONFIGURATION"));
+    }
+
+    public void testReturnsNullIfBundleIsNull() {
+        assertNull(Braintree.restoreSavedInstanceState(mContext, null));
+    }
+
+    public void testReturnsBraintreeInstanceIfThereIsAnExistingInstance() {
+        Bundle bundle = new Bundle();
+
+        mBraintree.onSaveInstanceState(bundle);
+        Braintree restoredBraintree = Braintree.restoreSavedInstanceState(mContext, bundle);
+
+        assertEquals(mBraintree, restoredBraintree);
+    }
+
+    public void testReturnsANewBraintreeInstanceIfThereIsNoExistingInstance() {
+        Braintree.reset();
+        Bundle bundle = new Bundle();
+        bundle.putString("com.braintreepayments.api.KEY_CLIENT_TOKEN", "{}");
+        bundle.putString("com.braintreepayments.api.KEY_CONFIGURATION", "{}");
+
+        assertTrue(Braintree.sInstances.size() == 0);
+        Braintree braintree = Braintree.restoreSavedInstanceState(mContext, bundle);
+        assertTrue(braintree != null);
+        assertTrue(Braintree.sInstances.size() == 1);
     }
 
     /** helper to synchronously create a credit card */

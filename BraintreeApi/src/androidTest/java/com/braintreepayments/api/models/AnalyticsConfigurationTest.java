@@ -6,7 +6,7 @@ import static com.braintreepayments.api.TestUtils.getConfigurationFromFixture;
 
 public class AnalyticsConfigurationTest extends AndroidTestCase {
 
-    public void testParsesAnalyticConfigurationFromToken() {
+    public void testParsesAnalyticsConfigurationFromToken() {
         Configuration configuration = getConfigurationFromFixture(getContext(),
                 "configuration_with_analytics.json");
 

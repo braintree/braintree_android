@@ -1,8 +1,6 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
-apply plugin: 'signing'
 
-def paypalVersion = 'PayPalAndroidSDK-2.8.5.jar'
+def paypalVersion = 'PayPalAndroidSDK-2.9.11.jar'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -16,8 +14,9 @@ android {
         testInstrumentationRunner 'com.braintreepayments.testutils.ui.NoAnimationsInstrumentationTestRunner'
     }
 
-    packagingOptions {
-        exclude 'LICENSE.txt'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
@@ -27,6 +26,8 @@ configurations {
 
 dependencies {
     compile 'com.google.code.gson:gson:[2.2.4,3.0)'
+    compile 'com.google.android.gms:play-services-wallet:[7.5.0,8.0.0)'
+
     compile project(':BraintreeData')
     compile files('libs/' + paypalVersion)
 
@@ -63,7 +64,7 @@ gradle.taskGraph.whenReady { taskGraph ->
     android.buildTypes.debug.buildConfigField('boolean', 'RUN_ALL_TESTS', '' + RUN_ALL_TESTS)
 }
 
-task grantAnimationPermission(type: Exec, dependsOn: 'installDebugTest') {
+task grantAnimationPermission(type: Exec, dependsOn: 'installDebugAndroidTest') {
     commandLine 'adb shell pm grant com.braintreepayments.api.test android.permission.SET_ANIMATION_SCALE'.split(' ')
 }
 
@@ -106,7 +107,7 @@ task fullJar(type: Jar, dependsOn: releaseJar) {
     from zipTree(releaseJar.archivePath)
     from {
         configurations.compile.findAll {
-            it.getName() != paypalVersion
+            it.getName() != paypalVersion && !it.getName().startsWith("play-services") && !it.getName().startsWith("support")
         }.collect {
             it.isDirectory() ? null : zipTree(it)
         }
@@ -120,22 +121,9 @@ artifacts {
     archives fullJar
 }
 
-signing {
-    sign configurations.archives
-}
-
-def sonatypeUsername = System.properties.containsKey('sonatypeUsername') ? System.properties['sonatypeUsername'] : ''
-def sonatypePassword = System.properties.containsKey('sonatypePassword') ? System.properties['sonatypePassword'] : ''
-
 uploadArchives {
     repositories {
         mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
-            }
-
             pom.setArtifactId 'braintree-api'
 
             pom.project {
@@ -144,26 +132,12 @@ uploadArchives {
                 version = "${android.defaultConfig.versionName}"
                 packaging 'jar'
                 description 'This is Braintree\'s v.zero SDK for Android. Integrate this library to accept payments in your Android app.'
-                url 'https://github.com/braintree/braintree_android'
+            }
 
-                scm {
-                    url 'scm:git@github.com:braintree/braintree_android.git'
-                    connection 'scm:git@github.com:braintree/braintree_android.git'
-                    developerConnection 'scm:git@github.com:braintree/braintree_android.git'
-                }
-
-                developers {
-                    developer {
-                        id 'devs'
-                        name 'Braintree Payments'
-                    }
-                }
-
-                licenses {
-                    license {
-                        name 'MIT'
-                        url 'http://opensource.org/licenses/MIT'
-                        distribution 'repo'
+            pom.whenConfigured { MavenPom pom ->
+                pom.dependencies.each {
+                    if (it.artifactId == 'play-services-wallet') {
+                        it.optional = true
                     }
                 }
             }

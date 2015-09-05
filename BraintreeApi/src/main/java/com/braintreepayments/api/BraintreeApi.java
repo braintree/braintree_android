@@ -13,19 +13,31 @@ import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.exceptions.ServerException;
+import com.braintreepayments.api.models.CoinbaseAccount;
+import com.braintreepayments.api.models.CoinbaseAccountBuilder;
+import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
 import com.braintreepayments.api.models.AnalyticsRequest;
+import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.ClientToken;
-import com.braintreepayments.api.models.CoinbaseAccount;
-import com.braintreepayments.api.models.CoinbaseAccountBuilder;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.wallet.Cart;
+import com.google.android.gms.wallet.FullWallet;
+import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
+import com.google.android.gms.wallet.WalletConstants;
+import com.google.gson.Gson;
+import com.paypal.android.sdk.payments.PayPalConfiguration;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,72 +56,69 @@ public class BraintreeApi {
     private static final String PAYMENT_METHOD_ENDPOINT = "payment_methods";
 
     private Context mContext;
+    private ClientToken mClientToken;
     private Configuration mConfiguration;
     private HttpRequest mHttpRequest;
 
     private VenmoAppSwitch mVenmoAppSwitch;
     private Coinbase mCoinbase;
-    private BraintreeData mBraintreeData;
+    private AndroidPay mAndroidPay;
+    private Object mBraintreeData;
 
     /**
-     * @deprecated
+     * @deprecated Interactions should be done using {@link com.braintreepayments.api.Braintree}
+     * instead.
      *
      * Initialize a BraintreeApi instance to communicate with Braintree.
      *
      * @param context
      * @param clientTokenString A client token obtained from a Braintree server side SDK.
      */
+    @Deprecated
     public BraintreeApi(Context context, String clientTokenString) {
         Pattern pattern = Pattern.compile("([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)");
         if (pattern.matcher(clientTokenString).matches()) {
             clientTokenString = new String(Base64.decode(clientTokenString, Base64.DEFAULT));
         }
 
-        ClientToken clientToken = ClientToken.fromString(clientTokenString);
+        mClientToken = ClientToken.fromString(clientTokenString);
 
         mContext = context.getApplicationContext();
         mConfiguration = Configuration.fromJson(clientTokenString);
-        mHttpRequest = new HttpRequest(clientToken.getClientApiUrl(),
-                clientToken.getAuthorizationFingerprint());
+        mHttpRequest = new HttpRequest(mClientToken.getAuthorizationFingerprint());
+        mHttpRequest.setBaseUrl(mConfiguration.getClientApiUrl());
 
+        mBraintreeData = null;
         mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
         mCoinbase = new Coinbase(context, mConfiguration);
-        mBraintreeData = null;
     }
 
     protected BraintreeApi(Context context, ClientToken clientToken) {
         mContext = context.getApplicationContext();
-        mHttpRequest = new HttpRequest(clientToken.getClientApiUrl(),
-                clientToken.getAuthorizationFingerprint());
-
-        mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
-        mCoinbase = new Coinbase(context, mConfiguration);
-        mBraintreeData = null;
+        mClientToken = clientToken;
+        mHttpRequest = new HttpRequest(mClientToken.getAuthorizationFingerprint());
     }
 
-    protected BraintreeApi(Context context, HttpRequest requestor) {
-        mContext = context.getApplicationContext();
-        mHttpRequest = requestor;
-
-        mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
-        mCoinbase = new Coinbase(context, mConfiguration);
-        mBraintreeData = null;
+    protected BraintreeApi(Context context, String clientTokenString, String configurationString) {
+        this(context, ClientToken.fromString(clientTokenString),
+                Configuration.fromJson(configurationString),
+                new HttpRequest(ClientToken.fromString(clientTokenString).getAuthorizationFingerprint()));
     }
 
-    protected BraintreeApi(Context context, ClientToken clientToken, Configuration configuration) {
-        this(context, configuration,
-                new HttpRequest(clientToken.getClientApiUrl(), clientToken.getAuthorizationFingerprint()));
-    }
-
-    protected BraintreeApi(Context context, Configuration configuration,
+    protected BraintreeApi(Context context, ClientToken clientToken, Configuration configuration,
             HttpRequest requestor) {
         mContext = context.getApplicationContext();
+        mClientToken = clientToken;
         mConfiguration = configuration;
         mHttpRequest = requestor;
 
-        mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
-        mCoinbase = new Coinbase(context, mConfiguration);
+        if (configuration != null) {
+            mHttpRequest.setBaseUrl(configuration.getClientApiUrl());
+        }
+
         mBraintreeData = null;
+        mVenmoAppSwitch = new VenmoAppSwitch(mContext, mConfiguration);
+        mCoinbase = new Coinbase(mContext, mConfiguration);
     }
 
     protected boolean isSetup() {
@@ -118,25 +127,57 @@ public class BraintreeApi {
 
     protected void setup() throws ErrorWithResponse, BraintreeException {
         mConfiguration = getConfiguration();
+        mHttpRequest.setBaseUrl(mConfiguration.getClientApiUrl());
+
+        mBraintreeData = null;
+        mVenmoAppSwitch = new VenmoAppSwitch(mContext, mConfiguration);
     }
 
     private Configuration getConfiguration() throws ErrorWithResponse, BraintreeException {
-        HttpResponse response = mHttpRequest.get(versionedPath("configuration"));
+        String configUrl = Uri.parse(mClientToken.getConfigUrl())
+                .buildUpon()
+                .appendQueryParameter("configVersion", "3")
+                .build()
+                .toString();
+        HttpResponse response = mHttpRequest.get(configUrl);
         return Configuration.fromJson(response.getResponseBody());
     }
 
+    protected String getConfigurationString() {
+        if (mConfiguration != null) {
+            return new Gson().toJson(mConfiguration);
+        } else {
+            return null;
+        }
+    }
+
     /**
+     * @deprecated See {@link Braintree#isPayPalEnabled()}
+     *
      * @return If PayPal is supported and enabled in the current environment.
      */
+    @Deprecated
     public boolean isPayPalEnabled() {
         return mConfiguration.isPayPalEnabled();
     }
 
     /**
-     * @return If Venmo app switch is supported and enabled in the current environment
+     * @deprecated See {@link Braintree#isVenmoEnabled()}
+     *
+     * @return If Venmo app switch is supported and enabled in the current environment.
      */
+    @Deprecated
     public boolean isVenmoEnabled() {
         return mVenmoAppSwitch.isAvailable();
+    }
+
+    protected boolean isAndroidPayEnabled() {
+        try {
+            return (mConfiguration.getAndroidPay().isEnabled() &&
+                    GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mContext) == ConnectionResult.SUCCESS);
+        } catch (NoClassDefFoundError e) {
+            return false;
+        }
     }
 
     /**
@@ -147,23 +188,31 @@ public class BraintreeApi {
     }
 
     /**
-     * @return If 3D Secure is supported and enabled for the current merchant account
+     * @deprecated See {@link Braintree#isThreeDSecureEnabled()}
+     *
+     * @return If 3D Secure is supported and enabled for the current merchant account.
      */
-    @Beta
+    @Deprecated
     public boolean isThreeDSecureEnabled() {
         return mConfiguration.isThreeDSecureEnabled();
     }
 
     /**
-     * @return If cvv is required to add a card
+     * @deprecated See {@link Braintree#isCvvChallenegePresent()}
+     *
+     * @return If cvv is required to add a card.
      */
+    @Deprecated
     public boolean isCvvChallengePresent() {
         return mConfiguration.isCvvChallengePresent();
     }
 
     /**
-     * @return If postal code is required to add a card
+     * @deprecated See {@link Braintree#isPostalCodeChallengePresent()}
+     *
+     * @return If postal code is required to add a card.
      */
+    @Deprecated
     public boolean isPostalCodeChallengePresent() {
         return mConfiguration.isPostalCodeChallengePresent();
     }
@@ -172,14 +221,16 @@ public class BraintreeApi {
      * Start the Pay With PayPal flow. This will launch a new activity for the PayPal mobile SDK.
      *
      * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     *   when {@link #startPayWithPayPal(android.app.Activity, int)} finishes.
+     *   when {@link #startPayWithPayPal(android.app.Activity, int, java.util.List)} finishes.
      * @param requestCode The request code associated with this start request. Will be returned in
+     * @param additionalScopes A {@link java.util.List} of additional scopes. Ex: 'address'
      * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      */
-    public void startPayWithPayPal(Activity activity, int requestCode) {
+    public void startPayWithPayPal(Activity activity, int requestCode, List<String> additionalScopes) {
         PayPalHelper.startPaypal(activity.getApplicationContext(), mConfiguration.getPayPal());
-        PayPalHelper.launchPayPal(activity, requestCode, mConfiguration.getPayPal());
+        PayPalHelper.launchPayPal(activity, requestCode, mConfiguration.getPayPal(), additionalScopes);
     }
+
 
     /**
      * Start the Pay With Venmo flow. This will app switch to the Venmo app.
@@ -193,6 +244,60 @@ public class BraintreeApi {
     public void startPayWithVenmo(Activity activity, int requestCode)
             throws AppSwitchNotAvailableException {
         mVenmoAppSwitch.launch(activity, requestCode);
+    }
+
+    protected PaymentMethodTokenizationParameters getAndroidPayTokenizationParameters() {
+        if (mAndroidPay == null) {
+            mAndroidPay = new AndroidPay(mConfiguration);
+        }
+
+        return mAndroidPay.getTokenizationParameters();
+    }
+
+    protected void performAndroidPayMaskedWalletRequest(Activity activity, int requestCode, Cart cart,
+            boolean isBillingAgreement, boolean shippingAddressRequired,
+            boolean phoneNumberRequired) throws InvalidArgumentException, UnexpectedException {
+        if (isBillingAgreement && cart != null) {
+            throw new InvalidArgumentException("The cart must be null when isBillingAgreement is true");
+        } else if(!isBillingAgreement && cart == null) {
+            throw new InvalidArgumentException("Cart cannot be null unless isBillingAgreement is true");
+        }
+
+        if (mAndroidPay == null) {
+            mAndroidPay = new AndroidPay(mConfiguration);
+        }
+
+        mAndroidPay.setCart(cart);
+        mAndroidPay.performMaskedWalletRequest(activity, requestCode, isBillingAgreement,
+                shippingAddressRequired, phoneNumberRequired);
+    }
+
+    protected void performAndroidPayChangeMaskedWalletRequest(Activity activity, int requestCode,
+            String googleTransactionId) throws UnexpectedException {
+        if (mAndroidPay == null) {
+            mAndroidPay = new AndroidPay(mConfiguration);
+        }
+
+        mAndroidPay.performChangeMaskedWalletRequest(activity, requestCode, googleTransactionId);
+    }
+
+    protected void performAndroidPayFullWalletRequest(Activity activity, int requestCode, Cart cart,
+            String googleTransactionId) throws UnexpectedException {
+        if (mAndroidPay == null) {
+            mAndroidPay = new AndroidPay(mConfiguration);
+        }
+
+        if (cart != null) {
+            mAndroidPay.setCart(cart);
+        }
+
+        mAndroidPay.performFullWalletRequest(activity, requestCode, googleTransactionId);
+    }
+
+    protected void disconnectGoogleApiClient() {
+        if (mAndroidPay != null) {
+            mAndroidPay.disconnect();
+        }
     }
 
     /**
@@ -236,7 +341,8 @@ public class BraintreeApi {
     }
 
     /**
-     * @deprecated
+     * @deprecated Use {@link com.braintreepayments.api.BraintreeApi#finishPayWithPayPal(android.app.Activity, int, android.content.Intent)}
+     * instead.
      *
      * This method should *not* be used, it does not include a Application Correlation ID.
      * PayPal uses the Application Correlation ID to verify that the payment is originating from
@@ -253,6 +359,7 @@ public class BraintreeApi {
      *
      * @see BraintreeApi#create(com.braintreepayments.api.models.PaymentMethod.Builder)
      */
+    @Deprecated
     public PayPalAccount finishPayWithPayPal(int resultCode, Intent data)
             throws BraintreeException, ErrorWithResponse {
         PayPalAccountBuilder payPalAccountBuilder = handlePayPalResponse(null, resultCode, data);
@@ -264,6 +371,8 @@ public class BraintreeApi {
     }
 
     /**
+     * @deprecated Use {@link Braintree#finishPayWithPayPal(Activity, int, Intent)} instead.
+     *
      * @param activity The calling activity
      * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
@@ -274,6 +383,7 @@ public class BraintreeApi {
      *
      * @see BraintreeApi#create(com.braintreepayments.api.models.PaymentMethod.Builder)
      */
+    @Deprecated
     public PayPalAccount finishPayWithPayPal(Activity activity, int resultCode, Intent data)
             throws BraintreeException, ErrorWithResponse {
         PayPalAccountBuilder payPalAccountBuilder = handlePayPalResponse(activity, resultCode, data);
@@ -293,6 +403,19 @@ public class BraintreeApi {
      */
     public String finishPayWithVenmo(int resultCode, Intent data) {
         return mVenmoAppSwitch.handleAppSwitchResponse(resultCode, data);
+    }
+
+    protected AndroidPayCard getNonceFromAndroidPayFullWalletResponse(Intent data) throws JSONException {
+        if (AndroidPay.isFullWalletResponse(data)) {
+            FullWallet fullWallet = data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET);
+            JSONArray androidPayCards = new JSONObject(fullWallet.getPaymentMethodToken().getToken())
+                    .getJSONArray("androidPayCards");
+            if (androidPayCards.length() > 0) {
+                return new Gson().fromJson(androidPayCards.getString(0), AndroidPayCard.class);
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -480,8 +603,15 @@ public class BraintreeApi {
      * @see com.braintreepayments.api.data.BraintreeData
      */
     public String collectDeviceData(Activity activity, String merchantId, String collectorUrl) {
-        mBraintreeData = new BraintreeData(activity, merchantId, collectorUrl);
-        return mBraintreeData.collectDeviceData();
+        String deviceData;
+        try {
+            mBraintreeData = new BraintreeData(activity, merchantId, collectorUrl);
+            deviceData = ((BraintreeData) mBraintreeData).collectDeviceData();
+        } catch (NoClassDefFoundError e) {
+            deviceData = "{\"correlation_id\":\"" + PayPalConfiguration.getClientMetadataId(activity) + "\"}";
+        }
+
+        return deviceData;
     }
 
     private String versionedPath(String path) {

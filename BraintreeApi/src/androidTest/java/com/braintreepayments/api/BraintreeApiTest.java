@@ -3,7 +3,7 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
+import android.os.Bundle;
 import android.test.AndroidTestCase;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
@@ -12,18 +12,19 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
+import com.braintreepayments.api.models.CoinbaseAccount;
+import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
-import com.braintreepayments.api.models.CoinbaseAccount;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
+import com.google.gson.Gson;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 
 import org.json.JSONException;
 import org.mockito.ArgumentCaptor;
 
-import java.io.UnsupportedEncodingException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.braintreepayments.api.TestUtils.assertIsANonce;
@@ -51,7 +52,8 @@ public class BraintreeApiTest extends AndroidTestCase {
     public void testThrowsConfigurationExceptionOnBadPayPalConfiguration()
             throws ErrorWithResponse, BraintreeException {
         Configuration configuration = mock(Configuration.class);
-        BraintreeApi braintreeApi = new BraintreeApi(mContext, configuration, mock(HttpRequest.class));
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, mock(ClientToken.class),
+                configuration, mock(HttpRequest.class));
         boolean exceptionHappened = false;
 
         try {
@@ -100,7 +102,8 @@ public class BraintreeApiTest extends AndroidTestCase {
         Configuration configuration = mock(Configuration.class);
         when(configuration.isAnalyticsEnabled()).thenReturn(true);
         when(configuration.getAnalytics()).thenReturn(analyticsConfiguration);
-        BraintreeApi braintreeApi = new BraintreeApi(mContext, configuration, httpRequest);
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, mock(ClientToken.class),
+                configuration, httpRequest);
 
         braintreeApi.sendAnalyticsEvent("very.important.analytics-payload", "TEST");
 
@@ -113,7 +116,8 @@ public class BraintreeApiTest extends AndroidTestCase {
         HttpRequest httpRequest = mock(HttpRequest.class);
         Configuration configuration = mock(Configuration.class);
         when(configuration.isAnalyticsEnabled()).thenReturn(false);
-        BraintreeApi braintreeApi = new BraintreeApi(mContext, configuration, httpRequest);
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, mock(ClientToken.class),
+                configuration, httpRequest);
 
         braintreeApi.sendAnalyticsEvent("event", "TEST");
 
@@ -124,8 +128,10 @@ public class BraintreeApiTest extends AndroidTestCase {
         final AtomicInteger requestCount = new AtomicInteger(0);
         final AtomicInteger responseCode = new AtomicInteger(0);
 
-        ClientToken clientToken = ClientToken.fromString(new TestClientTokenBuilder().build());
-        HttpRequest request = new HttpRequest(clientToken.getClientApiUrl(), clientToken.getAuthorizationFingerprint()) {
+        String clientTokenString = new TestClientTokenBuilder().build();
+        ClientToken clientToken = ClientToken.fromString(clientTokenString);
+        Configuration configuration = Configuration.fromJson(clientTokenString);
+        HttpRequest request = new HttpRequest(clientToken.getAuthorizationFingerprint()) {
             @Override
             public HttpResponse post (String url, String params)
                     throws BraintreeException, ErrorWithResponse {
@@ -135,7 +141,8 @@ public class BraintreeApiTest extends AndroidTestCase {
                 return response;
             }
         };
-        BraintreeApi braintreeApi = new BraintreeApi(mContext, request);
+        request.setBaseUrl(configuration.getClientApiUrl());
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, clientToken, configuration, request);
         braintreeApi.setup();
 
         braintreeApi.sendAnalyticsEvent("event", "TEST");
@@ -189,5 +196,47 @@ public class BraintreeApiTest extends AndroidTestCase {
         } finally {
             TestClientTokenBuilder.enableCoinbase(false);
         }
+    }
+
+    public void testGetAndroidPayPaymentMethodTokenizationParametersReturnsParameters() {
+        AndroidPayConfiguration androidPayConfiguration = mock(AndroidPayConfiguration.class);
+        when(androidPayConfiguration.getGoogleAuthorizationFingerprint())
+                .thenReturn("google-auth-fingerprint");
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.getMerchantId()).thenReturn("android-pay-merchant-id");
+        when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
+
+        BraintreeApi braintreeApi =
+                new BraintreeApi(mContext, mock(ClientToken.class), configuration, mock(HttpRequest.class));
+        Bundle tokenizationParameters =
+                braintreeApi.getAndroidPayTokenizationParameters().getParameters();
+
+        assertEquals("braintree", tokenizationParameters.getString("gateway"));
+        assertEquals(configuration.getMerchantId(), tokenizationParameters.getString(
+                "braintree:merchantId"));
+        assertEquals(androidPayConfiguration.getGoogleAuthorizationFingerprint(),
+                tokenizationParameters.getString("braintree:authorizationFingerprint"));
+        assertEquals("v1", tokenizationParameters.getString("braintree:apiVersion"));
+        assertEquals(BuildConfig.VERSION_NAME, tokenizationParameters.getString(
+                "braintree:sdkVersion"));
+    }
+
+    public void testGetConfigurationReturnsConfigurationAsAString() {
+        Configuration configuration = Configuration.fromJson(new TestClientTokenBuilder().build());
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, mock(ClientToken.class), configuration,
+                mock(HttpRequest.class));
+
+        String configurationString = braintreeApi.getConfigurationString();
+
+        assertEquals(new Gson().toJson(configuration), configurationString);
+    }
+
+    public void testGetConfigurationReturnsNullIfConfigurationIsNull() {
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, mock(ClientToken.class), null,
+                mock(HttpRequest.class));
+
+        String configurationString = braintreeApi.getConfigurationString();
+
+        assertNull(configurationString);
     }
 }

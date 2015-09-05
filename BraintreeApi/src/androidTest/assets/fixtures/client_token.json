@@ -1,5 +1,5 @@
 {
-    "clientApiUrl": "client_api_url",
+    "configUrl": "client_api_configuration_url",
     "authorizationFingerprint": "authorization_fingerprint",
     "challenges": ["cvv"],
     "merchantId": "integration_merchant_id",

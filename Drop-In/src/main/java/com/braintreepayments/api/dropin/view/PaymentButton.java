@@ -15,8 +15,10 @@ import android.widget.RelativeLayout;
 
 import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.Coinbase;
-import com.braintreepayments.api.PayPalHelper;
 import com.braintreepayments.api.dropin.R;
+import com.google.android.gms.wallet.Cart;
+
+import java.util.List;
 
 /**
  * Skinned button for launching flows other than basic credit card forms (Pay With PayPal, Pay With Venmo, etc.).
@@ -45,6 +47,13 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
     private Activity mActivity;
     private int mRequestCode;
     private Braintree mBraintree;
+
+    private Cart mCart;
+    private boolean mIsBillingAgreement;
+    private boolean mShippingAddressRequired;
+    private boolean mPhoneNumberRequired;
+
+    private List<String> mAdditionalScopes;
 
     /**
      * Default request code to use when launching Pay With... flows.
@@ -76,11 +85,11 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
 
     /**
      * Use this if you need to manually specify a request code.
-     * @param activity {@link android.app.Activity} hosting the button
-     * @param braintree {@link com.braintreepayments.api.Braintree} instance being used to communicate with the Braintree gateway.
-     * @param requestCode Unique identifier for launching activities via {@link android.app.Activity#startActivityForResult(android.content.Intent, int)}.
-     *                      Use this in your {@link android.app.Activity} when overriding {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     *                      to call {@link com.braintreepayments.api.dropin.view.PaymentButton#onActivityResult(int, int, android.content.Intent)}.
+     * @param activity {@link Activity} hosting the button
+     * @param braintree {@link Braintree} instance being used to communicate with the Braintree gateway.
+     * @param requestCode Unique identifier for launching activities via {@link Activity#startActivityForResult(Intent, int)}.
+     *                      Use this in your {@link Activity} when overriding {@link Activity#onActivityResult(int, int, Intent)}
+     *                      to call {@link PaymentButton#onActivityResult(int, int, Intent)}.
      */
     public void initialize(Activity activity, Braintree braintree, int requestCode) {
         mActivity = activity;
@@ -92,9 +101,9 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
         boolean isPayPalEnabled = mBraintree.isPayPalEnabled();
         boolean isVenmoEnabled = mBraintree.isVenmoEnabled();
         boolean isCoinbaseEnabled = mBraintree.isCoinbaseEnabled();
+        boolean isAndroidPayEnabled = (mBraintree.isAndroidPayEnabled() && (mCart != null || mIsBillingAgreement));
         int buttonCount = 0;
-
-        if (!isPayPalEnabled && !isVenmoEnabled && !isCoinbaseEnabled) {
+        if (!isPayPalEnabled && !isVenmoEnabled && !isCoinbaseEnabled && !isAndroidPayEnabled) {
             setVisibility(GONE);
         } else {
             if (isPayPalEnabled) {
@@ -104,6 +113,9 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
                 buttonCount++;
             }
             if (isCoinbaseEnabled) {
+                buttonCount++;
+            }
+            if (isAndroidPayEnabled) {
                 buttonCount++;
             }
 
@@ -116,13 +128,88 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
             if (isCoinbaseEnabled) {
                 enableButton(findViewById(R.id.bt_coinbase_button), buttonCount);
             }
+            if (isAndroidPayEnabled) {
+                enableButton(findViewById(R.id.bt_android_pay_button), buttonCount);
+            }
 
-            if (buttonCount > 1) {
+            if (isPayPalEnabled && buttonCount > 1) {
                 findViewById(R.id.bt_payment_button_divider).setVisibility(VISIBLE);
+            } else if (isVenmoEnabled && buttonCount > 1) {
+                findViewById(R.id.bt_payment_button_divider_2).setVisibility(VISIBLE);
             }
             if (buttonCount > 2) {
                 findViewById(R.id.bt_payment_button_divider_2).setVisibility(VISIBLE);
             }
+        }
+    }
+
+    /**
+     * Options to be used with Android Pay. Must be called *before*
+     * {@link PaymentButton#initialize(Activity, Braintree)} if you would like to use Android Pay.
+     * Failure to do so will result in Android Pay not present in the {@link PaymentButton}.
+     *
+     * @param cart The {@link Cart} to use with Android Pay
+     */
+    public void setAndroidPayOptions(Cart cart) {
+        setAndroidPayOptions(cart, false, false, false);
+    }
+
+    /**
+     * Options to be used with Android Pay. Must be called *before*
+     * {@link PaymentButton#initialize(Activity, Braintree)} if you would like to use Android Pay.
+     * Failure to do so will result in Android Pay not present in the {@link PaymentButton}.
+     *
+     * @param cart The {@link Cart} to use with Android Pay
+     * @param isBillingAgreement Should a multiple use card be requested.
+     * @param shippingAddressRequired Should the user be prompted for a shipping address.
+     * @param phoneNumberRequired Should the user be prompted for a phone number.
+     */
+    public void setAndroidPayOptions(Cart cart, boolean isBillingAgreement,
+            boolean shippingAddressRequired, boolean phoneNumberRequired) {
+        mCart = cart;
+        mIsBillingAgreement = isBillingAgreement;
+        mShippingAddressRequired = shippingAddressRequired;
+        mPhoneNumberRequired = phoneNumberRequired;
+    }
+
+    /**
+     * Set additional scopes to request when a user is authorizing PayPal.
+     *
+     * @param additionalScopes A {@link java.util.List} of additional scopes.
+     *                         Ex: PayPalOAuthScopes.PAYPAL_SCOPE_ADDRESS.
+     *                         Acceptable scopes are defined in {@link com.paypal.android.sdk.payments.PayPalOAuthScopes}.
+     */
+    public void setAdditionalPayPalScopes(List<String> additionalScopes) {
+        mAdditionalScopes = additionalScopes;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.bt_paypal_button) {
+            mBraintree.startPayWithPayPal(mActivity, mRequestCode, mAdditionalScopes);
+        } else if (v.getId() == R.id.bt_venmo_button) {
+            mBraintree.startPayWithVenmo(mActivity, mRequestCode);
+        } else if (v.getId() == R.id.bt_coinbase_button) {
+            mBraintree.startPayWithCoinbase(mActivity, mRequestCode);
+        } else if (v.getId() == R.id.bt_android_pay_button) {
+            mBraintree.performAndroidPayMaskedWalletRequest(mActivity, mRequestCode, mCart,
+                    mIsBillingAgreement, mShippingAddressRequired, mPhoneNumberRequired);
+        }
+
+        performClick();
+    }
+
+    /**
+     * Extracts payment information from activity results and posts {@link com.braintreepayments.api.models.PaymentMethod}s
+     * or nonces to listeners as appropriate.
+     *
+     * @param requestCode Request code from {@link Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param responseCode Result code from {@link Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param data {@link android.content.Intent} from {@link Activity#onActivityResult(int, int, android.content.Intent)}
+     */
+    public void onActivityResult(int requestCode, int responseCode, Intent data) {
+        if (requestCode == mRequestCode) {
+            mBraintree.onActivityResult(mActivity, requestCode, responseCode, data);
         }
     }
 
@@ -133,35 +220,5 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.MATCH_PARENT, 3f / buttonCount);
         view.setLayoutParams(params);
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.bt_paypal_button) {
-            mBraintree.startPayWithPayPal(mActivity, mRequestCode);
-        } else if (v.getId() == R.id.bt_venmo_button) {
-            mBraintree.startPayWithVenmo(mActivity, mRequestCode);
-        } else if (v.getId() == R.id.bt_coinbase_button) {
-            mBraintree.startPayWithCoinbase(mActivity, mRequestCode);
-        }
-    }
-
-    /**
-     * Extracts payment information from activity results and posts {@link com.braintreepayments.api.models.PaymentMethod}s
-     * or nonces to listeners as appropriate.
-     * @param requestCode Request code from {@link Activity#onActivityResult(int, int, android.content.Intent)}
-     * @param resultCode Result code from {@link Activity#onActivityResult(int, int, android.content.Intent)}
-     * @param data {@link android.content.Intent} from {@link Activity#onActivityResult(int, int, android.content.Intent)}
-     */
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == mRequestCode && resultCode == Activity.RESULT_OK) {
-            if (PayPalHelper.isPayPalIntent(data)) {
-                mBraintree.finishPayWithPayPal(mActivity, resultCode, data);
-            } else if (Coinbase.canParseResponse(mActivity, data)) {
-                mBraintree.finishPayWithCoinbase(resultCode, data);
-            } else {
-                mBraintree.finishPayWithVenmo(resultCode, data);
-            }
-        }
     }
 }

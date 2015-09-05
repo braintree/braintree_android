@@ -1,13 +1,15 @@
 package com.braintreepayments.api.models;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Metadata {
 
-    private String integration;
-    private String source;
+    @SerializedName("integration") private String mIntegration;
+    @SerializedName("source") private String mSource;
 
     public Metadata(String integration, String source) {
-        this.integration = integration;
-        this.source = source;
+        mIntegration = integration;
+        mSource = source;
     }
 
 }

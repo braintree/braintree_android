@@ -11,12 +11,31 @@
     <string name="custom">Custom</string>
     <string name="create_transaction">Create a Transaction</string>
     <string name="loading">Loading…</string>
+    <string name="buy">Buy</string>
+    <string name="cart">Cart</string>
+
+    <!-- CustomActivity -->
+    <string name="purchase">Purchase</string>
+    <string name="card_number">Card Number</string>
+    <string name="expiration_date">Expiration Date</string>
 
     <!-- FinishedActivity -->
     <string name="transaction_complete">Transaction Complete</string>
+    <string name="purchase_complete">Purchase Complete</string>
 
     <!-- Settings -->
+    <string name="options">Options</string>
     <string name="environment">Environment</string>
+    <string name="android_pay">Android Pay</string>
+    <string name="android_pay_is_billing_agreement">isBillingAgreement</string>
+    <string name="android_pay_is_billing_agreement_summary">Use Android Pay with a billing agreement</string>
+    <string name="android_pay_require_shipping_address">Require Shipping Address</string>
+    <string name="android_pay_require_shipping_address_summary">Require shipping address from the user</string>
+    <string name="android_pay_require_phone_number">Require Phone Number</string>
+    <string name="android_pay_require_phone_number_summary">Require phone number from the user</string>
+    <string name="paypal">PayPal</string>
+    <string name="paypal_request_address_scope">Request Address Scope</string>
+    <string name="paypal_request_address_scope_summary">Request address scope from the user (Payment Button &amp; Custom only)</string>
     <string name="three_d_secure">3D Secure</string>
     <string name="enable_three_d_secure">Enable 3D Secure</string>
     <string name="enable_three_d_secure_summary">3D Secure will automatically be run on all Card payment methods</string>

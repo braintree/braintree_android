@@ -1,6 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
-apply plugin: 'signing'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -14,19 +12,21 @@ android {
         testInstrumentationRunner 'com.braintreepayments.testutils.ui.NoAnimationsInstrumentationTestRunner'
     }
 
-    packagingOptions {
-        exclude 'LICENSE.txt'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
 dependencies {
+    compile 'com.braintreepayments:card-form:2.0.1'
     compile project(':BraintreeApi')
-    compile project(':CardForm')
+    compile 'com.google.android.gms:play-services-wallet:[7.5.0,8.0.0)'
 
     androidTestCompile project(':TestUtils')
 }
 
-task grantAnimationPermission(type: Exec, dependsOn: 'installDebugTest') {
+task grantAnimationPermission(type: Exec, dependsOn: 'installDebugAndroidTest') {
     commandLine 'adb shell pm grant com.braintreepayments.api.dropin.test android.permission.SET_ANIMATION_SCALE'.split(' ')
 }
 
@@ -57,22 +57,9 @@ artifacts {
     archives sourcesJar
 }
 
-signing {
-    sign configurations.archives
-}
-
-def sonatypeUsername = System.properties.containsKey('sonatypeUsername') ? System.properties['sonatypeUsername'] : ''
-def sonatypePassword = System.properties.containsKey('sonatypePassword') ? System.properties['sonatypePassword'] : ''
-
 uploadArchives {
     repositories {
         mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
-            }
-
             pom.setArtifactId 'braintree'
 
             pom.project {
@@ -81,26 +68,12 @@ uploadArchives {
                 version = "${android.defaultConfig.versionName}"
                 packaging 'aar'
                 description 'Drop-in payment form for Braintree\'s v.zero SDK. Integrate this library to add a readymade UI for your payments.'
-                url 'https://github.com/braintree/braintree_android'
+            }
 
-                scm {
-                    url 'scm:git@github.com:braintree/braintree_android.git'
-                    connection 'scm:git@github.com:braintree/braintree_android.git'
-                    developerConnection 'scm:git@github.com:braintree/braintree_android.git'
-                }
-
-                developers {
-                    developer {
-                        id 'devs'
-                        name 'Braintree Payments'
-                    }
-                }
-
-                licenses {
-                    license {
-                        name 'MIT'
-                        url 'http://opensource.org/licenses/MIT'
-                        distribution 'repo'
+            pom.whenConfigured { MavenPom pom ->
+                pom.dependencies.each {
+                    if (it.artifactId == 'play-services-wallet') {
+                        it.optional = true
                     }
                 }
             }

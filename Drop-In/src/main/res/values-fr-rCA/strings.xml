@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <resources>
-    <string name="bt_form_pay_with_card_header">PAYER AVEC UNE CARTE</string>
+    <string name="bt_form_pay_with_card_header">Payer Avec Une Carte</string>
 
     <string name="bt_invalid_card">Informations de carte incorrectes</string>
 
@@ -9,7 +9,7 @@
     <string name="bt_add_new_payment_method">Ajouter un nouveau mode de paiement </string>
     <string name="bt_add_payment_method">Ajouter un nouveau mode de paiement </string>
 
-    <string name="bt_default_submit_button_text">Achat</string>
+    <string name="bt_default_submit_button_text">ACHAT</string>
     <string name="bt_default_action_bar_text">Achat</string>
 
     <!-- Note: %s is a place holder and should be left in translated strings -->

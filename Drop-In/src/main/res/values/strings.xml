@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="bt_form_pay_with_card_header">PAY WITH A CARD</string>
+    <string name="bt_form_pay_with_card_header">Pay With a Card</string>
 
     <string name="bt_invalid_card">Card information is invalid</string>
 
@@ -9,7 +9,7 @@
     <string name="bt_add_new_payment_method">Add New Payment Method</string>
     <string name="bt_add_payment_method">Add Payment Method</string>
 
-    <string name="bt_default_submit_button_text">Purchase</string>
+    <string name="bt_default_submit_button_text">PURCHASE</string>
     <string name="bt_default_action_bar_text">Purchase</string>
 
     <!-- Note: %s is a place holder and should be left in translated strings -->
@@ -17,7 +17,8 @@
 
     <string name="bt_pay_with_paypal">Pay with PayPal</string>
     <string name="bt_pay_with_venmo">Pay with Venmo</string>
-    <string tools:ignore="MissingTranslation" name="bt_pay_with_coinbase">Pay with Coinbase</string>
+    <string name="bt_pay_with_coinbase" tools:ignore="MissingTranslation">Pay with Coinbase</string>
+    <string name="bt_pay_with_android_pay" tools:ignore="MissingTranslation">Pay with Google Wallet</string>
 
     <string name="bt_descriptor_visa">Visa</string>
     <string name="bt_descriptor_mastercard">MasterCard</string>
@@ -27,6 +28,7 @@
     <string name="bt_descriptor_diners">Diners</string>
     <string name="bt_descriptor_maestro">Maestro</string>
     <string name="bt_descriptor_paypal">PayPal</string>
+    <string name="bt_descriptor_coinbase" tools:ignore="MissingTranslation">Coinbase</string>
+    <string name="bt_descriptor_android_pay" tools:ignore="MissingTranslation">Google Wallet</string>
     <string name="bt_descriptor_unknown">Card</string>
-    <string name="bt_descriptor_coinbase">Coinbase</string>
 </resources>

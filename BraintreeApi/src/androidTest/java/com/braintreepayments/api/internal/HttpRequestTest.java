@@ -34,7 +34,7 @@ public class HttpRequestTest extends AndroidTestCase {
     }
 
     public void testSendsUserAgent() throws IOException {
-        HttpRequest httpRequest = new HttpRequest("http://example.com", "");
+        HttpRequest httpRequest = new HttpRequest("");
 
         HttpURLConnection connection = httpRequest.init("http://example.com/");
 
@@ -43,7 +43,7 @@ public class HttpRequestTest extends AndroidTestCase {
     }
 
     public void testSendsAcceptLanguageHeader() throws IOException {
-        HttpRequest httpRequest = new HttpRequest("http://example.com", "");
+        HttpRequest httpRequest = new HttpRequest("");
 
         HttpURLConnection connection = httpRequest.init("http://example.com/");
 
@@ -52,15 +52,29 @@ public class HttpRequestTest extends AndroidTestCase {
     }
 
     public void testSendsContentType() throws IOException {
-        HttpRequest httpRequest = new HttpRequest("http://example.com", "");
+        HttpRequest httpRequest = new HttpRequest("");
 
         HttpURLConnection connection = httpRequest.init("http://example.com/");
 
         assertEquals("application/json", connection.getRequestProperty("Content-Type"));
     }
 
+    public void testThrowsErrorWhenBaseUrlIsNotSet() {
+        HttpRequest httpRequest = new HttpRequest(null);
+
+        try {
+            httpRequest.get("/").getResponseCode();
+            fail("No exception was thrown");
+        } catch (ErrorWithResponse errorWithResponse) {
+            fail("Receive incorrect error");
+        } catch (BraintreeException e) {
+            assertEquals("Protocol not found: null/?authorizationFingerprint=", e.getMessage());
+        }
+    }
+
     public void testThrowsErrorWhenURLIsNull() {
-        HttpRequest httpRequest = new HttpRequest(null, null);
+        HttpRequest httpRequest = new HttpRequest(null);
+        httpRequest.setBaseUrl(null);
 
         try {
             httpRequest.get("/").getResponseCode();
@@ -73,7 +87,8 @@ public class HttpRequestTest extends AndroidTestCase {
     }
 
     public void testThrowsErrorWhenURLIsEmpty() {
-        HttpRequest httpRequest = new HttpRequest("", null);
+        HttpRequest httpRequest = new HttpRequest(null);
+        httpRequest.setBaseUrl("");
 
         try {
             httpRequest.get("/").getResponseCode();
@@ -84,7 +99,6 @@ public class HttpRequestTest extends AndroidTestCase {
             assertEquals("Protocol not found: /?authorizationFingerprint=", e.getMessage());
         }
     }
-
 
     public void testThrowsUnexpectedExceptionWhenHttpRequestBlowsUp() throws IOException {
         HttpURLConnection connection = mock(HttpURLConnection.class);
@@ -146,20 +160,20 @@ public class HttpRequestTest extends AndroidTestCase {
 
     public void testGetRequestSslCertificateSuccessfulInSandbox()
             throws BraintreeException, ErrorWithResponse {
-        HttpRequest httpRequest = new HttpRequest("https://api.sandbox.braintreegateway.com",
-                "myAuthFingerprint");
+        HttpRequest httpRequest = new HttpRequest("");
+        httpRequest.setBaseUrl("https://api.sandbox.braintreegateway.com");
 
-        int statusCode = httpRequest.get("/").getResponseCode();
+        int statusCode = httpRequest.get("/wellness").getResponseCode();
 
         assertEquals(200, statusCode);
     }
 
     public void testGetRequestSslCertificateSuccessfulInProduction()
             throws BraintreeException, ErrorWithResponse {
-        HttpRequest httpRequest = new HttpRequest("https://api.braintreegateway.com",
-                "myAuthFingerprint");
+        HttpRequest httpRequest = new HttpRequest("");
+        httpRequest.setBaseUrl("https://api.braintreegateway.com");
 
-        int statusCode = httpRequest.get("/").getResponseCode();
+        int statusCode = httpRequest.get("/wellness").getResponseCode();
 
         assertEquals(200, statusCode);
     }
@@ -169,8 +183,8 @@ public class HttpRequestTest extends AndroidTestCase {
             return;
         }
         try {
-            HttpRequest httpRequest = new HttpRequest("https://" +
-                    EnvironmentHelper.getLocalhostIp() + ":9443", "");
+            HttpRequest httpRequest = new HttpRequest("");
+            httpRequest.setBaseUrl("https://" + EnvironmentHelper.getLocalhostIp() + ":9443");
             httpRequest.setConnectTimeout(1000);
             httpRequest.get("/");
             fail();
@@ -184,7 +198,7 @@ public class HttpRequestTest extends AndroidTestCase {
             Class<? extends Exception> exceptionType, String exceptionMessage) throws IOException {
         when(httpURLConnection.getOutputStream()).thenReturn(mock(OutputStream.class));
 
-        HttpRequest httpRequest = spy(new HttpRequest("", ""));
+        HttpRequest httpRequest = spy(new HttpRequest(""));
         doReturn(httpURLConnection).when(httpRequest).init(anyString());
 
         try {

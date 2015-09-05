@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.braintreepayments.api.annotations.Beta;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * A class to contain 3D Secure information about the current
@@ -12,8 +13,8 @@ import com.braintreepayments.api.annotations.Beta;
 @Beta
 public class ThreeDSecureInfo implements Parcelable {
 
-    private boolean liabilityShifted;
-    private boolean liabilityShiftPossible;
+    @SerializedName("liabilityShifted") private boolean mLiabilityShifted;
+    @SerializedName("liabilityShiftPossible") private boolean mLiabilityShiftPossible;
 
     public ThreeDSecureInfo() {}
 
@@ -22,7 +23,7 @@ public class ThreeDSecureInfo implements Parcelable {
      * {@link com.braintreepayments.api.models.Card}
      */
     public boolean isLiabilityShifted() {
-        return liabilityShifted;
+        return mLiabilityShifted;
     }
 
     /**
@@ -30,7 +31,7 @@ public class ThreeDSecureInfo implements Parcelable {
      * {@link com.braintreepayments.api.models.Card}
      */
     public boolean isLiabilityShiftPossible() {
-        return liabilityShiftPossible;
+        return mLiabilityShiftPossible;
     }
 
     @Override
@@ -38,13 +39,13 @@ public class ThreeDSecureInfo implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeByte(liabilityShifted ? (byte) 1 : (byte) 0);
-        dest.writeByte(liabilityShiftPossible ? (byte) 1 : (byte) 0);
+        dest.writeByte(mLiabilityShifted ? (byte) 1 : (byte) 0);
+        dest.writeByte(mLiabilityShiftPossible ? (byte) 1 : (byte) 0);
     }
 
     private ThreeDSecureInfo(Parcel in) {
-        this.liabilityShifted = in.readByte() != 0;
-        this.liabilityShiftPossible = in.readByte() != 0;
+        mLiabilityShifted = in.readByte() != 0;
+        mLiabilityShiftPossible = in.readByte() != 0;
     }
 
     public static final Creator<ThreeDSecureInfo> CREATOR = new Creator<ThreeDSecureInfo>() {

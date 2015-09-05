@@ -13,7 +13,7 @@ import com.braintreepayments.api.Braintree;
 public abstract class BraintreeViewController {
 
     private View mRootView;
-    private BraintreePaymentActivity mActivity;
+    protected BraintreePaymentActivity mActivity;
     protected final Braintree mBraintree;
     private final Customization mCustomization;
 
@@ -37,14 +37,14 @@ public abstract class BraintreeViewController {
             submitText = mCustomization.getAmount() + " - " + submitText;
         }
 
-        return submitText;
+        return submitText.toUpperCase();
     }
 
     protected String getCustomizedCallToAction() {
         String actionText = mCustomization.getSubmitButtonText();
 
         if (TextUtils.isEmpty(actionText)) {
-            actionText = getActivity().getString(R.string.bt_default_submit_button_text);
+            actionText = mActivity.getString(R.string.bt_default_submit_button_text);
         }
 
         return actionText;
@@ -65,10 +65,6 @@ public abstract class BraintreeViewController {
             TextView subview = findView(id);
             subview.setText(text);
         }
-    }
-
-    protected BraintreePaymentActivity getActivity() {
-        return mActivity;
     }
 
     /**

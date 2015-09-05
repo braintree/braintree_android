@@ -63,9 +63,16 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         mCardForm = findView(R.id.bt_card_form);
         mSubmitButton = findView(R.id.bt_card_form_submit_button);
 
-        mPaymentButton.initialize(getActivity(), mBraintree);
+        mPaymentButton.setOnClickListener(this);
 
-        mCardForm.setRequiredFields(true, true, mBraintree.isCvvChallenegePresent(),
+        try {
+            mPaymentButton.setAndroidPayOptions(mActivity.getAndroidPayCart(),
+                    mActivity.getAndroidPayIsBillingAgreement(), false, false);
+        } catch (NoClassDefFoundError ignored) {}
+
+        mPaymentButton.initialize(mActivity, mBraintree);
+
+        mCardForm.setRequiredFields(mActivity, true, true, mBraintree.isCvvChallenegePresent(),
                 mBraintree.isPostalCodeChallengePresent(), getCustomizedCallToAction());
         mCardForm.setOnCardFormValidListener(this);
         mCardForm.setOnCardFormSubmitListener(this);
@@ -76,8 +83,6 @@ public class AddPaymentMethodViewController extends BraintreeViewController
     }
 
     private void restoreState(Bundle savedInstanceState) {
-        mCardForm.onRestoreInstanceState(savedInstanceState);
-
         if (savedInstanceState.containsKey(EXTRA_FORM_IS_SUBMITTING)) {
             mIsSubmitting = savedInstanceState.getBoolean(EXTRA_FORM_IS_SUBMITTING);
             if (mIsSubmitting) {
@@ -96,14 +101,15 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        mCardForm.onSaveInstanceState(outState);
         outState.putBoolean(EXTRA_FORM_IS_SUBMITTING, mIsSubmitting);
         outState.putBoolean(EXTRA_SUBMIT_BUTTON_ENABLED, mSubmitButton.isEnabled());
     }
 
     @Override
     public void onClick(View v) {
-        if (v == mSubmitButton) {
+        if (v == mPaymentButton) {
+            mActivity.showLoadingView();
+        } else if (v == mSubmitButton) {
             if (mCardForm.isValid()) {
                 startSubmit();
                 mBraintree.create(getCardBuilder());
@@ -156,38 +162,42 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
     public void onPaymentResult(int requestCode, int resultCode, Intent data) {
         mIsSubmitting = true;
-        mPaymentButton.onActivityResult(requestCode, resultCode, data);
+        mBraintree.onActivityResult(mActivity, requestCode, resultCode, data);
     }
 
     public void setErrors(ErrorWithResponse error) {
-        showErrorUI();
         endSubmit();
 
-        if(error.errorFor("creditCard") != null) {
+        BraintreeError cardErrors = error.errorFor("creditCard");
+        if(cardErrors != null) {
             mBraintree.sendAnalyticsEvent("add-card.failed");
 
-            BraintreeError cardErrors = error.errorFor("creditCard");
             if(cardErrors.errorFor("number") != null) {
                 mCardForm.setCardNumberError();
             }
+
             if(cardErrors.errorFor("expirationYear") != null ||
                     cardErrors.errorFor("expirationMonth") != null ||
                     cardErrors.errorFor("expirationDate") != null ) {
                 mCardForm.setExpirationError();
             }
+
             if (cardErrors.errorFor("cvv") != null) {
                 mCardForm.setCvvError();
             }
+
             if(cardErrors.errorFor("billingAddress") != null) {
                 mCardForm.setPostalCodeError();
             }
+
+            showErrorUI();
         } else {
-            getActivity().onUnrecoverableError(new UnexpectedException(error.getMessage()));
+            mActivity.onUnrecoverableError(new UnexpectedException(error.getMessage()));
         }
     }
 
     private void showErrorUI() {
-        mLoadingHeader.setError(getActivity().getString(R.string.bt_invalid_card));
+        mLoadingHeader.setError(mActivity.getString(R.string.bt_invalid_card));
     }
 
     protected boolean isSubmitting() {
@@ -226,5 +236,4 @@ public class AddPaymentMethodViewController extends BraintreeViewController
     private void setDisabledSubmitButtonStyle() {
         mSubmitButton.setBackgroundResource(R.color.bt_button_disabled_color);
     }
-
 }

@@ -8,6 +8,13 @@ import static com.braintreepayments.api.TestUtils.getConfigurationFromFixture;
 
 public class ConfigurationTest extends AndroidTestCase {
 
+    public void testParsesClientApiUrlFromToken() {
+        Configuration configuration = getConfigurationFromFixture(getContext(),
+                "configuration_with_client_api_url.json");
+
+        assertEquals("client_api_url", configuration.getClientApiUrl());
+    }
+
     public void testParsesSingleChallengeFromToken() throws IOException {
         Configuration configuration = getConfigurationFromFixture(getContext(),
                 "configuration_with_cvv_challenge.json");
@@ -64,5 +71,14 @@ public class ConfigurationTest extends AndroidTestCase {
                 "configuration_with_no_three_d_secure.json");
 
         assertFalse(configuration.isThreeDSecureEnabled());
+    }
+
+    public void testReturnsNewAndroidPayConfigurationWhenAndroidPayIsNull() {
+        Configuration configuration = new Configuration();
+
+        assertNotNull(configuration.getAndroidPay());
+        assertFalse(configuration.getAndroidPay().isEnabled());
+        assertNull(configuration.getAndroidPay().getDisplayName());
+        assertNull(configuration.getAndroidPay().getEnvironment());
     }
 }

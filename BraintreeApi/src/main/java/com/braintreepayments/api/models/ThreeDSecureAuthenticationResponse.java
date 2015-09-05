@@ -1,12 +1,15 @@
 package com.braintreepayments.api.models;
 
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.exceptions.ErrorWithResponse.BraintreeError;
 import com.braintreepayments.api.exceptions.ErrorWithResponse.BraintreeErrors;
+import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,12 +20,23 @@ import org.json.JSONObject;
 @Beta
 public class ThreeDSecureAuthenticationResponse implements Parcelable {
 
-    private Card card;
-    private boolean success;
-    private BraintreeErrors errors;
-    private String exception;
+    @SerializedName("card") private Card mCard;
+    @SerializedName("success") private boolean mSuccess;
+    @SerializedName("errors") private BraintreeErrors mErrors;
+    @SerializedName("exception") private String mException;
 
     public ThreeDSecureAuthenticationResponse() {}
+
+    /**
+     * Checks the given {@link Intent} to see if it contains a {@link ThreeDSecureAuthenticationResponse}.
+     *
+     * @param intent The {@link Intent} to check.
+     * @return {@code true} is the {@link Intent} contains a {@link ThreeDSecureWebViewActivity#EXTRA_THREE_D_SECURE_RESULT},
+     *         {@code false} otherwise.
+     */
+    public static boolean isThreeDSecureAuthenticationResponse(Intent intent) {
+        return intent.hasExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT);
+    }
 
     /**
      * Used to parse a response from the Braintree Gateway to be used for 3D Secure
@@ -42,12 +56,12 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
             card.setThreeDSecureInfo(gson.fromJson(json.getJSONObject("threeDSecureInfo").toString(),
                     ThreeDSecureInfo.class));
 
-            authenticationResponse.card = card;
-            authenticationResponse.success = json.getBoolean("success");
+            authenticationResponse.mCard = card;
+            authenticationResponse.mSuccess = json.getBoolean("success");
         } catch (JSONException e) {
-            authenticationResponse.success = false;
+            authenticationResponse.mSuccess = false;
         }
-        authenticationResponse.errors = gson.fromJson(jsonString, BraintreeErrors.class);
+        authenticationResponse.mErrors = gson.fromJson(jsonString, BraintreeErrors.class);
 
         return authenticationResponse;
     }
@@ -61,8 +75,8 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
      */
     public static ThreeDSecureAuthenticationResponse fromException(String exception) {
         ThreeDSecureAuthenticationResponse authenticationResponse = new ThreeDSecureAuthenticationResponse();
-        authenticationResponse.success = false;
-        authenticationResponse.exception = exception;
+        authenticationResponse.mSuccess = false;
+        authenticationResponse.mException = exception;
 
         return authenticationResponse;
     }
@@ -71,7 +85,7 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
      * @return If the authentication was completed
      */
     public boolean isSuccess() {
-        return success;
+        return mSuccess;
     }
 
     /**
@@ -79,21 +93,21 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
      *         authentication
      */
     public Card getCard() {
-        return card;
+        return mCard;
     }
 
     /**
      * @return Possible errors that occurred during the authentication
      */
     public BraintreeErrors getErrors() {
-        return errors;
+        return mErrors;
     }
 
     /**
      * @return Possible exception that occurred during the authentication
      */
     public String getException() {
-        return exception;
+        return mException;
     }
 
     @Override
@@ -101,17 +115,17 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeByte(success ? (byte) 1 : (byte) 0);
-        dest.writeParcelable(card, flags);
-        dest.writeParcelable(errors, flags);
-        dest.writeString(exception);
+        dest.writeByte(mSuccess ? (byte) 1 : (byte) 0);
+        dest.writeParcelable(mCard, flags);
+        dest.writeParcelable(mErrors, flags);
+        dest.writeString(mException);
     }
 
     private ThreeDSecureAuthenticationResponse(Parcel in) {
-        success = in.readByte() != 0;
-        card = in.readParcelable(Card.class.getClassLoader());
-        errors = in.readParcelable(BraintreeError.class.getClassLoader());
-        exception = in.readString();
+        mSuccess = in.readByte() != 0;
+        mCard = in.readParcelable(Card.class.getClassLoader());
+        mErrors = in.readParcelable(BraintreeError.class.getClassLoader());
+        mException = in.readString();
     }
 
     public static final Creator<ThreeDSecureAuthenticationResponse> CREATOR =

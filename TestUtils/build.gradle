@@ -15,20 +15,18 @@ android {
         versionName rootProject.ext.versionName
     }
 
-    packagingOptions {
-        exclude 'LICENSE.txt'
-    }
-
     lintOptions {
         disable 'InvalidPackage'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
 dependencies {
-    compile 'org.mockito:mockito-core:1.9.5'
-    compile 'com.google.dexmaker:dexmaker:1.1'
     compile 'com.google.dexmaker:dexmaker-mockito:1.1'
-    compile 'com.android.support.test.espresso:espresso-core:2.0'
+    compile 'com.android.support.test.espresso:espresso-core:2.2'
 }
 
 android.buildTypes.each { type ->

@@ -4,6 +4,7 @@ import android.os.Parcelable;
 
 import com.braintreepayments.api.exceptions.ServerException;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,13 +28,13 @@ public abstract class PaymentMethod implements Parcelable, Serializable {
     private static final String PAYMENT_METHOD_COLLECTION_KEY = "paymentMethods";
     private static final String PAYMENT_METHOD_TYPE_KEY = "type";
 
-    protected String nonce;
-    protected String description;
-    protected PaymentMethodOptions options;
+    @SerializedName("nonce") protected String mNonce;
+    @SerializedName("description") protected String mDescription;
+    @SerializedName("options") protected PaymentMethodOptions mPaymentMethodOptions;
     protected transient String mSource;
 
     protected void setOptions(PaymentMethodOptions options) {
-        this.options = options;
+        mPaymentMethodOptions = options;
     }
 
     /**
@@ -42,14 +43,14 @@ public abstract class PaymentMethod implements Parcelable, Serializable {
      *          actions.
      */
     public String getNonce() {
-        return nonce;
+        return mNonce;
     }
 
     /**
      * @return The description of this PaymentMethod for displaying to a customer, e.g. 'Visa ending in...'
      */
     public String getDescription() {
-        return description;
+        return mDescription;
     }
 
     /**
@@ -93,20 +94,18 @@ public abstract class PaymentMethod implements Parcelable, Serializable {
             for(int i = 0; i < paymentMethods.length(); i++) {
                 paymentMethod = paymentMethods.getJSONObject(i);
                 String type = paymentMethod.getString(PAYMENT_METHOD_TYPE_KEY);
-                switch (type) {
-                    case Card.PAYMENT_METHOD_TYPE:
-                        paymentMethodsList.add(
-                                new Gson().fromJson(paymentMethod.toString(), Card.class));
-                        break;
-                    case PayPalAccount.PAYMENT_METHOD_TYPE:
-                        paymentMethodsList.add(
-                                new Gson().fromJson(paymentMethod.toString(), PayPalAccount.class));
-                        break;
-                    case CoinbaseAccount.PAYMENT_METHOD_TYPE:
-                        paymentMethodsList.add(
-                                new Gson()
-                                        .fromJson(paymentMethod.toString(), CoinbaseAccount.class));
-                        break;
+                if (type.equals(Card.PAYMENT_METHOD_TYPE)) {
+                    paymentMethodsList.add(
+                            new Gson().fromJson(paymentMethod.toString(), Card.class));
+                } else if (type.equals(PayPalAccount.PAYMENT_METHOD_TYPE)) {
+                    paymentMethodsList.add(
+                            new Gson().fromJson(paymentMethod.toString(), PayPalAccount.class));
+                } else if (type.equals(CoinbaseAccount.PAYMENT_METHOD_TYPE)) {
+                    paymentMethodsList.add(
+                            new Gson().fromJson(paymentMethod.toString(), CoinbaseAccount.class));
+                } else if (type.equals(AndroidPayCard.PAYMENT_METHOD_TYPE)) {
+                    paymentMethodsList.add(
+                            new Gson().fromJson(paymentMethod.toString(), AndroidPayCard.class));
                 }
             }
 
@@ -151,9 +150,10 @@ public abstract class PaymentMethod implements Parcelable, Serializable {
         public T build();
 
         /**
+         * @deprecated Replaced by {@link com.braintreepayments.api.models.PaymentMethod.Builder#toJsonString()} in 1.0.7.
+         *
          * Required for and handled by {@link com.braintreepayments.api.Braintree}. Not intended for general consumption.
          * @return Serialized representation of {@link com.braintreepayments.api.models.PaymentMethod} for API use.
-         * @deprecated Replaced by {@link #toJsonString()} in 1.0.7.
          */
         @Deprecated
         public Map<String, Object> toJson();

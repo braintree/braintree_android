@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.test.AndroidTestCase;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
 import com.braintreepayments.testutils.FixturesHelper;
 
 public class ThreeDSecureAuthenticationResponseTest extends AndroidTestCase {
@@ -64,5 +65,15 @@ public class ThreeDSecureAuthenticationResponseTest extends AndroidTestCase {
 
         assertEquals(authResponse.isSuccess(), parsedAuthResponse.isSuccess());
         assertEquals(authResponse.getException(), parsedAuthResponse.getException());
+    }
+
+    public void testIsThreeDSecureAuthenticationResponseReturnsTrueForThreeDSecureAuthenticationResponses() {
+        Intent intent = new Intent().putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT, "");
+
+        ThreeDSecureAuthenticationResponse.isThreeDSecureAuthenticationResponse(intent);
+    }
+
+    public void testIsThreeDSecureAuthenticationResponseReturnsFalseForNonThreeDSecureAuthenticationResponses() {
+        ThreeDSecureAuthenticationResponse.isThreeDSecureAuthenticationResponse(new Intent());
     }
 }

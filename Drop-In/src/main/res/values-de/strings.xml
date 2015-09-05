@@ -9,7 +9,7 @@
     <string name="bt_add_new_payment_method">Neue Zahlungsmethode hinzuf&#xFC;gen</string>
     <string name="bt_add_payment_method">Zahlungsquelle hinzuf&#xFC;gen</string>
 
-    <string name="bt_default_submit_button_text">Einkaufen</string>
+    <string name="bt_default_submit_button_text">EINKAUFEN</string>
     <string name="bt_default_action_bar_text">Einkaufen</string>
 
     <!-- Note: %s is a place holder and should be left in translated strings -->

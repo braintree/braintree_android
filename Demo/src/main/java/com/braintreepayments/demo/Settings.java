@@ -3,8 +3,8 @@ package com.braintreepayments.demo;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.text.TextUtils;
 
+@SuppressWarnings("com.braintreepayments.beta")
 public class Settings {
 
     protected static final String ENVIRONMENT = "environment";
@@ -27,6 +27,10 @@ public class Settings {
                 .apply();
     }
 
+    public static String getSandboxUrl() {
+        return SANDBOX_BASE_SERVER_URL;
+    }
+
     public static String getEnvironmentUrl(Context context) {
         int environment = getEnvironment(context);
         if (environment == 0) {
@@ -38,19 +42,32 @@ public class Settings {
         }
     }
 
-    public static String getClientTokenUrl(Context context) {
-        String path = "/client_token?";
+    public static String getCustomerId(Context context) {
+        return getPreferences(context).getString("customer", null);
+    }
 
-        String customer = getPreferences(context).getString("customer", "");
-        if (!TextUtils.isEmpty(customer)) {
-            path += "customer_id=" + customer + "&";
-        }
-
+    public static String getThreeDSecureMerchantAccountId(Context context) {
         if (isThreeDSecureEnabled(context) && getEnvironment(context) == 1) {
-            path += "merchant_account_id=test_AIB";
+            return "test_AIB";
+        } else {
+            return null;
         }
+    }
 
-        return getEnvironmentUrl(context) + path;
+    public static boolean isAndroidPayBillingAgreement(Context context) {
+        return getPreferences(context).getBoolean("android_pay_billing_agreement", false);
+    }
+
+    public static boolean isAndroidPayShippingAddressRequired(Context context) {
+        return getPreferences(context).getBoolean("android_pay_require_shipping_address", false);
+    }
+
+    public static boolean isAndroidPayPhoneNumberRequired(Context context) {
+        return getPreferences(context).getBoolean("android_pay_require_phone_number", false);
+    }
+
+    public static boolean isPayPalAddressScopeRequested(Context context) {
+        return getPreferences(context).getBoolean("paypal_request_address_scope", false);
     }
 
     public static boolean isThreeDSecureEnabled(Context context) {

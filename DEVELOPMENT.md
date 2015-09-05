@@ -2,6 +2,14 @@
 
 This document outlines development practices that we follow internally while developing this SDK.
 
+## Setup
+
+* Make sure Java 7 is installed and available in your `PATH`.
+* If you do not have the Android SDK installed, run `./gradlew build` 3 times to download the Android SDK and install all required tools as well as set your `local.properties` file (we use [sdk-manager-plugin](https://github.com/JakeWharton/sdk-manager-plugin) to do this automatically).
+* If you do have the Android SDK installed, add a `local.properties` file to the top level directory with `sdk.dir=/path/to/your/sdk/.android-sdk`
+* Run `./gradlew :Demo:installDebug` to install the [Demo](Demo) app on a device.
+* See [the testing section](#tests) for more about setting up and running tests.
+
 ## Development Merchant Server
 
 The included demo app utilizes a test merchant server hosted on heroku ([https://braintree-sample-merchant.herokuapp.com](https://braintree-sample-merchant.herokuapp.com)).
@@ -34,7 +42,6 @@ There are several components that comprise this SDK:
 
 * [BraintreeApi](BraintreeApi) provides the networking and communication layer. Includes the PayPal Android mobile SDK.
 * [BraintreeData](BraintreeData) collects and provides data for fraud detection.
-* [CardForm](CardForm) is a pre-build card form view that can be used anywhere.
 * [Drop-In](Drop-In) uses `BraintreeApi` to create a full checkout experience inside an `Activity`.
 * [Demo](Demo) is the reference integration of [Drop-In](Drop-In).
 * [FakeWallet](FakeWallet) is used to test the app switch portion of the SDK.
@@ -44,9 +51,10 @@ The individual components may be of interest for advanced integrations and are e
 
 ## Environmental Assumptions
 
-* Android Studio >= 1.0.0 and Android >= 10
-* Android 21 target SDK
+* Java 7
+* Android Studio
 * Gradle
+* Android SDK >= 10
 * Host app does not integrate the [PayPal Android SDK](https://github.com/paypal/PayPal-Android-SDK)
 * Host app does not integrate with the Kount SDK
 * Host app has a secure, authenticated server with a [Braintree server-side integration](https://developers.braintreepayments.com/android/start/hello-server)

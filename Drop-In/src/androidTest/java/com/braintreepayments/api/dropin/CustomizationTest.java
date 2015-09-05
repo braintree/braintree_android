@@ -63,7 +63,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForAddPaymentFormHeader();
-        onView(withId(R.id.bt_card_form_submit_button)).check(matches(withText("$19 - Subscribe")));
+        onView(withId(R.id.bt_card_form_submit_button)).check(matches(withText("$19 - SUBSCRIBE")));
     }
 
     public void testSubmitButtonUsesCustomizationForSelectPaymentMethodIfIncludedAsAnExtra()
@@ -85,7 +85,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForPaymentMethodList();
-        onView(withId(R.id.bt_select_payment_method_submit_button)).check(matches(withText("$19 - Subscribe")));
+        onView(withId(R.id.bt_select_payment_method_submit_button)).check(matches(withText("$19 - SUBSCRIBE")));
     }
 
     public void testDescriptionsAreDisplayedIfIncludedAsAnExtra() {
@@ -120,7 +120,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         getActivity();
 
         waitForAddPaymentFormHeader();
-        onView(withId(R.id.bt_card_form_submit_button)).check(matches(withText("$19 - Purchase")));
+        onView(withId(R.id.bt_card_form_submit_button)).check(matches(withText("$19 - PURCHASE")));
     }
 
     @TargetApi(VERSION_CODES.HONEYCOMB)

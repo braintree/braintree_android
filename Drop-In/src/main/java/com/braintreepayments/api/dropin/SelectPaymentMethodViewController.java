@@ -73,7 +73,7 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
             }
         } else if (v.getId() == mSubmitButton.getId()) {
             mSubmitButton.setEnabled(false);
-            getActivity().finalizeSelection(getActivePaymentMethod());
+            mActivity.finalizeSelection(getActivePaymentMethod());
         }
     }
 
@@ -91,14 +91,14 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
     @SuppressWarnings("NewApi")
     private void showPaymentMethodListDialog() {
         PaymentMethodListAdapter paymentMethodListAdapter =
-                new PaymentMethodListAdapter(getActivity(), this, mBraintree.getCachedPaymentMethods());
+                new PaymentMethodListAdapter(mActivity, this, mBraintree.getCachedPaymentMethods());
 
         ContextThemeWrapper contextThemeWrapper;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            contextThemeWrapper = new ContextThemeWrapper(getActivity(), android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
+            contextThemeWrapper = new ContextThemeWrapper(mActivity, android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
         }
         else {
-            contextThemeWrapper = new ContextThemeWrapper(getActivity(), android.R.style.Theme_Light_NoTitleBar);
+            contextThemeWrapper = new ContextThemeWrapper(mActivity, android.R.style.Theme_Light_NoTitleBar);
         }
 
         new AlertDialog.Builder(contextThemeWrapper)
@@ -114,7 +114,7 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
     }
 
     private void launchFormView() {
-        getActivity().initAddPaymentMethodView();
+        mActivity.showAddPaymentMethodView();
     }
 
     protected void onPaymentMethodSelected(int paymentMethodIndex) {

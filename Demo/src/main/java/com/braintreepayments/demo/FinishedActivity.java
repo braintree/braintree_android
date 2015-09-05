@@ -2,18 +2,22 @@ package com.braintreepayments.demo;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.view.SecureLoadingProgressBar;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
+import com.braintreepayments.demo.internal.ApiClient;
+import com.braintreepayments.demo.internal.ApiClientRequestInterceptor;
+import com.braintreepayments.demo.models.Transaction;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
+@SuppressWarnings("com.braintreepayments.beta")
 public class FinishedActivity extends Activity {
 
     private SecureLoadingProgressBar mLoadingSpinner;
@@ -29,31 +33,40 @@ public class FinishedActivity extends Activity {
     }
 
     private void sendNonceToServer(String nonce) {
-        RequestParams params = new RequestParams();
-        params.put("nonce", nonce);
-
-        if (Settings.isThreeDSecureEnabled(this)) {
-            if (Settings.getEnvironment(this) == 1) {
-                params.put("merchant_account_id", "test_AIB");
+        Callback<Transaction> callback = new Callback<Transaction>() {
+            @Override
+            public void success(Transaction transaction, Response response) {
+                if (TextUtils.isEmpty(transaction.getMessage())) {
+                    showMessage("Message was empty");
+                } else {
+                    showMessage(transaction.getMessage());
+                }
             }
 
-            params.put("requireThreeDSecure", Settings.isThreeDSecureRequired(this));
-        }
+            @Override
+            public void failure(RetrofitError error) {
+                showMessage("Unable to create a transaction. Response Code: " +
+                        error.getResponse().getStatus() + " Response body: " +
+                        error.getResponse().getBody());
+            }
+        };
 
-        new AsyncHttpClient().post(Settings.getEnvironmentUrl(this) + "/nonce/transaction", params,
-                new AsyncHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(String response) {
-                        try {
-                            showSuccessView(new JSONObject(response).optString("message"));
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
+        ApiClient apiClient = new RestAdapter.Builder()
+                .setEndpoint(Settings.getEnvironmentUrl(this))
+                .setRequestInterceptor(new ApiClientRequestInterceptor())
+                .build()
+                .create(ApiClient.class);
+
+        if (Settings.isThreeDSecureEnabled(this) && Settings.isThreeDSecureRequired(this)) {
+            apiClient.createTransaction(nonce, Settings.getThreeDSecureMerchantAccountId(this), true, callback);
+        } else if (Settings.isThreeDSecureEnabled(this)) {
+            apiClient.createTransaction(nonce, Settings.getThreeDSecureMerchantAccountId(this), callback);
+        } else {
+            apiClient.createTransaction(nonce, callback);
+        }
     }
 
-    private void showSuccessView(String message) {
+    private void showMessage(String message) {
         mLoadingSpinner.setVisibility(View.GONE);
         findViewById(R.id.thanks).setVisibility(View.VISIBLE);
         if (message != null) {

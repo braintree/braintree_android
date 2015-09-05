@@ -66,7 +66,7 @@ start_adb() {
 
 start_emulator() {
   echo "Creating emulator"
-  echo no | $ANDROID_HOME/tools/android create avd --force -n braintree-android -t android-21 --abi armeabi-v7a --skin WXGA720
+  echo no | $ANDROID_HOME/tools/android create avd --force -n braintree-android -t android-22 --abi armeabi-v7a --skin WXGA720
   echo "hw.keyboard=yes" >> ~/.android/avd/braintree-android.avd/config.ini
   echo "Starting emulator"
   $ANDROID_HOME/tools/emulator -avd braintree-android -no-boot-anim -wipe-data -no-audio -no-window &
@@ -117,10 +117,10 @@ cd_android
 wait_for_emulator
 
 ruby script/httpsd.rb /tmp/httpsd.pid
-ruby log_listener.rb &
+ruby script/log_listener.rb &
 log_listener_pid=$!
 
-$android_path/gradlew --info --no-color runAllTests :BraintreeData:connectedAndroidTest :BraintreeApi:connectedAndroidTest :CardForm:connectedAndroidTest
+$android_path/gradlew --info --continue --no-color runAllTests connectedAndroidTest
 test_return_code=$?
 
 cleanup_android

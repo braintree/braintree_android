@@ -2,17 +2,19 @@ require 'rake'
 
 task :default => :tests
 
+desc "Run Android lint on all modules"
 task :lint do
   sh "./gradlew clean lint"
 end
 
+desc "Run all Android tests"
 task :tests => :lint do
   output = `adb devices`
   if output.match(/device$/)
     begin
       sh "ruby script/httpsd.rb /tmp/httpsd.pid"
-      log_listener_pid = fork { exec 'ruby', 'log_listener.rb' }
-      sh "./gradlew --info runAllTests :BraintreeData:connectedAndroidTest :BraintreeApi:connectedAndroidTest :CardForm:connectedAndroidTest :Drop-In:connectedAndroidTest"
+      log_listener_pid = fork { exec 'ruby', 'script/log_listener.rb' }
+      sh "./gradlew --info --continue runAllTests connectedAndroidTest"
     ensure
       `kill -9 \`cat /tmp/httpsd.pid\``
       `kill -9 #{log_listener_pid}`
@@ -23,13 +25,32 @@ task :tests => :lint do
   end
 end
 
-task :release => :lint do
-  braintree_android_build_file = "build.gradle"
+desc "Publish current version as a SNAPSHOT"
+task :publish_snapshot => :tests do
+  abort("Version must contain '-SNAPSHOT'!") unless get_current_version.end_with?('-SNAPSHOT')
+
+  braintree_api_build_file = "BraintreeApi/build.gradle"
+  braintree_drop_in_build_file = "Drop-In/build.gradle"
+
+  sh "./gradlew clean :BraintreeData:uploadArchives"
+
+  replace_string(braintree_api_build_file, "compile project(':BraintreeData')", "compile 'com.braintreepayments.api:data:#{get_current_version}'")
+  sh "./gradlew clean :BraintreeApi:uploadArchives"
+
+  replace_string(braintree_drop_in_build_file, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree-api:#{get_current_version}'")
+  sh "./gradlew clean :Drop-In:uploadArchives"
+
+  replace_string(braintree_api_build_file, "compile 'com.braintreepayments.api:data:#{get_current_version}'", "compile project(':BraintreeData')")
+  replace_string(braintree_drop_in_build_file, "compile 'com.braintreepayments.api:braintree-api:#{get_current_version}'", "compile project(':BraintreeApi')")
+end
+
+desc "Interactive release to publish new version"
+task :release => :tests do
   braintree_api_build_file = "BraintreeApi/build.gradle"
   braintree_drop_in_build_file = "Drop-In/build.gradle"
 
   last_version = `git tag | tail -1`.chomp
-  puts "Changes since #{last_version}:"
+  puts "\nChanges since #{last_version}:"
   sh "git log --pretty=format:\"%h %ad%x20%s%x20%x28%an%x29\" --date=short #{last_version}.."
   puts "Please update your CHANGELOG.md. Press ENTER when you are done"
   $stdin.gets
@@ -37,65 +58,87 @@ task :release => :lint do
   puts "What version are you releasing? (x.x.x format)"
   version = $stdin.gets.chomp
 
-  increment_version_code(braintree_android_build_file)
-  update_version(braintree_android_build_file, version)
+  increment_version_code
+  update_version(version)
 
   sh "./gradlew clean :BraintreeData:uploadArchives"
-  puts "BraintreeData was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
+  puts "BraintreeData was uploaded, press ENTER to release it"
   $stdin.gets
-
-  sh "./gradlew clean :CardForm:uploadArchives"
-  puts "CardForm was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
-  $stdin.gets
+  sh "./gradlew :BraintreeData:closeRepository"
+  puts "Sleeping for one minute to allow closing to finish"
+  sleep 60
+  sh "./gradlew :BraintreeData:promoteRepository"
+  puts "Sleeping for five minutes to allow promotion to finish"
+  sleep 300
 
   replace_string(braintree_api_build_file, "compile project(':BraintreeData')", "compile 'com.braintreepayments.api:data:#{version}'")
   sh "./gradlew clean :BraintreeApi:uploadArchives"
-  puts "BraintreeApi was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
+  puts "BraintreeApi was uploaded, press ENTER to release it"
   $stdin.gets
+  sh "./gradlew :BraintreeApi:closeRepository"
+  puts "Sleeping for one minute to allow closing to finish"
+  sleep 60
+  sh "./gradlew :BraintreeApi:promoteRepository"
+  puts "Sleeping for five minutes to allow promotion to finish"
+  sleep 300
 
   replace_string(braintree_drop_in_build_file, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree-api:#{version}'")
-  replace_string(braintree_drop_in_build_file, "compile project(':CardForm')", "compile 'com.braintreepayments:card-form:#{version}'")
   sh "./gradlew clean :Drop-In:uploadArchives"
-  puts "Drop-In was uploaded, please promote it on oss.sonatype.org. Press ENTER when you have promoted it"
+  puts "Drop-In was uploaded, press ENTER to release it"
   $stdin.gets
+  sh "./gradlew :Drop-In:closeRepository"
+  puts "Sleeping for one minute to allow closing to finish"
+  sleep 60
+  sh "./gradlew :Drop-In:promoteRepository"
 
-  puts "Archives are uploaded! Commiting and tagging #{version} and preparing for the next development iteration"
+  puts "\nArchives are uploaded! Committing and tagging #{version} and preparing for the next development iteration"
   sh "git commit -am 'Release #{version}'"
   sh "git tag #{version} -am '#{version}'"
 
   replace_string(braintree_api_build_file, "compile 'com.braintreepayments.api:data:#{version}'", "compile project(':BraintreeData')")
   replace_string(braintree_drop_in_build_file, "compile 'com.braintreepayments.api:braintree-api:#{version}'", "compile project(':BraintreeApi')")
-  replace_string(braintree_drop_in_build_file, "compile 'com.braintreepayments:card-form:#{version}'", "compile project(':CardForm')")
+  update_version("#{version}-SNAPSHOT")
   sh "git commit -am 'Prepare for development'"
 
-  puts "Done. Commits and tags have been created. If everything appears to be in order, hit ENTER to push."
+  puts "\nDone. Commits and tags have been created. If everything appears to be in order, hit ENTER to push."
   $stdin.gets
 
   sh "git push origin master #{version}"
 
-  puts "Pushed to GHE! Press ENTER to push to public Github."
+  puts "\nPushed to GHE! Press ENTER to push to public Github."
   $stdin.gets
 
   sh "git push github master #{version}"
 
-  puts "Update client_releases.yml in the docs. Press ENTER when done."
+  puts "\nUpdate client_releases.yml in the docs. Press ENTER when done."
   $stdin.gets
 end
 
-def increment_version_code(filepath)
+def get_current_version
+  current_version = nil
+  File.foreach("build.gradle") do |line|
+    if match = line.match(/versionName = '(\d+\.\d+\.\d+(-SNAPSHOT)?)'/)
+      current_version = match.captures
+    end
+  end
+
+  return current_version[0]
+end
+
+def increment_version_code
   new_build_file = ""
-  File.foreach(filepath) do |line|
+  File.foreach("build.gradle") do |line|
     if line.match(/versionCode = (\d+)/)
       new_build_file += line.gsub(/versionCode = \d+/, "versionCode = #{$1.to_i + 1}")
     else
       new_build_file += line
     end
   end
-  IO.write(filepath, new_build_file)
+  IO.write('build.gradle', new_build_file)
 end
 
-def update_version(filepath, version)
-  replace_string(filepath, /versionName = '\d+\.\d+\.\d+'/, "versionName = '#{version}'")
+def update_version(version)
+  replace_string("build.gradle", /versionName = '\d+\.\d+\.\d+(-SNAPSHOT)?'/, "versionName = '#{version}'")
 end
 
 def replace_string(filepath, string_to_replace, new_string)

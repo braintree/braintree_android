@@ -43,7 +43,8 @@ public class VenmoAppSwitchTest extends AndroidTestCase {
 
         assertEquals(new ComponentName("com.venmo", "com.venmo.CardChooserActivity"),
                 intent.getComponent());
-        assertEquals("integration2_merchant_id", intent.getStringExtra(VenmoAppSwitch.EXTRA_MERCHANT_ID));
+        assertEquals("integration2_merchant_id", intent.getStringExtra(
+                VenmoAppSwitch.EXTRA_MERCHANT_ID));
     }
 
     public void testIntentIncludesVenmoEnvironment() {
@@ -75,5 +76,15 @@ public class VenmoAppSwitchTest extends AndroidTestCase {
 
     public void testHandleResponseReturnsNullOnUnsuccessfulResultCode() {
         assertNull(mVenmoAppSwitch.handleAppSwitchResponse(Activity.RESULT_CANCELED, new Intent()));
+    }
+
+    public void testIsVenmoAppSwitchResponseReturnsTrueForAppSwitchResponses() {
+        Intent intent = new Intent().putExtra(AppSwitch.EXTRA_PAYMENT_METHOD_NONCE, "");
+
+        assertTrue(VenmoAppSwitch.isVenmoAppSwitchResponse(intent));
+    }
+
+    public void testIsVenmoAppSwitchResponseReturnsFalseForNonAppSwitchResponses() {
+        assertFalse(VenmoAppSwitch.isVenmoAppSwitchResponse(new Intent()));
     }
 }

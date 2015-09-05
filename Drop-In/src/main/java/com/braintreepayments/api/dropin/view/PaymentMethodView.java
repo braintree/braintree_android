@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.braintreepayments.api.dropin.R;
+import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CoinbaseAccount;
 import com.braintreepayments.api.models.PaymentMethod;
@@ -30,6 +31,7 @@ public class PaymentMethodView extends RelativeLayout {
         MAESTRO(R.drawable.bt_maestro, R.string.bt_descriptor_maestro, "Maestro"),
         PAYPAL(R.drawable.bt_paypal, R.string.bt_descriptor_paypal, "PayPal"),
         COINBASE(R.drawable.bt_coinbase, R.string.bt_descriptor_coinbase, "Coinbase"),
+        ANDROID_PAY(R.drawable.bt_android_pay, R.string.bt_descriptor_android_pay, "Google Wallet"),
         UNKNOWN(UNKNOWN_IMAGE_ID, R.string.bt_descriptor_unknown, "unknown");
 
         private final int mPictureResId;
@@ -92,6 +94,9 @@ public class PaymentMethodView extends RelativeLayout {
                     ((Card) paymentMethod).getLastTwo());
         } else if (paymentMethod instanceof CoinbaseAccount) {
             mDescription = ((CoinbaseAccount) paymentMethod).getEmail();
+        } else if (paymentMethod instanceof AndroidPayCard) {
+            mDescription = String.format(getResources().getString(R.string.bt_card_descriptor),
+                    ((AndroidPayCard) paymentMethod).getLastTwo());
         } else {
             mDescription = paymentMethod.getDescription();
         }

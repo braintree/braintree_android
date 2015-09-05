@@ -25,7 +25,7 @@ public class HttpRequestTestUtils {
         when(connection.getInputStream()).thenReturn(streamFromString(response));
         when(connection.getErrorStream()).thenReturn(streamFromString(response));
 
-        HttpRequest httpRequest = spy(new HttpRequest("", ""));
+        HttpRequest httpRequest = spy(new HttpRequest(""));
         doReturn(connection).when(httpRequest).init(anyString());
 
         return httpRequest;

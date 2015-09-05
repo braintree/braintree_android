@@ -1,64 +1,66 @@
 package com.braintreepayments.api.models;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Contains the remote PayPal configuration for the Braintree SDK.
  */
 public class PayPalConfiguration {
 
-    private String displayName;
-    private String clientId;
-    private String privacyUrl;
-    private String userAgreementUrl;
-    private String directBaseUrl;
-    private String environment;
-    private boolean touchDisabled;
+    @SerializedName("displayName") private String mDisplayName;
+    @SerializedName("clientId") private String mClientId;
+    @SerializedName("privacyUrl") private String mPrivacyUrl;
+    @SerializedName("userAgreementUrl") private String mUserAgreementUrl;
+    @SerializedName("directBaseUrl") private String mDirectBaseUrl;
+    @SerializedName("environment") private String mEnvironment;
+    @SerializedName("touchDisabled") private boolean mTouchDisabled;
 
     /**
      * @return the PayPal app display name.
      */
     public String getDisplayName() {
-        return displayName;
+        return mDisplayName;
     }
 
     /**
      * @return the PayPal app client id.
      */
     public String getClientId() {
-        return clientId;
+        return mClientId;
     }
 
     /**
      * @return the PayPal app privacy url.
      */
     public String getPrivacyUrl() {
-        return privacyUrl;
+        return mPrivacyUrl;
     }
 
     /**
      * @return the PayPal app user agreement url.
      */
     public String getUserAgreementUrl() {
-        return userAgreementUrl;
+        return mUserAgreementUrl;
     }
 
     /**
      * @return the url for custom PayPal environments.
      */
     public String getDirectBaseUrl() {
-        return directBaseUrl + "/v1/";
+        return mDirectBaseUrl + "/v1/";
     }
 
     /**
      * @return the current environment for PayPal.
      */
     public String getEnvironment() {
-        return environment;
+        return mEnvironment;
     }
 
     /**
      * @return {@code true} if PayPal touch is currently disabled, {@code false} otherwise.
      */
     public boolean getTouchDisabled() {
-        return touchDisabled;
+        return mTouchDisabled;
     }
 }

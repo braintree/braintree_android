@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewStub;
 
 import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
 import com.braintreepayments.api.Braintree.ErrorListener;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodsUpdatedListener;
@@ -36,8 +37,10 @@ import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CoinbaseAccount;
+import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PaymentMethod;
+import com.google.android.gms.wallet.Cart;
 
 import java.io.Serializable;
 import java.util.List;
@@ -49,7 +52,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * {@link android.app.Activity} encompassing Braintree's Drop-In UI.
  */
 public class BraintreePaymentActivity extends Activity implements
-        PaymentMethodsUpdatedListener, PaymentMethodCreatedListener, ErrorListener {
+        BraintreeSetupFinishedListener, PaymentMethodsUpdatedListener, PaymentMethodCreatedListener,
+        ErrorListener {
 
     /**
      * The payment method flow halted due to a resolvable error (authentication, authorization, SDK upgrade required).
@@ -68,6 +72,16 @@ public class BraintreePaymentActivity extends Activity implements
      * Try again later.
      */
     public static final int BRAINTREE_RESULT_SERVER_UNAVAILABLE = 4;
+
+    /**
+     * Used for Android Pay to specify a {@link com.google.android.gms.wallet.Cart} for presentation and customization.
+     */
+    public static final String EXTRA_ANDROID_PAY_CART = "com.braintreepayments.api.dropin.EXTRA_CART";
+
+    /**
+     * Used for Android Pay to specify a billing agreement.
+     */
+    public static final String EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT = "com.braintreepayments.api.dropin.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT";
 
     /**
      * Used to specify a client token during initialization.
@@ -100,8 +114,7 @@ public class BraintreePaymentActivity extends Activity implements
     private Braintree mBraintree;
     private AddPaymentMethodViewController mAddPaymentMethodViewController;
     private SelectPaymentMethodViewController mSelectPaymentMethodViewController;
-    private AtomicBoolean mHasDataBeenReceived = new AtomicBoolean(false);
-    private boolean mUnableToGetPaymentMethods = false;
+    private AtomicBoolean mHavePaymentMethodsBeenReceived = new AtomicBoolean(false);
     private Bundle mSavedInstanceState;
     private Customization mCustomization;
 
@@ -125,25 +138,48 @@ public class BraintreePaymentActivity extends Activity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // For Coinbase browser switch
         BraintreeBroadcastManager.getInstance(this).registerReceiver(mBrowserSwitchReceiver,
                 new IntentFilter(
                         BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
 
-
-        mSavedInstanceState = (savedInstanceState != null) ? savedInstanceState : new Bundle();
-
         setContentView(R.layout.bt_drop_in_ui);
 
+        mSavedInstanceState = (savedInstanceState != null) ? savedInstanceState : new Bundle();
         mCustomization = getCustomization();
         customizeActionBar();
 
-        mBraintree = Braintree.getInstance(this, getClientToken());
+        mBraintree = Braintree.restoreSavedInstanceState(this, mSavedInstanceState);
+        if (mBraintree != null) {
+            init();
+        } else {
+            Braintree.setup(this, getClientToken(), this);
+            showLoadingView();
+        }
+    }
+
+    @Override
+    public void onBraintreeSetupFinished(boolean setupSuccessful, Braintree braintree,
+        String errorMessage, Exception exception) {
+        if (!setupSuccessful) {
+            setResult(BRAINTREE_RESULT_SERVER_ERROR,
+                new Intent().putExtra(EXTRA_ERROR_MESSAGE, exception));
+            finish();
+        } else {
+            mBraintree = braintree;
+            init();
+        }
+    }
+
+    private void init() {
         mBraintree.setIntegrationDropin();
         mBraintree.sendAnalyticsEvent("sdk.initialized");
+        mBraintree.addListener(this);
+        mBraintree.unlockListeners();
 
         if (mBraintree.hasCachedCards()) {
             if (mSavedInstanceState.getBoolean(ON_PAYMENT_METHOD_ADD_FORM_KEY)) {
-                initAddPaymentMethodView();
+                showAddPaymentMethodView();
             } else {
                 onPaymentMethodsUpdated(mBraintree.getCachedPaymentMethods());
             }
@@ -156,15 +192,17 @@ public class BraintreePaymentActivity extends Activity implements
     protected void onResume() {
         super.onResume();
 
-        mBraintree.addListener(this);
-        mBraintree.unlockListeners();
+        if (mBraintree != null) {
+            mBraintree.onResume(this);
+        }
     }
 
     protected void onPause() {
         super.onPause();
 
-        mBraintree.lockListeners();
-        mBraintree.removeListener(this);
+        if (mBraintree != null) {
+            mBraintree.onPause(this);
+        }
     }
 
     protected void onDestroy() {
@@ -176,24 +214,29 @@ public class BraintreePaymentActivity extends Activity implements
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == PaymentButton.REQUEST_CODE) {
-                StubbedView.LOADING_VIEW.show(this);
+                // prevent NPE if activity was restarted
+                initAddPaymentMethodView(StubbedView.CARD_FORM.inflateOrFind(this));
+                showLoadingView();
                 mAddPaymentMethodViewController.onPaymentResult(requestCode, resultCode, data);
             }
-        } else if (resultCode == RESULT_CANCELED) {
-            mBraintree.sendAnalyticsEvent("add-paypal.user-canceled"); // TODO Bug
+        } else {
+            if (resultCode == RESULT_CANCELED) {
+                mBraintree.sendAnalyticsEvent("add-paypal.user-canceled");
+            }
+            if (requestCode == PaymentButton.REQUEST_CODE) {
+                showAddPaymentMethodView();
+            }
         }
     }
 
     @Override
     public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
-        if (!mUnableToGetPaymentMethods) {
-            mHasDataBeenReceived.set(true);
+        mHavePaymentMethodsBeenReceived.set(true);
 
-            if (paymentMethods.size() == 0) {
-                initAddPaymentMethodView();
-            } else {
-                initSelectPaymentMethodView();
-            }
+        if (paymentMethods.size() == 0) {
+            showAddPaymentMethodView();
+        } else {
+            initSelectPaymentMethodView();
         }
     }
 
@@ -225,8 +268,8 @@ public class BraintreePaymentActivity extends Activity implements
         } else if (paymentMethod instanceof CoinbaseAccount) {
             mBraintree.sendAnalyticsEvent("add-coinbase.success");
             finishCreate();
-        } else {
-            mBraintree.sendAnalyticsEvent("add-unknown.success");
+        } else if (paymentMethod instanceof AndroidPayCard) {
+            mBraintree.sendAnalyticsEvent("add-android-pay.success");
             finishCreate();
         }
     }
@@ -234,14 +277,15 @@ public class BraintreePaymentActivity extends Activity implements
     private void finishCreate() {
         mAddPaymentMethodViewController.endSubmit();
         initSelectPaymentMethodView();
+        mSelectPaymentMethodViewController.onPaymentMethodSelected(0);
     }
 
     @Override
     public void onUnrecoverableError(Throwable throwable) {
         // Falling back to add payment method if getPaymentMethods fails
-        if (StubbedView.LOADING_VIEW.mCurrentView) {
-            mHasDataBeenReceived.set(true);
-            initAddPaymentMethodView();
+        if (StubbedView.LOADING_VIEW.mCurrentView && !mHavePaymentMethodsBeenReceived.get()) {
+            mHavePaymentMethodsBeenReceived.set(true);
+            showAddPaymentMethodView();
         } else {
             if(throwable instanceof AuthenticationException ||
                     throwable instanceof AuthorizationException ||
@@ -284,18 +328,18 @@ public class BraintreePaymentActivity extends Activity implements
         Executors.newScheduledThreadPool(1).schedule(new Runnable() {
             @Override
             public void run() {
-                if (!mHasDataBeenReceived.get()) {
+                if (!mHavePaymentMethodsBeenReceived.get()) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mUnableToGetPaymentMethods = true;
-                            initAddPaymentMethodView();
+                            mHavePaymentMethodsBeenReceived.set(true);
+                            showAddPaymentMethodView();
                         }
                     });
                 }
             }
         }, 10, TimeUnit.SECONDS);
-        StubbedView.LOADING_VIEW.show(this);
+        showLoadingView();
     }
 
     private void initSelectPaymentMethodView() {
@@ -311,19 +355,25 @@ public class BraintreePaymentActivity extends Activity implements
         setActionBarUpEnabled(false);
     }
 
-    protected void initAddPaymentMethodView() {
+    protected void showAddPaymentMethodView() {
         mBraintree.sendAnalyticsEvent("add-card.start");
 
-        View paymentMethodView = StubbedView.CARD_FORM.show(this);
-
-        if (mAddPaymentMethodViewController == null) {
-            mAddPaymentMethodViewController = new AddPaymentMethodViewController(this,
-                    mSavedInstanceState, paymentMethodView, mBraintree, mCustomization);
-        }
+        initAddPaymentMethodView(StubbedView.CARD_FORM.show(this));
 
         if (mBraintree.getCachedPaymentMethods().size() > 0) {
             setActionBarUpEnabled(true);
         }
+    }
+
+    private void initAddPaymentMethodView(View paymentMethodView) {
+        if (mAddPaymentMethodViewController == null) {
+            mAddPaymentMethodViewController = new AddPaymentMethodViewController(this,
+                    mSavedInstanceState, paymentMethodView, mBraintree, mCustomization);
+        }
+    }
+
+    protected void showLoadingView() {
+        StubbedView.LOADING_VIEW.show(this);
     }
 
     @TargetApi(VERSION_CODES.HONEYCOMB)
@@ -381,6 +431,14 @@ public class BraintreePaymentActivity extends Activity implements
         return customization;
     }
 
+    protected Cart getAndroidPayCart() throws NoClassDefFoundError {
+        return getIntent().getParcelableExtra(EXTRA_ANDROID_PAY_CART);
+    }
+
+    protected boolean getAndroidPayIsBillingAgreement() {
+        return getIntent().getBooleanExtra(EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, false);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -398,7 +456,10 @@ public class BraintreePaymentActivity extends Activity implements
                 mAddPaymentMethodViewController.isSubmitting()) {
             // noop
         } else {
-            mBraintree.sendAnalyticsEvent("sdk.exit.user-canceled");
+            if (mBraintree != null) {
+                mBraintree.sendAnalyticsEvent("sdk.exit.user-canceled");
+            }
+
             setResult(RESULT_CANCELED);
             finish();
         }
@@ -407,6 +468,7 @@ public class BraintreePaymentActivity extends Activity implements
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
         outState.putString(EXTRA_CLIENT_TOKEN, getClientToken());
 
         if (StubbedView.CARD_FORM.mCurrentView) {
@@ -415,6 +477,10 @@ public class BraintreePaymentActivity extends Activity implements
 
         saveState(mAddPaymentMethodViewController, outState);
         saveState(mSelectPaymentMethodViewController, outState);
+
+        if (mBraintree != null) {
+            mBraintree.onSaveInstanceState(outState);
+        }
     }
 
     private void saveState(BraintreeViewController viewController, Bundle outState) {
@@ -445,6 +511,20 @@ public class BraintreePaymentActivity extends Activity implements
         }
 
         /**
+         * @param activity activity for the views.
+         * @return the inflated or found view.
+         */
+        @SuppressWarnings("unchecked")
+        <T extends View> T inflateOrFind(BraintreePaymentActivity activity) {
+            ViewStub stub = activity.findView(mStubbedViewId);
+            if (stub != null) {
+                return (T) stub.inflate();
+            } else {
+                return activity.findView(mInflatedViewId);
+            }
+        }
+
+        /**
          * @param activity hosting activity for the views. Should always be {@code this}.
          * @return the displayed {@link View}.
          */
@@ -457,14 +537,7 @@ public class BraintreePaymentActivity extends Activity implements
                 }
             }
 
-            ViewStub stub = activity.findView(mStubbedViewId);
-            View inflated;
-            if (stub != null) {
-                inflated = stub.inflate();
-            } else {
-                inflated = activity.findView(mInflatedViewId);
-            }
-
+            View inflated = inflateOrFind(activity);
             if (VERSION.SDK_INT >= VERSION_CODES.HONEYCOMB_MR1) {
                 inflated.setAlpha(0f);
                 inflated.setVisibility(View.VISIBLE);

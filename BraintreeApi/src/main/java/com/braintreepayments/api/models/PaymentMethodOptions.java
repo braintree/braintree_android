@@ -1,5 +1,7 @@
 package com.braintreepayments.api.models;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 /**
@@ -7,15 +9,15 @@ import java.io.Serializable;
  * in the Braintree gateway.
  */
 public class PaymentMethodOptions implements Serializable {
-
-    private boolean validate;
-    private boolean storeInVault;
+    
+    @SerializedName("validate") private boolean mValidate;
+    @SerializedName("storeInVault") private boolean mStoreInVault;
 
     public void setValidate(boolean validate) {
-        this.validate = validate;
+        mValidate = validate;
     }
 
     public void setStoreInVault(boolean storeInVault) {
-        this.storeInVault = storeInVault;
+        mStoreInVault = storeInVault;
     }
 }

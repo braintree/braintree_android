@@ -1,5 +1,83 @@
 # Braintree Android SDK Release Notes
 
+## 1.6.5
+
+* Update PayPal SDK to 2.9.10
+* Fixes
+  * Fix incorrect custom integration in demo app
+  * Fix incorrect selected payment method in Drop-in after creating a new payment method
+  * Fix `NoClassDefFoundError` crash in Drop-in
+
+## 1.6.4
+
+* Update PayPal SDK to 2.9.8
+* Improvements
+  * Follow Android convention around button and text casing in Drop-in
+  * Update android-card-form to [2.0.1](https://github.com/braintree/android-card-form/blob/master/CHANGELOG.md#201)
+
+## 1.6.3
+
+* Improvements
+  * BraintreeData can now be optionally excluded
+* Fixes
+  * Remove optional dependency from full jar
+
+## 1.6.2
+
+* Update PayPal SDK to 2.9.7
+* Add support for additional PayPal scopes to `PaymentButton`
+* Fixes
+  * Return error instead of silently failing setup with bad client tokens
+  * Fix `NoClassDefFoundError` in Drop-in caused by optional dependency
+
+## 1.6.1
+
+* Fixes
+  * Fix `NoClassDefFoundError` in Drop-in and `PaymentButton` caused by optional dependency ([#34](https://github.com/braintree/braintree_android/issues/34))
+
+## 1.6.0
+
+* Update PayPal SDK to 2.9.6
+* Update gradle plugin to 1.2.3
+* Update build tools to 22.0.1
+* Features
+  * Add Android Pay support. *Please note:* this API is in beta and subject to change.
+  * Add `Braintree#onActivityResult` method
+  * Add support for additional PayPal scopes
+    * A `List` of additional scopes may be passed to `Braintree#startPayWithPayPal`
+    * `PayPalAccount#getBillingAddress` can be used to retrieve the billing address when the address scope is requested.
+
+## 1.5.1
+
+* Update PayPal SDK to 2.9.5
+* Switch to OkHttp for Demo app
+* Improvements
+  * Add methods to persist state across rotations
+* Fixes
+  * Fix Demo app crash when `MainActivity` was destroyed ([#26](https://github.com/braintree/braintree_android/pull/26))
+  * Fix NPE in Drop-in ([#30](https://github.com/braintree/braintree_android/issues/30))
+  * Fix ProGuard support and add ProGuard rules ([#29](https://github.com/braintree/braintree_android/issues/29))
+  * Fix Drop-in error handling for non-card errors
+
+## 1.5.0
+
+* Update PayPal SDK to 2.9.4
+* Move `CardForm` to [separate repo](https://github.com/braintree/android-card-form)
+* Deprecate `Braintree#getInstance` in favor of `Braintree#setup`
+* Fixes
+  * Remove metadata from assets, fixes [#16](https://github.com/braintree/braintree_android/issues/16)
+
+## 1.4.0
+
+* Update gradle plugin to 1.1.2
+* Update build tools to 22
+* Update `compileSdkVersion` and `targetSdkVersion` to 22
+* Update PayPal SDK to 2.9.0
+* Features
+  * Add support for 3D Secure. *Please note:* this API is in beta and subject to change.
+* Fixes
+  * Fix missing expiration date float label (#21)
+
 ## 1.3.0
 
 * Remove Drop-In support for Eclipse

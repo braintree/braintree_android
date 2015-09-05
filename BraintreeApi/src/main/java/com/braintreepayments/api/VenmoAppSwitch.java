@@ -15,6 +15,17 @@ public class VenmoAppSwitch extends AppSwitch {
         super(context, configuration);
     }
 
+    /**
+     * Checks the given {@link Intent} to see if it contains a {@link AppSwitch#EXTRA_PAYMENT_METHOD_NONCE}.
+     *
+     * @param intent The {@link Intent} to check.
+     * @return {@code true} is the {@link Intent} contains a {@link AppSwitch#EXTRA_PAYMENT_METHOD_NONCE},
+     *         {@code false} otherwise.
+     */
+    public static boolean isVenmoAppSwitchResponse(Intent intent) {
+        return intent.hasExtra(EXTRA_PAYMENT_METHOD_NONCE);
+    }
+
     @Override
     protected boolean isAvailable() {
         return super.isAvailable() && !mConfiguration.getVenmoState().equals("off");

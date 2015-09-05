@@ -12,7 +12,6 @@
         <activity android:name="com.paypal.android.sdk.payments.LoginActivity" />
         <activity android:name="com.paypal.android.sdk.payments.PayPalTouchActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-
         <service android:name="com.paypal.android.sdk.payments.PayPalService"
             android:exported="false" />
     </application>

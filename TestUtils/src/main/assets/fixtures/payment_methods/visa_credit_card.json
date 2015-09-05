@@ -6,7 +6,7 @@
     "isLocked": false,
     "securityQuestions": [],
     "details": {
-        cardType => "Visa",
-        lastTwo => "11"
+        "cardType": "Visa",
+        "lastTwo": "11"
     }
 }

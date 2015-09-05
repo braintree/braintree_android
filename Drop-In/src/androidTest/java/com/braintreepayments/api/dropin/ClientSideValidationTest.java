@@ -3,8 +3,8 @@ package com.braintreepayments.api.dropin;
 import android.app.Activity;
 import android.view.KeyEvent;
 
+import com.braintreepayments.api.Braintree;
 import com.braintreepayments.api.BraintreeApi;
-import com.braintreepayments.api.BraintreeTestUtils;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.PaymentMethod;
@@ -16,17 +16,19 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static com.braintreepayments.api.BraintreeTestUtils.setClientTokenExtraForTest;
 import static com.braintreepayments.api.BraintreeTestUtils.setUpActivityTest;
+import static com.braintreepayments.api.TestDependencyInjector.injectBraintree;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInCardForm;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.testutils.ui.Matchers.hasBackgroundResource;
 import static com.braintreepayments.testutils.ui.Matchers.withHint;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
@@ -35,7 +37,7 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
             throws ErrorWithResponse, BraintreeException {
         String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
         BraintreeApi api = spy(new BraintreeApi(mContext, clientToken));
-        BraintreeTestUtils.injectBraintreeApi(clientToken, api);
+        injectBraintree(clientToken, api);
         setUpActivityTest(this, clientToken);
         Activity activity = getActivity();
 
@@ -63,26 +65,26 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
         waitForAddPaymentFormHeader();
 
         onView(withId(R.id.bt_card_form_submit_button)).check(matches(
-                hasBackgroundResource(mContext, R.color.bt_button_disabled_color)));
+                hasBackgroundResource(R.color.bt_button_disabled_color)));
 
         fillInCardForm(mContext);
 
         onView(withId(R.id.bt_card_form_submit_button)).check(
-                matches(hasBackgroundResource(mContext, R.drawable.bt_submit_button_background)));
+                matches(hasBackgroundResource(R.drawable.bt_submit_button_background)));
 
         onView(withId(R.id.bt_card_form_expiration)).perform(click());
         sendKeys(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_DEL);
 
         onView(withId(R.id.bt_card_form_submit_button)).check(
-                matches(hasBackgroundResource(mContext, R.color.bt_button_disabled_color)));
+                matches(hasBackgroundResource(R.color.bt_button_disabled_color)));
     }
 
     public void testSubmitsToServerWhenFieldsPassClientValidation()
             throws ErrorWithResponse, BraintreeException {
         String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
-        BraintreeApi api = spy(new BraintreeApi(mContext, clientToken));
-        BraintreeTestUtils.injectBraintreeApi(clientToken, api);
-        setUpActivityTest(this, clientToken);
+        Braintree braintree = spy(injectBraintree(mContext, clientToken, clientToken));
+        injectBraintree(clientToken, braintree);
+        setClientTokenExtraForTest(this, clientToken);
         getActivity();
 
         waitForAddPaymentFormHeader();
@@ -93,7 +95,6 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestCase {
         onView(withHint("Postal Code")).perform(typeText("12345"));
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
-        verify(api, times(1)).create((PaymentMethod.Builder) anyObject());
+        verify(braintree).create(any(PaymentMethod.Builder.class));
     }
-
 }

@@ -7,6 +7,10 @@
         android:label="@string/app_name"
         android:theme="@style/DemoAppTheme"
         android:allowBackup="true">
+
+        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+        <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true" />
+
         <activity
             android:name=".MainActivity">
             <intent-filter>
@@ -14,11 +18,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SettingsActivity" android:label="Options" />
-        <activity android:name=".PaymentButtonActivity" android:label="Buy" />
-        <activity android:name=".CustomFormActivity" android:label="Buy" />
-        <activity android:name=".FinishedActivity" android:label="Purchase Complete" />
-
+        <activity android:name=".SettingsActivity" android:label="@string/options" />
+        <activity android:name=".PaymentButtonActivity" android:label="@string/buy" />
+        <activity android:name=".CustomFormActivity" android:label="@string/buy" />
+        <activity android:name=".FinishedActivity" android:label="@string/purchase_complete" />
         <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
             android:launchMode="singleTask"
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
@@ -30,6 +33,5 @@
                 <data android:scheme="${applicationId}.braintree" />
             </intent-filter>
         </activity>
-
     </application>
 </manifest>

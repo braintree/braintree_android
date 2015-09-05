@@ -1,7 +1,10 @@
 package com.braintreepayments.api.models;
 
+import android.content.Context;
+
 import com.braintreepayments.api.models.PaymentMethod.Builder;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,10 +16,10 @@ import java.util.Map;
  */
 public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount> {
 
-    private String email;
-    private String authorizationCode;
-    private String correlationId;
-    private PaymentMethodOptions options;
+    @SerializedName("email") private String mEmail;
+    @SerializedName("authorizationCode") private String mAuthorizationCode;
+    @SerializedName("correlationId") private String mCorrelationId;
+    @SerializedName("options") private PaymentMethodOptions mPaymentMethodOptions;
     private String mIntegration = "custom";
     private String mSource;
 
@@ -26,7 +29,7 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
      * @return {@link com.braintreepayments.api.models.PayPalAccountBuilder}
      */
     public PayPalAccountBuilder email(String email) {
-        this.email = email;
+        mEmail = email;
         return this;
     }
 
@@ -36,26 +39,26 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
      * @return {@link com.braintreepayments.api.models.PayPalAccountBuilder}
      */
     public PayPalAccountBuilder authorizationCode(String authorizationCode) {
-        this.authorizationCode = authorizationCode;
+        mAuthorizationCode = authorizationCode;
         return this;
     }
 
     /**
      * Used by PayPal wrappers to construct a {@link com.braintreepayments.api.models.PayPalAccount}.
      * @param correlationId Application correlation ID created by
-     * {@link com.paypal.android.sdk.payments.PayPalConfiguration#getApplicationCorrelationId(android.content.Context)}
+     * {@link com.paypal.android.sdk.payments.PayPalConfiguration#getClientMetadataId(Context)}
      * to verify the payment.
      * @return {@link com.braintreepayments.api.models.PayPalAccountBuilder}
      */
     public PayPalAccountBuilder correlationId(String correlationId) {
-        this.correlationId = correlationId;
+        mCorrelationId = correlationId;
         return this;
     }
 
     @Override
     public PayPalAccountBuilder validate(boolean validate) {
-        options = new PaymentMethodOptions();
-        options.setValidate(validate);
+        mPaymentMethodOptions = new PaymentMethodOptions();
+        mPaymentMethodOptions.setValidate(validate);
         return this;
     }
 
@@ -74,9 +77,9 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
     @Override
     public PayPalAccount build() {
         PayPalAccount payPalAccount = new PayPalAccount();
-        payPalAccount.setConsentCode(authorizationCode);
-        payPalAccount.setCorrelationId(correlationId);
-        payPalAccount.setOptions(options);
+        payPalAccount.setConsentCode(mAuthorizationCode);
+        payPalAccount.setCorrelationId(mCorrelationId);
+        payPalAccount.setOptions(mPaymentMethodOptions);
         payPalAccount.setSource(mSource);
 
         return payPalAccount;
@@ -98,7 +101,7 @@ public class PayPalAccountBuilder implements PaymentMethod.Builder<PayPalAccount
     @Override
     public PayPalAccount fromJson(String json) {
         PayPalAccount payPalAccount = PayPalAccount.fromJson(json);
-        payPalAccount.setEmail(email);
+        payPalAccount.setEmail(mEmail);
 
         return payPalAccount;
     }
