@@ -10,7 +10,6 @@ import android.provider.Settings.Secure;
 
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.utils.DeviceUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;

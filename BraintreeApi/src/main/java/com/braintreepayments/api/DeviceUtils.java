@@ -1,4 +1,4 @@
-package com.braintreepayments.api.utils;
+package com.braintreepayments.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -23,7 +23,10 @@ public class DeviceUtils {
 
     private static final String BRAINTREE_UUID_KEY = "braintreeUUID";
 
-    public static String getAppName(ApplicationInfo applicationInfo,
+    /**
+     * Returns the application name.
+     */
+    protected static String getAppName(ApplicationInfo applicationInfo,
             PackageManager packageManager) {
         if (applicationInfo != null) {
             return (String) packageManager.getApplicationLabel(applicationInfo);
@@ -32,7 +35,10 @@ public class DeviceUtils {
         }
     }
 
-    public static String getAppVersion(Context context) {
+    /**
+     * Returns the version name.
+     */
+    protected static String getAppVersion(Context context) {
         try {
             return context.getPackageManager()
                     .getPackageInfo(context.getPackageName(), 0).versionName;
@@ -41,7 +47,10 @@ public class DeviceUtils {
         }
     }
 
-    public static String isDeviceRooted() {
+    /**
+     * Returns a String representation of whether the device is rooted.
+     */
+    protected static String isDeviceRooted() {
         String buildTags = android.os.Build.TAGS;
         boolean check1 = buildTags != null && buildTags.contains("test-keys");
 
@@ -69,13 +78,18 @@ public class DeviceUtils {
         return Boolean.toString(check1 || check2 || check3);
     }
 
-    public static String getNetworkType(Context context) {
+    /**
+     * Returns the current network type.
+     * @param context
+     * @return
+     */
+    protected static String getNetworkType(Context context) {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         return connectivityManager.getActiveNetworkInfo().getTypeName();
     }
 
-    public static String getUUID(Context context) {
+    protected static String getUUID(Context context) {
         SharedPreferences prefs =
                 context.getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE);
 
@@ -88,7 +102,7 @@ public class DeviceUtils {
         return uuid;
     }
 
-    public static String detectEmulator() {
+    protected static String detectEmulator() {
         if ("google_sdk".equalsIgnoreCase(Build.PRODUCT) ||
                 "sdk".equalsIgnoreCase(Build.PRODUCT) ||
                 "Genymotion".equalsIgnoreCase(Build.MANUFACTURER) ||
@@ -99,7 +113,7 @@ public class DeviceUtils {
         }
     }
 
-    public static String getUserOrientation(Context context) {
+    protected static String getUserOrientation(Context context) {
         int orientation = context.getResources().getConfiguration().orientation;
         switch (orientation) {
             case Configuration.ORIENTATION_PORTRAIT:
