@@ -1,10 +1,7 @@
 package com.braintreepayments.api.models;
 
-import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,7 +56,7 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
      *
      * @param exception The message of the exception that occurred.
      * @return The {@link ThreeDSecureAuthenticationResponse} to be handled by
-     *         {@link com.braintreepayments.api.Braintree}
+     * {@link com.braintreepayments.api.threedsecure.ThreeDSecureWebViewClient}
      */
     public static ThreeDSecureAuthenticationResponse fromException(String exception) {
         ThreeDSecureAuthenticationResponse authenticationResponse = new ThreeDSecureAuthenticationResponse();

@@ -10,8 +10,8 @@ import org.json.JSONObject;
 /**
  * {@link com.braintreepayments.api.models.PaymentMethod} representing a PayPal account.
  *
- * @see {@link com.braintreepayments.api.models.Card}
- * @see {@link com.braintreepayments.api.models.PaymentMethod}
+ * @see com.braintreepayments.api.models.Card
+ * @see PaymentMethod
  */
 public class PayPalAccount extends PaymentMethod implements Parcelable {
 
