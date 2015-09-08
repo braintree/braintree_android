@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
-public class CardTokenizerTest {
+public class CardTokenizationTest {
 
     @Rule
     public final ActivityTestRule<TestActivity> mActivityTestRule =
@@ -70,7 +70,7 @@ public class CardTokenizerTest {
                 .cardNumber(VISA)
                 .expirationDate("08/20");
 
-        CardTokenizer.tokenize(mBraintreeFragment, cardBuilder);
+        PaymentMethodTokenizer.tokenize(mBraintreeFragment, cardBuilder);
 
         mCountDownLatch.await();
     }
@@ -97,7 +97,7 @@ public class CardTokenizerTest {
                 .cardNumber(VISA)
                 .expirationDate("08/20");
 
-        CardTokenizer.tokenize(mBraintreeFragment, cardBuilder);
+        PaymentMethodTokenizer.tokenize(mBraintreeFragment, cardBuilder);
 
         mCountDownLatch.await();
         verifyAnalyticsEvent(mBraintreeFragment, "card.nonce-received");
@@ -119,7 +119,7 @@ public class CardTokenizerTest {
                 .cardNumber(VISA)
                 .expirationDate("08/20");
 
-        CardTokenizer.tokenize(mBraintreeFragment, cardBuilder);
+        PaymentMethodTokenizer.tokenize(mBraintreeFragment, cardBuilder);
 
         mCountDownLatch.await();
     }
@@ -152,7 +152,7 @@ public class CardTokenizerTest {
             }
         });
 
-        CardTokenizer.tokenize(mBraintreeFragment, new CardBuilder().expirationMonth("01"));
+        PaymentMethodTokenizer.tokenize(mBraintreeFragment, new CardBuilder().expirationMonth("01"));
 
         mCountDownLatch.await();
     }
@@ -178,7 +178,7 @@ public class CardTokenizerTest {
             }
         });
 
-        CardTokenizer.tokenize(mBraintreeFragment, new CardBuilder().expirationMonth("01"));
+        PaymentMethodTokenizer.tokenize(mBraintreeFragment, new CardBuilder().expirationMonth("01"));
 
         mCountDownLatch.await();
         verifyAnalyticsEvent(mBraintreeFragment, "card.nonce-failed");

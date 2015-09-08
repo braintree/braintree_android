@@ -47,8 +47,9 @@ public class ThreeDSecure {
      *                    the 3D Secure verification if performed.
      * @param amount The amount of the transaction in the current merchant account's currency
      */
+    // TODO: should this take an BigDecimal instead of a String?
     public static void performVerification(final BraintreeFragment fragment, final CardBuilder cardBuilder, final String amount) {
-        PaymentMethodTokenization.tokenize(fragment, cardBuilder, new PaymentMethodResponseCallback() {
+        PaymentMethodTokenizer.tokenize(fragment, cardBuilder, new PaymentMethodResponseCallback() {
             @Override
             public void success(PaymentMethod paymentMethod) {
                 performVerification(fragment, paymentMethod.getNonce(), amount);
@@ -95,8 +96,9 @@ public class ThreeDSecure {
                             .put("merchantAccountId", configuration.getMerchantAccountId())
                             .put("amount", amount);
 
-                    fragment.getHttpClient().post(PaymentMethodTokenization.versionedPath(
-                                    PaymentMethodTokenization.PAYMENT_METHOD_ENDPOINT + "/" + nonce + "/three_d_secure/lookup"),
+                    fragment.getHttpClient().post(PaymentMethodTokenizer.versionedPath(
+                                    PaymentMethodTokenizer.PAYMENT_METHOD_ENDPOINT + "/" + nonce +
+                                            "/three_d_secure/lookup"),
                             params.toString(), new HttpResponseCallback() {
                                 @Override
                                 public void success(String responseBody) {

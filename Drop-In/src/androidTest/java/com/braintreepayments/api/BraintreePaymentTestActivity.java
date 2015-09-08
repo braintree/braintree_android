@@ -15,9 +15,11 @@ public class BraintreePaymentTestActivity extends BraintreePaymentActivity {
     public static final String EXTRA_DELAY = "delay";
     public static final String MOCK_CONFIGURATION = "mock_configuration";
     public static final String CONFIGURATION_ERROR = "configuration_error";
-    public static final String GET_PAYMENT_METHODS = PaymentMethodTokenization.versionedPath(PaymentMethodTokenization.PAYMENT_METHOD_ENDPOINT);
+    public static final String GET_PAYMENT_METHODS = PaymentMethodTokenizer
+            .versionedPath(PaymentMethodTokenizer.PAYMENT_METHOD_ENDPOINT);
     public static final String GET_PAYMENT_METHODS_ERROR = "get_payment_methods_error";
-    public static final String TOKENIZE_CREDIT_CARD = PaymentMethodTokenization.versionedPath(PaymentMethodTokenization.PAYMENT_METHOD_ENDPOINT + "/" + new CardBuilder().getApiPath());
+    public static final String TOKENIZE_CREDIT_CARD = PaymentMethodTokenizer.versionedPath(
+            PaymentMethodTokenizer.PAYMENT_METHOD_ENDPOINT + "/" + new CardBuilder().getApiPath());
     public static final String TOKENIZE_CREDIT_CARD_ERROR = "tokenize_credit_card_error";
 
     @Override

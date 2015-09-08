@@ -363,7 +363,7 @@ public class PayPal {
                     PayPalAccountBuilder paypalAccountBuilder =
                             getBuilderFromResponse(fragment.getContext(), resultCode, data);
                     if (paypalAccountBuilder != null) {
-                        PaymentMethodTokenization.tokenize(fragment, paypalAccountBuilder,
+                        PaymentMethodTokenizer.tokenize(fragment, paypalAccountBuilder,
                                 new PaymentMethodResponseCallback() {
                                     @Override
                                     public void success(PaymentMethod paymentMethod) {

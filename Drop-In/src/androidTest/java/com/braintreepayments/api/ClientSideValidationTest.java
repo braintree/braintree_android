@@ -50,8 +50,8 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestRunner
         assertTrue(postalCode.isError());
 
         verify(activity.mBraintreeFragment.getHttpClient(), never()).post(
-                eq(PaymentMethodTokenization.versionedPath(
-                        PaymentMethodTokenization.PAYMENT_METHOD_ENDPOINT + "/" +
+                eq(PaymentMethodTokenizer.versionedPath(
+                        PaymentMethodTokenizer.PAYMENT_METHOD_ENDPOINT + "/" +
                                 new CardBuilder().getApiPath())),
                 anyString(),
                 any(HttpResponseCallback.class));
@@ -84,8 +84,8 @@ public class ClientSideValidationTest extends BraintreePaymentActivityTestRunner
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
 
         verify(activity.mBraintreeFragment.getHttpClient()).post(
-                eq(PaymentMethodTokenization.versionedPath(
-                        PaymentMethodTokenization.PAYMENT_METHOD_ENDPOINT + "/" +
+                eq(PaymentMethodTokenizer.versionedPath(
+                        PaymentMethodTokenizer.PAYMENT_METHOD_ENDPOINT + "/" +
                                 new CardBuilder().getApiPath())),
                 anyString(),
                 any(HttpResponseCallback.class));

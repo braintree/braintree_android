@@ -125,7 +125,7 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
                     onPaymentMethodsUpdated(mBraintreeFragment.getCachedPaymentMethods());
                 }
             } else {
-                PaymentMethodTokenization.getPaymentMethods(mBraintreeFragment);
+                PaymentMethodTokenizer.getPaymentMethods(mBraintreeFragment);
                 waitForData();
             }
         } catch (InvalidArgumentException e) {

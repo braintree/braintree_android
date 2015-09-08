@@ -110,7 +110,7 @@ public class BraintreeFragmentTestUtils {
         };
         fragment.addListener(listener);
 
-        CardTokenizer.tokenize(fragment, cardBuilder);
+        PaymentMethodTokenizer.tokenize(fragment, cardBuilder);
 
         try {
             latch.await();
