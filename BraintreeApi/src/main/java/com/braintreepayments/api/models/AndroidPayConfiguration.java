@@ -96,7 +96,7 @@ public class AndroidPayConfiguration {
     }
 
     /**
-     * @return a list of supported card networks for Android Pay.
+     * @return a string array of supported card networks for Android Pay.
      */
     public String[] getSupportedNetworks() {
         return mSupportedNetworks;

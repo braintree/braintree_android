@@ -7,7 +7,9 @@ package com.braintreepayments.api.interfaces;
 public interface HttpResponseCallback {
 
     /**
-     * @param responseBody response to the HTTP request.
+     * @param responseBody response to the successful HTTP request.
+     * Successful is defined as requests with the response code
+     * {@link java.net.HttpURLConnection#HTTP_OK}
      */
     void success(String responseBody);
 
