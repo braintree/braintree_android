@@ -20,7 +20,7 @@ public class ClientKeyTest {
     public void fromString_acceptsAClientKey() throws InvalidArgumentException {
         ClientKey clientKey = ClientKey.fromString(CLIENT_KEY);
 
-        assertEquals("development_testing_integration_merchant_id", clientKey.getClientKey());
+        assertEquals("development_testing_integration_merchant_id", clientKey.clientKeyString());
     }
 
     @Test(timeout = 1000, expected = InvalidArgumentException.class)

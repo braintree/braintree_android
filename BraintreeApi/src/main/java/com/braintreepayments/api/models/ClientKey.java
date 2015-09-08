@@ -25,7 +25,7 @@ public class ClientKey {
         return clientKey;
     }
 
-    public String getClientKey() {
+    public String clientKeyString() {
         return mClientKey;
     }
 

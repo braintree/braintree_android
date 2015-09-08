@@ -58,7 +58,7 @@ public class AndroidPay {
                 .addParameter("braintree:sdkVersion", BuildConfig.VERSION_NAME);
 
         if (fragment.getClientKey() != null) {
-            parameters.addParameter("braintree:clientKey", fragment.getClientKey().getClientKey());
+            parameters.addParameter("braintree:clientKey", fragment.getClientKey().clientKeyString());
         }
 
         return parameters.build();

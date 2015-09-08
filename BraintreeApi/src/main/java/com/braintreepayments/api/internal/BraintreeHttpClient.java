@@ -64,7 +64,7 @@ public class BraintreeHttpClient {
     private int mReadTimeout = 60000; // 60 seconds
 
     public BraintreeHttpClient(ClientKey clientKey) {
-        mClientKey = clientKey.getClientKey();
+        mClientKey = clientKey.clientKeyString();
     }
 
     public BraintreeHttpClient(ClientToken clientToken) {

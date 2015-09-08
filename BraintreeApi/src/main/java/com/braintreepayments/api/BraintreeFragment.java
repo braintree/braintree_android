@@ -81,11 +81,11 @@ public class BraintreeFragment extends Fragment {
      * {@link Activity}'s {@link FragmentManager}.
      *
      * @param activity The {@link Activity} to add the {@link Fragment} to.
-     * @param clientToken The client token to use.
+     * @param clientKeyOrToken The client key or token to use.
      * @return {@link BraintreeFragment}
      * @throws InvalidArgumentException If the client token is not valid json or cannot be parsed.
      */
-    public static BraintreeFragment newInstance(Activity activity, String clientToken)
+    public static BraintreeFragment newInstance(Activity activity, String clientKeyOrToken)
             throws InvalidArgumentException {
         FragmentManager fm = activity.getFragmentManager();
 
@@ -103,11 +103,11 @@ public class BraintreeFragment extends Fragment {
             Bundle bundle = new Bundle();
 
             try {
-                bundle.putString(EXTRA_CLIENT_KEY, ClientKey.fromString(clientToken).getClientKey());
+                bundle.putString(EXTRA_CLIENT_KEY, ClientKey.fromString(clientKeyOrToken).clientKeyString());
             } catch (InvalidArgumentException e) {
                 try {
                     bundle.putString(EXTRA_CLIENT_TOKEN,
-                            ClientToken.fromString(clientToken).toJson());
+                            ClientToken.fromString(clientKeyOrToken).toJson());
                 } catch (JSONException e1) {
                     throw new InvalidArgumentException("Client key or client token was invalid.");
                 }
