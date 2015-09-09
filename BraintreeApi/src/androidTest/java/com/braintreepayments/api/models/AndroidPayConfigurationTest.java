@@ -3,6 +3,9 @@ package com.braintreepayments.api.models;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -14,6 +17,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
 public class AndroidPayConfigurationTest {
@@ -23,6 +27,8 @@ public class AndroidPayConfigurationTest {
     public void parsesAndroidPayConfigurationFromToken() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_android_pay.json"));
+
+        failIfNotGooglePlayServicesDevice();
 
         AndroidPayConfiguration androidPayConfiguration = configuration.getAndroidPay();
 
@@ -42,6 +48,8 @@ public class AndroidPayConfigurationTest {
         JSONObject json = new JSONObject(stringFromFixture("configuration_with_android_pay.json"))
                 .getJSONObject("androidPay");
 
+        failIfNotGooglePlayServicesDevice();
+
         AndroidPayConfiguration androidPayConfiguration = AndroidPayConfiguration.fromJson(json);
 
         assertTrue(androidPayConfiguration.isEnabled(getTargetContext()));
@@ -59,6 +67,8 @@ public class AndroidPayConfigurationTest {
     public void fromJson_returnsNewAndroidPayConfigurationWithDefaultValuesWhenJSONObjectIsNull() {
         AndroidPayConfiguration androidPayConfiguration = AndroidPayConfiguration.fromJson(null);
 
+        failIfNotGooglePlayServicesDevice();
+
         assertFalse(androidPayConfiguration.isEnabled(getTargetContext()));
         assertNull(androidPayConfiguration.getGoogleAuthorizationFingerprint());
         assertNull(androidPayConfiguration.getDisplayName());
@@ -71,10 +81,19 @@ public class AndroidPayConfigurationTest {
     public void fromJson_returnsNewAndroidPayConfigurationWithDefaultValuesWhenNoDataIsPresent() {
         AndroidPayConfiguration androidPayConfiguration = AndroidPayConfiguration.fromJson(new JSONObject());
 
+        failIfNotGooglePlayServicesDevice();
+
         assertFalse(androidPayConfiguration.isEnabled(getTargetContext()));
         assertNull(androidPayConfiguration.getGoogleAuthorizationFingerprint());
         assertNull(androidPayConfiguration.getDisplayName());
         assertNull(androidPayConfiguration.getEnvironment());
         assertEquals(0, androidPayConfiguration.getSupportedNetworks().length);
+    }
+
+    public static void failIfNotGooglePlayServicesDevice(){
+        if(GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getTargetContext()) !=
+                ConnectionResult.SUCCESS){
+            fail("Not using a Google Play Services device.");
+        }
     }
 }
