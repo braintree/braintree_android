@@ -58,8 +58,8 @@ public class BraintreeFragment extends Fragment {
 
     @VisibleForTesting
     protected BraintreeHttpClient mHttpClient;
+    protected GoogleApiClient mGoogleApiClient;
 
-    private GoogleApiClient mGoogleApiClient;
     private Queue<QueuedCallback> mCallbackQueue = new ArrayDeque<>();
     private List<PaymentMethod> mCachedPaymentMethods = new ArrayList<>();
     private boolean mHasFetchedPaymentMethods = false;
@@ -470,7 +470,7 @@ public class BraintreeFragment extends Fragment {
      */
     public GoogleApiClient getGoogleApiClient() {
         if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+            mGoogleApiClient = new GoogleApiClient.Builder(getContext())
                     .addApi(Wallet.API, new Wallet.WalletOptions.Builder()
                             .setEnvironment(AndroidPay.getEnvironment(getConfiguration().getAndroidPay()))
                             .setTheme(WalletConstants.THEME_LIGHT)
