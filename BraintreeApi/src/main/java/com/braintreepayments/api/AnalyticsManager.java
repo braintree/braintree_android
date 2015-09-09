@@ -59,7 +59,7 @@ class AnalyticsManager {
 
             @Override
             public void onConfigurationFetched(Configuration config) {
-                if (!fragment.getConfiguration().getAnalytics().isEnabled()) {
+                if (!config.getAnalytics().isEnabled()) {
                     return;
                 }
 
@@ -79,7 +79,7 @@ class AnalyticsManager {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                if (fragment.getConfiguration().getAnalytics().isEnabled()) {
+                if (configuration.getAnalytics().isEnabled()) {
                     processRequests(fragment);
                 }
             }
