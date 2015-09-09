@@ -126,6 +126,9 @@ public class BraintreeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
+        mContext = getActivity().getApplicationContext();
+        mIntegrationType = getArguments().getString(EXTRA_INTEGRATION_TYPE);
+
         try {
             if (getArguments().containsKey(EXTRA_CLIENT_KEY)) {
                 mClientKey = ClientKey.fromString(getArguments().getString(EXTRA_CLIENT_KEY));
@@ -143,9 +146,6 @@ public class BraintreeFragment extends Fragment {
         } catch (InvalidArgumentException | JSONException ignored) {
             // already checked in BraintreeFragment.newInstance
         }
-
-        mContext = getActivity().getApplicationContext();
-        mIntegrationType = getArguments().getString(EXTRA_INTEGRATION_TYPE);
 
         fetchConfiguration();
     }

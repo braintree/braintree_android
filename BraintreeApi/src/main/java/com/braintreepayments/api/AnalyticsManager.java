@@ -44,7 +44,7 @@ class AnalyticsManager {
 
     private static final int REQUEST_THRESHOLD = 5;
 
-    private static ArrayList<AnalyticsRequest> sRequestQueue = new ArrayList<>();
+    protected static ArrayList<AnalyticsRequest> sRequestQueue = new ArrayList<>();
     private static JSONObject sCachedMetadata;
 
     /**
@@ -166,7 +166,7 @@ class AnalyticsManager {
         return applicationInfo;
     }
 
-    private static class AnalyticsRequest {
+    public static class AnalyticsRequest {
 
         private final String mIntegrationType;
         private final String mEvent;
