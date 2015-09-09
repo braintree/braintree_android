@@ -19,6 +19,9 @@ import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 import org.junit.Test;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
@@ -334,11 +337,15 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
                        (Parcelable) new ErrorWithResponse(422, stringFromFixture("errors/expiration_date_error_response.json")));
         Activity activity = getActivity(clientToken, intent);
 
-        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_card_number)).perform(typeText(VISA));
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_expiration)).perform(typeText("0815"), closeSoftKeyboard());
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
+        waitForView(
+                withId(com.braintreepayments.api.dropin.R.id.bt_card_form_card_number)).perform(typeText(
+                VISA));
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_expiration)).perform(typeText(createExpirationDateOneMonthInTheFuture()), closeSoftKeyboard());
+        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button),
+                isEnabled());
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(
+                click());
 
-        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button), isEnabled());
 
         ErrorEditText editText = (ErrorEditText) activity.findViewById(
                 com.braintreepayments.api.dropin.R.id.bt_card_form_expiration);
@@ -347,6 +354,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
 
         LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(
                 com.braintreepayments.api.dropin.R.id.bt_header_container);
+
         assertEquals(HeaderState.ERROR, loadingHeader.getCurrentState());
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_header_container)).check(matches(isDisplayed()));
     }
@@ -358,7 +366,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
         waitForView(
                 withId(com.braintreepayments.api.dropin.R.id.bt_card_form_card_number)).perform(typeText(
                 VISA));
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_expiration)).perform(typeText("0815"), closeSoftKeyboard());
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_expiration)).perform(typeText(createExpirationDateOneMonthInTheFuture()), closeSoftKeyboard());
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_postal_code)).perform(typeText("20000"));
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
 
@@ -499,5 +507,15 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
     private boolean checkHomeAsUpEnabled(Activity activity) {
         return (activity.getActionBar().getDisplayOptions() & ActionBar.DISPLAY_HOME_AS_UP) ==
             ActionBar.DISPLAY_HOME_AS_UP;
+    }
+
+    private String createExpirationDateOneMonthInTheFuture(){
+        // Build a date one month in the future so we surpass
+        // our built in expiration date checker.
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, 1);
+        Date date = cal.getTime();
+        String datePlusOneMonth = new SimpleDateFormat("MMyy").format(date);
+        return datePlusOneMonth;
     }
 }
