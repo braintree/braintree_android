@@ -11,6 +11,7 @@ import android.util.Log;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodResponseCallback;
 import com.braintreepayments.api.models.Configuration;
@@ -101,52 +102,56 @@ public class PayPal {
      *                         Acceptable scopes are defined in {@link com.braintreepayments.api.PayPal}.
      */
     public static void authorizeAccount(final BraintreeFragment fragment, final List<String> additionalScopes) {
-        fragment.sendAnalyticsEvent("paypal.selected");
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                fragment.sendAnalyticsEvent("paypal.selected");
 
-        if (fragment.getConfiguration().getPayPal().getUseBillingAgreement()) {
-            PayPalCheckout checkout = new PayPalCheckout();
-            billingAgreement(fragment, checkout);
-            return;
-        }
-
-        sBraintreeFragmentBroadcastReceiver.setFragment(fragment);
-        BraintreeBroadcastManager.getInstance(fragment.getContext())
-                .registerReceiver(sBraintreeFragmentBroadcastReceiver, new IntentFilter(
-                        BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
-
-        try {
-            sPendingRequest = buildPayPalAuthorizationConfiguration(fragment.getActivity(),
-                    fragment.getConfiguration(),
-                    fragment.getClientToken().toJson());
-
-            if (additionalScopes != null) {
-                for (String scope : additionalScopes) {
-                    ((AuthorizationRequest) sPendingRequest).withScopeValue(scope);
+                if (fragment.getConfiguration().getPayPal().getUseBillingAgreement()) {
+                    PayPalCheckout checkout = new PayPalCheckout();
+                    billingAgreement(fragment, checkout);
+                    return;
                 }
-            }
 
-            sPendingRequestStatus =
-                    PayPalOneTouchCore.performRequest(fragment.getActivity(),
-                            sPendingRequest,
-                            PAYPAL_AUTHORIZATION_REQUEST_CODE,
-                            sEnableSignatureVerification,
-                            new BrowserSwitchAdapter() {
-                                @Override
-                                public void handleBrowserSwitchIntent(Intent intent) {
-                                    fragment.getActivity().startActivityForResult(
-                                            new Intent(fragment.getActivity(),
-                                                    BraintreeBrowserSwitchActivity.class)
-                                                    .setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                                                    .putExtra(
-                                                            BraintreeBrowserSwitchActivity.EXTRA_INTENT,
-                                                            intent),
-                                            PAYPAL_AUTHORIZATION_REQUEST_CODE);
-                                }
-                            });
-            sendAnalyticsForPayPalPerformRequestStatus(fragment, sPendingRequestStatus,
-                    false);
-        } catch (BraintreeException ignored) {
-        }
+                sBraintreeFragmentBroadcastReceiver.setFragment(fragment);
+                BraintreeBroadcastManager.getInstance(fragment.getContext())
+                        .registerReceiver(sBraintreeFragmentBroadcastReceiver, new IntentFilter(
+                                BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
+
+                try {
+                    sPendingRequest = buildPayPalAuthorizationConfiguration(fragment.getActivity(),
+                            fragment.getConfiguration(),
+                            fragment.getClientToken().toJson());
+
+                    if (additionalScopes != null) {
+                        for (String scope : additionalScopes) {
+                            ((AuthorizationRequest) sPendingRequest).withScopeValue(scope);
+                        }
+                    }
+
+                    sPendingRequestStatus =
+                            PayPalOneTouchCore.performRequest(fragment.getActivity(),
+                                    sPendingRequest,
+                                    PAYPAL_AUTHORIZATION_REQUEST_CODE,
+                                    sEnableSignatureVerification,
+                                    new BrowserSwitchAdapter() {
+                                        @Override
+                                        public void handleBrowserSwitchIntent(Intent intent) {
+                                            fragment.getActivity().startActivityForResult(
+                                                    new Intent(fragment.getActivity(),
+                                                            BraintreeBrowserSwitchActivity.class)
+                                                            .setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                                                            .putExtra(
+                                                                    BraintreeBrowserSwitchActivity.EXTRA_INTENT,
+                                                                    intent),
+                                                    PAYPAL_AUTHORIZATION_REQUEST_CODE);
+                                        }
+                                    });
+                    sendAnalyticsForPayPalPerformRequestStatus(fragment, sPendingRequestStatus,
+                            false);
+                } catch (BraintreeException ignored) {}
+            }
+        });
     }
 
     /**

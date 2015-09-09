@@ -74,9 +74,10 @@ public class PaymentMethodTokenizer {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                fragment.getHttpClient().post(PaymentMethodTokenizer.versionedPath(
-                                PaymentMethodTokenizer.PAYMENT_METHOD_ENDPOINT + "/" +
-                                        paymentMethodBuilder.getApiPath()),
+                String url = PaymentMethodTokenizer.versionedPath(
+                        PaymentMethodTokenizer.PAYMENT_METHOD_ENDPOINT + "/" +
+                                paymentMethodBuilder.getApiPath());
+                fragment.getHttpClient().post(url,
                         paymentMethodBuilder.build(), new HttpResponseCallback() {
                             @Override
                             public void success(String responseBody) {
@@ -114,7 +115,8 @@ public class PaymentMethodTokenizer {
      *
      * @param paymentMethodBuilder {@link PaymentMethodBuilder}
      */
-    public static void tokenize(final BraintreeFragment fragment, final PaymentMethodBuilder paymentMethodBuilder) {
+    public static void tokenize(final BraintreeFragment fragment,
+            final PaymentMethodBuilder paymentMethodBuilder) {
         PaymentMethodTokenizer.tokenize(fragment, paymentMethodBuilder,
                 new PaymentMethodResponseCallback() {
                     @Override

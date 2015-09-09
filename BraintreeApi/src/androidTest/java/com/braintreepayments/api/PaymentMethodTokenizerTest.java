@@ -203,6 +203,8 @@ public class PaymentMethodTokenizerTest {
     @Test(timeout = 10000)
     @MediumTest
     public void tokenize_acceptsAPayPalAccount() throws InterruptedException, JSONException {
+        // TODO: I think we're passing in bad credentials for OTC flow. Probably need to the stub
+
         final CountDownLatch latch = new CountDownLatch(1);
         JSONObject otcJson = new JSONObject(FixturesHelper.stringFromFixture("paypal_otc_response.json"));
         BraintreeFragment fragment = getFragment(mActivity, new TestClientTokenBuilder().withPayPal().build());

@@ -15,26 +15,18 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalConfiguration;
 import com.braintreepayments.api.test.TestActivity;
 import com.google.android.gms.wallet.Cart;
-import com.paypal.android.sdk.payments.PayPalOAuthScopes;
-import com.paypal.android.sdk.payments.PayPalProfileSharingActivity;
-import com.paypal.android.sdk.payments.PayPalTouchActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-
-import java.util.Collections;
-import java.util.List;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.doNothing;
@@ -170,43 +162,6 @@ public class PaymentButtonTest {
                 mPaymentButton.findViewById(R.id.bt_payment_button_divider).getVisibility());
         assertEquals(View.VISIBLE,
                 mPaymentButton.findViewById(R.id.bt_payment_button_divider_2).getVisibility());
-    }
-
-    @Test(timeout = 1000)
-    public void startsPayWithPayPal() throws InvalidArgumentException, JSONException {
-        setEnabledPaymentMethods(true, true, true);
-        BraintreeFragment fragment = getFragment();
-        mPaymentButton.initialize(fragment);
-
-        mPaymentButton.findViewById(R.id.bt_paypal_button).performClick();
-
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivityForResult(intentCaptor.capture(), anyInt());
-        assertEquals(PayPalProfileSharingActivity.class.getName(),
-                intentCaptor.getValue().getComponent().getClassName());
-    }
-
-    @Test(timeout = 1000)
-    public void startsPayWithPayPalWithAddressScope() throws InvalidArgumentException,
-            JSONException {
-        setEnabledPaymentMethods(true, true, true);
-        BraintreeFragment fragment = getFragment();
-        List<String> scopes = Collections.singletonList(PayPalOAuthScopes.PAYPAL_SCOPE_ADDRESS);
-        mPaymentButton.setAdditionalPayPalScopes(scopes);
-        mPaymentButton.initialize(fragment);
-
-        mPaymentButton.findViewById(R.id.bt_paypal_button).performClick();
-
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivityForResult(intentCaptor.capture(), anyInt());
-        Intent intent = intentCaptor.getValue();
-        String paypalScopes = intent.getParcelableExtra(PayPalTouchActivity.EXTRA_REQUESTED_SCOPES)
-                .toString();
-        assertEquals(PayPalProfileSharingActivity.class.getName(),
-                intent.getComponent().getClassName());
-        assertTrue(paypalScopes.contains("https://uri.paypal.com/services/payments/futurepayments"));
-        assertTrue(paypalScopes.contains("email"));
-        assertTrue(paypalScopes.contains("address"));
     }
 
     @Test(timeout = 1000)
