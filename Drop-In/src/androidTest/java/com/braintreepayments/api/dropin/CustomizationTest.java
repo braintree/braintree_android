@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.braintreepayments.api.BraintreeApi;
 import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
@@ -106,6 +107,31 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         onView(withId(R.id.bt_description_amount)).check(matches(withText("$1,000,000,000.00")));
         onView(withId(R.id.bt_card_form_submit_button)).check(matches(withText(
                 startsWith("$1,000,000,000.00"))));
+    }
+
+    public void testSecondaryDescriptionCanBeGreaterThanOneLine() throws InterruptedException {
+        String actual = "Some stuffz\nSome more stuffz\nEven more yet";
+        int expectedVisibleLines = 3;
+
+        Intent intent = createIntent();
+        String clientToken = new TestClientTokenBuilder().build();
+        Customization customization = new CustomizationBuilder()
+                .primaryDescription("Hello, World!")
+                .secondaryDescription(actual)
+                .amount("$1,000,000,000.00")
+                .build();
+        intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, clientToken);
+        intent.putExtra(BraintreePaymentActivity.EXTRA_CUSTOMIZATION, customization);
+        setActivityIntent(intent);
+        getActivity();
+        waitForAddPaymentFormHeader();
+
+        TextView secondaryDescription = (TextView) getActivity().findViewById(R.id.bt_secondary_description);
+        int textHeight = secondaryDescription.getLineHeight();
+        int height = secondaryDescription.getHeight();
+
+        int approxVisibleLines = height / textHeight;
+        assertEquals(expectedVisibleLines, approxVisibleLines);
     }
 
     public void testDefaultButtonTextIsUsedWhenCustomizationIsPresentWithoutSpecifyingButtonText() {
