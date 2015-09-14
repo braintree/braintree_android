@@ -1,0 +1,9 @@
+{
+    "coinbaseEnabled": true,
+    "coinbase": {
+        "clientId": "dfaldfjfhadsfhasdfh",
+        "merchantAccount": "coinbase-merchant@example.com",
+        "scopes": "authorizations:test user",
+        "redirectUrl": "coinbase://"
+    }
+}

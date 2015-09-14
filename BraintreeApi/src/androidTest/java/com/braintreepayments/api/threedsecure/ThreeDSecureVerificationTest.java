@@ -14,7 +14,7 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
-import com.braintreepayments.api.test.ThreeDSecureAuthenticationTestActivity;
+import com.braintreepayments.api.ThreeDSecureAuthenticationTestActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 import org.json.JSONException;
@@ -68,7 +68,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
         waitForView(withId(android.R.id.widget_frame));
 
         // wait for page to load
-        SystemClock.sleep(5000);
+        SystemClock.sleep(7000);
 
         sendKeys(KeyEvent.KEYCODE_BACK);
 
@@ -161,7 +161,7 @@ public class ThreeDSecureVerificationTest extends ActivityInstrumentationTestCas
             throws ErrorWithResponse, BraintreeException {
         Activity activity = startThreeDSecureTestActivity("4000000000000101");
 
-        SystemClock.sleep(5000);
+        SystemClock.sleep(7000);
 
         waitForActivityToFinish(activity);
         Map<String, Object> result = getActivityResult(activity);

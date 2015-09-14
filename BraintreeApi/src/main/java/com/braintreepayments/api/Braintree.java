@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,6 +20,7 @@ import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
+import com.braintreepayments.api.models.CoinbaseAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
@@ -32,6 +34,7 @@ import com.google.android.gms.wallet.WalletConstants;
 
 import org.json.JSONException;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -132,30 +135,6 @@ public class Braintree {
     private final Set<ErrorListener> mErrorListeners = new HashSet<ErrorListener>();
 
     private List<PaymentMethod> mCachedPaymentMethods;
-
-    /**
-     * @deprecated Use the asynchronous
-     * {@link com.braintreepayments.api.Braintree#setup(android.content.Context, String, com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener)}
-     * instead.
-     *
-     * Obtain an instance of {@link Braintree}. If multiple calls are made with the same {@code
-     * clientToken}, you may get the same instance returned.
-     *
-     * @param context
-     * @param clientToken A client token obtained from a Braintree server SDK.
-     * @return {@link com.braintreepayments.api.Braintree} instance. Repeated called to
-     *         {@link #getInstance(android.content.Context, String)} with the same {@code clientToken}
-     *         may return the same {@link com.braintreepayments.api.Braintree} instance.
-     */
-    @Deprecated
-    public static Braintree getInstance(Context context, String clientToken) {
-        if (sInstances.containsKey(clientToken)) {
-            return sInstances.get(clientToken);
-        } else {
-            return new Braintree(clientToken,
-                    new BraintreeApi(context.getApplicationContext(), clientToken));
-        }
-    }
 
     /**
      * Called to begin the setup of {@link Braintree}. Once setup is complete the supplied
@@ -316,6 +295,13 @@ public class Braintree {
      */
     public boolean isVenmoEnabled() {
         return mBraintreeApi.isVenmoEnabled();
+    }
+
+    /**
+     * @return if Coinbase is enabled in the current environment.
+     */
+    public boolean isCoinbaseEnabled() {
+        return mBraintreeApi.isCoinbaseEnabled();
     }
 
     /**
@@ -581,6 +567,7 @@ public class Braintree {
 
     /**
      * Start the Pay With Venmo flow. This will app switch to the Venmo app.
+     *
      * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * when {@link #startPayWithVenmo(android.app.Activity, int)} finishes.
      * @param requestCode The request code associated with this start request. Will be returned in
@@ -635,6 +622,88 @@ public class Braintree {
             });
         } else {
             sendAnalyticsEvent("venmo-app.fail");
+        }
+    }
+
+    /**
+     * Start the pay with Coinbase flow. This will switch to the Coinbase website.
+     *
+     * If an error occurs, the exception that occurred will be sent to
+     * {@link Braintree.ErrorListener#onRecoverableError(com.braintreepayments.api.exceptions.ErrorWithResponse)} or
+     * {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)} as appropriate.
+     *
+     * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     *        when {@link #startPayWithCoinbase(android.app.Activity, int)} finishes.
+     * @param requestCode The request code associated with this start request. Will be returned in
+     *        {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     */
+    public void startPayWithCoinbase(Activity activity, int requestCode) {
+        boolean payWithCoinbaseInitiated = false;
+        sendAnalyticsEvent("coinbase.initiate.started");
+        if (!mBraintreeApi.isCoinbaseEnabled()) {
+            sendAnalyticsEvent("coinbase.initiate.unavailable");
+            postUnrecoverableErrorToListeners(new AppSwitchNotAvailableException());
+        } else {
+            try {
+                payWithCoinbaseInitiated = mBraintreeApi.startPayWithCoinbase(activity, requestCode);
+                sendAnalyticsEvent("coinbase.webswitch.started");
+
+            } catch (UnsupportedEncodingException e) {
+                postUnrecoverableErrorToListeners(e);
+                sendAnalyticsEvent("coinbase.initiate.exception");
+            }
+
+            if (!payWithCoinbaseInitiated) {
+                postUnrecoverableErrorToListeners(new AppSwitchNotAvailableException());
+                sendAnalyticsEvent("coinbase.initiate.failed");
+            }
+        }
+    }
+
+    /**
+     * Finish the Coinbase flow and create a {@link com.braintreepayments.api.models.CoinbaseAccount}
+     *
+     * If an error occurs, the exception that occurred will be sent to
+     * {@link Braintree.ErrorListener#onRecoverableError(com.braintreepayments.api.exceptions.ErrorWithResponse)} or
+     * {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)} as appropriate.
+     *
+     * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     */
+    public synchronized void finishPayWithCoinbase(final int resultCode, final Intent data) {
+
+        Uri redirectUri = data.getParcelableExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL);
+        String error = redirectUri != null ? redirectUri.getQueryParameter("error") : null;
+        if (error != null) {
+            if (error.equals("access_denied")) {
+                sendAnalyticsEvent("coinbase.webswitch.denied");
+            } else {
+                sendAnalyticsEvent("coinbase.webswitch.failed");
+            }
+        } else {
+            mExecutorService.submit(new Runnable() {
+                @Override
+                public void run() {
+
+                    sendAnalyticsEvent("coinbase.webswitch.authorized");
+
+                    try {
+                        CoinbaseAccount coinbaseAccount = mBraintreeApi.finishPayWithCoinbase(resultCode, data);
+                        if (coinbaseAccount != null) {
+                            addPaymentMethodToCache(coinbaseAccount);
+                            postCreatedMethodToListeners(coinbaseAccount);
+                            postCreatedNonceToListeners(coinbaseAccount.getNonce());
+                            sendAnalyticsEvent("coinbase.tokenize.succeeded");
+                        }
+                    } catch (BraintreeException e) {
+                        sendAnalyticsEvent("coinbase.tokenize.failed");
+                        postUnrecoverableErrorToListeners(e);
+                    } catch (ErrorWithResponse errorWithResponse) {
+                        sendAnalyticsEvent("coinbase.tokenize.failed");
+                        postRecoverableErrorToListeners(errorWithResponse);
+                    }
+                }
+            });
         }
     }
 
@@ -940,6 +1009,8 @@ public class Braintree {
         if (responseCode == Activity.RESULT_OK && data != null) {
             if (PayPalHelper.isPayPalIntent(data)) {
                 finishPayWithPayPal(activity, responseCode, data);
+            } else if (Coinbase.canParseResponse(activity, data)) {
+                finishPayWithCoinbase(responseCode, data);
             } else if (AndroidPay.isMaskedWalletResponse(data)) {
                 performAndroidPayFullWalletRequest(activity, requestCode, null, getAndroidPayGoogleTransactionId(data));
             } else if (AndroidPay.isFullWalletResponse(data)) {

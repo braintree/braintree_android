@@ -1,12 +1,17 @@
 package com.braintreepayments.demo;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.Window;
 
 import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.BraintreeBroadcastManager;
+import com.braintreepayments.api.BraintreeBrowserSwitchActivity;
 import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
 import com.braintreepayments.api.dropin.BraintreePaymentActivity;
@@ -22,10 +27,29 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodCrea
 
     private PaymentButton mPaymentButton;
 
+    private BroadcastReceiver mBrowserSwitchReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action
+                    .equalsIgnoreCase(BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED)) {
+                mPaymentButton.onActivityResult(PaymentButton.REQUEST_CODE, intent.getIntExtra(
+                        BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_EXTRA_RESULT,
+                        Activity.RESULT_OK),
+                        intent);
+            }
+        }
+    };
+
     protected void onCreate(Bundle onSaveInstanceState) {
         super.onCreate(onSaveInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.payment_button);
+
+        // Register the BroadcastReceiver for Coinbase browser switch
+        BraintreeBroadcastManager.getInstance(this).registerReceiver(mBrowserSwitchReceiver,
+                new IntentFilter(
+                        BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
 
         mPaymentButton = (PaymentButton) findViewById(R.id.payment_button);
 
@@ -57,6 +81,11 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodCrea
             setResult(RESULT_FIRST_USER, intent);
             finish();
         }
+    }
+
+    protected void onDestroy() {
+        BraintreeBroadcastManager.getInstance(this).unregisterReceiver(mBrowserSwitchReceiver);
+        super.onDestroy();
     }
 
     @Override

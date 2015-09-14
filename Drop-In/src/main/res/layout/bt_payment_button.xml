@@ -28,6 +28,12 @@
 
     <ImageButton
         style="@style/bt_payment_method_app_switch_button"
+        android:id="@+id/bt_coinbase_button"
+        android:src="@drawable/bt_logo_coinbase"
+        android:contentDescription="@string/bt_pay_with_coinbase" />
+
+    <ImageButton
+        style="@style/bt_payment_method_app_switch_button"
         android:id="@+id/bt_android_pay_button"
         android:src="@drawable/bt_logo_android_pay"
         android:contentDescription="@string/bt_pay_with_android_pay" />

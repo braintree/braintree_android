@@ -1,9 +1,12 @@
 package com.braintreepayments.api.dropin.view;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -11,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.Coinbase;
 import com.braintreepayments.api.dropin.R;
 import com.google.android.gms.wallet.Cart;
 
@@ -96,15 +100,19 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
 
         boolean isPayPalEnabled = mBraintree.isPayPalEnabled();
         boolean isVenmoEnabled = mBraintree.isVenmoEnabled();
+        boolean isCoinbaseEnabled = mBraintree.isCoinbaseEnabled();
         boolean isAndroidPayEnabled = (mBraintree.isAndroidPayEnabled() && (mCart != null || mIsBillingAgreement));
         int buttonCount = 0;
-        if (!isPayPalEnabled && !isVenmoEnabled && !isAndroidPayEnabled) {
+        if (!isPayPalEnabled && !isVenmoEnabled && !isCoinbaseEnabled && !isAndroidPayEnabled) {
             setVisibility(GONE);
         } else {
             if (isPayPalEnabled) {
                 buttonCount++;
             }
             if (isVenmoEnabled) {
+                buttonCount++;
+            }
+            if (isCoinbaseEnabled) {
                 buttonCount++;
             }
             if (isAndroidPayEnabled) {
@@ -116,6 +124,9 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
             }
             if (isVenmoEnabled) {
                 enableButton(findViewById(R.id.bt_venmo_button), buttonCount);
+            }
+            if (isCoinbaseEnabled) {
+                enableButton(findViewById(R.id.bt_coinbase_button), buttonCount);
             }
             if (isAndroidPayEnabled) {
                 enableButton(findViewById(R.id.bt_android_pay_button), buttonCount);
@@ -178,6 +189,8 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
             mBraintree.startPayWithPayPal(mActivity, mRequestCode, mAdditionalScopes);
         } else if (v.getId() == R.id.bt_venmo_button) {
             mBraintree.startPayWithVenmo(mActivity, mRequestCode);
+        } else if (v.getId() == R.id.bt_coinbase_button) {
+            mBraintree.startPayWithCoinbase(mActivity, mRequestCode);
         } else if (v.getId() == R.id.bt_android_pay_button) {
             mBraintree.performAndroidPayMaskedWalletRequest(mActivity, mRequestCode, mCart,
                     mIsBillingAgreement, mShippingAddressRequired, mPhoneNumberRequired);

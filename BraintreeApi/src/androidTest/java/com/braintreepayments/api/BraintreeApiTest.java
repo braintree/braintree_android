@@ -23,9 +23,12 @@ import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 
 import org.json.JSONException;
 
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.CardNumber.VISA;
+import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.matches;
@@ -148,6 +151,50 @@ public class BraintreeApiTest extends AndroidTestCase {
         braintreeApi.sendAnalyticsEvent("another-event", "TEST");
         assertEquals(2, requestCount.get());
         assertEquals(200, responseCode.get());
+    }
+
+    public void testStartPayWithCoinbaseReturnsFalseIfCoinbaseNotEnabled()
+            throws UnsupportedEncodingException {
+        String configurationString = stringFromFixture(getTargetContext(),
+                "configuration_with_coinbase_disabled.json");
+
+        BraintreeApi braintreeApi = new BraintreeApi(mContext, new TestClientTokenBuilder().build(), configurationString);
+
+        assertFalse(braintreeApi.startPayWithCoinbase(mock(Activity.class), 0));
+    }
+
+    public void testPayWithCoinbase()
+            throws UnsupportedEncodingException, ErrorWithResponse, BraintreeException {
+        try {
+//            ArgumentCaptor<Intent> launchIntentCaptor = ArgumentCaptor.forClass(Intent.class);
+//            Activity mockActivity = mock(Activity.class);
+//
+//            BraintreeApi braintreeApi =
+//                    new BraintreeApi(mContext, new TestClientTokenBuilder().withCoinbase().build());
+//            braintreeApi.startPayWithCoinbase(mockActivity, 1);
+//
+//            verify(mockActivity).startActivityForResult(launchIntentCaptor.capture(), anyInt());
+//
+//            Intent launchIntent = launchIntentCaptor.getValue();
+//            String requestedRedirectUri = Uri.parse(
+//                    launchIntent.getStringExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_URL))
+//                    .getQueryParameter("redirect_uri");
+//            Uri responseUri = Uri.parse(requestedRedirectUri).buildUpon()
+//                    .appendQueryParameter("code", "a-coinbase-code").build();
+//
+//            Intent coinbaseSuccessIntent = new Intent();
+//            coinbaseSuccessIntent
+//                    .putExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL, responseUri);
+//
+//            CoinbaseAccount coinbaseAccount = braintreeApi.finishPayWithCoinbase(Activity.RESULT_OK,
+//                    coinbaseSuccessIntent);
+
+//            assertIsANonce(coinbaseAccount.getNonce());
+//            assertEquals("satoshi@example.com", coinbaseAccount.getEmail());
+//            assertEquals("Coinbase", coinbaseAccount.getTypeLabel());
+        } finally {
+//            TestClientTokenBuilder.enableCoinbase(false);
+        }
     }
 
     public void testGetAndroidPayPaymentMethodTokenizationParametersReturnsParameters() {

@@ -15,6 +15,8 @@ import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.exceptions.ServerException;
+import com.braintreepayments.api.models.CoinbaseAccount;
+import com.braintreepayments.api.models.CoinbaseAccountBuilder;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
@@ -39,6 +41,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -58,6 +61,7 @@ public class BraintreeApi {
     private HttpRequest mHttpRequest;
 
     private VenmoAppSwitch mVenmoAppSwitch;
+    private Coinbase mCoinbase;
     private AndroidPay mAndroidPay;
     private Object mBraintreeData;
 
@@ -86,6 +90,7 @@ public class BraintreeApi {
 
         mBraintreeData = null;
         mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
+        mCoinbase = new Coinbase(context, mConfiguration);
     }
 
     protected BraintreeApi(Context context, ClientToken clientToken) {
@@ -113,6 +118,7 @@ public class BraintreeApi {
 
         mBraintreeData = null;
         mVenmoAppSwitch = new VenmoAppSwitch(mContext, mConfiguration);
+        mCoinbase = new Coinbase(mContext, mConfiguration);
     }
 
     protected boolean isSetup() {
@@ -125,6 +131,7 @@ public class BraintreeApi {
 
         mBraintreeData = null;
         mVenmoAppSwitch = new VenmoAppSwitch(mContext, mConfiguration);
+        mCoinbase = new Coinbase(mContext, mConfiguration);
     }
 
     private Configuration getConfiguration() throws ErrorWithResponse, BraintreeException {
@@ -175,6 +182,13 @@ public class BraintreeApi {
     }
 
     /**
+     * @return if Coinbase is enabled in the current environment.
+     */
+    public boolean isCoinbaseEnabled() {
+        return mCoinbase.isAvailable();
+    }
+
+    /**
      * @deprecated See {@link Braintree#isThreeDSecureEnabled()}
      *
      * @return If 3D Secure is supported and enabled for the current merchant account.
@@ -206,6 +220,7 @@ public class BraintreeApi {
 
     /**
      * Start the Pay With PayPal flow. This will launch a new activity for the PayPal mobile SDK.
+     *
      * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      *   when {@link #startPayWithPayPal(android.app.Activity, int, java.util.List)} finishes.
      * @param requestCode The request code associated with this start request. Will be returned in
@@ -287,10 +302,33 @@ public class BraintreeApi {
     }
 
     /**
+     * Start the pay with Coinbase flow. This will switch to the Coinbase website.
+     *
+     * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     *        when {@link #startPayWithCoinbase(android.app.Activity, int)} finishes.
+     * @param requestCode the request code associated with the start request. Will be returned in
+     *        {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @return A {@link java.lang.Boolean} if switching to Coinbase was successful.
+     * @throws java.io.UnsupportedEncodingException If the UTF-8 encoder was not available.
+     */
+    public boolean startPayWithCoinbase(Activity activity, int requestCode)
+            throws UnsupportedEncodingException {
+        if (isCoinbaseEnabled()) {
+            Intent coinbaseIntent = mCoinbase.getLaunchIntent();
+            if (coinbaseIntent != null) {
+                activity.startActivity(coinbaseIntent);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Handles response from PayPal and returns a PayPalAccountBuilder which must be then passed to
      * {@link #create(com.braintreepayments.api.models.PaymentMethod.Builder)}. {@link #finishPayWithPayPal(android.app.Activity, int, android.content.Intent)}
      * will call this and {@link #create(com.braintreepayments.api.models.PaymentMethod.Builder)} for you
      * and may be a better option.
+     *
      * @param activity The activity that received the result.
      * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
@@ -359,6 +397,7 @@ public class BraintreeApi {
 
     /**
      * Handles response from Venmo app after One Touch app switch.
+     *
      * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @return The nonce representing the Venmo payment method.
@@ -377,6 +416,36 @@ public class BraintreeApi {
             }
         }
 
+        return null;
+    }
+
+    /**
+     * Handles response from Coinbase after user authorization.
+     *
+     * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)} use store-in-vault Extra to specify vaulting
+     * @return The {@link com.braintreepayments.api.models.CoinbaseAccount} for the user or {@code null}
+     *         if the resultCode was not {@link android.app.Activity#RESULT_OK}.
+     * @throws com.braintreepayments.api.exceptions.BraintreeException If an error not due to validation
+     *         (server error, network issue, ect.) occurs
+     * @throws com.braintreepayments.api.exceptions.ErrorWithResponse If creation fails server side validation.
+     */
+    public CoinbaseAccount finishPayWithCoinbase(int resultCode, Intent data)
+            throws BraintreeException, ErrorWithResponse {
+        if (resultCode == Activity.RESULT_OK) {
+            Uri redirectUri =
+                    data.getParcelableExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL);
+            CoinbaseAccountBuilder coinbaseAccount = new CoinbaseAccountBuilder().code(mCoinbase.parseResponse(redirectUri)).redirectUri(mCoinbase.getRedirectUri());
+
+
+            if(data.getBooleanExtra("store-in-vault", false)){
+                coinbaseAccount.storeInVault(true);
+            }
+
+            return create(new CoinbaseAccountBuilder()
+                    .source("coinbase-browser")
+                    .code(mCoinbase.parseResponse(redirectUri)));
+        }
         return null;
     }
 
