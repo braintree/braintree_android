@@ -11,13 +11,8 @@ import java.io.Serializable;
 public class PaymentMethodOptions implements Serializable {
     
     @SerializedName("validate") private boolean mValidate;
-    @SerializedName("storeInVault") private boolean mStoreInVault;
 
     public void setValidate(boolean validate) {
         mValidate = validate;
-    }
-
-    public void setStoreInVault(boolean storeInVault) {
-        mStoreInVault = storeInVault;
     }
 }

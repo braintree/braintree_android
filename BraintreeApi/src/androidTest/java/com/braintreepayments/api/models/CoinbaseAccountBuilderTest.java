@@ -63,4 +63,17 @@ public class CoinbaseAccountBuilderTest extends TestCase {
 
         assertFalse(coinbaseAccount.keys().hasNext());
     }
+
+    public void testIncludesStoreInVaultWhenSet() throws JSONException {
+        CoinbaseAccountBuilder coinbaseAccountBuilder = new CoinbaseAccountBuilder();
+        coinbaseAccountBuilder.storeInVault(true);
+
+        JSONObject coinbaseAccount = new JSONObject(coinbaseAccountBuilder.toJsonString())
+                .getJSONObject(COINBASE_KEY);
+
+        JSONObject option = coinbaseAccount.getJSONObject("options");
+
+        assertTrue(option.has("storeInVault"));
+        assertTrue(option.getBoolean("storeInVault"));
+    }
 }

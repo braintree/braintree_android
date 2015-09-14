@@ -8,7 +8,7 @@ import java.util.Map;
 public class CoinbaseAccountBuilder implements PaymentMethod.Builder<CoinbaseAccount> {
 
     private String mCode;
-    private PaymentMethodOptions mOptions;
+    private CoinbasePaymentMethodOptions mOptions;
     private String mIntegration = "custom";
     private String mRedirectUri;
     private String mSource;
@@ -24,8 +24,8 @@ public class CoinbaseAccountBuilder implements PaymentMethod.Builder<CoinbaseAcc
     }
 
     public CoinbaseAccountBuilder storeInVault(boolean storeInVault) {
-        if (mOptions == null) {
-            mOptions = new PaymentMethodOptions();
+        if(mOptions == null){
+            mOptions = new CoinbasePaymentMethodOptions();
         }
         mOptions.setStoreInVault(storeInVault);
         return this;
@@ -68,8 +68,8 @@ public class CoinbaseAccountBuilder implements PaymentMethod.Builder<CoinbaseAcc
 
     @Override
     public CoinbaseAccountBuilder validate(boolean validate) {
-        if (mOptions == null) {
-            mOptions = new PaymentMethodOptions();
+        if(mOptions == null){
+            mOptions = new CoinbasePaymentMethodOptions();
         }
         mOptions.setValidate(validate);
         return this;
