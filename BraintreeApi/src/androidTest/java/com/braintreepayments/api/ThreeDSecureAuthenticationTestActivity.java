@@ -1,10 +1,8 @@
-package com.braintreepayments.api.test;
+package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.braintreepayments.api.Braintree;
 
 public class ThreeDSecureAuthenticationTestActivity extends Activity {
 
@@ -18,8 +16,7 @@ public class ThreeDSecureAuthenticationTestActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Braintree braintree = Braintree.getInstance(this,
-                getIntent().getStringExtra(EXTRA_CLIENT_TOKEN));
+        Braintree braintree = new Braintree(this, getIntent().getStringExtra(EXTRA_CLIENT_TOKEN));
         String nonce = getIntent().getStringExtra(EXTRA_NONCE);
         String amount = getIntent().getStringExtra(EXTRA_AMOUNT);
 

@@ -13,6 +13,7 @@ import com.braintreepayments.api.models.Configuration;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -149,14 +150,32 @@ public class CoinbaseTest {
 
     /* helpers */
     private Coinbase getCoinbaseWithValidConfiguration() {
-        CoinbaseConfiguration coinbaseConfiguration = mock(CoinbaseConfiguration.class);
-        when(coinbaseConfiguration.getClientId()).thenReturn("some-coinbase-client-id");
-        when(coinbaseConfiguration.getMerchantAccount()).thenReturn("coinbase-merchant@example.com");
-        when(coinbaseConfiguration.getScopes()).thenReturn("some coinbase scope");
-        Configuration configuration = mock(Configuration.class);
-        when(configuration.getCoinbase()).thenReturn(coinbaseConfiguration);
+        try {
+            CoinbaseConfiguration config = new CoinbaseConfiguration();
+            Field clientId = CoinbaseConfiguration.class.getDeclaredField("clientId");
+            Field merchantAccount = CoinbaseConfiguration.class.getDeclaredField("merchantAccount");
+            Field scopes = CoinbaseConfiguration.class.getDeclaredField("scopes");
+            Field environment = CoinbaseConfiguration.class.getDeclaredField("environment");
 
-        return getCoinbaseWithSpecifiedConfiguration(configuration);
+            clientId.setAccessible(true);
+            merchantAccount.setAccessible(true);
+            scopes.setAccessible(true);
+            environment.setAccessible(true);
+
+            clientId.set(config, "some-coinbase-client-id");
+            merchantAccount.set(config, "coinbase-merchant@example.com");
+            scopes.set(config, "some coinbase scope");
+            environment.set(config, "sandbox_shared");
+
+            Configuration configuration = mock(Configuration.class);
+            when(configuration.getCoinbase()).thenReturn(config);
+
+            return getCoinbaseWithSpecifiedConfiguration(configuration);
+        } catch (IllegalAccessException iae) {
+            return null;
+        } catch (NoSuchFieldException nsf) {
+            return null;
+        }
     }
 
     private Coinbase getCoinbaseWithSpecifiedConfiguration(Configuration configuration) {

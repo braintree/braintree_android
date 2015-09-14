@@ -220,9 +220,6 @@ public class Braintree {
         mBraintreeApi.setup();
     }
 
-
-
-
     protected String analyticsPrefix() {
         return mIntegrationType + ".android";
     }
