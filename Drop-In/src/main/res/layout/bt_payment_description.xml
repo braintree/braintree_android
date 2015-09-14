@@ -34,7 +34,6 @@
             android:layout_below="@id/bt_primary_description"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:maxLines="1"
             android:textColor="@color/bt_light_gray"
             android:textSize="@dimen/bt_default_small_text_size" />
 
