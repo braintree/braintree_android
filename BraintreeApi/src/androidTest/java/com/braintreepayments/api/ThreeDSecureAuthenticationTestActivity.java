@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
+
 public class ThreeDSecureAuthenticationTestActivity extends Activity {
 
     public static final String EXTRA_CLIENT_TOKEN = "client_token";
@@ -15,12 +17,21 @@ public class ThreeDSecureAuthenticationTestActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Braintree.setup(this, getIntent().getStringExtra(EXTRA_CLIENT_TOKEN),
+                new BraintreeSetupFinishedListener() {
+                    @Override
+                    public void onBraintreeSetupFinished(boolean setupSuccessful,
+                            Braintree braintree,
+                            String errorMessage, Exception exception) {
 
-        Braintree braintree = new Braintree(this, getIntent().getStringExtra(EXTRA_CLIENT_TOKEN));
-        String nonce = getIntent().getStringExtra(EXTRA_NONCE);
-        String amount = getIntent().getStringExtra(EXTRA_AMOUNT);
+                        String nonce = getIntent().getStringExtra(EXTRA_NONCE);
+                        String amount = getIntent().getStringExtra(EXTRA_AMOUNT);
 
-        braintree.startThreeDSecureVerification(this, THREE_D_SECURE_REQUEST, nonce, amount);
+                        braintree.startThreeDSecureVerification(
+                                ThreeDSecureAuthenticationTestActivity.this, THREE_D_SECURE_REQUEST,
+                                nonce, amount);
+                    }
+                });
     }
 
     @Override
