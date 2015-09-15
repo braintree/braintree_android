@@ -12,20 +12,23 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
+import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.BraintreePaymentActivityTestRunner;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
+import org.json.JSONException;
 import org.junit.Test;
 
 import java.util.Map;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
-import static com.braintreepayments.testutils.ui.Matchers.withId;
-import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
 import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 @LargeTest
 public class UnsuccessfulResultTest extends BraintreePaymentActivityTestRunner {
@@ -169,6 +172,16 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestRunner {
     private void setupActivityWithBraintree() {
         mActivity = getActivity(new TestClientTokenBuilder().build());
         mFragment = mActivity.mBraintreeFragment;
-        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_header));
+
+        String clientToken = new TestClientTokenBuilder().withAnalytics().build();
+        Configuration configuration = null;
+        try {
+            configuration = Configuration.fromJson(clientToken);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            fail("Unable to generate client token");
+        }
+        mFragment = spy(mFragment);
+        when(mFragment.getConfiguration()).thenReturn(configuration);
     }
 }

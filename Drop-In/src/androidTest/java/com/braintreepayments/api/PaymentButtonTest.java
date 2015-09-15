@@ -181,6 +181,7 @@ public class PaymentButtonTest {
         BraintreeFragment fragment = getFragment();
         mPaymentButton.setAndroidPayOptions(Cart.newBuilder().build(), 1);
         mPaymentButton.initialize(fragment);
+        getInstrumentation().waitForIdleSync();
 
         mPaymentButton.findViewById(R.id.bt_android_pay_button).performClick();
 

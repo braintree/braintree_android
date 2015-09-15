@@ -2,6 +2,7 @@ package com.braintreepayments.api.utils;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.support.test.espresso.PerformException;
 import android.support.test.espresso.ViewInteraction;
 import android.util.Log;
@@ -62,9 +63,10 @@ public class PaymentFormHelpers {
         fillInCardForm();
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
-        waitForView(withId(R.id.bt_header_status_icon));
+        waitForView(withId(R.id.bt_header_container));
 
         LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(R.id.bt_header_container);
+        SystemClock.sleep(1000);
         assertEquals(HeaderState.SUCCESS, loadingHeader.getCurrentState());
         onView(withId(R.id.bt_header_container)).check(matches(isDisplayed()));
 
