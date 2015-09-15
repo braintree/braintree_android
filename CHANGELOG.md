@@ -1,5 +1,13 @@
 # Braintree Android SDK Release Notes
 
+## 2.0-SNAPSHOT
+
+* 2.0 is still in Beta, API is subject to change
+* Major changes to architecture
+  * Major logic in Braintree now implemented with a Fragment
+  * Logic for specific payment methods now lives within dedicated classes
+  * Lifecycle cleanup is now handled by Braintree
+
 ## 1.7.4
 
 * Fixes
