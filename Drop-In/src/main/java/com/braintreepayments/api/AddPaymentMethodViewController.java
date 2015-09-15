@@ -150,12 +150,6 @@ public class AddPaymentMethodViewController extends BraintreeViewController
             mBraintreeFragment.sendAnalyticsEvent("card.form.focused");
             mFocusEventSent = true;
         }
-
-        mScrollView.postDelayed(new Runnable() {
-            public void run() {
-                mScrollView.smoothScrollTo(0, field.getTop());
-            }
-        }, 100);
     }
 
     private CardBuilder getCardBuilder() {
