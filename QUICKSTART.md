@@ -66,7 +66,7 @@ CardBuilder cardBuilder = new CardBuilder()
     .cardNumber(cardNumber)
     .expirationDate(expirationDate);
 
-CardTokenizer.tokenize(braintreeFragment, cardBuilder);
+TokenizationClient.tokenize(braintreeFragment, cardBuilder);
 ```
 
 ## Tokenize a PayPal Account
@@ -107,6 +107,12 @@ and wait for the callback.
 
 ```java
 AndroidPay.getAllowedCardNetworks(braintreeFragment)
+```
+
+### Request an Android Pay `MaskedWallet`
+
+```java
+AndroidPay.performMaskedWalletRequest(braintreeFragment, cart, isBillingAgreement, shippingAddressRequired, phoneNumberRequired, requestCode);
 ```
 
 ### Tokenize an Android Pay `FullWallet`
