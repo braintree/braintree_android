@@ -70,7 +70,7 @@ public class CardTokenizationTest {
                 .cardNumber(VISA)
                 .expirationDate("08/20");
 
-        PaymentMethodTokenizer.tokenize(mBraintreeFragment, cardBuilder);
+        TokenizationClient.tokenize(mBraintreeFragment, cardBuilder);
 
         mCountDownLatch.await();
     }
@@ -97,7 +97,7 @@ public class CardTokenizationTest {
                 .cardNumber(VISA)
                 .expirationDate("08/20");
 
-        PaymentMethodTokenizer.tokenize(mBraintreeFragment, cardBuilder);
+        TokenizationClient.tokenize(mBraintreeFragment, cardBuilder);
 
         mCountDownLatch.await();
         verifyAnalyticsEvent(mBraintreeFragment, "card.nonce-received");
@@ -119,7 +119,7 @@ public class CardTokenizationTest {
                 .cardNumber(VISA)
                 .expirationDate("08/20");
 
-        PaymentMethodTokenizer.tokenize(mBraintreeFragment, cardBuilder);
+        TokenizationClient.tokenize(mBraintreeFragment, cardBuilder);
 
         mCountDownLatch.await();
     }
@@ -152,7 +152,7 @@ public class CardTokenizationTest {
             }
         });
 
-        PaymentMethodTokenizer.tokenize(mBraintreeFragment, new CardBuilder().expirationMonth("01"));
+        TokenizationClient.tokenize(mBraintreeFragment, new CardBuilder().expirationMonth("01"));
 
         mCountDownLatch.await();
     }
@@ -178,7 +178,7 @@ public class CardTokenizationTest {
             }
         });
 
-        PaymentMethodTokenizer.tokenize(mBraintreeFragment, new CardBuilder().expirationMonth("01"));
+        TokenizationClient.tokenize(mBraintreeFragment, new CardBuilder().expirationMonth("01"));
 
         mCountDownLatch.await();
         verifyAnalyticsEvent(mBraintreeFragment, "card.nonce-failed");

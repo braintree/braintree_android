@@ -13,7 +13,7 @@ import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.PaymentButton;
-import com.braintreepayments.api.PaymentMethodTokenizer;
+import com.braintreepayments.api.TokenizationClient;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.models.CardBuilder;
@@ -87,7 +87,7 @@ public class CustomFormActivity extends Activity implements PaymentMethodCreated
             .cardNumber(mCardNumber.getText().toString())
             .expirationDate(mExpirationDate.getText().toString());
 
-        PaymentMethodTokenizer.tokenize(mBraintreeFragment, cardBuilder);
+        TokenizationClient.tokenize(mBraintreeFragment, cardBuilder);
     }
 
     @Override

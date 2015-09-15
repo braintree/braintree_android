@@ -21,8 +21,8 @@ import org.json.JSONException;
 
 import java.util.List;
 
-import static com.braintreepayments.api.PaymentMethodTokenizer.PAYMENT_METHOD_ENDPOINT;
-import static com.braintreepayments.api.PaymentMethodTokenizer.versionedPath;
+import static com.braintreepayments.api.TokenizationClient.PAYMENT_METHOD_ENDPOINT;
+import static com.braintreepayments.api.TokenizationClient.versionedPath;
 
 /**
  * Class containing Venmo specific logic.

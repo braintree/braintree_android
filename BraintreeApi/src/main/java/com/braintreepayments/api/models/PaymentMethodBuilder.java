@@ -1,6 +1,7 @@
 package com.braintreepayments.api.models;
 
 import com.braintreepayments.api.BraintreeFragment;
+import com.braintreepayments.api.TokenizationClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,7 +38,7 @@ public abstract class PaymentMethodBuilder<T> {
 
     /**
      * Sets the integration method associated with the
-     * {@link com.braintreepayments.api.PaymentMethodTokenizer#tokenize(BraintreeFragment, PaymentMethodBuilder)}
+     * {@link TokenizationClient#tokenize(BraintreeFragment, PaymentMethodBuilder)}
      * call for analytics use. Defaults to custom and does not need to ever be set.
      *
      * @param integration the current integration style.
@@ -53,7 +54,7 @@ public abstract class PaymentMethodBuilder<T> {
 
     /**
      * Sets the source associated with the
-     * {@link com.braintreepayments.api.PaymentMethodTokenizer#tokenize(BraintreeFragment, PaymentMethodBuilder)}
+     * {@link TokenizationClient#tokenize(BraintreeFragment, PaymentMethodBuilder)}
      * call for analytics use. Set automatically.
      *
      * @param source the source of the payment method.

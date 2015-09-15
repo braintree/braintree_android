@@ -140,7 +140,8 @@ public class PayPal {
                                             fragment.getActivity().startActivityForResult(
                                                     new Intent(fragment.getActivity(),
                                                             BraintreeBrowserSwitchActivity.class)
-                                                            .setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+                                                            .setFlags(
+                                                                    Intent.FLAG_ACTIVITY_NO_ANIMATION)
                                                             .putExtra(
                                                                     BraintreeBrowserSwitchActivity.EXTRA_INTENT,
                                                                     intent),
@@ -149,7 +150,8 @@ public class PayPal {
                                     });
                     sendAnalyticsForPayPalPerformRequestStatus(fragment, sPendingRequestStatus,
                             false);
-                } catch (BraintreeException ignored) {}
+                } catch (BraintreeException ignored) {
+                }
             }
         });
     }
@@ -368,7 +370,7 @@ public class PayPal {
                     PayPalAccountBuilder paypalAccountBuilder =
                             getBuilderFromResponse(fragment.getContext(), resultCode, data);
                     if (paypalAccountBuilder != null) {
-                        PaymentMethodTokenizer.tokenize(fragment, paypalAccountBuilder,
+                        TokenizationClient.tokenize(fragment, paypalAccountBuilder,
                                 new PaymentMethodResponseCallback() {
                                     @Override
                                     public void success(PaymentMethod paymentMethod) {
