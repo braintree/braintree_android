@@ -126,7 +126,7 @@ public class AndroidPay {
      * @param phoneNumberRequired {@code true} if this request requires a phone number, {@code false} otherwise.
      * @param requestCode The requestCode to use with {@link Activity#startActivityForResult(Intent, int)}
      */
-    protected static void performMaskedWalletRequest(BraintreeFragment fragment, Cart cart,
+    public static void performMaskedWalletRequest(BraintreeFragment fragment, Cart cart,
             boolean isBillingAgreement, boolean shippingAddressRequired,
             boolean phoneNumberRequired, int requestCode) {
         fragment.sendAnalyticsEvent("android-pay.selected");
@@ -171,7 +171,7 @@ public class AndroidPay {
      *          be forwarded
      * @param googleTransactionId The transaction id from the {@link MaskedWallet}.
      */
-    protected static void performFullWalletRequest(BraintreeFragment fragment,
+    public static void performFullWalletRequest(BraintreeFragment fragment,
             Cart cart, boolean isBillingAgreement, String googleTransactionId) {
         FullWalletRequest.Builder fullWalletRequestBuilder = FullWalletRequest.newBuilder()
                 .setGoogleTransactionId(googleTransactionId);
@@ -184,7 +184,7 @@ public class AndroidPay {
                 ANDROID_PAY_FULL_WALLET_REQUEST_CODE);
     }
 
-    protected static void onActivityResult(BraintreeFragment fragment, Cart cart,
+    public static void onActivityResult(BraintreeFragment fragment, Cart cart,
             boolean isBillingAgreement, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             if (data.hasExtra(WalletConstants.EXTRA_MASKED_WALLET)) {
