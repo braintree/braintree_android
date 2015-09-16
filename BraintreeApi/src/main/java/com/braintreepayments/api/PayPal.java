@@ -114,7 +114,7 @@ public class PayPal {
                 }
 
                 sBraintreeFragmentBroadcastReceiver.setFragment(fragment);
-                BraintreeBroadcastManager.getInstance(fragment.getContext())
+                BraintreeBroadcastManager.getInstance(fragment.getApplicationContext())
                         .registerReceiver(sBraintreeFragmentBroadcastReceiver, new IntentFilter(
                                 BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
 
@@ -194,7 +194,7 @@ public class PayPal {
     private static void checkout(final BraintreeFragment fragment, final PayPalCheckout checkout,
             final boolean isBillingAgreement) {
         sBraintreeFragmentBroadcastReceiver.setFragment(fragment);
-        BraintreeBroadcastManager.getInstance(fragment.getContext())
+        BraintreeBroadcastManager.getInstance(fragment.getApplicationContext())
                 .registerReceiver(sBraintreeFragmentBroadcastReceiver, new IntentFilter(
                         BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
 
@@ -282,7 +282,7 @@ public class PayPal {
             throws JSONException, ErrorWithResponse, BraintreeException {
         Configuration configuration = fragment.getConfiguration();
         CheckoutRequest request =
-                PayPal.buildPayPalCheckoutConfiguration(null, fragment.getContext(), configuration);
+                PayPal.buildPayPalCheckoutConfiguration(null, fragment.getApplicationContext(), configuration);
 
         String currencyCode = checkout.getCurrencyCode();
         if (currencyCode == null) {
@@ -368,7 +368,7 @@ public class PayPal {
                     sendAnalyticsEventForSwitchResult(fragment, isCheckout, isAppSwitch,
                             "succeeded");
                     PayPalAccountBuilder paypalAccountBuilder =
-                            getBuilderFromResponse(fragment.getContext(), resultCode, data);
+                            getBuilderFromResponse(fragment.getApplicationContext(), resultCode, data);
                     if (paypalAccountBuilder != null) {
                         TokenizationClient.tokenize(fragment, paypalAccountBuilder,
                                 new PaymentMethodResponseCallback() {

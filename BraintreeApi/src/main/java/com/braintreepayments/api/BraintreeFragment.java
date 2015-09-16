@@ -431,7 +431,7 @@ public class BraintreeFragment extends Fragment {
         });
     }
 
-    public Context getContext() {
+    protected Context getApplicationContext() {
         return mContext;
     }
 

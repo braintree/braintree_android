@@ -106,7 +106,7 @@ class AnalyticsManager {
                 } catch (JSONException ignored) {}
             }
 
-            JSONObject fullMetaData = generateRequestBody(fragment.getContext(),
+            JSONObject fullMetaData = generateRequestBody(fragment.getApplicationContext(),
                     requests.get(0).getIntegrationType());
 
             String requestBody = new JSONObject()

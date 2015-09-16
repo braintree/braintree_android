@@ -231,7 +231,7 @@ public class BraintreeFragmentTest {
     public void getContext_returnsContext() throws InvalidArgumentException {
         BraintreeFragment fragment = getFragment(mActivity, mClientToken);
 
-        assertEquals(mActivity.getApplicationContext(), fragment.getContext());
+        assertEquals(mActivity.getApplicationContext(), fragment.getApplicationContext());
     }
 
     @Test(timeout = 1000)

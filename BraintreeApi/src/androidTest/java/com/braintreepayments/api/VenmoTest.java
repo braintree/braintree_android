@@ -177,7 +177,7 @@ public class VenmoTest {
                 .thenReturn(Collections.singletonList(resolveInfo));
         Context context = mock(Context.class);
         when(context.getPackageManager()).thenReturn(packageManager);
-        when(fragment.getContext()).thenReturn(context);
+        when(fragment.getApplicationContext()).thenReturn(context);
         disableSignatureVerification();
 
         Venmo.authorize(fragment);
@@ -219,7 +219,7 @@ public class VenmoTest {
                 .thenReturn(Collections.singletonList(resolveInfo));
         Context context = mock(Context.class);
         when(context.getPackageManager()).thenReturn(packageManager);
-        when(fragment.getContext()).thenReturn(context);
+        when(fragment.getApplicationContext()).thenReturn(context);
         disableSignatureVerification();
 
         Venmo.authorize(fragment);

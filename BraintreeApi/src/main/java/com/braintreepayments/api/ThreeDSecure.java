@@ -106,7 +106,7 @@ public class ThreeDSecure {
                                         ThreeDSecureLookup threeDSecureLookup =
                                                 ThreeDSecureLookup.fromJson(responseBody);
                                         if (threeDSecureLookup.getAcsUrl() != null) {
-                                            Intent intent = new Intent(fragment.getContext(),
+                                            Intent intent = new Intent(fragment.getApplicationContext(),
                                                             ThreeDSecureWebViewActivity.class)
                                                             .putExtra(
                                                                     ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_LOOKUP,

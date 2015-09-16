@@ -39,7 +39,7 @@ public class BraintreeFragmentTestUtils {
             String clientToken = stringFromFixture("client_token.json");
             BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity, clientToken));
             doNothing().when(fragment).fetchConfiguration();
-            when(fragment.getContext()).thenReturn(getTargetContext());
+            when(fragment.getApplicationContext()).thenReturn(getTargetContext());
             when(fragment.getConfiguration()).thenReturn(configuration);
             getInstrumentation().waitForIdleSync();
 
@@ -62,7 +62,7 @@ public class BraintreeFragmentTestUtils {
         try {
             BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity, clientToken));
             doNothing().when(fragment).fetchConfiguration();
-            when(fragment.getContext()).thenReturn(getTargetContext());
+            when(fragment.getApplicationContext()).thenReturn(getTargetContext());
             when(fragment.getConfiguration()).thenReturn(configuration);
             getInstrumentation().waitForIdleSync();
 

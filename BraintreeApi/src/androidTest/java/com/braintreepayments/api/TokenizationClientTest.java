@@ -200,7 +200,7 @@ public class TokenizationClientTest {
         latch.await();
     }
 
-    @Test(timeout = 10000)
+    @Test//(timeout = 10000)
     @MediumTest
     public void tokenize_acceptsAPayPalAccount() throws InterruptedException, JSONException {
         // TODO: I think we're passing in bad credentials for OTC flow. Probably need to the stub

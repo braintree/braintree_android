@@ -218,7 +218,7 @@ public class PaymentButtonTest {
         BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity,
                 stringFromFixture("client_token.json")));
         doNothing().when(fragment).fetchConfiguration();
-        when(fragment.getContext()).thenReturn(getTargetContext());
+        when(fragment.getApplicationContext()).thenReturn(getTargetContext());
         when(fragment.getConfiguration()).thenReturn(configuration);
         doNothing().when(fragment).startActivity(any(Intent.class));
         doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());

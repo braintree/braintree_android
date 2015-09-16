@@ -86,7 +86,7 @@ public class Venmo {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                if (isAvailable(fragment.getContext(), configuration)) {
+                if (isAvailable(fragment.getApplicationContext(), configuration)) {
                     fragment.startActivityForResult(Venmo.getLaunchIntent(configuration),
                             VENMO_REQUEST_CODE);
                     fragment.sendAnalyticsEvent("venmo.app-switch.started");

@@ -96,7 +96,7 @@ public class Fraud {
         } catch (NoClassDefFoundError | JSONException ignored) {}
 
         try {
-            deviceData.put(CORRELATION_ID_KEY, PayPalOneTouchCore.getClientMetadataId(fragment.getContext()));
+            deviceData.put(CORRELATION_ID_KEY, PayPalOneTouchCore.getClientMetadataId(fragment.getApplicationContext()));
         } catch (JSONException ignored) {}
 
         return deviceData.toString();
