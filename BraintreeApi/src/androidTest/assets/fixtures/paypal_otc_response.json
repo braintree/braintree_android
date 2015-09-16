@@ -8,8 +8,8 @@
   "response": {
     "code": "test_auth_code"
   },
-  "response_type": "code",
+  "response_type": "authorization_code",
   "user": {
-    "display_string": "test_email"
+    "display_string": "some_email"
   }
 }

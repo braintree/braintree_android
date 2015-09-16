@@ -30,7 +30,6 @@ public class PayPalAccountBuilderTest {
         JSONObject jsonMetadata = jsonObject.getJSONObject(PaymentMethodBuilder.METADATA_KEY);
 
         assertNull(jsonAccount.opt("details"));
-        assertEquals("test_auth_code", jsonAccount.getString("consentCode"));
         assertEquals("correlation_id", jsonAccount.getString("correlationId"));
         assertEquals("custom", jsonMetadata.getString("integration"));
         assertEquals("paypal-sdk", jsonMetadata.getString("source"));
