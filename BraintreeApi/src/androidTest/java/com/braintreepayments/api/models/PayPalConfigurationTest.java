@@ -40,6 +40,49 @@ public class PayPalConfigurationTest {
 
     @Test(timeout = 1000)
     @SmallTest
+    public void parsesPayPalConfigurationFromTokenForLive() throws JSONException {
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_live_paypal.json"));
+
+        assertTrue(configuration.isPayPalEnabled());
+
+        PayPalConfiguration payPalConfiguration = configuration.getPayPal();
+
+        assertTrue(configuration.isPayPalEnabled());
+        assertTrue(payPalConfiguration.isEnabled());
+        assertEquals("paypal_merchant", payPalConfiguration.getDisplayName());
+        assertEquals("paypal_client_id", payPalConfiguration.getClientId());
+        assertEquals("http://www.example.com/privacy", payPalConfiguration.getPrivacyUrl());
+        assertEquals("http://www.example.com/user_agreement", payPalConfiguration.getUserAgreementUrl());
+        assertEquals("https://www.paypal.com/v1/", payPalConfiguration.getDirectBaseUrl());
+        assertEquals("live", payPalConfiguration.getEnvironment());
+        assertTrue(payPalConfiguration.isTouchDisabled());
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void parsesPayPalConfigurationFromTokenForCustom() throws JSONException {
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_custom_paypal.json"));
+
+        assertTrue(configuration.isPayPalEnabled());
+
+        PayPalConfiguration payPalConfiguration = configuration.getPayPal();
+
+        assertTrue(configuration.isPayPalEnabled());
+        assertTrue(payPalConfiguration.isEnabled());
+        assertEquals("paypal_merchant", payPalConfiguration.getDisplayName());
+        assertEquals("paypal_client_id", payPalConfiguration.getClientId());
+        assertEquals("http://www.example.com/privacy", payPalConfiguration.getPrivacyUrl());
+        assertEquals("http://www.example.com/user_agreement", payPalConfiguration.getUserAgreementUrl());
+        assertEquals("https://braintree.paypal.com/v1/", payPalConfiguration.getDirectBaseUrl());
+        assertEquals("custom", payPalConfiguration.getEnvironment());
+        assertTrue(payPalConfiguration.isTouchDisabled());
+    }
+
+
+    @Test(timeout = 1000)
+    @SmallTest
     public void reportsPayPalNotEnabledWhenFlagged() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_disabled_paypal.json"));
