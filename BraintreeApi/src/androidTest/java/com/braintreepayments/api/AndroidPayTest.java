@@ -185,7 +185,7 @@ public class AndroidPayTest {
         verify(fragment).sendAnalyticsEvent("android-pay.canceled");
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     @SmallTest
     public void onActivityResult_sendsAnalyticsEventOnNonOkOrCanceledResult() {
         BraintreeFragment fragment = getSetupFragment();

@@ -2,6 +2,8 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.view.KeyEvent;
 
@@ -9,13 +11,17 @@ import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
 import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.test.BraintreePaymentActivityTestRunner;
 import com.braintreepayments.cardform.R;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
@@ -23,7 +29,6 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInCardForm;
-import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.CardNumber.VISA;
@@ -33,9 +38,12 @@ import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
 import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -129,7 +137,9 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
     }
 
     @Test(timeout = 30000)
-    public void addsEventOnAddPayPalSucceeded() {
+    public void addsEventOnAddPayPalSucceeded() throws InterruptedException {
+        Looper.prepare();
+
         String clientToken = new TestClientTokenBuilder()
                 .withPayPal()
                 .withAnalytics()
@@ -137,10 +147,28 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
         Intent intent = new Intent()
                 .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken);
         mActivity = getActivity(clientToken, intent);
+        mActivity.mBraintreeFragment = spy(mActivity.mBraintreeFragment);
         mFragment = mActivity.mBraintreeFragment;
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        PayPalAccount payPalAccount = new PayPalAccount();
+                        mFragment.postCallback(payPalAccount);
+                        countDownLatch.countDown();
+                    }
+                }, 500);
+                return null;
+            }
+        }).when(mFragment).startActivityForResult(any(Intent.class),
+                eq(PayPal.PAYPAL_AUTHORIZATION_REQUEST_CODE));
 
-        performPayPalAdd();
+        PayPal.authorizeAccount(mFragment);
 
+        countDownLatch.await();
         verifyAnalyticsEvent("add-paypal.success");
     }
 

@@ -7,6 +7,7 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 
+import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.TestActivity;
 
@@ -23,13 +24,13 @@ import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
-import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class PayPalTest {
@@ -50,7 +51,6 @@ public class PayPalTest {
     @Test(timeout = 1000)
     @SmallTest
     public void authorizeAccount_startsPayPal() throws JSONException, InterruptedException {
-        fail("Not fixed");
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_offline_paypal.json"));
         final ArgumentCaptor<Intent> launchIntentCaptor = ArgumentCaptor.forClass(Intent.class);
@@ -81,8 +81,19 @@ public class PayPalTest {
     public void authorizeAccount_sendsAnalyticsEvent() throws JSONException, InterruptedException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_offline_paypal.json"));
+        ClientToken clientToken = ClientToken.fromString(stringFromFixture("client_token.json"));
         final BraintreeFragment fragment = getMockFragment(mActivity, configuration);
         doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
+        when(fragment.getClientToken()).thenReturn(clientToken);
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                latch.countDown();
+                return null;
+            }
+        }).when(fragment).sendAnalyticsEvent(eq("paypal.selected"));
 
         mActivity.runOnUiThread(new Runnable() {
             @Override
@@ -91,6 +102,8 @@ public class PayPalTest {
             }
         });
 
-        verify(fragment).sendAnalyticsEvent("paypal.selected");
+//        verify(fragment).sendAnalyticsEvent("paypal.selected");
+        latch.await();
     }
+
 }
