@@ -124,7 +124,6 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
         waitForAddPaymentFormHeader();
 
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_paypal_button)).perform(click());
-        waitForView(withHint("Email"));
 
         verifyAnalyticsEvent("paypal.selected");
     }
