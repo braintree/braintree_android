@@ -75,6 +75,18 @@ TokenizationClient.tokenize(braintreeFragment, cardBuilder);
 PayPal.authorizeAccount(braintreeFragment);
 ```
 
+## Perform Billing Agreement with PayPal OneTouchCore
+```java
+PayPalCheckout checkout = new PayPalCheckout();
+PayPal.billingAgreement(braintreeFragment, checkout);
+```
+
+## Perform Express Checkout with PayPal OneTouchCore
+```java
+PayPalCheckout checkout = new PayPalCheckout(new BigDecimal(19.99));
+PayPal.checkout(braintreeFragment, checkout);
+```
+
 ## Tokenize a Card from Venmo
 
 ```java
