@@ -153,8 +153,8 @@ public class PayPal {
                                     });
                     sendAnalyticsForPayPalPerformRequestStatus(fragment, sPendingRequestStatus,
                             false);
-                } catch (BraintreeException ignored) {
-                    ignored.toString();
+                } catch (BraintreeException error) {
+                    fragment.postCallback(error);
                 }
             }
         });
@@ -389,7 +389,8 @@ public class PayPal {
                     }
                     break;
             }
-        } catch (ConfigurationException ignored) {
+        } catch (ConfigurationException error) {
+            fragment.postCallback(error);
         }
     }
 
@@ -454,8 +455,7 @@ public class PayPal {
                                 .put("code", "fake-code:" + ((AuthorizationRequest)
                                         sPendingRequest).getScopeString()));
                     }
-                } catch (JSONException ignored) {
-                }
+                } catch (JSONException ignored) {}
 
                 paypalAccountBuilder.oneTouchCoreData(response);
                 break;
