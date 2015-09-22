@@ -7,6 +7,7 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 
+import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.TestActivity;
@@ -23,6 +24,7 @@ import org.mockito.stubbing.Answer;
 import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
+import static com.braintreepayments.api.BraintreeFragmentTestUtils.verifyAnalyticsEvent;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -50,6 +52,7 @@ public class PayPalTest {
 
     @Test(timeout = 1000)
     @SmallTest
+    @FlakyTest
     public void authorizeAccount_startsPayPal() throws JSONException, InterruptedException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_offline_paypal.json"));
@@ -63,11 +66,13 @@ public class PayPalTest {
                 doAnswer(new Answer() {
                     @Override
                     public Object answer(InvocationOnMock invocation) throws Throwable {
-                        verify(fragment).startActivityForResult(launchIntentCaptor.capture(), eq(PayPal.PAYPAL_AUTHORIZATION_REQUEST_CODE));
+                        verify(fragment).startActivityForResult(launchIntentCaptor.capture(),
+                                eq(PayPal.PAYPAL_AUTHORIZATION_REQUEST_CODE));
                         mLatch.countDown();
                         return null;
                     }
-                }).when(fragment).startActivityForResult(any(Intent.class), eq(PayPal.PAYPAL_AUTHORIZATION_REQUEST_CODE));
+                }).when(fragment).startActivityForResult(any(Intent.class),
+                        eq(PayPal.PAYPAL_AUTHORIZATION_REQUEST_CODE));
                 PayPal.authorizeAccount(fragment);
             }
         });
@@ -77,33 +82,17 @@ public class PayPalTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    @FlakyTest
-    public void authorizeAccount_sendsAnalyticsEvent() throws JSONException, InterruptedException {
+    public void authorizeAccount_sendsAnalyticsEvent() throws JSONException{
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_offline_paypal.json"));
         ClientToken clientToken = ClientToken.fromString(stringFromFixture("client_token.json"));
         final BraintreeFragment fragment = getMockFragment(mActivity, configuration);
         doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
+        doNothing().when(fragment).waitForConfiguration(any(ConfigurationListener.class));
         when(fragment.getClientToken()).thenReturn(clientToken);
 
-        final CountDownLatch latch = new CountDownLatch(1);
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                latch.countDown();
-                return null;
-            }
-        }).when(fragment).sendAnalyticsEvent(eq("paypal.selected"));
-
-        mActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                PayPal.authorizeAccount(fragment);
-            }
-        });
-
-//        verify(fragment).sendAnalyticsEvent("paypal.selected");
-        latch.await();
+        PayPal.authorizeAccount(fragment);
+        verifyAnalyticsEvent(fragment, "paypal.selected");
     }
 
 }

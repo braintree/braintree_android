@@ -141,7 +141,7 @@ public class AndroidPayTest {
         assertTrue(allowedCardNetworks.contains(CardNetwork.DISCOVER));
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     @SmallTest
     public void performMaskedWalletRequest_sendsAnalyticsEvent() throws InterruptedException {
         BraintreeFragment fragment = getSetupFragment();

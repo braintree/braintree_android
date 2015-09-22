@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.app.Activity;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
@@ -16,12 +15,9 @@ import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.fail;
-import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -121,10 +117,6 @@ public class BraintreeFragmentTestUtils {
     }
 
     public static void verifyAnalyticsEvent(BraintreeFragment fragment, String event) {
-        AnalyticsManager.flushEvents(fragment);
-        verify(fragment.getHttpClient(), times(1)).post(
-                eq(fragment.getConfiguration().getAnalytics().getUrl()),
-                contains(event),
-                isNull(HttpResponseCallback.class));
+        verify(fragment).sendAnalyticsEvent(eq(event));
     }
 }

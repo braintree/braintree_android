@@ -122,7 +122,7 @@ public class PayPal {
                                 BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
 
                 try {
-                    sPendingRequest = buildPayPalAuthorizationConfiguration(fragment.getActivity(),
+                    sPendingRequest = buildPayPalAuthorizationConfiguration(fragment.getApplicationContext(),
                             fragment.getConfiguration(),
                             fragment.getClientToken().toJson());
 
@@ -218,7 +218,7 @@ public class PayPal {
                     sPendingRequest =
                             buildPayPalCheckoutConfiguration(
                                     paypalPaymentResource.getRedirectUrl(),
-                                    fragment.getActivity(),
+                                    fragment.getApplicationContext(),
                                     fragment.getConfiguration());
 
                     sPendingRequestStatus =
