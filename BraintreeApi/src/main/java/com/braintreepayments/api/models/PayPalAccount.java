@@ -27,7 +27,7 @@ public class PayPalAccount extends PaymentMethod implements Parcelable {
     private static final String FIRST_NAME_KEY = "firstName";
     private static final String LAST_NAME_KEY = "lastName";
     private static final String PHONE_KEY = "phone";
-    private static final String PAYER_ID_KEY = "payer_id";
+    private static final String PAYER_ID_KEY = "payerId";
 
     private String mClientMetadataId;
     private PostalAddress mBillingAddress;
