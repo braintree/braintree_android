@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Parcelable;
+import android.test.FlakyTest;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.view.KeyEvent;
 import android.widget.Button;
@@ -68,6 +69,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
     }
 
     @Test(timeout = 30000)
+    @FlakyTest
     public void cardFormCreatesAPaymentMethodWithACustomer() {
         addCardAndAssertSuccess(getActivity(new TestClientTokenBuilder().build()));
     }
@@ -103,6 +105,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
     }
 
     @Test(timeout = 30000)
+    // TODO: Need a way to interact with the browser
     public void paypalCreatesAPaymentMethodWithACustomer() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
 
@@ -110,6 +113,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
     }
 
     @Test(timeout = 30000)
+    // TODO: Need a way to interact with the browser
     public void paypalCreatesAPaymentMethodWithoutACustomer() {
         String clientToken = new TestClientTokenBuilder().withoutCustomer().withPayPal().build();
 
@@ -117,6 +121,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
     }
 
     @Test(timeout = 30000)
+    // TODO: Need a way to interact with the browser
     public void returnsToSelectPaymentMethodViewAfterAddingAPayPalAccount() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         Intent intent = new Intent()
@@ -130,6 +135,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
     }
 
     @Test(timeout = 30000)
+    // TODO: Need a way to interact with the browser
     public void displaysLoadingViewWhileCreatingAPayPalAccount() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         Intent intent = new Intent()
@@ -233,6 +239,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
     }
 
     @Test(timeout = 30000)
+    // TODO: Need a way to interact with the browser
     public void backButtonInPayPalTakesYouBackToAddPaymentMethodView() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         Intent intent = new Intent()
@@ -261,6 +268,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
     }
 
     @Test(timeout = 30000)
+    // TODO: Need a way to interact with the browser
     public void backButtonDuringPayPalAddDoesNothing() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         Intent intent = new Intent()
@@ -286,6 +294,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
     }
 
     @Test(timeout = 30000)
+    // TODO: Need a way to interact with the browser
     public void upButtonIsShownAfterYouAddAPaymentMethod() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         Intent intent = new Intent()

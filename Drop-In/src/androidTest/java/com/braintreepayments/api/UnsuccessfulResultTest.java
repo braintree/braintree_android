@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.junit.Test;
 
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
@@ -69,18 +70,25 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestRunner {
     }
 
     @Test(timeout = 30000)
-    public void returnsDeveloperErrorOnAuthenticationException() {
+    public void returnsDeveloperErrorOnAuthenticationException() throws InterruptedException {
         setupActivityWithBraintree();
-        AuthenticationException exception = new AuthenticationException();
-        mFragment.postCallback(exception);
+        final CountDownLatch latch = new CountDownLatch(1);
+        mFragment.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AuthenticationException exception = new AuthenticationException();
+                mFragment.postCallback(exception);
+                waitForActivityToFinish(mActivity);
+                Map<String, Object> result = getActivityResult(mActivity);
 
-        waitForActivityToFinish(mActivity);
-        Map<String, Object> result = getActivityResult(mActivity);
-
-        assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_DEVELOPER_ERROR,
-                result.get("resultCode"));
-        assertEquals(exception, ((Intent) result.get("resultData"))
-                .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE));
+                assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_DEVELOPER_ERROR,
+                        result.get("resultCode"));
+                assertEquals(exception, ((Intent) result.get("resultData"))
+                        .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE));
+                latch.countDown();
+            }
+        });
+        latch.await();
     }
 
     @Test(timeout = 30000)

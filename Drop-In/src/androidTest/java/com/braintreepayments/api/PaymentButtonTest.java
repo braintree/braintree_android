@@ -263,6 +263,7 @@ public class PaymentButtonTest {
 
     @Test(timeout = 1000)
     public void startsPayWithAndroidPay() throws JSONException, InvalidArgumentException {
+        Looper.prepare();
         setEnabledPaymentMethods(true, true, true);
         BraintreeFragment fragment = getFragment();
         mPaymentButton.setAndroidPayOptions(Cart.newBuilder().build(), 1);
@@ -304,6 +305,7 @@ public class PaymentButtonTest {
         when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
 
         Activity activity = mActivityTestRule.getActivity();
+        ClientToken clientToken = ClientToken.fromString(stringFromFixture("client_token.json"));
         BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity,
                 stringFromFixture("client_token.json")));
         doNothing().when(fragment).fetchConfiguration();
@@ -311,6 +313,7 @@ public class PaymentButtonTest {
         when(fragment.getConfiguration()).thenReturn(configuration);
         doNothing().when(fragment).startActivity(any(Intent.class));
         doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
+        when(fragment.getClientToken()).thenReturn(clientToken);
         getInstrumentation().waitForIdleSync();
 
         doAnswer(new Answer() {
