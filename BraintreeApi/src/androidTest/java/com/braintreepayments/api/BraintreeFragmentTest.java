@@ -17,8 +17,8 @@ import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
+import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Card;
-import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PaymentMethod;
@@ -239,7 +239,7 @@ public class BraintreeFragmentTest {
     public void getClientKey_returnsClientKey() throws InvalidArgumentException {
         BraintreeFragment fragment = getFragment(mActivity, CLIENT_KEY);
 
-        assertEquals(CLIENT_KEY, fragment.getClientKey().clientKeyString());
+        assertEquals(CLIENT_KEY, fragment.getAuthorization().toString());
     }
 
     @Test(timeout = 1000)
@@ -559,13 +559,14 @@ public class BraintreeFragmentTest {
     @Test(timeout = 10000)
     @MediumTest
     public void sendAnalyticsEvent_sendsEventsToServer() throws InterruptedException,
-            JSONException {
+            JSONException, InvalidArgumentException {
         String clientToken = new TestClientTokenBuilder().withAnalytics().build();
         Configuration configuration = Configuration.fromJson(clientToken);
         BraintreeFragment fragment = spy(getFragment(mActivity, clientToken));
         when(fragment.getConfiguration()).thenReturn(configuration);
+        Authorization authorization = Authorization.fromString(clientToken);
         BraintreeHttpClient httpClient =
-                new BraintreeHttpClient(ClientToken.fromString(clientToken)) {
+                new BraintreeHttpClient(authorization) {
                     @Override
                     public void post(String url, final String params,
                             final HttpResponseCallback callback) {

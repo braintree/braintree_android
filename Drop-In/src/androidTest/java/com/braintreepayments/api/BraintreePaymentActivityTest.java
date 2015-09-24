@@ -22,7 +22,7 @@ public class BraintreePaymentActivityTest {
     @Test(timeout = 30000)
     public void setsIntegrationTypeToDropinForDropinActivity() {
         Intent intent = new Intent(getTargetContext(), BraintreePaymentActivity.class)
-                .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, new TestClientTokenBuilder().build());
+                .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_AUTHORIZATION, new TestClientTokenBuilder().build());
         BraintreePaymentActivity activity = mActivityTestRule.launchActivity(intent);
 
         assertEquals("dropin", activity.mBraintreeFragment.mIntegrationType);

@@ -16,6 +16,7 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodResponseCallback;
 import com.braintreepayments.api.interfaces.QueuedCallback;
+import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PayPalCheckout;
@@ -71,6 +72,7 @@ public class PayPal {
     private static final String ADDRESS_OVERRIDE_KEY = "address_override";
     private static final String LOCALE_CODE_KEY = "locale_code";
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
+    private static final String CLIENT_KEY = "client_key";
     private static final String RETURN_URL_KEY = "return_url";
     private static final String CANCEL_URL_KEY = "cancel_url";
     private static final String EXPERIENCE_PROFILE_KEY = "experience_profile";
@@ -125,7 +127,7 @@ public class PayPal {
                     sPendingRequest =
                             buildPayPalAuthorizationConfiguration(fragment.getApplicationContext(),
                                     fragment.getConfiguration(),
-                                    fragment.getClientToken().toJson());
+                                    fragment.getAuthorization().toString());
 
                     if (additionalScopes != null) {
                         for (String scope : additionalScopes) {
@@ -191,13 +193,15 @@ public class PayPal {
      * Starts the Checkout With PayPal flow. This will launch the PayPal app if installed or switch
      * to the browser for user authorization.
      *
+     * This requires that the merchant uses a {@link com.braintreepayments.api.models.ClientToken}
+     *
      * @param fragment           A {@link BraintreeFragment} used to process the request.
      * @param checkout           A {@link PayPalCheckout} used to customize the request.
      * @param isBillingAgreement A boolean. If true, this will use the Billing Agreement. Otherwise,
      *                           PayPal will perform a Single Payment.
      */
     private static void checkout(final BraintreeFragment fragment, final PayPalCheckout checkout,
-            final boolean isBillingAgreement) {
+                                 final boolean isBillingAgreement) {
         sBraintreeFragmentBroadcastReceiver.setFragment(fragment);
         BraintreeBroadcastManager.getInstance(fragment.getApplicationContext())
                 .registerReceiver(sBraintreeFragmentBroadcastReceiver, new IntentFilter(
@@ -302,12 +306,18 @@ public class PayPal {
             experienceProfile.put(LOCALE_CODE_KEY, checkout.getLocaleCode());
         }
 
-        String authorizationFingerprint = fragment.getClientToken().getAuthorizationFingerprint();
+
         JSONObject parameters = new JSONObject()
-                .put(AUTHORIZATION_FINGERPRINT_KEY, authorizationFingerprint)
                 .put(RETURN_URL_KEY, request.getSuccessUrl())
                 .put(CANCEL_URL_KEY, request.getCancelUrl())
                 .put(EXPERIENCE_PROFILE_KEY, experienceProfile);
+
+        if (fragment.getAuthorization() instanceof ClientToken) {
+            parameters.put(AUTHORIZATION_FINGERPRINT_KEY,
+                    ((ClientToken) fragment.getAuthorization()).getAuthorizationFingerprint());
+        } else {
+            parameters.put(CLIENT_KEY, fragment.getAuthorization().toString());
+        }
 
         if (!isBillingAgreement) {
             parameters.put(AMOUNT_KEY, checkout.getAmount().toString())

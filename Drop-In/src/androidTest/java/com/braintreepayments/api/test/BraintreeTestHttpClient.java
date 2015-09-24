@@ -8,7 +8,7 @@ import android.os.SystemClock;
 import com.braintreepayments.api.BraintreePaymentTestActivity;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
-import com.braintreepayments.api.models.ClientToken;
+import com.braintreepayments.api.models.Authorization;
 
 import static com.braintreepayments.api.BraintreePaymentTestActivity.CONFIGURATION_ERROR;
 import static com.braintreepayments.api.BraintreePaymentTestActivity.GET_PAYMENT_METHODS;
@@ -22,8 +22,8 @@ public class BraintreeTestHttpClient extends BraintreeHttpClient {
     private Intent mIntent;
     private long mDelay;
 
-    public BraintreeTestHttpClient(ClientToken clientToken, Intent intent) {
-        super(clientToken);
+    public BraintreeTestHttpClient(Authorization authorization, Intent intent) {
+        super(authorization);
         BraintreeHttpClient.DEBUG = true;
         mIntent = intent;
         mDelay = mIntent.getLongExtra(BraintreePaymentTestActivity.EXTRA_DELAY, 0);

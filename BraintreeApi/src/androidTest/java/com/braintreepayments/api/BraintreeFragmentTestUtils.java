@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
+import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.Configuration;
@@ -37,6 +38,7 @@ public class BraintreeFragmentTestUtils {
             doNothing().when(fragment).fetchConfiguration();
             when(fragment.getApplicationContext()).thenReturn(getTargetContext());
             when(fragment.getConfiguration()).thenReturn(configuration);
+            when(fragment.getAuthorization()).thenReturn(Authorization.fromString(clientToken));
             getInstrumentation().waitForIdleSync();
 
             return fragment;
@@ -50,16 +52,17 @@ public class BraintreeFragmentTestUtils {
      * Get a {@link org.mockito.Spy} {@link BraintreeFragment} with the given {@link Configuration}.
      *
      * @param activity
-     * @param clientToken
+     * @param clientTokenOrKey
      * @param configuration
      * @return
      */
-    public static BraintreeFragment getMockFragment(Activity activity, String clientToken, Configuration configuration) {
+    public static BraintreeFragment getMockFragment(Activity activity, String clientTokenOrKey, Configuration configuration) {
         try {
-            BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity, clientToken));
+            BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity, clientTokenOrKey));
             doNothing().when(fragment).fetchConfiguration();
             when(fragment.getApplicationContext()).thenReturn(getTargetContext());
             when(fragment.getConfiguration()).thenReturn(configuration);
+            when(fragment.getAuthorization()).thenReturn(Authorization.fromString(clientTokenOrKey));
             getInstrumentation().waitForIdleSync();
 
             return fragment;

@@ -43,7 +43,7 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodCrea
 
         try {
             mBraintreeFragment = BraintreeFragment.newInstance(this,
-                    getIntent().getStringExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN));
+                    getIntent().getStringExtra(BraintreePaymentActivity.EXTRA_CLIENT_AUTHORIZATION));
         } catch (InvalidArgumentException e) {
             Intent intent = new Intent()
                     .putExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE, e.getMessage());

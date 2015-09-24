@@ -22,8 +22,8 @@ import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
+import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.ClientKey;
-import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.google.android.gms.common.ConnectionResult;
@@ -46,14 +46,14 @@ import java.util.Queue;
  */
 public class BraintreeFragment extends Fragment {
 
-    public static final String EXTRA_CLIENT_TOKEN = "com.braintreepayments.api.EXTRA_CLIENT_TOKEN";
-    public static final String EXTRA_CLIENT_KEY = "com.braintreepayments.api.EXTRA_CLIENT_KEY";
-    public static final String EXTRA_INTEGRATION_TYPE = "com.braintreepayments.api.EXTRA_INTEGRATION_TYPE";
+    public static final String EXTRA_AUTHORIZATION_TOKEN =
+            "com.braintreepayments.api.EXTRA_AUTHORIZATION_TOKEN";
+    public static final String EXTRA_INTEGRATION_TYPE =
+            "com.braintreepayments.api.EXTRA_INTEGRATION_TYPE";
     public static final String TAG = "com.braintreepayments.api.BraintreeFragment";
 
     private Context mContext;
-    private ClientKey mClientKey;
-    private ClientToken mClientToken;
+    private Authorization mAuthorization;
     private Configuration mConfiguration;
 
     @VisibleForTesting
@@ -103,14 +103,10 @@ public class BraintreeFragment extends Fragment {
             Bundle bundle = new Bundle();
 
             try {
-                bundle.putString(EXTRA_CLIENT_KEY, ClientKey.fromString(clientKeyOrToken).clientKeyString());
+                Authorization authorization = Authorization.fromString(clientKeyOrToken);
+                bundle.putParcelable(EXTRA_AUTHORIZATION_TOKEN, authorization);
             } catch (InvalidArgumentException e) {
-                try {
-                    bundle.putString(EXTRA_CLIENT_TOKEN,
-                            ClientToken.fromString(clientKeyOrToken).toJson());
-                } catch (JSONException e1) {
-                    throw new InvalidArgumentException("Client key or client token was invalid.");
-                }
+                throw new InvalidArgumentException("Client key or client token was invalid.");
             }
 
             bundle.putString(EXTRA_INTEGRATION_TYPE, integrationType);
@@ -128,23 +124,16 @@ public class BraintreeFragment extends Fragment {
 
         mContext = getActivity().getApplicationContext();
         mIntegrationType = getArguments().getString(EXTRA_INTEGRATION_TYPE);
+        mAuthorization = getArguments().getParcelable(EXTRA_AUTHORIZATION_TOKEN);
 
-        try {
-            if (getArguments().containsKey(EXTRA_CLIENT_KEY)) {
-                mClientKey = ClientKey.fromString(getArguments().getString(EXTRA_CLIENT_KEY));
-                if (mHttpClient == null) {
-                    mHttpClient = new BraintreeHttpClient(mClientKey);
-                }
-                sendAnalyticsEvent("started.client-key");
-            } else {
-                mClientToken = ClientToken.fromString(getArguments().getString(EXTRA_CLIENT_TOKEN));
-                if (mHttpClient == null) {
-                    mHttpClient = new BraintreeHttpClient(mClientToken);
-                }
-                sendAnalyticsEvent("started.client-token");
-            }
-        } catch (InvalidArgumentException | JSONException ignored) {
-            // already checked in BraintreeFragment.newInstance
+        if (mHttpClient == null) {
+            mHttpClient = new BraintreeHttpClient(mAuthorization);
+        }
+
+        if (mAuthorization instanceof ClientKey) {
+            sendAnalyticsEvent("started.client-key");
+        } else {
+            sendAnalyticsEvent("started.client-token");
         }
 
         fetchConfiguration();
@@ -351,14 +340,7 @@ public class BraintreeFragment extends Fragment {
 
     @VisibleForTesting
     protected void fetchConfiguration() {
-        String configUrl;
-        if (mClientKey != null) {
-            configUrl = mClientKey.getConfigUrl();
-        } else {
-            configUrl = mClientToken.getConfigUrl();
-        }
-
-        configUrl = Uri.parse(configUrl)
+        String configUrl = Uri.parse(mAuthorization.getConfigUrl())
                 .buildUpon()
                 .appendQueryParameter("configVersion", "3")
                 .build()
@@ -431,16 +413,12 @@ public class BraintreeFragment extends Fragment {
         });
     }
 
+    protected Authorization getAuthorization() {
+        return mAuthorization;
+    }
+
     protected Context getApplicationContext() {
         return mContext;
-    }
-
-    protected ClientKey getClientKey() {
-        return mClientKey;
-    }
-
-    protected ClientToken getClientToken() {
-        return mClientToken;
     }
 
     protected Configuration getConfiguration() {
@@ -461,11 +439,11 @@ public class BraintreeFragment extends Fragment {
 
     /**
      * Obtain an instance of a {@link GoogleApiClient} that is connected or connecting to be used
-     * for Android Pay. This instance will be automatically disconnected in
-     * {@link Fragment#onPause()} and automatically connected in {@link Fragment#onResume()}.
-     *
-     * Connection failed and connection suspended errors will be sent to
-     * {@link BraintreeErrorListener#onUnrecoverableError(Throwable)}.
+     * for Android Pay. This instance will be automatically disconnected in {@link
+     * Fragment#onPause()} and automatically connected in {@link Fragment#onResume()}.
+     * <p/>
+     * Connection failed and connection suspended errors will be sent to {@link
+     * BraintreeErrorListener#onUnrecoverableError(Throwable)}.
      *
      * @return {@link GoogleApiClient}.
      */
@@ -473,7 +451,8 @@ public class BraintreeFragment extends Fragment {
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                     .addApi(Wallet.API, new Wallet.WalletOptions.Builder()
-                            .setEnvironment(AndroidPay.getEnvironment(getConfiguration().getAndroidPay()))
+                            .setEnvironment(
+                                    AndroidPay.getEnvironment(getConfiguration().getAndroidPay()))
                             .setTheme(WalletConstants.THEME_LIGHT)
                             .build())
                     .build();
@@ -493,7 +472,8 @@ public class BraintreeFragment extends Fragment {
             mGoogleApiClient.registerConnectionFailedListener(new OnConnectionFailedListener() {
                 @Override
                 public void onConnectionFailed(ConnectionResult connectionResult) {
-                    postCallback(new GoogleApiClientException("Connection failed: " + connectionResult.getErrorCode()));
+                    postCallback(new GoogleApiClientException(
+                            "Connection failed: " + connectionResult.getErrorCode()));
                 }
             });
 

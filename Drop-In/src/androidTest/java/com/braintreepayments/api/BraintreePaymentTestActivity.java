@@ -2,11 +2,9 @@ package com.braintreepayments.api;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
+import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.CardBuilder;
-import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.test.BraintreeTestHttpClient;
-
-import org.json.JSONException;
 
 import static org.mockito.Mockito.spy;
 
@@ -24,11 +22,8 @@ public class BraintreePaymentTestActivity extends BraintreePaymentActivity {
 
     @Override
     protected BraintreeFragment getBraintreeFragment() throws InvalidArgumentException {
-        BraintreeHttpClient httpClient = null;
-        try {
-            httpClient = spy(new BraintreeTestHttpClient(ClientToken.fromString(getClientToken()), getIntent()));
-        } catch (JSONException ignored) {}
-
+        BraintreeHttpClient httpClient = spy(new BraintreeTestHttpClient(Authorization.fromString(getClientToken()),
+                getIntent()));
         BraintreeFragment fragment = super.getBraintreeFragment();
         fragment.mHttpClient = httpClient;
 

@@ -15,6 +15,7 @@ import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
+import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalConfiguration;
@@ -305,7 +306,7 @@ public class PaymentButtonTest {
         when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
 
         Activity activity = mActivityTestRule.getActivity();
-        ClientToken clientToken = ClientToken.fromString(stringFromFixture("client_token.json"));
+        Authorization clientToken = Authorization.fromString(stringFromFixture("client_token.json"));
         BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity,
                 stringFromFixture("client_token.json")));
         doNothing().when(fragment).fetchConfiguration();
@@ -313,7 +314,7 @@ public class PaymentButtonTest {
         when(fragment.getConfiguration()).thenReturn(configuration);
         doNothing().when(fragment).startActivity(any(Intent.class));
         doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
-        when(fragment.getClientToken()).thenReturn(clientToken);
+        when(fragment.getAuthorization()).thenReturn(clientToken);
         getInstrumentation().waitForIdleSync();
 
         doAnswer(new Answer() {

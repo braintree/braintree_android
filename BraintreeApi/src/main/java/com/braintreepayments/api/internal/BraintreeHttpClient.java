@@ -3,7 +3,6 @@ package com.braintreepayments.api.internal;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.braintreepayments.api.BuildConfig;
@@ -15,6 +14,7 @@ import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.ClientKey;
 import com.braintreepayments.api.models.ClientToken;
 
@@ -57,18 +57,13 @@ public class BraintreeHttpClient {
     protected final MonitoredThreadPoolExecutor mThreadPool = MonitoredThreadPoolExecutor.newCachedThreadPool();
 
     private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
-    private String mClientKey;
-    private String mAuthorizationFingerprint;
+    private final Authorization mAuthorization;
     private String mBaseUrl;
     private int mConnectTimeout = 30000; // 30 seconds
     private int mReadTimeout = 60000; // 60 seconds
 
-    public BraintreeHttpClient(ClientKey clientKey) {
-        mClientKey = clientKey.clientKeyString();
-    }
-
-    public BraintreeHttpClient(ClientToken clientToken) {
-        mAuthorizationFingerprint = clientToken.getAuthorizationFingerprint();
+    public BraintreeHttpClient(Authorization authorization) {
+        mAuthorization = authorization;
     }
 
     public void setBaseUrl(String baseUrl) {
@@ -106,10 +101,10 @@ public class BraintreeHttpClient {
                     uri = Uri.parse(mBaseUrl + path);
                 }
 
-                if (!TextUtils.isEmpty(mAuthorizationFingerprint)) {
+                if (mAuthorization instanceof ClientToken) {
                     uri = uri.buildUpon()
                             .appendQueryParameter(AUTHORIZATION_FINGERPRINT_KEY,
-                                    mAuthorizationFingerprint)
+                                    ((ClientToken) mAuthorization).getAuthorizationFingerprint())
                             .build();
                 }
 
@@ -144,9 +139,10 @@ public class BraintreeHttpClient {
                 HttpURLConnection connection = null;
                 try {
                     String payload;
-                    if (!TextUtils.isEmpty(mAuthorizationFingerprint)) {
+                    if (mAuthorization instanceof ClientToken) {
                         payload = new JSONObject(data)
-                                .put(AUTHORIZATION_FINGERPRINT_KEY, mAuthorizationFingerprint)
+                                .put(AUTHORIZATION_FINGERPRINT_KEY,
+                                        ((ClientToken) mAuthorization).getAuthorizationFingerprint())
                                 .toString();
                     } else {
                        payload = data;
@@ -191,8 +187,8 @@ public class BraintreeHttpClient {
         connection.setRequestProperty("User-Agent", USER_AGENT);
         connection.setRequestProperty("Accept-Language", Locale.getDefault().getLanguage());
 
-        if (!TextUtils.isEmpty(mClientKey)) {
-            connection.setRequestProperty("Client-Key", mClientKey);
+        if (mAuthorization instanceof ClientKey) {
+            connection.setRequestProperty("Client-Key", mAuthorization.toString());
         }
 
         connection.setConnectTimeout(mConnectTimeout);

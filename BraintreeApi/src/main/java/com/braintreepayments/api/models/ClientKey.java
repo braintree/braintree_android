@@ -1,33 +1,27 @@
 package com.braintreepayments.api.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 
-public class ClientKey {
+public class ClientKey extends Authorization implements Parcelable {
 
-    private String mClientKey;
-    private String mEnvironment;
-    private String mMerchantId;
-    private String mUrl;
+    protected static String MATCHER = "^[a-zA-Z0-9_]+_[a-zA-Z0-9]+_[a-zA-Z0-9_]+$";
 
-    public static ClientKey fromString(String clientKeyString) throws InvalidArgumentException {
-        if (!clientKeyString.matches("^[a-zA-Z0-9_]+_[a-zA-Z0-9]+_[a-zA-Z0-9_]+$")) {
-            throw new InvalidArgumentException("Client Key is not a valid format");
-        }
+    private final String mEnvironment;
+    private final String mMerchantId;
+    private final String mUrl;
+
+    ClientKey(String clientKeyString) throws InvalidArgumentException {
+        super(clientKeyString);
 
         String[] clientKeyParts = clientKeyString.split("_", 3);
-        ClientKey clientKey = new ClientKey();
-        clientKey.mClientKey = clientKeyString;
-        clientKey.mEnvironment = clientKeyParts[0];
-        clientKey.mMerchantId = clientKeyParts[2];
-        clientKey.mUrl = BraintreeEnvironment.getUrl(clientKey.mEnvironment) + "merchants/" +
-                clientKey.mMerchantId + "/client_api/";
-
-        return clientKey;
-    }
-
-    public String clientKeyString() {
-        return mClientKey;
+        mEnvironment = clientKeyParts[0];
+        mMerchantId = clientKeyParts[2];
+        mUrl = BraintreeEnvironment.getUrl(mEnvironment) + "merchants/" +
+                mMerchantId + "/client_api/";
     }
 
     public String getEnvironment() {
@@ -42,6 +36,7 @@ public class ClientKey {
         return mUrl;
     }
 
+    @Override
     public String getConfigUrl() {
         return mUrl + "v1/configuration";
     }
@@ -69,4 +64,34 @@ public class ClientKey {
             throw new InvalidArgumentException("Client key contained invalid environment");
         }
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeString(mEnvironment);
+        dest.writeString(mMerchantId);
+        dest.writeString(mUrl);
+    }
+
+    protected ClientKey(Parcel in) {
+        super(in);
+        mEnvironment = in.readString();
+        mMerchantId = in.readString();
+        mUrl = in.readString();
+    }
+
+    public static final Creator<ClientKey> CREATOR = new Creator<ClientKey>() {
+        public ClientKey createFromParcel(Parcel source) {
+            return new ClientKey(source);
+        }
+
+        public ClientKey[] newArray(int size) {
+            return new ClientKey[size];
+        }
+    };
 }

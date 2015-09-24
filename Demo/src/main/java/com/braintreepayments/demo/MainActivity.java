@@ -49,7 +49,6 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     private static final int CUSTOM_REQUEST = 300;
     private static final int PAYPAL_REQUEST = 400;
 
-
     /**
      * Keys to store state on config changes.
      */
@@ -69,7 +68,6 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     private Button mCustomButton;
     private Button mCreateTransactionButton;
     private ProgressDialog mLoading;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +108,19 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (mClientToken != null && Settings.useClientKey(this)) {
+            resetState();
+            setup();
+        } else if (mClientToken == null && !Settings.useClientKey(this)) {
+            resetState();
+            getClientToken();
+        }
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mClientToken != null) {
@@ -135,23 +146,15 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
                 .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT,
                         Settings.isAndroidPayBillingAgreement(this));
 
-        if (Settings.useClientKey(this)) {
-            intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, Settings.getEnvironmentClientKey(this));
-        } else {
-            intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken);
-        }
+        intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_AUTHORIZATION, getAuthorization());
 
         startActivityForResult(intent, DROP_IN_REQUEST);
     }
 
-    public void launchPayPal(View v){
+    public void launchPayPal(View v) {
         Intent intent = PayPalActivity.createIntent(this);
 
-        if (Settings.useClientKey(this)) {
-            intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, Settings.getEnvironmentClientKey(this));
-        } else {
-            intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken);
-        }
+        intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_AUTHORIZATION, getAuthorization());
 
         startActivityForResult(intent, PAYPAL_REQUEST);
     }
@@ -161,16 +164,13 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
                 .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
                 .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT,
                         Settings.isAndroidPayBillingAgreement(this))
-                .putExtra("shippingAddressRequired", Settings.isAndroidPayShippingAddressRequired(this))
+                .putExtra("shippingAddressRequired",
+                        Settings.isAndroidPayShippingAddressRequired(this))
                 .putExtra("phoneNumberRequired", Settings.isAndroidPayPhoneNumberRequired(this))
                 .putExtra("payPalAddressScopeRequested", Settings.isPayPalAddressScopeRequested(
                         this));
 
-        if (Settings.useClientKey(this)) {
-            intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, Settings.getEnvironmentClientKey(this));
-        } else {
-            intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken);
-        }
+        intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_AUTHORIZATION, getAuthorization());
 
         startActivityForResult(intent, PAYMENT_BUTTON_REQUEST);
     }
@@ -178,17 +178,15 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     public void launchCustom(View v) {
         Intent intent = new Intent(this, CustomFormActivity.class)
                 .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
-                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, Settings.isAndroidPayBillingAgreement(this))
-                .putExtra("shippingAddressRequired", Settings.isAndroidPayShippingAddressRequired(this))
+                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT,
+                        Settings.isAndroidPayBillingAgreement(this))
+                .putExtra("shippingAddressRequired",
+                        Settings.isAndroidPayShippingAddressRequired(this))
                 .putExtra("phoneNumberRequired", Settings.isAndroidPayPhoneNumberRequired(this))
                 .putExtra("payPalAddressScopeRequested",
                         Settings.isPayPalAddressScopeRequested(this));
 
-        if (Settings.useClientKey(this)) {
-            intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, Settings.getEnvironmentClientKey(this));
-        } else {
-            intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, mClientToken);
-        }
+        intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_AUTHORIZATION, getAuthorization());
 
         startActivityForResult(intent, CUSTOM_REQUEST);
     }
@@ -229,10 +227,12 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
         safelyCloseLoadingView();
 
         if (resultCode == RESULT_OK) {
-            PaymentMethod paymentMethod = data.getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
+            PaymentMethod paymentMethod =
+                    data.getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
             displayNonce(paymentMethod.getNonce());
             if (Settings.isThreeDSecureEnabled(this)) {
-                mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
+                mLoading = ProgressDialog.show(this, getString(R.string.loading),
+                        getString(R.string.loading), true, false);
                 ThreeDSecure.performVerification(mBraintreeFragment, mNonce, "1");
             } else {
                 mCreateTransactionButton.setEnabled(true);
@@ -303,6 +303,14 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
             enableButtons(true);
         } catch (InvalidArgumentException e) {
             showDialog(e.getMessage());
+        }
+    }
+
+    private String getAuthorization() {
+        if (Settings.useClientKey(this)) {
+            return Settings.getEnvironmentClientKey(this);
+        } else {
+            return mClientToken;
         }
     }
 

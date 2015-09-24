@@ -166,7 +166,7 @@ public class AnalyticsManagerTest {
         assertEquals(Integer.toString(VERSION.SDK_INT), json.getString("platformVersion"));
         assertEquals(BuildConfig.VERSION_NAME, json.getString("sdkVersion"));
         assertEquals("com.braintreepayments.api.test", json.getString("merchantAppId"));
-        assertEquals("Test-api", json.getString("merchantAppName"));
+        assertEquals("com.braintreepayments.api.test", json.getString("merchantAppName"));
         assertEquals(Build.MANUFACTURER, json.getString("deviceManufacturer"));
         assertEquals(Build.MODEL, json.getString("deviceModel"));
         assertEquals(Secure.getString(getTargetContext().getContentResolver(), Secure.ANDROID_ID), json.getString("androidId"));

@@ -68,7 +68,8 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestRunner {
         getActivity(new TestClientTokenBuilder().withCvvAndPostalCodeVerification().build());
 
         fillInCardForm();
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).check(matches(isEnabled()));
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).check(
+                matches(isEnabled()));
 
         rotateToLandscape();
         waitForAddPaymentFormHeader();
@@ -76,7 +77,8 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestRunner {
         onExpirationField().check(matches(withText("0619")));
         onCvvField().check(matches(withText("123")));
         onPostalCodeField().check(matches(withText("12345")));
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).check(matches(isEnabled()));
+        onView(withId(
+                com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).check(matches(isEnabled()));
     }
 
     @Test(timeout = 30000)
@@ -108,7 +110,8 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestRunner {
                 com.braintreepayments.api.dropin.R.string.bt_descriptor_visa)));
 
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_selected_payment_method_view)).perform(click());
-        onView(withText(com.braintreepayments.api.dropin.R.string.bt_descriptor_amex)).perform(click());
+        onView(withText(com.braintreepayments.api.dropin.R.string.bt_descriptor_amex)).perform(
+                click());
         assertSelectedPaymentMethodIs(com.braintreepayments.api.dropin.R.string.bt_descriptor_amex);
 
         rotateToLandscape();
@@ -148,9 +151,11 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestRunner {
 
         waitForAddPaymentFormHeader(FOUR_SECONDS * 4);
         fillInCardForm();
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(
+                click());
 
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_card_number)).check(matches(not(isEnabled())));
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_card_number)).check(
+                matches(not(isEnabled())));
         rotateToLandscape();
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_card_number)).check(matches(not(isEnabled())));
     }
@@ -162,10 +167,12 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestRunner {
         waitForAddPaymentFormHeader();
         rotateToLandscape();
         fillInCardForm();
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
-        rotateToPortrait();
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(
+                click());
 
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).check(matches(not(isEnabled())));
+        rotateToPortrait();
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).check(
+                matches(not(isEnabled())));
     }
 
     @Test(timeout = 30000)
@@ -174,14 +181,16 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestRunner {
 
         waitForAddPaymentFormHeader();
         fillInCardForm();
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(
+                click());
 
         waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_header_container));
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_header_loading_spinner)).check(matches(isDisplayed()));
 
         rotateToLandscape();
 
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).check(matches(not(isEnabled())));
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).check(
+                matches(not(isEnabled())));
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_header_loading_spinner)).check(matches(isDisplayed()));
     }
 

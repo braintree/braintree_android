@@ -75,9 +75,10 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
     public static final String EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT = "com.braintreepayments.api.dropin.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT";
 
     /**
-     * Used to specify a client token during initialization.
+     * Used to specify an {@link com.braintreepayments.api.models.Authorization} object
+     * during initialization.
      */
-    public static final String EXTRA_CLIENT_TOKEN = "com.braintreepayments.api.dropin.EXTRA_CLIENT_TOKEN";
+    public static final String EXTRA_CLIENT_AUTHORIZATION = "com.braintreepayments.api.dropin.EXTRA_CLIENT_AUTHORIZATION";
 
     /**
      * Used to specify UI customizations during initialization.
@@ -308,13 +309,13 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
     }
 
     protected String getClientToken() {
-        String clientToken = getIntent().getStringExtra(EXTRA_CLIENT_TOKEN);
+        String clientToken = getIntent().getStringExtra(EXTRA_CLIENT_AUTHORIZATION);
         if (clientToken == null) {
-            clientToken = mSavedInstanceState.getString(EXTRA_CLIENT_TOKEN);
+            clientToken = mSavedInstanceState.getString(EXTRA_CLIENT_AUTHORIZATION);
             if (clientToken == null) {
                 throw new IllegalArgumentException("A client token must be specified with " +
                         BraintreePaymentActivity.class.getSimpleName() +
-                        ".EXTRA_CLIENT_TOKEN extra");
+                        ".EXTRA_CLIENT_AUTHORIZATION extra");
             }
         }
         return clientToken;
@@ -382,7 +383,7 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString(EXTRA_CLIENT_TOKEN, getClientToken());
+        outState.putString(EXTRA_CLIENT_AUTHORIZATION, getClientToken());
 
         if (StubbedView.CARD_FORM.mCurrentView) {
             outState.putBoolean(ON_PAYMENT_METHOD_ADD_FORM_KEY, true);

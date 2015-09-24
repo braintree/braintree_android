@@ -57,20 +57,20 @@ public class BraintreePaymentActivityTestRunner implements FailureHandler {
 
     public BraintreePaymentActivity getActivity(String clientToken) {
         Intent intent = new Intent(getTargetContext(), BraintreePaymentTestActivity.class)
-                .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, clientToken);
+                .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_AUTHORIZATION, clientToken);
         return mActivityTestRule.launchActivity(intent);
     }
 
     public BraintreePaymentActivity getActivity(String clientToken, long delay) {
         Intent intent = new Intent(getTargetContext(), BraintreePaymentTestActivity.class)
-                .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, clientToken)
+                .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_AUTHORIZATION, clientToken)
                 .putExtra(BraintreePaymentTestActivity.EXTRA_DELAY, delay);
         return mActivityTestRule.launchActivity(intent);
     }
 
     public BraintreePaymentActivity getActivity(String clientToken, Intent intent) {
         intent.setClass(getTargetContext(), BraintreePaymentTestActivity.class)
-                .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, clientToken);
+                .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_AUTHORIZATION, clientToken);
         return mActivityTestRule.launchActivity(intent);
     }
 

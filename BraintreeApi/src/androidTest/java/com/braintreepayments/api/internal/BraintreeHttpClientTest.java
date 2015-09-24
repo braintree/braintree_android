@@ -15,11 +15,10 @@ import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.ClientKey;
-import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.testutils.EnvironmentHelper;
 
-import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,8 +62,10 @@ public class BraintreeHttpClientTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void doesNotSendClientKeyWhenNotPresent() throws IOException, JSONException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(ClientToken.fromString(stringFromFixture("client_token.json")));
+    public void doesNotSendClientKeyWhenNotPresent()
+            throws IOException, InvalidArgumentException {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                Authorization.fromString(stringFromFixture("client_token.json")));
 
         HttpURLConnection connection = httpClient.init("http://example.com/");
 
@@ -74,8 +75,8 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     @SmallTest
     public void get_includesAuthorizationFingerprintWhenPresent()
-            throws IOException, InterruptedException, JSONException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(ClientToken.fromString(stringFromFixture("client_token.json"))) {
+            throws IOException, InterruptedException, InvalidArgumentException {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(Authorization.fromString(stringFromFixture("client_token.json"))) {
             @Override
             protected HttpURLConnection init(String url) throws IOException {
                 assertTrue(url.contains("authorization_fingerprint"));

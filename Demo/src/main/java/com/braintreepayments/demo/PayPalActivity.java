@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -14,7 +15,9 @@ import android.widget.TextView;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.PayPal;
+import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalCheckout;
@@ -26,7 +29,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class PayPalActivity extends Activity implements PaymentMethodCreatedListener {
+public class PayPalActivity extends Activity implements PaymentMethodCreatedListener,
+        BraintreeErrorListener {
 
     private static final long WAIT_TIME = TimeUnit.SECONDS.toMillis(15);
     private static final long ONE_SECOND = 1000;
@@ -48,7 +52,7 @@ public class PayPalActivity extends Activity implements PaymentMethodCreatedList
         setContentView(R.layout.paypal);
 
         Bundle extras = getIntent().getExtras();
-        String extraClientToken = extras.getString(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN);
+        String extraClientToken = extras.getString(BraintreePaymentActivity.EXTRA_CLIENT_AUTHORIZATION);
         // Connect Views
         mLog = (TextView) findViewById(R.id.log);
         mBillingAgreementButton = (Button) findViewById(R.id.paypal_billing_agreement_button);
@@ -184,5 +188,15 @@ public class PayPalActivity extends Activity implements PaymentMethodCreatedList
      */
     public static Intent createIntent(Context context) {
         return new Intent(context, PayPalActivity.class);
+    }
+
+    @Override
+    public void onUnrecoverableError(Throwable throwable) {
+        Log.d("ERROR", throwable.getMessage());
+    }
+
+    @Override
+    public void onRecoverableError(ErrorWithResponse error) {
+        Log.d("ERROR", error.getMessage());
     }
 }

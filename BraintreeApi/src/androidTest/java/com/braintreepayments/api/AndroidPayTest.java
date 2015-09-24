@@ -12,7 +12,7 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
-import com.braintreepayments.api.models.ClientKey;
+import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.TestActivity;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
+import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestClientKey.CLIENT_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
@@ -52,7 +53,8 @@ public class AndroidPayTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void getTokenizationParameters_returnsCorrectParameters() {
+    public void getTokenizationParameters_returnsCorrectParameters()
+            throws InvalidArgumentException {
         AndroidPayConfiguration androidPayConfiguration = mock(AndroidPayConfiguration.class);
         when(androidPayConfiguration.getGoogleAuthorizationFingerprint())
                 .thenReturn("google-auth-fingerprint");
@@ -61,6 +63,8 @@ public class AndroidPayTest {
         when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
         BraintreeFragment fragment =
                 getMockFragment(mActivityTestRule.getActivity(), configuration);
+        when(fragment.getAuthorization()).thenReturn(
+                Authorization.fromString("sandbox_abcdef_merchantIDHere"));
 
         Bundle tokenizationParameters =
                 AndroidPay.getTokenizationParameters(fragment).getParameters();
@@ -77,7 +81,8 @@ public class AndroidPayTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void getTokenizationParameters_doesNotIncludeAClientKeyWhenNotPresent() {
+    public void getTokenizationParameters_doesNotIncludeAClientKeyWhenNotPresent()
+            throws InvalidArgumentException {
         AndroidPayConfiguration androidPayConfiguration = mock(AndroidPayConfiguration.class);
         when(androidPayConfiguration.getGoogleAuthorizationFingerprint())
                 .thenReturn("google-auth-fingerprint");
@@ -86,6 +91,8 @@ public class AndroidPayTest {
         when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
         BraintreeFragment fragment =
                 getMockFragment(mActivityTestRule.getActivity(), configuration);
+        when(fragment.getAuthorization()).thenReturn(
+                Authorization.fromString(stringFromFixture("client_token.json")));
 
         Bundle tokenizationParameters =
                 AndroidPay.getTokenizationParameters(fragment).getParameters();
@@ -106,7 +113,6 @@ public class AndroidPayTest {
         final BraintreeFragment fragment = getMockFragment(mActivityTestRule.getActivity(),
                 CLIENT_KEY,
                 configuration);
-        when(fragment.getClientKey()).thenReturn(ClientKey.fromString(CLIENT_KEY));
 
         Bundle tokenizationParameters =
                 AndroidPay.getTokenizationParameters(fragment).getParameters();
@@ -143,11 +149,14 @@ public class AndroidPayTest {
 
     @Test(timeout = 5000)
     @SmallTest
-    public void performMaskedWalletRequest_sendsAnalyticsEvent() throws InterruptedException {
+    public void performMaskedWalletRequest_sendsAnalyticsEvent()
+            throws InterruptedException, InvalidArgumentException {
         BraintreeFragment fragment = getSetupFragment();
         injectFakeGoogleApiClient(fragment);
+        when(fragment.getAuthorization()).thenReturn(
+                Authorization.fromString("sandbox_abcdef_merchantId"));
 
-        AndroidPay.performMaskedWalletRequest(fragment, null, true, false, false, 0);
+        AndroidPay.performMaskedWalletRequest(fragment, Cart.newBuilder().build(), false, false, false, 0);
 
         InOrder order = inOrder(fragment);
         order.verify(fragment).sendAnalyticsEvent("android-pay.selected");
@@ -180,7 +189,7 @@ public class AndroidPayTest {
     public void onActivityResult_sendsAnalyticsEventOnCancel() {
         BraintreeFragment fragment = getSetupFragment();
 
-        AndroidPay.onActivityResult(fragment, null, false, Activity.RESULT_CANCELED, new Intent());
+        AndroidPay.onActivityResult(fragment, Cart.newBuilder().build(), false, Activity.RESULT_CANCELED, new Intent());
 
         verify(fragment).sendAnalyticsEvent("android-pay.canceled");
     }
@@ -190,7 +199,7 @@ public class AndroidPayTest {
     public void onActivityResult_sendsAnalyticsEventOnNonOkOrCanceledResult() {
         BraintreeFragment fragment = getSetupFragment();
 
-        AndroidPay.onActivityResult(fragment, null, false, Activity.RESULT_FIRST_USER,
+        AndroidPay.onActivityResult(fragment, Cart.newBuilder().build(), false, Activity.RESULT_FIRST_USER,
                 new Intent());
 
         verify(fragment).sendAnalyticsEvent("android-pay.failed");
@@ -207,7 +216,7 @@ public class AndroidPayTest {
         Intent intent = new Intent()
                 .putExtra(WalletConstants.EXTRA_MASKED_WALLET, wallet);
 
-        AndroidPay.onActivityResult(fragment, null, false, Activity.RESULT_OK, intent);
+        AndroidPay.onActivityResult(fragment, Cart.newBuilder().build(), false, Activity.RESULT_OK, intent);
 
         verify(fragment).sendAnalyticsEvent("android-pay.authorized");
     }
