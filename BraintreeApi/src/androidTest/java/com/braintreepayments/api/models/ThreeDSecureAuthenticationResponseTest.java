@@ -1,6 +1,7 @@
 package com.braintreepayments.api.models;
 
 import android.content.Intent;
+import android.os.Parcel;
 import android.test.AndroidTestCase;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
@@ -42,10 +43,12 @@ public class ThreeDSecureAuthenticationResponseTest extends AndroidTestCase {
     public void testCanBeSerialized() {
         ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
                 FixturesHelper.stringFromFixture(getContext(),
-                "three_d_secure/authentication_response.json"));
+                        "three_d_secure/authentication_response.json"));
+        Parcel parcel = Parcel.obtain();
+        authResponse.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
 
-        Intent intent = new Intent().putExtra("auth-response", authResponse);
-        ThreeDSecureAuthenticationResponse parsedAuthResponse = intent.getParcelableExtra("auth-response");
+        ThreeDSecureAuthenticationResponse parsedAuthResponse = ThreeDSecureAuthenticationResponse.CREATOR.createFromParcel(parcel);
 
         assertEquals(authResponse.getCard().getLastTwo(), parsedAuthResponse.getCard().getLastTwo());
         assertEquals(authResponse.getCard().getThreeDSecureInfo().isLiabilityShifted(),

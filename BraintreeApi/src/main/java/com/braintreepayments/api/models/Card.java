@@ -97,6 +97,7 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(mBillingAddress, 0);
+        dest.writeParcelable(mThreeDSecureInfo, 0);
         dest.writeParcelable(mDetails, 0);
         dest.writeString(mExpirationMonth);
         dest.writeString(mExpirationYear);
@@ -111,6 +112,7 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
 
     private Card(Parcel in) {
         mBillingAddress = in.readParcelable(BillingAddress.class.getClassLoader());
+        mThreeDSecureInfo = in.readParcelable(ThreeDSecureInfo.class.getClassLoader());
         mDetails = in.readParcelable(CardDetails.class.getClassLoader());
         mExpirationMonth = in.readString();
         mExpirationYear = in.readString();
