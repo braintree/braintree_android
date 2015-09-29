@@ -93,6 +93,7 @@ public class ThreeDSecureLookup implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(mCard, flags);
         dest.writeString(mAcsUrl);
         dest.writeString(mMd);
         dest.writeString(mTermUrl);
@@ -100,6 +101,7 @@ public class ThreeDSecureLookup implements Parcelable {
     }
 
     private ThreeDSecureLookup(Parcel in) {
+        mCard = in.readParcelable(Card.class.getClassLoader());
         mAcsUrl = in.readString();
         mMd = in.readString();
         mTermUrl = in.readString();

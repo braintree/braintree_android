@@ -1,6 +1,6 @@
 package com.braintreepayments.api.models;
 
-import android.content.Intent;
+import android.os.Parcel;
 import android.test.AndroidTestCase;
 
 import com.braintreepayments.testutils.FixturesHelper;
@@ -27,8 +27,11 @@ public class ThreeDSecureLookupTest extends AndroidTestCase {
     }
 
     public void testCanBeSerialized() {
-        Intent intent = new Intent().putExtra("lookup", mLookup);
-        ThreeDSecureLookup parsedLookup = intent.getParcelableExtra("lookup");
+        Parcel parcel = Parcel.obtain();
+        mLookup.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+
+        ThreeDSecureLookup parsedLookup = ThreeDSecureLookup.CREATOR.createFromParcel(parcel);
 
         assertEquals(mLookup.getAcsUrl(), parsedLookup.getAcsUrl());
         assertEquals(mLookup.getMd(), parsedLookup.getMd());

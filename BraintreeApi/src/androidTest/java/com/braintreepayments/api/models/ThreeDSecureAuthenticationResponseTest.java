@@ -62,9 +62,11 @@ public class ThreeDSecureAuthenticationResponseTest extends AndroidTestCase {
     public void testExceptionsAreSerialized() {
         ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse
                 .fromException("Error!");
+        Parcel parcel = Parcel.obtain();
+        authResponse.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
 
-        Intent intent = new Intent().putExtra("auth-response", authResponse);
-        ThreeDSecureAuthenticationResponse parsedAuthResponse = intent.getParcelableExtra("auth-response");
+        ThreeDSecureAuthenticationResponse parsedAuthResponse = ThreeDSecureAuthenticationResponse.CREATOR.createFromParcel(parcel);
 
         assertEquals(authResponse.isSuccess(), parsedAuthResponse.isSuccess());
         assertEquals(authResponse.getException(), parsedAuthResponse.getException());
