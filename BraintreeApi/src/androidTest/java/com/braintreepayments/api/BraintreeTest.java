@@ -523,37 +523,37 @@ public class BraintreeTest extends AndroidTestCase {
     }
 
     public void testStartThreeDSecureVerificationAcceptsACardBuilderAndPostsAPaymentMethodToListener() {
-//        String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
-//
-//        BraintreeApi braintreeApi = new BraintreeApi(getContext(), clientToken);
-//        Braintree braintree = new Braintree(clientToken, braintreeApi);
-//
-//        final AtomicBoolean paymentMethodNonceCalled = new AtomicBoolean(false);
-//        final AtomicBoolean paymentMethodCreatedCalled = new AtomicBoolean(false);
-//        SimpleListener listener = new SimpleListener() {
-//            @Override
-//            public void onPaymentMethodNonce(String paymentMethodNonce) {
-//                assertNotNull(paymentMethodNonce);
-//                paymentMethodNonceCalled.set(true);
-//            }
-//
-//            @Override
-//            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-//                assertEquals("51", ((Card) paymentMethod).getLastTwo());
-//                paymentMethodCreatedCalled.set(true);
-//            }
-//        };
-//        braintree.addListener(listener);
-//
-//        CardBuilder cardBuilder = new CardBuilder()
-//                .cardNumber("4000000000000051")
-//                .expirationDate("12/20");
-//        braintree.startThreeDSecureVerification(null, 0, cardBuilder, "5");
-//
-//        SystemClock.sleep(9995000); //TODO not this long
-//
-//        assertTrue(paymentMethodNonceCalled.get());
-//        assertTrue(paymentMethodCreatedCalled.get());
+        String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
+
+        BraintreeApi braintreeApi = new BraintreeApi(getContext(), clientToken);
+        Braintree braintree = new Braintree(clientToken, braintreeApi);
+
+        final AtomicBoolean paymentMethodNonceCalled = new AtomicBoolean(false);
+        final AtomicBoolean paymentMethodCreatedCalled = new AtomicBoolean(false);
+        SimpleListener listener = new SimpleListener() {
+            @Override
+            public void onPaymentMethodNonce(String paymentMethodNonce) {
+                assertNotNull(paymentMethodNonce);
+                paymentMethodNonceCalled.set(true);
+            }
+
+            @Override
+            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+                assertEquals("51", ((Card) paymentMethod).getLastTwo());
+                paymentMethodCreatedCalled.set(true);
+            }
+        };
+        braintree.addListener(listener);
+
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber("4000000000000051")
+                .expirationDate("12/20");
+        braintree.startThreeDSecureVerification(null, 0, cardBuilder, "5");
+
+        SystemClock.sleep(5000);
+
+        assertTrue(paymentMethodNonceCalled.get());
+        assertTrue(paymentMethodCreatedCalled.get());
     }
 
     public void testFinishThreeDSecureVerificationPostsPaymentMethodToListener()
