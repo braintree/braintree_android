@@ -26,8 +26,6 @@ public class CoinbaseAccount extends PaymentMethod implements Parcelable, Serial
     @SerializedName("redirect_uri")
     private String mRedirectUri;
 
-    public CoinbaseAccount() {}
-
     protected void setAccessCode(String accessCode) {
         mAccessCode = accessCode;
     }
@@ -65,26 +63,30 @@ public class CoinbaseAccount extends PaymentMethod implements Parcelable, Serial
         return new Gson().fromJson(json, CoinbaseAccount.class);
     }
 
+    public CoinbaseAccount() {}
+
     @Override
-    public int describeContents() { return 0; }
+    public int describeContents() {
+        return 0;
+    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.mAccessCode);
-        dest.writeParcelable(this.mDetails, 0);
-        dest.writeString(this.mNonce);
-        dest.writeString(this.mDescription);
-        dest.writeSerializable(this.mPaymentMethodOptions);
-        dest.writeString(this.mSource);
+        dest.writeString(mAccessCode);
+        dest.writeParcelable(mDetails, 0);
+        dest.writeString(mNonce);
+        dest.writeString(mDescription);
+        dest.writeSerializable(mPaymentMethodOptions);
+        dest.writeString(mSource);
     }
 
     private CoinbaseAccount(Parcel in) {
-        this.mAccessCode = in.readString();
-        this.mDetails = in.readParcelable(CoinbaseAccountDetails.class.getClassLoader());
-        this.mNonce = in.readString();
-        this.mDescription = in.readString();
-        this.mPaymentMethodOptions = (PaymentMethodOptions) in.readSerializable();
-        this.mSource = in.readString();
+        mAccessCode = in.readString();
+        mDetails = in.readParcelable(CoinbaseAccountDetails.class.getClassLoader());
+        mNonce = in.readString();
+        mDescription = in.readString();
+        mPaymentMethodOptions = (PaymentMethodOptions) in.readSerializable();
+        mSource = in.readString();
     }
 
     public static final Creator<CoinbaseAccount> CREATOR = new Creator<CoinbaseAccount>() {
@@ -94,17 +96,20 @@ public class CoinbaseAccount extends PaymentMethod implements Parcelable, Serial
     };
 
     private static class CoinbaseAccountDetails implements Parcelable, Serializable {
+
         @SerializedName("email")
         private String mEmail;
-
-        public CoinbaseAccountDetails() {}
 
         public String getEmail() {
             return mEmail;
         }
 
+        public CoinbaseAccountDetails() {}
+
         @Override
-        public int describeContents() { return 0; }
+        public int describeContents() {
+            return 0;
+        }
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {dest.writeString(this.mEmail);}
@@ -113,11 +118,13 @@ public class CoinbaseAccount extends PaymentMethod implements Parcelable, Serial
 
         public static final Creator<CoinbaseAccountDetails> CREATOR =
                 new Creator<CoinbaseAccountDetails>() {
-                    public CoinbaseAccountDetails createFromParcel(
-                            Parcel source) {return new CoinbaseAccountDetails(source);}
+                    public CoinbaseAccountDetails createFromParcel(Parcel source) {
+                        return new CoinbaseAccountDetails(source);
+                    }
 
-                    public CoinbaseAccountDetails[] newArray(
-                            int size) {return new CoinbaseAccountDetails[size];}
+                    public CoinbaseAccountDetails[] newArray(int size) {
+                        return new CoinbaseAccountDetails[size];
+                    }
                 };
     }
 }
