@@ -137,6 +137,30 @@ public class Braintree {
     private List<PaymentMethod> mCachedPaymentMethods;
 
     /**
+     * @deprecated Use the asynchronous
+     * {@link com.braintreepayments.api.Braintree#setup(android.content.Context, String, com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener)}
+     * instead.
+     *
+     * Obtain an instance of {@link Braintree}. If multiple calls are made with the same {@code
+     * clientToken}, you may get the same instance returned.
+     *
+     * @param context
+     * @param clientToken A client token obtained from a Braintree server SDK.
+     * @return {@link com.braintreepayments.api.Braintree} instance. Repeated called to
+     *         {@link #getInstance(android.content.Context, String)} with the same {@code clientToken}
+     *         may return the same {@link com.braintreepayments.api.Braintree} instance.
+     */
+    @Deprecated
+    public static Braintree getInstance(Context context, String clientToken) {
+        if (sInstances.containsKey(clientToken)) {
+            return sInstances.get(clientToken);
+        } else {
+            return new Braintree(clientToken,
+                    new BraintreeApi(context.getApplicationContext(), clientToken));
+        }
+    }
+
+    /**
      * Called to begin the setup of {@link Braintree}. Once setup is complete the supplied
      * {@link com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener} will receive
      * a call to {@link com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener#onBraintreeSetupFinished(boolean, Braintree, String, Exception)}
