@@ -809,7 +809,7 @@ public class BraintreeTest extends AndroidTestCase {
     public void testSameBraintreeIsRetrievedForIdenticalClientTokens() throws InterruptedException {
         final String clientToken = new TestClientTokenBuilder().build();
 
-        final CountDownLatch latch = new CountDownLatch(1);
+        final CountDownLatch latch = new CountDownLatch(2);
         Braintree.setup(getContext(), clientToken, new BraintreeSetupFinishedListener() {
             @Override
             public void onBraintreeSetupFinished(boolean setupSuccessful, final Braintree b1,
@@ -819,8 +819,7 @@ public class BraintreeTest extends AndroidTestCase {
 
                 Braintree.setup(getContext(), clientToken, new BraintreeSetupFinishedListener() {
                     @Override
-                    public void onBraintreeSetupFinished(boolean setupSuccessful,
-                            Braintree b2,
+                    public void onBraintreeSetupFinished(boolean setupSuccessful, Braintree b2,
                             String errorMessage, Exception exception) {
                         assertTrue(setupSuccessful);
                         assertTrue(b1 == b2);
