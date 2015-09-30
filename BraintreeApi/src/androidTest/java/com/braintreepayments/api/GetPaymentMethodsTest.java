@@ -39,7 +39,7 @@ public class GetPaymentMethodsTest extends AndroidTestCase {
     public void testGetPaymentMethodsReturnsAListOfAddedPaymentMethods()
             throws ErrorWithResponse, BraintreeException {
         BraintreeApi braintreeApi = new BraintreeApi(getContext(),
-                new TestClientTokenBuilder().withFakePayPal().build());
+                new TestClientTokenBuilder().withPayPal().build());
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
                 .expirationMonth("01")

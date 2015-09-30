@@ -50,6 +50,7 @@ import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPayme
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodList;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.CardNumber.VISA;
+import static com.braintreepayments.testutils.ExpirationDate.VALID_EXPIRATION;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.ui.Matchers.withHint;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
@@ -134,18 +135,24 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testPayPalCreatesAPaymentMethodWithACustomer() {
-        setUpActivityTest(this, new TestClientTokenBuilder().withPayPal().build());
+        setUpActivityTest(this, new TestClientTokenBuilder()
+                .withPayPal()
+                .withPayPalStage()
+                .build());
         assertCreatePaymentMethodFromPayPal("jane.doe@example.com");
     }
 
     public void testPayPalCreatesAPaymentMethodWithoutACustomer() {
-        setUpActivityTest(this,
-                new TestClientTokenBuilder().withoutCustomer().withPayPal().build());
+        setUpActivityTest(this, new TestClientTokenBuilder()
+                .withoutCustomer()
+                .withPayPal()
+                .withPayPalStage()
+                .build());
         assertCreatePaymentMethodFromPayPal("bt_buyer_us@paypal.com");
     }
 
     public void testReturnsToSelectPaymentMethodViewAfterAddingAPayPalAccount() {
-        setUpActivityTest(this, new TestClientTokenBuilder().withFakePayPal().build());
+        setUpActivityTest(this, new TestClientTokenBuilder().withPayPal().build());
         getActivity();
 
         fillInOfflinePayPal();
@@ -155,7 +162,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testDisplaysLoadingViewWhileCreatingAPayPalAccount() {
-        String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
+        String clientToken = new TestClientTokenBuilder().withPayPal().build();
         injectSlowBraintree(mContext, clientToken, THREE_SECONDS);
         setUpActivityTest(this, clientToken);
         getActivity();
@@ -221,7 +228,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
     public void testFinishesActivityWithErrorIfANonCreditCardErrorIsReturned()
             throws ErrorWithResponse, BraintreeException {
-        String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
+        String clientToken = new TestClientTokenBuilder().withPayPal().build();
         BraintreeApi braintreeApi = spy(new BraintreeApi(mContext, clientToken));
         doThrow(new ErrorWithResponse(422, "{}")).when(braintreeApi)
                 .create(any(PaymentMethod.Builder.class));
@@ -290,7 +297,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testBackButtonDuringPayPalAddDoesNothing() {
-        String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
+        String clientToken = new TestClientTokenBuilder().withPayPal().build();
         injectSlowBraintree(mContext, clientToken, TWO_SECONDS);
         setClientTokenExtraForTest(this, clientToken);
         getActivity();
@@ -312,7 +319,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testUpButtonIsShownAfterYouAddAPaymentMethod() {
-        setUpActivityTest(this, new TestClientTokenBuilder().withFakePayPal().build());
+        setUpActivityTest(this, new TestClientTokenBuilder().withPayPal().build());
         BraintreePaymentActivity activity = getActivity();
 
         performPayPalAdd();
@@ -362,7 +369,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreePaymentActivity activity = getActivity();
 
         waitForView(withId(R.id.bt_card_form_card_number)).perform(typeText(VISA));
-        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("0815"), closeSoftKeyboard());
+        onView(withId(R.id.bt_card_form_expiration)).perform(typeText(VALID_EXPIRATION), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
         waitForView(withId(R.id.bt_card_form_submit_button), isEnabled());
@@ -382,7 +389,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         BraintreePaymentActivity activity = getActivity();
 
         waitForView(withId(R.id.bt_card_form_card_number)).perform(typeText(VISA));
-        onView(withId(R.id.bt_card_form_expiration)).perform(typeText("0815"), closeSoftKeyboard());
+        onView(withId(R.id.bt_card_form_expiration)).perform(typeText(VALID_EXPIRATION), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_cvv)).perform(typeText("123"), closeSoftKeyboard());
         onView(withId(R.id.bt_card_form_postal_code)).perform(typeText("20000"));
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
@@ -518,7 +525,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
 
         waitForView(withId(R.id.bt_paypal_button)).perform(click());
         waitForView(withHint("Email"), FIFTEEN_SECONDS).perform(typeText("bt_buyer_us@paypal.com"));
-        onView(withHint("Password")).perform(typeText("11111111"));
+        onView(withHint("Password")).perform(typeText("stage2@qa"));
         onView(withHint("Log In")).perform(click());
         waitForPaymentMethodList();
 

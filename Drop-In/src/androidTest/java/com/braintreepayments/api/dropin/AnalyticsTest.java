@@ -1,6 +1,9 @@
 package com.braintreepayments.api.dropin;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.SystemClock;
 import android.view.KeyEvent;
 
 import com.braintreepayments.api.Braintree;
@@ -22,6 +25,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static com.braintreepayments.api.BraintreeTestUtils.setClientTokenExtraForTest;
 import static com.braintreepayments.api.TestDependencyInjector.injectBraintree;
 import static com.braintreepayments.api.TestDependencyInjector.injectSlowNonSetupBraintree;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInCardForm;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
@@ -40,12 +44,6 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
     private Braintree mBraintree;
     private BraintreePaymentActivity mActivity;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        System.setProperty("dexmaker.dexcache", mContext.getCacheDir().getPath());
-    }
-
     public void testAddsEventOnSDKInitialized() {
         setupActivity();
         verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.initialized");
@@ -59,7 +57,8 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     public void testAddsEventOnAddCardSucceeded() {
         setupActivity();
-        fillInCreditCard();
+        fillInCardForm(mContext);
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
         waitForActivityToFinish(mActivity);
 
         verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.initialized");
@@ -111,11 +110,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
             SystemClock.sleep(1000);
 
-            verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.initialized");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("add-card.start");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("add-coinbase.success");
+            verify(mBraintree).sendAnalyticsEvent("add-coinbase.success");
         } finally {
             TestClientTokenBuilder.enableCoinbase(false);
         }
@@ -126,21 +121,15 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
             setupCoinbaseActivity();
 
             Intent broadcastIntent = new Intent();
-            broadcastIntent.putExtra("com.braintreepayments.api.BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL"
-                    , Uri.parse("com.braintreepayments.api.dropin.test.braintree://coinbase?code=coinbase-code"));
+            broadcastIntent.putExtra("com.braintreepayments.api.BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL",
+                    Uri.parse("com.braintreepayments.api.dropin.test.braintree://coinbase?code=coinbase-code"));
             mBraintree.finishPayWithCoinbase(Activity.RESULT_OK, broadcastIntent);
 
             SystemClock.sleep(1000);
 
-            verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.initialized");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("add-card.start");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("coinbase.webswitch.authorized");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("add-coinbase.success");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("coinbase.tokenize.succeeded");
+            verify(mBraintree).sendAnalyticsEvent("coinbase.webswitch.authorized");
+            verify(mBraintree).sendAnalyticsEvent("add-coinbase.success");
+            verify(mBraintree).sendAnalyticsEvent("coinbase.tokenize.succeeded");
         } finally {
             TestClientTokenBuilder.enableCoinbase(false);
         }
@@ -151,18 +140,13 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
             setupCoinbaseActivity();
 
             Intent broadcastIntent = new Intent();
-            broadcastIntent.putExtra("com.braintreepayments.api.BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL"
-                    , Uri.parse("com.braintreepayments.api.dropin.test.braintree://coinbase?error=access_denied&error_description=User+denied+access"));
+            broadcastIntent.putExtra("com.braintreepayments.api.BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL",
+                    Uri.parse("com.braintreepayments.api.dropin.test.braintree://coinbase?error=access_denied&error_description=User+denied+access"));
             mBraintree.finishPayWithCoinbase(Activity.RESULT_OK, broadcastIntent);
 
             SystemClock.sleep(1000);
 
-            verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.initialized");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("add-card.start");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("coinbase.webswitch.denied");
-
+            verify(mBraintree).sendAnalyticsEvent("coinbase.webswitch.denied");
         } finally {
             TestClientTokenBuilder.enableCoinbase(false);
         }
@@ -173,87 +157,13 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
             setupCoinbaseActivity();
 
             Intent broadcastIntent = new Intent();
-            broadcastIntent.putExtra("com.braintreepayments.api.BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL"
-                    , Uri.parse("com.braintreepayments.api.dropin.test.braintree://coinbase?error=a_random_error&error_description=Something+happened"));
+            broadcastIntent.putExtra("com.braintreepayments.api.BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL",
+                    Uri.parse("com.braintreepayments.api.dropin.test.braintree://coinbase?error=a_random_error&error_description=Something+happened"));
             mBraintree.finishPayWithCoinbase(Activity.RESULT_OK, broadcastIntent);
 
             SystemClock.sleep(1000);
 
-            verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.initialized");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("add-card.start");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("coinbase.webswitch.failed");
-
-        } finally {
-            TestClientTokenBuilder.enableCoinbase(false);
-        }
-    }
-
-    public void testAddsEventsOnCoinbaseWebswitchSucceeded() {
-        try {
-            setupCoinbaseActivity();
-
-            Intent broadcastIntent = new Intent();
-            broadcastIntent.putExtra("com.braintreepayments.api.BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL"
-                    , Uri.parse("com.braintreepayments.api.dropin.test.braintree://coinbase?code=coinbase-code"));
-            mBraintree.finishPayWithCoinbase(Activity.RESULT_OK, broadcastIntent);
-
-            SystemClock.sleep(1000);
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.initialized");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("add-card.start");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("coinbase.webswitch.authorized");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("add-coinbase.success");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("coinbase.tokenize.succeeded");
-        } finally {
-            TestClientTokenBuilder.enableCoinbase(false);
-        }
-    }
-
-    public void testAddsEventsOnCoinbaseWebswitchDenied() {
-        try {
-            setupCoinbaseActivity();
-
-            Intent broadcastIntent = new Intent();
-            broadcastIntent.putExtra("com.braintreepayments.api.BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL"
-                    , Uri.parse("com.braintreepayments.api.dropin.test.braintree://coinbase?error=access_denied&error_description=User+denied+access"));
-            mBraintree.finishPayWithCoinbase(Activity.RESULT_OK, broadcastIntent);
-
-            SystemClock.sleep(1000);
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.initialized");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("add-card.start");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("coinbase.webswitch.denied");
-
-        } finally {
-            TestClientTokenBuilder.enableCoinbase(false);
-        }
-    }
-
-    public void testAddsEventsOnCoinbaseWebswitchFailed() {
-        try {
-            setupCoinbaseActivity();
-
-            Intent broadcastIntent = new Intent();
-            broadcastIntent.putExtra("com.braintreepayments.api.BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL"
-                    , Uri.parse("com.braintreepayments.api.dropin.test.braintree://coinbase?error=a_random_error&error_description=Something+happened"));
-            mBraintree.finishPayWithCoinbase(Activity.RESULT_OK, broadcastIntent);
-
-            SystemClock.sleep(1000);
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.initialized");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("add-card.start");
-
-            verify(mBraintree, times(1)).sendAnalyticsEvent("coinbase.webswitch.failed");
-
+            verify(mBraintree).sendAnalyticsEvent("coinbase.webswitch.failed");
         } finally {
             TestClientTokenBuilder.enableCoinbase(false);
         }
@@ -261,7 +171,8 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     public void testAddsEventOnSDKExitWithSuccess() {
         setupActivity();
-        fillInCreditCard();
+        fillInCardForm(mContext);
+        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
         waitForActivityToFinish(mActivity);
 
         verify(mBraintree, times(1)).sendAnalyticsEvent("sdk.exit.success");
@@ -317,7 +228,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
 
     /* helpers */
     private void setupActivity() {
-        String clientToken = new TestClientTokenBuilder().withFakePayPal().withAnalytics().build();
+        String clientToken = new TestClientTokenBuilder().withPayPal().withAnalytics().build();
         mBraintree = spy(injectBraintree(mContext, clientToken, clientToken));
         injectBraintree(clientToken, mBraintree);
         setClientTokenExtraForTest(this, clientToken);
@@ -326,19 +237,11 @@ public class AnalyticsTest extends BraintreePaymentActivityTestCase {
     }
 
     private void setupCoinbaseActivity() {
-        String clientToken = new TestClientTokenBuilder().withFakePayPal().withAnalytics().withCoinbase().build();
+        String clientToken = new TestClientTokenBuilder().withCoinbase().withAnalytics().build();
         mBraintree = spy(Braintree.getInstance(mContext, clientToken));
         injectBraintree(clientToken, mBraintree);
-        setUpActivityTest(this, clientToken);
+        setClientTokenExtraForTest(this, clientToken);
         mActivity = getActivity();
         waitForAddPaymentFormHeader();
-    }
-
-    private void fillInCreditCard() {
-        onView(withHint("Card Number")).perform(typeText(VISA));
-        onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
-        onView(withHint("CVV")).perform(typeText("123"), closeSoftKeyboard());
-        onView(withHint("Postal Code")).perform(typeText("12345"));
-        onView(withId(R.id.bt_card_form_submit_button)).perform(click());
     }
 }

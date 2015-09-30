@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.braintreepayments.api.BraintreeApi;
-import com.braintreepayments.api.BraintreeTestUtils;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.Card;
@@ -63,7 +62,8 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        String clientToken = new TestClientTokenBuilder().withFakePayPal().withCoinbase().build();
+        TestClientTokenBuilder.enableCoinbase(true);
+        String clientToken = new TestClientTokenBuilder().withPayPal().build();
         setUpActivityTest(this, clientToken);
         mBraintreeApi = new BraintreeApi(mContext, clientToken);
         mBraintreeApi.create(new CardBuilder()
@@ -72,19 +72,11 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
                 .expirationYear("2018"));
     }
 
-    private String createAmex() throws IOException, ErrorWithResponse {
-        SystemClock.sleep(1000);
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
 
-        return mBraintreeApi.create(new CardBuilder()
-                .cardNumber(AMEX)
-                .expirationMonth("01")
-                .expirationYear("2019")).getNonce();
-    }
-
-    private String createCoinbase() throws IOException, ErrorWithResponse {
-        SystemClock.sleep(1000);
-
-        return mBraintreeApi.create(new CoinbaseAccountBuilder().code("coinbase-code").storeInVault(true)).getNonce();
+        TestClientTokenBuilder.enableCoinbase(false);
     }
 
     public void testDisplaysALoadingViewWhileGettingPaymentMethods() {
@@ -372,4 +364,19 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
         assertFalse(submitButton.isEnabled());
     }
 
+    /* helpers */
+    private String createAmex() throws IOException, ErrorWithResponse {
+        SystemClock.sleep(1000);
+
+        return mBraintreeApi.create(new CardBuilder()
+                .cardNumber(AMEX)
+                .expirationMonth("01")
+                .expirationYear("2019")).getNonce();
+    }
+
+    private String createCoinbase() throws IOException, ErrorWithResponse {
+        SystemClock.sleep(1000);
+
+        return mBraintreeApi.create(new CoinbaseAccountBuilder().code("coinbase-code").storeInVault(true)).getNonce();
+    }
 }

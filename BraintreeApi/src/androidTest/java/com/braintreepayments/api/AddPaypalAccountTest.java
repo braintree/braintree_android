@@ -14,7 +14,7 @@ public class AddPaypalAccountTest extends AndroidTestCase {
 
     public void setUp() {
         TestUtils.setUp(getContext());
-        mBraintreeApi = new BraintreeApi(getContext(), new TestClientTokenBuilder().withFakePayPal().build());
+        mBraintreeApi = new BraintreeApi(getContext(), new TestClientTokenBuilder().withPayPal().build());
     }
 
     public void testCanAddPayPalAccount() throws ErrorWithResponse, BraintreeException {

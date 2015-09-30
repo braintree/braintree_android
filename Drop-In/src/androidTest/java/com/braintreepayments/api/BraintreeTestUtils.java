@@ -49,7 +49,7 @@ public class BraintreeTestUtils {
      * @return
      */
     public static String setClientTokenExtraForTest(ActivityInstrumentationTestCase2<BraintreePaymentActivity> testCase) {
-        String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
+        String clientToken = new TestClientTokenBuilder().withPayPal().build();
         setClientTokenExtraForTest(testCase, clientToken);
 
         return clientToken;

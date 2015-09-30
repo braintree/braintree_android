@@ -95,7 +95,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
             return;
         }
 
-        String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
+        String clientToken = new TestClientTokenBuilder().withPayPal().build();
         setUpActivityTest(this, clientToken);
         BraintreeApi api = new BraintreeApi(mContext, clientToken);
         api.create(new CardBuilder()
@@ -120,7 +120,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestCase {
         if (VERSION.SDK_INT < VERSION_CODES.JELLY_BEAN_MR2) {
             return;
         }
-        String clientToken = new TestClientTokenBuilder().withFakePayPal().build();
+        String clientToken = new TestClientTokenBuilder().withPayPal().build();
         setUpActivityTest(this, clientToken);
         BraintreeApi api = new BraintreeApi(mContext, clientToken);
         api.create(new CardBuilder()
