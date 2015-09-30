@@ -160,7 +160,7 @@ public class BraintreeApiTest extends AndroidTestCase {
     public void testStartPayWithCoinbaseReturnsFalseIfCoinbaseNotEnabled()
             throws UnsupportedEncodingException {
         String configurationString = stringFromFixture(getTargetContext(),
-                "configuration_with_coinbase_disabled.json");
+                "configuration_with_disabled_coinbase.json");
 
         BraintreeApi braintreeApi = new BraintreeApi(mContext, new TestClientTokenBuilder().build(), configurationString);
 
