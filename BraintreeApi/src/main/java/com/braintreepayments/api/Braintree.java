@@ -658,6 +658,7 @@ public class Braintree {
      *
      * @param activity The {@link android.app.Activity} used to perform the web switch.
      */
+    @Beta
     public void startPayWithCoinbase(Activity activity) {
         boolean payWithCoinbaseInitiated = false;
         sendAnalyticsEvent("coinbase.initiate.started");
@@ -689,6 +690,7 @@ public class Braintree {
      *
      * @param data The {@link android.content.Intent} provided in the {@link android.content.BroadcastReceiver}
      */
+    @Beta
     public synchronized void finishPayWithCoinbase(final Intent data) {
         Uri redirectUri = data.getParcelableExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL);
         String error = redirectUri != null ? redirectUri.getQueryParameter("error") : null;

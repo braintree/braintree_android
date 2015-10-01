@@ -3,6 +3,7 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.braintreepayments.api.annotations.Beta;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
@@ -13,6 +14,7 @@ import java.io.Serializable;
  * @see {@link com.braintreepayments.api.models.PayPalAccount}
  * @see {@link com.braintreepayments.api.models.PaymentMethod}
  */
+@Beta
 public class CoinbaseAccount extends PaymentMethod implements Parcelable, Serializable {
 
     protected static final String PAYMENT_METHOD_TYPE = "CoinbaseAccount";

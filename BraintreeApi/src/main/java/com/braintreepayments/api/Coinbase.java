@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.exceptions.CoinbaseException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.models.CoinbaseConfiguration;
@@ -16,6 +17,7 @@ import java.net.URLEncoder;
 /**
  * Class to generate Coinbase request url and parse Coinbase response.
  */
+@Beta
 public class Coinbase {
 
     private static final String REDIRECT_URI_HOST = "coinbase";

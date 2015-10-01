@@ -38,7 +38,10 @@ public class BetaDetector extends Detector implements JavaScanner {
             "performAndroidPayChangeMaskedWalletRequest",
             "performAndroidPayFullWalletRequest",
             "getNonceFromAndroidPayFullWalletResponse",
-            "getAndroidPay"
+            "getAndroidPay",
+            "isCoinbaseEnabled",
+            "startPayWithCoinbase",
+            "finishPayWithCoinbase"
     );
 
     private static final Implementation IMPLEMENTATION = new Implementation(

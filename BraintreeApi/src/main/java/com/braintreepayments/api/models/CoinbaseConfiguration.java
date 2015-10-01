@@ -1,10 +1,12 @@
 package com.braintreepayments.api.models;
 
+import com.braintreepayments.api.annotations.Beta;
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Contains the remote Coinbase configuration for the Braintree SDK
  */
+@Beta
 public class CoinbaseConfiguration {
 
     @SerializedName("clientId") private String mClientId;

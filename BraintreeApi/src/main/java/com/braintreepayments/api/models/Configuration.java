@@ -93,6 +93,7 @@ public class Configuration {
     /**
      * @return {@code true} if Coinbase is enabled, {@code false} otherwise.
      */
+    @Beta
     public boolean isCoinbaseEnabled() {
         return (mCoinbaseEnabled && mCoinbaseConfiguration != null);
     }
