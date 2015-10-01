@@ -4,10 +4,8 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -22,8 +20,6 @@ import com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener;
 import com.braintreepayments.api.Braintree.ErrorListener;
 import com.braintreepayments.api.Braintree.PaymentMethodCreatedListener;
 import com.braintreepayments.api.Braintree.PaymentMethodsUpdatedListener;
-import com.braintreepayments.api.BraintreeBroadcastManager;
-import com.braintreepayments.api.BraintreeBrowserSwitchActivity;
 import com.braintreepayments.api.VenmoAppSwitch;
 import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
 import com.braintreepayments.api.dropin.view.PaymentButton;
@@ -35,9 +31,8 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
-import com.braintreepayments.api.models.Card;
-import com.braintreepayments.api.models.CoinbaseAccount;
 import com.braintreepayments.api.models.AndroidPayCard;
+import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.google.android.gms.wallet.Cart;
@@ -118,31 +113,9 @@ public class BraintreePaymentActivity extends Activity implements
     private Bundle mSavedInstanceState;
     private Customization mCustomization;
 
-    private BroadcastReceiver mBrowserSwitchReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equalsIgnoreCase(BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED)) {
-                StubbedView.LOADING_VIEW.show(BraintreePaymentActivity.this);
-                intent.putExtra("store-in-vault", true);
-                BraintreePaymentActivity.this.mAddPaymentMethodViewController.onPaymentResult(
-                        PaymentButton.REQUEST_CODE, intent.getIntExtra(
-                                BraintreeBrowserSwitchActivity.BROADCAST_BROWSER_EXTRA_RESULT,
-                                Activity.RESULT_OK), intent);
-            }
-        }
-    };
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // For Coinbase browser switch
-        BraintreeBroadcastManager.getInstance(this).registerReceiver(mBrowserSwitchReceiver,
-                new IntentFilter(
-                        BraintreeBrowserSwitchActivity.LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED));
-
         setContentView(R.layout.bt_drop_in_ui);
 
         mSavedInstanceState = (savedInstanceState != null) ? savedInstanceState : new Bundle();
@@ -205,11 +178,6 @@ public class BraintreePaymentActivity extends Activity implements
         }
     }
 
-    protected void onDestroy() {
-        BraintreeBroadcastManager.getInstance(this).unregisterReceiver(mBrowserSwitchReceiver);
-        super.onDestroy();
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
@@ -264,9 +232,6 @@ public class BraintreePaymentActivity extends Activity implements
             }
         } else if (paymentMethod instanceof PayPalAccount) {
             mBraintree.sendAnalyticsEvent("add-paypal.success");
-            finishCreate();
-        } else if (paymentMethod instanceof CoinbaseAccount) {
-            mBraintree.sendAnalyticsEvent("add-coinbase.success");
             finishCreate();
         } else if (paymentMethod instanceof AndroidPayCard) {
             mBraintree.sendAnalyticsEvent("add-android-pay.success");
