@@ -14,7 +14,7 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
-import com.braintreepayments.api.ThreeDSecureAuthenticationTestActivity;
+import com.braintreepayments.api.test.ThreeDSecureAuthenticationTestActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 import org.json.JSONException;
