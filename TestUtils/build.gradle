@@ -26,7 +26,10 @@ android {
 
 dependencies {
     compile 'com.google.dexmaker:dexmaker-mockito:1.1'
-    compile 'com.android.support.test.espresso:espresso-core:2.2'
+    compile 'com.android.support.test.espresso:espresso-core:2.2.1'
+    compile 'com.android.support.test.espresso:espresso-intents:2.2.1'
+    compile 'com.android.support.test:runner:0.4'
+    compile 'com.android.support.test:rules:0.4'
 }
 
 android.buildTypes.each { type ->
