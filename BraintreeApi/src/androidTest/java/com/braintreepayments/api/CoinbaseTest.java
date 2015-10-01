@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.exceptions.CoinbaseException;
@@ -11,6 +12,7 @@ import com.braintreepayments.api.models.CoinbaseConfiguration;
 import com.braintreepayments.api.models.Configuration;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -23,10 +25,11 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(AndroidJUnit4.class)
 public class CoinbaseTest {
 
     @Test
-    public void testIsAvailableReturnsTrueWhenCoinbaseIsEnabled() {
+    public void isAvailable_returnsTrueWhenCoinbaseIsEnabled() {
         Configuration configuration = mock(Configuration.class);
         when(configuration.isCoinbaseEnabled()).thenReturn(true);
 
@@ -36,7 +39,7 @@ public class CoinbaseTest {
     }
 
     @Test
-    public void testIsAvailableReturnsFalseWhenCoinbaseIsDisabled() {
+    public void isAvailable_returnsFalseWhenCoinbaseIsDisabled() {
         Configuration configuration = mock(Configuration.class);
         when(configuration.isCoinbaseEnabled()).thenReturn(false);
 
@@ -46,7 +49,7 @@ public class CoinbaseTest {
     }
 
     @Test
-    public void testGetLaunchIntentReturnsAnIntentToOpenUpTheCoinbaseWebsite()
+    public void getLaunchIntent_returnsAnIntentToOpenUpTheCoinbaseWebsite()
             throws AppSwitchNotAvailableException, UnsupportedEncodingException {
         Intent coinbaseIntent = getCoinbaseWithValidConfiguration().getLaunchIntent();
 
@@ -67,7 +70,7 @@ public class CoinbaseTest {
     }
 
     @Test
-    public void testCanHandleResponseAcceptsAValidResponse() throws UnsupportedEncodingException {
+    public void canParseResponse_acceptsAValidResponse() throws UnsupportedEncodingException {
         Intent coinbaseIntent = getCoinbaseWithValidConfiguration().getLaunchIntent();
 
         Uri browserSwitchUri = Uri.parse(coinbaseIntent.getStringExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_URL));
@@ -81,7 +84,7 @@ public class CoinbaseTest {
     }
 
     @Test
-    public void testCanHandleResponseRejectsAnInvalidResponse() {
+    public void canParseResponse_rejectsAnInvalidResponse() {
         Uri uri = Uri.parse("my.app.social.stuff://not-for-braintree");
 
         assertFalse("Coinbase should reject a random url",
@@ -89,7 +92,7 @@ public class CoinbaseTest {
     }
 
     @Test
-    public void testParseResponseReturnsACodeOnSuccess()
+    public void parseResponse_returnsACodeOnSuccess()
             throws UnsupportedEncodingException, CoinbaseException, ConfigurationException {
         Coinbase coinbase = getCoinbaseWithValidConfiguration();
 
@@ -105,11 +108,10 @@ public class CoinbaseTest {
     }
 
     @Test
-    public void testParseResponseThrowsWhenCoinbaseReturnsAnErrorMessage() {
+    public void parseResponse_throwsWhenCoinbaseReturnsAnErrorMessage() {
         try {
             getCoinbaseWithValidConfiguration().parseResponse(
-                    Uri.parse(
-                            "com.example.merchant.braintree://coinbase?error_description=Something%20went%20wrong!&error_code=FAIL"));
+                    Uri.parse("com.example.merchant.braintree://coinbase?error_description=Something%20went%20wrong!&error_code=FAIL"));
             fail("No exception was thrown");
         } catch (CoinbaseException e) {
             assertEquals("Response should parse error message from URI",
@@ -121,29 +123,28 @@ public class CoinbaseTest {
     }
 
     @Test(expected = CoinbaseException.class)
-    public void testParseResponseThrowsWhenCodeIsNotPresent()
+    public void parseResponse_throwsWhenCodeIsNotPresent()
             throws CoinbaseException, ConfigurationException {
             getCoinbaseWithValidConfiguration().parseResponse(
                     Uri.parse("com.example.merchant.braintree://coinbase?unexpected=most_definitely"));
     }
 
     @Test(expected = ConfigurationException.class)
-    public void testParseResponseThrowsForAURIWithAnUnexpectedScheme()
+    public void parseResponse_throwsForAURIWithAnUnexpectedScheme()
             throws CoinbaseException, ConfigurationException {
         getCoinbaseWithValidConfiguration().parseResponse(
-                Uri.parse(
-                        "com.example.merchant.cool-social-media-login://coinbase?code=some-code-from-coinbase"));
+                Uri.parse("com.example.merchant.cool-social-media-login://coinbase?code=some-code-from-coinbase"));
     }
 
     @Test(expected = ConfigurationException.class)
-    public void testParseResponseThrowsForAURIWithAnUnexpectedHost()
+    public void parse_responseThrowsForAURIWithAnUnexpectedHost()
             throws CoinbaseException, ConfigurationException {
          getCoinbaseWithValidConfiguration().parseResponse(
                 Uri.parse("com.example.merchant.braintree://dogecoin?code=some-code-from-coinbase"));
     }
 
     @Test(expected = ConfigurationException.class)
-    public void testParseResponseThrowsForNullURI()
+    public void parseResponse_throwsForNullURI()
             throws CoinbaseException, ConfigurationException {
         getCoinbaseWithValidConfiguration().parseResponse(null);
     }
