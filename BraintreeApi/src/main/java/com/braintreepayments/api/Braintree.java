@@ -656,12 +656,9 @@ public class Braintree {
      * {@link Braintree.ErrorListener#onRecoverableError(com.braintreepayments.api.exceptions.ErrorWithResponse)} or
      * {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)} as appropriate.
      *
-     * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     *        when {@link #startPayWithCoinbase(android.app.Activity, int)} finishes.
-     * @param requestCode The request code associated with this start request. Will be returned in
-     *        {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param activity The {@link android.app.Activity} used to perform the web switch.
      */
-    public void startPayWithCoinbase(Activity activity, int requestCode) {
+    public void startPayWithCoinbase(Activity activity) {
         boolean payWithCoinbaseInitiated = false;
         sendAnalyticsEvent("coinbase.initiate.started");
         if (!mBraintreeApi.isCoinbaseEnabled()) {
@@ -669,9 +666,8 @@ public class Braintree {
             postUnrecoverableErrorToListeners(new AppSwitchNotAvailableException());
         } else {
             try {
-                payWithCoinbaseInitiated = mBraintreeApi.startPayWithCoinbase(activity, requestCode);
+                payWithCoinbaseInitiated = mBraintreeApi.startPayWithCoinbase(activity);
                 sendAnalyticsEvent("coinbase.webswitch.started");
-
             } catch (UnsupportedEncodingException e) {
                 postUnrecoverableErrorToListeners(e);
                 sendAnalyticsEvent("coinbase.initiate.exception");
@@ -691,11 +687,9 @@ public class Braintree {
      * {@link Braintree.ErrorListener#onRecoverableError(com.braintreepayments.api.exceptions.ErrorWithResponse)} or
      * {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)} as appropriate.
      *
-     * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param data The {@link android.content.Intent} provided in the {@link android.content.BroadcastReceiver}
      */
-    public synchronized void finishPayWithCoinbase(final int resultCode, final Intent data) {
-
+    public synchronized void finishPayWithCoinbase(final Intent data) {
         Uri redirectUri = data.getParcelableExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL);
         String error = redirectUri != null ? redirectUri.getQueryParameter("error") : null;
         if (error != null) {
@@ -708,17 +702,15 @@ public class Braintree {
             mExecutorService.submit(new Runnable() {
                 @Override
                 public void run() {
-
                     sendAnalyticsEvent("coinbase.webswitch.authorized");
 
                     try {
-                        CoinbaseAccount coinbaseAccount = mBraintreeApi.finishPayWithCoinbase(resultCode, data);
-                        if (coinbaseAccount != null) {
-                            addPaymentMethodToCache(coinbaseAccount);
-                            postCreatedMethodToListeners(coinbaseAccount);
-                            postCreatedNonceToListeners(coinbaseAccount.getNonce());
-                            sendAnalyticsEvent("coinbase.tokenize.succeeded");
-                        }
+                        CoinbaseAccount coinbaseAccount = mBraintreeApi.finishPayWithCoinbase(data);
+
+                        addPaymentMethodToCache(coinbaseAccount);
+                        postCreatedMethodToListeners(coinbaseAccount);
+                        postCreatedNonceToListeners(coinbaseAccount.getNonce());
+                        sendAnalyticsEvent("coinbase.tokenize.succeeded");
                     } catch (BraintreeException e) {
                         sendAnalyticsEvent("coinbase.tokenize.failed");
                         postUnrecoverableErrorToListeners(e);
@@ -1033,8 +1025,6 @@ public class Braintree {
         if (responseCode == Activity.RESULT_OK && data != null) {
             if (PayPalHelper.isPayPalIntent(data)) {
                 finishPayWithPayPal(activity, responseCode, data);
-            } else if (Coinbase.canParseResponse(activity, data)) {
-                finishPayWithCoinbase(responseCode, data);
             } else if (AndroidPay.isMaskedWalletResponse(data)) {
                 performAndroidPayFullWalletRequest(activity, requestCode, null, getAndroidPayGoogleTransactionId(data));
             } else if (AndroidPay.isFullWalletResponse(data)) {

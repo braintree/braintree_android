@@ -29,10 +29,8 @@ import org.mockito.ArgumentCaptor;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.CardNumber.VISA;
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.matches;
@@ -157,16 +155,6 @@ public class BraintreeApiTest extends AndroidTestCase {
         assertEquals(200, responseCode.get());
     }
 
-    public void testStartPayWithCoinbaseReturnsFalseIfCoinbaseNotEnabled()
-            throws UnsupportedEncodingException {
-        String configurationString = stringFromFixture(getTargetContext(),
-                "configuration_with_disabled_coinbase.json");
-
-        BraintreeApi braintreeApi = new BraintreeApi(mContext, new TestClientTokenBuilder().build(), configurationString);
-
-        assertFalse(braintreeApi.startPayWithCoinbase(mock(Activity.class), 0));
-    }
-
     public void testPayWithCoinbase()
             throws UnsupportedEncodingException, ErrorWithResponse, BraintreeException {
         try {
@@ -175,7 +163,7 @@ public class BraintreeApiTest extends AndroidTestCase {
 
             BraintreeApi braintreeApi =
                     new BraintreeApi(mContext, new TestClientTokenBuilder().withCoinbase().build());
-            braintreeApi.startPayWithCoinbase(mockActivity, 1);
+            braintreeApi.startPayWithCoinbase(mockActivity);
 
             verify(mockActivity).startActivity(launchIntentCaptor.capture());
 
@@ -190,8 +178,7 @@ public class BraintreeApiTest extends AndroidTestCase {
             coinbaseSuccessIntent.putExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL,
                     responseUri);
 
-            CoinbaseAccount coinbaseAccount = braintreeApi.finishPayWithCoinbase(Activity.RESULT_OK,
-                    coinbaseSuccessIntent);
+            CoinbaseAccount coinbaseAccount = braintreeApi.finishPayWithCoinbase(coinbaseSuccessIntent);
 
             assertIsANonce(coinbaseAccount.getNonce());
             assertEquals("satoshi@example.com", coinbaseAccount.getEmail());

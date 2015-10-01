@@ -184,7 +184,7 @@ public class BraintreeApi {
     /**
      * @return if Coinbase is enabled in the current environment.
      */
-    public boolean isCoinbaseEnabled() {
+    protected boolean isCoinbaseEnabled() {
         return mCoinbase.isAvailable();
     }
 
@@ -304,21 +304,15 @@ public class BraintreeApi {
     /**
      * Start the pay with Coinbase flow. This will switch to the Coinbase website.
      *
-     * @param activity The {@link android.app.Activity} to receive {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     *        when {@link #startPayWithCoinbase(android.app.Activity, int)} finishes.
-     * @param requestCode the request code associated with the start request. Will be returned in
-     *        {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * @param activity The {@link android.app.Activity} used to perform the web switch.
      * @return A {@link java.lang.Boolean} if switching to Coinbase was successful.
      * @throws java.io.UnsupportedEncodingException If the UTF-8 encoder was not available.
      */
-    public boolean startPayWithCoinbase(Activity activity, int requestCode)
-            throws UnsupportedEncodingException {
-        if (isCoinbaseEnabled()) {
-            Intent coinbaseIntent = mCoinbase.getLaunchIntent();
-            if (coinbaseIntent != null) {
-                activity.startActivity(coinbaseIntent);
-                return true;
-            }
+    protected boolean startPayWithCoinbase(Activity activity) throws UnsupportedEncodingException {
+        Intent coinbaseIntent = mCoinbase.getLaunchIntent();
+        if (coinbaseIntent != null) {
+            activity.startActivity(coinbaseIntent);
+            return true;
         }
         return false;
     }
@@ -422,7 +416,6 @@ public class BraintreeApi {
     /**
      * Handles response from Coinbase after user authorization.
      *
-     * @param resultCode The result code provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)} use store-in-vault Extra to specify vaulting
      * @return The {@link com.braintreepayments.api.models.CoinbaseAccount} for the user or {@code null}
      *         if the resultCode was not {@link android.app.Activity#RESULT_OK}.
@@ -430,23 +423,20 @@ public class BraintreeApi {
      *         (server error, network issue, ect.) occurs
      * @throws com.braintreepayments.api.exceptions.ErrorWithResponse If creation fails server side validation.
      */
-    public CoinbaseAccount finishPayWithCoinbase(int resultCode, Intent data)
-            throws BraintreeException, ErrorWithResponse {
-        if (resultCode == Activity.RESULT_OK) {
-            Uri redirectUri =
-                    data.getParcelableExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL);
-            CoinbaseAccountBuilder coinbaseAccount = new CoinbaseAccountBuilder().code(mCoinbase.parseResponse(redirectUri)).redirectUri(mCoinbase.getRedirectUri());
+    protected CoinbaseAccount finishPayWithCoinbase(Intent data) throws BraintreeException,
+            ErrorWithResponse {
+        Uri redirectUri = data.getParcelableExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL);
+        CoinbaseAccountBuilder coinbaseAccount = new CoinbaseAccountBuilder()
+                .code(mCoinbase.parseResponse(redirectUri))
+                .redirectUri(mCoinbase.getRedirectUri());
 
-
-            if(data.getBooleanExtra("store-in-vault", false)){
-                coinbaseAccount.storeInVault(true);
-            }
-
-            return create(new CoinbaseAccountBuilder()
-                    .source("coinbase-browser")
-                    .code(mCoinbase.parseResponse(redirectUri)));
+        if(data.getBooleanExtra("store-in-vault", false)){
+            coinbaseAccount.storeInVault(true);
         }
-        return null;
+
+        return create(new CoinbaseAccountBuilder()
+                .source("coinbase-browser")
+                .code(mCoinbase.parseResponse(redirectUri)));
     }
 
     /**
