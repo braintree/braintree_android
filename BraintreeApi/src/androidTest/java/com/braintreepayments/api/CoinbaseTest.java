@@ -8,15 +8,15 @@ import android.support.test.runner.AndroidJUnit4;
 import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.exceptions.CoinbaseException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
-import com.braintreepayments.api.models.CoinbaseConfiguration;
 import com.braintreepayments.api.models.Configuration;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 
+import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static com.braintreepayments.api.TestUtils.getConfigurationFromFixture;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -61,12 +61,12 @@ public class CoinbaseTest {
         assertEquals("https", browserSwitchUri.getScheme());
         assertEquals("www.coinbase.com", browserSwitchUri.getHost());
         assertEquals("/oauth/authorize", browserSwitchUri.getPath());
-        assertEquals("some-coinbase-client-id",
+        assertEquals("coinbase-client-id",
                 browserSwitchUri.getQueryParameter("client_id"));
         assertEquals("coinbase-merchant@example.com",
                 browserSwitchUri.getQueryParameter("meta[authorizations_merchant_account]"));
         assertNotNull(browserSwitchUri.getQueryParameter("redirect_uri"));
-        assertEquals("some coinbase scope", browserSwitchUri.getQueryParameter("scope"));
+        assertEquals("authorizations:test user", browserSwitchUri.getQueryParameter("scope"));
     }
 
     @Test
@@ -151,32 +151,8 @@ public class CoinbaseTest {
 
     /* helpers */
     private Coinbase getCoinbaseWithValidConfiguration() {
-        try {
-            CoinbaseConfiguration config = new CoinbaseConfiguration();
-            Field clientId = CoinbaseConfiguration.class.getDeclaredField("clientId");
-            Field merchantAccount = CoinbaseConfiguration.class.getDeclaredField("merchantAccount");
-            Field scopes = CoinbaseConfiguration.class.getDeclaredField("scopes");
-            Field environment = CoinbaseConfiguration.class.getDeclaredField("environment");
-
-            clientId.setAccessible(true);
-            merchantAccount.setAccessible(true);
-            scopes.setAccessible(true);
-            environment.setAccessible(true);
-
-            clientId.set(config, "some-coinbase-client-id");
-            merchantAccount.set(config, "coinbase-merchant@example.com");
-            scopes.set(config, "some coinbase scope");
-            environment.set(config, "sandbox_shared");
-
-            Configuration configuration = mock(Configuration.class);
-            when(configuration.getCoinbase()).thenReturn(config);
-
-            return getCoinbaseWithSpecifiedConfiguration(configuration);
-        } catch (IllegalAccessException iae) {
-            return null;
-        } catch (NoSuchFieldException nsf) {
-            return null;
-        }
+        return getCoinbaseWithSpecifiedConfiguration(getConfigurationFromFixture(getTargetContext(),
+                "configuration_with_coinbase.json"));
     }
 
     private Coinbase getCoinbaseWithSpecifiedConfiguration(Configuration configuration) {
