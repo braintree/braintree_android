@@ -46,7 +46,7 @@ public class BraintreeBrowserSwitchActivity extends Activity {
         super.onResume();
 
         if (mPaused) {
-            broadcastResult(null, Activity.RESULT_CANCELED);
+            broadcastResult(new Intent(), Activity.RESULT_CANCELED);
             setResult(Activity.RESULT_CANCELED);
             finish();
         }
@@ -60,10 +60,23 @@ public class BraintreeBrowserSwitchActivity extends Activity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        broadcastResult(intent, resultCode);
+        finish();
+    }
+
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        broadcastResult(intent, Activity.RESULT_OK);
+        if (intent.getDataString().contains("cancel")) {
+            broadcastResult(intent, RESULT_CANCELED);
+        } else {
+            broadcastResult(intent, RESULT_OK);
+        }
+
         finish();
     }
 

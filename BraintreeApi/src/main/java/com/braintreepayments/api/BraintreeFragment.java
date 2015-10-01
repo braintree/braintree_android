@@ -64,9 +64,9 @@ public class BraintreeFragment extends Fragment {
     private List<PaymentMethod> mCachedPaymentMethods = new ArrayList<>();
     private boolean mHasFetchedPaymentMethods = false;
 
+    protected BraintreeCancelListener mCancelListener;
     private ConfigurationListener mConfigurationListener;
     private ConfigurationFetchedErrorListener mConfigurationErrorListener;
-    private BraintreeCancelListener mCancelListener;
     private PaymentMethodsUpdatedListener mPaymentMethodsUpdatedListener;
     private PaymentMethodCreatedListener mPaymentMethodCreatedListener;
     private BraintreeErrorListener mErrorListener;
@@ -438,6 +438,7 @@ public class BraintreeFragment extends Fragment {
     protected ClientKey getClientKey() {
         return mClientKey;
     }
+
     protected ClientToken getClientToken() {
         return mClientToken;
     }

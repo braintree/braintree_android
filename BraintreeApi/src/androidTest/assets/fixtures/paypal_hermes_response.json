@@ -1,0 +1,5 @@
+{
+  "paymentResource": {
+    "redirectUrl": "http://example.com"
+  }
+}
