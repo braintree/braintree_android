@@ -177,7 +177,11 @@ public class BraintreeFragment extends Fragment {
 
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
-        } } @Override public void onActivityResult(final int requestCode, int resultCode, Intent data) {
+        }
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == Activity.RESULT_CANCELED) {
