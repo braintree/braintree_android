@@ -1,5 +1,6 @@
 package com.braintreepayments.api.models;
 
+import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 
 public class ClientKey {
@@ -47,7 +48,7 @@ public class ClientKey {
 
     private enum BraintreeEnvironment {
 
-        DEVELOPMENT("development", "http://10.0.2.2:3000/"),
+        DEVELOPMENT("development", BuildConfig.DEVELOPMENT_URL),
         SANDBOX("sandbox", "https://api.sandbox.braintreegateway.com/"),
         PRODUCTION("production", "https://api.braintreegateway.com/");
 

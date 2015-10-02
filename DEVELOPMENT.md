@@ -32,6 +32,8 @@ systemProp.GATEWAY_IP="URL_OR_IP_OF_YOUR_GATEWAY"
 
 // defaults to 3000
 systemProp.GATEWAY_PORT="PORT_OF_YOUR_GATEWAY"
+
+systemProp.DEVELOPMENT_URL="FULL_URL_AND_PORT_OF_A_DEVELOPMENT_GATEWAY"
 ```
 
 Please note: It is not currently possible to run tests outside of Braintree.
