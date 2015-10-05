@@ -160,40 +160,6 @@ public class PayPalTest {
         mLatch.await();
     }
 
-    @Test(timeout = 10000)
-    @MediumTest
-    public void checkout_resultCancelledThrows() throws JSONException, InterruptedException {
-        Looper.prepare();
-        Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_offline_paypal.json"));
-        final BraintreeFragment fragment = getMockFragment(mActivity, configuration);
-        fragment.mHttpClient = new BraintreeHttpClient(
-                ClientToken.fromString(new TestClientTokenBuilder().build())) {
-            @Override
-            public void post(String path, String data, HttpResponseCallback callback) {
-                callback.success(stringFromFixture("paypal_hermes_response.json"));
-            }
-        };
-
-        ActivityResult result = new ActivityResult(Activity.RESULT_CANCELED, new Intent());
-        intending(allOf(hasAction(Intent.ACTION_VIEW))).respondWith(result);
-
-        fragment.addListener(new BraintreeErrorListener() {
-            @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                assertTrue(throwable instanceof UserCancelledException);
-                mLatch.countDown();
-            }
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
-                fail("Wrong error listener called");
-            }
-        });
-        PayPal.checkout(fragment, new PayPalCheckout(BigDecimal.ONE));
-        mLatch.await();
-    }
-
     @Test(timeout = 1000)
     @SmallTest
     public void authorizeAccount_sendsAnalyticsEvent() throws JSONException {

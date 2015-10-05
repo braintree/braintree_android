@@ -65,7 +65,6 @@ public class PayPal {
 
     protected static boolean sEnableSignatureVerification = true;
 
-    private static final String PAYLOAD_KEY_CLIENT_TOKEN = "client_token";
     private static final String SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement";
     private static final String CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource";
     private static final String NO_SHIPPING_KEY = "no_shipping";
