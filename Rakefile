@@ -68,8 +68,8 @@ task :release => :tests do
   puts "Sleeping for one minute to allow closing to finish"
   sleep 60
   sh "./gradlew :BraintreeData:promoteRepository"
-  puts "Sleeping for five minutes to allow promotion to finish"
-  sleep 300
+  puts "Sleeping for ten minutes to allow promotion to finish"
+  sleep 600
 
   replace_string(braintree_api_build_file, "compile project(':BraintreeData')", "compile 'com.braintreepayments.api:data:#{version}'")
   sh "./gradlew clean :BraintreeApi:uploadArchives"
@@ -79,8 +79,8 @@ task :release => :tests do
   puts "Sleeping for one minute to allow closing to finish"
   sleep 60
   sh "./gradlew :BraintreeApi:promoteRepository"
-  puts "Sleeping for five minutes to allow promotion to finish"
-  sleep 300
+  puts "Sleeping for ten minutes to allow promotion to finish"
+  sleep 600
 
   replace_string(braintree_drop_in_build_file, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree-api:#{version}'")
   sh "./gradlew clean :Drop-In:uploadArchives"
