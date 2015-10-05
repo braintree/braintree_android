@@ -9,7 +9,7 @@ import java.io.Serializable;
  * in the Braintree gateway.
  */
 public class PaymentMethodOptions implements Serializable {
-    
+
     @SerializedName("validate") private boolean mValidate;
 
     public void setValidate(boolean validate) {

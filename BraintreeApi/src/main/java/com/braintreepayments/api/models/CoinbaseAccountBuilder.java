@@ -1,10 +1,12 @@
 package com.braintreepayments.api.models;
 
+import com.braintreepayments.api.annotations.Beta;
 import com.google.gson.Gson;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Beta
 public class CoinbaseAccountBuilder implements PaymentMethod.Builder<CoinbaseAccount> {
 
     private String mCode;
