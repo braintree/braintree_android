@@ -110,8 +110,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testSecondaryDescriptionCanBeGreaterThanOneLine() throws InterruptedException {
-        String actual = "Some stuffz\nSome more stuffz\nEven more yet";
-        int expectedVisibleLines = 3;
+        String actual = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur at sollicitudin tellus, sed pellentesque ante. Phasellus aliquam nec mauris ac tincidunt. Curabitur at sollicitudin tellus, sed pellentesque ante.";
 
         Intent intent = createIntent();
         String clientToken = new TestClientTokenBuilder().build();
@@ -131,7 +130,31 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
         int height = secondaryDescription.getHeight();
 
         int approxVisibleLines = height / textHeight;
-        assertEquals(expectedVisibleLines, approxVisibleLines);
+        assertEquals(3, approxVisibleLines);
+    }
+
+    public void testSecondaryDescriptionRespectsLineBreaks() throws InterruptedException {
+        String actual = "Some stuff\nSome more stuff\nEven more yet";
+
+        Intent intent = createIntent();
+        String clientToken = new TestClientTokenBuilder().build();
+        Customization customization = new CustomizationBuilder()
+                .primaryDescription("Hello, World!")
+                .secondaryDescription(actual)
+                .amount("$1,000,000,000.00")
+                .build();
+        intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_TOKEN, clientToken);
+        intent.putExtra(BraintreePaymentActivity.EXTRA_CUSTOMIZATION, customization);
+        setActivityIntent(intent);
+        getActivity();
+        waitForAddPaymentFormHeader();
+
+        TextView secondaryDescription = (TextView) getActivity().findViewById(R.id.bt_secondary_description);
+        int textHeight = secondaryDescription.getLineHeight();
+        int height = secondaryDescription.getHeight();
+
+        int approxVisibleLines = height / textHeight;
+        assertEquals(3, approxVisibleLines);
     }
 
     public void testDefaultButtonTextIsUsedWhenCustomizationIsPresentWithoutSpecifyingButtonText() {
