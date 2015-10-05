@@ -1,5 +1,21 @@
 # Braintree Android SDK Release Notes
 
+## 1.7.0
+
+* Update gradle plugin to 1.3.1
+* Update build tools to 23.0.1
+* Update `compileSdkVersion` and `targetSdkVersion` to 23
+* Update PayPal SDK to 2.10.0
+* Increase maximum version of Google Play Services to 9.0.0 ([#50](https://github.com/braintree/braintree_android/pull/50))
+* Set compile options to use Java 7
+* Features
+  * Add support for Coinbase. *Please note:* this API is in beta and subject to change.
+* Fixes
+  * Fix rare crash when Braintree was recreated
+  * Fix 3D Secure bug that prevented a card from being returned
+  * Remove use of Apache library ([#43](https://github.com/braintree/braintree_android/issues/43))
+  * Remove single line description limitation ([#45](https://github.com/braintree/braintree_android/issues/45))
+
 ## 1.6.5
 
 * Update PayPal SDK to 2.9.10
