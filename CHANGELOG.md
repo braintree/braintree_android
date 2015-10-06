@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 1.7.1
+
+* Fixes
+  * Fix tokenization failure in Coinbase
+
 ## 1.7.0
 
 * Update gradle plugin to 1.3.1
