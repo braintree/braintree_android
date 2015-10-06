@@ -18,12 +18,14 @@ import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.CoinbaseAccount;
+import com.braintreepayments.api.models.CoinbaseAccountBuilder;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.google.gson.Gson;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.mockito.ArgumentCaptor;
 
 import java.io.UnsupportedEncodingException;
@@ -36,6 +38,7 @@ import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -156,13 +159,14 @@ public class BraintreeApiTest extends AndroidTestCase {
     }
 
     public void testPayWithCoinbase()
-            throws UnsupportedEncodingException, ErrorWithResponse, BraintreeException {
+            throws UnsupportedEncodingException, ErrorWithResponse, BraintreeException,
+            JSONException {
         try {
             ArgumentCaptor<Intent> launchIntentCaptor = ArgumentCaptor.forClass(Intent.class);
             Activity mockActivity = mock(Activity.class);
 
-            BraintreeApi braintreeApi =
-                    new BraintreeApi(mContext, new TestClientTokenBuilder().withCoinbase().build());
+            BraintreeApi braintreeApi = spy(new BraintreeApi(mContext,
+                    new TestClientTokenBuilder().withCoinbase().build()));
             braintreeApi.startPayWithCoinbase(mockActivity);
 
             verify(mockActivity).startActivity(launchIntentCaptor.capture());
@@ -180,6 +184,14 @@ public class BraintreeApiTest extends AndroidTestCase {
 
             CoinbaseAccount coinbaseAccount = braintreeApi.finishPayWithCoinbase(coinbaseSuccessIntent);
 
+            ArgumentCaptor<CoinbaseAccountBuilder> coinbaseAccountBuilderCaptor =
+                    ArgumentCaptor.forClass(CoinbaseAccountBuilder.class);
+            verify(braintreeApi).create(coinbaseAccountBuilderCaptor.capture());
+            JSONObject json = new JSONObject(coinbaseAccountBuilderCaptor.getValue().toJsonString())
+                    .getJSONObject("coinbaseAccount");
+
+            assertEquals("com.braintreepayments.api.test.braintree://coinbase", json.getString("redirect_uri"));
+            assertEquals("a-coinbase-code", json.getString("code"));
             assertIsANonce(coinbaseAccount.getNonce());
             assertEquals("satoshi@example.com", coinbaseAccount.getEmail());
             assertEquals("Coinbase", coinbaseAccount.getTypeLabel());

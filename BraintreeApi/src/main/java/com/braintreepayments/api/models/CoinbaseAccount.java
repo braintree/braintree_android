@@ -118,11 +118,11 @@ public class CoinbaseAccount extends PaymentMethod implements Parcelable, Serial
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(this.mEmail);
+            dest.writeString(mEmail);
         }
 
         private CoinbaseAccountDetails(Parcel in) {
-            this.mEmail = in.readString();
+            mEmail = in.readString();
         }
 
         public static final Creator<CoinbaseAccountDetails> CREATOR =

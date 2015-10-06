@@ -428,14 +428,14 @@ public class BraintreeApi {
         Uri redirectUri = data.getParcelableExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL);
         CoinbaseAccountBuilder coinbaseAccount = new CoinbaseAccountBuilder()
                 .code(mCoinbase.parseResponse(redirectUri))
-                .redirectUri(mCoinbase.getRedirectUri());
+                .redirectUri(mCoinbase.getRedirectUri())
+                .source("coinbase-browser");
 
         if(data.getBooleanExtra("store-in-vault", false)){
             coinbaseAccount.storeInVault(true);
         }
 
-        return create(coinbaseAccount
-                .source("coinbase-browser"));
+        return create(coinbaseAccount);
     }
 
     /**
