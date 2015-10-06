@@ -22,7 +22,7 @@ import static junit.framework.Assert.assertEquals;
  * Created by pair on 9/17/15.
  */
 @RunWith(AndroidJUnit4.class)
-public class PaypalRequestBuilderTest {
+public class PayPalRequestBuilderTest {
 
     @Rule
     public final ActivityTestRule<TestActivity> mActivityTestRule =
@@ -39,12 +39,12 @@ public class PaypalRequestBuilderTest {
     @SmallTest
     public void buildPayPalRequest_buildsWithLiveStageUrl()
             throws JSONException, ConfigurationException {
-        PaypalRequestBuilder paypalRequestBuilder = new PaypalRequestBuilder();
+        PayPalRequestBuilder payPalRequestBuilder = new PayPalRequestBuilder();
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_live_paypal.json"));
 
 
-        Request request = paypalRequestBuilder.createAuthorizationRequest(mActivity, configuration);
+        Request request = payPalRequestBuilder.createAuthorizationRequest(mActivity, configuration);
         assertEquals(AuthorizationRequest.ENVIRONMENT_LIVE, request.getEnvironment());
         assertBaseRequestProperties(request);
     }
@@ -53,12 +53,12 @@ public class PaypalRequestBuilderTest {
     @SmallTest
     public void buildPayPalRequest_buildsWithOfflineStageUrl()
             throws JSONException, ConfigurationException {
-        PaypalRequestBuilder paypalRequestBuilder = new PaypalRequestBuilder();
+        PayPalRequestBuilder payPalRequestBuilder = new PayPalRequestBuilder();
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_offline_paypal.json"));
 
 
-        Request request = paypalRequestBuilder.createAuthorizationRequest(mActivity, configuration);
+        Request request = payPalRequestBuilder.createAuthorizationRequest(mActivity, configuration);
         assertEquals(AuthorizationRequest.ENVIRONMENT_MOCK, request.getEnvironment());
         assertBaseRequestProperties(request);
     }
@@ -67,12 +67,12 @@ public class PaypalRequestBuilderTest {
     @SmallTest
     public void buildPayPalRequest_buildsWithCustomStageUrl()
             throws JSONException, ConfigurationException {
-        PaypalRequestBuilder paypalRequestBuilder = new PaypalRequestBuilder();
+        PayPalRequestBuilder payPalRequestBuilder = new PayPalRequestBuilder();
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_custom_paypal.json"));
 
 
-        Request request = paypalRequestBuilder.createAuthorizationRequest(mActivity, configuration);
+        Request request = payPalRequestBuilder.createAuthorizationRequest(mActivity, configuration);
         assertEquals("custom", request.getEnvironment());
         assertBaseRequestProperties(request);
     }
@@ -89,9 +89,9 @@ public class PaypalRequestBuilderTest {
     @Test(expected = ConfigurationException.class)
     @SmallTest
     public void buildPayPalRequest_failOnBadConfiguration() throws JSONException, ConfigurationException {
-        PaypalRequestBuilder paypalRequestBuilder = new PaypalRequestBuilder();
+        PayPalRequestBuilder payPalRequestBuilder = new PayPalRequestBuilder();
         Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_disabled_paypal.json"));
-        Request request = paypalRequestBuilder.createAuthorizationRequest(mActivity, configuration);
+        Request request = payPalRequestBuilder.createAuthorizationRequest(mActivity, configuration);
     }
 }
 

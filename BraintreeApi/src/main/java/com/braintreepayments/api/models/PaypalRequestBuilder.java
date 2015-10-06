@@ -7,10 +7,7 @@ import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
 import com.paypal.android.sdk.onetouch.core.Request;
 
-/**
- * Created by pair on 9/17/15.
- */
-public class PaypalRequestBuilder {
+public class PayPalRequestBuilder {
 
     public CheckoutRequest createCheckoutRequest(Context context, Configuration configuration) throws ConfigurationException {
         CheckoutRequest request = new CheckoutRequest();

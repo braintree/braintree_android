@@ -22,7 +22,7 @@ import com.braintreepayments.api.models.PayPalCheckout;
 import com.braintreepayments.api.models.PayPalConfiguration;
 import com.braintreepayments.api.models.PayPalPaymentResource;
 import com.braintreepayments.api.models.PaymentMethod;
-import com.braintreepayments.api.models.PaypalRequestBuilder;
+import com.braintreepayments.api.models.PayPalRequestBuilder;
 import com.braintreepayments.api.models.PostalAddress;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.BrowserSwitchAdapter;
@@ -543,7 +543,7 @@ public class PayPal {
             pairingId = Uri.parse(approvalUrl).getQueryParameter("token");
         }
 
-        PaypalRequestBuilder requestBuilder = new PaypalRequestBuilder();
+        PayPalRequestBuilder requestBuilder = new PayPalRequestBuilder();
         CheckoutRequest request = requestBuilder.createCheckoutRequest(context, configuration);
         request.pairingId(pairingId)
                 .approvalURL(approvalUrl);
@@ -558,7 +558,7 @@ public class PayPal {
             Configuration configuration, String clientKeyString) throws ConfigurationException {
         PayPalConfiguration payPalConfiguration = configuration.getPayPal();
 
-        PaypalRequestBuilder requestBuilder = new PaypalRequestBuilder();
+        PayPalRequestBuilder requestBuilder = new PayPalRequestBuilder();
         AuthorizationRequest request = requestBuilder.createAuthorizationRequest(context, configuration);
         request.privacyUrl(payPalConfiguration.getPrivacyUrl())
                 .userAgreementUrl(payPalConfiguration.getUserAgreementUrl())
