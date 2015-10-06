@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 /**
  * {@link com.braintreepayments.api.models.PaymentMethod} representing a Coinbase account.
+ *
  * @see {@link com.braintreepayments.api.models.PayPalAccount}
  * @see {@link com.braintreepayments.api.models.PaymentMethod}
  */
@@ -75,6 +76,7 @@ public class CoinbaseAccount extends PaymentMethod implements Parcelable, Serial
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mAccessCode);
+        dest.writeString(mRedirectUri);
         dest.writeParcelable(mDetails, 0);
         dest.writeString(mNonce);
         dest.writeString(mDescription);
@@ -84,6 +86,7 @@ public class CoinbaseAccount extends PaymentMethod implements Parcelable, Serial
 
     private CoinbaseAccount(Parcel in) {
         mAccessCode = in.readString();
+        mRedirectUri = in.readString();
         mDetails = in.readParcelable(CoinbaseAccountDetails.class.getClassLoader());
         mNonce = in.readString();
         mDescription = in.readString();
@@ -114,9 +117,13 @@ public class CoinbaseAccount extends PaymentMethod implements Parcelable, Serial
         }
 
         @Override
-        public void writeToParcel(Parcel dest, int flags) {dest.writeString(this.mEmail);}
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(this.mEmail);
+        }
 
-        private CoinbaseAccountDetails(Parcel in) {this.mEmail = in.readString();}
+        private CoinbaseAccountDetails(Parcel in) {
+            this.mEmail = in.readString();
+        }
 
         public static final Creator<CoinbaseAccountDetails> CREATOR =
                 new Creator<CoinbaseAccountDetails>() {

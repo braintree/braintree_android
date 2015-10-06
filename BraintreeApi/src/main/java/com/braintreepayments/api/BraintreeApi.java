@@ -434,9 +434,8 @@ public class BraintreeApi {
             coinbaseAccount.storeInVault(true);
         }
 
-        return create(new CoinbaseAccountBuilder()
-                .source("coinbase-browser")
-                .code(mCoinbase.parseResponse(redirectUri)));
+        return create(coinbaseAccount
+                .source("coinbase-browser"));
     }
 
     /**
