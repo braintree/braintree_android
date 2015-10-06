@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
+import android.text.TextUtils;
 
 import com.braintreepayments.api.Fraud.BraintreeEnvironment;
 import com.braintreepayments.api.models.Configuration;
@@ -16,6 +17,7 @@ import org.junit.runner.RunWith;
 
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
@@ -66,5 +68,17 @@ public class FraudTest {
         JSONObject json = new JSONObject(deviceData);
         assertNotNull(json.get("device_session_id"));
         assertEquals("100", json.get("fraud_merchant_id"));
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void getPayPalClientMetadataId_returnsClientMetadataId() {
+        BraintreeFragment fragment = getMockFragment(mActivityTestRule.getActivity(),
+                mock(Configuration.class));
+
+        String clientMetadataId = Fraud.getPayPalClientMetadataId(
+                fragment.getActivity().getApplicationContext());
+
+        assertFalse(TextUtils.isEmpty(clientMetadataId));
     }
 }

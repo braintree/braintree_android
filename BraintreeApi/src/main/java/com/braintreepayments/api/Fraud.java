@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.VisibleForTesting;
 
 import com.devicecollector.DeviceCollector;
@@ -96,9 +98,19 @@ public class Fraud {
         } catch (NoClassDefFoundError | JSONException ignored) {}
 
         try {
-            deviceData.put(CORRELATION_ID_KEY, PayPalOneTouchCore.getClientMetadataId(fragment.getApplicationContext()));
+            deviceData.put(CORRELATION_ID_KEY, getPayPalClientMetadataId(fragment.getApplicationContext()));
         } catch (JSONException ignored) {}
 
         return deviceData.toString();
+    }
+
+    /**
+     * Collect device information for fraud identification purposes from PayPal only.
+     *
+     * @param context A valid {@link Context}
+     * @return The client metadata id associated with the collected data.
+     */
+    public static String getPayPalClientMetadataId(Context context) {
+        return  PayPalOneTouchCore.getClientMetadataId(context);
     }
 }

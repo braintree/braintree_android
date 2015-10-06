@@ -28,6 +28,7 @@ public class PayPalAccount extends PaymentMethod implements Parcelable {
     private static final String LAST_NAME_KEY = "lastName";
     private static final String PHONE_KEY = "phone";
     private static final String PAYER_ID_KEY = "payerId";
+    private static final String CLIENT_METADATA_ID_KEY = "correlationId";
 
     private String mClientMetadataId;
     private PostalAddress mBillingAddress;
@@ -61,6 +62,7 @@ public class PayPalAccount extends PaymentMethod implements Parcelable {
 
         JSONObject details = json.getJSONObject(DETAILS_KEY);
         mEmail = details.optString(EMAIL_KEY, null);
+        mClientMetadataId = details.optString(CLIENT_METADATA_ID_KEY, null);
 
         try {
             JSONObject payerInfo = details.getJSONObject(PAYER_INFO_KEY);
