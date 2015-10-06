@@ -91,6 +91,6 @@ allprojects {
         minSdkVersion = 10
         targetSdkVersion = 23
         versionCode = 30
-        versionName = '1.7.1'
+        versionName = '1.7.1-SNAPSHOT'
     }
 }
