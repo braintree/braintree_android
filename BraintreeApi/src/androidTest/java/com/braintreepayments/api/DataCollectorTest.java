@@ -5,7 +5,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.text.TextUtils;
 
-import com.braintreepayments.api.Fraud.BraintreeEnvironment;
+import com.braintreepayments.api.DataCollector.BraintreeEnvironment;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.TestActivity;
 
@@ -22,7 +22,7 @@ import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
 @RunWith(AndroidJUnit4.class)
-public class FraudTest {
+public class DataCollectorTest {
 
     @Rule
     public final ActivityTestRule<TestActivity> mActivityTestRule =
@@ -31,16 +31,16 @@ public class FraudTest {
     @Test(timeout = 1000)
     @SmallTest
     public void getMerchantId_returnsCorrectMerchantId() {
-        assertEquals("600000", Fraud.BraintreeEnvironment.SANDBOX.getMerchantId());
-        assertEquals("600000", Fraud.BraintreeEnvironment.PRODUCTION.getMerchantId());
+        assertEquals("600000", DataCollector.BraintreeEnvironment.SANDBOX.getMerchantId());
+        assertEquals("600000", DataCollector.BraintreeEnvironment.PRODUCTION.getMerchantId());
     }
 
     @Test(timeout = 1000)
     @SmallTest
     public void getCollectorUrl_returnsCorrectUrl() {
-        assertEquals("https://assets.braintreegateway.com/sandbox/data/logo.htm", Fraud.BraintreeEnvironment.SANDBOX.getCollectorUrl());
+        assertEquals("https://assets.braintreegateway.com/sandbox/data/logo.htm", DataCollector.BraintreeEnvironment.SANDBOX.getCollectorUrl());
         assertEquals("https://assets.braintreegateway.com/data/logo.htm",
-                Fraud.BraintreeEnvironment.PRODUCTION.getCollectorUrl());
+                DataCollector.BraintreeEnvironment.PRODUCTION.getCollectorUrl());
     }
 
     @Test(timeout = 1000)
@@ -49,7 +49,7 @@ public class FraudTest {
         BraintreeFragment fragment = getMockFragment(mActivityTestRule.getActivity(),
                 mock(Configuration.class));
 
-        String deviceData = Fraud.collectDeviceData(fragment);
+        String deviceData = DataCollector.collectDeviceData(fragment);
 
         JSONObject json = new JSONObject(deviceData);
         assertNotNull(json.get("device_session_id"));
@@ -63,7 +63,7 @@ public class FraudTest {
         BraintreeFragment fragment = getMockFragment(mActivityTestRule.getActivity(),
                 mock(Configuration.class));
 
-        String deviceData = Fraud.collectDeviceData(fragment, "100", "http://example.com");
+        String deviceData = DataCollector.collectDeviceData(fragment, "100", "http://example.com");
 
         JSONObject json = new JSONObject(deviceData);
         assertNotNull(json.get("device_session_id"));
@@ -76,7 +76,7 @@ public class FraudTest {
         BraintreeFragment fragment = getMockFragment(mActivityTestRule.getActivity(),
                 mock(Configuration.class));
 
-        String clientMetadataId = Fraud.getPayPalClientMetadataId(
+        String clientMetadataId = DataCollector.getPayPalClientMetadataId(
                 fragment.getActivity().getApplicationContext());
 
         assertFalse(TextUtils.isEmpty(clientMetadataId));

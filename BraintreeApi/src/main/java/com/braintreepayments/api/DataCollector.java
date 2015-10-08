@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.VisibleForTesting;
 
@@ -15,9 +14,9 @@ import org.json.JSONObject;
 import java.util.UUID;
 
 /**
- * BraintreeData is used to collect device information to aid fraud detection and prevention.
+ * DataCollector is used to collect device information to aid in fraud detection and prevention.
  */
-public class Fraud {
+public class DataCollector {
 
     private static final String DEVICE_SESSION_ID_KEY = "device_session_id";
     private static final String FRAUD_MERCHANT_ID_KEY = "fraud_merchant_id";
