@@ -11,6 +11,7 @@ public class Configuration {
 
     private static final String CLIENT_API_URL_KEY = "clientApiUrl";
     private static final String CHALLENGES_KEY = "challenges";
+    private static final String ENVIRONMENT_KEY = "environment";
     private static final String MERCHANT_ID_KEY = "merchantId";
     private static final String MERCHANT_ACCOUNT_ID_KEY = "merchantAccountId";
     private static final String ANALYTICS_KEY = "analytics";
@@ -23,6 +24,7 @@ public class Configuration {
     private String mConfigurationString;
     private String mClientApiUrl;
     private String[] mChallenges;
+    private String mEnvironment;
     private String mMerchantId;
     private String mMerchantAccountId;
     private AnalyticsConfiguration mAnalyticsConfiguration;
@@ -45,6 +47,7 @@ public class Configuration {
 
         configuration.mClientApiUrl = json.getString(CLIENT_API_URL_KEY);
         configuration.mChallenges = parseJsonChallenges(json.optJSONArray(CHALLENGES_KEY));
+        configuration.mEnvironment = json.getString(ENVIRONMENT_KEY);
         configuration.mPaypalEnabled = json.optBoolean(PAYPAL_ENABLED_KEY, false);
         configuration.mPayPalConfiguration = PayPalConfiguration.fromJson(json.optJSONObject(PAYPAL_KEY));
         configuration.mAndroidPayConfiguration = AndroidPayConfiguration.fromJson(json.optJSONObject(ANDROID_PAY_KEY));
@@ -80,6 +83,13 @@ public class Configuration {
      */
     public boolean isPostalCodeChallengePresent() {
         return isChallengePresent("postal_code");
+    }
+
+    /**
+     * @return The current environment.
+     */
+    public String getEnvironment() {
+        return mEnvironment;
     }
 
     /**

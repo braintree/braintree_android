@@ -1,5 +1,6 @@
 {
   "clientApiUrl": "client-api-url",
+  "environment": "test",
   "paypalEnabled": true,
   "paypal": {
     "displayName": "paypal_merchant",

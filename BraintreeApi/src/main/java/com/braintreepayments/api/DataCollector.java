@@ -1,8 +1,9 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
-import android.support.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.models.Configuration;
 import com.devicecollector.DeviceCollector;
 import com.devicecollector.DeviceCollector.ErrorCode;
 import com.devicecollector.DeviceCollector.StatusListener;
@@ -22,27 +23,9 @@ public class DataCollector {
     private static final String FRAUD_MERCHANT_ID_KEY = "fraud_merchant_id";
     private static final String CORRELATION_ID_KEY = "correlation_id";
 
-    @VisibleForTesting
-    protected enum BraintreeEnvironment {
-        SANDBOX("https://assets.braintreegateway.com/sandbox/data/logo.htm"),
-        PRODUCTION("https://assets.braintreegateway.com/data/logo.htm");
-
-        private static final String BRAINTREE_MERCHANT_ID = "600000";
-
-        private final String mUrl;
-
-        BraintreeEnvironment(String url) {
-            mUrl = url;
-        }
-
-        protected String getMerchantId() {
-            return BRAINTREE_MERCHANT_ID;
-        }
-
-        protected String getCollectorUrl() {
-            return mUrl;
-        }
-    }
+    private static final String BRAINTREE_MERCHANT_ID = "600000";
+    private static final String SANDBOX_DEVICE_COLLECTOR_URL = "https://assets.braintreegateway.com/sandbox/data/logo.htm";
+    private static final String PRODUCTION_DEVICE_COLLECTOR_URL = "https://assets.braintreegateway.com/data/logo.htm";
 
     private static Object sDeviceCollector;
 
@@ -53,8 +36,7 @@ public class DataCollector {
      * @return Device data String to send to Braintree.
      */
     public static String collectDeviceData(BraintreeFragment fragment) {
-        return collectDeviceData(fragment, BraintreeEnvironment.SANDBOX.getMerchantId(),
-                BraintreeEnvironment.SANDBOX.getCollectorUrl());
+        return collectDeviceData(fragment, BRAINTREE_MERCHANT_ID);
     }
 
     /**
@@ -63,37 +45,16 @@ public class DataCollector {
      *
      * @param fragment {@link BraintreeFragment}
      * @param merchantId The fraud merchant id from Braintree.
-     * @param collectorUrl The fraud collector url from Braintree.
      * @return Device data String to send to Braintree.
      */
-    public static String collectDeviceData(BraintreeFragment fragment, String merchantId,
-            String collectorUrl) {
+    public static String collectDeviceData(BraintreeFragment fragment, String merchantId) {
         JSONObject deviceData = new JSONObject();
 
         try {
-            DeviceCollector deviceCollector = new DeviceCollector(fragment.getActivity());
-            sDeviceCollector = deviceCollector;
-            deviceCollector.setMerchantId(merchantId);
-            deviceCollector.setCollectorUrl(collectorUrl);
-            deviceCollector.setStatusListener(new StatusListener() {
-                @Override
-                public void onCollectorStart() {}
-
-                @Override
-                public void onCollectorSuccess() {
-                    sDeviceCollector = null;
-                }
-
-                @Override
-                public void onCollectorError(ErrorCode errorCode, Exception e) {
-                    sDeviceCollector = null;
-                }
-            });
-
             String deviceSessionId = UUID.randomUUID().toString().replace("-", "");
             deviceData.put(DEVICE_SESSION_ID_KEY, deviceSessionId);
             deviceData.put(FRAUD_MERCHANT_ID_KEY, merchantId);
-            deviceCollector.collect(deviceSessionId);
+            startDeviceCollector(fragment, merchantId, deviceSessionId);
         } catch (NoClassDefFoundError | JSONException ignored) {}
 
         try {
@@ -111,5 +72,41 @@ public class DataCollector {
      */
     public static String getPayPalClientMetadataId(Context context) {
         return  PayPalOneTouchCore.getClientMetadataId(context);
+    }
+
+    private static void startDeviceCollector(final BraintreeFragment fragment,
+            final String merchantId, final String deviceSessionId) {
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                DeviceCollector deviceCollector = new DeviceCollector(fragment.getActivity());
+                sDeviceCollector = deviceCollector;
+                deviceCollector.setMerchantId(merchantId);
+                deviceCollector.setCollectorUrl(getDeviceCollectorUrl(configuration.getEnvironment()));
+                deviceCollector.setStatusListener(new StatusListener() {
+                    @Override
+                    public void onCollectorStart() {}
+
+                    @Override
+                    public void onCollectorSuccess() {
+                        sDeviceCollector = null;
+                    }
+
+                    @Override
+                    public void onCollectorError(ErrorCode errorCode, Exception e) {
+                        sDeviceCollector = null;
+                    }
+                });
+
+                deviceCollector.collect(deviceSessionId);
+            }
+        });
+    }
+
+    static String getDeviceCollectorUrl(String environment) {
+        if ("production".equalsIgnoreCase(environment)) {
+            return PRODUCTION_DEVICE_COLLECTOR_URL;
+        }
+        return SANDBOX_DEVICE_COLLECTOR_URL;
     }
 }

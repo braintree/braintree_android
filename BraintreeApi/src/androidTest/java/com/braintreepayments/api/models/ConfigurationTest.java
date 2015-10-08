@@ -38,7 +38,7 @@ public class ConfigurationTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void fromJson_parsesClientApiUrlFromToken() throws JSONException {
+    public void fromJson_parsesClientApiUrl() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_client_api_url.json"));
 
@@ -57,7 +57,7 @@ public class ConfigurationTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void fromJson_parsesSingleChallengeFromToken() throws JSONException {
+    public void fromJson_parsesSingleChallenge() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_cvv_challenge.json"));
 
@@ -67,7 +67,7 @@ public class ConfigurationTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void fromJson_parsesAllChallengesFromToken() throws JSONException {
+    public void fromJson_parsesAllChallenges() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_multiple_challenges.json"));
 
@@ -81,9 +81,24 @@ public class ConfigurationTest {
         Configuration.fromJson(stringFromFixture("configuration_without_merchant_id.json"));
     }
 
+    @Test(timeout = 1000, expected = JSONException.class)
+    @SmallTest
+    public void fromJson_throwsWhenNoEnvironmentPresent() throws JSONException {
+        Configuration.fromJson(stringFromFixture("configuration_without_environment.json"));
+    }
+
     @Test(timeout = 1000)
     @SmallTest
-    public void fromJson_parsesMerchantIdFromToken() throws JSONException {
+    public void fromJson_parsesEnvironment() throws JSONException {
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_environment.json"));
+
+        assertEquals("integration_merchant_id", configuration.getMerchantId());
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void fromJson_parsesMerchantId() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_merchant_id.json"));
 
@@ -92,7 +107,7 @@ public class ConfigurationTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void fromJson_parsesMerchantAccountIdFromToken() throws JSONException {
+    public void fromJson_parsesMerchantAccountId() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_merchant_account_id.json"));
 

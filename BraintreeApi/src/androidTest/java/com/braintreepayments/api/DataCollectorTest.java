@@ -5,7 +5,6 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.text.TextUtils;
 
-import com.braintreepayments.api.DataCollector.BraintreeEnvironment;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.TestActivity;
 
@@ -30,17 +29,10 @@ public class DataCollectorTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void getMerchantId_returnsCorrectMerchantId() {
-        assertEquals("600000", DataCollector.BraintreeEnvironment.SANDBOX.getMerchantId());
-        assertEquals("600000", DataCollector.BraintreeEnvironment.PRODUCTION.getMerchantId());
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void getCollectorUrl_returnsCorrectUrl() {
-        assertEquals("https://assets.braintreegateway.com/sandbox/data/logo.htm", DataCollector.BraintreeEnvironment.SANDBOX.getCollectorUrl());
-        assertEquals("https://assets.braintreegateway.com/data/logo.htm",
-                DataCollector.BraintreeEnvironment.PRODUCTION.getCollectorUrl());
+    public void getDeviceCollectorUrl_returnsCorrectUrl() {
+        assertEquals("https://assets.braintreegateway.com/data/logo.htm", DataCollector.getDeviceCollectorUrl("production"));
+        assertEquals("https://assets.braintreegateway.com/sandbox/data/logo.htm", DataCollector.getDeviceCollectorUrl("sandbox"));
+        assertEquals("https://assets.braintreegateway.com/sandbox/data/logo.htm", DataCollector.getDeviceCollectorUrl(""));
     }
 
     @Test(timeout = 1000)
@@ -52,9 +44,9 @@ public class DataCollectorTest {
         String deviceData = DataCollector.collectDeviceData(fragment);
 
         JSONObject json = new JSONObject(deviceData);
-        assertNotNull(json.get("device_session_id"));
-        assertEquals(BraintreeEnvironment.SANDBOX.getMerchantId(), json.get("fraud_merchant_id"));
-        assertNotNull(json.get("correlation_id"));
+        assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));
+        assertEquals("600000", json.getString("fraud_merchant_id"));
+        assertNotNull(json.getString("correlation_id"));
     }
 
     @Test(timeout = 1000)
@@ -63,11 +55,11 @@ public class DataCollectorTest {
         BraintreeFragment fragment = getMockFragment(mActivityTestRule.getActivity(),
                 mock(Configuration.class));
 
-        String deviceData = DataCollector.collectDeviceData(fragment, "100", "http://example.com");
+        String deviceData = DataCollector.collectDeviceData(fragment, "100");
 
         JSONObject json = new JSONObject(deviceData);
-        assertNotNull(json.get("device_session_id"));
-        assertEquals("100", json.get("fraud_merchant_id"));
+        assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));
+        assertEquals("100", json.getString("fraud_merchant_id"));
     }
 
     @Test(timeout = 1000)
