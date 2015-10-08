@@ -11,26 +11,26 @@ public class Configuration {
 
     private static final String CLIENT_API_URL_KEY = "clientApiUrl";
     private static final String CHALLENGES_KEY = "challenges";
+    private static final String MERCHANT_ID_KEY = "merchantId";
+    private static final String MERCHANT_ACCOUNT_ID_KEY = "merchantAccountId";
+    private static final String ANALYTICS_KEY = "analytics";
     private static final String PAYPAL_ENABLED_KEY = "paypalEnabled";
     private static final String PAYPAL_KEY = "paypal";
     private static final String ANDROID_PAY_KEY = "androidPay";
     private static final String VENMO_KEY = "venmo";
     private static final String THREE_D_SECURE_ENABLED_KEY = "threeDSecureEnabled";
-    private static final String MERCHANT_ID_KEY = "merchantId";
-    private static final String MERCHANT_ACCOUNT_ID_KEY = "merchantAccountId";
-    private static final String ANALTICS_KEY = "analytics";
 
     private String mConfigurationString;
     private String mClientApiUrl;
     private String[] mChallenges;
+    private String mMerchantId;
+    private String mMerchantAccountId;
+    private AnalyticsConfiguration mAnalyticsConfiguration;
     private boolean mPaypalEnabled;
     private PayPalConfiguration mPayPalConfiguration;
     private AndroidPayConfiguration mAndroidPayConfiguration;
     private String mVenmo;
     private boolean mThreeDSecureEnabled;
-    private String mMerchantId;
-    private String mMerchantAccountId;
-    private AnalyticsConfiguration mAnalyticsConfiguration;
 
     /**
      * Creates a new {@link com.braintreepayments.api.models.Configuration} instance from a json string.
@@ -52,7 +52,7 @@ public class Configuration {
         configuration.mThreeDSecureEnabled = json.optBoolean(THREE_D_SECURE_ENABLED_KEY, false);
         configuration.mMerchantId = json.getString(MERCHANT_ID_KEY);
         configuration.mMerchantAccountId = json.optString(MERCHANT_ACCOUNT_ID_KEY, null);
-        configuration.mAnalyticsConfiguration = AnalyticsConfiguration.fromJson(json.optJSONObject(ANALTICS_KEY));
+        configuration.mAnalyticsConfiguration = AnalyticsConfiguration.fromJson(json.optJSONObject(ANALYTICS_KEY));
 
         return configuration;
     }
