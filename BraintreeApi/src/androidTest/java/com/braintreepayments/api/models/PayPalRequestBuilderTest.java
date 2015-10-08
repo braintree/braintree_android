@@ -18,9 +18,6 @@ import org.junit.runner.RunWith;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 
-/**
- * Created by pair on 9/17/15.
- */
 @RunWith(AndroidJUnit4.class)
 public class PayPalRequestBuilderTest {
 

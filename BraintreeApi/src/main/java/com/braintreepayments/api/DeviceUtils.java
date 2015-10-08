@@ -16,8 +16,6 @@ import java.util.UUID;
 
 /**
  * Contains a cornucopia of information about the device.
- *
- * Created by pair on 9/2/15.
  */
 public class DeviceUtils {
 
