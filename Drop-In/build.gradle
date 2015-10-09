@@ -60,10 +60,10 @@ artifacts {
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.setArtifactId 'braintree'
+            pom.setArtifactId 'drop-in'
 
             pom.project {
-                name 'braintree'
+                name 'drop-in'
                 groupId = 'com.braintreepayments.api'
                 version = "${android.defaultConfig.versionName}"
                 packaging 'aar'
