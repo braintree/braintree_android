@@ -58,8 +58,8 @@ class AnalyticsManager {
         final AnalyticsRequest request = new AnalyticsRequest(integrationType, eventFragment);
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
-            public void onConfigurationFetched(Configuration config) {
-                if (!config.getAnalytics().isEnabled()) {
+            public void onConfigurationFetched(Configuration configuration) {
+                if (!configuration.getAnalytics().isEnabled()) {
                     return;
                 }
 
