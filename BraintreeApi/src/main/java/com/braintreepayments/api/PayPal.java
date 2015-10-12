@@ -26,6 +26,7 @@ import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.PayPalRequestBuilder;
 import com.braintreepayments.api.models.PostalAddress;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
+import com.paypal.android.sdk.onetouch.core.BillingAgreementRequest;
 import com.paypal.android.sdk.onetouch.core.BrowserSwitchAdapter;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchActivity;
@@ -220,11 +221,19 @@ public class PayPal {
                     return;
                 }
                 try {
-                    sPendingRequest =
-                            buildPayPalCheckoutConfiguration(
-                                    paypalPaymentResource.getRedirectUrl(),
-                                    fragment.getApplicationContext(),
-                                    fragment.getConfiguration());
+                    sPendingRequest = null;
+                    if (isBillingAgreement) {
+                        sPendingRequest = buildPayPalBillingAgreementConfiguration(
+                                            paypalPaymentResource.getRedirectUrl(),
+                                            fragment.getApplicationContext(),
+                                            fragment.getConfiguration());
+                    } else {
+                        sPendingRequest = buildPayPalCheckoutConfiguration(
+                                paypalPaymentResource.getRedirectUrl(),
+                                fragment.getApplicationContext(),
+                                fragment.getConfiguration());
+                    }
+
 
                     sPendingRequestStatus =
                             PayPalOneTouchCore.performRequest(fragment.getActivity(),
@@ -555,6 +564,25 @@ public class PayPal {
 
         PayPalRequestBuilder requestBuilder = new PayPalRequestBuilder();
         CheckoutRequest request = requestBuilder.createCheckoutRequest(context, configuration);
+        request.pairingId(pairingId)
+                .approvalURL(approvalUrl);
+
+        return request;
+    }
+
+    /**
+     * Set properties specific to an BillingAgreement
+     */
+    private static BillingAgreementRequest buildPayPalBillingAgreementConfiguration(String approvalUrl,
+            Context context,
+            Configuration configuration) throws ConfigurationException {
+        String pairingId = null;
+        if (approvalUrl != null) {
+            pairingId = Uri.parse(approvalUrl).getQueryParameter("ba_token");
+        }
+
+        PayPalRequestBuilder requestBuilder = new PayPalRequestBuilder();
+        BillingAgreementRequest request = requestBuilder.createBillingAgreementRequest(context, configuration);
         request.pairingId(pairingId)
                 .approvalURL(approvalUrl);
 

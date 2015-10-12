@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
+import com.paypal.android.sdk.onetouch.core.BillingAgreementRequest;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
 import com.paypal.android.sdk.onetouch.core.Request;
 
@@ -11,6 +12,12 @@ public class PayPalRequestBuilder {
 
     public CheckoutRequest createCheckoutRequest(Context context, Configuration configuration) throws ConfigurationException {
         CheckoutRequest request = new CheckoutRequest();
+        buildRequest(request, context, configuration);
+        return request;
+    }
+
+    public BillingAgreementRequest createBillingAgreementRequest(Context context, Configuration configuration) throws ConfigurationException {
+        BillingAgreementRequest request = new BillingAgreementRequest();
         buildRequest(request, context, configuration);
         return request;
     }
