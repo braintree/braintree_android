@@ -21,6 +21,7 @@ import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
+import com.braintreepayments.api.internal.BraintreeBroadcastReceiver;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.ClientKey;
@@ -52,9 +53,13 @@ public class BraintreeFragment extends Fragment {
             "com.braintreepayments.api.EXTRA_INTEGRATION_TYPE";
     public static final String TAG = "com.braintreepayments.api.BraintreeFragment";
 
+    protected static final String EXTRA_CONFIGURATION =
+            "com.braintreepayments.api.EXTRA_CONFIGURATION";
+
     private Context mContext;
     private Authorization mAuthorization;
     private Configuration mConfiguration;
+    private static BraintreeBroadcastReceiver sBroadcastReceiver;
 
     @VisibleForTesting
     protected BraintreeHttpClient mHttpClient;
@@ -87,6 +92,10 @@ public class BraintreeFragment extends Fragment {
      */
     public static BraintreeFragment newInstance(Activity activity, String clientKeyOrToken)
             throws InvalidArgumentException {
+        return newInstance(activity, clientKeyOrToken, new Bundle());
+    }
+
+    protected static BraintreeFragment newInstance(Activity activity, String clientKeyOrToken, Bundle bundle) throws InvalidArgumentException {
         FragmentManager fm = activity.getFragmentManager();
 
         String integrationType = "custom";
@@ -97,10 +106,17 @@ public class BraintreeFragment extends Fragment {
             }
         } catch (ClassNotFoundException ignored) {}
 
+        if (bundle.containsKey(EXTRA_CONFIGURATION)) {
+            try {
+                Configuration.fromJson(bundle.getString(EXTRA_CONFIGURATION));
+            } catch (JSONException e) {
+                throw new InvalidArgumentException(e.getMessage());
+            }
+        }
+
         BraintreeFragment braintreeFragment = (BraintreeFragment) fm.findFragmentByTag(TAG);
         if (braintreeFragment == null) {
             braintreeFragment = new BraintreeFragment();
-            Bundle bundle = new Bundle();
 
             try {
                 Authorization authorization = Authorization.fromString(clientKeyOrToken);
@@ -125,6 +141,9 @@ public class BraintreeFragment extends Fragment {
         mContext = getActivity().getApplicationContext();
         mIntegrationType = getArguments().getString(EXTRA_INTEGRATION_TYPE);
         mAuthorization = getArguments().getParcelable(EXTRA_AUTHORIZATION_TOKEN);
+        if (sBroadcastReceiver == null) {
+            sBroadcastReceiver = new BraintreeBroadcastReceiver();
+        }
 
         if (mHttpClient == null) {
             mHttpClient = new BraintreeHttpClient(mAuthorization);
@@ -136,7 +155,13 @@ public class BraintreeFragment extends Fragment {
             sendAnalyticsEvent("started.client-token");
         }
 
-        fetchConfiguration();
+        if (getArguments().getString(EXTRA_CONFIGURATION) == null) {
+            fetchConfiguration();
+        } else {
+            try {
+                setConfiguration(Configuration.fromJson(getArguments().getString(EXTRA_CONFIGURATION)));
+            } catch (JSONException ignored) {}
+        }
     }
 
     @Override
@@ -152,6 +177,8 @@ public class BraintreeFragment extends Fragment {
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
+
+        sBroadcastReceiver.register(this);
     }
 
     @Override
@@ -170,10 +197,16 @@ public class BraintreeFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        sBroadcastReceiver.unregister(getApplicationContext());
+    }
+
+    @Override
     public void onActivityResult(final int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == Activity.RESULT_CANCELED) {
+        if (resultCode == Activity.RESULT_CANCELED && data != null) {
             postOrQueueCallback(new QueuedCallback() {
                 @Override
                 public boolean shouldRun() {
@@ -188,7 +221,7 @@ public class BraintreeFragment extends Fragment {
         }
 
         switch (requestCode) {
-            case PayPal.PAYPAL_AUTHORIZATION_REQUEST_CODE:
+            case PayPal.PAYPAL_REQUEST_CODE:
                 PayPal.onActivityResult(this, resultCode, data);
                 break;
             case Venmo.VENMO_REQUEST_CODE:
@@ -350,8 +383,7 @@ public class BraintreeFragment extends Fragment {
             @Override
             public void success(String responseBody) {
                 try {
-                    mConfiguration = Configuration.fromJson(responseBody);
-                    getHttpClient().setBaseUrl(mConfiguration.getClientApiUrl());
+                    setConfiguration(Configuration.fromJson(responseBody));
 
                     postOrQueueCallback(new QueuedCallback() {
                         @Override
@@ -423,6 +455,11 @@ public class BraintreeFragment extends Fragment {
 
     protected Configuration getConfiguration() {
         return mConfiguration;
+    }
+
+    protected void setConfiguration(Configuration configuration) {
+        mConfiguration = configuration;
+        getHttpClient().setBaseUrl(configuration.getClientApiUrl());
     }
 
     protected BraintreeHttpClient getHttpClient() {

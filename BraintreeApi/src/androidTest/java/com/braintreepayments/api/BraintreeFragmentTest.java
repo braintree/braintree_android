@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.MediumTest;
@@ -101,6 +102,14 @@ public class BraintreeFragmentTest {
     @SmallTest
     public void newInstance_throwsAnExceptionForABadClientToken() throws InvalidArgumentException {
         BraintreeFragment.newInstance(mActivity, "{}");
+    }
+
+    @Test(timeout = 1000, expected = InvalidArgumentException.class)
+    @SmallTest
+    public void newInstance_throwsAnExceptionForBadConfiguration() throws InvalidArgumentException {
+        Bundle args = new Bundle();
+        args.putString(BraintreeFragment.EXTRA_CONFIGURATION, "Not a configuration string");
+        BraintreeFragment.newInstance(mActivity, CLIENT_KEY, args);
     }
 
     @Test(timeout = 1000)

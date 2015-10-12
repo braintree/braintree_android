@@ -21,11 +21,11 @@ public class PayPalCheckout {
     /**
      * Constructs a description of a PayPal checkout for Single Payment and Billing Agreements.
      *
-     * @note This mAmount may differ slight from the transaction mAmount. The exact decline rules
-     *        for mismatches between this client-side mAmount and the final mAmount in the Transaction
+     * @note This amount may differ slight from the transaction amount. The exact decline rules
+     *        for mismatches between this client-side amount and the final amount in the Transaction
      *        are determined by the gateway.
      *
-     * @param amount The transaction mAmount in currency units (as
+     * @param amount The transaction amount in currency units (as
      * determined by setCurrencyCode). For example, "1.20" corresponds to one dollar and twenty cents.
      */
     public PayPalCheckout(BigDecimal amount) {
@@ -46,8 +46,9 @@ public class PayPalCheckout {
      *
      * @param amount The desired mAmount
      */
-    public void setAmount(BigDecimal amount) {
+    public PayPalCheckout setAmount(BigDecimal amount) {
         mAmount = amount;
+        return this;
     }
 
     /**
@@ -57,8 +58,9 @@ public class PayPalCheckout {
      *
      * @param currencyCode A currency code, such as "USD"
      */
-    public void setCurrencyCode(String currencyCode) {
+    public PayPalCheckout setCurrencyCode(String currencyCode) {
         mCurrencyCode = currencyCode;
+        return this;
     }
 
     /**
@@ -66,8 +68,9 @@ public class PayPalCheckout {
      *
      * @param enableShippingAddress Whether to request the mShippingAddress and return it.
      */
-    public void setEnableShippingAddress(Boolean enableShippingAddress) {
+    public PayPalCheckout setEnableShippingAddress(Boolean enableShippingAddress) {
         mEnableShippingAddress = enableShippingAddress;
+        return this;
     }
 
     /**
@@ -75,8 +78,9 @@ public class PayPalCheckout {
      *
      * @param localeCode Whether to use a custom locale code.
      */
-    public void setLocaleCode(String localeCode) {
+    public PayPalCheckout setLocaleCode(String localeCode) {
         mLocaleCode = localeCode;
+        return this;
     }
 
     /**
@@ -84,8 +88,9 @@ public class PayPalCheckout {
      *
      * @param addressOverride Whether to use a custom shipping address
      */
-    public void setAddressOverride(Boolean addressOverride) {
+    public PayPalCheckout setAddressOverride(Boolean addressOverride) {
         mAddressOverride = addressOverride;
+        return this;
     }
 
     /**
@@ -93,8 +98,9 @@ public class PayPalCheckout {
      *
      * @param shippingAddress a custom {@link PostalAddress}
      */
-    public void setShippingAddress(PostalAddress shippingAddress) {
+    public PayPalCheckout setShippingAddress(PostalAddress shippingAddress) {
         mShippingAddress = shippingAddress;
+        return this;
     }
 
     public BigDecimal getAmount() {

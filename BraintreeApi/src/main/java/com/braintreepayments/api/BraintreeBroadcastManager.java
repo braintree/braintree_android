@@ -111,6 +111,20 @@ public class BraintreeBroadcastManager {
         };
     }
 
+    public boolean isRegistered(BroadcastReceiver receiver, String filterAction) {
+        synchronized (mReceivers) {
+            if (mReceivers.containsKey(receiver)) {
+                for (IntentFilter filter : mReceivers.get(receiver)) {
+                    if (filter.hasAction(filterAction)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Register a receive for any local broadcasts that match the given IntentFilter.
      *

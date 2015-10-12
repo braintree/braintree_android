@@ -164,7 +164,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
                 return null;
             }
         }).when(mFragment).startActivityForResult(any(Intent.class),
-                eq(PayPal.PAYPAL_AUTHORIZATION_REQUEST_CODE));
+                eq(PayPal.PAYPAL_REQUEST_CODE));
 
         PayPal.authorizeAccount(mFragment);
 

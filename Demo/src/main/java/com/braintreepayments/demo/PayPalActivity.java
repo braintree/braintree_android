@@ -118,8 +118,7 @@ public class PayPalActivity extends Activity implements PaymentMethodCreatedList
      * Kicks off a PayPal Billing Agreement.
      */
     public void launchBillingAgreement(View v) {
-        PayPalCheckout checkout = new PayPalCheckout();
-        PayPal.billingAgreement(mBraintreeFragment, checkout);
+        PayPal.requestBillingAgreement(mBraintreeFragment);
     }
 
     @Override

@@ -196,7 +196,7 @@ public class PaymentButtonTest {
 
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(fragment).startActivityForResult(intentCaptor.capture(),
-                eq(PayPal.PAYPAL_AUTHORIZATION_REQUEST_CODE));
+                eq(PayPal.PAYPAL_REQUEST_CODE));
 
         Intent intent = intentCaptor.getValue();
         assertEquals(BraintreeBrowserSwitchActivity.class.getName(),
@@ -234,11 +234,11 @@ public class PaymentButtonTest {
                 Result r = createFakeResult();
                 paypalIntent.putExtra(PayPalOneTouchActivity.EXTRA_ONE_TOUCH_RESULT, r);
 
-                fragment.onActivityResult(PayPal.PAYPAL_AUTHORIZATION_REQUEST_CODE, Activity.RESULT_OK, paypalIntent);
+                fragment.onActivityResult(PayPal.PAYPAL_REQUEST_CODE, Activity.RESULT_OK, paypalIntent);
                 return null;
             }
         }).when(fragment).startActivityForResult(any(Intent.class),
-                eq(PayPal.PAYPAL_AUTHORIZATION_REQUEST_CODE));
+                eq(PayPal.PAYPAL_REQUEST_CODE));
 
         mPaymentButton.findViewById(R.id.bt_paypal_button).performClick();
 

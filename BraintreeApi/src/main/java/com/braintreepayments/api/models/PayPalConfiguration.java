@@ -122,7 +122,7 @@ public class PayPalConfiguration {
     /**
      * @return if billing agreements are enabled.
      */
-    public boolean getUseBillingAgreement() {
+    public boolean shouldUseBillingAgreement() {
         return mUseBillingAgreement;
     }
 }
