@@ -15,16 +15,16 @@ import java.io.InputStreamReader;
 import java.util.UUID;
 
 /**
- * Contains a cornucopia of information about the device.
+ * Contains methods to collect information about the app and device.
  */
-public class DeviceUtils {
+class DeviceMetadata {
 
     private static final String BRAINTREE_UUID_KEY = "braintreeUUID";
 
     /**
      * Returns the application name.
      */
-    protected static String getAppName(ApplicationInfo applicationInfo,
+    static String getAppName(ApplicationInfo applicationInfo,
             PackageManager packageManager) {
         if (applicationInfo != null) {
             return (String) packageManager.getApplicationLabel(applicationInfo);
@@ -36,7 +36,7 @@ public class DeviceUtils {
     /**
      * Returns the version name.
      */
-    protected static String getAppVersion(Context context) {
+    static String getAppVersion(Context context) {
         try {
             return context.getPackageManager()
                     .getPackageInfo(context.getPackageName(), 0).versionName;
@@ -48,14 +48,13 @@ public class DeviceUtils {
     /**
      * Returns a String representation of whether the device is rooted.
      */
-    protected static String isDeviceRooted() {
+    static String isDeviceRooted() {
         String buildTags = android.os.Build.TAGS;
         boolean check1 = buildTags != null && buildTags.contains("test-keys");
 
         boolean check2;
         try {
-            File file = new File("/system/app/Superuser.apk");
-            check2 = file.exists();
+            check2 = new File("/system/app/Superuser.apk").exists();
         } catch (Exception e) {
             check2 = false;
         }
@@ -64,11 +63,7 @@ public class DeviceUtils {
         try {
             Process process = Runtime.getRuntime().exec(new String[]{"/system/xbin/which", "su"});
             BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            if (in.readLine() != null) {
-                check3 = true;
-            } else {
-                check3 = false;
-            }
+            check3 = in.readLine() != null;
         } catch (Exception e) {
             check3 = false;
         }
@@ -77,17 +72,20 @@ public class DeviceUtils {
     }
 
     /**
-     * Returns the current network type.
      * @param context
-     * @return
+     * @return The current network type.
      */
-    protected static String getNetworkType(Context context) {
+    static String getNetworkType(Context context) {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         return connectivityManager.getActiveNetworkInfo().getTypeName();
     }
 
-    protected static String getUUID(Context context) {
+    /**
+     * @param context
+     * @return A persistent UUID for this application install.
+     */
+    static String getUUID(Context context) {
         SharedPreferences prefs =
                 context.getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE);
 
@@ -100,7 +98,10 @@ public class DeviceUtils {
         return uuid;
     }
 
-    protected static String detectEmulator() {
+    /**
+     * @return "true" if the current device is an emulator.
+     */
+    static String detectEmulator() {
         if ("google_sdk".equalsIgnoreCase(Build.PRODUCT) ||
                 "sdk".equalsIgnoreCase(Build.PRODUCT) ||
                 "Genymotion".equalsIgnoreCase(Build.MANUFACTURER) ||
@@ -111,7 +112,11 @@ public class DeviceUtils {
         }
     }
 
-    protected static String getUserOrientation(Context context) {
+    /**
+     * @param context
+     * @return "Portrait", "Landscape" or "Unknown".
+     */
+    static String getUserOrientation(Context context) {
         int orientation = context.getResources().getConfiguration().orientation;
         switch (orientation) {
             case Configuration.ORIENTATION_PORTRAIT:

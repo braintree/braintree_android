@@ -44,8 +44,9 @@ class AnalyticsManager {
 
     private static final int REQUEST_THRESHOLD = 5;
 
-    protected static ArrayList<AnalyticsRequest> sRequestQueue = new ArrayList<>();
     private static JSONObject sCachedMetadata;
+
+    static ArrayList<AnalyticsRequest> sRequestQueue = new ArrayList<>();
 
     /**
      * Queue or send analytics request with integration type and event.
@@ -56,7 +57,6 @@ class AnalyticsManager {
     static void sendRequest(final BraintreeFragment fragment, final String integrationType, final String eventFragment) {
         final AnalyticsRequest request = new AnalyticsRequest(integrationType, eventFragment);
         fragment.waitForConfiguration(new ConfigurationListener() {
-
             @Override
             public void onConfigurationFetched(Configuration config) {
                 if (!config.getAnalytics().isEnabled()) {
@@ -126,9 +126,9 @@ class AnalyticsManager {
         }
 
         return new JSONObject(sCachedMetadata.toString())
-                .put(DEVICE_NETWORK_TYPE_KEY, DeviceUtils.getNetworkType(context))
+                .put(DEVICE_NETWORK_TYPE_KEY, DeviceMetadata.getNetworkType(context))
                 .put(INTEGRATION_TYPE_KEY, integrationType)
-                .put(USER_INTERFACE_ORIENTATION_KEY, DeviceUtils.getUserOrientation(context));
+                .put(USER_INTERFACE_ORIENTATION_KEY, DeviceMetadata.getUserOrientation(context));
     }
 
     private static JSONObject populateCachedMetadata(Context context) {
@@ -139,15 +139,15 @@ class AnalyticsManager {
                     .put(SDK_VERSION_KEY, BuildConfig.VERSION_NAME)
                     .put(MERCHANT_APP_ID_KEY, context.getPackageName())
                     .put(MERCHANT_APP_NAME_KEY,
-                            DeviceUtils.getAppName(getApplicationInfo(context),
+                            DeviceMetadata.getAppName(getApplicationInfo(context),
                                     context.getPackageManager()))
-                    .put(MERCHANT_APP_VERSION_KEY, DeviceUtils.getAppVersion(context))
-                    .put(DEVICE_ROOTED_KEY, DeviceUtils.isDeviceRooted())
+                    .put(MERCHANT_APP_VERSION_KEY, DeviceMetadata.getAppVersion(context))
+                    .put(DEVICE_ROOTED_KEY, DeviceMetadata.isDeviceRooted())
                     .put(DEVICE_MANUFACTURER_KEY, Build.MANUFACTURER)
                     .put(DEVICE_MODEL_KEY, Build.MODEL)
                     .put(ANDROID_ID_KEY, Secure.getString(context.getContentResolver(), Secure.ANDROID_ID))
-                    .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY, DeviceUtils.getUUID(context))
-                    .put(IS_SIMULATOR_KEY, DeviceUtils.detectEmulator());
+                    .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY, DeviceMetadata.getUUID(context))
+                    .put(IS_SIMULATOR_KEY, DeviceMetadata.detectEmulator());
         } catch (JSONException ignored) {}
 
         return meta;
@@ -166,26 +166,26 @@ class AnalyticsManager {
         return applicationInfo;
     }
 
-    public static class AnalyticsRequest {
+    static class AnalyticsRequest {
 
         private final String mIntegrationType;
         private final String mEvent;
         private final long mTimestamp;
 
-        public AnalyticsRequest(String integration, String event){
+        AnalyticsRequest(String integration, String event){
             mIntegrationType = integration;
             mEvent = event;
             mTimestamp = System.currentTimeMillis() / 1000;
         }
 
-        public String getEvent() {
+        String getEvent() {
             return "android." + mIntegrationType + "." + mEvent;
         }
 
-        public long getTimestamp() {
+        long getTimestamp() {
             return mTimestamp;
         }
 
-        public String getIntegrationType() { return mIntegrationType; }
+        String getIntegrationType() { return mIntegrationType; }
     }
 }
