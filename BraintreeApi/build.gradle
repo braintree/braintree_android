@@ -107,23 +107,10 @@ task releaseJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompil
     exclude { details -> details.file.name.endsWith('.xml') }
 }
 
-task fullJar(type: Jar, dependsOn: releaseJar) {
-    classifier = 'full'
-    from zipTree(releaseJar.archivePath)
-    from {
-        configurations.compile.findAll {
-            it.getName() != paypalVersion && !it.getName().startsWith("play-services") && !it.getName().startsWith("support")
-        }.collect {
-            it.isDirectory() ? null : zipTree(it)
-        }
-    }
-}
-
 artifacts {
     archives javadocsJar
     archives sourcesJar
     archives releaseJar
-    archives fullJar
 }
 
 uploadArchives {
