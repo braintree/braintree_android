@@ -24,7 +24,6 @@ import com.braintreepayments.api.PayPalSignatureVerification;
 import com.braintreepayments.api.ThreeDSecure;
 import com.braintreepayments.api.dropin.Customization;
 import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
@@ -202,16 +201,9 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     }
 
     @Override
-    public void onUnrecoverableError(Throwable throwable) {
+    public void onError(Exception error) {
         safelyCloseLoadingView();
-        showDialog("An unrecoverable error was encountered (" +
-                throwable.getClass().getSimpleName() + "): " + throwable.getMessage());
-    }
-
-    @Override
-    public void onRecoverableError(ErrorWithResponse error) {
-        safelyCloseLoadingView();
-        showDialog("A recoverable error occurred: " + error.getMessage());
+        showDialog("An error occurred (" + error.getClass() + "): " + error.getMessage());
     }
 
     @Override

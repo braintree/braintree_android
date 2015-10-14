@@ -196,7 +196,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
             showErrorUI();
         } else {
-            mActivity.onUnrecoverableError(new UnexpectedException(error.getMessage()));
+            mActivity.onError(new UnexpectedException(error.getMessage()));
         }
     }
 

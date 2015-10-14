@@ -14,7 +14,6 @@ import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
@@ -194,12 +193,7 @@ public class PayPalTest {
 
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                fail(throwable.getMessage());
-            }
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
+            public void onError(Exception error) {
                 fail(error.getMessage());
             }
         });
@@ -314,16 +308,11 @@ public class PayPalTest {
 
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                assertEquals(ConfigurationException.class, throwable.getClass());
+            public void onError(Exception error) {
+                assertTrue(error instanceof ConfigurationException);
                 assertEquals("PayPal is disabled or configuration is invalid",
-                        throwable.getMessage());
+                        error.getMessage());
                 latch.countDown();
-            }
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
-                fail(error.getMessage());
             }
         });
 

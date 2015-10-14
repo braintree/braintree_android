@@ -201,15 +201,11 @@ public class BraintreeFragmentTest {
                 stringFromFixture("client_token_with_bad_config_url.json"));
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {
+            public void onError(Exception error) {
                 assertEquals(
                         "Protocol not found: nullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint",
-                        throwable.getMessage());
+                        error.getMessage());
                 mCountDownLatch.countDown();
-            }
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
             }
         });
 
@@ -284,13 +280,9 @@ public class BraintreeFragmentTest {
 
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                assertEquals("Error!", throwable.getMessage());
+            public void onError(Exception error) {
+                assertEquals("Error!", error.getMessage());
                 mCountDownLatch.countDown();
-            }
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
             }
         });
 
@@ -305,12 +297,9 @@ public class BraintreeFragmentTest {
 
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {
-            }
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
-                assertEquals(422, error.getStatusCode());
+            public void onError(Exception error) {
+                assertTrue(error instanceof ErrorWithResponse);
+                assertEquals(422, ((ErrorWithResponse) error).getStatusCode());
                 mCountDownLatch.countDown();
             }
         });
@@ -390,12 +379,7 @@ public class BraintreeFragmentTest {
         BraintreeFragment fragment = getFragment(mActivity, mClientToken);
         BraintreeErrorListener listener = new BraintreeErrorListener() {
             @Override
-            public void onRecoverableError(ErrorWithResponse error) {
-                fail("Listener was called");
-            }
-
-            @Override
-            public void onUnrecoverableError(Throwable throwable) {
+            public void onError(Exception error) {
                 fail("Listener was called");
             }
         };
@@ -481,12 +465,8 @@ public class BraintreeFragmentTest {
         BraintreeFragment fragment = getFragment(mActivity, mClientToken);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onRecoverableError(ErrorWithResponse error) {
-            }
-
-            @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                assertEquals("Error!", throwable.getMessage());
+            public void onError(Exception error) {
+                assertEquals("Error!", error.getMessage());
                 mCountDownLatch.countDown();
             }
         });
@@ -502,13 +482,10 @@ public class BraintreeFragmentTest {
         BraintreeFragment fragment = getFragment(mActivity, mClientToken);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onRecoverableError(ErrorWithResponse error) {
-                assertEquals(422, error.getStatusCode());
+            public void onError(Exception error) {
+                assertTrue(error instanceof ErrorWithResponse);
+                assertEquals(422, ((ErrorWithResponse) error).getStatusCode());
                 mCountDownLatch.countDown();
-            }
-
-            @Override
-            public void onUnrecoverableError(Throwable throwable) {
             }
         });
 

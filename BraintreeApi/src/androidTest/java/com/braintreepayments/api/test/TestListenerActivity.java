@@ -2,7 +2,6 @@ package com.braintreepayments.api.test;
 
 import android.app.Activity;
 
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
@@ -20,11 +19,7 @@ public class TestListenerActivity extends Activity implements PaymentMethodCreat
         PaymentMethodsUpdatedListener, BraintreeErrorListener, ConfigurationListener {
 
     @Override
-    public void onUnrecoverableError(Throwable throwable) {
-    }
-
-    @Override
-    public void onRecoverableError(ErrorWithResponse error) {
+    public void onError(Exception error) {
     }
 
     @Override

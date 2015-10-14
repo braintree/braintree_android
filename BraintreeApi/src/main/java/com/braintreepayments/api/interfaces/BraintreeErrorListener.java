@@ -1,23 +1,15 @@
 package com.braintreepayments.api.interfaces;
 
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
-
 /**
  * Interface that defines callbacks for errors that occur when processing Braintree requests.
  */
 public interface BraintreeErrorListener extends BraintreeListener {
 
     /**
-     * onUnrecoverableError will be called where there is an exception that cannot be handled.
+     * {@link #onError(Exception)} will be called when there is an exception that cannot be handled,
+     * such as a network or request error, or when there are data validation errors.
      *
-     * @param throwable the exception.
+     * @param error
      */
-    void onUnrecoverableError(Throwable throwable);
-
-    /**
-     * onRecoverableError will be called on data validation errors.
-     *
-     * @param error the validation error.
-     */
-    void onRecoverableError(ErrorWithResponse error);
+    void onError(Exception error);
 }

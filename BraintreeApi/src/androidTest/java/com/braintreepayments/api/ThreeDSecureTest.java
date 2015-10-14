@@ -7,7 +7,6 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
 
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
@@ -126,13 +125,9 @@ public class ThreeDSecureTest {
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                assertEquals("Error!", throwable.getMessage());
+            public void onError(Exception error) {
+                assertEquals("Error!", error.getMessage());
                 mCountDownLatch.countDown();
-            }
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
             }
         });
         ThreeDSecureAuthenticationResponse authResponse =
@@ -151,11 +146,7 @@ public class ThreeDSecureTest {
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {
-            }
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
+            public void onError(Exception error) {
                 assertEquals("Failed to authenticate, please try a different form of payment",
                         error.getMessage());
                 mCountDownLatch.countDown();

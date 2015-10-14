@@ -11,7 +11,6 @@ import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.BraintreeFragmentTestUtils;
 import com.braintreepayments.api.ThreeDSecure;
 import com.braintreepayments.api.exceptions.AuthorizationException;
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.models.Card;
@@ -151,14 +150,13 @@ public class ThreeDSecureVerificationTest {
         BraintreeFragment fragment = BraintreeFragmentTestUtils.getFragment(mActivity, CLIENT_KEY);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                assertTrue(throwable instanceof AuthorizationException);
-                assertEquals("Client key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions", throwable.getMessage());
+            public void onError(Exception error) {
+                assertTrue(error instanceof AuthorizationException);
+                assertEquals(
+                        "Client key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions",
+                        error.getMessage());
                 mCountDownLatch.countDown();
             }
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {}
         });
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber("4000000000000051")
@@ -225,10 +223,7 @@ public class ThreeDSecureVerificationTest {
         BraintreeFragment fragment = getFragment();
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {}
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
+            public void onError(Exception error) {
                 assertEquals("Failed to authenticate, please try a different form of payment",
                         error.getMessage());
                 mCountDownLatch.countDown();
@@ -277,10 +272,7 @@ public class ThreeDSecureVerificationTest {
         BraintreeFragment fragment = getFragment();
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {}
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
+            public void onError(Exception error) {
                 assertEquals("Failed to authenticate, please try a different form of payment",
                         error.getMessage());
                 mCountDownLatch.countDown();
@@ -303,10 +295,7 @@ public class ThreeDSecureVerificationTest {
         BraintreeFragment fragment = getFragment();
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {}
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
+            public void onError(Exception error) {
                 assertEquals("An unexpected error occurred", error.getMessage());
                 mCountDownLatch.countDown();
             }
@@ -329,10 +318,7 @@ public class ThreeDSecureVerificationTest {
         BraintreeFragment fragment = getFragment();
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {}
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
+            public void onError(Exception error) {
                 assertEquals("An unexpected error occurred", error.getMessage());
                 mCountDownLatch.countDown();
             }

@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.GoogleApiClientException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
@@ -332,7 +331,7 @@ public class BraintreeFragment extends Fragment {
         });
     }
 
-    protected void postCallback(final Throwable error) {
+    protected void postCallback(final Exception error) {
         postOrQueueCallback(new QueuedCallback() {
             @Override
             public boolean shouldRun() {
@@ -341,11 +340,7 @@ public class BraintreeFragment extends Fragment {
 
             @Override
             public void run() {
-                if (error instanceof ErrorWithResponse) {
-                    mErrorListener.onRecoverableError((ErrorWithResponse) error);
-                } else {
-                    mErrorListener.onUnrecoverableError(error);
-                }
+                mErrorListener.onError(error);
             }
         });
     }
@@ -480,7 +475,7 @@ public class BraintreeFragment extends Fragment {
      * Fragment#onPause()} and automatically connected in {@link Fragment#onResume()}.
      * <p/>
      * Connection failed and connection suspended errors will be sent to {@link
-     * BraintreeErrorListener#onUnrecoverableError(Throwable)}.
+     * BraintreeErrorListener#onError(Exception)}.
      *
      * @return {@link GoogleApiClient}.
      */

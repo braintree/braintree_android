@@ -13,7 +13,6 @@ import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.exceptions.AuthorizationException;
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
@@ -303,13 +302,9 @@ public class VenmoTest {
         final CountDownLatch latch = new CountDownLatch(1);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                assertEquals("No nonce present in response from Venmo app", throwable.getMessage());
+            public void onError(Exception error) {
+                assertEquals("No nonce present in response from Venmo app", error.getMessage());
                 latch.countDown();
-            }
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
             }
         });
 
@@ -332,14 +327,9 @@ public class VenmoTest {
         final CountDownLatch latch = new CountDownLatch(1);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                assertEquals("Nonce not found", throwable.getMessage());
+            public void onError(Exception error) {
+                assertEquals("Nonce not found", error.getMessage());
                 latch.countDown();
-            }
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
-
             }
         });
         Intent intent = new Intent().putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE,
@@ -402,14 +392,12 @@ public class VenmoTest {
         final CountDownLatch latch = new CountDownLatch(1);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                assertTrue(throwable instanceof AuthorizationException);
-                assertEquals("Client key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions", throwable.getMessage());
+            public void onError(Exception error) {
+                assertTrue(error instanceof AuthorizationException);
+                assertEquals("Client key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions",
+                        error.getMessage());
                 latch.countDown();
             }
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {}
         });
 
         Venmo.onActivityResult(fragment, Activity.RESULT_OK, intent);

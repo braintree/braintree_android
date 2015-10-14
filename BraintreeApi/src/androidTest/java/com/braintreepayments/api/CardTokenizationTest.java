@@ -131,10 +131,9 @@ public class CardTokenizationTest {
         setupFragment();
         mBraintreeFragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {}
+            public void onError(Exception exception) {
+                ErrorWithResponse error = (ErrorWithResponse) exception;
 
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
                 assertEquals(422, error.getStatusCode());
                 assertNotNull(error.getFieldErrors());
                 assertEquals("Credit card is invalid", error.getMessage());
@@ -170,10 +169,7 @@ public class CardTokenizationTest {
         when(mBraintreeFragment.getHttpClient()).thenReturn(httpClient);
         mBraintreeFragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {}
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
+            public void onError(Exception error) {
                 mCountDownLatch.countDown();
             }
         });

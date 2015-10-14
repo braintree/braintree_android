@@ -96,14 +96,11 @@ public class TokenizationClientTest {
         });
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                assertTrue(throwable instanceof UnexpectedException);
-                assertEquals("Mock", throwable.getMessage());
+            public void onError(Exception error) {
+                assertTrue(error instanceof UnexpectedException);
+                assertEquals("Mock", error.getMessage());
                 latch.countDown();
             }
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {}
         });
 
         TokenizationClient.getPaymentMethods(fragment);
@@ -181,14 +178,12 @@ public class TokenizationClientTest {
         });
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                assertTrue(throwable instanceof AuthorizationException);
-                assertEquals("Client key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions", throwable.getMessage());
+            public void onError(Exception error) {
+                assertTrue(error instanceof AuthorizationException);
+                assertEquals("Client key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions",
+                        error.getMessage());
                 latch.countDown();
             }
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {}
         });
         tokenize(fragment, new CardBuilder()
                 .cardNumber(VISA)

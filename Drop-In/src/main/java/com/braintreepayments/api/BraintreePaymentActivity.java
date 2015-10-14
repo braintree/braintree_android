@@ -203,38 +203,38 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
     }
 
     @Override
-    public void onUnrecoverableError(Throwable throwable) {
-        // Falling back to add payment method if getPaymentMethods fails
-        if (StubbedView.LOADING_VIEW.mCurrentView && !mHavePaymentMethodsBeenReceived.get() &&
-                mBraintreeFragment.getConfiguration() != null) {
-            mBraintreeFragment.sendAnalyticsEvent("appeared");
-            mHavePaymentMethodsBeenReceived.set(true);
-            showAddPaymentMethodView();
+    public void onError(Exception error) {
+        if (error instanceof ErrorWithResponse) {
+            mAddPaymentMethodViewController.setErrors((ErrorWithResponse) error);
         } else {
-            if(throwable instanceof AuthenticationException ||
-                    throwable instanceof AuthorizationException ||
-                    throwable instanceof UpgradeRequiredException ||
-                    throwable instanceof ConfigurationException) {
-                mBraintreeFragment.sendAnalyticsEvent("sdk.exit.developer-error");
-                setResult(BRAINTREE_RESULT_DEVELOPER_ERROR,
-                        new Intent().putExtra(EXTRA_ERROR_MESSAGE, throwable));
-            } else if(throwable instanceof ServerException || throwable instanceof UnexpectedException) {
-                mBraintreeFragment.sendAnalyticsEvent("sdk.exit.server-error");
-                setResult(BRAINTREE_RESULT_SERVER_ERROR,
-                        new Intent().putExtra(EXTRA_ERROR_MESSAGE, throwable));
-            } else if(throwable instanceof DownForMaintenanceException) {
-                mBraintreeFragment.sendAnalyticsEvent("sdk.exit.server-unavailable");
-                setResult(BRAINTREE_RESULT_SERVER_UNAVAILABLE,
-                        new Intent().putExtra(EXTRA_ERROR_MESSAGE, throwable));
+            // Falling back to add payment method if getPaymentMethods fails
+            if (StubbedView.LOADING_VIEW.mCurrentView && !mHavePaymentMethodsBeenReceived.get() &&
+                    mBraintreeFragment.getConfiguration() != null) {
+                mBraintreeFragment.sendAnalyticsEvent("appeared");
+                mHavePaymentMethodsBeenReceived.set(true);
+                showAddPaymentMethodView();
+            } else {
+                if (error instanceof AuthenticationException ||
+                        error instanceof AuthorizationException ||
+                        error instanceof UpgradeRequiredException ||
+                        error instanceof ConfigurationException) {
+                    mBraintreeFragment.sendAnalyticsEvent("sdk.exit.developer-error");
+                    setResult(BRAINTREE_RESULT_DEVELOPER_ERROR,
+                            new Intent().putExtra(EXTRA_ERROR_MESSAGE, error));
+                } else if (error instanceof ServerException ||
+                        error instanceof UnexpectedException) {
+                    mBraintreeFragment.sendAnalyticsEvent("sdk.exit.server-error");
+                    setResult(BRAINTREE_RESULT_SERVER_ERROR,
+                            new Intent().putExtra(EXTRA_ERROR_MESSAGE, error));
+                } else if (error instanceof DownForMaintenanceException) {
+                    mBraintreeFragment.sendAnalyticsEvent("sdk.exit.server-unavailable");
+                    setResult(BRAINTREE_RESULT_SERVER_UNAVAILABLE,
+                            new Intent().putExtra(EXTRA_ERROR_MESSAGE, error));
+                }
+
+                finish();
             }
-
-            finish();
         }
-    }
-
-    @Override
-    public void onRecoverableError(ErrorWithResponse error) {
-        mAddPaymentMethodViewController.setErrors(error);
     }
 
     protected void finalizeSelection(PaymentMethod paymentMethod) {

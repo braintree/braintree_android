@@ -69,7 +69,7 @@ public class DataCollectorTest {
                 mock(Configuration.class));
 
         String clientMetadataId = DataCollector.getPayPalClientMetadataId(
-                fragment.getActivity().getApplicationContext());
+                fragment.getApplicationContext());
 
         assertFalse(TextUtils.isEmpty(clientMetadataId));
     }

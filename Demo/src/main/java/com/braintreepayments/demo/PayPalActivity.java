@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.PayPal;
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
@@ -190,12 +189,7 @@ public class PayPalActivity extends Activity implements PaymentMethodCreatedList
     }
 
     @Override
-    public void onUnrecoverableError(Throwable throwable) {
-        Log.d("ERROR", throwable.getMessage());
-    }
-
-    @Override
-    public void onRecoverableError(ErrorWithResponse error) {
+    public void onError(Exception error) {
         Log.d("ERROR", error.getMessage());
     }
 }
