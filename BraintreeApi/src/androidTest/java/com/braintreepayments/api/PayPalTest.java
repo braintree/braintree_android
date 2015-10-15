@@ -12,6 +12,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
 
+import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
@@ -39,6 +40,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.espresso.intent.Intents.intending;
@@ -101,6 +103,58 @@ public class PayPalTest {
                 }
             }
         });
+        mLatch.await();
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void checkout_withNoAmountPostsException() throws InterruptedException {
+        String configString = stringFromFixture("configuration_with_offline_paypal.json");
+        String authString = stringFromFixture("client_token.json");
+        final BraintreeFragment fragment = BraintreeFragmentTestUtils.getFragment(mActivity,
+                authString, configString);
+        fragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onUnrecoverableError(Throwable throwable) {
+                assertTrue(throwable instanceof BraintreeException);
+                assertEquals("An amount MUST be specified for the Single Payment flow.",
+                        throwable.getMessage());
+                mLatch.countDown();
+            }
+
+            @Override
+            public void onRecoverableError(ErrorWithResponse error) {
+                fail("onUnrecoverbleError should have been called, got: " + error);
+            }
+        });
+
+        PayPal.checkout(fragment, new PayPalCheckout());
+        mLatch.await();
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void requestBillingAgreement_withAmountPostsException() throws InterruptedException {
+        String configString = stringFromFixture("configuration_with_offline_paypal.json");
+        String authString = stringFromFixture("client_token.json");
+        final BraintreeFragment fragment = BraintreeFragmentTestUtils.getFragment(mActivity,
+                authString, configString);
+        fragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onUnrecoverableError(Throwable throwable) {
+                assertTrue(throwable instanceof BraintreeException);
+                assertEquals("There must be no amount specified for the Billing Agreement flow",
+                        throwable.getMessage());
+                mLatch.countDown();
+            }
+
+            @Override
+            public void onRecoverableError(ErrorWithResponse error) {
+                fail("onUnrecoverableError should have been called, got: " + error);
+            }
+        });
+
+        PayPal.requestBillingAgreement(fragment, new PayPalCheckout(new BigDecimal(BigInteger.ONE)));
         mLatch.await();
     }
 

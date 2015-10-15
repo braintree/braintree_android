@@ -109,7 +109,7 @@ public class PayPal {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 if (configuration.getPayPal().shouldUseBillingAgreement()) {
-                    requestBillingAgreement(fragment);
+                    requestBillingAgreement(fragment, new PayPalCheckout());
                     return;
                 }
 
@@ -146,8 +146,13 @@ public class PayPal {
      *
      * @param fragment A {@link BraintreeFragment} used to process the request.
      */
-    public static void requestBillingAgreement(BraintreeFragment fragment) {
-        checkout(fragment, new PayPalCheckout(), true);
+    public static void requestBillingAgreement(BraintreeFragment fragment, PayPalCheckout checkout) {
+        if (checkout.getAmount() == null) {
+            checkout(fragment, checkout, true);
+        } else {
+            fragment.postCallback(new BraintreeException(
+                    "There must be no amount specified for the Billing Agreement flow"));
+        }
     }
 
     /**
