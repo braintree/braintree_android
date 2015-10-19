@@ -1,21 +1,20 @@
 package com.braintreepayments.api.models;
 
-import java.math.BigDecimal;
-
 /**
  * Represents the parameters that are needed to kick off Checkout with PayPal
  *
  * In the checkout flow, the user is presented with details about the order and only agrees to a
  * single payment. The result is not eligible for being saved in the Vault; however, you will receive
  * shipping information and the user will not be able to revoke the consent.
+ *
+ * @see <a href="https://developer.paypal.com/docs/api/#inputfields-object">PayPal REST API Reference</a>
  */
 public class PayPalCheckout {
 
-    private BigDecimal mAmount;
+    private String mAmount;
     private String mCurrencyCode;
     private String mLocaleCode;
-    private Boolean mEnableShippingAddress;
-    private Boolean mAddressOverride;
+    private boolean mNoShipping;
     private PostalAddress mShippingAddress;
 
     /**
@@ -27,11 +26,12 @@ public class PayPalCheckout {
      *
      * @param amount The transaction amount in currency units (as
      * determined by setCurrencyCode). For example, "1.20" corresponds to one dollar and twenty cents.
+     * Amount must be a non-negative number, may optionally contain exactly 2 decimal places separated
+     * by '.', optional thousands separator ',', limited to 7 digits before the decimal point.
      */
-    public PayPalCheckout(BigDecimal amount) {
+    public PayPalCheckout(String amount) {
         mAmount = amount;
-        mEnableShippingAddress = true;
-        mAddressOverride = false;
+        mNoShipping = false;
     }
 
     /**
@@ -42,34 +42,26 @@ public class PayPalCheckout {
     }
 
     /**
-     * The approximate mAmount of the transaction.
+     * Optional: A valid ISO currency code to use for the transaction. Defaults to merchant currency
+     * code if not set.
      *
-     * @param amount The desired mAmount
-     */
-    public PayPalCheckout setAmount(BigDecimal amount) {
-        mAmount = amount;
-        return this;
-    }
-
-    /**
-     * The three character currency code for the mAmount.
-     *
-     * If unspecified, the currency code will be chosen based on the active merchant account in the client token.
+     * If unspecified, the currency code will be chosen based on the active merchant account in the
+     * client token.
      *
      * @param currencyCode A currency code, such as "USD"
      */
-    public PayPalCheckout setCurrencyCode(String currencyCode) {
+    public PayPalCheckout currencyCode(String currencyCode) {
         mCurrencyCode = currencyCode;
         return this;
     }
 
     /**
-     * Whether to request the mShippingAddress and return it.
+     * Defaults to false. When set to true, the shipping address selector will not be displayed.
      *
-     * @param enableShippingAddress Whether to request the mShippingAddress and return it.
+     * @param noShipping Whether to hide the shipping address in the flow.
      */
-    public PayPalCheckout setEnableShippingAddress(Boolean enableShippingAddress) {
-        mEnableShippingAddress = enableShippingAddress;
+    public PayPalCheckout noShipping(boolean noShipping) {
+        mNoShipping = noShipping;
         return this;
     }
 
@@ -78,32 +70,22 @@ public class PayPalCheckout {
      *
      * @param localeCode Whether to use a custom locale code.
      */
-    public PayPalCheckout setLocaleCode(String localeCode) {
+    public PayPalCheckout localeCode(String localeCode) {
         mLocaleCode = localeCode;
         return this;
     }
 
     /**
-     * Whether to use a custom shipping address - be sure to set a mShippingAddress
-     *
-     * @param addressOverride Whether to use a custom shipping address
-     */
-    public PayPalCheckout setAddressOverride(Boolean addressOverride) {
-        mAddressOverride = addressOverride;
-        return this;
-    }
-
-    /**
-     * A custom shipping address to be used for the checkout flow. Be sure to set mAddressOverride.
+     * A custom shipping address to be used for the checkout flow.
      *
      * @param shippingAddress a custom {@link PostalAddress}
      */
-    public PayPalCheckout setShippingAddress(PostalAddress shippingAddress) {
+    public PayPalCheckout shippingAddress(PostalAddress shippingAddress) {
         mShippingAddress = shippingAddress;
         return this;
     }
 
-    public BigDecimal getAmount() {
+    public String getAmount() {
         return mAmount;
     }
 
@@ -111,12 +93,8 @@ public class PayPalCheckout {
         return mCurrencyCode;
     }
 
-    public Boolean getEnableShippingAddress() {
-        return mEnableShippingAddress;
-    }
-
-    public Boolean getAddressOverride() {
-        return mAddressOverride;
+    public boolean getNoShipping() {
+        return mNoShipping;
     }
 
     public PostalAddress getShippingAddress() {

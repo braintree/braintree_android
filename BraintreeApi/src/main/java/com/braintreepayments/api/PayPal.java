@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
@@ -271,8 +272,7 @@ public class PayPal {
         }
 
         JSONObject experienceProfile = new JSONObject();
-        experienceProfile.put(NO_SHIPPING_KEY, !checkout.getEnableShippingAddress());
-        experienceProfile.put(ADDRESS_OVERRIDE_KEY, checkout.getAddressOverride());
+        experienceProfile.put(NO_SHIPPING_KEY, checkout.getNoShipping());
 
         if (checkout.getLocaleCode() != null) {
             experienceProfile.put(LOCALE_CODE_KEY, checkout.getLocaleCode());
@@ -281,8 +281,7 @@ public class PayPal {
 
         JSONObject parameters = new JSONObject()
                 .put(RETURN_URL_KEY, request.getSuccessUrl())
-                .put(CANCEL_URL_KEY, request.getCancelUrl())
-                .put(EXPERIENCE_PROFILE_KEY, experienceProfile);
+                .put(CANCEL_URL_KEY, request.getCancelUrl());
 
         if (fragment.getAuthorization() instanceof ClientToken) {
             parameters.put(AUTHORIZATION_FINGERPRINT_KEY,
@@ -292,11 +291,12 @@ public class PayPal {
         }
 
         if (!isBillingAgreement) {
-            parameters.put(AMOUNT_KEY, checkout.getAmount().toString())
+            parameters.put(AMOUNT_KEY, checkout.getAmount())
                     .put(CURRENCY_ISO_CODE_KEY, currencyCode);
         }
 
-        if (checkout.getAddressOverride() && checkout.getShippingAddress() != null) {
+        if (checkout.getShippingAddress() != null && !TextUtils.isEmpty(checkout.getShippingAddress().getStreetAddress())) {
+            experienceProfile.put(ADDRESS_OVERRIDE_KEY, true);
             PostalAddress shippingAddress = checkout.getShippingAddress();
             parameters.put(PostalAddress.LINE_1_KEY, shippingAddress.getStreetAddress());
             parameters.put(PostalAddress.LINE_2_KEY, shippingAddress.getExtendedAddress());
@@ -308,7 +308,11 @@ public class PayPal {
                     shippingAddress.getCountryCodeAlpha2());
             parameters.put(PostalAddress.RECIPIENT_NAME_UNDERSCORE_KEY,
                     shippingAddress.getRecipientName());
+        } else {
+            experienceProfile.put(ADDRESS_OVERRIDE_KEY, false);
         }
+
+        parameters.put(EXPERIENCE_PROFILE_KEY, experienceProfile);
 
         String apiUrl = isBillingAgreement ? SETUP_BILLING_AGREEMENT_ENDPOINT :
                 CREATE_SINGLE_PAYMENT_ENDPOINT;

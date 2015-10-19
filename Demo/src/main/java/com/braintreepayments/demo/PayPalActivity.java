@@ -23,7 +23,6 @@ import com.braintreepayments.api.models.PayPalCheckout;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.PostalAddress;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -109,7 +108,7 @@ public class PayPalActivity extends Activity implements PaymentMethodCreatedList
      * Kicks off a PayPal Single Payment.
      */
     public void launchSinglePayment(View v) {
-        PayPalCheckout checkout = new PayPalCheckout(new BigDecimal(1.5));
+        PayPalCheckout checkout = new PayPalCheckout("1.50");
         PayPal.checkout(mBraintreeFragment, checkout);
     }
 

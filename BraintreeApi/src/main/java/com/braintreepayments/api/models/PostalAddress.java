@@ -3,7 +3,6 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -22,13 +21,9 @@ public class PostalAddress implements Parcelable {
     public static final String LINE_2_KEY = "line2";
     public static final String COUNTRY_CODE_KEY = "countryCode";
 
-    /**
-     * Used by {@link #toJson()}
-     */
     public static final String COUNTRY_CODE_UNDERSCORE_KEY = "country_code";
     public static final String POSTAL_CODE_UNDERSCORE_KEY = "postal_code";
     public static final String RECIPIENT_NAME_UNDERSCORE_KEY = "recipient_name";
-
     private String mRecipientName;
     private String mStreetAddress;
     private String mExtendedAddress;
@@ -37,46 +32,142 @@ public class PostalAddress implements Parcelable {
     private String mPostalCode;
     private String mCountryCodeAlpha2;
 
-    protected PostalAddress(String streetAddress, String extendedAddress, String locality,
-            String region, String postalCode, String countryCodeAlpha2, String recipientName) {
-        mRecipientName = recipientName;
-        mStreetAddress = streetAddress;
-        mExtendedAddress = extendedAddress;
-        mLocality = locality;
-        mRegion = region;
-        mPostalCode = postalCode;
-        mCountryCodeAlpha2 = countryCodeAlpha2;
+    public static class Builder {
+        private final PostalAddress mPostalAddress = new PostalAddress();
+
+        public Builder recipientName(String name) {
+            mPostalAddress.setRecipientName(name);
+            return this;
+        }
+
+        public Builder streetAddress(String streetAddress) {
+            mPostalAddress.setStreetAddress(streetAddress);
+            return this;
+        }
+
+        public Builder extendedAddress(String extendedAddress) {
+            mPostalAddress.setExtendedAddress(extendedAddress);
+            return this;
+        }
+
+        public Builder locality(String locality) {
+            mPostalAddress.setLocality(locality);
+            return this;
+        }
+
+        public Builder region(String region) {
+            mPostalAddress.setRegion(region);
+            return this;
+        }
+
+        public Builder postalCode(String postalCode) {
+            mPostalAddress.setPostalCode(postalCode);
+            return this;
+        }
+
+        public Builder countryCodeAlpha2(String countryCodeAlpha2) {
+            mPostalAddress.setCountryCodeAlpha2(countryCodeAlpha2);
+            return this;
+        }
+
+        public PostalAddress build() {
+            return mPostalAddress;
+        }
+    }
+
+    private PostalAddress() {}
+
+    public static PostalAddress fromJson(JSONObject accountAddress) {
+        // If we don't have an account address, return null.
+        if (accountAddress == null) {
+            return new PostalAddress();
+        }
+
+        String streetAddress = accountAddress.optString(STREET_ADDRESS_KEY, null);
+        String extendedAddress = accountAddress.optString(EXTENDED_ADDRESS_KEY, null);
+        String countryCodeAlpha2 = accountAddress.optString(COUNTRY_CODE_ALPHA_2_KEY, null);
+
+        //Check alternate keys
+        if (streetAddress == null) {
+            streetAddress = accountAddress.optString(LINE_1_KEY, null);
+        }
+        if (extendedAddress == null) {
+            extendedAddress = accountAddress.optString(LINE_2_KEY, null);
+        }
+        if (countryCodeAlpha2 == null) {
+            countryCodeAlpha2 = accountAddress.optString(COUNTRY_CODE_KEY, null);
+        }
+
+        return new Builder().recipientName(accountAddress.optString(RECIPIENT_NAME_KEY, null))
+                .streetAddress(streetAddress)
+                .extendedAddress(extendedAddress)
+                .locality(accountAddress.optString(LOCALITY_KEY, null))
+                .region(accountAddress.optString(REGION_KEY, null))
+                .postalCode(accountAddress.optString(POSTAL_CODE_KEY, null))
+                .countryCodeAlpha2(countryCodeAlpha2).build();
     }
 
     public String getRecipientName() {
         return mRecipientName;
     }
 
+    public void setRecipientName(String recipientName) {
+        mRecipientName = recipientName;
+    }
+
     public String getStreetAddress() {
         return mStreetAddress;
+    }
+
+    public void setStreetAddress(String streetAddress) {
+        mStreetAddress = streetAddress;
     }
 
     public String getExtendedAddress() {
         return mExtendedAddress;
     }
 
+    public void setExtendedAddress(String extendedAddress) {
+        mExtendedAddress = extendedAddress;
+    }
+
     public String getLocality() {
         return mLocality;
+    }
+
+    public void setLocality(String locality) {
+        mLocality = locality;
     }
 
     public String getRegion() {
         return mRegion;
     }
 
+    public void setRegion(String region) {
+        mRegion = region;
+    }
+
     public String getPostalCode() {
         return mPostalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        mPostalCode = postalCode;
     }
 
     public String getCountryCodeAlpha2() {
         return mCountryCodeAlpha2;
     }
 
-    public PostalAddress() {}
+    public void setCountryCodeAlpha2(String countryCodeAlpha2) {
+        mCountryCodeAlpha2 = countryCodeAlpha2;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s\n%s\n%s\n%s, %s\n%s %s", mRecipientName, mStreetAddress,
+                mExtendedAddress, mLocality, mRegion, mPostalCode, mCountryCodeAlpha2);
+    }
 
     @Override
     public int describeContents() {
@@ -104,11 +195,6 @@ public class PostalAddress implements Parcelable {
         mRecipientName = in.readString();
     }
 
-    @Override
-    public String toString() {
-        return String.format("%s\n%s\n%s\n%s, %s\n%s %s", mRecipientName, mStreetAddress, mExtendedAddress, mLocality, mRegion, mPostalCode, mCountryCodeAlpha2);
-    }
-
     public static final Creator<PostalAddress> CREATOR = new Creator<PostalAddress>() {
         public PostalAddress createFromParcel(Parcel source) {
             return new PostalAddress(source);
@@ -118,46 +204,4 @@ public class PostalAddress implements Parcelable {
             return new PostalAddress[size];
         }
     };
-
-    public static PostalAddress fromJson(JSONObject accountAddress) {
-        // If we don't have an account address, return null.
-        if (accountAddress == null) {
-            return null;
-        }
-        String recipientName = accountAddress.optString(RECIPIENT_NAME_KEY, null);
-        String streetAddress = accountAddress.optString(STREET_ADDRESS_KEY, null);
-        String extendedAddress = accountAddress.optString(EXTENDED_ADDRESS_KEY, null);
-        String locality = accountAddress.optString(LOCALITY_KEY, null);
-        String region = accountAddress.optString(REGION_KEY, null);
-        String postalCode = accountAddress.optString(POSTAL_CODE_KEY, null);
-        String countryCodeAlpha2 = accountAddress.optString(COUNTRY_CODE_ALPHA_2_KEY, null);
-
-        //Check alternate keys
-        if (streetAddress == null) {
-            streetAddress = accountAddress.optString(LINE_1_KEY, null);
-        }
-        if (extendedAddress == null) {
-            extendedAddress = accountAddress.optString(LINE_2_KEY, null);
-        }
-        if (countryCodeAlpha2 == null) {
-            countryCodeAlpha2 = accountAddress.optString(COUNTRY_CODE_KEY, null);
-        }
-        return new PostalAddress(streetAddress, extendedAddress,
-                locality, region, postalCode, countryCodeAlpha2, recipientName);
-    }
-
-    public JSONObject toJson(){
-        JSONObject json = new JSONObject();
-        try {
-            json.putOpt(LINE_1_KEY, getStreetAddress());
-            json.putOpt(LINE_2_KEY, getExtendedAddress());
-            json.putOpt(LOCALITY_KEY, getLocality());
-            json.putOpt(REGION_KEY, getRegion());
-            json.putOpt(POSTAL_CODE_UNDERSCORE_KEY, getPostalCode());
-            json.putOpt(COUNTRY_CODE_UNDERSCORE_KEY, getCountryCodeAlpha2());
-            json.putOpt(RECIPIENT_NAME_UNDERSCORE_KEY, getRecipientName());
-        } catch (JSONException e){}
-        return json;
-    }
-
 }
