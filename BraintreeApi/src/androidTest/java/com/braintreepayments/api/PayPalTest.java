@@ -114,16 +114,11 @@ public class PayPalTest {
                 authString, configString);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                assertTrue(throwable instanceof BraintreeException);
+            public void onError(Exception error) {
+                assertTrue(error instanceof BraintreeException);
                 assertEquals("An amount MUST be specified for the Single Payment flow.",
-                        throwable.getMessage());
+                        error.getMessage());
                 mLatch.countDown();
-            }
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
-                fail("onUnrecoverbleError should have been called, got: " + error);
             }
         });
 
@@ -140,16 +135,11 @@ public class PayPalTest {
                 authString, configString);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
-            public void onUnrecoverableError(Throwable throwable) {
-                assertTrue(throwable instanceof BraintreeException);
+            public void onError(Exception error) {
+                assertTrue(error instanceof BraintreeException);
                 assertEquals("There must be no amount specified for the Billing Agreement flow",
-                        throwable.getMessage());
+                        error.getMessage());
                 mLatch.countDown();
-            }
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
-                fail("onUnrecoverableError should have been called, got: " + error);
             }
         });
 
