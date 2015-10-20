@@ -47,7 +47,6 @@ public class ThreeDSecure {
      *                    the 3D Secure verification if performed.
      * @param amount The amount of the transaction in the current merchant account's currency
      */
-    // TODO: should this take an BigDecimal instead of a String?
     public static void performVerification(final BraintreeFragment fragment, final CardBuilder cardBuilder, final String amount) {
         TokenizationClient.tokenize(fragment, cardBuilder, new PaymentMethodResponseCallback() {
             @Override
