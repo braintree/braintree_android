@@ -12,6 +12,7 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.ConfigurationFetchedErrorListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.interfaces.GoogleApiClientListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
@@ -25,6 +26,7 @@ import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -270,6 +272,22 @@ public class BraintreeFragmentTest {
         BraintreeFragment fragment = getFragment(mActivity, mClientToken);
 
         assertNotNull(fragment.getHttpClient());
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void getGoogleApiClient_returnsGoogleApiClient() throws InterruptedException {
+        BraintreeFragment fragment = getFragment(mActivity, mClientToken);
+
+        fragment.getGoogleApiClient(new GoogleApiClientListener() {
+            @Override
+            public void onResult(GoogleApiClient googleApiClient) {
+                assertNotNull(googleApiClient);
+                mCountDownLatch.countDown();
+            }
+        });
+
+        mCountDownLatch.await();
     }
 
     @Test(timeout = 1000)

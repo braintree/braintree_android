@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.interfaces.TokenizationParametersListener;
 import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.TokenizationKey;
+import com.braintreepayments.api.models.Configuration;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
 import com.google.android.gms.wallet.FullWalletRequest;
@@ -37,18 +40,34 @@ public class AndroidPay {
     private static final String DISCOVER_NETWORK = "discover";
 
     /**
-     * Get Braintree specific tokenization parameters for Android Pay. Useful for existing Google Wallet
-     * or Android Pay integrations, or when full control over the {@link com.google.android.gms.wallet.MaskedWalletRequest}
-     * and {@link com.google.android.gms.wallet.FullWalletRequest} is required.
+     * Get Braintree specific tokenization parameters for Android Pay. Useful for existing Google
+     * Wallet or Android Pay integrations, or when full control over the
+     * {@link com.google.android.gms.wallet.MaskedWalletRequest} and
+     * {@link com.google.android.gms.wallet.FullWalletRequest} is required.
      *
-     * These parameters should be supplied to the
+     * {@link PaymentMethodTokenizationParameters} should be supplied to the
      * {@link MaskedWalletRequest} via
-     * {@link com.google.android.gms.wallet.MaskedWalletRequest.Builder#setPaymentMethodTokenizationParameters(PaymentMethodTokenizationParameters)}.
+     * {@link com.google.android.gms.wallet.MaskedWalletRequest.Builder#setPaymentMethodTokenizationParameters(PaymentMethodTokenizationParameters)}
+     * and {@link Collection<Integer>} allowedCardNetworks should be supplied to the
+     * {@link MaskedWalletRequest} via
+     * {@link com.google.android.gms.wallet.MaskedWalletRequest.Builder#addAllowedCardNetworks(Collection)}.
      *
      * @param fragment {@link BraintreeFragment}
-     * @return the {@link PaymentMethodTokenizationParameters}
+     * @param listener Instance of {@link TokenizationParametersListener} to receive the
+     *                 {@link PaymentMethodTokenizationParameters}.
      */
-    public static PaymentMethodTokenizationParameters getTokenizationParameters(BraintreeFragment fragment) {
+    public static void getTokenizationParameters(final BraintreeFragment fragment,
+            final TokenizationParametersListener listener) {
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                listener.onResult(getTokenizationParameters(fragment),
+                        getAllowedCardNetworks(fragment));
+            }
+        });
+    }
+
+    static PaymentMethodTokenizationParameters getTokenizationParameters(BraintreeFragment fragment) {
         PaymentMethodTokenizationParameters.Builder parameters = PaymentMethodTokenizationParameters.newBuilder()
                 .setPaymentMethodTokenizationType(PaymentMethodTokenizationType.PAYMENT_GATEWAY)
                 .addParameter("gateway", "braintree")
@@ -65,17 +84,7 @@ public class AndroidPay {
         return parameters.build();
     }
 
-    /**
-     * Get a list of card networks currently supported by your Braintree merchant account for Android Pay.
-     *
-     * This parameter should be supplied to the {@link MaskedWalletRequest} via
-     * {@link com.google.android.gms.wallet.MaskedWalletRequest.Builder#addAllowedCardNetworks(Collection)}
-     *
-     * @param fragment {@link BraintreeFragment}
-     * @return A {@link Collection<Integer>} of card networks to supply to
-     *         {@link com.google.android.gms.wallet.MaskedWalletRequest.Builder#addAllowedCardNetworks(Collection)}.
-     */
-    public static Collection<Integer> getAllowedCardNetworks(BraintreeFragment fragment) {
+    static Collection<Integer> getAllowedCardNetworks(BraintreeFragment fragment) {
         Collection<Integer> allowedNetworks = new ArrayList<>();
         for (String network : fragment.getConfiguration().getAndroidPay().getSupportedNetworks()) {
             switch (network) {
@@ -127,9 +136,9 @@ public class AndroidPay {
      * @param phoneNumberRequired {@code true} if this request requires a phone number, {@code false} otherwise.
      * @param requestCode The requestCode to use with {@link Activity#startActivityForResult(Intent, int)}
      */
-    public static void performMaskedWalletRequest(BraintreeFragment fragment, Cart cart,
-            boolean isBillingAgreement, boolean shippingAddressRequired,
-            boolean phoneNumberRequired, int requestCode) {
+    public static void performMaskedWalletRequest(final BraintreeFragment fragment, final Cart cart,
+            final boolean isBillingAgreement, final boolean shippingAddressRequired,
+            final boolean phoneNumberRequired, final int requestCode) {
         fragment.sendAnalyticsEvent("android-pay.selected");
 
         if (isBillingAgreement && cart != null) {
@@ -144,24 +153,30 @@ public class AndroidPay {
             return;
         }
 
-        MaskedWalletRequest.Builder maskedWalletRequestBuilder = MaskedWalletRequest.newBuilder()
-                .setMerchantName(getMerchantName(fragment.getConfiguration().getAndroidPay()))
-                .setCurrencyCode("USD")
-                .setCart(cart)
-                .setIsBillingAgreement(isBillingAgreement)
-                .setShippingAddressRequired(shippingAddressRequired)
-                .setPhoneNumberRequired(phoneNumberRequired)
-                .setPaymentMethodTokenizationParameters(getTokenizationParameters(fragment))
-                .addAllowedCardNetworks(getAllowedCardNetworks(fragment));
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                MaskedWalletRequest.Builder maskedWalletRequestBuilder =
+                        MaskedWalletRequest.newBuilder()
+                                .setMerchantName(getMerchantName(configuration.getAndroidPay()))
+                                .setCurrencyCode("USD")
+                                .setCart(cart)
+                                .setIsBillingAgreement(isBillingAgreement)
+                                .setShippingAddressRequired(shippingAddressRequired)
+                                .setPhoneNumberRequired(phoneNumberRequired)
+                                .setPaymentMethodTokenizationParameters(getTokenizationParameters(fragment))
+                                .addAllowedCardNetworks(getAllowedCardNetworks(fragment));
 
-        if (cart != null) {
-            maskedWalletRequestBuilder.setEstimatedTotalPrice(cart.getTotalPrice());
-        }
+                if (cart != null) {
+                    maskedWalletRequestBuilder.setEstimatedTotalPrice(cart.getTotalPrice());
+                }
 
-        Wallet.Payments.loadMaskedWallet(fragment.getGoogleApiClient(),
-                maskedWalletRequestBuilder.build(), requestCode);
+                Wallet.Payments.loadMaskedWallet(fragment.getGoogleApiClient(),
+                        maskedWalletRequestBuilder.build(), requestCode);
 
-        fragment.sendAnalyticsEvent("android-pay.started");
+                fragment.sendAnalyticsEvent("android-pay.started");
+            }
+        });
     }
 
     /**

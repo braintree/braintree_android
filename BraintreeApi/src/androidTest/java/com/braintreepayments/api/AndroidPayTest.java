@@ -9,6 +9,7 @@ import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.interfaces.TokenizationParametersListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
@@ -19,6 +20,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.MaskedWallet;
 import com.google.android.gms.wallet.MaskedWallet.Builder;
+import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 import com.google.android.gms.wallet.WalletConstants.CardNetwork;
@@ -50,6 +52,50 @@ public class AndroidPayTest {
     @Rule
     public final ActivityTestRule<TestActivity> mActivityTestRule =
             new ActivityTestRule<>(TestActivity.class);
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void getTokenizationParameters_returnsCorrectParametersInCallback()
+            throws InvalidArgumentException, InterruptedException {
+        final AndroidPayConfiguration androidPayConfiguration = mock(AndroidPayConfiguration.class);
+        when(androidPayConfiguration.getGoogleAuthorizationFingerprint())
+                .thenReturn("google-auth-fingerprint");
+        when(androidPayConfiguration.getSupportedNetworks())
+                .thenReturn(new String[]{"visa", "mastercard", "amex", "discover"});
+        final Configuration configuration = mock(Configuration.class);
+        when(configuration.getMerchantId()).thenReturn("android-pay-merchant-id");
+        when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
+        BraintreeFragment fragment =
+                getMockFragment(mActivityTestRule.getActivity(), configuration);
+        when(fragment.getAuthorization()).thenReturn(Authorization.fromString(CLIENT_KEY));
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        AndroidPay.getTokenizationParameters(fragment, new TokenizationParametersListener() {
+            @Override
+            public void onResult(PaymentMethodTokenizationParameters parameters,
+                    Collection<Integer> allowedCardNetworks) {
+                assertEquals("braintree", parameters.getParameters().getString("gateway"));
+                assertEquals(configuration.getMerchantId(),
+                        parameters.getParameters().getString("braintree:merchantId"));
+                assertEquals(androidPayConfiguration.getGoogleAuthorizationFingerprint(),
+                        parameters.getParameters().getString("braintree:authorizationFingerprint"));
+                assertEquals("v1",
+                        parameters.getParameters().getString("braintree:apiVersion"));
+                assertEquals(BuildConfig.VERSION_NAME,
+                        parameters.getParameters().getString("braintree:sdkVersion"));
+
+                assertEquals(4, allowedCardNetworks.size());
+                assertTrue(allowedCardNetworks.contains(CardNetwork.VISA));
+                assertTrue(allowedCardNetworks.contains(CardNetwork.MASTERCARD));
+                assertTrue(allowedCardNetworks.contains(CardNetwork.AMEX));
+                assertTrue(allowedCardNetworks.contains(CardNetwork.DISCOVER));
+
+                latch.countDown();
+            }
+        });
+
+        latch.await();
+    }
 
     @Test(timeout = 1000)
     @SmallTest

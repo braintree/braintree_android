@@ -16,6 +16,7 @@ import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreeListener;
 import com.braintreepayments.api.interfaces.ConfigurationFetchedErrorListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.interfaces.GoogleApiClientListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
@@ -474,20 +475,29 @@ public class BraintreeFragment extends Fragment {
 
     /**
      * Obtain an instance of a {@link GoogleApiClient} that is connected or connecting to be used
-     * for Android Pay. This instance will be automatically disconnected in {@link
-     * Fragment#onPause()} and automatically connected in {@link Fragment#onResume()}.
+     * for Android Pay. This instance will be automatically disconnected in
+     * {@link Fragment#onPause()} and automatically connected in {@link Fragment#onResume()}.
      * <p/>
-     * Connection failed and connection suspended errors will be sent to {@link
-     * BraintreeErrorListener#onError(Exception)}.
+     * Connection failed and connection suspended errors will be sent to
+     * {@link BraintreeErrorListener#onError(Exception)}.
      *
-     * @return {@link GoogleApiClient}.
+     * @param listener {@link GoogleApiClientListener} to receive the {@link GoogleApiClient}
+     *        in {@link GoogleApiClientListener#onResult(GoogleApiClient)}.
      */
-    public GoogleApiClient getGoogleApiClient() {
+    public void getGoogleApiClient(final GoogleApiClientListener listener) {
+        waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                listener.onResult(getGoogleApiClient());
+            }
+        });
+    }
+
+    protected GoogleApiClient getGoogleApiClient() {
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                     .addApi(Wallet.API, new Wallet.WalletOptions.Builder()
-                            .setEnvironment(
-                                    AndroidPay.getEnvironment(getConfiguration().getAndroidPay()))
+                            .setEnvironment(AndroidPay.getEnvironment(getConfiguration().getAndroidPay()))
                             .setTheme(WalletConstants.THEME_LIGHT)
                             .build())
                     .build();
