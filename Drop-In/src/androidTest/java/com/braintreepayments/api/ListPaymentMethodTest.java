@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import java.util.Map;
 
+import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -56,10 +57,12 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
     @Test(timeout = 30000)
     public void loadingPaymentMethodsTimesOutAfterTenSecondsAndDropsToAddPaymentMethodForm() {
         String clientToken = new TestClientTokenBuilder().build();
-        Intent intent = new Intent()
+        Intent intent = new PaymentRequest()
+                .clientToken(clientToken)
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken)
                 .putExtra(BraintreePaymentTestActivity.EXTRA_DELAY, 11000);
-        getActivity(clientToken, intent);
+        getActivity(intent);
 
         waitForAddPaymentFormHeader(10500).check(matches(isDisplayed()));
     }
@@ -67,9 +70,11 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
     @Test(timeout = 30000)
     public void fallsBackToAddPaymentMethodFormIfLoadingPaymentMethodsBlowsUp() {
         long testStartTime = System.currentTimeMillis();
-        Intent intent = new Intent()
+        Intent intent = new PaymentRequest()
+                .clientToken(new TestClientTokenBuilder().build())
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.GET_PAYMENT_METHODS_ERROR, new UnexpectedException("Get Payment Methods Error"));
-        getActivity(new TestClientTokenBuilder().build(), intent);
+        getActivity(intent);
 
         waitForAddPaymentFormHeader();
 
@@ -79,8 +84,8 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void displaysACard() {
-        Activity activity = getActivity(new TestClientTokenBuilder().build(),
-                getSinglePaymentMethodsIntent());
+        Activity activity = getActivity(getSinglePaymentMethodsIntent(
+                new TestClientTokenBuilder().build()));
 
         waitForPaymentMethodList();
 
@@ -99,7 +104,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void displaysAddPaymentMethodIfOnlyOnePaymentMethodIsAvailable() {
-        getActivity(new TestClientTokenBuilder().build(), getSinglePaymentMethodsIntent());
+        getActivity(getSinglePaymentMethodsIntent(new TestClientTokenBuilder().build()));
 
         waitForPaymentMethodList();
 
@@ -109,7 +114,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void displaysChangePaymentMethodIfMoreThanOnePaymentMethodIsAvailable() {
-        getActivity(new TestClientTokenBuilder().build(), getMultiplePaymentMethodsIntent());
+        getActivity(getMultiplePaymentMethodsIntent(new TestClientTokenBuilder().build()));
 
         waitForPaymentMethodList();
 
@@ -120,7 +125,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void noopsWhenClickingPaymentMethodAndOnlyOneExists() {
-        getActivity(new TestClientTokenBuilder().build(), getSinglePaymentMethodsIntent());
+        getActivity(getSinglePaymentMethodsIntent(new TestClientTokenBuilder().build()));
 
         waitForPaymentMethodList();
 
@@ -136,7 +141,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void skipsPaymentMethodListWhenOnlyOnePaymentMethodExistsAndClickingAddPaymentMethodLink() {
-        getActivity(new TestClientTokenBuilder().build(), getSinglePaymentMethodsIntent());
+        getActivity(getSinglePaymentMethodsIntent(new TestClientTokenBuilder().build()));
 
         waitForPaymentMethodList();
 
@@ -148,8 +153,8 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void displaysCorrectActivePaymentMethod() {
-        Activity activity = getActivity(new TestClientTokenBuilder().build(),
-                getSinglePaymentMethodsIntent());
+        Activity activity = getActivity(getSinglePaymentMethodsIntent(
+                new TestClientTokenBuilder().build()));
 
         waitForPaymentMethodList();
 
@@ -169,9 +174,9 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
     @Test(timeout = 30000)
     public void setsCreatedPaymentMethodAsSelectedPaymentMethod() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
-        Intent intent = getSinglePaymentMethodsIntent()
+        Intent intent = getSinglePaymentMethodsIntent(clientToken)
                 .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken);
-        getActivity(clientToken, intent);
+        getActivity(intent);
         waitForPaymentMethodList();
 
         assertSelectedPaymentMethodIs(com.braintreepayments.api.dropin.R.string.bt_descriptor_visa);
@@ -185,7 +190,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void changePaymentMethodShowsChooserDialog() {
-        getActivity(new TestClientTokenBuilder().build(), getMultiplePaymentMethodsIntent());
+        getActivity(getMultiplePaymentMethodsIntent(new TestClientTokenBuilder().build()));
 
         waitForPaymentMethodList();
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_change_payment_method_link)).perform(
@@ -196,10 +201,12 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void showsAllPaymentMethodsInDialog() {
-        Intent intent = new Intent()
+        Intent intent = new PaymentRequest()
+                .clientToken(new TestClientTokenBuilder().build())
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.GET_PAYMENT_METHODS,
                         stringFromFixture("responses/get_payment_methods_response.json"));
-        getActivity(new TestClientTokenBuilder().build(), intent);
+        getActivity(intent);
         waitForPaymentMethodList();
 
         assertSelectedPaymentMethodIs(com.braintreepayments.api.dropin.R.string.bt_descriptor_visa);
@@ -216,7 +223,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void selectingFromListOfPaymentMethodsUpdatesCurrentPaymentMethod() {
-        getActivity(new TestClientTokenBuilder().build(), getMultiplePaymentMethodsIntent());
+        getActivity(getMultiplePaymentMethodsIntent(new TestClientTokenBuilder().build()));
 
         waitForPaymentMethodList();
         assertSelectedPaymentMethodIs(com.braintreepayments.api.dropin.R.string.bt_descriptor_visa);
@@ -232,8 +239,8 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void selectingFromListReturnsSelectedPaymentMethod() {
-        BraintreePaymentActivity activity = getActivity(new TestClientTokenBuilder().build(),
-                getMultiplePaymentMethodsIntent());
+        BraintreePaymentActivity activity = getActivity(getMultiplePaymentMethodsIntent(
+                new TestClientTokenBuilder().build()));
 
         waitForPaymentMethodList();
         assertSelectedPaymentMethodIs(com.braintreepayments.api.dropin.R.string.bt_descriptor_visa);
@@ -256,8 +263,8 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void submittingSelectedPaymentMethodReturnsItToCallingActivity() {
-        BraintreePaymentActivity activity = getActivity(new TestClientTokenBuilder().build(),
-                getSinglePaymentMethodsIntent());
+        BraintreePaymentActivity activity = getActivity(getSinglePaymentMethodsIntent(
+                new TestClientTokenBuilder().build()));
 
         waitForPaymentMethodList();
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_select_payment_method_submit_button)).perform(
@@ -274,7 +281,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void addNewPaymentMethodOpensPaymentMethodForm() {
-        getActivity(new TestClientTokenBuilder().build(), getMultiplePaymentMethodsIntent());
+        getActivity(getMultiplePaymentMethodsIntent(new TestClientTokenBuilder().build()));
         waitForPaymentMethodList();
         onView(withId(
                 com.braintreepayments.api.dropin.R.id.bt_selected_payment_method_view)).perform(
@@ -288,7 +295,7 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void backButtonTakesYouBackToSelectPaymentMethodViewFromAddPaymentMethodView() {
-        getActivity(new TestClientTokenBuilder().build(), getSinglePaymentMethodsIntent());
+        getActivity(getSinglePaymentMethodsIntent(new TestClientTokenBuilder().build()));
         waitForPaymentMethodList();
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_change_payment_method_link)).perform(click());
         onAddPaymentFormHeader().check(matches(isDisplayed()));
@@ -301,8 +308,8 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void actionBarUpTakesYouBackToSelectPaymentMethodViewFromAddPaymentMethodView() {
-        BraintreePaymentActivity activity = getActivity(new TestClientTokenBuilder().build(),
-                getSinglePaymentMethodsIntent());
+        BraintreePaymentActivity activity = getActivity(getSinglePaymentMethodsIntent(
+                new TestClientTokenBuilder().build()));
         waitForPaymentMethodList();
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_change_payment_method_link)).perform(
                 click());
@@ -319,14 +326,18 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestRunner {
     }
 
     /* helpers */
-    private Intent getSinglePaymentMethodsIntent() {
-        return new Intent()
+    private Intent getSinglePaymentMethodsIntent(String clientToken) {
+        return new PaymentRequest()
+                .clientToken(clientToken)
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.GET_PAYMENT_METHODS,
                         stringFromFixture("responses/get_payment_methods_visa_response.json"));
     }
 
-    private Intent getMultiplePaymentMethodsIntent() {
-        return new Intent()
+    private Intent getMultiplePaymentMethodsIntent(String clientToken) {
+        return new PaymentRequest()
+                .clientToken(clientToken)
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.GET_PAYMENT_METHODS,
                         stringFromFixture("responses/get_payment_methods_two_cards_response.json"));
     }

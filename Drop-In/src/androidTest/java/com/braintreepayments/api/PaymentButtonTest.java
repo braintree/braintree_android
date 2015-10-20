@@ -37,7 +37,6 @@ import org.mockito.stubbing.Answer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
@@ -82,7 +81,7 @@ public class PaymentButtonTest {
     @Test(timeout = 1000)
     public void notVisibleWhenNoMethodsAreEnabled() throws InvalidArgumentException, JSONException {
         setEnabledPaymentMethods(false, false, false);
-        mPaymentButton.initialize(getFragment());
+        mPaymentButton.initialize(getFragment(), new PaymentRequest());
 
         assertEquals(View.GONE, mPaymentButton.getVisibility());
     }
@@ -94,7 +93,7 @@ public class PaymentButtonTest {
                 stringFromFixture("client_token_with_bad_config_url.json"));
         getInstrumentation().waitForIdleSync();
 
-        mPaymentButton.initialize(fragment);
+        mPaymentButton.initialize(fragment, new PaymentRequest());
         SystemClock.sleep(100);
 
         assertEquals(View.GONE, mPaymentButton.getVisibility());
@@ -103,7 +102,7 @@ public class PaymentButtonTest {
     @Test(timeout = 1000)
     public void onlyShowsPayPal() throws InvalidArgumentException, JSONException {
         setEnabledPaymentMethods(true, false, false);
-        mPaymentButton.initialize(getFragment());
+        mPaymentButton.initialize(getFragment(), new PaymentRequest());
 
         assertEquals(View.VISIBLE, mPaymentButton.getVisibility());
         assertEquals(View.VISIBLE,
@@ -120,7 +119,7 @@ public class PaymentButtonTest {
     @Test(timeout = 1000)
     public void onlyShowsVenmo() throws InvalidArgumentException, JSONException {
         setEnabledPaymentMethods(false, true, false);
-        mPaymentButton.initialize(getFragment());
+        mPaymentButton.initialize(getFragment(), new PaymentRequest());
 
         assertEquals(View.VISIBLE, mPaymentButton.getVisibility());
         assertEquals(View.VISIBLE,
@@ -137,7 +136,9 @@ public class PaymentButtonTest {
     @Test(timeout = 1000)
     public void onlyShowsAndroidPay() throws InvalidArgumentException, JSONException {
         setEnabledPaymentMethods(false, false, true);
-        mPaymentButton.initialize(getFragment());
+        PaymentRequest paymentRequest = new PaymentRequest()
+                .androidPayCart(Cart.newBuilder().build());
+        mPaymentButton.initialize(getFragment(), paymentRequest);
 
         assertEquals(View.VISIBLE, mPaymentButton.getVisibility());
         assertEquals(View.VISIBLE,
@@ -153,7 +154,9 @@ public class PaymentButtonTest {
     @Test(timeout = 1000)
     public void showsAllMethodsAndDividers() throws InvalidArgumentException, JSONException {
         setEnabledPaymentMethods(true, true, true);
-        mPaymentButton.initialize(getFragment());
+        PaymentRequest paymentRequest = new PaymentRequest()
+                .androidPayCart(Cart.newBuilder().build());
+        mPaymentButton.initialize(getFragment(), paymentRequest);
 
         assertEquals(View.VISIBLE, mPaymentButton.getVisibility());
         assertEquals(View.VISIBLE,
@@ -172,7 +175,9 @@ public class PaymentButtonTest {
     public void showsSecondTwoMethodsWithCorrectDivider()
             throws InvalidArgumentException, JSONException {
         setEnabledPaymentMethods(false, true, true);
-        mPaymentButton.initialize(getFragment());
+        PaymentRequest paymentRequest = new PaymentRequest()
+                .androidPayCart(Cart.newBuilder().build());
+        mPaymentButton.initialize(getFragment(), paymentRequest);
 
         assertEquals(View.VISIBLE, mPaymentButton.getVisibility());
         assertEquals(View.GONE, mPaymentButton.findViewById(R.id.bt_paypal_button).getVisibility());
@@ -191,7 +196,7 @@ public class PaymentButtonTest {
         Looper.prepare();
         setEnabledPaymentMethods(true, true, true);
         BraintreeFragment fragment = getFragment();
-        mPaymentButton.initialize(fragment);
+        mPaymentButton.initialize(fragment, new PaymentRequest());
         mPaymentButton.findViewById(R.id.bt_paypal_button).performClick();
 
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
@@ -209,9 +214,9 @@ public class PaymentButtonTest {
         Looper.prepare();
         setEnabledPaymentMethods(true, true, true);
         final BraintreeFragment fragment = getFragment();
-        List<String> scopes = Collections.singletonList(PayPal.SCOPE_ADDRESS);
-        mPaymentButton.setAdditionalPayPalScopes(scopes);
-        mPaymentButton.initialize(fragment);
+        PaymentRequest paymentRequest = new PaymentRequest()
+                .paypalAdditionalScopes(Collections.singletonList(PayPal.SCOPE_ADDRESS));
+        mPaymentButton.initialize(fragment, paymentRequest);
 
         final CountDownLatch latch = new CountDownLatch(1);
         fragment.mHttpClient = new BraintreeHttpClient(ClientToken.fromString(stringFromFixture("client_token.json"))) {
@@ -255,7 +260,7 @@ public class PaymentButtonTest {
     public void startsPayWithVenmo() throws InvalidArgumentException, JSONException {
         setEnabledPaymentMethods(true, true, true);
         BraintreeFragment fragment = getFragment();
-        mPaymentButton.initialize(fragment);
+        mPaymentButton.initialize(fragment, new PaymentRequest());
 
         mPaymentButton.findViewById(R.id.bt_venmo_button).performClick();
 
@@ -267,8 +272,9 @@ public class PaymentButtonTest {
         Looper.prepare();
         setEnabledPaymentMethods(true, true, true);
         BraintreeFragment fragment = getFragment();
-        mPaymentButton.setAndroidPayOptions(Cart.newBuilder().build(), 1);
-        mPaymentButton.initialize(fragment);
+        PaymentRequest paymentRequest = new PaymentRequest()
+                .androidPayCart(Cart.newBuilder().build());
+        mPaymentButton.initialize(fragment, paymentRequest);
         getInstrumentation().waitForIdleSync();
 
         mPaymentButton.findViewById(R.id.bt_android_pay_button).performClick();

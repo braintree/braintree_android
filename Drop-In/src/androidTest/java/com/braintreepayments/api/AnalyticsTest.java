@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
@@ -125,9 +126,11 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
                 .withPayPal()
                 .withAnalytics()
                 .build();
-        Intent intent = new Intent()
+        Intent intent = new PaymentRequest()
+                .clientToken(clientToken)
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken);
-        mActivity = getActivity(clientToken, intent);
+        mActivity = getActivity(intent);
         mFragment = mActivity.mBraintreeFragment;
         waitForAddPaymentFormHeader();
 
@@ -144,9 +147,11 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
                 .withPayPal()
                 .withAnalytics()
                 .build();
-        Intent intent = new Intent()
+        Intent intent = new PaymentRequest()
+                .clientToken(clientToken)
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken);
-        mActivity = getActivity(clientToken, intent);
+        mActivity = getActivity(intent);
         mActivity.mBraintreeFragment = spy(mActivity.mBraintreeFragment);
         mFragment = mActivity.mBraintreeFragment;
         final CountDownLatch countDownLatch = new CountDownLatch(1);

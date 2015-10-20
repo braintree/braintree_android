@@ -20,10 +20,9 @@ import android.widget.TextView;
 
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.BraintreePaymentActivity;
+import com.braintreepayments.api.PaymentRequest;
 import com.braintreepayments.api.PayPalSignatureVerification;
 import com.braintreepayments.api.ThreeDSecure;
-import com.braintreepayments.api.dropin.Customization;
-import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
@@ -42,6 +41,13 @@ import retrofit.client.Response;
 
 public class MainActivity extends Activity implements PaymentMethodCreatedListener,
         BraintreeErrorListener, OnNavigationListener {
+
+    static final String EXTRA_AUTHORIZATION = "authorization";
+    static final String EXTRA_ANDROID_PAY_CART = "android_pay_cart";
+    static final String EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT = "android_pay_billing_agreement";
+    static final String EXTRA_ANDROID_PAY_SHIPPING_ADDRESS_REQUIRED = "android_pay_shipping_address";
+    static final String EXTRA_ANDROID_PAY_PHONE_NUMBER_REQUIRED = "android_pay_phone_number";
+    static final String EXTRA_PAYPAL_ADDRESS_SCOPE_REQUESTED = "paypal_address_scope";
 
     private static final int DROP_IN_REQUEST = 100;
     private static final int PAYMENT_BUTTON_REQUEST = 200;
@@ -132,62 +138,40 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     }
 
     public void launchDropIn(View v) {
-        Customization customization = new CustomizationBuilder()
+        PaymentRequest paymentRequest = new PaymentRequest()
+                .clientToken(getAuthorization())
+                .androidPayCart(getAndroidPayCart())
+                .androidPayBillingAgreement(Settings.isAndroidPayBillingAgreement(this))
                 .primaryDescription(getString(R.string.cart))
                 .secondaryDescription("1 Item")
                 .amount("$1.00")
-                .submitButtonText(getString(R.string.buy))
-                .build();
+                .submitButtonText(getString(R.string.buy));
 
-        Intent intent = new Intent(this, BraintreePaymentActivity.class)
-                .putExtra(BraintreePaymentActivity.EXTRA_CUSTOMIZATION, customization)
-                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
-                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT,
-                        Settings.isAndroidPayBillingAgreement(this));
-
-        intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_AUTHORIZATION, getAuthorization());
-
-        startActivityForResult(intent, DROP_IN_REQUEST);
+        startActivityForResult(paymentRequest.getIntent(this), DROP_IN_REQUEST);
     }
 
     public void launchPayPal(View v) {
-        Intent intent = PayPalActivity.createIntent(this);
-
-        intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_AUTHORIZATION, getAuthorization());
-
+        Intent intent = populateIntentExtras(new Intent(this, PayPalActivity.class));
         startActivityForResult(intent, PAYPAL_REQUEST);
     }
 
     public void launchPaymentButton(View v) {
-        Intent intent = new Intent(this, PaymentButtonActivity.class)
-                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
-                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT,
-                        Settings.isAndroidPayBillingAgreement(this))
-                .putExtra("shippingAddressRequired",
-                        Settings.isAndroidPayShippingAddressRequired(this))
-                .putExtra("phoneNumberRequired", Settings.isAndroidPayPhoneNumberRequired(this))
-                .putExtra("payPalAddressScopeRequested", Settings.isPayPalAddressScopeRequested(
-                        this));
-
-        intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_AUTHORIZATION, getAuthorization());
-
+        Intent intent = populateIntentExtras(new Intent(this, PaymentButtonActivity.class));
         startActivityForResult(intent, PAYMENT_BUTTON_REQUEST);
     }
 
     public void launchCustom(View v) {
-        Intent intent = new Intent(this, CustomFormActivity.class)
-                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
-                .putExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT,
-                        Settings.isAndroidPayBillingAgreement(this))
-                .putExtra("shippingAddressRequired",
-                        Settings.isAndroidPayShippingAddressRequired(this))
-                .putExtra("phoneNumberRequired", Settings.isAndroidPayPhoneNumberRequired(this))
-                .putExtra("payPalAddressScopeRequested",
-                        Settings.isPayPalAddressScopeRequested(this));
-
-        intent.putExtra(BraintreePaymentActivity.EXTRA_CLIENT_AUTHORIZATION, getAuthorization());
-
+        Intent intent = populateIntentExtras(new Intent(this, CustomFormActivity.class));
         startActivityForResult(intent, CUSTOM_REQUEST);
+    }
+
+    private Intent populateIntentExtras(Intent intent) {
+        return intent.putExtra(EXTRA_AUTHORIZATION, getAuthorization())
+                .putExtra(EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
+                .putExtra(EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, Settings.isAndroidPayBillingAgreement(this))
+                .putExtra(EXTRA_ANDROID_PAY_SHIPPING_ADDRESS_REQUIRED, Settings.isAndroidPayShippingAddressRequired(this))
+                .putExtra(EXTRA_ANDROID_PAY_SHIPPING_ADDRESS_REQUIRED, Settings.isAndroidPayPhoneNumberRequired(this))
+                .putExtra(EXTRA_PAYPAL_ADDRESS_SCOPE_REQUESTED, Settings.isPayPalAddressScopeRequested(this));
     }
 
     public void createTransaction(View v) {

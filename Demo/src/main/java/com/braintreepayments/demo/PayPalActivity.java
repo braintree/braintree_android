@@ -1,7 +1,6 @@
 package com.braintreepayments.demo;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -50,7 +49,7 @@ public class PayPalActivity extends Activity implements PaymentMethodCreatedList
         setContentView(R.layout.paypal);
 
         Bundle extras = getIntent().getExtras();
-        String extraClientToken = extras.getString(BraintreePaymentActivity.EXTRA_CLIENT_AUTHORIZATION);
+        String extraClientToken = extras.getString(MainActivity.EXTRA_AUTHORIZATION);
         // Connect Views
         mLog = (TextView) findViewById(R.id.log);
         mBillingAgreementButton = (Button) findViewById(R.id.paypal_billing_agreement_button);
@@ -178,13 +177,6 @@ public class PayPalActivity extends Activity implements PaymentMethodCreatedList
                 finish();
             }
         });
-    }
-
-    /**
-     * @return An intent that will launch a PayPalActivity.
-     */
-    public static Intent createIntent(Context context) {
-        return new Intent(context, PayPalActivity.class);
     }
 
     @Override

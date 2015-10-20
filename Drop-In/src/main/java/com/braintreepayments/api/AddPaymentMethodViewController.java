@@ -6,7 +6,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ScrollView;
 
-import com.braintreepayments.api.dropin.Customization;
 import com.braintreepayments.api.dropin.view.LoadingHeader;
 import com.braintreepayments.api.exceptions.BraintreeError;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
@@ -48,8 +47,8 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
     public AddPaymentMethodViewController(BraintreePaymentActivity activity,
             Bundle savedInstanceState, View root, BraintreeFragment braintreeFragment,
-            Customization customization) {
-        super(activity, root, braintreeFragment, customization);
+            PaymentRequest paymentRequest) {
+        super(activity, root, braintreeFragment, paymentRequest);
         mIsSubmitting = false;
 
         initViews();
@@ -66,13 +65,8 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
         mPaymentButton.setOnClickListener(this);
 
-        try {
-            mPaymentButton.setAndroidPayOptions(mActivity.getAndroidPayCart(),
-                    mActivity.getAndroidPayIsBillingAgreement(), false, false,
-                    AndroidPay.ANDROID_PAY_MASKED_WALLET_REQUEST_CODE);
-        } catch (NoClassDefFoundError ignored) {}
-
-        mPaymentButton.initialize(mBraintreeFragment);
+        mPaymentRequest.androidPayRequestCode(AndroidPay.ANDROID_PAY_MASKED_WALLET_REQUEST_CODE);
+        mPaymentButton.initialize(mBraintreeFragment, mPaymentRequest);
 
         mCardForm.setRequiredFields(mActivity, true, true,
                 mBraintreeFragment.getConfiguration().isCvvChallengePresent(),

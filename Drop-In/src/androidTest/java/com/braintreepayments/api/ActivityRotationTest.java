@@ -14,6 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
@@ -83,10 +84,12 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void addPaymentViewIsResumedOnRotationWhenThereAreExistingPaymentMethods() {
-        Intent intent = new Intent()
+        Intent intent = new PaymentRequest()
+                .clientToken(new TestClientTokenBuilder().build())
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.GET_PAYMENT_METHODS,
                         stringFromFixture("responses/get_payment_methods_visa_response.json"));
-        getActivity(new TestClientTokenBuilder().build(), intent);
+        getActivity(intent);
         waitForPaymentMethodList();
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_change_payment_method_link)).perform(click());
         waitForAddPaymentFormHeader();
@@ -100,10 +103,12 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void selectPaymentViewIsRestoredOnRotation() {
-        Intent intent = new Intent()
+        Intent intent = new PaymentRequest()
+                .clientToken(new TestClientTokenBuilder().build())
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.GET_PAYMENT_METHODS,
                         stringFromFixture("responses/get_payment_methods_two_cards_response.json"));
-        getActivity(new TestClientTokenBuilder().build(), intent);
+        getActivity(intent);
 
         waitForPaymentMethodList();
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_payment_method_type)).check(matches(withText(
@@ -121,10 +126,12 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void doesNotReloadPaymentMethodsOnRotate() {
-        Intent intent = new Intent()
+        Intent intent = new PaymentRequest()
+                .clientToken(new TestClientTokenBuilder().build())
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.GET_PAYMENT_METHODS,
                         stringFromFixture("responses/get_payment_methods_two_cards_response.json"));
-        BraintreePaymentActivity activity = getActivity(new TestClientTokenBuilder().build(), intent);
+        BraintreePaymentActivity activity = getActivity(intent);
 
         waitForPaymentMethodList();
         verify(activity.mBraintreeFragment.getHttpClient() , times(1))

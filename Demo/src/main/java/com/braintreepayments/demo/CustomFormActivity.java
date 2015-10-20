@@ -11,6 +11,7 @@ import android.widget.EditText;
 import com.braintreepayments.api.AndroidPay;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.BraintreePaymentActivity;
+import com.braintreepayments.api.PaymentRequest;
 import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.PaymentButton;
 import com.braintreepayments.api.TokenizationClient;
@@ -51,7 +52,7 @@ public class CustomFormActivity extends Activity implements PaymentMethodCreated
 
         try {
             mBraintreeFragment = BraintreeFragment.newInstance(this,
-                    getIntent().getStringExtra(BraintreePaymentActivity.EXTRA_CLIENT_AUTHORIZATION));
+                    getIntent().getStringExtra(MainActivity.EXTRA_AUTHORIZATION));
         } catch (InvalidArgumentException e) {
             Intent intent = new Intent()
                     .putExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE, e.getMessage());
@@ -60,20 +61,23 @@ public class CustomFormActivity extends Activity implements PaymentMethodCreated
             return;
         }
 
-        mCart = getIntent().getParcelableExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_CART);
-        mIsBillingAgreement = getIntent().getBooleanExtra(BraintreePaymentActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, false);
-        boolean shippingAddressRequired = getIntent().getBooleanExtra("shippingAddressRequired", false);
-        boolean phoneNumberRequired = getIntent().getBooleanExtra("phoneNumberRequired", false);
-        paymentButton.setAndroidPayOptions(mCart, mIsBillingAgreement, shippingAddressRequired,
-                phoneNumberRequired, ANDROID_PAY_REQUEST_CODE);
+        mCart = getIntent().getParcelableExtra(MainActivity.EXTRA_ANDROID_PAY_CART);
+        mIsBillingAgreement = getIntent().getBooleanExtra(MainActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, false);
 
-        boolean payPalAddressScopeRequested = getIntent().getBooleanExtra("payPalAddressScopeRequested", false);
-        if (payPalAddressScopeRequested) {
-            paymentButton.setAdditionalPayPalScopes(
-                    Collections.singletonList(PayPal.SCOPE_ADDRESS));
+        PaymentRequest paymentRequest = new PaymentRequest()
+                .androidPayCart(mCart)
+                .androidPayBillingAgreement(mIsBillingAgreement)
+                .androidPayShippingAddressRequired(getIntent().getBooleanExtra(MainActivity.EXTRA_ANDROID_PAY_SHIPPING_ADDRESS_REQUIRED, false))
+                .androidPayPhoneNumberRequired(getIntent()
+                        .getBooleanExtra(MainActivity.EXTRA_ANDROID_PAY_PHONE_NUMBER_REQUIRED,
+                                false))
+                .androidPayRequestCode(ANDROID_PAY_REQUEST_CODE);
+
+        if (getIntent().getBooleanExtra(MainActivity.EXTRA_PAYPAL_ADDRESS_SCOPE_REQUESTED, false)) {
+            paymentRequest.paypalAdditionalScopes(Collections.singletonList(PayPal.SCOPE_ADDRESS));
         }
 
-        paymentButton.initialize(mBraintreeFragment);
+        paymentButton.initialize(mBraintreeFragment, paymentRequest);
         paymentButton.setOnClickListener(this);
     }
 

@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.braintreepayments.api.dropin.Customization;
 import com.braintreepayments.api.dropin.adapters.PaymentMethodListAdapter;
 import com.braintreepayments.api.dropin.adapters.PaymentMethodListAdapter.PaymentMethodSelectedListener;
 import com.braintreepayments.api.dropin.view.PaymentMethodView;
@@ -36,8 +35,8 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
 
     public SelectPaymentMethodViewController(BraintreePaymentActivity activity,
             Bundle savedInstanceState, View root, BraintreeFragment braintreeFragment,
-            Customization customization) {
-        super(activity, root, braintreeFragment, customization);
+            PaymentRequest paymentRequest) {
+        super(activity, root, braintreeFragment, paymentRequest);
         mPaymentMethodView = findView(com.braintreepayments.api.dropin.R.id.bt_selected_payment_method_view);
         mPaymentMethodView.setOnClickListener(this);
 

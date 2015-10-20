@@ -4,12 +4,11 @@ import android.content.Intent;
 import android.support.test.rule.ActivityTestRule;
 import android.test.suitebuilder.annotation.LargeTest;
 
-import com.braintreepayments.testutils.TestClientTokenBuilder;
-
 import org.junit.Rule;
 import org.junit.Test;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 
 @LargeTest
@@ -21,8 +20,9 @@ public class BraintreePaymentActivityTest {
 
     @Test(timeout = 30000)
     public void setsIntegrationTypeToDropinForDropinActivity() {
-        Intent intent = new Intent(getTargetContext(), BraintreePaymentActivity.class)
-                .putExtra(BraintreePaymentActivity.EXTRA_CLIENT_AUTHORIZATION, new TestClientTokenBuilder().build());
+        Intent intent = new PaymentRequest()
+                .clientKey(TOKENIZATION_KEY)
+                .getIntent(getTargetContext());
         BraintreePaymentActivity activity = mActivityTestRule.launchActivity(intent);
 
         assertEquals("dropin", activity.mBraintreeFragment.mIntegrationType);

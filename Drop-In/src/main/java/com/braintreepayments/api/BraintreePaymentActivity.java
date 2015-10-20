@@ -13,8 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
 
-import com.braintreepayments.api.dropin.Customization;
-import com.braintreepayments.api.dropin.Customization.CustomizationBuilder;
 import com.braintreepayments.api.dropin.R;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.AuthorizationException;
@@ -33,7 +31,6 @@ import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PaymentMethod;
-import com.google.android.gms.wallet.Cart;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -45,6 +42,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class BraintreePaymentActivity extends Activity implements PaymentMethodsUpdatedListener,
         PaymentMethodCreatedListener, BraintreeCancelListener, BraintreeErrorListener {
+
+    /**
+     * {@link com.braintreepayments.api.models.PaymentMethod} returned by successfully exiting the flow.
+     */
+    public static final String EXTRA_PAYMENT_METHOD = "com.braintreepayments.api.dropin.EXTRA_PAYMENT_METHOD";
+
+    /**
+     * Error messages are returned as the value of this key in the data intent in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
+     * if {@code responseCode} is not {@link android.app.Activity#RESULT_OK} or {@link android.app.Activity#RESULT_CANCELED}
+     */
+    public static final String EXTRA_ERROR_MESSAGE = "com.braintreepayments.api.dropin.EXTRA_ERROR_MESSAGE";
 
     /**
      * The payment method flow halted due to a resolvable error (authentication, authorization, SDK upgrade required).
@@ -64,37 +72,7 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
      */
     public static final int BRAINTREE_RESULT_SERVER_UNAVAILABLE = 4;
 
-    /**
-     * Used for Android Pay to specify a {@link com.google.android.gms.wallet.Cart} for presentation and customization.
-     */
-    public static final String EXTRA_ANDROID_PAY_CART = "com.braintreepayments.api.dropin.EXTRA_CART";
-
-    /**
-     * Used for Android Pay to specify a billing agreement.
-     */
-    public static final String EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT = "com.braintreepayments.api.dropin.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT";
-
-    /**
-     * Used to specify an {@link com.braintreepayments.api.models.Authorization} object
-     * during initialization.
-     */
-    public static final String EXTRA_CLIENT_AUTHORIZATION = "com.braintreepayments.api.dropin.EXTRA_CLIENT_AUTHORIZATION";
-
-    /**
-     * Used to specify UI customizations during initialization.
-     */
-    public static final String EXTRA_CUSTOMIZATION = "com.braintreepayments.api.dropin.EXTRA_CUSTOMIZATION";
-
-    /**
-     * {@link com.braintreepayments.api.models.PaymentMethod} returned by successfully exiting the flow.
-     */
-    public static final String EXTRA_PAYMENT_METHOD = "com.braintreepayments.api.dropin.EXTRA_PAYMENT_METHOD";
-
-    /**
-     * Error messages are returned as the value of this key in the data intent in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     * if {@code responseCode} is not {@link android.app.Activity#RESULT_OK} or {@link android.app.Activity#RESULT_CANCELED}
-     */
-    public static final String EXTRA_ERROR_MESSAGE = "com.braintreepayments.api.dropin.EXTRA_ERROR_MESSAGE";
+    static final String EXTRA_CHECKOUT_REQUEST = "com.braintreepayments.api.EXTRA_CHECKOUT_REQUEST";
 
     private static final String ON_PAYMENT_METHOD_ADD_FORM_KEY = "com.braintreepayments.api.dropin.PAYMENT_METHOD_ADD_FORM";
 
@@ -104,7 +82,7 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
     private SelectPaymentMethodViewController mSelectPaymentMethodViewController;
     private AtomicBoolean mHavePaymentMethodsBeenReceived = new AtomicBoolean(false);
     private Bundle mSavedInstanceState;
-    private Customization mCustomization;
+    private PaymentRequest mPaymentRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +90,7 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
         setContentView(R.layout.bt_drop_in_ui);
 
         mSavedInstanceState = (savedInstanceState != null) ? savedInstanceState : new Bundle();
-        mCustomization = getCustomization();
+        mPaymentRequest = getIntent().getParcelableExtra(EXTRA_CHECKOUT_REQUEST);
         customizeActionBar();
 
         showLoadingView();
@@ -195,8 +173,8 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
         if ((requestCode == AndroidPay.ANDROID_PAY_MASKED_WALLET_REQUEST_CODE ||
                 requestCode == AndroidPay.ANDROID_PAY_FULL_WALLET_REQUEST_CODE) &&
                 resultCode == RESULT_OK) {
-            AndroidPay.onActivityResult(mBraintreeFragment, getAndroidPayCart(),
-                    getAndroidPayIsBillingAgreement(), resultCode, data);
+            AndroidPay.onActivityResult(mBraintreeFragment, mPaymentRequest.getAndroidPayCart(),
+                    mPaymentRequest.isAndroidPayBillingAgreement(), resultCode, data);
         } else if (resultCode != RESULT_OK) {
             showAddPaymentMethodView();
         }
@@ -269,7 +247,7 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
 
         if (mSelectPaymentMethodViewController == null) {
             mSelectPaymentMethodViewController = new SelectPaymentMethodViewController(this,
-                    mSavedInstanceState, selectMethodView, mBraintreeFragment, mCustomization);
+                    mSavedInstanceState, selectMethodView, mBraintreeFragment, mPaymentRequest);
         } else {
             mSelectPaymentMethodViewController.setupPaymentMethod();
         }
@@ -288,7 +266,7 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
     private void initAddPaymentMethodView(View paymentMethodView) {
         if (mAddPaymentMethodViewController == null) {
             mAddPaymentMethodViewController = new AddPaymentMethodViewController(this,
-                    mSavedInstanceState, paymentMethodView, mBraintreeFragment, mCustomization);
+                    mSavedInstanceState, paymentMethodView, mBraintreeFragment, mPaymentRequest);
         }
     }
 
@@ -305,54 +283,35 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
 
     @VisibleForTesting
     protected BraintreeFragment getBraintreeFragment() throws InvalidArgumentException {
-        return BraintreeFragment.newInstance(this, getClientToken());
+        return BraintreeFragment.newInstance(this, getAuthorization());
     }
 
-    protected String getClientToken() {
-        String clientToken = getIntent().getStringExtra(EXTRA_CLIENT_AUTHORIZATION);
-        if (clientToken == null) {
-            clientToken = mSavedInstanceState.getString(EXTRA_CLIENT_AUTHORIZATION);
-            if (clientToken == null) {
-                throw new IllegalArgumentException("A client token must be specified with " +
-                        BraintreePaymentActivity.class.getSimpleName() +
-                        ".EXTRA_CLIENT_AUTHORIZATION extra");
-            }
+    @VisibleForTesting
+    protected String getAuthorization() {
+        if (TextUtils.isEmpty(mPaymentRequest.getAuthorization())) {
+            throw new IllegalArgumentException("A client token or client key must be specified " +
+                    " in the " + PaymentRequest.class.getSimpleName());
         }
-        return clientToken;
+
+        return mPaymentRequest.getAuthorization();
     }
 
     private void customizeActionBar() {
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
-            if (TextUtils.isEmpty(mCustomization.getActionBarTitle())) {
+            if (TextUtils.isEmpty(mPaymentRequest.getActionBarTitle())) {
                 actionBar.setTitle(getString(R.string.bt_default_action_bar_text));
             } else {
-                actionBar.setTitle(mCustomization.getActionBarTitle());
+                actionBar.setTitle(mPaymentRequest.getActionBarTitle());
             }
 
-            if (mCustomization.getActionBarLogo() == 0) {
+            if (mPaymentRequest.getActionBarLogo() == 0) {
                 actionBar.setLogo(new ColorDrawable(
                         getResources().getColor(android.R.color.transparent)));
             } else {
-                actionBar.setLogo(mCustomization.getActionBarLogo());
+                actionBar.setLogo(mPaymentRequest.getActionBarLogo());
             }
         }
-    }
-
-    private Customization getCustomization() {
-        Customization customization = getIntent().getParcelableExtra(EXTRA_CUSTOMIZATION);
-        if (customization == null) {
-            customization = new CustomizationBuilder().build();
-        }
-        return customization;
-    }
-
-    protected Cart getAndroidPayCart() throws NoClassDefFoundError {
-        return getIntent().getParcelableExtra(EXTRA_ANDROID_PAY_CART);
-    }
-
-    protected boolean getAndroidPayIsBillingAgreement() {
-        return getIntent().getBooleanExtra(EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, false);
     }
 
     @Override
@@ -382,8 +341,6 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        outState.putString(EXTRA_CLIENT_AUTHORIZATION, getClientToken());
 
         if (StubbedView.CARD_FORM.mCurrentView) {
             outState.putBoolean(ON_PAYMENT_METHOD_ADD_FORM_KEY, true);

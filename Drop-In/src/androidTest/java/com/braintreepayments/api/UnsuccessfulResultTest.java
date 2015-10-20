@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
 import static junit.framework.Assert.assertEquals;
@@ -69,9 +70,12 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
     public void returnsServerErrorOnConfigurationException() {
-        Intent intent = new Intent()
-                .putExtra(BraintreePaymentTestActivity.CONFIGURATION_ERROR, new UnexpectedException("Configuration Error"));
-        mActivity = getActivity(new TestClientTokenBuilder().build(), intent);
+        Intent intent = new PaymentRequest()
+                .clientToken(new TestClientTokenBuilder().build())
+                .getIntent(getTargetContext())
+                .putExtra(BraintreePaymentTestActivity.CONFIGURATION_ERROR,
+                        new UnexpectedException("Configuration Error"));
+        mActivity = getActivity(intent);
 
         waitForActivityToFinish(mActivity);
 

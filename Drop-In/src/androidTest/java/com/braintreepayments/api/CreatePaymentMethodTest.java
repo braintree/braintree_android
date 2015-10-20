@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.Map;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
@@ -124,9 +125,11 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
     // TODO: Need a way to interact with the browser
     public void returnsToSelectPaymentMethodViewAfterAddingAPayPalAccount() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
-        Intent intent = new Intent()
+        Intent intent = new PaymentRequest()
+                .clientToken(clientToken)
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken);
-        getActivity(clientToken, intent);
+        getActivity(intent);
 
         fillInOfflinePayPal();
 
@@ -138,10 +141,12 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
     // TODO: Need a way to interact with the browser
     public void displaysLoadingViewWhileCreatingAPayPalAccount() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
-        Intent intent = new Intent()
+        Intent intent = new PaymentRequest()
+                .clientToken(clientToken)
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken)
                 .putExtra(BraintreePaymentTestActivity.EXTRA_DELAY, THREE_SECONDS);
-        getActivity(clientToken, intent);
+        getActivity(intent);
 
         fillInOfflinePayPal();
 
@@ -196,10 +201,12 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
 
     @Test(timeout = 30000)
     public void finishesActivityWithErrorIfANonCreditCardErrorIsReturned() {
-        Intent intent = new Intent()
+        Intent intent = new PaymentRequest()
+                .clientToken(new TestClientTokenBuilder().build())
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.TOKENIZE_CREDIT_CARD_ERROR,
                         (Parcelable) new ErrorWithResponse(422, "{}"));
-        Activity activity = getActivity(new TestClientTokenBuilder().build(), intent);
+        Activity activity = getActivity(intent);
 
         waitForAddPaymentFormHeader();
         onView(withHint(com.braintreepayments.api.dropin.R.string.bt_form_hint_card_number))
@@ -242,9 +249,11 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
     // TODO: Need a way to interact with the browser
     public void backButtonInPayPalTakesYouBackToAddPaymentMethodView() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
-        Intent intent = new Intent()
+        Intent intent = new PaymentRequest()
+                .clientToken(clientToken)
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken);
-        getActivity(clientToken, intent);
+        getActivity(intent);
 
         waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_paypal_button)).perform(click());
         waitForView(withHint("Email")).check(matches(isDisplayed())).perform(closeSoftKeyboard());
@@ -271,10 +280,12 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
     // TODO: Need a way to interact with the browser
     public void backButtonDuringPayPalAddDoesNothing() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
-        Intent intent = new Intent()
+        Intent intent = new PaymentRequest()
+                .clientToken(clientToken)
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken)
                 .putExtra(BraintreePaymentTestActivity.EXTRA_DELAY, TWO_SECONDS);
-        getActivity(clientToken, intent);
+        getActivity(intent);
         fillInOfflinePayPal();
         waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_inflated_loading_view)).check(
                 matches(isDisplayed()));
@@ -297,9 +308,11 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
     // TODO: Need a way to interact with the browser
     public void upButtonIsShownAfterYouAddAPaymentMethod() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
-        Intent intent = new Intent()
+        Intent intent = new PaymentRequest()
+                .clientToken(clientToken)
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken);
-        BraintreePaymentActivity activity = getActivity(clientToken, intent);
+        BraintreePaymentActivity activity = getActivity(intent);
         performPayPalAdd();
 
         assertFalse("Expected up not to be present on action bar", checkHomeAsUpEnabled(activity));
@@ -310,10 +323,13 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
 
     @Test(timeout = 30000)
     public void displaysAnErrorWhenCardNumberFailsOnServer() {
-        Intent intent = new Intent()
+        Intent intent = new PaymentRequest()
+                .clientToken(new TestClientTokenBuilder().build())
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.TOKENIZE_CREDIT_CARD_ERROR,
-                        (Parcelable) new ErrorWithResponse(422, stringFromFixture("errors/card_number_error_response.json")));
-        Activity activity = getActivity(new TestClientTokenBuilder().build(), intent);
+                        (Parcelable) new ErrorWithResponse(422,
+                                stringFromFixture("errors/card_number_error_response.json")));
+        Activity activity = getActivity(intent);
 
         waitForAddPaymentFormHeader();
         onView(withHint(com.braintreepayments.api.dropin.R.string.bt_form_hint_card_number))
@@ -341,10 +357,13 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
                 .withoutCvvChallenge()
                 .withoutPostalCodeChallenge()
                 .build();
-        Intent intent = new Intent()
+        Intent intent = new PaymentRequest()
+                .clientToken(clientToken)
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.TOKENIZE_CREDIT_CARD_ERROR,
-                       (Parcelable) new ErrorWithResponse(422, stringFromFixture("errors/expiration_date_error_response.json")));
-        Activity activity = getActivity(clientToken, intent);
+                        (Parcelable) new ErrorWithResponse(422,
+                                stringFromFixture("errors/expiration_date_error_response.json")));
+        Activity activity = getActivity(intent);
 
         waitForView(
                 withId(com.braintreepayments.api.dropin.R.id.bt_card_form_card_number)).perform(typeText(
@@ -394,10 +413,13 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
 
     @Test(timeout = 30000)
     public void returnsUnexpectedErrorWhenServerReturnsNonCreditCardError() {
-        Intent intent = new Intent()
+        Intent intent = new PaymentRequest()
+                .clientToken(new TestClientTokenBuilder().build())
+                .getIntent(getTargetContext())
                 .putExtra(BraintreePaymentTestActivity.TOKENIZE_CREDIT_CARD_ERROR,
-                        (Parcelable) new ErrorWithResponse(422, stringFromFixture("responses/error_response.json")));
-        Activity activity = getActivity(new TestClientTokenBuilder().build(), intent);
+                        (Parcelable) new ErrorWithResponse(422,
+                                stringFromFixture("responses/error_response.json")));
+        Activity activity = getActivity(intent);
 
         fillInCardForm();
 

@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.VisibleForTesting;
 import android.util.AttributeSet;
 import android.view.View;
@@ -15,7 +14,6 @@ import com.braintreepayments.api.dropin.R;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.models.Configuration;
-import com.google.android.gms.wallet.Cart;
 
 import java.util.List;
 
@@ -29,15 +27,8 @@ import java.util.List;
 public class PaymentButton extends RelativeLayout implements OnClickListener {
 
     private BraintreeFragment mBraintreeFragment;
+    private PaymentRequest mPaymentRequest;
     private ViewSwitcher mProgressViewSwitcher;
-
-    private Cart mCart;
-    private boolean mIsBillingAgreement;
-    private boolean mShippingAddressRequired;
-    private boolean mPhoneNumberRequired;
-    private int mRequestCode;
-
-    private List<String> mAdditionalScopes;
 
     public PaymentButton(Context context) {
         super(context);
@@ -52,57 +43,18 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
     }
 
     /**
-     * Options to be used with Android Pay. Must be called *before*
-     * {@link PaymentButton#initialize(BraintreeFragment)} if you would like to use Android Pay.
-     * Failure to do so will result in Android Pay not present in the {@link PaymentButton}.
-     *
-     * @param cart The {@link Cart} to use with Android Pay.
-     * @param requestCode The requestCode to use with {@link android.app.Activity#startActivityForResult(Intent, int)}.
-     */
-    public void setAndroidPayOptions(Cart cart, int requestCode) {
-        setAndroidPayOptions(cart, false, false, false, requestCode);
-    }
-
-    /**
-     * Options to be used with Android Pay. Must be called *before*
-     * {@link PaymentButton#initialize(BraintreeFragment)} if you would like to use Android Pay.
-     * Failure to do so will result in Android Pay not present in the {@link PaymentButton}.
-     *
-     * @param cart The {@link Cart} to use with Android Pay
-     * @param isBillingAgreement Should a multiple use card be requested.
-     * @param shippingAddressRequired Should the user be prompted for a shipping address.
-     * @param phoneNumberRequired Should the user be prompted for a phone number.
-     * @param requestCode The requestCode to use with {@link android.app.Activity#startActivityForResult(Intent, int)}}.
-     */
-    public void setAndroidPayOptions(Cart cart, boolean isBillingAgreement,
-            boolean shippingAddressRequired, boolean phoneNumberRequired, int requestCode) {
-        mCart = cart;
-        mIsBillingAgreement = isBillingAgreement;
-        mShippingAddressRequired = shippingAddressRequired;
-        mPhoneNumberRequired = phoneNumberRequired;
-        mRequestCode = requestCode;
-    }
-
-    /**
-     * Set additional scopes to request when a user is authorizing PayPal.
-     *
-     * @param additionalScopes A {@link java.util.List} of additional scopes.
-     *        Ex: {@link PayPal#SCOPE_ADDRESS}. Acceptable scopes are defined in {@link PayPal}.
-     */
-    public void setAdditionalPayPalScopes(List<String> additionalScopes) {
-        mAdditionalScopes = additionalScopes;
-    }
-
-    /**
      * Initialize the button. This method *MUST* be called or {@link PaymentButton} will not be
      * displayed.
      *
      * @param fragment {@link BraintreeFragment}
+     * @param paymentRequest {@link PaymentRequest} containing payment method options.
      */
-    public void initialize(BraintreeFragment fragment) {
+    public void initialize(BraintreeFragment fragment, PaymentRequest paymentRequest) {
         inflate(getContext(), R.layout.bt_payment_button, this);
         mProgressViewSwitcher = (ViewSwitcher) findViewById(R.id.bt_payment_method_view_switcher);
         showProgress(true);
+
+        mPaymentRequest = paymentRequest;
 
         mBraintreeFragment = fragment;
         mBraintreeFragment.waitForConfiguration(new ConfigurationListener() {
@@ -112,24 +64,29 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
                 showProgress(false);
             }
         });
-        mBraintreeFragment.setConfigurationErrorListener(new BraintreeResponseListener<Exception>() {
-            @Override
-            public void onResponse(Exception e) {
-                mBraintreeFragment.setConfigurationErrorListener(null);
-                setVisibility(GONE);
-            }
-        });
+        mBraintreeFragment.setConfigurationErrorListener(
+                new BraintreeResponseListener<Exception>() {
+                    @Override
+                    public void onResponse(Exception e) {
+                        mBraintreeFragment.setConfigurationErrorListener(null);
+                        setVisibility(GONE);
+                    }
+                });
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.bt_paypal_button) {
-            PayPal.authorizeAccount(mBraintreeFragment, mAdditionalScopes);
+            PayPal.authorizeAccount(mBraintreeFragment, mPaymentRequest.getPayPalAdditionalScopes());
         } else if (v.getId() == R.id.bt_venmo_button) {
             Venmo.authorize(mBraintreeFragment);
         } else if (v.getId() == R.id.bt_android_pay_button) {
-            AndroidPay.performMaskedWalletRequest(mBraintreeFragment, mCart, mIsBillingAgreement,
-                    mShippingAddressRequired, mPhoneNumberRequired, mRequestCode);
+            AndroidPay.performMaskedWalletRequest(mBraintreeFragment,
+                    mPaymentRequest.getAndroidPayCart(),
+                    mPaymentRequest.isAndroidPayBillingAgreement(),
+                    mPaymentRequest.isAndroidPayShippingAddressRequired(),
+                    mPaymentRequest.isAndroidPayPhoneNumberRequired(),
+                    mPaymentRequest.getAndroidPayRequestCode());
         }
 
         performClick();
@@ -201,7 +158,12 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
 
     @VisibleForTesting
     protected boolean isAndroidPayEnabled() {
-        return (mBraintreeFragment.getConfiguration().getAndroidPay().isEnabled(getContext())
-                && (mCart != null || mIsBillingAgreement));
+        try {
+            return (mBraintreeFragment.getConfiguration().getAndroidPay().isEnabled(getContext())
+                    && (mPaymentRequest.getAndroidPayCart() != null ||
+                    mPaymentRequest.isAndroidPayBillingAgreement()));
+        } catch (NoClassDefFoundError e) {
+            return false;
+        }
     }
 }
