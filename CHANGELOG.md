@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 1.7.3
+
+* Fixes
+  * Fix Android Pay bug caused by shared state between Activities
+
 ## 1.7.2
 
 * Update PayPal SDK to 2.11.1 (fixes [#48](https://github.com/braintree/braintree_android/issues/48))
