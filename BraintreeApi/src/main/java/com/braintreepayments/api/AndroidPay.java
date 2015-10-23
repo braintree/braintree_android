@@ -119,6 +119,7 @@ public class AndroidPay {
     protected void disconnect() {
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
+            mGoogleApiClient = null;
         }
     }
 
