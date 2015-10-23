@@ -173,10 +173,6 @@ public class BraintreeFragment extends Fragment {
 
         flushCallbacks();
 
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.connect();
-        }
-
         sBroadcastReceiver.register(this);
     }
 
@@ -189,6 +185,11 @@ public class BraintreeFragment extends Fragment {
         if (getActivity() instanceof BraintreeListener) {
             removeListener((BraintreeListener) getActivity());
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
 
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
