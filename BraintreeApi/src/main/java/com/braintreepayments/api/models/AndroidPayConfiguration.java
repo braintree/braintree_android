@@ -69,7 +69,7 @@ public class AndroidPayConfiguration {
             return mEnabled &&
                     GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) ==
                             ConnectionResult.SUCCESS;
-        } catch (Exception e) {
+        } catch (NoClassDefFoundError e) {
             return false;
         }
     }
