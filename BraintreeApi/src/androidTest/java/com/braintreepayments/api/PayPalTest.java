@@ -27,7 +27,6 @@ import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalCheckout;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.PostalAddress;
-import com.braintreepayments.api.models.PostalAddress.Builder;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
@@ -334,7 +333,8 @@ public class PayPalTest {
                         assertEquals(false, experienceProfileJson.get("no_shipping"));
                         assertEquals(false, experienceProfileJson.get("address_override"));
                         mLatch.countDown();
-                    } catch (JSONException e) {}
+                    } catch (JSONException e) {
+                    }
                 }
             }
         };
@@ -371,7 +371,8 @@ public class PayPalTest {
                         assertEquals(true, experienceProfileJson.get("no_shipping"));
                         assertEquals(false, experienceProfileJson.get("address_override"));
                         mLatch.countDown();
-                    } catch (JSONException e) {}
+                    } catch (JSONException e) {
+                    }
                 }
             }
         };
@@ -407,19 +408,19 @@ public class PayPalTest {
                         assertEquals(false, experienceProfileJson.get("no_shipping"));
                         assertEquals(true, experienceProfileJson.get("address_override"));
                         mLatch.countDown();
-                    } catch (JSONException e) {}
+                    } catch (JSONException e) {
+                    }
                 }
             }
         };
 
-        PostalAddress address = new Builder()
+        PostalAddress address = new PostalAddress()
                 .streetAddress("123 Fake St.")
                 .extendedAddress("Apt. v.0")
                 .locality("Oakland")
                 .region("CA")
                 .postalCode("12345")
-                .countryCodeAlpha2("US")
-                .build();
+                .countryCodeAlpha2("US");
 
         PayPalCheckout checkout = new PayPalCheckout("3.43").shippingAddress(address);
         PayPal.checkout(fragment, checkout);
@@ -453,19 +454,19 @@ public class PayPalTest {
                         assertEquals(true, experienceProfileJson.get("no_shipping"));
                         assertEquals(true, experienceProfileJson.get("address_override"));
                         mLatch.countDown();
-                    } catch (JSONException e) {}
+                    } catch (JSONException e) {
+                    }
                 }
             }
         };
 
-        PostalAddress address = new PostalAddress.Builder()
+        PostalAddress address = new PostalAddress()
                 .streetAddress("123 Fake St.")
                 .extendedAddress("Apt. v.0")
                 .locality("Oakland")
                 .region("CA")
                 .postalCode("12345")
-                .countryCodeAlpha2("US")
-                .build();
+                .countryCodeAlpha2("US");
         PayPalCheckout checkout =
                 new PayPalCheckout("3.43").noShipping(true).shippingAddress(address);
         PayPal.checkout(fragment, checkout);

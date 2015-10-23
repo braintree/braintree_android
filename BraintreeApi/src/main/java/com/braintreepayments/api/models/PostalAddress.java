@@ -32,53 +32,10 @@ public class PostalAddress implements Parcelable {
     private String mPostalCode;
     private String mCountryCodeAlpha2;
 
-    public static class Builder {
-        private final PostalAddress mPostalAddress = new PostalAddress();
-
-        public Builder recipientName(String name) {
-            mPostalAddress.setRecipientName(name);
-            return this;
-        }
-
-        public Builder streetAddress(String streetAddress) {
-            mPostalAddress.setStreetAddress(streetAddress);
-            return this;
-        }
-
-        public Builder extendedAddress(String extendedAddress) {
-            mPostalAddress.setExtendedAddress(extendedAddress);
-            return this;
-        }
-
-        public Builder locality(String locality) {
-            mPostalAddress.setLocality(locality);
-            return this;
-        }
-
-        public Builder region(String region) {
-            mPostalAddress.setRegion(region);
-            return this;
-        }
-
-        public Builder postalCode(String postalCode) {
-            mPostalAddress.setPostalCode(postalCode);
-            return this;
-        }
-
-        public Builder countryCodeAlpha2(String countryCodeAlpha2) {
-            mPostalAddress.setCountryCodeAlpha2(countryCodeAlpha2);
-            return this;
-        }
-
-        public PostalAddress build() {
-            return mPostalAddress;
-        }
-    }
-
-    private PostalAddress() {}
+    public PostalAddress() {}
 
     public static PostalAddress fromJson(JSONObject accountAddress) {
-        // If we don't have an account address, return null.
+        // If we don't have an account address, return an empty PostalAddress.
         if (accountAddress == null) {
             return new PostalAddress();
         }
@@ -98,69 +55,76 @@ public class PostalAddress implements Parcelable {
             countryCodeAlpha2 = accountAddress.optString(COUNTRY_CODE_KEY, null);
         }
 
-        return new Builder().recipientName(accountAddress.optString(RECIPIENT_NAME_KEY, null))
+        return new PostalAddress().recipientName(accountAddress.optString(RECIPIENT_NAME_KEY, null))
                 .streetAddress(streetAddress)
                 .extendedAddress(extendedAddress)
                 .locality(accountAddress.optString(LOCALITY_KEY, null))
                 .region(accountAddress.optString(REGION_KEY, null))
                 .postalCode(accountAddress.optString(POSTAL_CODE_KEY, null))
-                .countryCodeAlpha2(countryCodeAlpha2).build();
+                .countryCodeAlpha2(countryCodeAlpha2);
+    }
+
+    public PostalAddress recipientName(String name) {
+        mRecipientName = name;
+        return this;
+    }
+
+    public PostalAddress streetAddress(String streetAddress) {
+        mStreetAddress = streetAddress;
+        return this;
+    }
+
+    public PostalAddress extendedAddress(String extendedAddress) {
+        mExtendedAddress = extendedAddress;
+        return this;
+    }
+
+    public PostalAddress locality(String locality) {
+        mLocality = locality;
+        return this;
+    }
+
+    public PostalAddress region(String region) {
+        mRegion = region;
+        return this;
+    }
+
+    public PostalAddress postalCode(String postalCode) {
+        mPostalCode = postalCode;
+        return this;
+    }
+
+    public PostalAddress countryCodeAlpha2(String countryCodeAlpha2) {
+        mCountryCodeAlpha2 = countryCodeAlpha2;
+        return this;
     }
 
     public String getRecipientName() {
         return mRecipientName;
     }
 
-    public void setRecipientName(String recipientName) {
-        mRecipientName = recipientName;
-    }
-
     public String getStreetAddress() {
         return mStreetAddress;
-    }
-
-    public void setStreetAddress(String streetAddress) {
-        mStreetAddress = streetAddress;
     }
 
     public String getExtendedAddress() {
         return mExtendedAddress;
     }
 
-    public void setExtendedAddress(String extendedAddress) {
-        mExtendedAddress = extendedAddress;
-    }
-
     public String getLocality() {
         return mLocality;
-    }
-
-    public void setLocality(String locality) {
-        mLocality = locality;
     }
 
     public String getRegion() {
         return mRegion;
     }
 
-    public void setRegion(String region) {
-        mRegion = region;
-    }
-
     public String getPostalCode() {
         return mPostalCode;
     }
 
-    public void setPostalCode(String postalCode) {
-        mPostalCode = postalCode;
-    }
-
     public String getCountryCodeAlpha2() {
         return mCountryCodeAlpha2;
-    }
-
-    public void setCountryCodeAlpha2(String countryCodeAlpha2) {
-        mCountryCodeAlpha2 = countryCodeAlpha2;
     }
 
     @Override
