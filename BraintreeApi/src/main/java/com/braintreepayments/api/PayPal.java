@@ -584,14 +584,8 @@ public class PayPal {
         return new BrowserSwitchAdapter() {
             @Override
             public void handleBrowserSwitchIntent(Intent browserSwitchIntent) {
-                fragment.startActivity(
-                        new Intent(fragment.getApplicationContext(),
-                                BraintreeBrowserSwitchActivity.class)
-                                .setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-                                .putExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE,
-                                        requestCode)
-                                .putExtra(BraintreeBrowserSwitchActivity.EXTRA_INTENT,
-                                        browserSwitchIntent));
+                browserSwitchIntent.putExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE, requestCode);
+                fragment.startActivity(browserSwitchIntent);
             }
         };
     }

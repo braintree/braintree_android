@@ -30,38 +30,22 @@ public class BraintreeBrowserSwitchActivity extends Activity {
     public static final String EXTRA_REQUEST_CODE =
             "com.braintreepayments.api.messages.EXTRA_REQUEST_CODE";
 
-    /**
-     * Indicates whether or not this Activity has received onPause(), which indicates that
-     * it should automatically cancel, if the Activity resumes without a browser switch result.
-     */
-    private boolean mPaused = false;
-
-    private int mRequestCode;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        mRequestCode = getIntent().getIntExtra(EXTRA_REQUEST_CODE, BROWSER_SWITCH_REQUEST_CODE);
-        startActivity((Intent) getIntent().getParcelableExtra(EXTRA_INTENT));
+        onNewIntent(getIntent());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        if (mPaused) {
-            broadcastResult(new Intent(), Activity.RESULT_CANCELED);
-            finish();
-        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
-        mPaused = true;
     }
 
     /**
@@ -89,7 +73,7 @@ public class BraintreeBrowserSwitchActivity extends Activity {
 
     private void broadcastResult(Intent intent, int resultCode) {
         Intent broadcastIntent = new Intent(LOCAL_BROADCAST_BROWSER_SWITCH_COMPLETED)
-                .putExtra(EXTRA_REQUEST_CODE, mRequestCode)
+                .putExtra(EXTRA_REQUEST_CODE, BROWSER_SWITCH_REQUEST_CODE)
                 .putExtra(EXTRA_RESULT_CODE, resultCode);
 
         if (intent != null) {

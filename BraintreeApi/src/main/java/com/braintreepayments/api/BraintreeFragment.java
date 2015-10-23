@@ -68,6 +68,8 @@ public class BraintreeFragment extends Fragment {
     private Queue<QueuedCallback> mCallbackQueue = new ArrayDeque<>();
     private List<PaymentMethod> mCachedPaymentMethods = new ArrayList<>();
     private boolean mHasFetchedPaymentMethods = false;
+    private Boolean mBrowserSwitchHasReturned;
+    private int mRequestCode;
 
     protected BraintreeCancelListener mCancelListener;
     private ConfigurationListener mConfigurationListener;
@@ -181,6 +183,10 @@ public class BraintreeFragment extends Fragment {
         }
 
         sBroadcastReceiver.register(this);
+        if (Boolean.FALSE.equals(mBrowserSwitchHasReturned)) {
+            postCancelCallback(mRequestCode);
+            mBrowserSwitchHasReturned = null;
+        }
     }
 
     @Override
@@ -214,20 +220,12 @@ public class BraintreeFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == Activity.RESULT_CANCELED) {
-            postOrQueueCallback(new QueuedCallback() {
-                @Override
-                public boolean shouldRun() {
-                    return mCancelListener != null;
-                }
-
-                @Override
-                public void run() {
-                    mCancelListener.onCancel(requestCode);
-                }
-            });
+            postCancelCallback(requestCode);
         }
 
         switch (requestCode) {
+            case BraintreeBrowserSwitchActivity.BROWSER_SWITCH_REQUEST_CODE:
+                mBrowserSwitchHasReturned = true; // Always fall to next case
             case PayPal.PAYPAL_REQUEST_CODE:
                 PayPal.onActivityResult(this, resultCode, data);
                 break;
@@ -238,6 +236,8 @@ public class BraintreeFragment extends Fragment {
                 ThreeDSecure.onActivityResult(this, resultCode, data);
                 break;
         }
+
+        mRequestCode = -1;
     }
 
     /**
@@ -341,6 +341,20 @@ public class BraintreeFragment extends Fragment {
             @Override
             public void run() {
                 mErrorListener.onError(error);
+            }
+        });
+    }
+
+    protected void postCancelCallback(final int requestCode) {
+        postOrQueueCallback(new QueuedCallback() {
+            @Override
+            public boolean shouldRun() {
+                return mCancelListener != null;
+            }
+
+            @Override
+            public void run() {
+                mCancelListener.onCancel(requestCode);
             }
         });
     }
@@ -528,5 +542,14 @@ public class BraintreeFragment extends Fragment {
         }
 
         return mGoogleApiClient;
+    }
+
+    @Override
+    public void startActivity(Intent intent) {
+        if (intent.hasExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE)) {
+            mRequestCode = intent.getIntExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE, -1);
+            mBrowserSwitchHasReturned = false;
+        }
+        super.startActivity(intent);
     }
 }
