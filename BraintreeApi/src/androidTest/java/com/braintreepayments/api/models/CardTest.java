@@ -21,6 +21,7 @@ public class CardTest {
         Card card = Card.fromJson(cardString);
 
         assertEquals("Visa", card.getTypeLabel());
+        assertEquals("Visa", card.getCardType());
         assertEquals("123456-12345-12345-a-adfa", card.getNonce());
         assertEquals("ending in ••11", card.getDescription());
         assertEquals("11", card.getLastTwo());

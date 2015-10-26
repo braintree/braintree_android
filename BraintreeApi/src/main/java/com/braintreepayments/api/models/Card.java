@@ -62,6 +62,13 @@ public class Card extends PaymentMethod implements Parcelable {
     }
 
     /**
+     * @return Type of this card (e.g. Visa, MasterCard, American Express)
+     */
+    public String getCardType() {
+        return mCardType;
+    }
+
+    /**
      * @return Last two digits of the card, intended for display purposes.
      */
     public String getLastTwo() {
