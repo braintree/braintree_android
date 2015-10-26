@@ -21,15 +21,14 @@ public class PostalAddressTest {
     @Test(timeout = 1000)
     @SmallTest
     public void constructsCorrectly() throws JSONException {
-        PostalAddress postalAddress = new PostalAddress.Builder()
+        PostalAddress postalAddress = new PostalAddress()
                 .streetAddress("123 Fake St.")
                 .extendedAddress("Apt. 3")
                 .locality("Oakland")
                 .region("CA")
                 .postalCode("94602")
                 .countryCodeAlpha2("US")
-                .recipientName("John Fakerson")
-                .build();
+                .recipientName("John Fakerson");
 
         assertEquals("123 Fake St.", postalAddress.getStreetAddress());
         assertEquals("Apt. 3", postalAddress.getExtendedAddress());
