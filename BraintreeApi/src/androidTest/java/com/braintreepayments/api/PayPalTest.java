@@ -377,7 +377,7 @@ public class PayPalTest {
             }
         };
 
-        PayPal.checkout(fragment, new PayPalCheckout("1").noShipping(true));
+        PayPal.checkout(fragment, new PayPalCheckout("1").shippingAddressRequired(true));
 
         mLatch.await();
     }
@@ -422,7 +422,7 @@ public class PayPalTest {
                 .postalCode("12345")
                 .countryCodeAlpha2("US");
 
-        PayPalCheckout checkout = new PayPalCheckout("3.43").shippingAddress(address);
+        PayPalCheckout checkout = new PayPalCheckout("3.43").shippingAddressOverride(address);
         PayPal.checkout(fragment, checkout);
 
         mLatch.await();
@@ -468,7 +468,8 @@ public class PayPalTest {
                 .postalCode("12345")
                 .countryCodeAlpha2("US");
         PayPalCheckout checkout =
-                new PayPalCheckout("3.43").noShipping(true).shippingAddress(address);
+                new PayPalCheckout("3.43").shippingAddressRequired(true).shippingAddressOverride(
+                        address);
         PayPal.checkout(fragment, checkout);
 
         mLatch.await();

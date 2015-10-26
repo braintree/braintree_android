@@ -272,7 +272,7 @@ public class PayPal {
         }
 
         JSONObject experienceProfile = new JSONObject();
-        experienceProfile.put(NO_SHIPPING_KEY, checkout.getNoShipping());
+        experienceProfile.put(NO_SHIPPING_KEY, !checkout.isShippingAddressRequired());
 
         if (checkout.getLocaleCode() != null) {
             experienceProfile.put(LOCALE_CODE_KEY, checkout.getLocaleCode());
@@ -295,9 +295,9 @@ public class PayPal {
                     .put(CURRENCY_ISO_CODE_KEY, currencyCode);
         }
 
-        if (checkout.getShippingAddress() != null && !TextUtils.isEmpty(checkout.getShippingAddress().getStreetAddress())) {
+        if (checkout.getShippingAddressOverride() != null && !TextUtils.isEmpty(checkout.getShippingAddressOverride().getStreetAddress())) {
             experienceProfile.put(ADDRESS_OVERRIDE_KEY, true);
-            PostalAddress shippingAddress = checkout.getShippingAddress();
+            PostalAddress shippingAddress = checkout.getShippingAddressOverride();
             parameters.put(PostalAddress.LINE_1_KEY, shippingAddress.getStreetAddress());
             parameters.put(PostalAddress.LINE_2_KEY, shippingAddress.getExtendedAddress());
             parameters.put(PostalAddress.LOCALITY_KEY, shippingAddress.getLocality());

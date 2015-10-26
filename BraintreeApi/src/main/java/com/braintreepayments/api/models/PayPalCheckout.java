@@ -14,8 +14,8 @@ public class PayPalCheckout {
     private String mAmount;
     private String mCurrencyCode;
     private String mLocaleCode;
-    private boolean mNoShipping;
-    private PostalAddress mShippingAddress;
+    private boolean mShippingAddressRequired;
+    private PostalAddress mShippingAddressOverride;
 
     /**
      * Constructs a description of a PayPal checkout for Single Payment and Billing Agreements.
@@ -31,7 +31,7 @@ public class PayPalCheckout {
      */
     public PayPalCheckout(String amount) {
         mAmount = amount;
-        mNoShipping = false;
+        mShippingAddressRequired = false;
     }
 
     /**
@@ -58,10 +58,10 @@ public class PayPalCheckout {
     /**
      * Defaults to false. When set to true, the shipping address selector will not be displayed.
      *
-     * @param noShipping Whether to hide the shipping address in the flow.
+     * @param shippingAddressRequired Whether to hide the shipping address in the flow.
      */
-    public PayPalCheckout noShipping(boolean noShipping) {
-        mNoShipping = noShipping;
+    public PayPalCheckout shippingAddressRequired(boolean shippingAddressRequired) {
+        mShippingAddressRequired = shippingAddressRequired;
         return this;
     }
 
@@ -78,10 +78,10 @@ public class PayPalCheckout {
     /**
      * A custom shipping address to be used for the checkout flow.
      *
-     * @param shippingAddress a custom {@link PostalAddress}
+     * @param shippingAddressOverride a custom {@link PostalAddress}
      */
-    public PayPalCheckout shippingAddress(PostalAddress shippingAddress) {
-        mShippingAddress = shippingAddress;
+    public PayPalCheckout shippingAddressOverride(PostalAddress shippingAddressOverride) {
+        mShippingAddressOverride = shippingAddressOverride;
         return this;
     }
 
@@ -93,12 +93,12 @@ public class PayPalCheckout {
         return mCurrencyCode;
     }
 
-    public boolean getNoShipping() {
-        return mNoShipping;
+    public boolean isShippingAddressRequired() {
+        return mShippingAddressRequired;
     }
 
-    public PostalAddress getShippingAddress() {
-        return mShippingAddress;
+    public PostalAddress getShippingAddressOverride() {
+        return mShippingAddressOverride;
     }
 
     public String getLocaleCode() {
