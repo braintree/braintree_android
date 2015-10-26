@@ -330,7 +330,7 @@ public class PayPalTest {
                         JSONObject json = new JSONObject(data);
                         assertEquals("1", json.get("amount"));
                         JSONObject experienceProfileJson = json.getJSONObject("experience_profile");
-                        assertEquals(false, experienceProfileJson.get("no_shipping"));
+                        assertEquals(true, experienceProfileJson.get("no_shipping"));
                         assertEquals(false, experienceProfileJson.get("address_override"));
                         mLatch.countDown();
                     } catch (JSONException e) {
@@ -377,7 +377,7 @@ public class PayPalTest {
             }
         };
 
-        PayPal.checkout(fragment, new PayPalCheckout("1").shippingAddressRequired(true));
+        PayPal.checkout(fragment, new PayPalCheckout("1").shippingAddressRequired(false));
 
         mLatch.await();
     }
@@ -422,7 +422,7 @@ public class PayPalTest {
                 .postalCode("12345")
                 .countryCodeAlpha2("US");
 
-        PayPalCheckout checkout = new PayPalCheckout("3.43").shippingAddressOverride(address);
+        PayPalCheckout checkout = new PayPalCheckout("3.43").shippingAddressRequired(true).shippingAddressOverride(address);
         PayPal.checkout(fragment, checkout);
 
         mLatch.await();
@@ -468,7 +468,7 @@ public class PayPalTest {
                 .postalCode("12345")
                 .countryCodeAlpha2("US");
         PayPalCheckout checkout =
-                new PayPalCheckout("3.43").shippingAddressRequired(true).shippingAddressOverride(
+                new PayPalCheckout("3.43").shippingAddressRequired(false).shippingAddressOverride(
                         address);
         PayPal.checkout(fragment, checkout);
 
