@@ -11,6 +11,8 @@ import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethod;
 
+import org.json.JSONException;
+
 import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
@@ -51,12 +53,34 @@ public class BraintreeFragmentTestUtils {
             when(fragment.getApplicationContext()).thenReturn(getTargetContext());
             when(fragment.getConfiguration()).thenReturn(configuration);
             when(fragment.getAuthorization()).thenReturn(Authorization.fromString(authorization));
+            fragment.mConfiguration = configuration;
 
             getInstrumentation().waitForIdleSync();
             waitForFragmentTransaction(activity);
 
             return fragment;
         } catch (InterruptedException | InvalidArgumentException e) {
+            fail(e.getMessage());
+            return new BraintreeFragment();
+        }
+    }
+
+    public static BraintreeFragment getMockFragment(final Activity activity, String clientKeyOrToken, String configurationString) {
+            Bundle bundle = new Bundle();
+        bundle.putString(BraintreeFragment.EXTRA_CONFIGURATION, configurationString);
+        try {
+            BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity, clientKeyOrToken, bundle));
+            doNothing().when(fragment).fetchConfiguration();
+            when(fragment.getApplicationContext()).thenReturn(getTargetContext());
+            when(fragment.getAuthorization()).thenReturn(Authorization.fromString(clientKeyOrToken));
+            when(fragment.getConfiguration()).thenReturn(
+                    Configuration.fromJson(configurationString));
+
+            getInstrumentation().waitForIdleSync();
+            waitForFragmentTransaction(activity);
+
+            return fragment;
+        } catch (InterruptedException | InvalidArgumentException | JSONException e) {
             fail(e.getMessage());
             return new BraintreeFragment();
         }

@@ -58,18 +58,17 @@ public class BraintreeFragment extends Fragment {
 
     private Context mContext;
     private Authorization mAuthorization;
-    private Configuration mConfiguration;
     private static BraintreeBroadcastReceiver sBroadcastReceiver;
 
     @VisibleForTesting
     protected BraintreeHttpClient mHttpClient;
     protected GoogleApiClient mGoogleApiClient;
+    protected Configuration mConfiguration;
 
     private Queue<QueuedCallback> mCallbackQueue = new ArrayDeque<>();
     private List<PaymentMethod> mCachedPaymentMethods = new ArrayList<>();
     private boolean mHasFetchedPaymentMethods = false;
-    private Boolean mBrowserSwitchHasReturned;
-    private int mRequestCode;
+    private final BrowserSwitchState mBrowserSwitchState = new BrowserSwitchState();
 
     protected BraintreeCancelListener mCancelListener;
     private ConfigurationListener mConfigurationListener;
@@ -82,6 +81,7 @@ public class BraintreeFragment extends Fragment {
     protected String mIntegrationType;
 
     public BraintreeFragment() {}
+
 
     /**
      * Create a new instance of {@link BraintreeFragment} using the client token and add it to the
@@ -183,10 +183,7 @@ public class BraintreeFragment extends Fragment {
         }
 
         sBroadcastReceiver.register(this);
-        if (Boolean.FALSE.equals(mBrowserSwitchHasReturned)) {
-            postCancelCallback(mRequestCode);
-            mBrowserSwitchHasReturned = null;
-        }
+        mBrowserSwitchState.checkForCancel(this);
     }
 
     @Override
@@ -216,16 +213,14 @@ public class BraintreeFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(final int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == Activity.RESULT_CANCELED) {
-            postCancelCallback(requestCode);
+        if(requestCode == BraintreeBrowserSwitchActivity.BROWSER_SWITCH_REQUEST_CODE){
+            requestCode = mBrowserSwitchState.end();
         }
 
         switch (requestCode) {
-            case BraintreeBrowserSwitchActivity.BROWSER_SWITCH_REQUEST_CODE:
-                mBrowserSwitchHasReturned = true; // Always fall to next case
             case PayPal.PAYPAL_REQUEST_CODE:
                 PayPal.onActivityResult(this, resultCode, data);
                 break;
@@ -237,7 +232,9 @@ public class BraintreeFragment extends Fragment {
                 break;
         }
 
-        mRequestCode = -1;
+        if (resultCode == Activity.RESULT_CANCELED) {
+            postCancelCallback(requestCode);
+        }
     }
 
     /**
@@ -547,8 +544,8 @@ public class BraintreeFragment extends Fragment {
     @Override
     public void startActivity(Intent intent) {
         if (intent.hasExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE)) {
-            mRequestCode = intent.getIntExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE, -1);
-            mBrowserSwitchHasReturned = false;
+            mBrowserSwitchState.begin(
+                    intent.getIntExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE, -1));
         }
         super.startActivity(intent);
     }

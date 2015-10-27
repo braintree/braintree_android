@@ -1,13 +1,11 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
-import android.app.Instrumentation.ActivityResult;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
-import android.support.test.filters.FlakyTest;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
@@ -17,6 +15,7 @@ import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
+import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
@@ -29,6 +28,9 @@ import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
+import com.paypal.android.sdk.onetouch.core.PayPalOneTouchActivity;
+import com.paypal.android.sdk.onetouch.core.ResponseType;
+import com.paypal.android.sdk.onetouch.core.Result;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,24 +38,22 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.lang.reflect.Constructor;
 import java.util.concurrent.CountDownLatch;
 
-import static android.support.test.espresso.intent.Intents.intending;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.verifyAnalyticsEvent;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
-import static org.hamcrest.Matchers.allOf;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.verify;
 
 @RunWith(AndroidJUnit4.class)
 public class PayPalTest {
@@ -71,37 +71,83 @@ public class PayPalTest {
         mLatch = new CountDownLatch(1);
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
-    @FlakyTest
-    public void authorizeAccount_startsPayPal() throws JSONException, InterruptedException {
-        Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_offline_paypal.json"));
-        final ArgumentCaptor<Intent> launchIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-        final BraintreeFragment fragment = getMockFragment(mActivity, configuration);
-
-        mActivity.runOnUiThread(new Runnable() {
+    @Test
+    @MediumTest
+    public void authorizeAccount_startsBrowser() throws InterruptedException {
+        Looper.prepare();
+        final CountDownLatch latch = new CountDownLatch(1);
+        String configString = stringFromFixture("configuration_with_offline_paypal.json");
+        String authString = stringFromFixture("client_token.json");
+        final BraintreeFragment fragment = getMockFragment(mActivity, authString, configString);
+        doAnswer(new Answer() {
             @Override
-            public void run() {
-                doAnswer(new Answer() {
-                    @Override
-                    public Object answer(InvocationOnMock invocation) throws Throwable {
-                        verify(fragment).startActivity(launchIntentCaptor.capture());
-                        assertEquals(PayPal.PAYPAL_REQUEST_CODE,
-                                launchIntentCaptor.getValue().getIntExtra(
-                                        BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE,
-                                        Integer.MAX_VALUE));
-                        mLatch.countDown();
-                        return null;
-                    }
-                }).when(fragment).startActivity(any(Intent.class));
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Intent intent = ((Intent)invocation.getArguments()[0]);
+                assertEquals(Intent.ACTION_VIEW, intent.getAction());
+                Uri data = intent.getData();
+                assertEquals("checkout.paypal.com", data.getHost());
+                assertEquals("/one-touch-login/", data.getPath());
+                assertNotNull(data.getQueryParameter("payload"));
+                assertNotNull(data.getQueryParameter("payloadEnc"));
+                assertNotNull(data.getQueryParameter("payloadEnc"));
+                assertTrue(data.getQueryParameter("x-success").contains("success"));
+                assertTrue(data.getQueryParameter("x-cancel").contains("cancel"));
+                latch.countDown();
+                return null;
+            }
+        }).when(fragment).startActivity(any(Intent.class));
 
-                // TODO: sometimes getActivity() returns null, and I don't know why
-                if (fragment.getActivity() != null) {
-                    PayPal.authorizeAccount(fragment);
-                }
+        PayPal.authorizeAccount(fragment);
+        latch.await();
+    }
+
+    @Test//(timeout = 10000)
+    @MediumTest
+    public void authorizeAccount_authorizeAccount()
+            throws JSONException, InterruptedException, InvalidArgumentException {
+        Looper.prepare();
+        String authString = stringFromFixture("client_token.json");
+        final BraintreeFragment fragment = getFragment(mActivity, authString);
+
+        fragment.addListener(new PaymentMethodCreatedListener() {
+            @Override
+            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+                assertTrue(paymentMethod instanceof PayPalAccount);
+                mLatch.countDown();
             }
         });
+
+        fragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onError(Exception error) {
+                error.printStackTrace();
+                fail(error.getMessage());
+            }
+        });
+
+        fragment.addListener(new BraintreeCancelListener() {
+            @Override
+            public void onCancel(int requestCode) {
+                fail("Cancelled: " + requestCode);
+            }
+        });
+
+        final Intent intent = new Intent(mActivity, BraintreeBrowserSwitchActivity.class)
+                .setData(Uri.parse(
+                        "com.braintreepayments.demo.braintree://onetouch/v1/success?payloadEnc=mockPayloadEnc&payload=mockPayload&x-source=com.braintree.browserswitch"))
+                .putExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE,
+                        PayPal.PAYPAL_REQUEST_CODE)
+                .putExtra(PayPalOneTouchActivity.EXTRA_ONE_TOUCH_RESULT,
+                        (Parcelable) getMockPayPalResult());
+
+        PayPal.authorizeAccount(fragment);
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                mActivity.startActivity(intent);
+            }
+        });
+
         mLatch.await();
     }
 
@@ -189,18 +235,14 @@ public class PayPalTest {
             }
         });
 
-        Intent returnIntent = new Intent(Intent.ACTION_VIEW);
-        returnIntent.addCategory(Intent.CATEGORY_BROWSABLE);
-        returnIntent.setComponent(new ComponentName("com.braintreepayments.demo",
-                "com.braintreepayments.api.BraintreeBrowserSwitchActivity"));
-        returnIntent.setData(Uri.parse(
+        Intent intent = new Intent(mActivity, BraintreeBrowserSwitchActivity.class);
+        intent.setData(Uri.parse(
                 "com.braintreepayments.demo.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN"));
-        returnIntent.setFlags(272629760);
-
-        ActivityResult result = new ActivityResult(Activity.RESULT_CANCELED, returnIntent);
-        intending(allOf(hasAction(Intent.ACTION_VIEW))).respondWith(result);
+        intent.putExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE,
+                PayPal.PAYPAL_REQUEST_CODE);
 
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
+        mActivity.startActivity(intent);
 
         mLatch.await();
     }
@@ -231,13 +273,15 @@ public class PayPalTest {
             }
         });
 
-        Intent returnIntent = new Intent();
-        returnIntent.setData(
-                Uri.parse("http://paypal.com/do/the/thing/canceled?token=canceled-token"));
-        ActivityResult result = new ActivityResult(Activity.RESULT_OK, returnIntent);
-        intending(allOf(hasAction(Intent.ACTION_VIEW))).respondWith(result);
-
+        Intent intent = new Intent(mActivity, BraintreeBrowserSwitchActivity.class);
+        intent.setData(
+                Uri.parse(
+                        "com.braintreepayments.demo.braintree://paypal.com/do/the/thing/canceled?token=canceled-token"));
+        intent.putExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE,
+                PayPal.PAYPAL_REQUEST_CODE);
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
+        mActivity.startActivity(intent);
+
         mLatch.await();
     }
 
@@ -267,10 +311,15 @@ public class PayPalTest {
             }
         });
 
-        ActivityResult result = new ActivityResult(Activity.RESULT_CANCELED, new Intent());
-        intending(allOf(hasAction(Intent.ACTION_VIEW))).respondWith(result);
+        Intent intent = new Intent(mActivity, BraintreeBrowserSwitchActivity.class)
+                .putExtra(BraintreeBrowserSwitchActivity.EXTRA_RESULT_CODE,
+                        Activity.RESULT_CANCELED)
+                .putExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE,
+                        PayPal.PAYPAL_REQUEST_CODE);
 
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
+        mActivity.startActivity(intent);
+
         mLatch.await();
     }
 
@@ -333,8 +382,7 @@ public class PayPalTest {
                         assertEquals(true, experienceProfileJson.get("no_shipping"));
                         assertEquals(false, experienceProfileJson.get("address_override"));
                         mLatch.countDown();
-                    } catch (JSONException e) {
-                    }
+                    } catch (JSONException e) {}
                 }
             }
         };
@@ -475,5 +523,24 @@ public class PayPalTest {
         PayPal.requestOneTimePayment(fragment, request);
 
         mLatch.await();
+    }
+
+    public Object getMockPayPalResult() {
+        Result result = null;
+        try {
+            Constructor<Result> resultConstructor = Result.class
+                    .getDeclaredConstructor(String.class, ResponseType.class, JSONObject.class,
+                            String.class);
+            resultConstructor.setAccessible(true);
+            result = resultConstructor.newInstance("mock", ResponseType.web, new JSONObject(), "");
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            fail("Cannot find Result constructor");
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Cannot instantiate Result");
+        }
+
+        return result;
     }
 }
