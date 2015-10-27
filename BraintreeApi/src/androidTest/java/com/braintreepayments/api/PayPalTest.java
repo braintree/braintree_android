@@ -122,7 +122,7 @@ public class PayPalTest {
             }
         });
 
-        PayPal.checkout(fragment, new PayPalCheckout());
+        PayPal.requestExpressCheckout(fragment, new PayPalCheckout());
         mLatch.await();
     }
 
@@ -200,7 +200,7 @@ public class PayPalTest {
         ActivityResult result = new ActivityResult(Activity.RESULT_CANCELED, returnIntent);
         intending(allOf(hasAction(Intent.ACTION_VIEW))).respondWith(result);
 
-        PayPal.checkout(fragment, new PayPalCheckout("1"));
+        PayPal.requestExpressCheckout(fragment, new PayPalCheckout("1"));
 
         mLatch.await();
     }
@@ -237,7 +237,7 @@ public class PayPalTest {
         ActivityResult result = new ActivityResult(Activity.RESULT_OK, returnIntent);
         intending(allOf(hasAction(Intent.ACTION_VIEW))).respondWith(result);
 
-        PayPal.checkout(fragment, new PayPalCheckout("1"));
+        PayPal.requestExpressCheckout(fragment, new PayPalCheckout("1"));
         mLatch.await();
     }
 
@@ -270,7 +270,7 @@ public class PayPalTest {
         ActivityResult result = new ActivityResult(Activity.RESULT_CANCELED, new Intent());
         intending(allOf(hasAction(Intent.ACTION_VIEW))).respondWith(result);
 
-        PayPal.checkout(fragment, new PayPalCheckout("1"));
+        PayPal.requestExpressCheckout(fragment, new PayPalCheckout("1"));
         mLatch.await();
     }
 
@@ -346,7 +346,7 @@ public class PayPalTest {
             }
         });
 
-        PayPal.checkout(fragment, new PayPalCheckout("1"));
+        PayPal.requestExpressCheckout(fragment, new PayPalCheckout("1"));
 
         mLatch.await();
     }
@@ -377,7 +377,7 @@ public class PayPalTest {
             }
         };
 
-        PayPal.checkout(fragment, new PayPalCheckout("1").shippingAddressRequired(false));
+        PayPal.requestExpressCheckout(fragment, new PayPalCheckout("1").shippingAddressRequired(false));
 
         mLatch.await();
     }
@@ -422,8 +422,10 @@ public class PayPalTest {
                 .postalCode("12345")
                 .countryCodeAlpha2("US");
 
-        PayPalCheckout checkout = new PayPalCheckout("3.43").shippingAddressRequired(true).shippingAddressOverride(address);
-        PayPal.checkout(fragment, checkout);
+        PayPalCheckout checkout = new PayPalCheckout("3.43")
+                .shippingAddressRequired(true)
+                .shippingAddressOverride(address);
+        PayPal.requestExpressCheckout(fragment, checkout);
 
         mLatch.await();
     }
@@ -467,10 +469,10 @@ public class PayPalTest {
                 .region("CA")
                 .postalCode("12345")
                 .countryCodeAlpha2("US");
-        PayPalCheckout checkout =
-                new PayPalCheckout("3.43").shippingAddressRequired(false).shippingAddressOverride(
-                        address);
-        PayPal.checkout(fragment, checkout);
+        PayPalCheckout checkout = new PayPalCheckout("3.43")
+                .shippingAddressRequired(false)
+                .shippingAddressOverride(address);
+        PayPal.requestExpressCheckout(fragment, checkout);
 
         mLatch.await();
     }

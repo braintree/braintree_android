@@ -109,7 +109,7 @@ public class PayPalActivity extends Activity implements PaymentMethodCreatedList
      */
     public void launchSinglePayment(View v) {
         PayPalCheckout checkout = new PayPalCheckout("1.50");
-        PayPal.checkout(mBraintreeFragment, checkout);
+        PayPal.requestExpressCheckout(mBraintreeFragment, checkout);
     }
 
     /**

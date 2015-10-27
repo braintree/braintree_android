@@ -149,7 +149,7 @@ public class PayPal {
      */
     public static void requestBillingAgreement(BraintreeFragment fragment, PayPalCheckout checkout) {
         if (checkout.getAmount() == null) {
-            checkout(fragment, checkout, true);
+            requestExpressCheckout(fragment, checkout, true);
         } else {
             fragment.postCallback(new BraintreeException(
                     "There must be no amount specified for the Billing Agreement flow"));
@@ -164,9 +164,9 @@ public class PayPal {
      * @param checkout A {@link PayPalCheckout} used to customize the request. An amount MUST be
      *                 specified.
      */
-    public static void checkout(BraintreeFragment fragment, PayPalCheckout checkout) {
+    public static void requestExpressCheckout(BraintreeFragment fragment, PayPalCheckout checkout) {
         if (checkout.getAmount() != null) {
-            checkout(fragment, checkout, false);
+            requestExpressCheckout(fragment, checkout, false);
         } else {
             fragment.postCallback(new BraintreeException(
                     "An amount MUST be specified for the Single Payment flow."));
@@ -184,8 +184,9 @@ public class PayPal {
      * @param isBillingAgreement A boolean. If true, this will use the Billing Agreement. Otherwise,
      *                           PayPal will perform a Single Payment.
      */
-    private static void checkout(final BraintreeFragment fragment, final PayPalCheckout checkout,
-                                 final boolean isBillingAgreement) {
+    private static void requestExpressCheckout(final BraintreeFragment fragment,
+            final PayPalCheckout checkout,
+            final boolean isBillingAgreement) {
         final HttpResponseCallback callback = new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
@@ -278,7 +279,6 @@ public class PayPal {
             experienceProfile.put(LOCALE_CODE_KEY, checkout.getLocaleCode());
         }
 
-
         JSONObject parameters = new JSONObject()
                 .put(RETURN_URL_KEY, request.getSuccessUrl())
                 .put(CANCEL_URL_KEY, request.getCancelUrl());
@@ -295,7 +295,8 @@ public class PayPal {
                     .put(CURRENCY_ISO_CODE_KEY, currencyCode);
         }
 
-        if (checkout.getShippingAddressOverride() != null && !TextUtils.isEmpty(checkout.getShippingAddressOverride().getStreetAddress())) {
+        if (checkout.getShippingAddressOverride() != null &&
+                !TextUtils.isEmpty(checkout.getShippingAddressOverride().getStreetAddress())) {
             experienceProfile.put(ADDRESS_OVERRIDE_KEY, true);
             PostalAddress shippingAddress = checkout.getShippingAddressOverride();
             parameters.put(PostalAddress.LINE_1_KEY, shippingAddress.getStreetAddress());
@@ -328,7 +329,7 @@ public class PayPal {
             boolean isAppSwitch) {
         if (result != null && result.getError() == null) {
             sendAnalyticsEventForSwitchResult(fragment, isAppSwitch, "canceled");
-        } else if (result.getError() != null){
+        } else if (result.getError() != null) {
             sendAnalyticsEventForSwitchResult(fragment, isAppSwitch, "canceled-with-error");
         }
     }
