@@ -19,7 +19,7 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.models.PayPalAccount;
-import com.braintreepayments.api.models.PayPalCheckout;
+import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.PostalAddress;
 
@@ -108,7 +108,7 @@ public class PayPalActivity extends Activity implements PaymentMethodCreatedList
      * Kicks off a PayPal Single Payment.
      */
     public void launchSinglePayment(View v) {
-        PayPalCheckout checkout = new PayPalCheckout("1.50");
+        PayPalRequest checkout = new PayPalRequest("1.50");
         PayPal.requestExpressCheckout(mBraintreeFragment, checkout);
     }
 
@@ -116,7 +116,7 @@ public class PayPalActivity extends Activity implements PaymentMethodCreatedList
      * Kicks off a PayPal Billing Agreement.
      */
     public void launchBillingAgreement(View v) {
-        PayPal.requestBillingAgreement(mBraintreeFragment, new PayPalCheckout());
+        PayPal.requestBillingAgreement(mBraintreeFragment, new PayPalRequest());
     }
 
     @Override

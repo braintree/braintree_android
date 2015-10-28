@@ -17,7 +17,7 @@ import com.braintreepayments.api.interfaces.PaymentMethodResponseCallback;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
-import com.braintreepayments.api.models.PayPalCheckout;
+import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PayPalConfiguration;
 import com.braintreepayments.api.models.PayPalPaymentResource;
 import com.braintreepayments.api.models.PayPalRequestBuilder;
@@ -110,7 +110,7 @@ public class PayPal {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 if (configuration.getPayPal().shouldUseBillingAgreement()) {
-                    requestBillingAgreement(fragment, new PayPalCheckout());
+                    requestBillingAgreement(fragment, new PayPalRequest());
                     return;
                 }
 
@@ -147,7 +147,7 @@ public class PayPal {
      *
      * @param fragment A {@link BraintreeFragment} used to process the request.
      */
-    public static void requestBillingAgreement(BraintreeFragment fragment, PayPalCheckout checkout) {
+    public static void requestBillingAgreement(BraintreeFragment fragment, PayPalRequest checkout) {
         if (checkout.getAmount() == null) {
             requestExpressCheckout(fragment, checkout, true);
         } else {
@@ -161,10 +161,10 @@ public class PayPal {
      * fall back to a browser switch.
      *
      * @param fragment A {@link BraintreeFragment} used to process the request.
-     * @param checkout A {@link PayPalCheckout} used to customize the request. An amount MUST be
+     * @param checkout A {@link PayPalRequest} used to customize the request. An amount MUST be
      *                 specified.
      */
-    public static void requestExpressCheckout(BraintreeFragment fragment, PayPalCheckout checkout) {
+    public static void requestExpressCheckout(BraintreeFragment fragment, PayPalRequest checkout) {
         if (checkout.getAmount() != null) {
             requestExpressCheckout(fragment, checkout, false);
         } else {
@@ -180,12 +180,12 @@ public class PayPal {
      * This requires that the merchant uses a {@link com.braintreepayments.api.models.ClientToken}
      *
      * @param fragment           A {@link BraintreeFragment} used to process the request.
-     * @param checkout           A {@link PayPalCheckout} used to customize the request.
+     * @param checkout           A {@link PayPalRequest} used to customize the request.
      * @param isBillingAgreement A boolean. If true, this will use the Billing Agreement. Otherwise,
      *                           PayPal will perform a Single Payment.
      */
     private static void requestExpressCheckout(final BraintreeFragment fragment,
-            final PayPalCheckout checkout,
+            final PayPalRequest checkout,
             final boolean isBillingAgreement) {
         final HttpResponseCallback callback = new HttpResponseCallback() {
             @Override
@@ -255,7 +255,7 @@ public class PayPal {
      * flows for Single Payment and Billing Agreement.
      *
      * @param fragment           A {@link BraintreeFragment} used to process the request.
-     * @param checkout           A {@link PayPalCheckout} used to customize the request.
+     * @param checkout           A {@link PayPalRequest} used to customize the request.
      * @param isBillingAgreement A boolean. If true, this will use the Billing Agreement. Otherwise,fragment.waitForConfiguration(new ConfigurationListener() {@Override
     public void onConfigurationFetched(Configuration configuration) {
 
@@ -264,7 +264,7 @@ public class PayPal {
      * @param callback           A callback on the http request.
      */
     private static void createPaymentResource(BraintreeFragment fragment,
-            PayPalCheckout checkout, boolean isBillingAgreement, HttpResponseCallback callback)
+            PayPalRequest checkout, boolean isBillingAgreement, HttpResponseCallback callback)
             throws JSONException, ErrorWithResponse, BraintreeException {
         CheckoutRequest request = buildCheckoutConfiguration(null, fragment);
         String currencyCode = checkout.getCurrencyCode();

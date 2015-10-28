@@ -9,7 +9,7 @@ package com.braintreepayments.api.models;
  *
  * @see <a href="https://developer.paypal.com/docs/api/#inputfields-object">PayPal REST API Reference</a>
  */
-public class PayPalCheckout {
+public class PayPalRequest {
 
     private String mAmount;
     private String mCurrencyCode;
@@ -29,15 +29,15 @@ public class PayPalCheckout {
      * Amount must be a non-negative number, may optionally contain exactly 2 decimal places separated
      * by '.', optional thousands separator ',', limited to 7 digits before the decimal point.
      */
-    public PayPalCheckout(String amount) {
+    public PayPalRequest(String amount) {
         mAmount = amount;
         mShippingAddressRequired = false;
     }
 
     /**
-     * Constructs a {@link PayPalCheckout} with a null amount.
+     * Constructs a {@link PayPalRequest} with a null amount.
      */
-    public PayPalCheckout() {
+    public PayPalRequest() {
         this(null);
     }
 
@@ -50,7 +50,7 @@ public class PayPalCheckout {
      *
      * @param currencyCode A currency code, such as "USD"
      */
-    public PayPalCheckout currencyCode(String currencyCode) {
+    public PayPalRequest currencyCode(String currencyCode) {
         mCurrencyCode = currencyCode;
         return this;
     }
@@ -60,7 +60,7 @@ public class PayPalCheckout {
      *
      * @param shippingAddressRequired Whether to hide the shipping address in the flow.
      */
-    public PayPalCheckout shippingAddressRequired(boolean shippingAddressRequired) {
+    public PayPalRequest shippingAddressRequired(boolean shippingAddressRequired) {
         mShippingAddressRequired = shippingAddressRequired;
         return this;
     }
@@ -70,7 +70,7 @@ public class PayPalCheckout {
      *
      * @param localeCode Whether to use a custom locale code.
      */
-    public PayPalCheckout localeCode(String localeCode) {
+    public PayPalRequest localeCode(String localeCode) {
         mLocaleCode = localeCode;
         return this;
     }
@@ -80,7 +80,7 @@ public class PayPalCheckout {
      *
      * @param shippingAddressOverride a custom {@link PostalAddress}
      */
-    public PayPalCheckout shippingAddressOverride(PostalAddress shippingAddressOverride) {
+    public PayPalRequest shippingAddressOverride(PostalAddress shippingAddressOverride) {
         mShippingAddressOverride = shippingAddressOverride;
         return this;
     }

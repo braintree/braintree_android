@@ -24,7 +24,7 @@ import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccount;
-import com.braintreepayments.api.models.PayPalCheckout;
+import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.test.TestActivity;
@@ -122,7 +122,7 @@ public class PayPalTest {
             }
         });
 
-        PayPal.requestExpressCheckout(fragment, new PayPalCheckout());
+        PayPal.requestExpressCheckout(fragment, new PayPalRequest());
         mLatch.await();
     }
 
@@ -143,7 +143,7 @@ public class PayPalTest {
             }
         });
 
-        PayPal.requestBillingAgreement(fragment, new PayPalCheckout("1"));
+        PayPal.requestBillingAgreement(fragment, new PayPalRequest("1"));
         mLatch.await();
     }
 
@@ -200,7 +200,7 @@ public class PayPalTest {
         ActivityResult result = new ActivityResult(Activity.RESULT_CANCELED, returnIntent);
         intending(allOf(hasAction(Intent.ACTION_VIEW))).respondWith(result);
 
-        PayPal.requestExpressCheckout(fragment, new PayPalCheckout("1"));
+        PayPal.requestExpressCheckout(fragment, new PayPalRequest("1"));
 
         mLatch.await();
     }
@@ -237,7 +237,7 @@ public class PayPalTest {
         ActivityResult result = new ActivityResult(Activity.RESULT_OK, returnIntent);
         intending(allOf(hasAction(Intent.ACTION_VIEW))).respondWith(result);
 
-        PayPal.requestExpressCheckout(fragment, new PayPalCheckout("1"));
+        PayPal.requestExpressCheckout(fragment, new PayPalRequest("1"));
         mLatch.await();
     }
 
@@ -270,7 +270,7 @@ public class PayPalTest {
         ActivityResult result = new ActivityResult(Activity.RESULT_CANCELED, new Intent());
         intending(allOf(hasAction(Intent.ACTION_VIEW))).respondWith(result);
 
-        PayPal.requestExpressCheckout(fragment, new PayPalCheckout("1"));
+        PayPal.requestExpressCheckout(fragment, new PayPalRequest("1"));
         mLatch.await();
     }
 
@@ -346,7 +346,7 @@ public class PayPalTest {
             }
         });
 
-        PayPal.requestExpressCheckout(fragment, new PayPalCheckout("1"));
+        PayPal.requestExpressCheckout(fragment, new PayPalRequest("1"));
 
         mLatch.await();
     }
@@ -377,7 +377,7 @@ public class PayPalTest {
             }
         };
 
-        PayPal.requestExpressCheckout(fragment, new PayPalCheckout("1").shippingAddressRequired(false));
+        PayPal.requestExpressCheckout(fragment, new PayPalRequest("1").shippingAddressRequired(false));
 
         mLatch.await();
     }
@@ -422,10 +422,10 @@ public class PayPalTest {
                 .postalCode("12345")
                 .countryCodeAlpha2("US");
 
-        PayPalCheckout checkout = new PayPalCheckout("3.43")
+        PayPalRequest request = new PayPalRequest("3.43")
                 .shippingAddressRequired(true)
                 .shippingAddressOverride(address);
-        PayPal.requestExpressCheckout(fragment, checkout);
+        PayPal.requestExpressCheckout(fragment, request);
 
         mLatch.await();
     }
@@ -469,10 +469,10 @@ public class PayPalTest {
                 .region("CA")
                 .postalCode("12345")
                 .countryCodeAlpha2("US");
-        PayPalCheckout checkout = new PayPalCheckout("3.43")
+        PayPalRequest request = new PayPalRequest("3.43")
                 .shippingAddressRequired(false)
                 .shippingAddressOverride(address);
-        PayPal.requestExpressCheckout(fragment, checkout);
+        PayPal.requestExpressCheckout(fragment, request);
 
         mLatch.await();
     }
