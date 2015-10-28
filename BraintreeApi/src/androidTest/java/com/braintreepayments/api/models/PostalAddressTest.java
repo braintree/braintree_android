@@ -12,8 +12,10 @@ import org.junit.runner.RunWith;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class PostalAddressTest {
@@ -111,6 +113,29 @@ public class PostalAddressTest {
         assertEquals("94602", postSerialized.getPostalCode());
         assertEquals("US", postSerialized.getCountryCodeAlpha2());
         assertEquals("John Fakerson", postSerialized.getRecipientName());
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void isEmpty_returnsTrueIfCountryCodeIsntSet(){
+        PostalAddress postalAddress = new PostalAddress()
+                .streetAddress("123 Fake St.")
+                .extendedAddress("Apt. 3")
+                .locality("Oakland")
+                .region("CA")
+                .postalCode("94602")
+                .recipientName("John Fakerson");
+
+        assertTrue(postalAddress.isEmpty());
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void isEmpty_returnsFalseIfCountryCodeIsSet(){
+        PostalAddress postalAddress = new PostalAddress()
+                .countryCodeAlpha2("US");
+
+        assertFalse(postalAddress.isEmpty());
     }
 }
 

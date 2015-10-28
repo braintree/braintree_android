@@ -2,6 +2,7 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import org.json.JSONObject;
 
@@ -125,6 +126,11 @@ public class PostalAddress implements Parcelable {
 
     public String getCountryCodeAlpha2() {
         return mCountryCodeAlpha2;
+    }
+
+    public boolean isEmpty() {
+        // For our concerns, if the country code isn't empty this object isn't empty.
+        return TextUtils.isEmpty(mCountryCodeAlpha2);
     }
 
     @Override

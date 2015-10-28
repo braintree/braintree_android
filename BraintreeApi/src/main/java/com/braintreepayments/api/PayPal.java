@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
@@ -295,8 +294,7 @@ public class PayPal {
                     .put(CURRENCY_ISO_CODE_KEY, currencyCode);
         }
 
-        if (checkout.getShippingAddressOverride() != null &&
-                !TextUtils.isEmpty(checkout.getShippingAddressOverride().getStreetAddress())) {
+        if (checkout.getShippingAddressOverride() != null && !checkout.getShippingAddressOverride().isEmpty()) {
             experienceProfile.put(ADDRESS_OVERRIDE_KEY, true);
             PostalAddress shippingAddress = checkout.getShippingAddressOverride();
             parameters.put(PostalAddress.LINE_1_KEY, shippingAddress.getStreetAddress());
