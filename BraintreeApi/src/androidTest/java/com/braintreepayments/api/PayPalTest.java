@@ -38,8 +38,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.mockito.ArgumentCaptor;
 
 import java.lang.reflect.Constructor;
 import java.util.concurrent.CountDownLatch;
@@ -52,8 +51,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
 
 @RunWith(AndroidJUnit4.class)
 public class PayPalTest {
@@ -71,37 +69,32 @@ public class PayPalTest {
         mLatch = new CountDownLatch(1);
     }
 
-    @Test
+    @Test(timeout = 10000)
     @MediumTest
     public void authorizeAccount_startsBrowser() throws InterruptedException {
         Looper.prepare();
-        final CountDownLatch latch = new CountDownLatch(1);
         String configString = stringFromFixture("configuration_with_offline_paypal.json");
         String authString = stringFromFixture("client_token.json");
         final BraintreeFragment fragment = getMockFragment(mActivity, authString, configString);
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Intent intent = ((Intent)invocation.getArguments()[0]);
-                assertEquals(Intent.ACTION_VIEW, intent.getAction());
-                Uri data = intent.getData();
-                assertEquals("checkout.paypal.com", data.getHost());
-                assertEquals("/one-touch-login/", data.getPath());
-                assertNotNull(data.getQueryParameter("payload"));
-                assertNotNull(data.getQueryParameter("payloadEnc"));
-                assertNotNull(data.getQueryParameter("payloadEnc"));
-                assertTrue(data.getQueryParameter("x-success").contains("success"));
-                assertTrue(data.getQueryParameter("x-cancel").contains("cancel"));
-                latch.countDown();
-                return null;
-            }
-        }).when(fragment).startActivity(any(Intent.class));
 
         PayPal.authorizeAccount(fragment);
-        latch.await();
+
+        ArgumentCaptor<Intent> intentArgumentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(fragment).startActivity(intentArgumentCaptor.capture());
+
+        Intent intent = intentArgumentCaptor.getValue();
+        assertEquals(Intent.ACTION_VIEW, intent.getAction());
+        Uri data = intent.getData();
+        assertEquals("checkout.paypal.com", data.getHost());
+        assertEquals("/one-touch-login/", data.getPath());
+        assertNotNull(data.getQueryParameter("payload"));
+        assertNotNull(data.getQueryParameter("payloadEnc"));
+        assertNotNull(data.getQueryParameter("payloadEnc"));
+        assertTrue(data.getQueryParameter("x-success").contains("success"));
+        assertTrue(data.getQueryParameter("x-cancel").contains("cancel"));
     }
 
-    @Test//(timeout = 10000)
+    @Test(timeout = 10000)
     @MediumTest
     public void authorizeAccount_authorizeAccount()
             throws JSONException, InterruptedException, InvalidArgumentException {
@@ -114,14 +107,6 @@ public class PayPalTest {
             public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
                 assertTrue(paymentMethod instanceof PayPalAccount);
                 mLatch.countDown();
-            }
-        });
-
-        fragment.addListener(new BraintreeErrorListener() {
-            @Override
-            public void onError(Exception error) {
-                error.printStackTrace();
-                fail(error.getMessage());
             }
         });
 
@@ -138,7 +123,7 @@ public class PayPalTest {
                 .putExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE,
                         PayPal.PAYPAL_REQUEST_CODE)
                 .putExtra(PayPalOneTouchActivity.EXTRA_ONE_TOUCH_RESULT,
-                        (Parcelable) getMockPayPalResult());
+                        getMockPayPalResult());
 
         PayPal.authorizeAccount(fragment);
         fragment.waitForConfiguration(new ConfigurationListener() {
@@ -382,7 +367,8 @@ public class PayPalTest {
                         assertEquals(true, experienceProfileJson.get("no_shipping"));
                         assertEquals(false, experienceProfileJson.get("address_override"));
                         mLatch.countDown();
-                    } catch (JSONException e) {}
+                    } catch (JSONException e) {
+                    }
                 }
             }
         };
@@ -525,7 +511,7 @@ public class PayPalTest {
         mLatch.await();
     }
 
-    public Object getMockPayPalResult() {
+    private Parcelable getMockPayPalResult() {
         Result result = null;
         try {
             Constructor<Result> resultConstructor = Result.class

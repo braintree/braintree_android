@@ -2,16 +2,12 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 /**
  * Helper Activity that will send a Broadcast {@link Intent} once the browser switch completes. This
  * is a workaround for activities that are singleTop or singleTask.
- * <p>
- * Steps that this Activity takes are: <ol> <li>Launches an {@link Intent} to open the browser.</li>
- * <li>Waits for browser to complete.</li> <li>{@link #onPause()} is called when the browser is
- * complete.</li> <li>{@link #onResume()} is then called, which allows us to send the switch
- * complete broadcast.</li> <li>{@link #finish()} the activity.</li> </ol>
  */
 public class BraintreeBrowserSwitchActivity extends Activity {
 
@@ -31,25 +27,11 @@ public class BraintreeBrowserSwitchActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        onNewIntent(getIntent());
-    }
 
-    /**
-     * Overridden for testing
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
+        Intent intent = getIntent();
+        Uri data = intent.getData();
 
-        onNewIntent(intent);
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        if (intent.getDataString() == null || intent.getDataString().contains("cancel") ||
-                intent.getIntExtra(EXTRA_RESULT_CODE, Integer.MIN_VALUE) == Activity.RESULT_CANCELED) {
+        if (data == null || data.getPath().contains("cancel")) {
             broadcastResult(intent, RESULT_CANCELED);
         } else {
             broadcastResult(intent, RESULT_OK);

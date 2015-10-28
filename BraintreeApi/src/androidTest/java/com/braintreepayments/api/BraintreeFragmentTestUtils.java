@@ -65,16 +65,15 @@ public class BraintreeFragmentTestUtils {
         }
     }
 
-    public static BraintreeFragment getMockFragment(final Activity activity, String clientKeyOrToken, String configurationString) {
+    public static BraintreeFragment getMockFragment(final Activity activity, String clientKeyOrToken, String configuration) {
             Bundle bundle = new Bundle();
-        bundle.putString(BraintreeFragment.EXTRA_CONFIGURATION, configurationString);
+        bundle.putString(BraintreeFragment.EXTRA_CONFIGURATION, configuration);
         try {
             BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity, clientKeyOrToken, bundle));
             doNothing().when(fragment).fetchConfiguration();
             when(fragment.getApplicationContext()).thenReturn(getTargetContext());
             when(fragment.getAuthorization()).thenReturn(Authorization.fromString(clientKeyOrToken));
-            when(fragment.getConfiguration()).thenReturn(
-                    Configuration.fromJson(configurationString));
+            when(fragment.getConfiguration()).thenReturn(Configuration.fromJson(configuration));
 
             getInstrumentation().waitForIdleSync();
             waitForFragmentTransaction(activity);

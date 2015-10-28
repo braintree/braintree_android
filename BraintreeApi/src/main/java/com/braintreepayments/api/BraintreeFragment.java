@@ -62,7 +62,9 @@ public class BraintreeFragment extends Fragment {
 
     @VisibleForTesting
     protected BraintreeHttpClient mHttpClient;
+    @VisibleForTesting
     protected GoogleApiClient mGoogleApiClient;
+    @VisibleForTesting
     protected Configuration mConfiguration;
 
     private Queue<QueuedCallback> mCallbackQueue = new ArrayDeque<>();
@@ -81,7 +83,6 @@ public class BraintreeFragment extends Fragment {
     protected String mIntegrationType;
 
     public BraintreeFragment() {}
-
 
     /**
      * Create a new instance of {@link BraintreeFragment} using the client token and add it to the
@@ -216,9 +217,7 @@ public class BraintreeFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == BraintreeBrowserSwitchActivity.BROWSER_SWITCH_REQUEST_CODE){
-            requestCode = mBrowserSwitchState.end();
-        }
+        mBrowserSwitchState.end(requestCode);
 
         switch (requestCode) {
             case PayPal.PAYPAL_REQUEST_CODE:
@@ -544,8 +543,8 @@ public class BraintreeFragment extends Fragment {
     @Override
     public void startActivity(Intent intent) {
         if (intent.hasExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE)) {
-            mBrowserSwitchState.begin(
-                    intent.getIntExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE, -1));
+            mBrowserSwitchState.begin(intent.getIntExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE, -1));
+            sBroadcastReceiver.setIntent(intent);
         }
         super.startActivity(intent);
     }

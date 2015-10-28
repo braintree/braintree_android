@@ -17,16 +17,17 @@ import com.braintreepayments.api.BraintreeFragment;
 public class BraintreeBroadcastReceiver extends BroadcastReceiver {
 
     private BraintreeFragment mFragment;
+    private Intent mIntent;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        int requestCode = intent.getIntExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE,
+        int requestCode = mIntent.getIntExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE,
                 BraintreeBrowserSwitchActivity.BROWSER_SWITCH_REQUEST_CODE);
         int resultCode =
-                intent.getIntExtra(BraintreeBrowserSwitchActivity.EXTRA_RESULT_CODE,
+                mIntent.getIntExtra(BraintreeBrowserSwitchActivity.EXTRA_RESULT_CODE,
                         Activity.RESULT_OK);
         Intent browserIntent =
-                intent.getParcelableExtra(BraintreeBrowserSwitchActivity.EXTRA_INTENT);
+                mIntent.getParcelableExtra(BraintreeBrowserSwitchActivity.EXTRA_INTENT);
 
         if (mFragment != null) {
             mFragment.onActivityResult(requestCode, resultCode, browserIntent);
@@ -46,5 +47,9 @@ public class BraintreeBroadcastReceiver extends BroadcastReceiver {
     public void unregister(Context context) {
         mFragment = null;
         BraintreeBroadcastManager.getInstance(context).unregisterReceiver(this);
+    }
+
+    public void setIntent(Intent intent){
+        mIntent = intent;
     }
 }
