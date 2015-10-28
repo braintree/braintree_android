@@ -23,7 +23,7 @@ import com.braintreepayments.api.interfaces.QueuedCallback;
 import com.braintreepayments.api.internal.BraintreeBroadcastReceiver;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.ClientKey;
+import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.google.android.gms.common.ConnectionResult;
@@ -85,16 +85,17 @@ public class BraintreeFragment extends Fragment {
      * {@link Activity}'s {@link FragmentManager}.
      *
      * @param activity The {@link Activity} to add the {@link Fragment} to.
-     * @param clientKeyOrToken The client key or token to use.
+     * @param authorization The tokenization key or client token to use.
      * @return {@link BraintreeFragment}
      * @throws InvalidArgumentException If the client token is not valid json or cannot be parsed.
      */
-    public static BraintreeFragment newInstance(Activity activity, String clientKeyOrToken)
+    public static BraintreeFragment newInstance(Activity activity, String authorization)
             throws InvalidArgumentException {
-        return newInstance(activity, clientKeyOrToken, new Bundle());
+        return newInstance(activity, authorization, new Bundle());
     }
 
-    protected static BraintreeFragment newInstance(Activity activity, String clientKeyOrToken, Bundle bundle) throws InvalidArgumentException {
+    protected static BraintreeFragment newInstance(Activity activity, String authorizationString,
+            Bundle bundle) throws InvalidArgumentException {
         FragmentManager fm = activity.getFragmentManager();
 
         String integrationType = "custom";
@@ -118,10 +119,10 @@ public class BraintreeFragment extends Fragment {
             braintreeFragment = new BraintreeFragment();
 
             try {
-                Authorization authorization = Authorization.fromString(clientKeyOrToken);
+                Authorization authorization = Authorization.fromString(authorizationString);
                 bundle.putParcelable(EXTRA_AUTHORIZATION_TOKEN, authorization);
             } catch (InvalidArgumentException e) {
-                throw new InvalidArgumentException("Client key or client token was invalid.");
+                throw new InvalidArgumentException("Tokenization Key or client token was invalid.");
             }
 
             bundle.putString(EXTRA_INTEGRATION_TYPE, integrationType);
@@ -148,7 +149,7 @@ public class BraintreeFragment extends Fragment {
             mHttpClient = new BraintreeHttpClient(mAuthorization);
         }
 
-        if (mAuthorization instanceof ClientKey) {
+        if (mAuthorization instanceof TokenizationKey) {
             sendAnalyticsEvent("started.client-key");
         } else {
             sendAnalyticsEvent("started.client-token");

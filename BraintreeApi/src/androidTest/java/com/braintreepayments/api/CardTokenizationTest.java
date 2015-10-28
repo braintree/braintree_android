@@ -31,7 +31,7 @@ import static com.braintreepayments.api.BraintreeFragmentTestUtils.verifyAnalyti
 import static com.braintreepayments.api.internal.BraintreeHttpClientTestUtils.clientWithExpectedResponse;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
-import static com.braintreepayments.testutils.TestClientKey.CLIENT_KEY;
+import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
@@ -105,9 +105,10 @@ public class CardTokenizationTest {
 
     @Test(timeout = 10000)
     @MediumTest
-    public void tokenize_tokenizesACardWithAClientKey() throws InvalidArgumentException, InterruptedException {
+    public void tokenize_tokenizesACardWithATokenizationKey() throws InvalidArgumentException, InterruptedException {
         setupFragment();
-        mBraintreeFragment = BraintreeFragment.newInstance(mActivityTestRule.getActivity(), CLIENT_KEY);
+        mBraintreeFragment = BraintreeFragment.newInstance(mActivityTestRule.getActivity(),
+                TOKENIZATION_KEY);
         mBraintreeFragment.addListener(new PaymentMethodCreatedListener() {
             @Override
             public void onPaymentMethodCreated(PaymentMethod paymentMethod) {

@@ -21,7 +21,7 @@ import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
-import com.braintreepayments.api.models.ClientKey;
+import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.test.TestActivity;
@@ -44,7 +44,7 @@ import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragme
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.tokenize;
 import static com.braintreepayments.api.internal.SignatureVerificationTestUtils.disableSignatureVerification;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
-import static com.braintreepayments.testutils.TestClientKey.CLIENT_KEY;
+import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -247,7 +247,7 @@ public class VenmoTest {
             throws InterruptedException, InvalidArgumentException {
         BraintreeFragment fragment = getMockFragment(mActivity, getConfiguration());
         when(fragment.getHttpClient()).thenReturn(
-                new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
+                new BraintreeHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY)) {
                     @Override
                     public void get(String path, HttpResponseCallback callback) {
                         callback.success(stringFromFixture(
@@ -276,7 +276,7 @@ public class VenmoTest {
     public void onActivityResult_sendsAnalyticsEventOnSuccess() throws InvalidArgumentException {
         BraintreeFragment fragment = getMockFragment(mActivity, getConfiguration());
         when(fragment.getHttpClient()).thenReturn(
-                new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
+                new BraintreeHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY)) {
                     @Override
                     public void get(String path, HttpResponseCallback callback) {
                         callback.success(
@@ -318,7 +318,8 @@ public class VenmoTest {
     public void onActivityResult_postsExceptionToListener()
             throws InterruptedException, InvalidArgumentException {
         BraintreeFragment fragment = getMockFragment(mActivity, getConfiguration());
-        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
+        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY)) {
             @Override
             public void get(String path, HttpResponseCallback callback) {
                 callback.failure(new Exception("Nonce not found"));
@@ -365,7 +366,7 @@ public class VenmoTest {
     public void onActivityResult_sendsAnalyticsEventOnFailure() throws InvalidArgumentException {
         BraintreeFragment fragment = getMockFragment(mActivity, getConfiguration());
         when(fragment.getHttpClient()).thenReturn(
-                new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
+                new BraintreeHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY)) {
                     @Override
                     public void get(String path, HttpResponseCallback callback) {
                         callback.failure(new Exception());
@@ -382,8 +383,8 @@ public class VenmoTest {
 
     @Test(timeout = 10000)
     @MediumTest
-    public void onActivityResult_failsWhenUsingClientKey() throws InterruptedException {
-        BraintreeFragment fragment = getFragment(mActivity, CLIENT_KEY);
+    public void onActivityResult_failsWhenUsingTokenizationKey() throws InterruptedException {
+        BraintreeFragment fragment = getFragment(mActivity, TOKENIZATION_KEY);
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(CardNumber.VISA)
                 .expirationDate("08/19");

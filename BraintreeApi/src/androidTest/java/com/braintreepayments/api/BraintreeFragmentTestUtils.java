@@ -40,17 +40,17 @@ public class BraintreeFragmentTestUtils {
      * Get a {@link org.mockito.Spy} {@link BraintreeFragment} with the given {@link Configuration}.
      *
      * @param activity
-     * @param clientKeyOrToken
+     * @param authorization
      * @param configuration
      * @return
      */
-    public static BraintreeFragment getMockFragment(final Activity activity, String clientKeyOrToken, Configuration configuration) {
+    public static BraintreeFragment getMockFragment(final Activity activity, String authorization, Configuration configuration) {
         try {
-            BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity, clientKeyOrToken));
+            BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity, authorization));
             doNothing().when(fragment).fetchConfiguration();
             when(fragment.getApplicationContext()).thenReturn(getTargetContext());
             when(fragment.getConfiguration()).thenReturn(configuration);
-            when(fragment.getAuthorization()).thenReturn(Authorization.fromString(clientKeyOrToken));
+            when(fragment.getAuthorization()).thenReturn(Authorization.fromString(authorization));
 
             getInstrumentation().waitForIdleSync();
             waitForFragmentTransaction(activity);
@@ -66,21 +66,21 @@ public class BraintreeFragmentTestUtils {
      * Get a {@link BraintreeFragment} using the given ClientToken.
      *
      * @param activity
-     * @param clientKeyOrToken
+     * @param authorization
      * @return {@link BraintreeFragment}
      */
-    public static BraintreeFragment getFragment(Activity activity, String clientKeyOrToken) {
-        return getFragment(activity, clientKeyOrToken, null);
+    public static BraintreeFragment getFragment(Activity activity, String authorization) {
+        return getFragment(activity, authorization, null);
     }
 
-    public static BraintreeFragment getFragment(Activity activity, String clientKeyOrToken, String configurationString) {
+    public static BraintreeFragment getFragment(Activity activity, String authorization, String configurationString) {
         BraintreeFragment fragment;
         Bundle args = new Bundle();
         try {
             if (configurationString != null) {
                 args.putString(BraintreeFragment.EXTRA_CONFIGURATION, configurationString);
             }
-            fragment = BraintreeFragment.newInstance(activity, clientKeyOrToken, args);
+            fragment = BraintreeFragment.newInstance(activity, authorization, args);
 
             getInstrumentation().waitForIdleSync();
             waitForFragmentTransaction(activity);

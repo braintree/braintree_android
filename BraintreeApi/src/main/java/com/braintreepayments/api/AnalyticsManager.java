@@ -9,6 +9,7 @@ import android.os.Build.VERSION;
 import android.provider.Settings.Secure;
 
 import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 
 import org.json.JSONArray;
@@ -26,6 +27,8 @@ class AnalyticsManager {
     private static final String KIND_KEY = "kind";
     private static final String TIMESTAMP_KEY = "timestamp";
     private static final String META_KEY = "_meta";
+    private static final String TOKENIZATION_KEY = "tokenization_key";
+    private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
     private static final String PLATFORM_KEY = "platform";
     private static final String PLATFORM_VERSION_KEY = "platformVersion";
     private static final String SDK_VERSION_KEY = "sdkVersion";
@@ -97,29 +100,35 @@ class AnalyticsManager {
 
         try {
             JSONArray events = new JSONArray();
+
             for (AnalyticsRequest request : requests) {
-                try {
-                    JSONObject event = new JSONObject()
-                            .put(KIND_KEY, request.getEvent())
-                            .put(TIMESTAMP_KEY, request.getTimestamp());
-                    events.put(event);
-                } catch (JSONException ignored) {}
+                JSONObject event = new JSONObject()
+                        .put(KIND_KEY, request.getEvent())
+                        .put(TIMESTAMP_KEY, request.getTimestamp());
+
+                events.put(event);
             }
 
-            JSONObject fullMetaData = generateRequestBody(fragment.getApplicationContext(),
+            JSONObject metadata = generateMetadata(fragment.getApplicationContext(),
                     requests.get(0).getIntegrationType());
 
-            String requestBody = new JSONObject()
+            JSONObject fullRequest = new JSONObject()
                     .put(ANALYTICS_KEY, events)
-                    .put(META_KEY, fullMetaData)
-                    .toString();
+                    .put(META_KEY, metadata);
+
+            if (fragment.getAuthorization() instanceof ClientToken) {
+                fullRequest.put(AUTHORIZATION_FINGERPRINT_KEY,
+                        ((ClientToken) fragment.getAuthorization()).getAuthorizationFingerprint());
+            } else {
+                fullRequest.put(TOKENIZATION_KEY, fragment.getAuthorization().toString());
+            }
 
             fragment.getHttpClient().post(fragment.getConfiguration().getAnalytics().getUrl(),
-                    requestBody, null);
+                    fullRequest.toString(), null);
         } catch (JSONException ignored) {}
     }
 
-    private static JSONObject generateRequestBody(Context context, String integrationType)
+    private static JSONObject generateMetadata(Context context, String integrationType)
             throws JSONException {
         if (sCachedMetadata == null) {
             sCachedMetadata = populateCachedMetadata(context);

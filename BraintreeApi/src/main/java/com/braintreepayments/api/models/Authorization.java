@@ -22,11 +22,11 @@ public abstract class Authorization implements Parcelable {
      * @param authorizationString Given string to transform into an {@link Authorization}.
      * @return {@link Authorization}
      * @throws InvalidArgumentException This method will throw this exception type if the string
-     * passed does not meet any of the criteria supplied for {@link ClientToken} or {@link ClientKey}.
+     * passed does not meet any of the criteria supplied for {@link ClientToken} or {@link TokenizationKey}.
      */
     public static Authorization fromString(String authorizationString) throws InvalidArgumentException {
-        if (isClientKey(authorizationString)) {
-            return new ClientKey(authorizationString);
+        if (isTokenizationKey(authorizationString)) {
+            return new TokenizationKey(authorizationString);
         } else {
             return new ClientToken(authorizationString);
         }
@@ -38,15 +38,15 @@ public abstract class Authorization implements Parcelable {
     public abstract String getConfigUrl();
 
     /**
-     * @return The original Client token or Client key string, which can be used for serialization
+     * @return The original Client token or Tokenization Key string, which can be used for serialization
      */
     @Override
     public String toString() {
         return mRawValue;
     }
 
-    private static boolean isClientKey(String blob) {
-        return blob.matches(ClientKey.MATCHER);
+    private static boolean isTokenizationKey(String blob) {
+        return blob.matches(TokenizationKey.MATCHER);
     }
 
     @Override

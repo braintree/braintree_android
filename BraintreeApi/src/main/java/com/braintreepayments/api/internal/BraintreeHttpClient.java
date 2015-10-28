@@ -15,7 +15,7 @@ import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.ClientKey;
+import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.models.ClientToken;
 
 import org.json.JSONException;
@@ -187,7 +187,7 @@ public class BraintreeHttpClient {
         connection.setRequestProperty("User-Agent", USER_AGENT);
         connection.setRequestProperty("Accept-Language", Locale.getDefault().getLanguage());
 
-        if (mAuthorization instanceof ClientKey) {
+        if (mAuthorization instanceof TokenizationKey) {
             connection.setRequestProperty("Client-Key", mAuthorization.toString());
         }
 

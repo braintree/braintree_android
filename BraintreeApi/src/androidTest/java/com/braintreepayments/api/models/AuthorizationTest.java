@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
-import static com.braintreepayments.testutils.TestClientKey.CLIENT_KEY;
+import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
@@ -33,9 +33,9 @@ public class AuthorizationTest {
     }
 
     @Test(timeout = 1000)
-    public void fromString_returnsValidClientKey() throws InvalidArgumentException {
-        Authorization authorization = Authorization.fromString(CLIENT_KEY);
-        assertTrue(authorization instanceof ClientKey);
+    public void fromString_returnsValidTokenizationKey() throws InvalidArgumentException {
+        Authorization authorization = Authorization.fromString(TOKENIZATION_KEY);
+        assertTrue(authorization instanceof TokenizationKey);
     }
 
     @Test(timeout = 1000, expected = InvalidArgumentException.class)
@@ -44,9 +44,9 @@ public class AuthorizationTest {
     }
 
     @Test(timeout = 1000)
-    public void getType_returnsClientKey() throws InvalidArgumentException {
-        Authorization authorization = Authorization.fromString(CLIENT_KEY);
-        assertTrue(authorization instanceof ClientKey);
+    public void getType_returnsTokenizationKey() throws InvalidArgumentException {
+        Authorization authorization = Authorization.fromString(TOKENIZATION_KEY);
+        assertTrue(authorization instanceof TokenizationKey);
     }
 
     @Test(timeout = 1000)
@@ -75,20 +75,20 @@ public class AuthorizationTest {
     }
 
     @Test(timeout = 1000)
-    public void parcelable_parcelsClientKeyCorrectly() throws InvalidArgumentException {
+    public void parcelable_parcelsTokenizationKeyCorrectly() throws InvalidArgumentException {
         Parcel parcel = Parcel.obtain();
         parcel.setDataPosition(0);
 
-        Authorization authorization = Authorization.fromString(CLIENT_KEY);
+        Authorization authorization = Authorization.fromString(TOKENIZATION_KEY);
         authorization.writeToParcel(parcel, 0);
 
         parcel.setDataPosition(0);
 
-        Authorization authorization1 = new ClientKey(parcel);
+        Authorization authorization1 = new TokenizationKey(parcel);
         assertEquals(authorization.toString(), authorization1.toString());
         assertEquals(authorization.getConfigUrl(), authorization1.getConfigUrl());
-        assertEquals(((ClientKey) authorization).getEnvironment(), ((ClientKey) authorization1).getEnvironment());
-        assertEquals(((ClientKey) authorization).getMerchantId(), ((ClientKey) authorization1).getMerchantId());
-        assertEquals(((ClientKey) authorization).getUrl(), ((ClientKey) authorization1).getUrl());
+        assertEquals(((TokenizationKey) authorization).getEnvironment(), ((TokenizationKey) authorization1).getEnvironment());
+        assertEquals(((TokenizationKey) authorization).getMerchantId(), ((TokenizationKey) authorization1).getMerchantId());
+        assertEquals(((TokenizationKey) authorization).getUrl(), ((TokenizationKey) authorization1).getUrl());
     }
 }

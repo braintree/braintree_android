@@ -32,7 +32,7 @@ import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
-import static com.braintreepayments.testutils.TestClientKey.CLIENT_KEY;
+import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
 import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
@@ -146,8 +146,9 @@ public class ThreeDSecureVerificationTest {
 
     @Test(timeout = 10000)
     @MediumTest
-    public void performVerification_failsWithAClientKey() throws InterruptedException {
-        BraintreeFragment fragment = BraintreeFragmentTestUtils.getFragment(mActivity, CLIENT_KEY);
+    public void performVerification_failsWithATokenizationKey() throws InterruptedException {
+        BraintreeFragment fragment = BraintreeFragmentTestUtils.getFragment(mActivity,
+                TOKENIZATION_KEY);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {

@@ -35,7 +35,7 @@ import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
-import static com.braintreepayments.testutils.TestClientKey.CLIENT_KEY;
+import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
@@ -81,7 +81,7 @@ public class AndroidPayTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void getTokenizationParameters_doesNotIncludeAClientKeyWhenNotPresent()
+    public void getTokenizationParameters_doesNotIncludeATokenizationKeyWhenNotPresent()
             throws InvalidArgumentException {
         AndroidPayConfiguration androidPayConfiguration = mock(AndroidPayConfiguration.class);
         when(androidPayConfiguration.getGoogleAuthorizationFingerprint())
@@ -102,7 +102,7 @@ public class AndroidPayTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void getTokenizationParameters_includesAClientKeyWhenPresent()
+    public void getTokenizationParameters_includesATokenizationKeyWhenPresent()
             throws InvalidArgumentException, InterruptedException {
         AndroidPayConfiguration androidPayConfiguration = mock(AndroidPayConfiguration.class);
         when(androidPayConfiguration.getGoogleAuthorizationFingerprint()).thenReturn(
@@ -111,7 +111,7 @@ public class AndroidPayTest {
         when(configuration.getMerchantId()).thenReturn("android-pay-merchant-id");
         when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
         final BraintreeFragment fragment = getMockFragment(mActivityTestRule.getActivity(),
-                CLIENT_KEY,
+                TOKENIZATION_KEY,
                 configuration);
 
         Bundle tokenizationParameters =
@@ -119,9 +119,9 @@ public class AndroidPayTest {
 
         String actual = tokenizationParameters.getString("braintree:clientKey");
         String message = String.format("Expected [%s], but was [%s] from [%s]",
-                CLIENT_KEY, actual, tokenizationParameters.toString()
+                TOKENIZATION_KEY, actual, tokenizationParameters.toString()
         );
-        assertEquals(message, CLIENT_KEY, actual);
+        assertEquals(message, TOKENIZATION_KEY, actual);
     }
 
     @Test(timeout = 1000)

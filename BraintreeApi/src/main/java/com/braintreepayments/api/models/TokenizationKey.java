@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 
-public class ClientKey extends Authorization implements Parcelable {
+public class TokenizationKey extends Authorization implements Parcelable {
 
     protected static String MATCHER = "^[a-zA-Z0-9_]+_[a-zA-Z0-9]+_[a-zA-Z0-9_]+$";
 
@@ -14,12 +14,12 @@ public class ClientKey extends Authorization implements Parcelable {
     private final String mMerchantId;
     private final String mUrl;
 
-    ClientKey(String clientKeyString) throws InvalidArgumentException {
-        super(clientKeyString);
+    TokenizationKey(String tokenizationKey) throws InvalidArgumentException {
+        super(tokenizationKey);
 
-        String[] clientKeyParts = clientKeyString.split("_", 3);
-        mEnvironment = clientKeyParts[0];
-        mMerchantId = clientKeyParts[2];
+        String[] tokenizationKeyParts = tokenizationKey.split("_", 3);
+        mEnvironment = tokenizationKeyParts[0];
+        mMerchantId = tokenizationKeyParts[2];
         mUrl = BraintreeEnvironment.getUrl(mEnvironment) + "merchants/" +
                 mMerchantId + "/client_api/";
     }
@@ -61,7 +61,7 @@ public class ClientKey extends Authorization implements Parcelable {
                     return braintreeEnvironment.mUrl;
                 }
             }
-            throw new InvalidArgumentException("Client key contained invalid environment");
+            throw new InvalidArgumentException("Tokenization Key contained invalid environment");
         }
     }
 
@@ -78,20 +78,20 @@ public class ClientKey extends Authorization implements Parcelable {
         dest.writeString(mUrl);
     }
 
-    protected ClientKey(Parcel in) {
+    protected TokenizationKey(Parcel in) {
         super(in);
         mEnvironment = in.readString();
         mMerchantId = in.readString();
         mUrl = in.readString();
     }
 
-    public static final Creator<ClientKey> CREATOR = new Creator<ClientKey>() {
-        public ClientKey createFromParcel(Parcel source) {
-            return new ClientKey(source);
+    public static final Creator<TokenizationKey> CREATOR = new Creator<TokenizationKey>() {
+        public TokenizationKey createFromParcel(Parcel source) {
+            return new TokenizationKey(source);
         }
 
-        public ClientKey[] newArray(int size) {
-            return new ClientKey[size];
+        public TokenizationKey[] newArray(int size) {
+            return new TokenizationKey[size];
         }
     };
 }

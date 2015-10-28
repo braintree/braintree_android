@@ -6,7 +6,7 @@ import android.content.Intent;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
-import com.braintreepayments.api.models.ClientKey;
+import com.braintreepayments.api.models.TokenizationKey;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
 import com.google.android.gms.wallet.FullWalletRequest;
@@ -58,7 +58,7 @@ public class AndroidPay {
                 .addParameter("braintree:apiVersion", "v1")
                 .addParameter("braintree:sdkVersion", BuildConfig.VERSION_NAME);
 
-        if (fragment.getAuthorization() instanceof ClientKey) {
+        if (fragment.getAuthorization() instanceof TokenizationKey) {
             parameters.addParameter("braintree:clientKey", fragment.getAuthorization().toString());
         }
 

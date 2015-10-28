@@ -5,9 +5,9 @@
         android:title="@string/authorization">
 
         <CheckBoxPreference
-            android:key="client_key"
-            android:title="@string/client_key"
-            android:summary="@string/client_key_summary"
+            android:key="tokenization_key"
+            android:title="@string/tokenization_key"
+            android:summary="@string/tokenization_key_summary"
             android:defaultValue="false" />
 
     </PreferenceCategory>

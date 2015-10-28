@@ -99,9 +99,9 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
                     .getInt(Settings.ENVIRONMENT, 0);
         }
         setupActionBar();
-        if (mClientToken == null && !Settings.useClientKey(this)) {
+        if (mClientToken == null && !Settings.useTokenizationKey(this)) {
             getClientToken();
-        } else if (Settings.useClientKey(this)) {
+        } else if (Settings.useTokenizationKey(this)) {
             setup();
         }
     }
@@ -110,10 +110,10 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     protected void onResume() {
         super.onResume();
 
-        if (mClientToken != null && Settings.useClientKey(this)) {
+        if (mClientToken != null && Settings.useTokenizationKey(this)) {
             resetState();
             setup();
-        } else if (mClientToken == null && !Settings.useClientKey(this)) {
+        } else if (mClientToken == null && !Settings.useTokenizationKey(this)) {
             resetState();
             getClientToken();
         }
@@ -276,7 +276,7 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
         mBraintreeFragment = null;
         mNonce = null;
 
-        if (!Settings.useClientKey(this)) {
+        if (!Settings.useTokenizationKey(this)) {
             getClientToken();
         } else {
             setup();
@@ -286,8 +286,8 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     private void setup() {
         try {
             String authorization;
-            if (Settings.useClientKey(this)) {
-                authorization = Settings.getEnvironmentClientKey(this);
+            if (Settings.useTokenizationKey(this)) {
+                authorization = Settings.getEnvironmentTokenizationKey(this);
             } else {
                 authorization = mClientToken;
             }
@@ -299,8 +299,8 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     }
 
     private String getAuthorization() {
-        if (Settings.useClientKey(this)) {
-            return Settings.getEnvironmentClientKey(this);
+        if (Settings.useTokenizationKey(this)) {
+            return Settings.getEnvironmentTokenizationKey(this);
         } else {
             return mClientToken;
         }

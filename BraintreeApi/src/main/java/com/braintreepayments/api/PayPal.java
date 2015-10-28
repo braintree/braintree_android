@@ -70,7 +70,7 @@ public class PayPal {
     private static final String ADDRESS_OVERRIDE_KEY = "address_override";
     private static final String LOCALE_CODE_KEY = "locale_code";
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
-    private static final String CLIENT_KEY = "client_key";
+    private static final String TOKENIZATION_KEY = "client_key"; // TODO: change when Gateway accepts tokenization key
     private static final String RETURN_URL_KEY = "return_url";
     private static final String CANCEL_URL_KEY = "cancel_url";
     private static final String EXPERIENCE_PROFILE_KEY = "experience_profile";
@@ -286,7 +286,7 @@ public class PayPal {
             parameters.put(AUTHORIZATION_FINGERPRINT_KEY,
                     ((ClientToken) fragment.getAuthorization()).getAuthorizationFingerprint());
         } else {
-            parameters.put(CLIENT_KEY, fragment.getAuthorization().toString());
+            parameters.put(TOKENIZATION_KEY, fragment.getAuthorization().toString());
         }
 
         if (!isBillingAgreement) {
@@ -493,7 +493,7 @@ public class PayPal {
      * Set properties specific to an AuthorizationRequest
      */
     private static AuthorizationRequest buildAuthorizationConfiguration(Context context,
-            Configuration configuration, String clientKeyString) throws ConfigurationException {
+            Configuration configuration, String tokenizationKey) throws ConfigurationException {
         PayPalConfiguration payPalConfiguration = configuration.getPayPal();
 
         PayPalRequestBuilder requestBuilder = new PayPalRequestBuilder();
@@ -504,7 +504,7 @@ public class PayPal {
                 .withScopeValue(SCOPE_FUTURE_PAYMENTS)
                 .withScopeValue(SCOPE_EMAIL)
                 .withAdditionalPayloadAttribute(PAYLOAD_CLIENT_TOKEN_KEY,
-                        clientKeyString);
+                        tokenizationKey);
         return request;
     }
 

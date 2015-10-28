@@ -11,8 +11,8 @@ public class Settings {
     private static final String SANDBOX_BASE_SERVER_URL = "https://braintree-sample-merchant.herokuapp.com";
     private static final String PRODUCTION_BASE_SERVER_URL = "https://executive-sample-merchant.herokuapp.com";
 
-    private static final String SANDBOX_CLIENT_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn";
-    private static final String PRODUCTION_CLIENT_KEY = "production_t2wns2y2_dfy45jdj3dxkmz5m";
+    private static final String SANDBOX_TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn";
+    private static final String PRODUCTION_TOKENIZATION_KEY = "production_t2wns2y2_dfy45jdj3dxkmz5m";
 
     public static SharedPreferences getPreferences(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
@@ -56,16 +56,16 @@ public class Settings {
         }
     }
 
-    public static boolean useClientKey(Context context) {
-        return getPreferences(context).getBoolean("client_key", false);
+    public static boolean useTokenizationKey(Context context) {
+        return getPreferences(context).getBoolean("tokenization_key", false);
     }
 
-    public static String getEnvironmentClientKey(Context context) {
+    public static String getEnvironmentTokenizationKey(Context context) {
         int environment = getEnvironment(context);
         if (environment == 0) {
-            return SANDBOX_CLIENT_KEY;
+            return SANDBOX_TOKENIZATION_KEY;
         } else if (environment == 1) {
-            return PRODUCTION_CLIENT_KEY;
+            return PRODUCTION_TOKENIZATION_KEY;
         } else {
             return "";
         }

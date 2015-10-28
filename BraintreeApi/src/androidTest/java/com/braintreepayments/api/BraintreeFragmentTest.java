@@ -43,7 +43,7 @@ import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
-import static com.braintreepayments.testutils.TestClientKey.CLIENT_KEY;
+import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -76,9 +76,9 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void newInstance_returnsABraintreeFragmentFromAClientKey()
+    public void newInstance_returnsABraintreeFragmentFromATokenizationKey()
             throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, CLIENT_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
 
         assertNotNull(fragment);
     }
@@ -94,7 +94,7 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 1000, expected = InvalidArgumentException.class)
     @SmallTest
-    public void newInstance_throwsAnExceptionForABadClientKey() throws InvalidArgumentException {
+    public void newInstance_throwsAnExceptionForABadTokenizationKey() throws InvalidArgumentException {
         BraintreeFragment.newInstance(mActivity, "test_key_merchant");
     }
 
@@ -109,7 +109,7 @@ public class BraintreeFragmentTest {
     public void newInstance_throwsAnExceptionForBadConfiguration() throws InvalidArgumentException {
         Bundle args = new Bundle();
         args.putString(BraintreeFragment.EXTRA_CONFIGURATION, "Not a configuration string");
-        BraintreeFragment.newInstance(mActivity, CLIENT_KEY, args);
+        BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY, args);
     }
 
     @Test(timeout = 1000)
@@ -133,8 +133,8 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void sendsAnalyticsEventForClientKey() throws InterruptedException{
-        BraintreeFragment fragment = getFragment(mActivity, CLIENT_KEY);
+    public void sendsAnalyticsEventForTokenizationKey() throws InterruptedException{
+        BraintreeFragment fragment = getFragment(mActivity, TOKENIZATION_KEY);
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
@@ -165,8 +165,8 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 10000)
     @MediumTest
-    public void fetchConfiguration_worksWithAClientKey() throws InterruptedException {
-        final BraintreeFragment fragment = getFragment(mActivity, CLIENT_KEY);
+    public void fetchConfiguration_worksWithATokenizationKey() throws InterruptedException {
+        final BraintreeFragment fragment = getFragment(mActivity, TOKENIZATION_KEY);
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
@@ -241,10 +241,10 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void getClientKey_returnsClientKey() throws InvalidArgumentException {
-        BraintreeFragment fragment = getFragment(mActivity, CLIENT_KEY);
+    public void getTokenizationKey_returnsTokenizationKey() throws InvalidArgumentException {
+        BraintreeFragment fragment = getFragment(mActivity, TOKENIZATION_KEY);
 
-        assertEquals(CLIENT_KEY, fragment.getAuthorization().toString());
+        assertEquals(TOKENIZATION_KEY, fragment.getAuthorization().toString());
     }
 
     @Test(timeout = 1000)

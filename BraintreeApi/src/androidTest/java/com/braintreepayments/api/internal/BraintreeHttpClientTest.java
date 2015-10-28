@@ -16,7 +16,7 @@ import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.ClientKey;
+import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.testutils.EnvironmentHelper;
 
 import org.junit.Before;
@@ -31,7 +31,7 @@ import java.util.concurrent.CountDownLatch;
 import static com.braintreepayments.api.internal.BraintreeHttpClientTestUtils.clientWithExpectedException;
 import static com.braintreepayments.api.internal.BraintreeHttpClientTestUtils.clientWithExpectedResponse;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
-import static com.braintreepayments.testutils.TestClientKey.CLIENT_KEY;
+import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -52,17 +52,18 @@ public class BraintreeHttpClientTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void sendsClientKeyWhenPresent() throws IOException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY));
+    public void sendsTokenizationKeyWhenPresent() throws IOException, InvalidArgumentException {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY));
 
         HttpURLConnection connection = httpClient.init("http://example.com/");
 
-        assertEquals(CLIENT_KEY, connection.getRequestProperty("Client-Key"));
+        assertEquals(TOKENIZATION_KEY, connection.getRequestProperty("Client-Key"));
     }
 
     @Test(timeout = 1000)
     @SmallTest
-    public void doesNotSendClientKeyWhenNotPresent()
+    public void doesNotSendTokenizationKeyWhenNotPresent()
             throws IOException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
                 Authorization.fromString(stringFromFixture("client_token.json")));
@@ -95,7 +96,8 @@ public class BraintreeHttpClientTest {
     @SmallTest
     public void get_doesNotIncludeAuthorizationFingerprintWhenNotPresent()
             throws IOException, InterruptedException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY)) {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY)) {
             @Override
             protected HttpURLConnection init(String url) throws IOException {
                 assertFalse(url.contains("authorizationFingerprint"));
@@ -113,7 +115,8 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     @SmallTest
     public void sendsUserAgent() throws IOException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY));
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY));
 
         HttpURLConnection connection = httpClient.init("http://example.com/");
 
@@ -124,7 +127,8 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     @SmallTest
     public void sendsAcceptLanguageHeader() throws IOException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY));
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY));
 
         HttpURLConnection connection = httpClient.init("http://example.com/");
 
@@ -135,7 +139,8 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     @SmallTest
     public void sendsContentType() throws IOException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY));
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY));
 
         HttpURLConnection connection = httpClient.init("http://example.com/");
 
@@ -146,7 +151,8 @@ public class BraintreeHttpClientTest {
     @SmallTest
     public void setsDefaultConnectTimeoutOf30Seconds() throws IOException,
             InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY));
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY));
 
         HttpURLConnection connection = httpClient.init("http://example.com/");
 
@@ -156,7 +162,8 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     @SmallTest
     public void setDefaultReadTimeoutOf60Seconds() throws IOException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY));
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY));
 
         HttpURLConnection connection = httpClient.init("http://example.com/");
 
@@ -167,7 +174,8 @@ public class BraintreeHttpClientTest {
     @SmallTest
     public void throwsErrorWhenBaseUrlIsNotSet()
             throws InterruptedException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY));
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY));
 
         httpClient.get("/", new HttpResponseCallback() {
             @Override
@@ -188,7 +196,8 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     @SmallTest
     public void throwsErrorWhenURLIsNull() throws InterruptedException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY));
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY));
         httpClient.setBaseUrl(null);
 
         httpClient.get("/", new HttpResponseCallback() {
@@ -211,7 +220,8 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     @SmallTest
     public void throwsErrorWhenURLIsEmpty() throws InterruptedException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY));
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY));
         httpClient.setBaseUrl("");
 
         httpClient.get("/", new HttpResponseCallback() {
@@ -380,7 +390,8 @@ public class BraintreeHttpClientTest {
     @MediumTest
     public void getRequestSslCertificateSuccessfulInSandbox()
             throws InterruptedException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY));
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY));
         httpClient.setBaseUrl("https://api.sandbox.braintreegateway.com");
 
         httpClient.get("/wellness", new HttpResponseCallback() {
@@ -403,7 +414,8 @@ public class BraintreeHttpClientTest {
     @MediumTest
     public void getRequestSslCertificateSuccessfulInProduction()
             throws InterruptedException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY));
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY));
         httpClient.setBaseUrl("https://api.braintreegateway.com");
 
         httpClient.get("/wellness", new HttpResponseCallback() {
@@ -430,7 +442,8 @@ public class BraintreeHttpClientTest {
             return;
         }
 
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(ClientKey.fromString(CLIENT_KEY));
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY));
         httpClient.setBaseUrl("https://" + EnvironmentHelper.getLocalhostIp() + ":9443");
 
         httpClient.get("/", new HttpResponseCallback() {

@@ -53,7 +53,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestRunner {
     }
 
     @Test(timeout = 30000)
-    public void returnsInvalidArgumentExceptionOnInvalidClientKey() {
+    public void returnsInvalidArgumentExceptionOnInvalidTokenizationKey() {
         mActivity = getActivity("notAnEnv_abcde_merchantId");
 
         waitForActivityToFinish(mActivity);
@@ -63,7 +63,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestRunner {
                 .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE);
         assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_DEVELOPER_ERROR, result.get("resultCode"));
         assertTrue(exception instanceof InvalidArgumentException);
-        assertEquals("Client key contained invalid environment",
+        assertEquals("Tokenization Key contained invalid environment",
                 ((InvalidArgumentException) exception).getMessage());
     }
 
