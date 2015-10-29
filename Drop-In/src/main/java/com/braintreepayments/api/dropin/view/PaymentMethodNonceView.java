@@ -10,14 +10,14 @@ import android.widget.TextView;
 
 import com.braintreepayments.api.dropin.R;
 import com.braintreepayments.api.dropin.utils.PaymentMethodType;
-import com.braintreepayments.api.models.AndroidPayCard;
-import com.braintreepayments.api.models.Card;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.AndroidPayCardNonce;
+import com.braintreepayments.api.models.CardNonce;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 
 /**
  * Layout that includes an image and text representation of a PaymentMethod
  */
-public class PaymentMethodView extends RelativeLayout {
+public class PaymentMethodNonceView extends RelativeLayout {
 
     private PaymentMethodType mType = PaymentMethodType.UNKNOWN;
     private ImageView mIconView;
@@ -25,17 +25,17 @@ public class PaymentMethodView extends RelativeLayout {
     private TextView mDescriptionView;
     private CharSequence mDescription;
 
-    public PaymentMethodView(Context context) {
+    public PaymentMethodNonceView(Context context) {
         super(context);
         init(context);
     }
 
-    public PaymentMethodView(Context context, AttributeSet attrs) {
+    public PaymentMethodNonceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public PaymentMethodView(Context context, AttributeSet attrs, int defStyle) {
+    public PaymentMethodNonceView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context);
     }
@@ -48,16 +48,16 @@ public class PaymentMethodView extends RelativeLayout {
         refresh();
     }
 
-    public void setPaymentMethodDetails(PaymentMethod paymentMethod) {
-        mType = PaymentMethodType.forType(paymentMethod.getTypeLabel());
-        if (paymentMethod instanceof Card) {
+    public void setPaymentMethodNonceDetails(PaymentMethodNonce paymentMethodNonce) {
+        mType = PaymentMethodType.forType(paymentMethodNonce.getTypeLabel());
+        if (paymentMethodNonce instanceof CardNonce) {
             mDescription = String.format(getResources().getString(R.string.bt_card_descriptor),
-                    ((Card) paymentMethod).getLastTwo());
-        } else if (paymentMethod instanceof AndroidPayCard) {
+                    ((CardNonce) paymentMethodNonce).getLastTwo());
+        } else if (paymentMethodNonce instanceof AndroidPayCardNonce) {
             mDescription = String.format(getResources().getString(R.string.bt_card_descriptor),
-                    ((AndroidPayCard) paymentMethod).getLastTwo());
+                    ((AndroidPayCardNonce) paymentMethodNonce).getLastTwo());
         } else {
-            mDescription = paymentMethod.getDescription();
+            mDescription = paymentMethodNonce.getDescription();
         }
         refresh();
     }

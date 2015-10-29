@@ -25,13 +25,12 @@ import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
-import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
-import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
-import com.braintreepayments.api.models.AndroidPayCard;
-import com.braintreepayments.api.models.Card;
-import com.braintreepayments.api.models.PayPalAccount;
-import com.braintreepayments.api.models.PaymentMethod;
-import com.google.android.gms.wallet.Cart;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
+import com.braintreepayments.api.models.AndroidPayCardNonce;
+import com.braintreepayments.api.models.CardNonce;
+import com.braintreepayments.api.models.PayPalAccountNonce;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -41,13 +40,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * {@link android.app.Activity} encompassing Braintree's Drop-In UI.
  */
-public class BraintreePaymentActivity extends Activity implements PaymentMethodsUpdatedListener,
-        PaymentMethodCreatedListener, BraintreeCancelListener, BraintreeErrorListener {
+public class BraintreePaymentActivity extends Activity implements
+        PaymentMethodNoncesUpdatedListener,
+        PaymentMethodNonceCreatedListener, BraintreeCancelListener, BraintreeErrorListener {
 
     /**
-     * {@link com.braintreepayments.api.models.PaymentMethod} returned by successfully exiting the flow.
+     * {@link PaymentMethodNonce} returned by successfully exiting the flow.
      */
-    public static final String EXTRA_PAYMENT_METHOD = "com.braintreepayments.api.dropin.EXTRA_PAYMENT_METHOD";
+    public static final String EXTRA_PAYMENT_METHOD_NONCE = "com.braintreepayments.api.dropin.EXTRA_PAYMENT_METHOD_NONCE";
 
     /**
      * Error messages are returned as the value of this key in the data intent in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
@@ -80,8 +80,8 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
     @VisibleForTesting
     protected BraintreeFragment mBraintreeFragment;
     private AddPaymentMethodViewController mAddPaymentMethodViewController;
-    private SelectPaymentMethodViewController mSelectPaymentMethodViewController;
-    private AtomicBoolean mHavePaymentMethodsBeenReceived = new AtomicBoolean(false);
+    private SelectPaymentMethodNonceNonceViewController mSelectPaymentMethodNonceViewController;
+    private AtomicBoolean mHavePaymentMethodNoncesBeenReceived = new AtomicBoolean(false);
     private Bundle mSavedInstanceState;
     private PaymentRequest mPaymentRequest;
 
@@ -98,14 +98,14 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
         try {
             mBraintreeFragment = getBraintreeFragment();
 
-            if (mBraintreeFragment.hasFetchedPaymentMethods()) {
+            if (mBraintreeFragment.hasFetchedPaymentMethodNonces()) {
                 if (mSavedInstanceState.getBoolean(ON_PAYMENT_METHOD_ADD_FORM_KEY)) {
                     showAddPaymentMethodView();
                 } else {
-                    onPaymentMethodsUpdated(mBraintreeFragment.getCachedPaymentMethods());
+                    onPaymentMethodNoncesUpdated(mBraintreeFragment.getCachedPaymentMethodNonces());
                 }
             } else {
-                TokenizationClient.getPaymentMethods(mBraintreeFragment);
+                TokenizationClient.getPaymentMethodNonces(mBraintreeFragment);
                 waitForData();
             }
         } catch (InvalidArgumentException e) {
@@ -115,22 +115,22 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
     }
 
     @Override
-    public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
-        if (!mHavePaymentMethodsBeenReceived.get()) {
+    public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {
+        if (!mHavePaymentMethodNoncesBeenReceived.get()) {
             mBraintreeFragment.sendAnalyticsEvent("appeared");
-            mHavePaymentMethodsBeenReceived.set(true);
+            mHavePaymentMethodNoncesBeenReceived.set(true);
         }
 
-        if (paymentMethods.size() == 0) {
+        if (paymentMethodNonces.size() == 0) {
             showAddPaymentMethodView();
         } else {
-            initSelectPaymentMethodView();
+            initSelectPaymentMethodNonceView();
         }
     }
 
     @Override
-    public void onPaymentMethodCreated(final PaymentMethod paymentMethod) {
-        if (paymentMethod instanceof Card) {
+    public void onPaymentMethodNonceCreated(final PaymentMethodNonce paymentMethodNonce) {
+        if (paymentMethodNonce instanceof CardNonce) {
             if (StubbedView.CARD_FORM.mCurrentView) {
                 mAddPaymentMethodViewController.showSuccess();
                 Executors.newScheduledThreadPool(1).schedule(new Runnable() {
@@ -139,7 +139,7 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                finalizeSelection(paymentMethod);
+                                finalizeSelection(paymentMethodNonce);
                             }
                         });
                     }
@@ -147,10 +147,10 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
             } else {
                 finishCreate();
             }
-        } else if (paymentMethod instanceof PayPalAccount) {
+        } else if (paymentMethodNonce instanceof PayPalAccountNonce) {
             mBraintreeFragment.sendAnalyticsEvent("add-paypal.success");
             finishCreate();
-        } else if (paymentMethod instanceof AndroidPayCard) {
+        } else if (paymentMethodNonce instanceof AndroidPayCardNonce) {
             mBraintreeFragment.sendAnalyticsEvent("add-android-pay.success");
             finishCreate();
         }
@@ -158,8 +158,8 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
 
     private void finishCreate() {
         mAddPaymentMethodViewController.endSubmit();
-        initSelectPaymentMethodView();
-        mSelectPaymentMethodViewController.onPaymentMethodSelected(0);
+        initSelectPaymentMethodNonceView();
+        mSelectPaymentMethodNonceViewController.onPaymentMethodSelected(0);
     }
 
     @Override
@@ -187,10 +187,10 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
             mAddPaymentMethodViewController.setErrors((ErrorWithResponse) error);
         } else {
             // Falling back to add payment method if getPaymentMethods fails
-            if (StubbedView.LOADING_VIEW.mCurrentView && !mHavePaymentMethodsBeenReceived.get() &&
+            if (StubbedView.LOADING_VIEW.mCurrentView && !mHavePaymentMethodNoncesBeenReceived.get() &&
                     mBraintreeFragment.getConfiguration() != null) {
                 mBraintreeFragment.sendAnalyticsEvent("appeared");
-                mHavePaymentMethodsBeenReceived.set(true);
+                mHavePaymentMethodNoncesBeenReceived.set(true);
                 showAddPaymentMethodView();
             } else {
                 if (error instanceof AuthenticationException ||
@@ -216,11 +216,11 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
         }
     }
 
-    protected void finalizeSelection(PaymentMethod paymentMethod) {
+    protected void finalizeSelection(PaymentMethodNonce paymentMethodNonce) {
         mBraintreeFragment.sendAnalyticsEvent("sdk.exit.success");
 
         Intent resultIntent = new Intent();
-        resultIntent.putExtra(EXTRA_PAYMENT_METHOD, paymentMethod);
+        resultIntent.putExtra(EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce);
         setResult(RESULT_OK, resultIntent);
         finish();
     }
@@ -229,11 +229,11 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
         Executors.newScheduledThreadPool(1).schedule(new Runnable() {
             @Override
             public void run() {
-                if (!mHavePaymentMethodsBeenReceived.get()) {
+                if (!mHavePaymentMethodNoncesBeenReceived.get()) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mHavePaymentMethodsBeenReceived.set(true);
+                            mHavePaymentMethodNoncesBeenReceived.set(true);
                             showAddPaymentMethodView();
                         }
                     });
@@ -243,14 +243,14 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
         showLoadingView();
     }
 
-    private void initSelectPaymentMethodView() {
+    private void initSelectPaymentMethodNonceView() {
         View selectMethodView = StubbedView.SELECT_VIEW.show(this);
 
-        if (mSelectPaymentMethodViewController == null) {
-            mSelectPaymentMethodViewController = new SelectPaymentMethodViewController(this,
+        if (mSelectPaymentMethodNonceViewController == null) {
+            mSelectPaymentMethodNonceViewController = new SelectPaymentMethodNonceNonceViewController(this,
                     mSavedInstanceState, selectMethodView, mBraintreeFragment, mPaymentRequest);
         } else {
-            mSelectPaymentMethodViewController.setupPaymentMethod();
+            mSelectPaymentMethodNonceViewController.setupPaymentMethod();
         }
 
         setActionBarUpEnabled(false);
@@ -259,7 +259,7 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
     protected void showAddPaymentMethodView() {
         initAddPaymentMethodView(StubbedView.CARD_FORM.show(this));
 
-        if (mBraintreeFragment.getCachedPaymentMethods().size() > 0) {
+        if (mBraintreeFragment.getCachedPaymentMethodNonces().size() > 0) {
             setActionBarUpEnabled(true);
         }
     }
@@ -326,8 +326,8 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
 
     @Override
     public void onBackPressed() {
-        if (StubbedView.CARD_FORM.mCurrentView && mBraintreeFragment.getCachedPaymentMethods().size() > 0) {
-            initSelectPaymentMethodView();
+        if (StubbedView.CARD_FORM.mCurrentView && mBraintreeFragment.getCachedPaymentMethodNonces().size() > 0) {
+            initSelectPaymentMethodNonceView();
         } else if (mAddPaymentMethodViewController != null &&
                 mAddPaymentMethodViewController.isSubmitting()) {
             // noop
@@ -348,7 +348,7 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
         }
 
         saveState(mAddPaymentMethodViewController, outState);
-        saveState(mSelectPaymentMethodViewController, outState);
+        saveState(mSelectPaymentMethodNonceViewController, outState);
     }
 
     private void saveState(BraintreeViewController viewController, Bundle outState) {

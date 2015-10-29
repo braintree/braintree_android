@@ -19,7 +19,7 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
         super();
 
         try {
-            mJson.put(PAYPAL_ACCOUNT_KEY, mPaymentMethodJson);
+            mJson.put(PAYPAL_ACCOUNT_KEY, mPaymentMethodNonceJson);
         } catch (JSONException ignored) {}
     }
 
@@ -32,7 +32,7 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
      */
     public PayPalAccountBuilder clientMetadataId(String clientMetadataId) {
         try {
-            mPaymentMethodJson.put(CORRELATION_ID_KEY, clientMetadataId);
+            mPaymentMethodNonceJson.put(CORRELATION_ID_KEY, clientMetadataId);
         } catch (JSONException ignored) {}
 
         return this;
@@ -50,7 +50,7 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
             Iterator<String> otcKeyIterator = otcData.keys();
             while(otcKeyIterator.hasNext()){
                 String otcKey = otcKeyIterator.next();
-                mPaymentMethodJson.put(otcKey, otcData.get(otcKey));
+                mPaymentMethodNonceJson.put(otcKey, otcData.get(otcKey));
             }
         } catch (JSONException ignored) {}
         return this;
@@ -63,6 +63,6 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
 
     @Override
     public String getResponsePaymentMethodType() {
-        return PayPalAccount.PAYMENT_METHOD_TYPE;
+        return PayPalAccountNonce.TYPE;
     }
 }

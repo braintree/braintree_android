@@ -9,11 +9,11 @@ import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
-import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
-import com.braintreepayments.api.models.Card;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
@@ -54,17 +54,17 @@ public class ThreeDSecureTest {
 
     @Test(timeout = 10000)
     @MediumTest
-    public void performVerification_postsPaymentMethodToListenersWhenLookupReturnsACard()
+    public void performVerification_postsPaymentMethodNonceToListenersWhenLookupReturnsACard()
             throws InterruptedException, InvalidArgumentException {
         String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
         BraintreeFragment fragment = getFragment(mActivity, clientToken);
         String nonce = tokenize(fragment, new CardBuilder()
                 .cardNumber("4000000000000051")
                 .expirationDate("12/20")).getNonce();
-        fragment.addListener(new PaymentMethodCreatedListener() {
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                assertEquals("51", ((Card) paymentMethod).getLastTwo());
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertEquals("51", ((CardNonce) paymentMethodNonce).getLastTwo());
                 mCountDownLatch.countDown();
             }
         });
@@ -76,14 +76,14 @@ public class ThreeDSecureTest {
 
     @Test(timeout = 10000)
     @MediumTest
-    public void performVerification_acceptsACardBuilderAndPostsAPaymentMethodToListener()
+    public void performVerification_acceptsACardBuilderAndPostsAPaymentMethodNonceToListener()
             throws InterruptedException {
         String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
         BraintreeFragment fragment = getFragment(mActivity, clientToken);
-        fragment.addListener(new PaymentMethodCreatedListener() {
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                assertEquals("51", ((Card) paymentMethod).getLastTwo());
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertEquals("51", ((CardNonce) paymentMethodNonce).getLastTwo());
                 mCountDownLatch.countDown();
             }
         });
@@ -98,13 +98,13 @@ public class ThreeDSecureTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void onActivityResult_postsPaymentMethodToListener()
+    public void onActivityResult_postsPaymentMethodNonceToListener()
             throws JSONException, InterruptedException{
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
-        fragment.addListener(new PaymentMethodCreatedListener() {
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                assertEquals("11", ((Card) paymentMethod).getLastTwo());
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertEquals("11", ((CardNonce) paymentMethodNonce).getLastTwo());
                 mCountDownLatch.countDown();
             }
         });

@@ -31,7 +31,7 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
         mBillingAddressJsonObject = new JSONObject();
 
         try {
-            mJson.put(CREDIT_CARD_KEY, mPaymentMethodJson);
+            mJson.put(CREDIT_CARD_KEY, mPaymentMethodNonceJson);
         } catch (JSONException ignored) {}
     }
 
@@ -41,7 +41,7 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
      */
     public CardBuilder cardNumber(String number) {
         try {
-            mPaymentMethodJson.put(NUMBER_KEY, number);
+            mPaymentMethodNonceJson.put(NUMBER_KEY, number);
         } catch (JSONException ignored) {}
 
         return this;
@@ -53,7 +53,7 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
      */
     public CardBuilder cvv(String cvv) {
         try {
-            mPaymentMethodJson.put(CVV_KEY, cvv);
+            mPaymentMethodNonceJson.put(CVV_KEY, cvv);
         } catch (JSONException ignored) {}
 
         return this;
@@ -65,7 +65,7 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
      */
     public CardBuilder expirationMonth(String expirationMonth) {
         try {
-            mPaymentMethodJson.put(EXPIRATION_MONTH_KEY, expirationMonth);
+            mPaymentMethodNonceJson.put(EXPIRATION_MONTH_KEY, expirationMonth);
         } catch (JSONException ignored) {}
 
         return this;
@@ -77,7 +77,7 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
      */
     public CardBuilder expirationYear(String expirationYear) {
         try {
-            mPaymentMethodJson.put(EXPIRATION_YEAR_KEY, expirationYear);
+            mPaymentMethodNonceJson.put(EXPIRATION_YEAR_KEY, expirationYear);
         } catch (JSONException ignored) {}
 
         return this;
@@ -90,7 +90,7 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
      */
     public CardBuilder expirationDate(String expirationDate) {
         try {
-            mPaymentMethodJson.put(EXPIRATION_DATE_KEY, expirationDate);
+            mPaymentMethodNonceJson.put(EXPIRATION_DATE_KEY, expirationDate);
         } catch (JSONException ignored) {}
 
         return this;
@@ -103,7 +103,7 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
     public CardBuilder firstName(String firstName) {
         try {
             mBillingAddressJsonObject.put(FIRST_NAME_KEY, firstName);
-            mPaymentMethodJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
+            mPaymentMethodNonceJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
         } catch (JSONException ignored) {}
         return this;
     }
@@ -115,7 +115,7 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
     public CardBuilder lastName(String lastName) {
         try {
             mBillingAddressJsonObject.put(LAST_NAME_KEY, lastName);
-            mPaymentMethodJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
+            mPaymentMethodNonceJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
         } catch (JSONException ignored) {}
         return this;
     }
@@ -127,7 +127,7 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
     public CardBuilder countryName(String countryName) {
         try {
             mBillingAddressJsonObject.put(COUNTRY_NAME_KEY, countryName);
-            mPaymentMethodJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
+            mPaymentMethodNonceJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
         } catch (JSONException ignored) {}
         return this;
     }
@@ -139,7 +139,7 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
     public CardBuilder locality(String locality) {
         try {
             mBillingAddressJsonObject.put(LOCALITY_KEY, locality);
-            mPaymentMethodJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
+            mPaymentMethodNonceJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
         } catch (JSONException ignored) {}
         return this;
     }
@@ -151,7 +151,7 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
     public CardBuilder postalCode(String postalCode) {
         try {
             mBillingAddressJsonObject.put(POSTAL_CODE_KEY, postalCode);
-            mPaymentMethodJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
+            mPaymentMethodNonceJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
         } catch (JSONException ignored) {}
         return this;
     }
@@ -163,7 +163,7 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
     public CardBuilder region(String region) {
         try {
             mBillingAddressJsonObject.put(REGION_KEY, region);
-            mPaymentMethodJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
+            mPaymentMethodNonceJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
         } catch (JSONException ignored) {}
         return this;
     }
@@ -175,7 +175,7 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
     public CardBuilder streetAddress(String streetAddress) {
         try {
             mBillingAddressJsonObject.put(STREET_ADDRESS_KEY, streetAddress);
-            mPaymentMethodJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
+            mPaymentMethodNonceJson.put(BILLING_ADDRESS_KEY, mBillingAddressJsonObject);
         } catch (JSONException ignored) {}
         return this;
     }
@@ -187,6 +187,6 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
 
     @Override
     public String getResponsePaymentMethodType() {
-        return Card.PAYMENT_METHOD_TYPE;
+        return CardNonce.TYPE;
     }
 }

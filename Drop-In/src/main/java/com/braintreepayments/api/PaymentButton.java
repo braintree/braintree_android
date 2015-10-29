@@ -13,14 +13,16 @@ import android.widget.ViewSwitcher;
 import com.braintreepayments.api.dropin.R;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 
 /**
  * An intelligent button for handling non-card payment methods. This button will display payment
  * methods depending on their availability.
  *
- * Created {@link com.braintreepayments.api.models.PaymentMethod}s will be posted to
- * {@link com.braintreepayments.api.interfaces.PaymentMethodCreatedListener}.
+ * Created {@link PaymentMethodNonce}s will be posted to
+ * {@link PaymentMethodNonceCreatedListener}.
  */
 public class PaymentButton extends RelativeLayout implements OnClickListener {
 

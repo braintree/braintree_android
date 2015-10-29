@@ -16,14 +16,14 @@ import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
-import com.braintreepayments.api.models.Card;
+import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.CardNumber;
 
@@ -243,7 +243,7 @@ public class VenmoTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void onActivityResult_postsPaymentMethodOnSuccess()
+    public void onActivityResult_postsPaymentMethodNonceOnSuccess()
             throws InterruptedException, InvalidArgumentException {
         BraintreeFragment fragment = getMockFragment(mActivity, getConfiguration());
         when(fragment.getHttpClient()).thenReturn(
@@ -255,11 +255,11 @@ public class VenmoTest {
                     }
                 });
         final CountDownLatch latch = new CountDownLatch(1);
-        fragment.addListener(new PaymentMethodCreatedListener() {
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                assertEquals("123456-12345-12345-a-adfa", paymentMethod.getNonce());
-                assertEquals("11", ((Card) paymentMethod).getLastTwo());
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertEquals("123456-12345-12345-a-adfa", paymentMethodNonce.getNonce());
+                assertEquals("11", ((CardNonce) paymentMethodNonce).getLastTwo());
                 latch.countDown();
             }
         });
@@ -388,8 +388,8 @@ public class VenmoTest {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(CardNumber.VISA)
                 .expirationDate("08/19");
-        Card card = tokenize(fragment, cardBuilder);
-        Intent intent = new Intent().putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE, card.getNonce());
+        CardNonce cardNonce = tokenize(fragment, cardBuilder);
+        Intent intent = new Intent().putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE, cardNonce.getNonce());
         final CountDownLatch latch = new CountDownLatch(1);
         fragment.addListener(new BraintreeErrorListener() {
             @Override

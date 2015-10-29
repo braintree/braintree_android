@@ -18,13 +18,13 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.ClientToken;
-import com.braintreepayments.api.models.PayPalAccount;
+import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PayPalRequest;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
@@ -122,10 +122,10 @@ public class PayPalTest {
         final BraintreeFragment fragment = getFragment(mActivity,
                 stringFromFixture("client_token.json"),
                 stringFromFixture("configuration_with_offline_paypal.json"));
-        fragment.addListener(new PaymentMethodCreatedListener() {
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                assertTrue(paymentMethod instanceof PayPalAccount);
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertTrue(paymentMethodNonce instanceof PayPalAccountNonce);
                 mLatch.countDown();
             }
         });
@@ -145,10 +145,10 @@ public class PayPalTest {
         final BraintreeFragment fragment = getFragment(mActivity,
                 stringFromFixture("client_token.json"),
                 stringFromFixture("configuration_with_offline_paypal.json"));
-        fragment.addListener(new PaymentMethodCreatedListener() {
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                assertTrue(paymentMethod instanceof PayPalAccount);
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertTrue(paymentMethodNonce instanceof PayPalAccountNonce);
                 mLatch.countDown();
             }
         });
@@ -265,10 +265,10 @@ public class PayPalTest {
                 }
             }
         };
-        fragment.addListener(new PaymentMethodCreatedListener() {
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                assertTrue(paymentMethod instanceof PayPalAccount);
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertTrue(paymentMethodNonce instanceof PayPalAccountNonce);
                 mLatch.countDown();
             }
         });
@@ -305,10 +305,10 @@ public class PayPalTest {
                 fail("Cancel listener called with code: " + requestCode);
             }
         });
-        fragment.addListener(new PaymentMethodCreatedListener() {
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                assertTrue(paymentMethod instanceof PayPalAccount);
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertTrue(paymentMethodNonce instanceof PayPalAccountNonce);
                 mLatch.countDown();
             }
         });
@@ -428,10 +428,10 @@ public class PayPalTest {
                 }
             }
         };
-        fragment.addListener(new PaymentMethodCreatedListener() {
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                assertTrue(paymentMethod instanceof PayPalAccount);
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertTrue(paymentMethodNonce instanceof PayPalAccountNonce);
                 mLatch.countDown();
             }
         });
@@ -468,10 +468,10 @@ public class PayPalTest {
                 fail("Cancel listener called with code: " + requestCode);
             }
         });
-        fragment.addListener(new PaymentMethodCreatedListener() {
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                assertTrue(paymentMethod instanceof PayPalAccount);
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertTrue(paymentMethodNonce instanceof PayPalAccountNonce);
                 mLatch.countDown();
             }
         });

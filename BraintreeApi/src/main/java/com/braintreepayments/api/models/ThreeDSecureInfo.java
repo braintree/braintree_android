@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 /**
  * A class to contain 3D Secure information about the current
- * {@link com.braintreepayments.api.models.Card}
+ * {@link CardNonce}
  */
 public class ThreeDSecureInfo implements Parcelable {
 
@@ -31,7 +31,7 @@ public class ThreeDSecureInfo implements Parcelable {
 
     /**
      * @return If the 3D Secure liability shift has occurred for the current
-     * {@link com.braintreepayments.api.models.Card}
+     * {@link CardNonce}
      */
     public boolean isLiabilityShifted() {
         return mLiabilityShifted;
@@ -39,7 +39,7 @@ public class ThreeDSecureInfo implements Parcelable {
 
     /**
      * @return If the 3D Secure liability shift is possible for the current
-     * {@link com.braintreepayments.api.models.Card}
+     * {@link CardNonce}
      */
     public boolean isLiabilityShiftPossible() {
         return mLiabilityShiftPossible;

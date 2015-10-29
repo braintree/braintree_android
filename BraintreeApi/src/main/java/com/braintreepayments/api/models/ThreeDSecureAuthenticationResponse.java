@@ -14,7 +14,7 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
     private static final String PAYMENT_METHOD_KEY = "paymentMethod";
     private static final String SUCCESS_KEY = "success";
 
-    private Card mCard;
+    private CardNonce mCardNonce;
     private boolean mSuccess;
     private String mErrors;
     private String mException;
@@ -34,9 +34,9 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
 
             JSONObject cardJson = json.optJSONObject(PAYMENT_METHOD_KEY);
             if (cardJson != null) {
-                Card card = new Card();
-                card.fromJson(cardJson);
-                authenticationResponse.mCard = card;
+                CardNonce cardNonce = new CardNonce();
+                cardNonce.fromJson(cardJson);
+                authenticationResponse.mCardNonce = cardNonce;
             }
 
             authenticationResponse.mSuccess = json.getBoolean(SUCCESS_KEY);
@@ -75,11 +75,11 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
     }
 
     /**
-     * @return The {@link com.braintreepayments.api.models.Card} associated with the 3D Secure
+     * @return The {@link CardNonce} associated with the 3D Secure
      *         authentication
      */
-    public Card getCard() {
-        return mCard;
+    public CardNonce getCardNonce() {
+        return mCardNonce;
     }
 
     /**
@@ -106,14 +106,14 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte(mSuccess ? (byte) 1 : (byte) 0);
-        dest.writeParcelable(mCard, flags);
+        dest.writeParcelable(mCardNonce, flags);
         dest.writeString(mErrors);
         dest.writeString(mException);
     }
 
     private ThreeDSecureAuthenticationResponse(Parcel in) {
         mSuccess = in.readByte() != 0;
-        mCard = in.readParcelable(Card.class.getClassLoader());
+        mCardNonce = in.readParcelable(CardNonce.class.getClassLoader());
         mErrors = in.readString();
         mException = in.readString();
     }

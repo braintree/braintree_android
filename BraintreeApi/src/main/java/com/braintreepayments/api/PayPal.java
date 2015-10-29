@@ -12,7 +12,7 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.interfaces.PaymentMethodResponseCallback;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
@@ -20,7 +20,7 @@ import com.braintreepayments.api.models.PayPalConfiguration;
 import com.braintreepayments.api.models.PayPalPaymentResource;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PayPalRequestBuilder;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.BillingAgreementRequest;
@@ -336,10 +336,10 @@ public class PayPal {
         sendAnalyticsEventForSwitchResult(fragment, isAppSwitch(data), "succeeded");
 
         TokenizationClient.tokenize(fragment, parseResponse(result, data),
-                new PaymentMethodResponseCallback() {
+                new PaymentMethodNonceCallback() {
                     @Override
-                    public void success(PaymentMethod paymentMethod) {
-                        fragment.postCallback(paymentMethod);
+                    public void success(PaymentMethodNonce paymentMethodNonce) {
+                        fragment.postCallback(paymentMethodNonce);
                     }
 
                     @Override

@@ -16,17 +16,17 @@ import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
-import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
-import com.braintreepayments.api.models.PayPalAccount;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PayPalRequest;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class PayPalActivity extends Activity implements PaymentMethodCreatedListener,
+public class PayPalActivity extends Activity implements PaymentMethodNonceCreatedListener,
         BraintreeErrorListener {
 
     private static final long WAIT_TIME = TimeUnit.SECONDS.toMillis(15);
@@ -119,8 +119,8 @@ public class PayPalActivity extends Activity implements PaymentMethodCreatedList
     }
 
     @Override
-    public void onPaymentMethodCreated(final PaymentMethod paymentMethod) {
-        logPaymentMethod(paymentMethod);
+    public void onPaymentMethodNonceCreated(final PaymentMethodNonce paymentMethodNonce) {
+        logPaymentMethod(paymentMethodNonce);
         mCancelButton.setEnabled(true);
         mCountDownTimer = new CountDownTimer(WAIT_TIME, ONE_SECOND) {
 
@@ -136,21 +136,21 @@ public class PayPalActivity extends Activity implements PaymentMethodCreatedList
             }
         };
         mCountDownTimer.start();
-        returnPaymentMethod(paymentMethod);
+        returnPaymentMethod(paymentMethodNonce);
     }
 
-    private void logPaymentMethod(PaymentMethod paymentMethod) {
+    private void logPaymentMethod(PaymentMethodNonce paymentMethodNonce) {
         String log = "";
         String logFormat = "<b>%s</b>: %s<br>";
 
-        PayPalAccount paypalAccount = (PayPalAccount) paymentMethod;
-        log += String.format(logFormat, "Nonce", paymentMethod.getNonce());
+        PayPalAccountNonce paypalAccountNonce = (PayPalAccountNonce) paymentMethodNonce;
+        log += String.format(logFormat, "Nonce", paymentMethodNonce.getNonce());
 
-        PostalAddress billingAddress = paypalAccount.getBillingAddress();
+        PostalAddress billingAddress = paypalAccountNonce.getBillingAddress();
         if (billingAddress != null) {
             log += String.format(logFormat, "Address", billingAddress.toString());
         }
-        PostalAddress shippingAddress = paypalAccount.getShippingAddress();
+        PostalAddress shippingAddress = paypalAccountNonce.getShippingAddress();
         if (shippingAddress != null) {
             log += String.format(logFormat, "Shipping", shippingAddress.toString());
         }
@@ -161,9 +161,9 @@ public class PayPalActivity extends Activity implements PaymentMethodCreatedList
         mCancelButton.setText(String.format("Cancel [Cont. in %d]", secondsLeft));
     }
 
-    private void returnPaymentMethod(PaymentMethod paymentMethod) {
-        Intent intent = new Intent().putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD,
-                paymentMethod);
+    private void returnPaymentMethod(PaymentMethodNonce paymentMethodNonce) {
+        Intent intent = new Intent().putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE,
+                paymentMethodNonce);
         setResult(RESULT_OK, intent);
     }
 

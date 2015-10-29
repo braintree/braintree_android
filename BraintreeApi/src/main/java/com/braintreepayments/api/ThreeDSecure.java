@@ -7,10 +7,10 @@ import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.interfaces.PaymentMethodResponseCallback;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
@@ -48,10 +48,10 @@ public class ThreeDSecure {
      * @param amount The amount of the transaction in the current merchant account's currency
      */
     public static void performVerification(final BraintreeFragment fragment, final CardBuilder cardBuilder, final String amount) {
-        TokenizationClient.tokenize(fragment, cardBuilder, new PaymentMethodResponseCallback() {
+        TokenizationClient.tokenize(fragment, cardBuilder, new PaymentMethodNonceCallback() {
             @Override
-            public void success(PaymentMethod paymentMethod) {
-                performVerification(fragment, paymentMethod.getNonce(), amount);
+            public void success(PaymentMethodNonce paymentMethodNonce) {
+                performVerification(fragment, paymentMethodNonce.getNonce(), amount);
             }
 
             @Override
@@ -113,7 +113,7 @@ public class ThreeDSecure {
                                             fragment.startActivityForResult(intent,
                                                     THREE_D_SECURE_REQUEST_CODE);
                                         } else {
-                                            fragment.postCallback(threeDSecureLookup.getCard());
+                                            fragment.postCallback(threeDSecureLookup.getCardNonce());
                                         }
                                     } catch (JSONException e) {
                                         fragment.postCallback(e);
@@ -137,7 +137,7 @@ public class ThreeDSecure {
             ThreeDSecureAuthenticationResponse authenticationResponse =
                     data.getParcelableExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT);
             if (authenticationResponse.isSuccess()) {
-                fragment.postCallback(authenticationResponse.getCard());
+                fragment.postCallback(authenticationResponse.getCardNonce());
             } else if (authenticationResponse.getException() != null) {
                 fragment.postCallback(new BraintreeException(authenticationResponse.getException()));
             } else {

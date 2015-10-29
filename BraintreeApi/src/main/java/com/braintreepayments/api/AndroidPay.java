@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.TokenizationParametersListener;
-import com.braintreepayments.api.models.AndroidPayCard;
+import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.TokenizationKey;
@@ -109,7 +109,7 @@ public class AndroidPay {
 
     /**
      * Call this method when you've received a successful FullWallet request in your activity's
-     * {@link Activity#onActivityResult(int, int, Intent)} to get an {@link AndroidPayCard} from a
+     * {@link Activity#onActivityResult(int, int, Intent)} to get an {@link AndroidPayCardNonce} from a
      * {@link FullWallet}.
      *
      * @param fragment An instance of {@link BraintreeFragment}.
@@ -118,7 +118,8 @@ public class AndroidPay {
      */
     public static void tokenize(BraintreeFragment fragment, FullWallet wallet) {
         try {
-            fragment.postCallback(AndroidPayCard.fromJson(wallet.getPaymentMethodToken().getToken()));
+            fragment.postCallback(
+                    AndroidPayCardNonce.fromJson(wallet.getPaymentMethodToken().getToken()));
             fragment.sendAnalyticsEvent("android-pay.nonce-received");
         } catch (JSONException e) {
             fragment.postCallback(e);

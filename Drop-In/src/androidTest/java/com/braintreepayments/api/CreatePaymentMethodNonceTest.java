@@ -12,8 +12,8 @@ import android.widget.Button;
 import com.braintreepayments.api.dropin.view.LoadingHeader;
 import com.braintreepayments.api.dropin.view.LoadingHeader.HeaderState;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.models.Card;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.CardNonce;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.BraintreePaymentActivityTestRunner;
 import com.braintreepayments.cardform.view.ErrorEditText;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
@@ -41,7 +41,7 @@ import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInOfflinePa
 import static com.braintreepayments.api.utils.PaymentFormHelpers.onAddPaymentFormHeader;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
-import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodList;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodNonceList;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
@@ -62,26 +62,26 @@ import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.not;
 
 @LargeTest
-public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner {
+public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
-    public void cardFormCreatesAPaymentMethodWithoutACustomer() {
+    public void cardFormCreatesAPaymentMethodNonceWithoutACustomer() {
         addCardAndAssertSuccess(getActivity(new TestClientTokenBuilder().withoutCustomer().build()));
     }
 
     @Test(timeout = 30000)
     @FlakyTest
-    public void cardFormCreatesAPaymentMethodWithACustomer() {
+    public void cardFormCreatesAPaymentMethodNonceWithACustomer() {
         addCardAndAssertSuccess(getActivity(new TestClientTokenBuilder().build()));
     }
 
     @Test(timeout = 30000)
-    public void cardFormCreatesAPaymentMethodWithATokenizationKey() {
+    public void cardFormCreatesAPaymentMethodNonceWithATokenizationKey() {
         addCardAndAssertSuccess(getActivity(TOKENIZATION_KEY));
     }
 
     @Test(timeout = 30000)
-    public void cardFormCreatesAPaymentMethodWithoutCvvOrPostalCode() {
+    public void cardFormCreatesAPaymentMethodNonceWithoutCvvOrPostalCode() {
         BraintreePaymentActivity activity = getActivity(new TestClientTokenBuilder()
                 .withoutCvvChallenge()
                 .withoutPostalCodeChallenge()
@@ -97,17 +97,17 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
         waitForActivityToFinish(activity);
 
         Map<String, Object> result = getActivityResult(activity);
-        PaymentMethod response = ((Intent) result.get("resultData"))
-                        .getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
+        PaymentMethodNonce response = ((Intent) result.get("resultData"))
+                        .getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE);
 
         assertEquals(Activity.RESULT_OK, result.get("resultCode"));
         assertNotNull(response.getNonce());
-        assertEquals("11", ((Card) response).getLastTwo());
+        assertEquals("11", ((CardNonce) response).getLastTwo());
     }
 
     @Test(timeout = 30000)
     // TODO: Need a way to interact with the browser
-    public void paypalCreatesAPaymentMethodWithACustomer() {
+    public void paypalCreatesAPaymentMethodNonceWithACustomer() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
 
         assertCreatePaymentMethodFromPayPal(clientToken, "jane.doe@example.com");
@@ -115,7 +115,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
 
     @Test(timeout = 30000)
     // TODO: Need a way to interact with the browser
-    public void paypalCreatesAPaymentMethodWithoutACustomer() {
+    public void paypalCreatesAPaymentMethodNonceWithoutACustomer() {
         String clientToken = new TestClientTokenBuilder().withoutCustomer().withPayPal().build();
 
         assertCreatePaymentMethodFromPayPal(clientToken, "jane.doe@example.com");
@@ -123,7 +123,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
 
     @Test(timeout = 30000)
     // TODO: Need a way to interact with the browser
-    public void returnsToSelectPaymentMethodViewAfterAddingAPayPalAccount() {
+    public void returnsToSelectPaymentMethodNonceViewAfterAddingAPayPalAccount() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         Intent intent = new PaymentRequest()
                 .clientToken(clientToken)
@@ -133,7 +133,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
 
         fillInOfflinePayPal();
 
-        waitForPaymentMethodList(TEN_SECONDS);
+        waitForPaymentMethodNonceList(TEN_SECONDS);
         assertSelectedPaymentMethodIs(com.braintreepayments.api.dropin.R.string.bt_descriptor_paypal);
     }
 
@@ -152,11 +152,11 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
 
         waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_inflated_loading_view)).check(matches(isDisplayed()));
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_header)).check(matches(not(isDisplayed())));
-        waitForPaymentMethodList().check(matches(isDisplayed()));
+        waitForPaymentMethodNonceList().check(matches(isDisplayed()));
     }
 
     @Test(timeout = 30000)
-    public void disablesSubmitButtonWhileCreatingPaymentMethod() {
+    public void disablesSubmitButtonWhileCreatingPaymentMethodNonce() {
         BraintreePaymentActivity activity = getActivity(new TestClientTokenBuilder().build(), 200);
 
         fillInCardForm();
@@ -171,16 +171,16 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
         waitForActivityToFinish(activity);
 
         Map<String, Object> result = getActivityResult(activity);
-        PaymentMethod response = ((Intent) result.get("resultData"))
-                .getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
+        PaymentMethodNonce response = ((Intent) result.get("resultData"))
+                .getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE);
 
         assertEquals(Activity.RESULT_OK, result.get("resultCode"));
         assertNotNull(response.getNonce());
-        assertEquals("11", ((Card) response).getLastTwo());
+        assertEquals("11", ((CardNonce) response).getLastTwo());
     }
 
     @Test(timeout = 30000)
-    public void reEnablesSubmitButtonIfThereAreValidationErrorsForThePaymentMethod() {
+    public void reEnablesSubmitButtonIfThereAreValidationErrorsForThePaymentMethodNonce() {
         String clientToken = new TestClientTokenBuilder()
                 .withoutPostalCodeChallenge()
                 .withCvvVerification()
@@ -234,7 +234,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
     }
 
     @Test(timeout = 30000)
-    public void backButtonExitsTheActivityIfThereAreNoPaymentMethodsToSelectFrom() {
+    public void backButtonExitsTheActivityIfThereAreNoPaymentMethodNoncesToSelectFrom() {
         Activity activity = getActivity(new TestClientTokenBuilder().build());
         waitForAddPaymentFormHeader();
         onAddPaymentFormHeader().check(matches(isDisplayed()));
@@ -296,7 +296,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
     }
 
     @Test(timeout = 30000)
-    public void upButtonIsNotShownIfThereAreNoPaymentMethods() {
+    public void upButtonIsNotShownIfThereAreNoPaymentMethodNonces() {
         BraintreePaymentActivity activity = getActivity(new TestClientTokenBuilder().build());
 
         waitForAddPaymentFormHeader();
@@ -519,7 +519,7 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
         waitForView(withHint("Email"), FIFTEEN_SECONDS).perform(typeText("bt_buyer_us@paypal.com"));
         onView(withHint("Password")).perform(typeText("11111111"));
         onView(withHint("Log In")).perform(click());
-        waitForPaymentMethodList();
+        waitForPaymentMethodNonceList();
 
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_payment_method_description)).check(
                 matches(withText(descriptionEmail)));
@@ -528,11 +528,11 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestRunner 
         waitForActivityToFinish(activity);
 
         Map<String, Object> result = getActivityResult(activity);
-        PaymentMethod paymentMethod = ((Intent) result.get("resultData"))
-                .getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
+        PaymentMethodNonce paymentMethodNonce = ((Intent) result.get("resultData"))
+                .getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE);
 
         assertEquals(Activity.RESULT_OK, result.get("resultCode"));
-        assertNotNull(paymentMethod.getNonce());
+        assertNotNull(paymentMethodNonce.getNonce());
     }
 
     private boolean checkHomeAsUpEnabled(Activity activity) {

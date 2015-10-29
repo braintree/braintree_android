@@ -13,16 +13,16 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.interfaces.PaymentMethodResponseCallback;
-import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
+import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
-import com.braintreepayments.api.models.AndroidPayCard;
-import com.braintreepayments.api.models.Card;
+import com.braintreepayments.api.models.AndroidPayCardNonce;
+import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.FixturesHelper;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
@@ -66,25 +66,25 @@ public class TokenizationClientTest {
 
     @Test(timeout = 10000)
     @MediumTest
-    public void getPaymentMethods_returnsAnEmptyListIfEmpty() throws InterruptedException {
+    public void getPaymentMethodNonces_returnsAnEmptyListIfEmpty() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         BraintreeFragment fragment = getFragment(mActivity, new TestClientTokenBuilder().build());
-        fragment.addListener(new PaymentMethodsUpdatedListener() {
+        fragment.addListener(new PaymentMethodNoncesUpdatedListener() {
             @Override
-            public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
-                assertEquals(0, paymentMethods.size());
+            public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {
+                assertEquals(0, paymentMethodNonces.size());
                 latch.countDown();
             }
         });
 
-        TokenizationClient.getPaymentMethods(fragment);
+        TokenizationClient.getPaymentMethodNonces(fragment);
 
         latch.await();
     }
 
     @Test(timeout = 10000)
     @MediumTest
-    public void getPaymentMethods_throwsAnError() throws ErrorWithResponse,
+    public void getPaymentMethodNonces_throwsAnError() throws ErrorWithResponse,
             BraintreeException, InterruptedException, InvalidArgumentException {
         final CountDownLatch latch = new CountDownLatch(1);
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
@@ -104,14 +104,14 @@ public class TokenizationClientTest {
             }
         });
 
-        TokenizationClient.getPaymentMethods(fragment);
+        TokenizationClient.getPaymentMethodNonces(fragment);
 
         latch.await();
     }
 
     @Test(timeout = 1000)
     @SmallTest
-    public void getPaymentMethods_fetchesPaymentMethods()
+    public void getPaymentMethodNonces_fetchesPaymentMethods()
             throws InvalidArgumentException, InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
@@ -123,36 +123,36 @@ public class TokenizationClientTest {
                         stringFromFixture("payment_methods/get_payment_methods_response.json"));
             }
         });
-        fragment.addListener(new PaymentMethodsUpdatedListener() {
+        fragment.addListener(new PaymentMethodNoncesUpdatedListener() {
             @Override
-            public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
-                assertEquals(3, paymentMethods.size());
-                assertEquals("11", ((Card) paymentMethods.get(0)).getLastTwo());
-                assertEquals("PayPal", paymentMethods.get(1).getTypeLabel());
-                assertEquals("11", ((AndroidPayCard) paymentMethods.get(2)).getLastTwo());
+            public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {
+                assertEquals(3, paymentMethodNonces.size());
+                assertEquals("11", ((CardNonce) paymentMethodNonces.get(0)).getLastTwo());
+                assertEquals("PayPal", paymentMethodNonces.get(1).getTypeLabel());
+                assertEquals("11", ((AndroidPayCardNonce) paymentMethodNonces.get(2)).getLastTwo());
 
-                assertEquals(3, paymentMethods.size());
+                assertEquals(3, paymentMethodNonces.size());
                 latch.countDown();
             }
         });
 
-        TokenizationClient.getPaymentMethods(fragment);
+        TokenizationClient.getPaymentMethodNonces(fragment);
 
         latch.await();
     }
 
     @Test(timeout = 10000)
     @MediumTest
-    public void getPaymentMethods_getsPaymentMethodsFromServer() throws InterruptedException,
+    public void getPaymentMethodNonces_getsPaymentMethodsFromServer() throws InterruptedException,
             InvalidArgumentException {
         final CountDownLatch latch = new CountDownLatch(1);
         final String clientToken = new TestClientTokenBuilder().build();
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, clientToken);
-        fragment.addListener(new PaymentMethodsUpdatedListener() {
+        fragment.addListener(new PaymentMethodNoncesUpdatedListener() {
             @Override
-            public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
-                assertEquals(1, paymentMethods.size());
-                assertEquals("11", ((Card) paymentMethods.get(0)).getLastTwo());
+            public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {
+                assertEquals(1, paymentMethodNonces.size());
+                assertEquals("11", ((CardNonce) paymentMethodNonces.get(0)).getLastTwo());
                 latch.countDown();
             }
         });
@@ -161,21 +161,21 @@ public class TokenizationClientTest {
                 .expirationMonth("04")
                 .expirationYear("17"));
 
-        TokenizationClient.getPaymentMethods(fragment);
+        TokenizationClient.getPaymentMethodNonces(fragment);
 
         latch.await();
     }
 
     @Test(timeout = 10000)
     @MediumTest
-    public void getPaymentMethods_failsWithATokenizationKey() throws InterruptedException,
+    public void getPaymentMethodNonces_failsWithATokenizationKey() throws InterruptedException,
             InvalidArgumentException {
         final CountDownLatch latch = new CountDownLatch(1);
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        fragment.addListener(new PaymentMethodsUpdatedListener() {
+        fragment.addListener(new PaymentMethodNoncesUpdatedListener() {
             @Override
-            public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
-                fail("getPaymentMethods succeeded");
+            public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {
+                fail("getPaymentMethodNonces succeeded");
             }
         });
         fragment.addListener(new BraintreeErrorListener() {
@@ -192,7 +192,7 @@ public class TokenizationClientTest {
                 .expirationMonth("04")
                 .expirationYear("17"));
 
-        TokenizationClient.getPaymentMethods(fragment);
+        TokenizationClient.getPaymentMethodNonces(fragment);
 
         latch.await();
     }
@@ -210,11 +210,11 @@ public class TokenizationClientTest {
                         .oneTouchCoreData(otcJson);
 
         TokenizationClient.tokenize(fragment, paypalAccountBuilder,
-                new PaymentMethodResponseCallback() {
+                new PaymentMethodNonceCallback() {
                     @Override
-                    public void success(PaymentMethod paymentMethod) {
-                        assertNotNull(paymentMethod.getNonce());
-                        assertEquals("PayPal", paymentMethod.getTypeLabel());
+                    public void success(PaymentMethodNonce paymentMethodNonce) {
+                        assertNotNull(paymentMethodNonce.getNonce());
+                        assertEquals("PayPal", paymentMethodNonce.getTypeLabel());
                         latch.countDown();
                     }
 
@@ -237,11 +237,11 @@ public class TokenizationClientTest {
                 new PayPalAccountBuilder().oneTouchCoreData(otcJson);
 
         TokenizationClient.tokenize(fragment, paypalAccountBuilder,
-                new PaymentMethodResponseCallback() {
+                new PaymentMethodNonceCallback() {
                     @Override
-                    public void success(PaymentMethod paymentMethod) {
-                        assertNotNull(paymentMethod.getNonce());
-                        assertEquals("PayPal", paymentMethod.getTypeLabel());
+                    public void success(PaymentMethodNonce paymentMethodNonce) {
+                        assertNotNull(paymentMethodNonce.getNonce());
+                        assertEquals("PayPal", paymentMethodNonce.getTypeLabel());
                         latch.countDown();
                     }
 

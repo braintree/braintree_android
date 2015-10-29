@@ -3,30 +3,35 @@ package com.braintreepayments.api;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.interfaces.PaymentMethodResponseCallback;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
-import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 
 import org.json.JSONException;
 
 import java.util.List;
+
+import static com.braintreepayments.api.models.PaymentMethodNonce.parsePaymentMethodNonces;
 
 public class TokenizationClient {
 
     static final String PAYMENT_METHOD_ENDPOINT = "payment_methods";
 
     /**
-     * Retrieves the current list of {@link PaymentMethod} for the current customer.
+     * Retrieves the current list of {@link PaymentMethodNonce} for the current customer.
      * <p/>
-     * When finished, the {@link java.util.List} of {@link PaymentMethod}s will be sent to {@link
-     * com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener#onPaymentMethodsUpdated(List)}.
+     * When finished, the {@link java.util.List} of {@link PaymentMethodNonce}s will be sent to {@link
+     * PaymentMethodNoncesUpdatedListener#onPaymentMethodNoncesUpdated(List)}.
      *
      * @param fragment {@link BraintreeFragment}
      */
-    static void getPaymentMethods(final BraintreeFragment fragment) {
+    static void getPaymentMethodNonces(final BraintreeFragment fragment) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
@@ -35,10 +40,11 @@ public class TokenizationClient {
                             @Override
                             public void success(String responseBody) {
                                 try {
-                                    List<PaymentMethod> paymentMethods =
-                                            PaymentMethod.parsePaymentMethods(responseBody);
+                                    List<PaymentMethodNonce> paymentMethodNonces =
+                                            parsePaymentMethodNonces(
+                                                    responseBody);
 
-                                    fragment.postCallback(paymentMethods);
+                                    fragment.postCallback(paymentMethodNonces);
                                 } catch (JSONException e) {
                                     fragment.postCallback(e);
                                 }
@@ -54,23 +60,23 @@ public class TokenizationClient {
     }
 
     /**
-     * Create a {@link com.braintreepayments.api.models.PaymentMethod} in the Braintree Gateway.
+     * Create a {@link PaymentMethodNonce} in the Braintree Gateway.
      * <p/>
-     * On completion, returns the {@link PaymentMethod} to {@link PaymentMethodResponseCallback}.
+     * On completion, returns the {@link PaymentMethodNonce} to {@link PaymentMethodNonceCallback}.
      * <p/>
-     * If creation fails validation, {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onRecoverableError(ErrorWithResponse)}
+     * If creation fails validation, {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}
      * will be called with the resulting {@link ErrorWithResponse}.
      * <p/>
      * If an error not due to validation (server error, network issue, etc.) occurs, {@link
-     * com.braintreepayments.api.interfaces.BraintreeErrorListener#onUnrecoverableError(Throwable)}
+     * com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)} (Throwable)}
      * will be called with the {@link Exception} that occurred.
      *
-     * @param paymentMethodBuilder {@link PaymentMethodBuilder} for the {@link PaymentMethod} to be
+     * @param paymentMethodBuilder {@link PaymentMethodBuilder} for the {@link PaymentMethodNonce} to be
      * created.
      */
     static void tokenize(final BraintreeFragment fragment,
             final PaymentMethodBuilder paymentMethodBuilder,
-            final PaymentMethodResponseCallback callback) {
+            final PaymentMethodNonceCallback callback) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
@@ -81,11 +87,12 @@ public class TokenizationClient {
                             @Override
                             public void success(String responseBody) {
                                 try {
-                                    PaymentMethod paymentMethod =
-                                            PaymentMethod.parsePaymentMethod(responseBody,
+                                    PaymentMethodNonce paymentMethodNonce =
+                                            parsePaymentMethodNonces(
+                                                    responseBody,
                                                     paymentMethodBuilder
                                                             .getResponsePaymentMethodType());
-                                    callback.success(paymentMethod);
+                                    callback.success(paymentMethodNonce);
                                 } catch (JSONException e) {
                                     callback.failure(e);
                                 }
@@ -101,15 +108,15 @@ public class TokenizationClient {
     }
 
     /**
-     * Create a {@link com.braintreepayments.api.models.Card} in the Braintree Gateway.
+     * Create a {@link CardNonce} in the Braintree Gateway.
      * <p/>
-     * On completion, returns the {@link PaymentMethod} to {@link com.braintreepayments.api.interfaces.PaymentMethodCreatedListener}.
+     * On completion, returns the {@link PaymentMethodNonce} to {@link PaymentMethodNonceCreatedListener}.
      * <p/>
-     * If creation fails validation, {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onRecoverableError(ErrorWithResponse)}
+     * If creation fails validation, {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}
      * will be called with the resulting {@link ErrorWithResponse}.
      * <p/>
      * If an error not due to validation (server error, network issue, etc.) occurs, {@link
-     * com.braintreepayments.api.interfaces.BraintreeErrorListener#onUnrecoverableError(Throwable)}
+     * com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}
      * will be called with the {@link Exception} that occurred.
      *
      * @param paymentMethodBuilder {@link PaymentMethodBuilder}
@@ -117,10 +124,10 @@ public class TokenizationClient {
     public static void tokenize(final BraintreeFragment fragment,
             final PaymentMethodBuilder paymentMethodBuilder) {
         TokenizationClient.tokenize(fragment, paymentMethodBuilder,
-                new PaymentMethodResponseCallback() {
+                new PaymentMethodNonceCallback() {
                     @Override
-                    public void success(PaymentMethod paymentMethod) {
-                        fragment.postCallback(paymentMethod);
+                    public void success(PaymentMethodNonce paymentMethodNonce) {
+                        fragment.postCallback(paymentMethodNonce);
                         sendAnalyticEvent("nonce-received");
                     }
 

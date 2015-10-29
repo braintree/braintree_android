@@ -13,16 +13,16 @@ import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
-import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.Card;
+import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PayPalAccount;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PayPalAccountNonce;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -326,13 +326,13 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void addListener_flushesPaymentMethodCreatedCallback() throws InterruptedException {
+    public void addListener_flushesPaymentMethodNonceCreatedCallback() throws InterruptedException {
         BraintreeFragment fragment = getFragment(mActivity, mClientToken);
-        fragment.postCallback(new Card());
+        fragment.postCallback(new CardNonce());
 
-        fragment.addListener(new PaymentMethodCreatedListener() {
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
                 mCountDownLatch.countDown();
             }
         });
@@ -342,13 +342,13 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void addListener_flushesPaymentMethodsUpdatedCallback() throws InterruptedException {
+    public void addListener_flushesPaymentMethodNoncesUpdatedCallback() throws InterruptedException {
         BraintreeFragment fragment = getFragment(mActivity, mClientToken);
-        fragment.postCallback(new ArrayList<PaymentMethod>());
+        fragment.postCallback(new ArrayList<PaymentMethodNonce>());
 
-        fragment.addListener(new PaymentMethodsUpdatedListener() {
+        fragment.addListener(new PaymentMethodNoncesUpdatedListener() {
             @Override
-            public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
+            public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {
                 mCountDownLatch.countDown();
             }
         });
@@ -358,11 +358,11 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void removeListener_noPaymentMethodCreatedReceived() {
+    public void removeListener_noPaymentMethodNonceCreatedReceived() {
         BraintreeFragment fragment = getFragment(mActivity, mClientToken);
-        PaymentMethodCreatedListener listener = new PaymentMethodCreatedListener() {
+        PaymentMethodNonceCreatedListener listener = new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
                 fail("Listener was called");
             }
         };
@@ -370,16 +370,16 @@ public class BraintreeFragmentTest {
         fragment.addListener(listener);
         fragment.removeListener(listener);
 
-        fragment.postCallback(new Card());
+        fragment.postCallback(new CardNonce());
     }
 
     @Test(timeout = 1000)
     @SmallTest
-    public void removeListener_noPaymentMethodsUpdatedCallbacksReceived() {
+    public void removeListener_noPaymentMethodNoncesUpdatedCallbacksReceived() {
         BraintreeFragment fragment = getFragment(mActivity, mClientToken);
-        PaymentMethodsUpdatedListener listener = new PaymentMethodsUpdatedListener() {
+        PaymentMethodNoncesUpdatedListener listener = new PaymentMethodNoncesUpdatedListener() {
             @Override
-            public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
+            public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {
                 fail("Listener was called");
             }
         };
@@ -387,7 +387,7 @@ public class BraintreeFragmentTest {
         fragment.addListener(listener);
         fragment.removeListener(listener);
 
-        fragment.postCallback(new ArrayList<PaymentMethod>());
+        fragment.postCallback(new ArrayList<PaymentMethodNonce>());
     }
 
     @Test(timeout = 1000)
@@ -426,54 +426,54 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void postCallback_addsPaymentMethodToCache() {
+    public void postCallback_addsPaymentMethodNonceToCache() {
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
-        assertEquals(0, fragment.getCachedPaymentMethods().size());
+        assertEquals(0, fragment.getCachedPaymentMethodNonces().size());
 
-        fragment.postCallback(new Card());
+        fragment.postCallback(new CardNonce());
 
-        assertEquals(1, fragment.getCachedPaymentMethods().size());
-        assertTrue(fragment.getCachedPaymentMethods().get(0) instanceof Card);
+        assertEquals(1, fragment.getCachedPaymentMethodNonces().size());
+        assertTrue(fragment.getCachedPaymentMethodNonces().get(0) instanceof CardNonce);
     }
 
     @Test(timeout = 1000)
     @SmallTest
-    public void postCallback_addsPaymentMethodToBeginningOfCache() {
+    public void postCallback_addsPaymentMethodNonceToBeginningOfCache() {
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
-        assertEquals(0, fragment.getCachedPaymentMethods().size());
+        assertEquals(0, fragment.getCachedPaymentMethodNonces().size());
 
-        fragment.postCallback(new Card());
-        fragment.postCallback(new PayPalAccount());
+        fragment.postCallback(new CardNonce());
+        fragment.postCallback(new PayPalAccountNonce());
 
-        assertEquals(2, fragment.getCachedPaymentMethods().size());
-        assertTrue(fragment.getCachedPaymentMethods().get(0) instanceof PayPalAccount);
+        assertEquals(2, fragment.getCachedPaymentMethodNonces().size());
+        assertTrue(fragment.getCachedPaymentMethodNonces().get(0) instanceof PayPalAccountNonce);
     }
 
     @Test(timeout = 1000)
     @SmallTest
-    public void postCallback_setsBooleanForFetchedPaymentMethods() {
+    public void postCallback_setsBooleanForFetchedPaymentMethodNonces() {
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
-        assertFalse(fragment.hasFetchedPaymentMethods());
+        assertFalse(fragment.hasFetchedPaymentMethodNonces());
 
-        fragment.postCallback(new ArrayList<PaymentMethod>());
+        fragment.postCallback(new ArrayList<PaymentMethodNonce>());
 
-        assertTrue(fragment.hasFetchedPaymentMethods());
+        assertTrue(fragment.hasFetchedPaymentMethodNonces());
     }
 
     @Test(timeout = 1000)
     @SmallTest
-    public void postCallback_addsAllPaymentMethodsToCache() {
+    public void postCallback_addsAllPaymentMethodNoncesToCache() {
         BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
-        assertEquals(0, fragment.getCachedPaymentMethods().size());
-        List<PaymentMethod> paymentMethodList = new ArrayList<>();
-        paymentMethodList.add(new Card());
-        paymentMethodList.add(new PayPalAccount());
+        assertEquals(0, fragment.getCachedPaymentMethodNonces().size());
+        List<PaymentMethodNonce> paymentMethodNonceList = new ArrayList<>();
+        paymentMethodNonceList.add(new CardNonce());
+        paymentMethodNonceList.add(new PayPalAccountNonce());
 
-        fragment.postCallback(paymentMethodList);
+        fragment.postCallback(paymentMethodNonceList);
 
-        assertEquals(2, fragment.getCachedPaymentMethods().size());
-        assertTrue(fragment.getCachedPaymentMethods().get(0) instanceof Card);
-        assertTrue(fragment.getCachedPaymentMethods().get(1) instanceof PayPalAccount);
+        assertEquals(2, fragment.getCachedPaymentMethodNonces().size());
+        assertTrue(fragment.getCachedPaymentMethodNonces().get(0) instanceof CardNonce);
+        assertTrue(fragment.getCachedPaymentMethodNonces().get(1) instanceof PayPalAccountNonce);
     }
 
     @Test(timeout = 1000)

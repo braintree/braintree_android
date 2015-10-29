@@ -5,7 +5,7 @@
 
     <include layout="@layout/bt_payment_description" />
 
-    <com.braintreepayments.api.dropin.view.PaymentMethodView
+    <com.braintreepayments.api.dropin.view.PaymentMethodNonceView
         android:id="@+id/bt_selected_payment_method_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

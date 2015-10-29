@@ -30,7 +30,7 @@ import static com.braintreepayments.api.utils.PaymentFormHelpers.onCvvField;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.onExpirationField;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.onPostalCodeField;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
-import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodList;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodNonceList;
 import static com.braintreepayments.testutils.CardNumber.AMEX;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
@@ -90,7 +90,8 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestRunner {
                 .putExtra(BraintreePaymentTestActivity.GET_PAYMENT_METHODS,
                         stringFromFixture("responses/get_payment_methods_visa_response.json"));
         getActivity(intent);
-        waitForPaymentMethodList();
+
+        waitForPaymentMethodNonceList();
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_change_payment_method_link)).perform(click());
         waitForAddPaymentFormHeader();
         onCardField().perform(typeText(AMEX), closeSoftKeyboard());
@@ -110,7 +111,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestRunner {
                         stringFromFixture("responses/get_payment_methods_two_cards_response.json"));
         getActivity(intent);
 
-        waitForPaymentMethodList();
+        waitForPaymentMethodNonceList();
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_payment_method_type)).check(matches(withText(
                 com.braintreepayments.api.dropin.R.string.bt_descriptor_visa)));
 
@@ -120,7 +121,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestRunner {
         assertSelectedPaymentMethodIs(com.braintreepayments.api.dropin.R.string.bt_descriptor_amex);
 
         rotateToLandscape();
-        waitForPaymentMethodList();
+        waitForPaymentMethodNonceList();
         assertSelectedPaymentMethodIs(com.braintreepayments.api.dropin.R.string.bt_descriptor_amex);
     }
 
@@ -133,13 +134,13 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestRunner {
                         stringFromFixture("responses/get_payment_methods_two_cards_response.json"));
         BraintreePaymentActivity activity = getActivity(intent);
 
-        waitForPaymentMethodList();
+        waitForPaymentMethodNonceList();
         verify(activity.mBraintreeFragment.getHttpClient() , times(1))
                 .get(eq(BraintreePaymentTestActivity.GET_PAYMENT_METHODS),
                         any(HttpResponseCallback.class));
         rotateToLandscape();
 
-        waitForPaymentMethodList();
+        waitForPaymentMethodNonceList();
         verifyNoMoreInteractions(activity.mBraintreeFragment.getHttpClient());
     }
 

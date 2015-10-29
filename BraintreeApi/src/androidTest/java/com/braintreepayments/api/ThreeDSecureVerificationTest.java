@@ -11,10 +11,10 @@ import android.test.suitebuilder.annotation.MediumTest;
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
-import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
-import com.braintreepayments.api.models.Card;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.CardBuilder;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
@@ -138,14 +138,14 @@ public class ThreeDSecureVerificationTest {
     public void performVerification_doesALookupAndReturnsACardAndANullACSUrlWhenAuthenticationIsNotRequired()
             throws InterruptedException {
         BraintreeFragment fragment = getFragment();
-        fragment.addListener(new PaymentMethodCreatedListener() {
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                Card card = (Card) paymentMethod;
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
-                assertEquals("51", card.getLastTwo());
-                assertTrue(card.getThreeDSecureInfo().isLiabilityShifted());
-                assertTrue(card.getThreeDSecureInfo().isLiabilityShiftPossible());
+                assertEquals("51", cardNonce.getLastTwo());
+                assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+                assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
 
                 mCountDownLatch.countDown();
             }
@@ -188,10 +188,10 @@ public class ThreeDSecureVerificationTest {
     public void performVerification_doesALookupAndReturnsACardWhenThereIsALookupError()
             throws InterruptedException {
         BraintreeFragment fragment = getFragment();
-        fragment.addListener(new PaymentMethodCreatedListener() {
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                assertEquals("77", ((Card) paymentMethod).getLastTwo());
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertEquals("77", ((CardNonce) paymentMethodNonce).getLastTwo());
                 mCountDownLatch.countDown();
             }
         });
@@ -209,14 +209,14 @@ public class ThreeDSecureVerificationTest {
     public void performVerification_requestsAuthenticationWhenRequired()
             throws InterruptedException {
         BraintreeFragment fragment = getFragment();
-        fragment.addListener(new PaymentMethodCreatedListener() {
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                Card card = (Card) paymentMethod;
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
-                assertEquals("02", card.getLastTwo());
-                assertTrue(card.getThreeDSecureInfo().isLiabilityShifted());
-                assertTrue(card.getThreeDSecureInfo().isLiabilityShiftPossible());
+                assertEquals("02", cardNonce.getLastTwo());
+                assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+                assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
 
                 mCountDownLatch.countDown();
             }
@@ -269,13 +269,13 @@ public class ThreeDSecureVerificationTest {
     public void performVerification_returnsASuccessfulAuthenticationWhenIssuerDoesNotParticipate()
             throws InterruptedException {
         BraintreeFragment fragment = getFragment();
-        fragment.addListener(new PaymentMethodCreatedListener() {
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                Card card = (Card) paymentMethod;
-                assertEquals("01", card.getLastTwo());
-                assertTrue(card.getThreeDSecureInfo().isLiabilityShifted());
-                assertTrue(card.getThreeDSecureInfo().isLiabilityShiftPossible());
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+                assertEquals("01", cardNonce.getLastTwo());
+                assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+                assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
 
                 mCountDownLatch.countDown();
             }

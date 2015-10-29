@@ -12,8 +12,8 @@ import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.dropin.R;
 import com.braintreepayments.api.dropin.view.LoadingHeader;
 import com.braintreepayments.api.dropin.view.LoadingHeader.HeaderState;
-import com.braintreepayments.api.models.Card;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.CardNonce;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 
 import org.hamcrest.Matcher;
 
@@ -73,12 +73,12 @@ public class PaymentFormHelpers {
         waitForActivityToFinish(activity);
 
         Map<String, Object> result = getActivityResult(activity);
-        PaymentMethod response = ((Intent) result.get("resultData"))
-                .getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
+        PaymentMethodNonce response = ((Intent) result.get("resultData"))
+                .getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE);
 
         assertEquals(Activity.RESULT_OK, result.get("resultCode"));
         assertNotNull(response.getNonce());
-        assertEquals("11", ((Card) response).getLastTwo());
+        assertEquals("11", ((CardNonce) response).getLastTwo());
     }
 
     public static void fillInOfflinePayPal() {
@@ -93,14 +93,14 @@ public class PaymentFormHelpers {
 
     public static void performPayPalAdd() {
         fillInOfflinePayPal();
-        waitForPaymentMethodList();
+        waitForPaymentMethodNonceList();
     }
 
-    public static ViewInteraction waitForPaymentMethodList() {
+    public static ViewInteraction waitForPaymentMethodNonceList() {
         return waitForView(withId(R.id.bt_change_payment_method_link), TEN_SECONDS);
     }
 
-    public static ViewInteraction waitForPaymentMethodList(int timeout) {
+    public static ViewInteraction waitForPaymentMethodNonceList(int timeout) {
         return waitForView(withId(R.id.bt_change_payment_method_link), timeout);
     }
 

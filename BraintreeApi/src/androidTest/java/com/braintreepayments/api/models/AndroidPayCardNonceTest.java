@@ -11,18 +11,18 @@ import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
-public class AndroidPayCardTest {
+public class AndroidPayCardNonceTest {
 
     @Test(timeout = 1000)
     @SmallTest
     public void testCanCreateFromJson() throws JSONException {
         String androidPayString = stringFromFixture("payment_methods/android_pay_card_response.json");
 
-        AndroidPayCard androidPayCard = AndroidPayCard.fromJson(androidPayString);
+        AndroidPayCardNonce androidPayCardNonce = AndroidPayCardNonce.fromJson(androidPayString);
 
-        assertEquals("Google Wallet", androidPayCard.getTypeLabel());
-        assertEquals("fake-android-pay-nonce", androidPayCard.getNonce());
-        assertEquals("Android Pay", androidPayCard.getDescription());
-        assertEquals("11", androidPayCard.getLastTwo());
+        assertEquals("Google Wallet", androidPayCardNonce.getTypeLabel());
+        assertEquals("fake-android-pay-nonce", androidPayCardNonce.getNonce());
+        assertEquals("Android Pay", androidPayCardNonce.getDescription());
+        assertEquals("11", androidPayCardNonce.getLastTwo());
     }
 }

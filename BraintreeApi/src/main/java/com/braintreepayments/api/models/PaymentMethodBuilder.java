@@ -19,13 +19,13 @@ public abstract class PaymentMethodBuilder<T> {
     private static final String VALIDATE_KEY = "validate";
 
     protected final JSONObject mJson;
-    protected final JSONObject mPaymentMethodJson;
+    protected final JSONObject mPaymentMethodNonceJson;
     private final JSONObject mOptionsJson;
     private final JSONObject mMetaJson;
 
     public PaymentMethodBuilder() {
         mJson = new JSONObject();
-        mPaymentMethodJson = new JSONObject();
+        mPaymentMethodNonceJson = new JSONObject();
         mOptionsJson = new JSONObject();
         mMetaJson = new JSONObject();
 
@@ -69,23 +69,23 @@ public abstract class PaymentMethodBuilder<T> {
     }
 
     /**
-     * @param validate Flag to denote when the associated {@link com.braintreepayments.api.models.PaymentMethod}
-     *   will be validated. When set to {@code true}, the {@link com.braintreepayments.api.models.PaymentMethod}
-     *   will be validated immediately. When {@code false}, the {@link com.braintreepayments.api.models.PaymentMethod}
+     * @param validate Flag to denote when the associated {@link PaymentMethodNonce}
+     *   will be validated. When set to {@code true}, the {@link PaymentMethodNonce}
+     *   will be validated immediately. When {@code false}, the {@link PaymentMethodNonce}
      *   will be validated when used by a server side library for a Braintree gateway action.
      */
     @SuppressWarnings("unchecked")
     public T validate(boolean validate) {
         try {
             mOptionsJson.put(VALIDATE_KEY, validate);
-            mPaymentMethodJson.put(OPTIONS_KEY, mOptionsJson);
+            mPaymentMethodNonceJson.put(OPTIONS_KEY, mOptionsJson);
         } catch (JSONException ignored) {}
 
         return (T) this;
     }
 
     /**
-     * @return String representation of {@link com.braintreepayments.api.models.PaymentMethod} for API use.
+     * @return String representation of {@link PaymentMethodNonce} for API use.
      */
     public String build() {
         return mJson.toString();

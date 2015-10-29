@@ -24,9 +24,9 @@ public class ThreeDSecureAuthenticationResponseTest {
         ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
                 stringFromFixture("three_d_secure/authentication_response.json"));
 
-        assertEquals("11", authResponse.getCard().getLastTwo());
-        assertTrue(authResponse.getCard().getThreeDSecureInfo().isLiabilityShifted());
-        assertTrue(authResponse.getCard().getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertEquals("11", authResponse.getCardNonce().getLastTwo());
+        assertTrue(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
+        assertTrue(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertTrue(authResponse.isSuccess());
     }
 
@@ -47,7 +47,7 @@ public class ThreeDSecureAuthenticationResponseTest {
                 stringFromFixture("three_d_secure/authentication_response_with_error.json"));
         ErrorWithResponse errors = new ErrorWithResponse(0, authResponse.getErrors());
 
-        assertNull(authResponse.getCard());
+        assertNull(authResponse.getCardNonce());
         assertFalse(authResponse.isSuccess());
         assertEquals("Failed to authenticate, please try a different form of payment", errors.getMessage());
     }
@@ -63,11 +63,11 @@ public class ThreeDSecureAuthenticationResponseTest {
 
         ThreeDSecureAuthenticationResponse parsedAuthResponse = ThreeDSecureAuthenticationResponse.CREATOR.createFromParcel(parcel);
 
-        assertEquals(authResponse.getCard().getLastTwo(), parsedAuthResponse.getCard().getLastTwo());
-        assertEquals(authResponse.getCard().getThreeDSecureInfo().isLiabilityShifted(),
-                parsedAuthResponse.getCard().getThreeDSecureInfo().isLiabilityShifted());
-        assertEquals(authResponse.getCard().getThreeDSecureInfo().isLiabilityShiftPossible(),
-                parsedAuthResponse.getCard().getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertEquals(authResponse.getCardNonce().getLastTwo(), parsedAuthResponse.getCardNonce().getLastTwo());
+        assertEquals(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShifted(),
+                parsedAuthResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
+        assertEquals(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible(),
+                parsedAuthResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertEquals(authResponse.isSuccess(), parsedAuthResponse.isSuccess());
         assertEquals(authResponse.getException(), parsedAuthResponse.getException());
     }

@@ -24,7 +24,7 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
-import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodList;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodNonceList;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static com.braintreepayments.testutils.ui.Assertions.assertBitmapsEqual;
@@ -189,7 +189,7 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
                         stringFromFixture("responses/get_payment_methods_two_cards_response.json"));
         getActivity(intent);
 
-        waitForPaymentMethodList();
+        waitForPaymentMethodNonceList();
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_select_payment_method_submit_button)).check(matches(withText("$19 - SUBSCRIBE")));
     }
 

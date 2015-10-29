@@ -15,7 +15,7 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.SignatureVerification;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 
 import org.json.JSONException;
 
@@ -23,6 +23,7 @@ import java.util.List;
 
 import static com.braintreepayments.api.TokenizationClient.PAYMENT_METHOD_ENDPOINT;
 import static com.braintreepayments.api.TokenizationClient.versionedPath;
+import static com.braintreepayments.api.models.PaymentMethodNonce.*;
 
 /**
  * Class containing Venmo specific logic.
@@ -76,7 +77,7 @@ public class Venmo {
      * Start the Pay With Venmo flow. This will app switch to the Venmo app.
      *
      * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to
-     * {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onUnrecoverableError(Throwable)}.
+     * {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}.
      *
      * @param fragment {@link BraintreeFragment}
      */
@@ -116,10 +117,10 @@ public class Venmo {
                         @Override
                         public void success(String responseBody) {
                             try {
-                                List<PaymentMethod> paymentMethodsList =
-                                        PaymentMethod.parsePaymentMethods(responseBody);
-                                if (paymentMethodsList.size() == 1) {
-                                    fragment.postCallback(paymentMethodsList.get(0));
+                                List<PaymentMethodNonce> paymentMethodNoncesList =
+                                        parsePaymentMethodNonces(responseBody);
+                                if (paymentMethodNoncesList.size() == 1) {
+                                    fragment.postCallback(paymentMethodNoncesList.get(0));
                                     fragment.sendAnalyticsEvent("venmo.app-switch.nonce-received");
                                 } else {
                                     fragment.postCallback(new ServerException(

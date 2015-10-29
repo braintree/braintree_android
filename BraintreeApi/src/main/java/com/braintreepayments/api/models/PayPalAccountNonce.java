@@ -8,14 +8,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * {@link com.braintreepayments.api.models.PaymentMethod} representing a PayPal account.
+ * {@link PaymentMethodNonce} representing a PayPal account.
  *
- * @see com.braintreepayments.api.models.Card
- * @see PaymentMethod
+ * @see {@link CardNonce}
+ * @see {@link PaymentMethodNonce}
  */
-public class PayPalAccount extends PaymentMethod implements Parcelable {
+public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable {
 
-    protected static final String PAYMENT_METHOD_TYPE = "PayPalAccount";
+    protected static final String TYPE = "PayPalAccount";
     protected static final String API_RESOURCE_KEY = "paypalAccounts";
 
     private static final String DETAILS_KEY = "details";
@@ -40,21 +40,21 @@ public class PayPalAccount extends PaymentMethod implements Parcelable {
     private String mPayerId;
 
     /**
-     * Convert an API response to a {@link PayPalAccount}.
+     * Convert an API response to a {@link PayPalAccountNonce}.
      *
-     * @param json Raw JSON representation of a {@link PayPalAccount}.
-     * @return {@link PayPalAccount} for use in payment method selection UIs.
+     * @param json Raw JSON representation of a {@link PayPalAccountNonce}.
+     * @return {@link PayPalAccountNonce} for use in payment method selection UIs.
      */
-    public static PayPalAccount fromJson(String json) throws JSONException {
-        PayPalAccount payPalAccount = new PayPalAccount();
-        payPalAccount.fromJson(PayPalAccount.getJsonObjectForType(API_RESOURCE_KEY, json));
-        return payPalAccount;
+    public static PayPalAccountNonce fromJson(String json) throws JSONException {
+        PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce();
+        payPalAccountNonce.fromJson(PayPalAccountNonce.getJsonObjectForType(API_RESOURCE_KEY, json));
+        return payPalAccountNonce;
     }
 
     /**
-     * Generates a {@link PayPalAccount} from the {@link JSONObject}.
+     * Generates a {@link PayPalAccountNonce} from the {@link JSONObject}.
      *
-     * @param json {@link JSONObject} that holds properties for {@link PayPalAccount}.
+     * @param json {@link JSONObject} that holds properties for {@link PayPalAccountNonce}.
      * @throws JSONException
      */
     protected void fromJson(JSONObject json) throws JSONException {
@@ -104,7 +104,7 @@ public class PayPalAccount extends PaymentMethod implements Parcelable {
     }
 
     /**
-     * @return The type of this {@link PaymentMethod} (always "PayPal")
+     * @return The type of this {@link PaymentMethodNonce} (always "PayPal")
      */
     @Override
     public String getTypeLabel() {
@@ -168,7 +168,7 @@ public class PayPalAccount extends PaymentMethod implements Parcelable {
         mClientMetadataId = clientMetadataId;
     }
 
-    public PayPalAccount() {}
+    public PayPalAccountNonce() {}
 
     @Override
     public int describeContents() {
@@ -189,7 +189,7 @@ public class PayPalAccount extends PaymentMethod implements Parcelable {
         dest.writeString(mPayerId);
     }
 
-    private PayPalAccount(Parcel in) {
+    private PayPalAccountNonce(Parcel in) {
         mClientMetadataId = in.readString();
         mNonce = in.readString();
         mDescription = in.readString();
@@ -202,13 +202,13 @@ public class PayPalAccount extends PaymentMethod implements Parcelable {
         mPayerId = in.readString();
     }
 
-    public static final Creator<PayPalAccount> CREATOR = new Creator<PayPalAccount>() {
-        public PayPalAccount createFromParcel(Parcel source) {
-            return new PayPalAccount(source);
+    public static final Creator<PayPalAccountNonce> CREATOR = new Creator<PayPalAccountNonce>() {
+        public PayPalAccountNonce createFromParcel(Parcel source) {
+            return new PayPalAccountNonce(source);
         }
 
-        public PayPalAccount[] newArray(int size) {
-            return new PayPalAccount[size];
+        public PayPalAccountNonce[] newArray(int size) {
+            return new PayPalAccountNonce[size];
         }
     };
 }

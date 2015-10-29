@@ -15,9 +15,9 @@ import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.PaymentButton;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
-import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
-import com.braintreepayments.api.models.PaymentMethod;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
 import com.google.android.gms.wallet.FullWalletRequest;
@@ -27,7 +27,7 @@ import com.google.android.gms.wallet.WalletConstants;
 
 import java.util.Collections;
 
-public class PaymentButtonActivity extends Activity implements PaymentMethodCreatedListener,
+public class PaymentButtonActivity extends Activity implements PaymentMethodNonceCreatedListener,
         OnClickListener {
 
     private static final int ANDROID_PAY_REQUEST_CODE = 1;
@@ -71,9 +71,9 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodCrea
     }
 
     @Override
-    public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+    public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         setResult(RESULT_OK, new Intent()
-                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD, paymentMethod));
+                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce));
         finish();
     }
 

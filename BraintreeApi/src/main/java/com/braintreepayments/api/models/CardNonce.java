@@ -7,11 +7,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * {@link com.braintreepayments.api.models.PaymentMethod} representing a credit or debit card.
+ * {@link PaymentMethodNonce} representing a credit or debit card.
  */
-public class Card extends PaymentMethod implements Parcelable {
+public class CardNonce extends PaymentMethodNonce implements Parcelable {
 
-    protected static final String PAYMENT_METHOD_TYPE = "CreditCard";
+    protected static final String TYPE = "CreditCard";
     protected static final String API_RESOURCE_KEY = "creditCards";
 
     private static final String THREE_D_SECURE_INFO_KEY = "threeDSecureInfo";
@@ -24,16 +24,16 @@ public class Card extends PaymentMethod implements Parcelable {
     private String mLastTwo;
 
     /**
-     * Convert an API response to a {@link Card}.
+     * Convert an API response to a {@link CardNonce}.
      *
-     * @param json Raw JSON response from Braintree of a {@link Card}.
-     * @return {@link Card}.
+     * @param json Raw JSON response from Braintree of a {@link CardNonce}.
+     * @return {@link CardNonce}.
      * @throws JSONException when parsing the response fails.
      */
-    public static Card fromJson(String json) throws JSONException {
-        Card card = new Card();
-        card.fromJson(Card.getJsonObjectForType(API_RESOURCE_KEY, json));
-        return card;
+    public static CardNonce fromJson(String json) throws JSONException {
+        CardNonce cardNonce = new CardNonce();
+        cardNonce.fromJson(CardNonce.getJsonObjectForType(API_RESOURCE_KEY, json));
+        return cardNonce;
     }
 
     /**
@@ -76,14 +76,14 @@ public class Card extends PaymentMethod implements Parcelable {
     }
 
     /**
-     * @return The 3D Secure info for the current {@link com.braintreepayments.api.models.Card} or
+     * @return The 3D Secure info for the current {@link CardNonce} or
      * {@code null}
      */
     public ThreeDSecureInfo getThreeDSecureInfo() {
         return mThreeDSecureInfo;
     }
 
-    public Card() {}
+    public CardNonce() {}
 
     @Override
     public int describeContents() {
@@ -99,7 +99,7 @@ public class Card extends PaymentMethod implements Parcelable {
         dest.writeString(mLastTwo);
     }
 
-    protected Card(Parcel in) {
+    protected CardNonce(Parcel in) {
         mThreeDSecureInfo = in.readParcelable(ThreeDSecureInfo.class.getClassLoader());
         mNonce = in.readString();
         mDescription = in.readString();
@@ -107,13 +107,13 @@ public class Card extends PaymentMethod implements Parcelable {
         mLastTwo = in.readString();
     }
 
-    public static final Creator<Card> CREATOR = new Creator<Card>() {
-        public Card createFromParcel(Parcel source) {
-            return new Card(source);
+    public static final Creator<CardNonce> CREATOR = new Creator<CardNonce>() {
+        public CardNonce createFromParcel(Parcel source) {
+            return new CardNonce(source);
         }
 
-        public Card[] newArray(int size) {
-            return new Card[size];
+        public CardNonce[] newArray(int size) {
+            return new CardNonce[size];
         }
     };
 }

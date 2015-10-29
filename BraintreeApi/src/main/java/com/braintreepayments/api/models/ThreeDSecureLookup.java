@@ -11,14 +11,14 @@ import org.json.JSONObject;
  */
 public class ThreeDSecureLookup implements Parcelable {
 
-    private static final String PAYMENT_METHOD_KEY = "paymentMethod";
+    private static final String CARD_NONCE_KEY = "paymentMethod";
     private static final String LOOKUP_KEY = "lookup";
     private static final String ACS_URL_KEY = "acsUrl";
     private static final String MD_KEY = "md";
     private static final String TERM_URL_KEY = "termUrl";
     private static final String PA_REQ_KEY = "pareq";
 
-    private Card mCard;
+    private CardNonce mCardNonce;
     private String mAcsUrl;
     private String mMd;
     private String mTermUrl;
@@ -37,9 +37,9 @@ public class ThreeDSecureLookup implements Parcelable {
 
         ThreeDSecureLookup lookup = new ThreeDSecureLookup();
 
-        Card card = new Card();
-        card.fromJson(json.getJSONObject(PAYMENT_METHOD_KEY));
-        lookup.mCard = card;
+        CardNonce cardNonce = new CardNonce();
+        cardNonce.fromJson(json.getJSONObject(CARD_NONCE_KEY));
+        lookup.mCardNonce = cardNonce;
 
         JSONObject lookupJson = json.getJSONObject(LOOKUP_KEY);
 
@@ -57,12 +57,12 @@ public class ThreeDSecureLookup implements Parcelable {
     }
 
     /**
-     * @return The {@link com.braintreepayments.api.models.Card} from the 3D Secure lookup.
+     * @return The {@link CardNonce} from the 3D Secure lookup.
      * If {@link #getAcsUrl()} is {@code null} this card may be used immediately and will benefit
      * from 3D Secure.
      */
-    public Card getCard() {
-        return mCard;
+    public CardNonce getCardNonce() {
+        return mCardNonce;
     }
 
     /**
@@ -103,7 +103,7 @@ public class ThreeDSecureLookup implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(mCard, flags);
+        dest.writeParcelable(mCardNonce, flags);
         dest.writeString(mAcsUrl);
         dest.writeString(mMd);
         dest.writeString(mTermUrl);
@@ -111,7 +111,7 @@ public class ThreeDSecureLookup implements Parcelable {
     }
 
     private ThreeDSecureLookup(Parcel in) {
-        mCard = in.readParcelable(Card.class.getClassLoader());
+        mCardNonce = in.readParcelable(CardNonce.class.getClassLoader());
         mAcsUrl = in.readString();
         mMd = in.readString();
         mTermUrl = in.readString();

@@ -4,12 +4,12 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.Card;
+import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 
 import org.json.JSONException;
 
@@ -127,19 +127,19 @@ public class BraintreeFragmentTestUtils {
     }
 
     /**
-     * Tokenize a card and return the {@link Card} instance.
+     * Tokenize a card and return the {@link CardNonce} instance.
      *
      * @param fragment
      * @param cardBuilder
-     * @return {@link Card}
+     * @return {@link CardNonce}
      */
-    public static Card tokenize(BraintreeFragment fragment, CardBuilder cardBuilder) {
+    public static CardNonce tokenize(BraintreeFragment fragment, CardBuilder cardBuilder) {
         final CountDownLatch latch = new CountDownLatch(1);
-        final Card[] card = new Card[1];
-        PaymentMethodCreatedListener listener = new PaymentMethodCreatedListener() {
+        final CardNonce[] cardNonce = new CardNonce[1];
+        PaymentMethodNonceCreatedListener listener = new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                card[0] = (Card) paymentMethod;
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                cardNonce[0] = (CardNonce) paymentMethodNonce;
                 latch.countDown();
             }
         };
@@ -152,7 +152,7 @@ public class BraintreeFragmentTestUtils {
         } catch (InterruptedException ignored) {}
 
         fragment.removeListener(listener);
-        return card[0];
+        return cardNonce[0];
     }
 
     public static void verifyAnalyticsEvent(BraintreeFragment fragment, String event) {

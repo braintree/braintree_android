@@ -25,9 +25,9 @@ import com.braintreepayments.api.PayPalSignatureVerification;
 import com.braintreepayments.api.ThreeDSecure;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
-import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.internal.VenmoSignatureVerification;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.demo.internal.ApiClient;
 import com.braintreepayments.demo.internal.ApiClientRequestInterceptor;
 import com.braintreepayments.demo.models.ClientToken;
@@ -39,7 +39,7 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class MainActivity extends Activity implements PaymentMethodCreatedListener,
+public class MainActivity extends Activity implements PaymentMethodNonceCreatedListener,
         BraintreeErrorListener, OnNavigationListener {
 
     static final String EXTRA_AUTHORIZATION = "authorization";
@@ -188,8 +188,8 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     }
 
     @Override
-    public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-        displayNonce(paymentMethod.getNonce());
+    public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+        displayNonce(paymentMethodNonce.getNonce());
         safelyCloseLoadingView();
     }
 
@@ -200,9 +200,9 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
         safelyCloseLoadingView();
 
         if (resultCode == RESULT_OK) {
-            PaymentMethod paymentMethod =
-                    data.getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD);
-            displayNonce(paymentMethod.getNonce());
+            PaymentMethodNonce paymentMethodNonce =
+                    data.getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE);
+            displayNonce(paymentMethodNonce.getNonce());
             if (Settings.isThreeDSecureEnabled(this)) {
                 mLoading = ProgressDialog.show(this, getString(R.string.loading),
                         getString(R.string.loading), true, false);

@@ -8,13 +8,13 @@ import android.test.suitebuilder.annotation.MediumTest;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
-import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
-import com.braintreepayments.api.models.Card;
+import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
@@ -59,10 +59,10 @@ public class CardTokenizationTest {
     @MediumTest
     public void tokenize_tokenizesACard() throws InvalidArgumentException, InterruptedException {
         setupFragment();
-        mBraintreeFragment.addListener(new PaymentMethodCreatedListener() {
+        mBraintreeFragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                assertEquals("11", ((Card) paymentMethod).getLastTwo());
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertEquals("11", ((CardNonce) paymentMethodNonce).getLastTwo());
                 mCountDownLatch.countDown();
             }
         });
@@ -87,9 +87,9 @@ public class CardTokenizationTest {
         BraintreeHttpClient httpClient = clientWithExpectedResponse(201,
                 stringFromFixture("payment_methods/visa_credit_card_response.json"));
         when(mBraintreeFragment.getHttpClient()).thenReturn(httpClient);
-        mBraintreeFragment.addListener(new PaymentMethodCreatedListener() {
+        mBraintreeFragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
                 mCountDownLatch.countDown();
             }
         });
@@ -109,10 +109,10 @@ public class CardTokenizationTest {
         setupFragment();
         mBraintreeFragment = BraintreeFragment.newInstance(mActivityTestRule.getActivity(),
                 TOKENIZATION_KEY);
-        mBraintreeFragment.addListener(new PaymentMethodCreatedListener() {
+        mBraintreeFragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                assertEquals("11", ((Card) paymentMethod).getLastTwo());
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertEquals("11", ((CardNonce) paymentMethodNonce).getLastTwo());
                 mCountDownLatch.countDown();
             }
         });

@@ -17,14 +17,14 @@ import com.braintreepayments.api.interfaces.BraintreeListener;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
-import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PaymentMethod;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -67,15 +67,15 @@ public class BraintreeFragment extends Fragment {
     private Context mContext;
     private Authorization mAuthorization;
     private Queue<QueuedCallback> mCallbackQueue = new ArrayDeque<>();
-    private List<PaymentMethod> mCachedPaymentMethods = new ArrayList<>();
-    private boolean mHasFetchedPaymentMethods = false;
+    private List<PaymentMethodNonce> mCachedPaymentMethodNonces = new ArrayList<>();
+    private boolean mHasFetchedPaymentMethodNonces = false;
     private boolean mIsBrowserSwitching = false;
 
-    protected BraintreeCancelListener mCancelListener;
+    private BraintreeCancelListener mCancelListener;
     private ConfigurationListener mConfigurationListener;
     private BraintreeResponseListener<Exception> mConfigurationErrorListener;
-    private PaymentMethodsUpdatedListener mPaymentMethodsUpdatedListener;
-    private PaymentMethodCreatedListener mPaymentMethodCreatedListener;
+    private PaymentMethodNoncesUpdatedListener mPaymentMethodNoncesUpdatedListener;
+    private PaymentMethodNonceCreatedListener mPaymentMethodNonceCreatedListener;
     private BraintreeErrorListener mErrorListener;
 
     public BraintreeFragment() {}
@@ -264,12 +264,12 @@ public class BraintreeFragment extends Fragment {
             mCancelListener = (BraintreeCancelListener) listener;
         }
 
-        if (listener instanceof PaymentMethodsUpdatedListener) {
-            mPaymentMethodsUpdatedListener = (PaymentMethodsUpdatedListener) listener;
+        if (listener instanceof PaymentMethodNoncesUpdatedListener) {
+            mPaymentMethodNoncesUpdatedListener = (PaymentMethodNoncesUpdatedListener) listener;
         }
 
-        if (listener instanceof PaymentMethodCreatedListener) {
-            mPaymentMethodCreatedListener = (PaymentMethodCreatedListener) listener;
+        if (listener instanceof PaymentMethodNonceCreatedListener) {
+            mPaymentMethodNonceCreatedListener = (PaymentMethodNonceCreatedListener) listener;
         }
 
         if (listener instanceof BraintreeErrorListener) {
@@ -293,12 +293,12 @@ public class BraintreeFragment extends Fragment {
             mCancelListener = null;
         }
 
-        if (listener instanceof PaymentMethodsUpdatedListener) {
-            mPaymentMethodsUpdatedListener = null;
+        if (listener instanceof PaymentMethodNoncesUpdatedListener) {
+            mPaymentMethodNoncesUpdatedListener = null;
         }
 
-        if (listener instanceof PaymentMethodCreatedListener) {
-            mPaymentMethodCreatedListener = null;
+        if (listener instanceof PaymentMethodNonceCreatedListener) {
+            mPaymentMethodNonceCreatedListener = null;
         }
 
         if (listener instanceof BraintreeErrorListener) {
@@ -310,33 +310,34 @@ public class BraintreeFragment extends Fragment {
         AnalyticsManager.sendRequest(this, mIntegrationType, eventFragment);
     }
 
-    protected void postCallback(final PaymentMethod paymentMethod) {
-        mCachedPaymentMethods.add(0, paymentMethod);
+    protected void postCallback(final PaymentMethodNonce paymentMethodNonce) {
+        mCachedPaymentMethodNonces.add(0, paymentMethodNonce);
         postOrQueueCallback(new QueuedCallback() {
             @Override
             public boolean shouldRun() {
-                return mPaymentMethodCreatedListener != null;
+                return mPaymentMethodNonceCreatedListener != null;
             }
 
             @Override
             public void run() {
-                mPaymentMethodCreatedListener.onPaymentMethodCreated(paymentMethod);
+                mPaymentMethodNonceCreatedListener.onPaymentMethodNonceCreated(paymentMethodNonce);
             }
         });
     }
 
-    protected void postCallback(final List<PaymentMethod> paymentMethodList) {
-        mCachedPaymentMethods = paymentMethodList;
-        mHasFetchedPaymentMethods = true;
+    protected void postCallback(final List<PaymentMethodNonce> paymentMethodNonceList) {
+        mCachedPaymentMethodNonces = paymentMethodNonceList;
+        mHasFetchedPaymentMethodNonces = true;
         postOrQueueCallback(new QueuedCallback() {
             @Override
             public boolean shouldRun() {
-                return mPaymentMethodsUpdatedListener != null;
+                return mPaymentMethodNoncesUpdatedListener != null;
             }
 
             @Override
             public void run() {
-                mPaymentMethodsUpdatedListener.onPaymentMethodsUpdated(paymentMethodList);
+                mPaymentMethodNoncesUpdatedListener.onPaymentMethodNoncesUpdated(
+                        paymentMethodNonceList);
             }
         });
     }
@@ -475,12 +476,12 @@ public class BraintreeFragment extends Fragment {
         return mHttpClient;
     }
 
-    protected boolean hasFetchedPaymentMethods() {
-        return mHasFetchedPaymentMethods;
+    protected boolean hasFetchedPaymentMethodNonces() {
+        return mHasFetchedPaymentMethodNonces;
     }
 
-    protected List<PaymentMethod> getCachedPaymentMethods() {
-        return Collections.unmodifiableList(mCachedPaymentMethods);
+    protected List<PaymentMethodNonce> getCachedPaymentMethodNonces() {
+        return Collections.unmodifiableList(mCachedPaymentMethodNonces);
     }
 
     /**

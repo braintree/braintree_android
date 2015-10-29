@@ -7,12 +7,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * {@link com.braintreepayments.api.models.PaymentMethod} representing an Android Pay card.
- * @see com.braintreepayments.api.models.PaymentMethod
+ * {@link PaymentMethodNonce} representing an Android Pay card.
+ * @see PaymentMethodNonce
  */
-public class AndroidPayCard extends PaymentMethod implements Parcelable {
+public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelable {
 
-    protected static final String PAYMENT_METHOD_TYPE = "AndroidPayCard";
+    protected static final String TYPE = "AndroidPayCard";
     protected static final String API_RESOURCE_KEY = "androidPayCards";
 
     private static final String CARD_DETAILS_KEY = "details";
@@ -23,16 +23,17 @@ public class AndroidPayCard extends PaymentMethod implements Parcelable {
     private String mLastTwo;
 
     /**
-     * Convert an API response to an {@link AndroidPayCard}.
+     * Convert an API response to an {@link AndroidPayCardNonce}.
      *
-     * @param json Raw JSON response from Braintree of a {@link AndroidPayCard}.
-     * @return {@link AndroidPayCard}.
+     * @param json Raw JSON response from Braintree of a {@link AndroidPayCardNonce}.
+     * @return {@link AndroidPayCardNonce}.
      * @throws JSONException when parsing the response fails.
      */
-    public static AndroidPayCard fromJson(String json) throws JSONException {
-        AndroidPayCard androidPayCard = new AndroidPayCard();
-        androidPayCard.fromJson(AndroidPayCard.getJsonObjectForType(API_RESOURCE_KEY, json));
-        return androidPayCard;
+    public static AndroidPayCardNonce fromJson(String json) throws JSONException {
+        AndroidPayCardNonce androidPayCardNonce = new AndroidPayCardNonce();
+        androidPayCardNonce
+                .fromJson(AndroidPayCardNonce.getJsonObjectForType(API_RESOURCE_KEY, json));
+        return androidPayCardNonce;
     }
 
     protected void fromJson(JSONObject json) throws JSONException {
@@ -52,7 +53,7 @@ public class AndroidPayCard extends PaymentMethod implements Parcelable {
         return mLastTwo;
     }
 
-    public AndroidPayCard() {}
+    public AndroidPayCardNonce() {}
 
     @Override
     public int describeContents() {
@@ -67,20 +68,20 @@ public class AndroidPayCard extends PaymentMethod implements Parcelable {
         dest.writeString(mLastTwo);
     }
 
-    private AndroidPayCard(Parcel in) {
+    private AndroidPayCardNonce(Parcel in) {
         mNonce = in.readString();
         mDescription = in.readString();
         mCardType = in.readString();
         mLastTwo = in.readString();
     }
 
-    public static final Creator<AndroidPayCard> CREATOR = new Creator<AndroidPayCard>() {
-        public AndroidPayCard createFromParcel(Parcel source) {
-            return new AndroidPayCard(source);
+    public static final Creator<AndroidPayCardNonce> CREATOR = new Creator<AndroidPayCardNonce>() {
+        public AndroidPayCardNonce createFromParcel(Parcel source) {
+            return new AndroidPayCardNonce(source);
         }
 
-        public AndroidPayCard[] newArray(int size) {
-            return new AndroidPayCard[size];
+        public AndroidPayCardNonce[] newArray(int size) {
+            return new AndroidPayCardNonce[size];
         }
     };
 }

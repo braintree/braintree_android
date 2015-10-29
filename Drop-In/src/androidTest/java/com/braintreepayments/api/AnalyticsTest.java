@@ -11,7 +11,7 @@ import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
 import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.models.PayPalAccount;
+import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.test.BraintreePaymentActivityTestRunner;
 import com.braintreepayments.cardform.R;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
@@ -161,15 +161,14 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        PayPalAccount payPalAccount = new PayPalAccount();
-                        mFragment.postCallback(payPalAccount);
+                        PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce();
+                        mFragment.postCallback(payPalAccountNonce);
                         countDownLatch.countDown();
                     }
                 }, 500);
                 return null;
             }
-        }).when(mFragment).startActivityForResult(any(Intent.class),
-                eq(PayPal.PAYPAL_REQUEST_CODE));
+        }).when(mFragment).startActivity(any(Intent.class));
 
         PayPal.authorizeAccount(mFragment);
 

@@ -30,10 +30,10 @@ public class ThreeDSecureLookupTest {
         assertEquals("merchant-descriptor", mLookup.getMd());
         assertEquals("https://term-url/", mLookup.getTermUrl());
         assertEquals("pareq", mLookup.getPareq());
-        assertEquals("11", mLookup.getCard().getLastTwo());
-        assertEquals("123456-12345-12345-a-adfa", mLookup.getCard().getNonce());
-        assertTrue(mLookup.getCard().getThreeDSecureInfo().isLiabilityShifted());
-        assertTrue(mLookup.getCard().getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertEquals("11", mLookup.getCardNonce().getLastTwo());
+        assertEquals("123456-12345-12345-a-adfa", mLookup.getCardNonce().getNonce());
+        assertTrue(mLookup.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
+        assertTrue(mLookup.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
     }
 
     @Test(timeout = 1000)
@@ -49,11 +49,11 @@ public class ThreeDSecureLookupTest {
         assertEquals(mLookup.getMd(), parsedLookup.getMd());
         assertEquals(mLookup.getTermUrl(), parsedLookup.getTermUrl());
         assertEquals(mLookup.getPareq(), parsedLookup.getPareq());
-        assertEquals(mLookup.getCard().getLastTwo(), parsedLookup.getCard().getLastTwo());
-        assertEquals(mLookup.getCard().getNonce(), parsedLookup.getCard().getNonce());
-        assertEquals(mLookup.getCard().getThreeDSecureInfo().isLiabilityShifted(),
-                parsedLookup.getCard().getThreeDSecureInfo().isLiabilityShifted());
-        assertEquals(mLookup.getCard().getThreeDSecureInfo().isLiabilityShiftPossible(),
-                parsedLookup.getCard().getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertEquals(mLookup.getCardNonce().getLastTwo(), parsedLookup.getCardNonce().getLastTwo());
+        assertEquals(mLookup.getCardNonce().getNonce(), parsedLookup.getCardNonce().getNonce());
+        assertEquals(mLookup.getCardNonce().getThreeDSecureInfo().isLiabilityShifted(),
+                parsedLookup.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
+        assertEquals(mLookup.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible(),
+                parsedLookup.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
     }
 }
