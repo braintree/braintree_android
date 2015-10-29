@@ -85,17 +85,21 @@ class DeviceMetadata {
      * @param context
      * @return A persistent UUID for this application install.
      */
-    static String getUUID(Context context) {
+    static String getPersistentUUID(Context context) {
         SharedPreferences prefs =
                 context.getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE);
 
         String uuid = prefs.getString(BRAINTREE_UUID_KEY, null);
         if (uuid == null) {
-            uuid = UUID.randomUUID().toString().replace("-", "");
+            uuid = getFormattedUUID();
             prefs.edit().putString(BRAINTREE_UUID_KEY, uuid).apply();
         }
 
         return uuid;
+    }
+
+    static String getFormattedUUID() {
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
     /**

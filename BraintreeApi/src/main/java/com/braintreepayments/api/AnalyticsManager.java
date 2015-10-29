@@ -17,6 +17,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Centralized location for caching, queuing, and sending Analytics events
@@ -40,6 +44,7 @@ class AnalyticsManager {
     private static final String DEVICE_MODEL_KEY = "deviceModel";
     private static final String DEVICE_NETWORK_TYPE_KEY = "deviceNetworkType";
     private static final String ANDROID_ID_KEY = "androidId";
+    private static final String SESSION_ID_KEY = "sessionId";
     private static final String DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY = "deviceAppGeneratedPersistentUuid";
     private static final String IS_SIMULATOR_KEY = "isSimulator";
     private static final String INTEGRATION_TYPE_KEY = "integrationType";
@@ -57,8 +62,9 @@ class AnalyticsManager {
      * @param integrationType The current method of integration used.
      * @param eventFragment The analytics event to record.
      */
-    static void sendRequest(final BraintreeFragment fragment, final String integrationType, final String eventFragment) {
-        final AnalyticsRequest request = new AnalyticsRequest(integrationType, eventFragment);
+    static void sendRequest(final BraintreeFragment fragment, final String integrationType,
+            final String eventFragment) {
+        final AnalyticsRequest request = new AnalyticsRequest(fragment, integrationType, eventFragment);
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
@@ -99,36 +105,50 @@ class AnalyticsManager {
         sRequestQueue.clear();
 
         try {
-            JSONArray events = new JSONArray();
+            Map<String, List<AnalyticsRequest>> requestsToSessionId = new HashMap<>();
 
             for (AnalyticsRequest request : requests) {
-                JSONObject event = new JSONObject()
-                        .put(KIND_KEY, request.getEvent())
-                        .put(TIMESTAMP_KEY, request.getTimestamp());
+                List<AnalyticsRequest> requestsForId = requestsToSessionId.get(request.getSessionId());
+                if (requestsForId == null) {
+                    requestsForId = new ArrayList<>();
+                }
+                requestsForId.add(request);
 
-                events.put(event);
+                requestsToSessionId.put(request.getSessionId(), requestsForId);
             }
 
-            JSONObject metadata = generateMetadata(fragment.getApplicationContext(),
-                    requests.get(0).getIntegrationType());
+            for (Entry<String, List<AnalyticsRequest>> entry : requestsToSessionId.entrySet()) {
+                JSONArray events = new JSONArray();
 
-            JSONObject fullRequest = new JSONObject()
-                    .put(ANALYTICS_KEY, events)
-                    .put(META_KEY, metadata);
+                for (AnalyticsRequest request : entry.getValue()) {
+                    JSONObject event = new JSONObject()
+                            .put(KIND_KEY, request.getEvent())
+                            .put(TIMESTAMP_KEY, request.getTimestamp());
 
-            if (fragment.getAuthorization() instanceof ClientToken) {
-                fullRequest.put(AUTHORIZATION_FINGERPRINT_KEY,
-                        ((ClientToken) fragment.getAuthorization()).getAuthorizationFingerprint());
-            } else {
-                fullRequest.put(TOKENIZATION_KEY, fragment.getAuthorization().toString());
+                    events.put(event);
+                }
+
+                JSONObject metadata = generateMetadata(fragment.getApplicationContext(),
+                        entry.getValue().get(0).getIntegrationType(), entry.getKey());
+
+                JSONObject fullRequest = new JSONObject()
+                        .put(ANALYTICS_KEY, events)
+                        .put(META_KEY, metadata);
+
+                if (fragment.getAuthorization() instanceof ClientToken) {
+                    fullRequest.put(AUTHORIZATION_FINGERPRINT_KEY,
+                            ((ClientToken) fragment.getAuthorization()).getAuthorizationFingerprint());
+                } else {
+                    fullRequest.put(TOKENIZATION_KEY, fragment.getAuthorization().toString());
+                }
+
+                fragment.getHttpClient().post(fragment.getConfiguration().getAnalytics().getUrl(),
+                        fullRequest.toString(), null);
             }
-
-            fragment.getHttpClient().post(fragment.getConfiguration().getAnalytics().getUrl(),
-                    fullRequest.toString(), null);
         } catch (JSONException ignored) {}
     }
 
-    private static JSONObject generateMetadata(Context context, String integrationType)
+    private static JSONObject generateMetadata(Context context, String integrationType, String sessionId)
             throws JSONException {
         if (sCachedMetadata == null) {
             sCachedMetadata = populateCachedMetadata(context);
@@ -137,7 +157,8 @@ class AnalyticsManager {
         return new JSONObject(sCachedMetadata.toString())
                 .put(DEVICE_NETWORK_TYPE_KEY, DeviceMetadata.getNetworkType(context))
                 .put(INTEGRATION_TYPE_KEY, integrationType)
-                .put(USER_INTERFACE_ORIENTATION_KEY, DeviceMetadata.getUserOrientation(context));
+                .put(USER_INTERFACE_ORIENTATION_KEY, DeviceMetadata.getUserOrientation(context))
+                .put(SESSION_ID_KEY, sessionId);
     }
 
     private static JSONObject populateCachedMetadata(Context context) {
@@ -154,8 +175,10 @@ class AnalyticsManager {
                     .put(DEVICE_ROOTED_KEY, DeviceMetadata.isDeviceRooted())
                     .put(DEVICE_MANUFACTURER_KEY, Build.MANUFACTURER)
                     .put(DEVICE_MODEL_KEY, Build.MODEL)
-                    .put(ANDROID_ID_KEY, Secure.getString(context.getContentResolver(), Secure.ANDROID_ID))
-                    .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY, DeviceMetadata.getUUID(context))
+                    .put(ANDROID_ID_KEY, Secure.getString(context.getContentResolver(),
+                            Secure.ANDROID_ID))
+                    .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY, DeviceMetadata.getPersistentUUID(
+                            context))
                     .put(IS_SIMULATOR_KEY, DeviceMetadata.detectEmulator());
         } catch (JSONException ignored) {}
 
@@ -177,14 +200,23 @@ class AnalyticsManager {
 
     static class AnalyticsRequest {
 
+        private static Map<Integer, String> sSessionIdMap = new HashMap<>();
+
         private final String mIntegrationType;
         private final String mEvent;
         private final long mTimestamp;
+        private String mSessionId;
 
-        AnalyticsRequest(String integration, String event){
+        AnalyticsRequest(BraintreeFragment fragment, String integration, String event) {
             mIntegrationType = integration;
             mEvent = event;
             mTimestamp = System.currentTimeMillis() / 1000;
+            mSessionId = sSessionIdMap.get(fragment.hashCode());
+
+            if (mSessionId == null) {
+                mSessionId = DeviceMetadata.getFormattedUUID();
+                sSessionIdMap.put(fragment.hashCode(), mSessionId);
+            }
         }
 
         String getEvent() {
@@ -195,6 +227,12 @@ class AnalyticsManager {
             return mTimestamp;
         }
 
-        String getIntegrationType() { return mIntegrationType; }
+        String getIntegrationType() {
+            return mIntegrationType;
+        }
+
+        String getSessionId() {
+            return mSessionId;
+        }
     }
 }
