@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
@@ -585,9 +584,9 @@ public class PayPal {
             final int requestCode) {
         return new BrowserSwitchAdapter() {
             @Override
-            public void handleBrowserSwitchIntent(Intent browserSwitchIntent) {
-                browserSwitchIntent.putExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE, requestCode);
-                fragment.startActivity(browserSwitchIntent);
+            public void handleBrowserSwitchIntent(Intent intent) {
+                intent.putExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, true);
+                fragment.startActivity(intent);
             }
         };
     }

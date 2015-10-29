@@ -20,7 +20,6 @@ import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
-import com.braintreepayments.api.internal.BraintreeBroadcastReceiver;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.TokenizationKey;
@@ -56,10 +55,8 @@ public class BraintreeFragment extends Fragment {
     private static final String EXTRA_INTEGRATION_TYPE =
             "com.braintreepayments.api.EXTRA_INTEGRATION_TYPE";
 
-    private Context mContext;
-    private Authorization mAuthorization;
-    private static BraintreeBroadcastReceiver sBroadcastReceiver;
-
+    @VisibleForTesting
+    protected String mIntegrationType;
     @VisibleForTesting
     protected BraintreeHttpClient mHttpClient;
     @VisibleForTesting
@@ -67,10 +64,12 @@ public class BraintreeFragment extends Fragment {
     @VisibleForTesting
     protected Configuration mConfiguration;
 
+    private Context mContext;
+    private Authorization mAuthorization;
     private Queue<QueuedCallback> mCallbackQueue = new ArrayDeque<>();
     private List<PaymentMethod> mCachedPaymentMethods = new ArrayList<>();
     private boolean mHasFetchedPaymentMethods = false;
-    private final BrowserSwitchState mBrowserSwitchState = new BrowserSwitchState();
+    private boolean mIsBrowserSwitching = false;
 
     protected BraintreeCancelListener mCancelListener;
     private ConfigurationListener mConfigurationListener;
@@ -78,9 +77,6 @@ public class BraintreeFragment extends Fragment {
     private PaymentMethodsUpdatedListener mPaymentMethodsUpdatedListener;
     private PaymentMethodCreatedListener mPaymentMethodCreatedListener;
     private BraintreeErrorListener mErrorListener;
-
-    @VisibleForTesting
-    protected String mIntegrationType;
 
     public BraintreeFragment() {}
 
@@ -145,9 +141,6 @@ public class BraintreeFragment extends Fragment {
         mContext = getActivity().getApplicationContext();
         mIntegrationType = getArguments().getString(EXTRA_INTEGRATION_TYPE);
         mAuthorization = getArguments().getParcelable(EXTRA_AUTHORIZATION_TOKEN);
-        if (sBroadcastReceiver == null) {
-            sBroadcastReceiver = new BraintreeBroadcastReceiver();
-        }
 
         if (mHttpClient == null) {
             mHttpClient = new BraintreeHttpClient(mAuthorization);
@@ -183,8 +176,15 @@ public class BraintreeFragment extends Fragment {
             mGoogleApiClient.connect();
         }
 
-        sBroadcastReceiver.register(this);
-        mBrowserSwitchState.checkForCancel(this);
+        if (mIsBrowserSwitching) {
+            onActivityResult(PayPal.PAYPAL_REQUEST_CODE,
+                    BraintreeBrowserSwitchActivity.sLastBrowswerSwitchResultCode,
+                    BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse);
+
+            BraintreeBrowserSwitchActivity.sLastBrowswerSwitchResultCode = Activity.RESULT_CANCELED;
+            BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = null;
+            mIsBrowserSwitching = false;
+        }
     }
 
     @Override
@@ -208,16 +208,18 @@ public class BraintreeFragment extends Fragment {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        sBroadcastReceiver.unregister(getApplicationContext());
+    public void startActivity(Intent intent) {
+        if (intent.hasExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH)) {
+            BraintreeBrowserSwitchActivity.sLastBrowswerSwitchResultCode = Activity.RESULT_CANCELED;
+            BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = null;
+            mIsBrowserSwitching = true;
+        }
+        super.startActivity(intent);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        mBrowserSwitchState.end(requestCode);
 
         switch (requestCode) {
             case PayPal.PAYPAL_REQUEST_CODE:
@@ -232,7 +234,17 @@ public class BraintreeFragment extends Fragment {
         }
 
         if (resultCode == Activity.RESULT_CANCELED) {
-            postCancelCallback(requestCode);
+            postOrQueueCallback(new QueuedCallback() {
+                @Override
+                public boolean shouldRun() {
+                    return mCancelListener != null;
+                }
+
+                @Override
+                public void run() {
+                    mCancelListener.onCancel(requestCode);
+                }
+            });
         }
     }
 
@@ -337,20 +349,6 @@ public class BraintreeFragment extends Fragment {
             @Override
             public void run() {
                 mErrorListener.onError(error);
-            }
-        });
-    }
-
-    protected void postCancelCallback(final int requestCode) {
-        postOrQueueCallback(new QueuedCallback() {
-            @Override
-            public boolean shouldRun() {
-                return mCancelListener != null;
-            }
-
-            @Override
-            public void run() {
-                mCancelListener.onCancel(requestCode);
             }
         });
     }
@@ -538,14 +536,5 @@ public class BraintreeFragment extends Fragment {
         }
 
         return mGoogleApiClient;
-    }
-
-    @Override
-    public void startActivity(Intent intent) {
-        if (intent.hasExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE)) {
-            mBrowserSwitchState.begin(intent.getIntExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE, -1));
-            sBroadcastReceiver.setIntent(intent);
-        }
-        super.startActivity(intent);
     }
 }
