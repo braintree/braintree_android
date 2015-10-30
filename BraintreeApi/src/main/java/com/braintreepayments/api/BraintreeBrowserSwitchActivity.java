@@ -22,6 +22,7 @@ public class BraintreeBrowserSwitchActivity extends Activity {
         sLastBrowserSwitchResponse = getIntent();
 
         if (getIntent() == null || getIntent().getData() == null ||
+                getIntent().getData().getPath() == null ||
                 getIntent().getData().getPath().contains("cancel")) {
             sLastBrowswerSwitchResultCode = RESULT_CANCELED;
         } else {

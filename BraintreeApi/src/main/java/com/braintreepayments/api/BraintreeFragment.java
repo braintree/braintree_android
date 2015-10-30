@@ -213,8 +213,10 @@ public class BraintreeFragment extends Fragment {
             BraintreeBrowserSwitchActivity.sLastBrowswerSwitchResultCode = Activity.RESULT_CANCELED;
             BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = null;
             mIsBrowserSwitching = true;
+            getActivity().startActivity(intent);
+        } else {
+            super.startActivity(intent);
         }
-        super.startActivity(intent);
     }
 
     @Override

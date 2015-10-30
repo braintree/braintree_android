@@ -171,7 +171,7 @@ public class PayPal {
             requestOneTimePayment(fragment, checkout, false);
         } else {
             fragment.postCallback(new BraintreeException(
-                    "An amount MUST be specified for the Single Payment flow."));
+                    "An amount must be specified for the Single Payment flow."));
         }
     }
 
@@ -410,8 +410,7 @@ public class PayPal {
                 payload.put("response", new JSONObject().put("code",
                         "fake-code:" + ((AuthorizationRequest) sPendingRequest).getScopeString()));
             }
-        } catch (JSONException ignored) {
-        }
+        } catch (JSONException ignored) {}
 
         paypalAccountBuilder.oneTouchCoreData(payload);
 

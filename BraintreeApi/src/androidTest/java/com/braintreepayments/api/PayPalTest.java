@@ -1,12 +1,14 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
+import android.app.Instrumentation.ActivityResult;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Looper;
-import android.os.Parcelable;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.test.runner.intent.IntentCallback;
+import android.support.test.runner.intent.IntentMonitorRegistry;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
 
@@ -15,22 +17,17 @@ import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
-import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.ClientToken;
-import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
-import com.paypal.android.sdk.onetouch.core.PayPalOneTouchActivity;
-import com.paypal.android.sdk.onetouch.core.ResponseType;
-import com.paypal.android.sdk.onetouch.core.Result;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,9 +37,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 
-import java.lang.reflect.Constructor;
 import java.util.concurrent.CountDownLatch;
 
+import static android.support.test.espresso.intent.Intents.intending;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtraWithKey;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.verifyAnalyticsEvent;
@@ -54,7 +52,7 @@ import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.verify;
 
 @RunWith(AndroidJUnit4.class)
-public class PayPalTest {
+public class PayPalTest implements IntentCallback {
 
     @Rule
     public final IntentsTestRule<TestActivity> mActivityTestRule =
@@ -62,20 +60,22 @@ public class PayPalTest {
 
     private Activity mActivity;
     private CountDownLatch mLatch;
+    private String mResponseUrl;
 
     @Before
     public void setUp() {
         mActivity = mActivityTestRule.getActivity();
         mLatch = new CountDownLatch(1);
+        mResponseUrl = null;
     }
 
     @Test(timeout = 10000)
     @MediumTest
-    public void authorizeAccount_startsBrowser() throws InterruptedException {
+    public void authorizeAccount_startsBrowser() {
         Looper.prepare();
-        String configString = stringFromFixture("configuration_with_offline_paypal.json");
-        String authString = stringFromFixture("client_token.json");
-        final BraintreeFragment fragment = getMockFragment(mActivity, authString, configString);
+        final BraintreeFragment fragment = getMockFragment(mActivity,
+                stringFromFixture("client_token.json"),
+                stringFromFixture("configuration_with_offline_paypal.json"));
 
         PayPal.authorizeAccount(fragment);
 
@@ -96,12 +96,12 @@ public class PayPalTest {
 
     @Test(timeout = 10000)
     @MediumTest
-    public void authorizeAccount_authorizeAccount()
-            throws JSONException, InterruptedException, InvalidArgumentException {
+    public void authorizeAccount_authorizesAccount() throws InterruptedException,
+            InvalidArgumentException {
         Looper.prepare();
-        String authString = stringFromFixture("client_token.json");
-        final BraintreeFragment fragment = getFragment(mActivity, authString);
-
+        final BraintreeFragment fragment = getFragment(mActivity,
+                stringFromFixture("client_token.json"),
+                stringFromFixture("configuration_with_offline_paypal.json"));
         fragment.addListener(new PaymentMethodCreatedListener() {
             @Override
             public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
@@ -109,61 +109,42 @@ public class PayPalTest {
                 mLatch.countDown();
             }
         });
-
-        fragment.addListener(new BraintreeCancelListener() {
-            @Override
-            public void onCancel(int requestCode) {
-                fail("Cancelled: " + requestCode);
-            }
-        });
-
-        final Intent intent = new Intent(mActivity, BraintreeBrowserSwitchActivity.class)
-                .setData(Uri.parse(
-                        "com.braintreepayments.demo.braintree://onetouch/v1/success?payloadEnc=mockPayloadEnc&payload=mockPayload&x-source=com.braintree.browserswitch"))
-                .putExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE,
-                        PayPal.PAYPAL_REQUEST_CODE)
-                .putExtra(PayPalOneTouchActivity.EXTRA_ONE_TOUCH_RESULT,
-                        getMockPayPalResult());
+        setBrowserSwitchResponse(
+                "onetouch/v1/success?payloadEnc=mockPayloadEnc&payload=mockPayload&x-source=com.braintree.browserswitch");
 
         PayPal.authorizeAccount(fragment);
-        fragment.waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                mActivity.startActivity(intent);
-            }
-        });
 
         mLatch.await();
     }
 
     @Test(timeout = 1000)
     @SmallTest
-    public void checkout_withNoAmountPostsException() throws InterruptedException {
-        String configString = stringFromFixture("configuration_with_offline_paypal.json");
-        String authString = stringFromFixture("client_token.json");
-        final BraintreeFragment fragment = BraintreeFragmentTestUtils.getFragment(mActivity,
-                authString, configString);
+    public void checkout_postsExceptionWhenNoAmountIsSet() throws InterruptedException {
+        final BraintreeFragment fragment = getFragment(mActivity,
+                stringFromFixture("client_token.json"),
+                stringFromFixture("configuration_with_offline_paypal.json"));
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
                 assertTrue(error instanceof BraintreeException);
-                assertEquals("An amount MUST be specified for the Single Payment flow.",
+                assertEquals("An amount must be specified for the Single Payment flow.",
                         error.getMessage());
                 mLatch.countDown();
             }
         });
 
         PayPal.requestOneTimePayment(fragment, new PayPalRequest());
+
         mLatch.await();
     }
 
     @Test(timeout = 1000)
     @SmallTest
-    public void requestBillingAgreement_withAmountPostsException() throws InterruptedException {
-        String configString = stringFromFixture("configuration_with_offline_paypal.json");
-        String authString = stringFromFixture("client_token.json");
-        final BraintreeFragment fragment = BraintreeFragmentTestUtils.getFragment(mActivity,
-                authString, configString);
+    public void requestBillingAgreement_postsExceptionWhenAmountIsIncluded()
+            throws InterruptedException {
+        final BraintreeFragment fragment = getFragment(mActivity,
+                stringFromFixture("client_token.json"),
+                stringFromFixture("configuration_with_offline_paypal.json"));
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
@@ -175,18 +156,18 @@ public class PayPalTest {
         });
 
         PayPal.requestBillingAgreement(fragment, new PayPalRequest("1"));
+
         mLatch.await();
     }
 
     @Test(timeout = 10000)
     @MediumTest
-    public void checkout_successfulResultDoesNotCallCancelListener()
-            throws InvalidArgumentException, InterruptedException {
+    public void checkout_doesNotCallCancelListenerWhenSuccessful() throws InvalidArgumentException,
+            InterruptedException {
         Looper.prepare();
-        String configString = stringFromFixture("configuration_with_offline_paypal.json");
         String authString = stringFromFixture("client_token.json");
-        final BraintreeFragment fragment =
-                BraintreeFragmentTestUtils.getFragment(mActivity, authString, configString);
+        final BraintreeFragment fragment = getFragment(mActivity, authString,
+                stringFromFixture("configuration_with_offline_paypal.json"));
         fragment.mHttpClient = new BraintreeHttpClient(Authorization.fromString(authString)) {
             @Override
             public void post(String path, String data, HttpResponseCallback callback) {
@@ -197,14 +178,12 @@ public class PayPalTest {
                 }
             }
         };
-
         fragment.addListener(new BraintreeCancelListener() {
             @Override
             public void onCancel(int requestCode) {
                 fail("Cancel listener called with code: " + requestCode);
             }
         });
-
         fragment.addListener(new PaymentMethodCreatedListener() {
             @Override
             public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
@@ -213,21 +192,10 @@ public class PayPalTest {
             }
         });
 
-        fragment.addListener(new BraintreeErrorListener() {
-            @Override
-            public void onError(Exception error) {
-                fail(error.getMessage());
-            }
-        });
-
-        Intent intent = new Intent(mActivity, BraintreeBrowserSwitchActivity.class);
-        intent.setData(Uri.parse(
-                "com.braintreepayments.demo.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN"));
-        intent.putExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE,
-                PayPal.PAYPAL_REQUEST_CODE);
+        setBrowserSwitchResponse(
+                "onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN");
 
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
-        mActivity.startActivity(intent);
 
         mLatch.await();
     }
@@ -239,9 +207,8 @@ public class PayPalTest {
         Looper.prepare();
         String configString = stringFromFixture("configuration_with_offline_paypal.json");
         String authString = stringFromFixture("client_token.json");
-        final BraintreeFragment fragment = BraintreeFragmentTestUtils.getFragment(mActivity,
+        final BraintreeFragment fragment = getFragment(mActivity,
                 authString, configString);
-
         fragment.mHttpClient = new BraintreeHttpClient(
                 ClientToken.fromString(new TestClientTokenBuilder().build())) {
             @Override
@@ -249,7 +216,6 @@ public class PayPalTest {
                 callback.success(stringFromFixture("paypal_hermes_response.json"));
             }
         };
-
         fragment.addListener(new BraintreeCancelListener() {
             @Override
             public void onCancel(int requestCode) {
@@ -257,53 +223,9 @@ public class PayPalTest {
                 mLatch.countDown();
             }
         });
-
-        Intent intent = new Intent(mActivity, BraintreeBrowserSwitchActivity.class);
-        intent.setData(
-                Uri.parse(
-                        "com.braintreepayments.demo.braintree://paypal.com/do/the/thing/canceled?token=canceled-token"));
-        intent.putExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE,
-                PayPal.PAYPAL_REQUEST_CODE);
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
-        mActivity.startActivity(intent);
-
-        mLatch.await();
-    }
-
-    @Test(timeout = 10000)
-    @MediumTest
-    public void checkout_resultCanceledTriggersCancelListener()
-            throws JSONException, InterruptedException, InvalidArgumentException {
-        Looper.prepare();
-        String configString = stringFromFixture("configuration_with_offline_paypal.json");
-        String authString = stringFromFixture("client_token.json");
-        final BraintreeFragment fragment = BraintreeFragmentTestUtils.getFragment(mActivity,
-                authString, configString);
-
-        fragment.mHttpClient = new BraintreeHttpClient(
-                ClientToken.fromString(new TestClientTokenBuilder().build())) {
-            @Override
-            public void post(String path, String data, HttpResponseCallback callback) {
-                callback.success(stringFromFixture("paypal_hermes_response.json"));
-            }
-        };
-
-        fragment.addListener(new BraintreeCancelListener() {
-            @Override
-            public void onCancel(int requestCode) {
-                assertEquals(PayPal.PAYPAL_REQUEST_CODE, requestCode);
-                mLatch.countDown();
-            }
-        });
-
-        Intent intent = new Intent(mActivity, BraintreeBrowserSwitchActivity.class)
-                .putExtra(BraintreeBrowserSwitchActivity.EXTRA_RESULT_CODE,
-                        Activity.RESULT_CANCELED)
-                .putExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_CODE,
-                        PayPal.PAYPAL_REQUEST_CODE);
+        setBrowserSwitchResponse("onetouch/v1/cancel");
 
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
-        mActivity.startActivity(intent);
 
         mLatch.await();
     }
@@ -314,13 +236,14 @@ public class PayPalTest {
             throws JSONException, InvalidArgumentException {
         Looper.prepare();
         BraintreeFragment fragment = getMockFragment(mActivity,
-                Configuration
-                        .fromJson(stringFromFixture("configuration_with_offline_paypal.json")));
+                stringFromFixture("client_token.json"),
+                stringFromFixture("configuration_with_offline_paypal.json"));
 
         // TODO: sometimes getActivity() returns null, and I don't know why
         if (fragment.getActivity() != null) {
             PayPal.authorizeAccount(fragment);
         }
+
         verifyAnalyticsEvent(fragment, "paypal.selected");
     }
 
@@ -328,23 +251,22 @@ public class PayPalTest {
     @SmallTest
     public void onActivityResult_postConfigurationExceptionWhenInvalid()
             throws JSONException, InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
-        Configuration configuration =
-                Configuration.fromJson(stringFromFixture("configuration_with_analytics.json"));
-        final BraintreeFragment fragment = getMockFragment(mActivity, configuration);
-
+        final BraintreeFragment fragment = getMockFragment(mActivity,
+                stringFromFixture("client_token.json"),
+                stringFromFixture("configuration_with_analytics.json"));
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
                 assertTrue(error instanceof ConfigurationException);
                 assertEquals("PayPal is disabled or configuration is invalid",
                         error.getMessage());
-                latch.countDown();
+                mLatch.countDown();
             }
         });
 
         PayPal.authorizeAccount(fragment);
-        latch.await();
+
+        mLatch.await();
     }
 
     @Test(timeout = 1000)
@@ -353,9 +275,8 @@ public class PayPalTest {
             throws InvalidArgumentException, InterruptedException {
         String configString = stringFromFixture("configuration_with_offline_paypal.json");
         String authString = stringFromFixture("client_token.json");
-        final BraintreeFragment fragment = BraintreeFragmentTestUtils.getFragment(mActivity,
+        final BraintreeFragment fragment = getFragment(mActivity,
                 authString, configString);
-
         fragment.mHttpClient = new BraintreeHttpClient(Authorization.fromString(authString)) {
             @Override
             public void post(String path, String data, HttpResponseCallback callback) {
@@ -366,13 +287,12 @@ public class PayPalTest {
                         JSONObject experienceProfileJson = json.getJSONObject("experience_profile");
                         assertEquals(true, experienceProfileJson.get("no_shipping"));
                         assertEquals(false, experienceProfileJson.get("address_override"));
+
                         mLatch.countDown();
-                    } catch (JSONException e) {
-                    }
+                    } catch (JSONException ignored) {}
                 }
             }
         };
-
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
@@ -392,8 +312,7 @@ public class PayPalTest {
         String configString = stringFromFixture("configuration_with_offline_paypal.json");
         String authString = stringFromFixture("client_token.json");
         final BraintreeFragment fragment =
-                BraintreeFragmentTestUtils.getFragment(mActivity, authString, configString);
-
+                getFragment(mActivity, authString, configString);
         fragment.mHttpClient = new BraintreeHttpClient(Authorization.fromString(authString)) {
             @Override
             public void post(String path, String data, HttpResponseCallback callback) {
@@ -405,8 +324,7 @@ public class PayPalTest {
                         assertEquals(true, experienceProfileJson.get("no_shipping"));
                         assertEquals(false, experienceProfileJson.get("address_override"));
                         mLatch.countDown();
-                    } catch (JSONException e) {
-                    }
+                    } catch (JSONException ignored) {}
                 }
             }
         };
@@ -423,8 +341,7 @@ public class PayPalTest {
         String configString = stringFromFixture("configuration_with_offline_paypal.json");
         String authString = stringFromFixture("client_token.json");
         final BraintreeFragment fragment =
-                BraintreeFragmentTestUtils.getFragment(mActivity, authString, configString);
-
+                getFragment(mActivity, authString, configString);
         fragment.mHttpClient = new BraintreeHttpClient(Authorization.fromString(authString)) {
             @Override
             public void post(String path, String data, HttpResponseCallback callback) {
@@ -441,9 +358,9 @@ public class PayPalTest {
                         JSONObject experienceProfileJson = json.getJSONObject("experience_profile");
                         assertEquals(false, experienceProfileJson.get("no_shipping"));
                         assertEquals(true, experienceProfileJson.get("address_override"));
+
                         mLatch.countDown();
-                    } catch (JSONException e) {
-                    }
+                    } catch (JSONException ignored) {}
                 }
             }
         };
@@ -470,9 +387,8 @@ public class PayPalTest {
             throws InvalidArgumentException, InterruptedException {
         String configString = stringFromFixture("configuration_with_offline_paypal.json");
         String authString = stringFromFixture("client_token.json");
-        final BraintreeFragment fragment = BraintreeFragmentTestUtils.getFragment(mActivity,
+        final BraintreeFragment fragment = getFragment(mActivity,
                 authString, configString);
-
         fragment.mHttpClient = new BraintreeHttpClient(Authorization.fromString(authString)) {
             @Override
             public void post(String path, String data, HttpResponseCallback callback) {
@@ -490,8 +406,7 @@ public class PayPalTest {
                         assertEquals(true, experienceProfileJson.get("no_shipping"));
                         assertEquals(true, experienceProfileJson.get("address_override"));
                         mLatch.countDown();
-                    } catch (JSONException e) {
-                    }
+                    } catch (JSONException ignored) {}
                 }
             }
         };
@@ -511,22 +426,21 @@ public class PayPalTest {
         mLatch.await();
     }
 
-    private Parcelable getMockPayPalResult() {
-        Result result = null;
-        try {
-            Constructor<Result> resultConstructor = Result.class
-                    .getDeclaredConstructor(String.class, ResponseType.class, JSONObject.class,
-                            String.class);
-            resultConstructor.setAccessible(true);
-            result = resultConstructor.newInstance("mock", ResponseType.web, new JSONObject(), "");
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-            fail("Cannot find Result constructor");
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("Cannot instantiate Result");
-        }
+    /** helpers */
+    private void setBrowserSwitchResponse(final String responseUrl) {
+        intending(hasExtraWithKey(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH))
+                .respondWith(new ActivityResult(Activity.RESULT_FIRST_USER, null));
 
-        return result;
+        mResponseUrl = "com.braintreepayments.api.test.braintree://" + responseUrl;
+
+        IntentMonitorRegistry.getInstance().addIntentCallback(this);
+    }
+
+    @Override
+    public void onIntentSent(Intent intent) {
+        if (intent.hasExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH) &&
+                mResponseUrl != null) {
+            mActivity.startActivity(new Intent().setData(Uri.parse(mResponseUrl)));
+        }
     }
 }
