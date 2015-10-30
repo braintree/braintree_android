@@ -12,7 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.ViewSwitcher;
 
 import com.braintreepayments.api.dropin.R;
-import com.braintreepayments.api.interfaces.ConfigurationFetchedErrorListener;
+import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.models.Configuration;
 import com.google.android.gms.wallet.Cart;
@@ -26,8 +26,7 @@ import java.util.List;
  * Created {@link com.braintreepayments.api.models.PaymentMethod}s will be posted to
  * {@link com.braintreepayments.api.interfaces.PaymentMethodCreatedListener}.
  */
-public class PaymentButton extends RelativeLayout implements ConfigurationFetchedErrorListener,
-        OnClickListener {
+public class PaymentButton extends RelativeLayout implements OnClickListener {
 
     private BraintreeFragment mBraintreeFragment;
     private ViewSwitcher mProgressViewSwitcher;
@@ -88,8 +87,7 @@ public class PaymentButton extends RelativeLayout implements ConfigurationFetche
      * Set additional scopes to request when a user is authorizing PayPal.
      *
      * @param additionalScopes A {@link java.util.List} of additional scopes.
-     *                         Ex: PayPalOAuthScopes.PAYPAL_SCOPE_ADDRESS.
-     *                         Acceptable scopes are defined in {@link com.paypal.android.sdk.payments.PayPalOAuthScopes}.
+     *        Ex: {@link PayPal#SCOPE_ADDRESS}. Acceptable scopes are defined in {@link PayPal}.
      */
     public void setAdditionalPayPalScopes(List<String> additionalScopes) {
         mAdditionalScopes = additionalScopes;
@@ -107,21 +105,20 @@ public class PaymentButton extends RelativeLayout implements ConfigurationFetche
         showProgress(true);
 
         mBraintreeFragment = fragment;
-        mBraintreeFragment.addListener(this);
         mBraintreeFragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                mBraintreeFragment.removeListener(this);
                 setupButton();
                 showProgress(false);
             }
         });
-    }
-
-    @Override
-    public void onConfigurationError(Throwable throwable) {
-        setVisibility(GONE);
-        mBraintreeFragment.removeListener(this);
+        mBraintreeFragment.setConfigurationErrorListener(new BraintreeResponseListener<Exception>() {
+            @Override
+            public void onResponse(Exception e) {
+                mBraintreeFragment.setConfigurationErrorListener(null);
+                setVisibility(GONE);
+            }
+        });
     }
 
     @Override

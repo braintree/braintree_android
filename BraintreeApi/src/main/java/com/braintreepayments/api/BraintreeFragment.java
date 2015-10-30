@@ -14,9 +14,8 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreeListener;
-import com.braintreepayments.api.interfaces.ConfigurationFetchedErrorListener;
+import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
-import com.braintreepayments.api.interfaces.GoogleApiClientListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
@@ -72,7 +71,7 @@ public class BraintreeFragment extends Fragment {
 
     protected BraintreeCancelListener mCancelListener;
     private ConfigurationListener mConfigurationListener;
-    private ConfigurationFetchedErrorListener mConfigurationErrorListener;
+    private BraintreeResponseListener<Exception> mConfigurationErrorListener;
     private PaymentMethodsUpdatedListener mPaymentMethodsUpdatedListener;
     private PaymentMethodCreatedListener mPaymentMethodCreatedListener;
     private BraintreeErrorListener mErrorListener;
@@ -246,10 +245,6 @@ public class BraintreeFragment extends Fragment {
             mConfigurationListener = (ConfigurationListener) listener;
         }
 
-        if (listener instanceof ConfigurationFetchedErrorListener) {
-            mConfigurationErrorListener = (ConfigurationFetchedErrorListener) listener;
-        }
-
         if (listener instanceof BraintreeCancelListener) {
             mCancelListener = (BraintreeCancelListener) listener;
         }
@@ -277,10 +272,6 @@ public class BraintreeFragment extends Fragment {
     public <T extends BraintreeListener> void removeListener(T listener) {
         if (listener instanceof ConfigurationListener) {
             mConfigurationListener = null;
-        }
-
-        if (listener instanceof ConfigurationFetchedErrorListener) {
-            mConfigurationErrorListener = null;
         }
 
         if (listener instanceof BraintreeCancelListener) {
@@ -406,7 +397,7 @@ public class BraintreeFragment extends Fragment {
 
                         @Override
                         public void run() {
-                            mConfigurationErrorListener.onConfigurationError(e);
+                            mConfigurationErrorListener.onResponse(e);
                         }
                     });
                 }
@@ -423,11 +414,15 @@ public class BraintreeFragment extends Fragment {
 
                     @Override
                     public void run() {
-                        mConfigurationErrorListener.onConfigurationError(exception);
+                        mConfigurationErrorListener.onResponse(exception);
                     }
                 });
             }
         });
+    }
+
+    void setConfigurationErrorListener(BraintreeResponseListener<Exception> listener) {
+        mConfigurationErrorListener = listener;
     }
 
     protected void waitForConfiguration(final ConfigurationListener listener) {
@@ -481,14 +476,15 @@ public class BraintreeFragment extends Fragment {
      * Connection failed and connection suspended errors will be sent to
      * {@link BraintreeErrorListener#onError(Exception)}.
      *
-     * @param listener {@link GoogleApiClientListener} to receive the {@link GoogleApiClient}
-     *        in {@link GoogleApiClientListener#onResult(GoogleApiClient)}.
+     * @param listener {@link BraintreeResponseListener<GoogleApiClient>} to receive the
+     *                 {@link GoogleApiClient} in
+     *                 {@link BraintreeResponseListener<GoogleApiClient>#onResponse(GoogleApiClient)}.
      */
-    public void getGoogleApiClient(final GoogleApiClientListener listener) {
+    public void getGoogleApiClient(final BraintreeResponseListener<GoogleApiClient> listener) {
         waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                listener.onResult(getGoogleApiClient());
+                listener.onResponse(getGoogleApiClient());
             }
         });
     }

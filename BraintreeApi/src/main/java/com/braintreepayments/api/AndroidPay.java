@@ -164,7 +164,8 @@ public class AndroidPay {
                                 .setIsBillingAgreement(isBillingAgreement)
                                 .setShippingAddressRequired(shippingAddressRequired)
                                 .setPhoneNumberRequired(phoneNumberRequired)
-                                .setPaymentMethodTokenizationParameters(getTokenizationParameters(fragment))
+                                .setPaymentMethodTokenizationParameters(
+                                        getTokenizationParameters(fragment))
                                 .addAllowedCardNetworks(getAllowedCardNetworks(fragment));
 
                 if (cart != null) {
