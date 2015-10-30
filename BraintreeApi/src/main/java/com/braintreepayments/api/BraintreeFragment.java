@@ -175,6 +175,11 @@ public class BraintreeFragment extends Fragment {
 
         flushCallbacks();
 
+        if (mGoogleApiClient != null && !mGoogleApiClient.isConnected() &&
+                !mGoogleApiClient.isConnecting()) {
+            mGoogleApiClient.connect();
+        }
+
         sBroadcastReceiver.register(this);
     }
 
@@ -471,7 +476,8 @@ public class BraintreeFragment extends Fragment {
     /**
      * Obtain an instance of a {@link GoogleApiClient} that is connected or connecting to be used
      * for Android Pay. This instance will be automatically disconnected in
-     * {@link Fragment#onPause()} and automatically connected in {@link Fragment#onResume()}.
+     * {@link BraintreeFragment#onStop()} and automatically connected in
+     * {@link BraintreeFragment#onResume()}.
      * <p/>
      * Connection failed and connection suspended errors will be sent to
      * {@link BraintreeErrorListener#onError(Exception)}.
