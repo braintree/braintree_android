@@ -20,7 +20,6 @@ public class PaymentRequest implements Parcelable {
     private String mCurrencyCode;
 
     private Cart mAndroidPayCart;
-    private boolean mAndroidPayBillingAgreement;
     private boolean mAndroidPayShippingAddressRequired;
     private boolean mAndroidPayPhoneNumberRequired;
     private int mAndroidPayRequestCode;
@@ -86,17 +85,6 @@ public class PaymentRequest implements Parcelable {
      */
     public PaymentRequest androidPayCart(Cart cart) {
         mAndroidPayCart = cart;
-        return this;
-    }
-
-    /**
-     * This method is optional.
-     *
-     * @param isBillingAgreement {@code true} if Android Pay requests should request a billing
-     *        agreement.
-     */
-    public PaymentRequest androidPayBillingAgreement(boolean isBillingAgreement) {
-        mAndroidPayBillingAgreement = isBillingAgreement;
         return this;
     }
 
@@ -227,10 +215,6 @@ public class PaymentRequest implements Parcelable {
         return mAndroidPayCart;
     }
 
-    boolean isAndroidPayBillingAgreement() {
-        return mAndroidPayBillingAgreement;
-    }
-
     boolean isAndroidPayShippingAddressRequired() {
         return mAndroidPayShippingAddressRequired;
     }
@@ -278,7 +262,6 @@ public class PaymentRequest implements Parcelable {
         dest.writeString(mAmount);
         dest.writeString(mCurrencyCode);
         dest.writeParcelable(mAndroidPayCart, 0);
-        dest.writeByte(mAndroidPayBillingAgreement ? (byte) 1 : (byte) 0);
         dest.writeByte(mAndroidPayShippingAddressRequired ? (byte) 1 : (byte) 0);
         dest.writeByte(mAndroidPayPhoneNumberRequired ? (byte) 1 : (byte) 0);
         dest.writeInt(mAndroidPayRequestCode);
@@ -295,7 +278,6 @@ public class PaymentRequest implements Parcelable {
         mAmount = in.readString();
         mCurrencyCode = in.readString();
         mAndroidPayCart = in.readParcelable(Cart.class.getClassLoader());
-        mAndroidPayBillingAgreement = in.readByte() != 0;
         mAndroidPayShippingAddressRequired = in.readByte() != 0;
         mAndroidPayPhoneNumberRequired = in.readByte() != 0;
         mAndroidPayRequestCode = in.readInt();

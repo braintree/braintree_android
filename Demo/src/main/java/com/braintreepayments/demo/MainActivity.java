@@ -44,7 +44,6 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
 
     static final String EXTRA_AUTHORIZATION = "authorization";
     static final String EXTRA_ANDROID_PAY_CART = "android_pay_cart";
-    static final String EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT = "android_pay_billing_agreement";
     static final String EXTRA_ANDROID_PAY_SHIPPING_ADDRESS_REQUIRED = "android_pay_shipping_address";
     static final String EXTRA_ANDROID_PAY_PHONE_NUMBER_REQUIRED = "android_pay_phone_number";
     static final String EXTRA_PAYPAL_ADDRESS_SCOPE_REQUESTED = "paypal_address_scope";
@@ -141,7 +140,6 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
         PaymentRequest paymentRequest = new PaymentRequest()
                 .clientToken(getAuthorization())
                 .androidPayCart(getAndroidPayCart())
-                .androidPayBillingAgreement(Settings.isAndroidPayBillingAgreement(this))
                 .primaryDescription(getString(R.string.cart))
                 .secondaryDescription("1 Item")
                 .amount("$1.00")
@@ -168,9 +166,8 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     private Intent populateIntentExtras(Intent intent) {
         return intent.putExtra(EXTRA_AUTHORIZATION, getAuthorization())
                 .putExtra(EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
-                .putExtra(EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, Settings.isAndroidPayBillingAgreement(this))
                 .putExtra(EXTRA_ANDROID_PAY_SHIPPING_ADDRESS_REQUIRED, Settings.isAndroidPayShippingAddressRequired(this))
-                .putExtra(EXTRA_ANDROID_PAY_SHIPPING_ADDRESS_REQUIRED, Settings.isAndroidPayPhoneNumberRequired(this))
+                .putExtra(EXTRA_ANDROID_PAY_PHONE_NUMBER_REQUIRED, Settings.isAndroidPayPhoneNumberRequired(this))
                 .putExtra(EXTRA_PAYPAL_ADDRESS_SCOPE_REQUESTED, Settings.isPayPalAddressScopeRequested(this));
     }
 
@@ -297,21 +294,17 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     }
 
     private Cart getAndroidPayCart() {
-        if (Settings.isAndroidPayBillingAgreement(this)) {
-            return null;
-        } else {
-            return Cart.newBuilder()
-                    .setCurrencyCode("USD")
-                    .setTotalPrice("1.00")
-                    .addLineItem(LineItem.newBuilder()
-                            .setCurrencyCode("USD")
-                            .setDescription("Description")
-                            .setQuantity("1")
-                            .setUnitPrice("1.00")
-                            .setTotalPrice("1.00")
-                            .build())
-                    .build();
-        }
+        return Cart.newBuilder()
+                .setCurrencyCode("USD")
+                .setTotalPrice("1.00")
+                .addLineItem(LineItem.newBuilder()
+                        .setCurrencyCode("USD")
+                        .setDescription("Description")
+                        .setQuantity("1")
+                        .setUnitPrice("1.00")
+                        .setTotalPrice("1.00")
+                        .build())
+                .build();
     }
 
     private void enableButtons(boolean enable) {

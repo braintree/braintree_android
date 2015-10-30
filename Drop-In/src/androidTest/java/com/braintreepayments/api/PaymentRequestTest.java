@@ -12,7 +12,6 @@ import android.widget.ImageView;
 
 import com.braintreepayments.api.test.BraintreePaymentActivityTestRunner;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
-import com.braintreepayments.testutils.TestTokenizationKey;
 import com.google.android.gms.wallet.Cart;
 
 import org.junit.Test;
@@ -49,7 +48,6 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
                 .amount("1.00")
                 .currencyCode("USD")
                 .androidPayCart(cart)
-                .androidPayBillingAgreement(true)
                 .androidPayShippingAddressRequired(true)
                 .androidPayPhoneNumberRequired(true)
                 .androidPayRequestCode(1)
@@ -69,7 +67,6 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
         assertEquals("1.00", paymentRequest.getAmount());
         assertEquals("USD", paymentRequest.getCurrencyCode());
         assertEquals("5.00", paymentRequest.getAndroidPayCart().getTotalPrice());
-        assertTrue(paymentRequest.isAndroidPayBillingAgreement());
         assertTrue(paymentRequest.isAndroidPayShippingAddressRequired());
         assertTrue(paymentRequest.isAndroidPayPhoneNumberRequired());
         assertEquals(1, paymentRequest.getAndroidPayRequestCode());
@@ -92,7 +89,6 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
                 .amount("1.00")
                 .currencyCode("USD")
                 .androidPayCart(cart)
-                .androidPayBillingAgreement(true)
                 .androidPayShippingAddressRequired(true)
                 .androidPayPhoneNumberRequired(true)
                 .androidPayRequestCode(1)
@@ -112,7 +108,6 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
         assertEquals("1.00", parceledPaymentRequest.getAmount());
         assertEquals("USD", parceledPaymentRequest.getCurrencyCode());
         assertEquals("5.00", parceledPaymentRequest.getAndroidPayCart().getTotalPrice());
-        assertTrue(parceledPaymentRequest.isAndroidPayBillingAgreement());
         assertTrue(parceledPaymentRequest.isAndroidPayShippingAddressRequired());
         assertTrue(parceledPaymentRequest.isAndroidPayPhoneNumberRequired());
         assertEquals(1, parceledPaymentRequest.getAndroidPayRequestCode());

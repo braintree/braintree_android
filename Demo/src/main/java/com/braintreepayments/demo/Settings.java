@@ -71,10 +71,6 @@ public class Settings {
         }
     }
 
-    public static boolean isAndroidPayBillingAgreement(Context context) {
-        return getPreferences(context).getBoolean("android_pay_billing_agreement", false);
-    }
-
     public static boolean isAndroidPayShippingAddressRequired(Context context) {
         return getPreferences(context).getBoolean("android_pay_require_shipping_address", false);
     }

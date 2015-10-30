@@ -31,6 +31,7 @@ import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.PayPalAccount;
 import com.braintreepayments.api.models.PaymentMethod;
+import com.google.android.gms.wallet.Cart;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -174,7 +175,7 @@ public class BraintreePaymentActivity extends Activity implements PaymentMethods
                 requestCode == AndroidPay.ANDROID_PAY_FULL_WALLET_REQUEST_CODE) &&
                 resultCode == RESULT_OK) {
             AndroidPay.onActivityResult(mBraintreeFragment, mPaymentRequest.getAndroidPayCart(),
-                    mPaymentRequest.isAndroidPayBillingAgreement(), resultCode, data);
+                    resultCode, data);
         } else if (resultCode != RESULT_OK) {
             showAddPaymentMethodView();
         }

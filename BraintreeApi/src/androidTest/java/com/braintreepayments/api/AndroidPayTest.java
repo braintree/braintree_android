@@ -202,7 +202,7 @@ public class AndroidPayTest {
         when(fragment.getAuthorization()).thenReturn(
                 Authorization.fromString("sandbox_abcdef_merchantId"));
 
-        AndroidPay.performMaskedWalletRequest(fragment, Cart.newBuilder().build(), false, false, false, 0);
+        AndroidPay.performMaskedWalletRequest(fragment, Cart.newBuilder().build(), false, false, 0);
 
         InOrder order = inOrder(fragment);
         order.verify(fragment).sendAnalyticsEvent("android-pay.selected");
@@ -211,23 +211,18 @@ public class AndroidPayTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void performMaskedWalletRequest_sendsAnalyticsEventForCartAndBillingAgreement() {
+    public void performMaskedWalletRequest_sendsFailedEventWhenCartIsNull()
+            throws InterruptedException, InvalidArgumentException {
         BraintreeFragment fragment = getSetupFragment();
+        injectFakeGoogleApiClient(fragment);
+        when(fragment.getAuthorization()).thenReturn(
+                Authorization.fromString("sandbox_abcdef_merchantId"));
 
-        AndroidPay.performMaskedWalletRequest(fragment, Cart.newBuilder().build(), true, false,
-                false, 0);
+        AndroidPay.performMaskedWalletRequest(fragment, null, false, false, 0);
 
-        verify(fragment).sendAnalyticsEvent("android-pay.failed");
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void performMaskedWalletRequest_sendsAnalyticsEventForNoCartOrBillingAgreement() {
-        BraintreeFragment fragment = getSetupFragment();
-
-        AndroidPay.performMaskedWalletRequest(fragment, null, false, false, false, 0);
-
-        verify(fragment).sendAnalyticsEvent("android-pay.failed");
+        InOrder order = inOrder(fragment);
+        order.verify(fragment).sendAnalyticsEvent("android-pay.selected");
+        order.verify(fragment).sendAnalyticsEvent("android-pay.failed");
     }
 
     @Test(timeout = 1000)
@@ -235,7 +230,7 @@ public class AndroidPayTest {
     public void onActivityResult_sendsAnalyticsEventOnCancel() {
         BraintreeFragment fragment = getSetupFragment();
 
-        AndroidPay.onActivityResult(fragment, Cart.newBuilder().build(), false, Activity.RESULT_CANCELED, new Intent());
+        AndroidPay.onActivityResult(fragment, Cart.newBuilder().build(), Activity.RESULT_CANCELED, new Intent());
 
         verify(fragment).sendAnalyticsEvent("android-pay.canceled");
     }
@@ -245,7 +240,7 @@ public class AndroidPayTest {
     public void onActivityResult_sendsAnalyticsEventOnNonOkOrCanceledResult() {
         BraintreeFragment fragment = getSetupFragment();
 
-        AndroidPay.onActivityResult(fragment, Cart.newBuilder().build(), false, Activity.RESULT_FIRST_USER,
+        AndroidPay.onActivityResult(fragment, Cart.newBuilder().build(), Activity.RESULT_FIRST_USER,
                 new Intent());
 
         verify(fragment).sendAnalyticsEvent("android-pay.failed");
@@ -262,7 +257,7 @@ public class AndroidPayTest {
         Intent intent = new Intent()
                 .putExtra(WalletConstants.EXTRA_MASKED_WALLET, wallet);
 
-        AndroidPay.onActivityResult(fragment, Cart.newBuilder().build(), false, Activity.RESULT_OK, intent);
+        AndroidPay.onActivityResult(fragment, Cart.newBuilder().build(), Activity.RESULT_OK, intent);
 
         verify(fragment).sendAnalyticsEvent("android-pay.authorized");
     }

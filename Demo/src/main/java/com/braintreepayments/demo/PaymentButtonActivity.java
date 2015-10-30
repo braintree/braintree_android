@@ -34,7 +34,6 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodCrea
 
     private BraintreeFragment mBraintreeFragment;
     private Cart mCart;
-    private boolean mIsBillingAgreement;
 
     @Override
     protected void onCreate(Bundle onSaveInstanceState) {
@@ -56,15 +55,11 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodCrea
         }
 
         mCart = getIntent().getParcelableExtra(MainActivity.EXTRA_ANDROID_PAY_CART);
-        mIsBillingAgreement = getIntent().getBooleanExtra(MainActivity.EXTRA_ANDROID_PAY_IS_BILLING_AGREEMENT, false);
 
         PaymentRequest paymentRequest = new PaymentRequest()
                 .androidPayCart(mCart)
-                .androidPayBillingAgreement(mIsBillingAgreement)
                 .androidPayShippingAddressRequired(getIntent().getBooleanExtra(MainActivity.EXTRA_ANDROID_PAY_SHIPPING_ADDRESS_REQUIRED, false))
-                .androidPayPhoneNumberRequired(getIntent()
-                        .getBooleanExtra(MainActivity.EXTRA_ANDROID_PAY_PHONE_NUMBER_REQUIRED,
-                                false))
+                .androidPayPhoneNumberRequired(getIntent().getBooleanExtra(MainActivity.EXTRA_ANDROID_PAY_PHONE_NUMBER_REQUIRED, false))
                 .androidPayRequestCode(ANDROID_PAY_REQUEST_CODE);
 
         if (getIntent().getBooleanExtra(MainActivity.EXTRA_PAYPAL_ADDRESS_SCOPE_REQUESTED, false)) {
@@ -98,19 +93,17 @@ public class PaymentButtonActivity extends Activity implements PaymentMethodCrea
                             ((MaskedWallet) data.getParcelableExtra(WalletConstants.EXTRA_MASKED_WALLET))
                                     .getGoogleTransactionId();
 
-                    final FullWalletRequest.Builder fullWalletRequestBuilder = FullWalletRequest.newBuilder()
-                            .setGoogleTransactionId(googleTransactionId);
-
-                    if (!mIsBillingAgreement) {
-                        fullWalletRequestBuilder.setCart(mCart);
-                    }
+                    final FullWalletRequest fullWalletRequest = FullWalletRequest.newBuilder()
+                            .setGoogleTransactionId(googleTransactionId)
+                            .setCart(mCart)
+                            .build();
 
                     mBraintreeFragment.getGoogleApiClient(
                             new BraintreeResponseListener<GoogleApiClient>() {
                                 @Override
                                 public void onResponse(GoogleApiClient googleApiClient) {
                                     Wallet.Payments.loadFullWallet(googleApiClient,
-                                            fullWalletRequestBuilder.build(),
+                                            fullWalletRequest,
                                             ANDROID_PAY_REQUEST_CODE);
                                 }
                             });

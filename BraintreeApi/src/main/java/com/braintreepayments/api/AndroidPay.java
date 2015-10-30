@@ -2,14 +2,15 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.TokenizationParametersListener;
 import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
-import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.models.TokenizationKey;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
 import com.google.android.gms.wallet.FullWalletRequest;
@@ -131,25 +132,18 @@ public class AndroidPay {
      *
      * @param fragment The current {@link BraintreeFragment}.
      * @param cart The cart representation with price and optionally items.
-     * @param isBillingAgreement {@code true} if this request is for a billing agreement, {@code false} otherwise.
      * @param shippingAddressRequired {@code true} if this request requires a shipping address, {@code false} otherwise.
      * @param phoneNumberRequired {@code true} if this request requires a phone number, {@code false} otherwise.
      * @param requestCode The requestCode to use with {@link Activity#startActivityForResult(Intent, int)}
      */
-    public static void performMaskedWalletRequest(final BraintreeFragment fragment, final Cart cart,
-            final boolean isBillingAgreement, final boolean shippingAddressRequired,
-            final boolean phoneNumberRequired, final int requestCode) {
+    static void performMaskedWalletRequest(final BraintreeFragment fragment, final @NonNull Cart cart,
+            final boolean shippingAddressRequired, final boolean phoneNumberRequired, 
+            final int requestCode) {
         fragment.sendAnalyticsEvent("android-pay.selected");
 
-        if (isBillingAgreement && cart != null) {
+        if (cart == null) {
+            fragment.postCallback(new BraintreeException("Cannot pass null cart to performMaskedWalletRequest"));
             fragment.sendAnalyticsEvent("android-pay.failed");
-            fragment.postCallback(new InvalidArgumentException(
-                    "The cart must be null when isBillingAgreement is true"));
-            return;
-        } else if (!isBillingAgreement && cart == null) {
-            fragment.sendAnalyticsEvent("android-pay.failed");
-            fragment.postCallback(new InvalidArgumentException(
-                    "Cart cannot be null unless isBillingAgreement is true"));
             return;
         }
 
@@ -161,16 +155,12 @@ public class AndroidPay {
                                 .setMerchantName(getMerchantName(configuration.getAndroidPay()))
                                 .setCurrencyCode("USD")
                                 .setCart(cart)
-                                .setIsBillingAgreement(isBillingAgreement)
+                                .setEstimatedTotalPrice(cart.getTotalPrice())
                                 .setShippingAddressRequired(shippingAddressRequired)
                                 .setPhoneNumberRequired(phoneNumberRequired)
                                 .setPaymentMethodTokenizationParameters(
                                         getTokenizationParameters(fragment))
                                 .addAllowedCardNetworks(getAllowedCardNetworks(fragment));
-
-                if (cart != null) {
-                    maskedWalletRequestBuilder.setEstimatedTotalPrice(cart.getTotalPrice());
-                }
 
                 Wallet.Payments.loadMaskedWallet(fragment.getGoogleApiClient(),
                         maskedWalletRequestBuilder.build(), requestCode);
@@ -186,30 +176,26 @@ public class AndroidPay {
      *
      * @param fragment The current {@link BraintreeFragment} through which the callbacks should
      *          be forwarded
+     * @param cart The {@link Cart} that was used to create the MaskedWalletRequest
      * @param googleTransactionId The transaction id from the {@link MaskedWallet}.
      */
-    public static void performFullWalletRequest(BraintreeFragment fragment,
-            Cart cart, boolean isBillingAgreement, String googleTransactionId) {
+    static void performFullWalletRequest(BraintreeFragment fragment, Cart cart, String googleTransactionId) {
         FullWalletRequest.Builder fullWalletRequestBuilder = FullWalletRequest.newBuilder()
+                .setCart(cart)
                 .setGoogleTransactionId(googleTransactionId);
-
-        if (!isBillingAgreement) {
-            fullWalletRequestBuilder.setCart(cart);
-        }
 
         Wallet.Payments.loadFullWallet(fragment.getGoogleApiClient(), fullWalletRequestBuilder.build(),
                 ANDROID_PAY_FULL_WALLET_REQUEST_CODE);
     }
 
-    public static void onActivityResult(BraintreeFragment fragment, Cart cart,
-            boolean isBillingAgreement, int resultCode, Intent data) {
+    static void onActivityResult(BraintreeFragment fragment, Cart cart, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             if (data.hasExtra(WalletConstants.EXTRA_MASKED_WALLET)) {
                 fragment.sendAnalyticsEvent("android-pay.authorized");
                 String googleTransactionId =
                         ((MaskedWallet) data.getParcelableExtra(WalletConstants.EXTRA_MASKED_WALLET))
                         .getGoogleTransactionId();
-                performFullWalletRequest(fragment, cart, isBillingAgreement, googleTransactionId);
+                performFullWalletRequest(fragment, cart, googleTransactionId);
             } else if (data.hasExtra(WalletConstants.EXTRA_FULL_WALLET)) {
                 tokenize(fragment,
                         (FullWallet) data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET));

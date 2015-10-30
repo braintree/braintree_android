@@ -15,8 +15,6 @@ import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.models.Configuration;
 
-import java.util.List;
-
 /**
  * An intelligent button for handling non-card payment methods. This button will display payment
  * methods depending on their availability.
@@ -64,14 +62,13 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
                 showProgress(false);
             }
         });
-        mBraintreeFragment.setConfigurationErrorListener(
-                new BraintreeResponseListener<Exception>() {
-                    @Override
-                    public void onResponse(Exception e) {
-                        mBraintreeFragment.setConfigurationErrorListener(null);
-                        setVisibility(GONE);
-                    }
-                });
+        mBraintreeFragment.setConfigurationErrorListener(new BraintreeResponseListener<Exception>() {
+            @Override
+            public void onResponse(Exception e) {
+                mBraintreeFragment.setConfigurationErrorListener(null);
+                setVisibility(GONE);
+            }
+        });
     }
 
     @Override
@@ -83,7 +80,6 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
         } else if (v.getId() == R.id.bt_android_pay_button) {
             AndroidPay.performMaskedWalletRequest(mBraintreeFragment,
                     mPaymentRequest.getAndroidPayCart(),
-                    mPaymentRequest.isAndroidPayBillingAgreement(),
                     mPaymentRequest.isAndroidPayShippingAddressRequired(),
                     mPaymentRequest.isAndroidPayPhoneNumberRequired(),
                     mPaymentRequest.getAndroidPayRequestCode());
@@ -160,8 +156,7 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
     protected boolean isAndroidPayEnabled() {
         try {
             return (mBraintreeFragment.getConfiguration().getAndroidPay().isEnabled(getContext())
-                    && (mPaymentRequest.getAndroidPayCart() != null ||
-                    mPaymentRequest.isAndroidPayBillingAgreement()));
+                    && mPaymentRequest.getAndroidPayCart() != null);
         } catch (NoClassDefFoundError e) {
             return false;
         }

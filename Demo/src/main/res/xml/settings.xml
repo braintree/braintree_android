@@ -27,12 +27,6 @@
         android:title="@string/android_pay">
 
         <CheckBoxPreference
-            android:key="android_pay_billing_agreement"
-            android:title="@string/android_pay_is_billing_agreement"
-            android:summary="@string/android_pay_is_billing_agreement_summary"
-            android:defaultValue="false" />
-
-        <CheckBoxPreference
             android:key="android_pay_require_shipping_address"
             android:title="@string/android_pay_require_shipping_address"
             android:summary="@string/android_pay_require_shipping_address_summary"
