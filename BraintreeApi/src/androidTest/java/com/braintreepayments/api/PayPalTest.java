@@ -122,7 +122,7 @@ public class PayPalTest {
             }
         });
 
-        PayPal.requestExpressCheckout(fragment, new PayPalRequest());
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest());
         mLatch.await();
     }
 
@@ -200,7 +200,7 @@ public class PayPalTest {
         ActivityResult result = new ActivityResult(Activity.RESULT_CANCELED, returnIntent);
         intending(allOf(hasAction(Intent.ACTION_VIEW))).respondWith(result);
 
-        PayPal.requestExpressCheckout(fragment, new PayPalRequest("1"));
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
 
         mLatch.await();
     }
@@ -237,7 +237,7 @@ public class PayPalTest {
         ActivityResult result = new ActivityResult(Activity.RESULT_OK, returnIntent);
         intending(allOf(hasAction(Intent.ACTION_VIEW))).respondWith(result);
 
-        PayPal.requestExpressCheckout(fragment, new PayPalRequest("1"));
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
         mLatch.await();
     }
 
@@ -270,7 +270,7 @@ public class PayPalTest {
         ActivityResult result = new ActivityResult(Activity.RESULT_CANCELED, new Intent());
         intending(allOf(hasAction(Intent.ACTION_VIEW))).respondWith(result);
 
-        PayPal.requestExpressCheckout(fragment, new PayPalRequest("1"));
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
         mLatch.await();
     }
 
@@ -346,7 +346,7 @@ public class PayPalTest {
             }
         });
 
-        PayPal.requestExpressCheckout(fragment, new PayPalRequest("1"));
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
 
         mLatch.await();
     }
@@ -377,7 +377,7 @@ public class PayPalTest {
             }
         };
 
-        PayPal.requestExpressCheckout(fragment, new PayPalRequest("1").shippingAddressRequired(false));
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").shippingAddressRequired(false));
 
         mLatch.await();
     }
@@ -425,7 +425,7 @@ public class PayPalTest {
         PayPalRequest request = new PayPalRequest("3.43")
                 .shippingAddressRequired(true)
                 .shippingAddressOverride(address);
-        PayPal.requestExpressCheckout(fragment, request);
+        PayPal.requestOneTimePayment(fragment, request);
 
         mLatch.await();
     }
@@ -472,7 +472,7 @@ public class PayPalTest {
         PayPalRequest request = new PayPalRequest("3.43")
                 .shippingAddressRequired(false)
                 .shippingAddressOverride(address);
-        PayPal.requestExpressCheckout(fragment, request);
+        PayPal.requestOneTimePayment(fragment, request);
 
         mLatch.await();
     }

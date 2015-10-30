@@ -148,7 +148,7 @@ public class PayPal {
      */
     public static void requestBillingAgreement(BraintreeFragment fragment, PayPalRequest checkout) {
         if (checkout.getAmount() == null) {
-            requestExpressCheckout(fragment, checkout, true);
+            requestOneTimePayment(fragment, checkout, true);
         } else {
             fragment.postCallback(new BraintreeException(
                     "There must be no amount specified for the Billing Agreement flow"));
@@ -163,9 +163,9 @@ public class PayPal {
      * @param checkout A {@link PayPalRequest} used to customize the request. An amount MUST be
      *                 specified.
      */
-    public static void requestExpressCheckout(BraintreeFragment fragment, PayPalRequest checkout) {
+    public static void requestOneTimePayment(BraintreeFragment fragment, PayPalRequest checkout) {
         if (checkout.getAmount() != null) {
-            requestExpressCheckout(fragment, checkout, false);
+            requestOneTimePayment(fragment, checkout, false);
         } else {
             fragment.postCallback(new BraintreeException(
                     "An amount MUST be specified for the Single Payment flow."));
@@ -183,7 +183,7 @@ public class PayPal {
      * @param isBillingAgreement A boolean. If true, this will use the Billing Agreement. Otherwise,
      *                           PayPal will perform a Single Payment.
      */
-    private static void requestExpressCheckout(final BraintreeFragment fragment,
+    private static void requestOneTimePayment(final BraintreeFragment fragment,
             final PayPalRequest checkout,
             final boolean isBillingAgreement) {
         final HttpResponseCallback callback = new HttpResponseCallback() {

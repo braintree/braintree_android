@@ -109,7 +109,7 @@ public class PayPalActivity extends Activity implements PaymentMethodCreatedList
      */
     public void launchSinglePayment(View v) {
         PayPalRequest checkout = new PayPalRequest("1.50");
-        PayPal.requestExpressCheckout(mBraintreeFragment, checkout);
+        PayPal.requestOneTimePayment(mBraintreeFragment, checkout);
     }
 
     /**
