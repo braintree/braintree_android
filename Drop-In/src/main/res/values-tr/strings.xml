@@ -16,6 +16,7 @@
     <string name="bt_card_descriptor">sonu &#x15F;u numarayla biten %s</string>
 
     <string name="bt_pay_with_paypal">PayPal ile &#xF6;deyin</string>
+    <string name="bt_pay_with_venmo">Venmo ile &#xF6;deyin </string>
 
     <string name="bt_descriptor_visa">Visa</string>
     <string name="bt_descriptor_mastercard">MasterCard</string>

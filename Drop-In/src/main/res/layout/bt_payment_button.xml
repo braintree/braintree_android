@@ -12,7 +12,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:weightSum="3" >
+            android:weightSum="3">
 
             <ImageButton
                 style="@style/bt_payment_method_app_switch_button"
@@ -23,6 +23,16 @@
             <View
                 style="@style/bt_app_switch_button_divider"
                 android:id="@+id/bt_payment_button_divider" />
+
+            <ImageButton
+                style="@style/bt_payment_method_app_switch_button"
+                android:id="@+id/bt_venmo_button"
+                android:src="@drawable/bt_logo_venmo"
+                android:contentDescription="@string/bt_pay_with_venmo" />
+
+            <View
+                style="@style/bt_app_switch_button_divider"
+                android:id="@+id/bt_payment_button_divider_2" />
 
             <ImageButton
                 style="@style/bt_payment_method_app_switch_button"

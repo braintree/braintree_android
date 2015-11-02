@@ -16,6 +16,7 @@
     <string name="bt_card_descriptor">&#x437;&#x430;&#x43A;&#x430;&#x43D;&#x447;&#x438;&#x432;&#x430;&#x435;&#x442;&#x441;&#x44F; &#x432; %s</string>
 
     <string name="bt_pay_with_paypal">&#x41E;&#x43F;&#x43B;&#x430;&#x442;&#x438;&#x442;&#x44C; &#x447;&#x435;&#x440;&#x435;&#x437; PayPal</string>
+    <string name="bt_pay_with_venmo">&#x41E;&#x43F;&#x43B;&#x430;&#x442;&#x438;&#x442;&#x44C; &#x441; &#x43F;&#x43E;&#x43C;&#x43E;&#x449;&#x44C;&#x44E; Venmo</string>
 
     <string name="bt_descriptor_visa">Visa</string>
     <string name="bt_descriptor_mastercard">MasterCard</string>

@@ -16,6 +16,7 @@
     <string name="bt_card_descriptor">ko&#x144;czy si&#x119; cyframi %s</string>
 
     <string name="bt_pay_with_paypal">Zap&#x142;a&#x107; w systemie PayPal</string>
+    <string name="bt_pay_with_venmo">Zap&#x142;a&#x107; w systemie Venmo</string>
 
     <string name="bt_descriptor_visa">Visa</string>
     <string name="bt_descriptor_mastercard">MasterCard</string>

@@ -13,6 +13,7 @@ public enum PaymentMethodType {
     MASTERCARD(R.drawable.bt_mastercard, R.string.bt_descriptor_mastercard, "MasterCard"),
     PAYPAL(R.drawable.bt_paypal, R.string.bt_descriptor_paypal, "PayPal"),
     VISA(R.drawable.bt_visa, R.string.bt_descriptor_visa, "Visa"),
+    PAY_WITH_VENMO(R.drawable.bt_venmo, R.string.bt_descriptor_pay_with_venmo, "Venmo"),
     UNKNOWN(0, R.string.bt_descriptor_unknown, "unknown");
 
     private final int mDrawable;
@@ -26,10 +27,10 @@ public enum PaymentMethodType {
     }
 
     /**
-     * @param paymentMethodType A {@link String} representing a canonical name for a payment method.
-     *
-     * @return a {@link PaymentMethodType} for for the given {@link String}, or
-     *         {@link PaymentMethodType#UNKNOWN} if no match could be made.
+     * @param paymentMethodType A {@link String} representing a canonical name for a payment
+     * method.
+     * @return a {@link PaymentMethodType} for for the given {@link String}, or {@link
+     * PaymentMethodType#UNKNOWN} if no match could be made.
      */
     public static PaymentMethodType forType(String paymentMethodType) {
         for (PaymentMethodType type : values()) {
@@ -42,15 +43,15 @@ public enum PaymentMethodType {
 
     /**
      * @return An id representing a {@link android.graphics.drawable.Drawable} icon for the current
-     *         {@link PaymentMethodType}.
+     * {@link PaymentMethodType}.
      */
     public int getDrawable() {
         return mDrawable;
     }
 
     /**
-     * @return An id representing a localized {@link String} for the current
-     *         {@link PaymentMethodType}.
+     * @return An id representing a localized {@link String} for the current {@link
+     * PaymentMethodType}.
      */
     public int getLocalizedName() {
         return mLocalizedName;
@@ -58,7 +59,7 @@ public enum PaymentMethodType {
 
     /**
      * @return A {@link String} name of the {@link PaymentMethodType} as it is categorized by
-     *         Braintree.
+     * Braintree.
      */
     public String getCanonicalName() {
         return mCanonicalName;

@@ -2,6 +2,7 @@ package com.braintreepayments.api.models;
 
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
+import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.junit.Test;
@@ -112,6 +113,26 @@ public class ConfigurationTest {
                 stringFromFixture("configuration_with_merchant_account_id.json"));
 
         assertEquals("integration_merchant_account_id", configuration.getMerchantAccountId());
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void returnsEmptyVenmoConfigurationWhenNotDefined() throws JSONException {
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration.json"));
+
+        assertNotNull(configuration.getPayWithVenmo());
+        assertTrue(TextUtils.isEmpty(configuration.getPayWithVenmo().getAccessToken()));
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void payWithVenmoIsEnabledWhenConfigurationExists() throws JSONException {
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_pay_with_venmo.json"));
+
+        assertNotNull(configuration.getPayWithVenmo());
+        assertFalse(TextUtils.isEmpty(configuration.getPayWithVenmo().getAccessToken()));
     }
 
     @Test(timeout = 1000)

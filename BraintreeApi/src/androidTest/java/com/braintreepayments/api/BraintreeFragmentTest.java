@@ -94,7 +94,8 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 1000, expected = InvalidArgumentException.class)
     @SmallTest
-    public void newInstance_throwsAnExceptionForABadTokenizationKey() throws InvalidArgumentException {
+    public void newInstance_throwsAnExceptionForABadTokenizationKey()
+            throws InvalidArgumentException {
         BraintreeFragment.newInstance(mActivity, "test_key_merchant");
     }
 
@@ -125,7 +126,7 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void sendsAnalyticsEventForTokenizationKey() throws InterruptedException{
+    public void sendsAnalyticsEventForTokenizationKey() throws InterruptedException {
         BraintreeFragment fragment = getFragment(mActivity, TOKENIZATION_KEY);
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
@@ -333,7 +334,8 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void addListener_flushesPaymentMethodNoncesUpdatedCallback() throws InterruptedException {
+    public void addListener_flushesPaymentMethodNoncesUpdatedCallback()
+            throws InterruptedException {
         BraintreeFragment fragment = getFragment(mActivity, mClientToken);
         fragment.postCallback(new ArrayList<PaymentMethodNonce>());
 
