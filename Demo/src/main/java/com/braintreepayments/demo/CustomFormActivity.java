@@ -15,9 +15,11 @@ import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.PaymentButton;
 import com.braintreepayments.api.TokenizationClient;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
 import com.google.android.gms.wallet.FullWalletRequest;
@@ -108,15 +110,22 @@ public class CustomFormActivity extends Activity implements PaymentMethodCreated
                             ((MaskedWallet) data.getParcelableExtra(WalletConstants.EXTRA_MASKED_WALLET))
                                     .getGoogleTransactionId();
 
-                    FullWalletRequest.Builder fullWalletRequestBuilder = FullWalletRequest.newBuilder()
+                    final FullWalletRequest.Builder fullWalletRequestBuilder = FullWalletRequest.newBuilder()
                             .setGoogleTransactionId(googleTransactionId);
 
                     if (!mIsBillingAgreement) {
                         fullWalletRequestBuilder.setCart(mCart);
                     }
 
-                    Wallet.Payments.loadFullWallet(mBraintreeFragment.getGoogleApiClient(),
-                            fullWalletRequestBuilder.build(), ANDROID_PAY_REQUEST_CODE);
+                    mBraintreeFragment.getGoogleApiClient(
+                            new BraintreeResponseListener<GoogleApiClient>() {
+                                @Override
+                                public void onResponse(GoogleApiClient googleApiClient) {
+                                    Wallet.Payments.loadFullWallet(googleApiClient,
+                                            fullWalletRequestBuilder.build(),
+                                            ANDROID_PAY_REQUEST_CODE);
+                                }
+                            });
                 } else {
                     AndroidPay.tokenize(mBraintreeFragment,
                             (FullWallet) data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET));
