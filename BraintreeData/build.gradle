@@ -17,7 +17,7 @@ android {
 }
 
 dependencies {
-    compile files('libs/devicecollector-sdk-2.5.jar')
+    compile files('libs/devicecollector-sdk-2.6.jar')
 }
 
 /* maven deploy + signing */
