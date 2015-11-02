@@ -129,7 +129,7 @@ public class PostalAddress implements Parcelable {
     }
 
     public boolean isEmpty() {
-        // For our concerns, if the country code isn't empty this object isn't empty.
+        // A PostalAddress is considered empty if it does not have a country code
         return TextUtils.isEmpty(mCountryCodeAlpha2);
     }
 
