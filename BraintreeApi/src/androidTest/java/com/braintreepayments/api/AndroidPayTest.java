@@ -67,7 +67,7 @@ public class AndroidPayTest {
         when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
         BraintreeFragment fragment =
                 getMockFragment(mActivityTestRule.getActivity(), configuration);
-        when(fragment.getAuthorization()).thenReturn(Authorization.fromString(CLIENT_KEY));
+        when(fragment.getAuthorization()).thenReturn(Authorization.fromString(TOKENIZATION_KEY));
         final CountDownLatch latch = new CountDownLatch(1);
 
         AndroidPay.getTokenizationParameters(fragment, new TokenizationParametersListener() {
