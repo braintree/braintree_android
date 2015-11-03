@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import com.braintreepayments.api.test.BraintreePaymentActivityTestRunner;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
+import com.braintreepayments.testutils.TestTokenizationKey;
 import com.google.android.gms.wallet.Cart;
 
 import org.junit.Test;
