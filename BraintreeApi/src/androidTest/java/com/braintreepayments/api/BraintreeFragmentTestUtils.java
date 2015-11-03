@@ -51,7 +51,6 @@ public class BraintreeFragmentTestUtils {
             BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity, authorization));
             doNothing().when(fragment).fetchConfiguration();
             when(fragment.getApplicationContext()).thenReturn(getTargetContext());
-            when(fragment.getConfiguration()).thenReturn(configuration);
             when(fragment.getAuthorization()).thenReturn(Authorization.fromString(authorization));
             fragment.mConfiguration = configuration;
 
