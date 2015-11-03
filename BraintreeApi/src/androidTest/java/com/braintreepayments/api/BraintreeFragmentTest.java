@@ -10,9 +10,8 @@ import android.test.suitebuilder.annotation.SmallTest;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
-import com.braintreepayments.api.interfaces.ConfigurationFetchedErrorListener;
+import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
-import com.braintreepayments.api.interfaces.GoogleApiClientListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodsUpdatedListener;
@@ -220,12 +219,12 @@ public class BraintreeFragmentTest {
             throws InvalidArgumentException, InterruptedException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity,
                 stringFromFixture("client_token_with_bad_config_url.json"));
-        fragment.addListener(new ConfigurationFetchedErrorListener() {
+        fragment.setConfigurationErrorListener(new BraintreeResponseListener<Exception>() {
             @Override
-            public void onConfigurationError(Throwable throwable) {
+            public void onResponse(Exception error) {
                 assertEquals(
                         "Protocol not found: nullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint",
-                        throwable.getMessage());
+                        error.getMessage());
                 mCountDownLatch.countDown();
             }
         });
@@ -279,9 +278,9 @@ public class BraintreeFragmentTest {
     public void getGoogleApiClient_returnsGoogleApiClient() throws InterruptedException {
         BraintreeFragment fragment = getFragment(mActivity, mClientToken);
 
-        fragment.getGoogleApiClient(new GoogleApiClientListener() {
+        fragment.getGoogleApiClient(new BraintreeResponseListener<GoogleApiClient>() {
             @Override
-            public void onResult(GoogleApiClient googleApiClient) {
+            public void onResponse(GoogleApiClient googleApiClient) {
                 assertNotNull(googleApiClient);
                 mCountDownLatch.countDown();
             }
