@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.VisibleForTesting;
-import android.util.Log;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
@@ -194,9 +193,7 @@ public class PayPal {
                 try {
                     paypalPaymentResource = PayPalPaymentResource.fromJson(responseBody);
                 } catch (JSONException e) {
-                    // If the PayPalPaymentResource is unable to be loaded, return.
                     fragment.postCallback(e);
-                    Log.d("PayPal", "Unable to parse URL for PayPal app switch.");
                     return;
                 }
 
@@ -223,15 +220,6 @@ public class PayPal {
             @Override
             public void failure(Exception e) {
                 fragment.postCallback(e);
-                ErrorWithResponse ex = (ErrorWithResponse) e;
-                try {
-                    JSONObject response = new JSONObject(ex.getErrorResponse());
-                    String debugId = response.getJSONObject("error").getString("debugId");
-                    Log.d("PayPal",
-                            "Unable to generate URL for PayPal app switch. DebugId: " + debugId);
-                } catch (JSONException jsonException) {
-                    Log.d("PayPal", "Unable to generate URL for PayPal app switch.");
-                }
             }
         };
 
