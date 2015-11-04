@@ -66,7 +66,14 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
 
         try {
             JSONObject payerInfo = details.getJSONObject(PAYER_INFO_KEY);
-            JSONObject billingAddress = payerInfo.has(ACCOUNT_ADDRESS_KEY) ? payerInfo.optJSONObject(ACCOUNT_ADDRESS_KEY) : payerInfo.optJSONObject(BILLING_ADDRESS_KEY);
+
+            JSONObject billingAddress;
+            if (payerInfo.has(ACCOUNT_ADDRESS_KEY)) {
+                billingAddress = payerInfo.optJSONObject(ACCOUNT_ADDRESS_KEY);
+            } else {
+                billingAddress = payerInfo.optJSONObject(BILLING_ADDRESS_KEY);
+            }
+
             JSONObject shippingAddress = payerInfo.optJSONObject(SHIPPING_ADDRESS_KEY);
 
             mBillingAddress = PostalAddress.fromJson(billingAddress);
@@ -158,14 +165,6 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
      */
     public String getPayerId(){
         return mPayerId;
-    }
-
-    /**
-     * Sets the ClientMetadataId after the app switch
-     * @param clientMetadataId - Client Metadata Id
-     */
-    protected void setClientMetadataId(String clientMetadataId) {
-        mClientMetadataId = clientMetadataId;
     }
 
     public PayPalAccountNonce() {}

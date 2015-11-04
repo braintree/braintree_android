@@ -1,7 +1,7 @@
 package com.braintreepayments.api.models;
 
 /**
- * Represents the parameters that are needed to kick off Checkout with PayPal
+ * Represents the parameters that are needed to start a Checkout with PayPal
  *
  * In the checkout flow, the user is presented with details about the order and only agrees to a
  * single payment. The result is not eligible for being saved in the Vault; however, you will receive
