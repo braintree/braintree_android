@@ -213,7 +213,7 @@ public class BraintreeFragment extends Fragment {
     public void onActivityResult(final int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == Activity.RESULT_CANCELED && data != null) {
+        if (resultCode == Activity.RESULT_CANCELED) {
             postOrQueueCallback(new QueuedCallback() {
                 @Override
                 public boolean shouldRun() {
