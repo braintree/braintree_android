@@ -492,27 +492,27 @@ public class PayPal {
     }
 
     @VisibleForTesting
-    static CheckoutRequest getCheckoutRequest(String approvalUrl,
+    static CheckoutRequest getCheckoutRequest(String redirectUrl,
             Context context, PayPalConfiguration configuration) {
         CheckoutRequest request = populateRequestData(new CheckoutRequest(), context, configuration)
-                .approvalURL(approvalUrl);
+                .approvalURL(redirectUrl);
 
-        if (approvalUrl != null) {
-            request.pairingId(Uri.parse(approvalUrl).getQueryParameter("token"));
+        if (redirectUrl!= null) {
+            request.pairingId(Uri.parse(redirectUrl).getQueryParameter("token"));
         }
 
         return request;
     }
 
     @VisibleForTesting
-    static BillingAgreementRequest getBillingAgreementRequest(String approvalUrl,
+    static BillingAgreementRequest getBillingAgreementRequest(String redirectUrl,
             Context context, PayPalConfiguration configuration) {
         BillingAgreementRequest request = populateRequestData(new BillingAgreementRequest(),
                 context, configuration)
-                .approvalURL(approvalUrl);
+                .approvalURL(redirectUrl);
 
-        if (approvalUrl != null) {
-            request.pairingId(Uri.parse(approvalUrl).getQueryParameter("ba_token"));
+        if (redirectUrl != null) {
+            request.pairingId(Uri.parse(redirectUrl).getQueryParameter("ba_token"));
         }
 
         return request;
