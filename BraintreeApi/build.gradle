@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 
-def paypalVersion = 'OneTouchCoreAndroid-2.4.3.jar'
 def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"';
 
 android {
@@ -30,7 +29,7 @@ dependencies {
     compile 'com.android.support:support-annotations:[23.0.0,24.0.0)'
 
     compile project(':BraintreeDataCollector')
-    compile files('libs/' + paypalVersion)
+    compile project(':OneTouchCore')
 
     lintChecks project(path: ":Lint", configuration: "lintChecks")
 
@@ -99,7 +98,7 @@ task releaseJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompil
     from projectDir.path + '/build/intermediates/classes/release/'
     from {
         configurations.compile.findAll {
-            it.getName() == paypalVersion
+            //it.getName() == paypalVersion
         }.collect {
             it.isDirectory() ? it : zipTree(it)
         }

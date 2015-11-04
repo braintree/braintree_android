@@ -1,6 +1,7 @@
 include ':BraintreeApi'
 include ':BraintreeDataCollector'
 include ':Drop-In'
+include ':OneTouchCore'
 
 include ':TestUtils'
 include ':Lint'
