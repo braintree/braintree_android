@@ -29,7 +29,7 @@ public interface CoreEnvironment {
     String getUserAgent();
 
     /**
-     * The application specified sha1, used for Hmac header
+     * The application specified sha1
      *
      * @return
      */

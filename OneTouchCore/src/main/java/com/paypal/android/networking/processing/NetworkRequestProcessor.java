@@ -244,8 +244,6 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
             builder.add(headerEntry.getKey(), headerEntry.getValue());
         }
 
-        // TODO: Add HMAC Headers
-
         return builder.build();
     }
 
