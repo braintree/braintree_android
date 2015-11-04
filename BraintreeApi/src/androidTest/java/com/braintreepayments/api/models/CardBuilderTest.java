@@ -2,8 +2,6 @@ package com.braintreepayments.api.models;
 
 import android.test.suitebuilder.annotation.SmallTest;
 
-import com.braintreepayments.api.Venmo;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -115,10 +113,10 @@ public class CardBuilderTest {
     @Test(timeout = 1000)
     @SmallTest
     public void setsCardSource() throws JSONException {
-        CardBuilder builder = new CardBuilder().source(Venmo.VENMO_SOURCE);
+        CardBuilder builder = new CardBuilder().source("form");
         JSONObject jsonObject = new JSONObject(builder.build());
 
-        assertEquals(Venmo.VENMO_SOURCE, jsonObject.getJSONObject("_meta").getString("source"));
+        assertEquals("form", jsonObject.getJSONObject("_meta").getString("source"));
     }
 
     @Test(timeout = 1000)

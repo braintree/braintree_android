@@ -18,7 +18,6 @@ public class Configuration {
     private static final String PAYPAL_ENABLED_KEY = "paypalEnabled";
     private static final String PAYPAL_KEY = "paypal";
     private static final String ANDROID_PAY_KEY = "androidPay";
-    private static final String VENMO_KEY = "venmo";
     private static final String THREE_D_SECURE_ENABLED_KEY = "threeDSecureEnabled";
 
     private String mConfigurationString;
@@ -31,7 +30,6 @@ public class Configuration {
     private boolean mPaypalEnabled;
     private PayPalConfiguration mPayPalConfiguration;
     private AndroidPayConfiguration mAndroidPayConfiguration;
-    private String mVenmo;
     private boolean mThreeDSecureEnabled;
 
     /**
@@ -51,7 +49,6 @@ public class Configuration {
         configuration.mPaypalEnabled = json.optBoolean(PAYPAL_ENABLED_KEY, false);
         configuration.mPayPalConfiguration = PayPalConfiguration.fromJson(json.optJSONObject(PAYPAL_KEY));
         configuration.mAndroidPayConfiguration = AndroidPayConfiguration.fromJson(json.optJSONObject(ANDROID_PAY_KEY));
-        configuration.mVenmo = json.optString(VENMO_KEY, null);
         configuration.mThreeDSecureEnabled = json.optBoolean(THREE_D_SECURE_ENABLED_KEY, false);
         configuration.mMerchantId = json.getString(MERCHANT_ID_KEY);
         configuration.mMerchantAccountId = json.optString(MERCHANT_ACCOUNT_ID_KEY, null);
@@ -112,19 +109,6 @@ public class Configuration {
      */
     public AndroidPayConfiguration getAndroidPay() {
         return mAndroidPayConfiguration;
-    }
-
-    /**
-     * @return a {@link java.lang.String} of "off" is Venmo is disabled, a {@link String} of
-     * "offline" when the Venmo environment is offline or a {@link String} of "live" when the
-     * Venmo environment is live.
-     */
-    public String getVenmoState() {
-        if (mVenmo == null) {
-            return "off";
-        } else {
-            return mVenmo;
-        }
     }
 
     /**

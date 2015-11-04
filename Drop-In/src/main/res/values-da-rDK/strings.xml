@@ -16,7 +16,6 @@
     <string name="bt_card_descriptor">slutter p&#xE5; %s</string>
 
     <string name="bt_pay_with_paypal">Betal med PayPal</string>
-    <string name="bt_pay_with_venmo">Betal med Venmo</string>
 
     <string name="bt_descriptor_visa">Visa</string>
     <string name="bt_descriptor_mastercard">MasterCard</string>

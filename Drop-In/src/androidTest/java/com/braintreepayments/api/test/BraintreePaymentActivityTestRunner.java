@@ -16,7 +16,6 @@ import com.braintreepayments.api.BraintreePaymentTestActivity;
 import com.braintreepayments.api.PaymentRequest;
 import com.braintreepayments.api.PayPalTestSignatureVerification;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
-import com.braintreepayments.api.internal.SignatureVerificationTestUtils;
 import com.braintreepayments.testutils.ui.ViewHelper;
 
 import org.hamcrest.Matcher;

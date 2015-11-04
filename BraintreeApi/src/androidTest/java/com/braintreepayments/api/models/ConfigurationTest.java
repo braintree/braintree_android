@@ -116,24 +116,6 @@ public class ConfigurationTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void returnsOffIfVenmoIsNull() throws JSONException {
-        Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_null_venmo.json"));
-
-        assertEquals("off", configuration.getVenmoState());
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void returnsVenmoStatus() throws JSONException {
-        Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_offline_venmo.json"));
-
-        assertEquals("offline", configuration.getVenmoState());
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
     public void reportsThreeDSecureEnabledWhenEnabled() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_three_d_secure.json"));

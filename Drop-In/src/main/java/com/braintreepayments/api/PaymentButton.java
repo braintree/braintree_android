@@ -77,8 +77,6 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
     public void onClick(View v) {
         if (v.getId() == R.id.bt_paypal_button) {
             PayPal.authorizeAccount(mBraintreeFragment, mPaymentRequest.getPayPalAdditionalScopes());
-        } else if (v.getId() == R.id.bt_venmo_button) {
-            Venmo.authorize(mBraintreeFragment);
         } else if (v.getId() == R.id.bt_android_pay_button) {
             AndroidPay.performMaskedWalletRequest(mBraintreeFragment,
                     mPaymentRequest.getAndroidPayCart(),
@@ -92,16 +90,12 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
 
     private void setupButton() {
         boolean isPayPalEnabled = isPayPalEnabled();
-        boolean isVenmoEnabled = isVenmoEnabled();
         boolean isAndroidPayEnabled = isAndroidPayEnabled();
         int buttonCount = 0;
-        if (!isPayPalEnabled && !isVenmoEnabled && !isAndroidPayEnabled) {
+        if (!isPayPalEnabled && !isAndroidPayEnabled) {
             setVisibility(GONE);
         } else {
             if (isPayPalEnabled) {
-                buttonCount++;
-            }
-            if (isVenmoEnabled) {
                 buttonCount++;
             }
             if (isAndroidPayEnabled) {
@@ -111,20 +105,12 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
             if (isPayPalEnabled) {
                 enableButton(findViewById(R.id.bt_paypal_button), buttonCount);
             }
-            if (isVenmoEnabled) {
-                enableButton(findViewById(R.id.bt_venmo_button), buttonCount);
-            }
             if (isAndroidPayEnabled) {
                 enableButton(findViewById(R.id.bt_android_pay_button), buttonCount);
             }
 
             if (isPayPalEnabled && buttonCount > 1) {
                 findViewById(R.id.bt_payment_button_divider).setVisibility(VISIBLE);
-            } else if (isVenmoEnabled && buttonCount > 1) {
-                findViewById(R.id.bt_payment_button_divider_2).setVisibility(VISIBLE);
-            }
-            if (buttonCount > 2) {
-                findViewById(R.id.bt_payment_button_divider_2).setVisibility(VISIBLE);
             }
 
             setVisibility(VISIBLE);
@@ -147,11 +133,6 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
     @VisibleForTesting
     protected boolean isPayPalEnabled() {
         return mBraintreeFragment.getConfiguration().isPayPalEnabled();
-    }
-
-    @VisibleForTesting
-    protected boolean isVenmoEnabled() {
-        return Venmo.isAvailable(getContext(), mBraintreeFragment.getConfiguration());
     }
 
     @VisibleForTesting

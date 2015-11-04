@@ -16,7 +16,6 @@
     <string name="bt_card_descriptor">eindigend op %s</string>
 
     <string name="bt_pay_with_paypal">Betalen met PayPal</string>
-    <string name="bt_pay_with_venmo">Betalen met Venno</string>
 
     <string name="bt_descriptor_visa">Visa</string>
     <string name="bt_descriptor_mastercard">MasterCard</string>

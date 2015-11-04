@@ -31,7 +31,6 @@ public class TestClientTokenBuilder {
     private ArrayList<String> mChallenges = new ArrayList<String>() {{ add("cvv"); add("postal_code"); }};
     private boolean mRevoked = false;
     private boolean mTouchEnabled = false;
-    private String mVenmoEnvironment = null;
     private boolean mWithFakePayPal = true;
 
     public TestClientTokenBuilder withoutCustomer() {
@@ -87,16 +86,6 @@ public class TestClientTokenBuilder {
 
     public TestClientTokenBuilder withTouchEnabled() {
         mTouchEnabled = true;
-        return this;
-    }
-
-    public TestClientTokenBuilder withOfflineVenmo() {
-        mVenmoEnvironment = "offline";
-        return this;
-    }
-
-    public TestClientTokenBuilder withLiveVenmo() {
-        mVenmoEnvironment = "live";
         return this;
     }
 
@@ -156,10 +145,6 @@ public class TestClientTokenBuilder {
                 overrides.put("paypal", new JSONObject().put("touchDisabled", "true"));
             }
 
-            if (mVenmoEnvironment != null) {
-                overrides.put("venmo", mVenmoEnvironment);
-            }
-
             json.put("overrides", overrides);
 
             String path = "/merchants/" + merchantId + "/client_api/testing/client_token";
@@ -177,9 +162,6 @@ public class TestClientTokenBuilder {
             clientToken = clientToken.replaceAll(replacement, EnvironmentHelper.getGatewayIp());
 
             JSONObject clientTokenJson = new JSONObject(clientToken);
-            if (mVenmoEnvironment == null) {
-                clientTokenJson.put("venmo", "off");
-            }
             if (mWithFakePayPal) {
                 clientTokenJson.put("paypal", clientTokenJson.getJSONObject("paypal").put("environment", "offline"));
             }

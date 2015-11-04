@@ -26,7 +26,6 @@ import com.braintreepayments.api.ThreeDSecure;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
-import com.braintreepayments.api.internal.VenmoSignatureVerification;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.demo.internal.ApiClient;
 import com.braintreepayments.demo.internal.ApiClientRequestInterceptor;
@@ -81,7 +80,6 @@ public class MainActivity extends Activity implements PaymentMethodNonceCreatedL
         // Warning, signature verification is disabled for this demo only, you should never
         // do this as it opens a security hole
         PayPalSignatureVerification.disableAppSwitchSignatureVerification();
-        VenmoSignatureVerification.disableAppSwitchSignatureVerification();
 
         mNonceTextView = (TextView) findViewById(R.id.nonce);
         mDropInButton = (Button) findViewById(R.id.drop_in);

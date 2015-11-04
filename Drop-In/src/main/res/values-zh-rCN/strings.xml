@@ -16,7 +16,6 @@
     <string name="bt_card_descriptor">&#x5C3E;&#x53F7;&#x4E3A;%s</string>
 
     <string name="bt_pay_with_paypal">&#x7528;PayPal&#x4ED8;&#x6B3E;</string>
-    <string name="bt_pay_with_venmo">&#x7528;Venmo&#x4ED8;&#x6B3E;</string>
 
     <string name="bt_descriptor_visa">Visa</string>
     <string name="bt_descriptor_mastercard">MasterCard</string>
