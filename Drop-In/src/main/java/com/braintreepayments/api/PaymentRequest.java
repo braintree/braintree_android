@@ -36,7 +36,7 @@ public class PaymentRequest implements Parcelable {
 
     /**
      * Provide authorization allowing this client to communicate with Braintree. Either
-     * {@link #clientToken(String)} or {@link #clientKey(String)} must be set or an
+     * {@link #clientToken(String)} or {@link #tokenizationKey(String)} must be set or an
      * {@link com.braintreepayments.api.exceptions.AuthenticationException} will occur.
      *
      * @param clientToken The client token to use for the request.
@@ -48,13 +48,13 @@ public class PaymentRequest implements Parcelable {
 
     /**
      * Provide authorization allowing this client to communicate with Braintree. Either
-     * {@link #clientToken(String)} or {@link #clientKey(String)} must be set or an
+     * {@link #clientToken(String)} or {@link #tokenizationKey(String)} must be set or an
      * {@link com.braintreepayments.api.exceptions.AuthenticationException} will occur.
      *
-     * @param clientKey The client key to use for the request.
+     * @param tokenizationKey The tokenization key to use for the request.
      */
-    public PaymentRequest clientKey(String clientKey) {
-        mAuthorization = clientKey;
+    public PaymentRequest tokenizationKey(String tokenizationKey) {
+        mAuthorization = tokenizationKey;
         return this;
     }
 

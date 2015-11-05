@@ -45,7 +45,6 @@ public class BraintreePaymentActivityTestRunner implements FailureHandler {
     public void setUp() {
         BraintreeHttpClient.DEBUG = true;
         PayPalTestSignatureVerification.disableAppSwitchSignatureVerification();
-        SignatureVerificationTestUtils.disableSignatureVerification();
 
         mDelegate = new DefaultFailureHandler(getTargetContext());
         setFailureHandler(this);

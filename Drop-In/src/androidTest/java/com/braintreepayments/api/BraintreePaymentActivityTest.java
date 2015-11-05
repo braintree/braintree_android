@@ -21,7 +21,7 @@ public class BraintreePaymentActivityTest {
     @Test(timeout = 30000)
     public void setsIntegrationTypeToDropinForDropinActivity() {
         Intent intent = new PaymentRequest()
-                .clientKey(TOKENIZATION_KEY)
+                .tokenizationKey(TOKENIZATION_KEY)
                 .getIntent(getTargetContext());
         BraintreePaymentActivity activity = mActivityTestRule.launchActivity(intent);
 

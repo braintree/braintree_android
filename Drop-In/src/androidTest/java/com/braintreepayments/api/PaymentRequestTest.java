@@ -44,7 +44,7 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
                 .setTotalPrice("5.00")
                 .build();
         Intent intent = new PaymentRequest()
-                .clientKey(TOKENIZATION_KEY)
+                .tokenizationKey(TOKENIZATION_KEY)
                 .amount("1.00")
                 .currencyCode("USD")
                 .androidPayCart(cart)
@@ -85,7 +85,7 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
                 .setTotalPrice("5.00")
                 .build();
         PaymentRequest paymentRequest = new PaymentRequest()
-                .clientKey(TOKENIZATION_KEY)
+                .tokenizationKey(TOKENIZATION_KEY)
                 .amount("1.00")
                 .currencyCode("USD")
                 .androidPayCart(cart)
@@ -133,7 +133,7 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
     @Test(timeout = 1000)
     public void getIntent_includesClientKey() {
         PaymentRequest paymentRequest = new PaymentRequest()
-                .clientKey(TOKENIZATION_KEY);
+                .tokenizationKey(TOKENIZATION_KEY);
 
         assertEquals(TOKENIZATION_KEY, paymentRequest.getAuthorization());
     }
@@ -142,7 +142,7 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
     @Test(timeout = 30000)
     public void descriptionIsNotNecessary() {
         Intent intent = new PaymentRequest()
-                .clientKey(TOKENIZATION_KEY)
+                .tokenizationKey(TOKENIZATION_KEY)
                 .getIntent(getTargetContext());
         getActivity(intent);
 
@@ -154,7 +154,7 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
     @Test(timeout = 30000)
     public void submitButtonUsesDefaultTextIfNoCustomizationProvided() {
         Intent intent = new PaymentRequest()
-                .clientKey(TOKENIZATION_KEY)
+                .tokenizationKey(TOKENIZATION_KEY)
                 .getIntent(getTargetContext());
         getActivity(intent);
 
@@ -167,7 +167,7 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
     @Test(timeout = 30000)
     public void submitButtonUsesCustomizationForCardFormIfIncludedAsAnExtra() {
         Intent intent = new PaymentRequest()
-                .clientKey(TOKENIZATION_KEY)
+                .tokenizationKey(TOKENIZATION_KEY)
                 .submitButtonText("Subscribe")
                 .amount("$19")
                 .getIntent(getTargetContext());
@@ -197,7 +197,7 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
     @Test(timeout = 30000)
     public void descriptionsAreDisplayedIfIncludedAsAnExtra() {
         Intent intent = new PaymentRequest()
-                .clientKey(TOKENIZATION_KEY)
+                .tokenizationKey(TOKENIZATION_KEY)
                 .primaryDescription("Hello, World!")
                 .secondaryDescription("Some stuffz")
                 .amount("$1,000,000,000.00")
@@ -215,7 +215,7 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
     @Test(timeout = 30000)
     public void defaultButtonTextIsUsedWhenCustomizationIsPresentWithoutSpecifyingButtonText() {
         Intent intent = new PaymentRequest()
-                .clientKey(TOKENIZATION_KEY)
+                .tokenizationKey(TOKENIZATION_KEY)
                 .amount("$19")
                 .getIntent(getTargetContext());
         getActivity(intent);
@@ -228,7 +228,7 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
     @Test(timeout = 30000)
     public void actionBarTitleAndLogoAreUsedIfIncludedAsAnExtra() {
         Intent intent = new PaymentRequest()
-                .clientKey(TOKENIZATION_KEY)
+                .tokenizationKey(TOKENIZATION_KEY)
                 .actionBarTitle("This is a title")
                 .actionBarLogo(android.R.drawable.ic_delete)
                 .getIntent(getTargetContext());
@@ -250,7 +250,7 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
     @Test(timeout = 30000)
     public void defaultActionBarTitleAndLogoAreUsedWhenCustomizationIsPresentWithoutSpecifyingTitleAndLogo() {
         Intent intent = new PaymentRequest()
-                .clientKey(TOKENIZATION_KEY)
+                .tokenizationKey(TOKENIZATION_KEY)
                 .primaryDescription("Description")
                 .getIntent(getTargetContext());
         Activity activity = getActivity(intent);
