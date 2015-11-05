@@ -1,10 +1,10 @@
 package com.paypal.android.networking.processing;
 
-import com.paypal.android.sdk.onetouch.core.base.Constants;
 import com.paypal.android.networking.events.LibraryError;
 import com.paypal.android.networking.events.RequestError;
 import com.paypal.android.networking.request.ServerRequest;
 import com.paypal.android.networking.request.ServerRequestEnvironment;
+import com.paypal.android.sdk.onetouch.core.base.Constants;
 
 import android.util.Log;
 

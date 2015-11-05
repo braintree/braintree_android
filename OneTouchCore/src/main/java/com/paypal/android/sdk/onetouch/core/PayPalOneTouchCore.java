@@ -1,10 +1,5 @@
 package com.paypal.android.sdk.onetouch.core;
 
-import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
-import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
-import com.paypal.android.sdk.onetouch.core.base.SdkRiskComponent;
-import com.paypal.android.sdk.onetouch.core.sdk.V1WalletHelper;
-import com.paypal.android.sdk.onetouch.core.sdk.V2WalletHelper;
 import com.paypal.android.networking.EnvironmentManager;
 import com.paypal.android.networking.PayPalEnvironment;
 import com.paypal.android.networking.ServerInterface;
@@ -13,6 +8,9 @@ import com.paypal.android.networking.processing.NetworkRequestProcessor;
 import com.paypal.android.networking.processing.RequestExecutorThread;
 import com.paypal.android.networking.processing.RequestProcessor;
 import com.paypal.android.networking.request.ServerRequest;
+import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
+import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
+import com.paypal.android.sdk.onetouch.core.base.SdkRiskComponent;
 import com.paypal.android.sdk.onetouch.core.config.ConfigManager;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
@@ -23,6 +21,8 @@ import com.paypal.android.sdk.onetouch.core.network.ConfigFileRequest;
 import com.paypal.android.sdk.onetouch.core.network.OtcApiName;
 import com.paypal.android.sdk.onetouch.core.network.OtcEnvironment;
 import com.paypal.android.sdk.onetouch.core.network.OtcMockRequestProcessor;
+import com.paypal.android.sdk.onetouch.core.sdk.V1WalletHelper;
+import com.paypal.android.sdk.onetouch.core.sdk.V2WalletHelper;
 
 import android.app.Activity;
 import android.content.Context;

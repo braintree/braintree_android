@@ -1,10 +1,10 @@
 package com.paypal.android.networking.analytics;
 
-import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
-import com.paypal.android.sdk.onetouch.core.base.URLEncoderHelper;
 import com.paypal.android.networking.request.ApiInfo;
 import com.paypal.android.networking.request.RestApiRequest;
 import com.paypal.android.networking.request.ServerRequestEnvironment;
+import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
+import com.paypal.android.sdk.onetouch.core.base.URLEncoderHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;

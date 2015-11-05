@@ -1,8 +1,5 @@
 package com.paypal.android.networking.processing;
 
-import com.paypal.android.sdk.onetouch.core.base.Constants;
-import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
-import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
 import com.paypal.android.networking.EnvironmentManager;
 import com.paypal.android.networking.events.LibraryError;
 import com.paypal.android.networking.events.RequestError;
@@ -11,6 +8,9 @@ import com.paypal.android.networking.http.OkHttpClientFactory;
 import com.paypal.android.networking.http.Tlsv1_0UnavailableException;
 import com.paypal.android.networking.request.ServerRequest;
 import com.paypal.android.networking.request.ServerRequestEnvironment;
+import com.paypal.android.sdk.onetouch.core.base.Constants;
+import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
+import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
 
 import android.text.TextUtils;
 import android.util.Log;

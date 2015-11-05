@@ -1,10 +1,10 @@
 package com.paypal.android.sdk.onetouch.core.config;
 
-import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
-import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
 import com.paypal.android.networking.ServerInterface;
 import com.paypal.android.networking.request.ServerRequest;
 import com.paypal.android.sdk.onetouch.core.BuildConfig;
+import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
+import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
 import com.paypal.android.sdk.onetouch.core.network.ConfigFileRequest;
 
 import android.util.Log;

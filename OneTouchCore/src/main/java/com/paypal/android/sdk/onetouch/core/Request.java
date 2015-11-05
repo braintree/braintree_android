@@ -1,7 +1,7 @@
 package com.paypal.android.sdk.onetouch.core;
 
-import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.networking.EnvironmentManager;
+import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
 import com.paypal.android.sdk.onetouch.core.encryption.InvalidEncryptionDataException;

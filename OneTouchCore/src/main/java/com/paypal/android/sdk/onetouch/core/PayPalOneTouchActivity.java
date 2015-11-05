@@ -13,11 +13,11 @@ package com.paypal.android.sdk.onetouch.core;
 
 import com.paypal.android.sdk.onetouch.core.base.Constants;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
+import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
+import com.paypal.android.sdk.onetouch.core.network.OtcEnvironment;
 import com.paypal.android.sdk.onetouch.core.sdk.ThemeManifestValidator;
 import com.paypal.android.sdk.onetouch.core.sdk.V1WalletHelper;
 import com.paypal.android.sdk.onetouch.core.sdk.V2WalletHelper;
-import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
-import com.paypal.android.sdk.onetouch.core.network.OtcEnvironment;
 
 import android.app.Activity;
 import android.content.Intent;

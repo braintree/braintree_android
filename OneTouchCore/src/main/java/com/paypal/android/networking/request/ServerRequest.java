@@ -1,8 +1,8 @@
 package com.paypal.android.networking.request;
 
-import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
 import com.paypal.android.networking.events.ErrorBase;
 import com.paypal.android.networking.events.RequestError;
+import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
 
 import android.util.Log;
 

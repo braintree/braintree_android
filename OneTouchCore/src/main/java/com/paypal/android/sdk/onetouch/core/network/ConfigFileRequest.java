@@ -1,10 +1,10 @@
 package com.paypal.android.sdk.onetouch.core.network;
 
-import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
 import com.paypal.android.networking.events.LibraryError;
 import com.paypal.android.networking.request.ServerRequest;
 import com.paypal.android.networking.request.ServerRequestEnvironment;
 import com.paypal.android.sdk.onetouch.core.BuildConfig;
+import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
 import com.paypal.android.sdk.onetouch.core.config.ConfigFileParser;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.network.OtcApiName.ApiName;

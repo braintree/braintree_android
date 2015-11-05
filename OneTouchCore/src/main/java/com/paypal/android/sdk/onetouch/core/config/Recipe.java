@@ -1,8 +1,8 @@
 package com.paypal.android.sdk.onetouch.core.config;
 
-import com.paypal.android.sdk.onetouch.core.sdk.WalletAppHelper;
 import com.paypal.android.sdk.onetouch.core.Protocol;
 import com.paypal.android.sdk.onetouch.core.RequestTarget;
+import com.paypal.android.sdk.onetouch.core.sdk.WalletAppHelper;
 
 import android.content.Context;
 import android.content.Intent;

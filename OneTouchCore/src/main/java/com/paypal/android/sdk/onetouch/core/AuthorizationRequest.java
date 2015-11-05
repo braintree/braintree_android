@@ -1,8 +1,8 @@
 package com.paypal.android.sdk.onetouch.core;
 
+import com.paypal.android.networking.EnvironmentManager;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;
-import com.paypal.android.networking.EnvironmentManager;
 import com.paypal.android.sdk.onetouch.core.config.ConfigEndpoint;
 import com.paypal.android.sdk.onetouch.core.config.OAuth2Recipe;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;

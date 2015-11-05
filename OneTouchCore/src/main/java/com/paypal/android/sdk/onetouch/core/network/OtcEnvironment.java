@@ -1,8 +1,8 @@
 package com.paypal.android.sdk.onetouch.core.network;
 
+import com.paypal.android.sdk.onetouch.core.BuildConfig;
 import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
 import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;
-import com.paypal.android.sdk.onetouch.core.BuildConfig;
 
 import android.text.TextUtils;
 
