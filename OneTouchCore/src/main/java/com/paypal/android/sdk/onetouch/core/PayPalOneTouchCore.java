@@ -111,7 +111,7 @@ public class PayPalOneTouchCore {
     /**
      * Must be called from Main thread!
      */
-    private static synchronized void initService(Context context){
+    private static void initService(Context context){
         Log.d(TAG, "initService()");
         if(null == sServerInterface) {
             PayPalEnvironment env = getEnvironment(getEnvironmentName(), "https://api-m.paypal.com/v1/");
