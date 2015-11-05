@@ -120,7 +120,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         } else if (v == mSubmitButton) {
             if (mCardForm.isValid()) {
                 startSubmit();
-                TokenizationClient.tokenize(mBraintreeFragment, getCardBuilder());
+                Card.tokenize(mBraintreeFragment, getCardBuilder());
                 mBraintreeFragment.sendAnalyticsEvent("card.form.submitted.succeeded");
             } else {
                 mCardForm.validate();

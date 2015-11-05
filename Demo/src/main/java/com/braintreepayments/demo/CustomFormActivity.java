@@ -12,14 +12,14 @@ import com.braintreepayments.api.AndroidPay;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.PaymentRequest;
+import com.braintreepayments.api.Card;
 import com.braintreepayments.api.PaymentButton;
-import com.braintreepayments.api.TokenizationClient;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
-import com.braintreepayments.api.models.CardBuilder;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
 import com.google.android.gms.wallet.FullWalletRequest;
@@ -83,7 +83,7 @@ public class CustomFormActivity extends Activity implements PaymentMethodNonceCr
             .cardNumber(mCardNumber.getText().toString())
             .expirationDate(mExpirationDate.getText().toString());
 
-        TokenizationClient.tokenize(mBraintreeFragment, cardBuilder);
+        Card.tokenize(mBraintreeFragment, cardBuilder);
     }
 
     @Override

@@ -145,7 +145,7 @@ public class BraintreeFragmentTestUtils {
         };
         fragment.addListener(listener);
 
-        TokenizationClient.tokenize(fragment, cardBuilder);
+        Card.tokenize(fragment, cardBuilder);
 
         try {
             latch.await();

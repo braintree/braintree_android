@@ -1,7 +1,6 @@
 package com.braintreepayments.api.interfaces;
 
 import com.braintreepayments.api.BraintreeFragment;
-import com.braintreepayments.api.TokenizationClient;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 
 import java.util.List;
@@ -14,7 +13,7 @@ public interface PaymentMethodNoncesUpdatedListener extends BraintreeListener {
     /**
      * {@link #onPaymentMethodNoncesUpdated(List)} will be called with a list of {@link PaymentMethodNonce}s
      * as a callback when
-     * {@link TokenizationClient#getPaymentMethods(BraintreeFragment)}
+     * {@link com.braintreepayments.api.TokenizationClient#getPaymentMethodNonces(BraintreeFragment)}
      * is called.
      *
      * @param paymentMethodNonces the {@link List} of {@link PaymentMethodNonce}s.
