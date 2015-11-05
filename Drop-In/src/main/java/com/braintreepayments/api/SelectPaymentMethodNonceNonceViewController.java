@@ -14,7 +14,7 @@ import com.braintreepayments.api.dropin.view.PaymentMethodNonceView;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 
 /**
- * {@link BraintreeViewController} for handling manipulation of existing payment methods.
+ * {@link BraintreeViewController} for handling manipulation of existing payment method nonces.
  */
 public class SelectPaymentMethodNonceNonceViewController extends BraintreeViewController
         implements View.OnClickListener, PaymentMethodNonceSelectedListener {

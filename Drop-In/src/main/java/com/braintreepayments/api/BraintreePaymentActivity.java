@@ -186,7 +186,7 @@ public class BraintreePaymentActivity extends Activity implements
         if (error instanceof ErrorWithResponse) {
             mAddPaymentMethodViewController.setErrors((ErrorWithResponse) error);
         } else {
-            // Falling back to add payment method if getPaymentMethods fails
+            // Falling back to add payment method if getPaymentMethodNonces fails
             if (StubbedView.LOADING_VIEW.mCurrentView && !mHavePaymentMethodNoncesBeenReceived.get() &&
                     mBraintreeFragment.getConfiguration() != null) {
                 mBraintreeFragment.sendAnalyticsEvent("appeared");

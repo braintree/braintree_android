@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * Base class representing a method of payment for a customer. {@link PaymentMethodNonce} represents the
- * common interface of all payment methods, and can be handled by a server interchangeably.
+ * common interface of all payment method nonces, and can be handled by a server interchangeably.
  */
 public abstract class PaymentMethodNonce implements Parcelable {
 
@@ -62,10 +62,10 @@ public abstract class PaymentMethodNonce implements Parcelable {
     public abstract String getTypeLabel();
 
     /**
-     * Parses a response from the Braintree gateway for a list of payment methods.
+     * Parses a response from the Braintree gateway for a list of payment method nonces.
      *
      * @param jsonBody Json-formatted String containing a list of {@link PaymentMethodNonce}s
-     * @return List of {@link PaymentMethodNonce}s contained in paymentMethodsString
+     * @return List of {@link PaymentMethodNonce}s contained in jsonBody
      * @throws JSONException
      */
     public static List<PaymentMethodNonce> parsePaymentMethodNonces(String jsonBody)
