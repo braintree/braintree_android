@@ -1,0 +1,5 @@
+{
+  "clientApiUrl": "client-api-url",
+  "environment": "environment",
+  "merchantId": "merchant-id"
+}

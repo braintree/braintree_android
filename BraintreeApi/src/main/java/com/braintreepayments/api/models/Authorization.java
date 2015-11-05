@@ -2,6 +2,7 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 
@@ -45,8 +46,12 @@ public abstract class Authorization implements Parcelable {
         return mRawValue;
     }
 
-    private static boolean isTokenizationKey(String blob) {
-        return blob.matches(TokenizationKey.MATCHER);
+    /**
+     * @param tokenizationKey The {@link String} to check if it is a tokenization key
+     * @return {@code true} if the {@link String} is a tokenization key, {@code false} otherwise.
+     */
+    public static boolean isTokenizationKey(String tokenizationKey) {
+        return !TextUtils.isEmpty(tokenizationKey) && tokenizationKey.matches(TokenizationKey.MATCHER);
     }
 
     @Override

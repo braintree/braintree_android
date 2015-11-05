@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.PaymentRequest;
+import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.PayPalSignatureVerification;
 import com.braintreepayments.api.ThreeDSecure;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
@@ -33,6 +34,8 @@ import com.braintreepayments.demo.models.ClientToken;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.LineItem;
 
+import java.util.Collections;
+
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -42,10 +45,8 @@ public class MainActivity extends Activity implements PaymentMethodNonceCreatedL
         BraintreeErrorListener, OnNavigationListener {
 
     static final String EXTRA_AUTHORIZATION = "authorization";
+    static final String EXTRA_PAYMENT_REQUEST = "payment_request";
     static final String EXTRA_ANDROID_PAY_CART = "android_pay_cart";
-    static final String EXTRA_ANDROID_PAY_SHIPPING_ADDRESS_REQUIRED = "android_pay_shipping_address";
-    static final String EXTRA_ANDROID_PAY_PHONE_NUMBER_REQUIRED = "android_pay_phone_number";
-    static final String EXTRA_PAYPAL_ADDRESS_SCOPE_REQUESTED = "paypal_address_scope";
 
     private static final int DROP_IN_REQUEST = 100;
     private static final int PAYMENT_BUTTON_REQUEST = 200;
@@ -135,38 +136,47 @@ public class MainActivity extends Activity implements PaymentMethodNonceCreatedL
     }
 
     public void launchDropIn(View v) {
+        startActivityForResult(getPaymentRequest().getIntent(this), DROP_IN_REQUEST);
+    }
+
+    public void launchPayPal(View v) {
+        Intent intent = new Intent(this, PayPalActivity.class)
+                .putExtra(EXTRA_AUTHORIZATION, getAuthorization());
+        startActivityForResult(intent, PAYPAL_REQUEST);
+    }
+
+    public void launchPaymentButton(View v) {
+        Intent intent = new Intent(this, PaymentButtonActivity.class)
+                .putExtra(EXTRA_AUTHORIZATION, getAuthorization())
+                .putExtra(EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
+                .putExtra(EXTRA_PAYMENT_REQUEST, getPaymentRequest());
+        startActivityForResult(intent, PAYMENT_BUTTON_REQUEST);
+    }
+
+    public void launchCustom(View v) {
+        Intent intent = new Intent(this, CustomFormActivity.class)
+                .putExtra(EXTRA_AUTHORIZATION, getAuthorization())
+                .putExtra(EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
+                .putExtra(EXTRA_PAYMENT_REQUEST, getPaymentRequest());
+        startActivityForResult(intent, CUSTOM_REQUEST);
+    }
+
+    private PaymentRequest getPaymentRequest() {
         PaymentRequest paymentRequest = new PaymentRequest()
                 .clientToken(getAuthorization())
                 .androidPayCart(getAndroidPayCart())
+                .androidPayShippingAddressRequired(Settings.isAndroidPayShippingAddressRequired(this))
+                .androidPayPhoneNumberRequired(Settings.isAndroidPayPhoneNumberRequired(this))
                 .primaryDescription(getString(R.string.cart))
                 .secondaryDescription("1 Item")
                 .amount("$1.00")
                 .submitButtonText(getString(R.string.buy));
 
-        startActivityForResult(paymentRequest.getIntent(this), DROP_IN_REQUEST);
-    }
+        if (Settings.isPayPalAddressScopeRequested(this)) {
+            paymentRequest.paypalAdditionalScopes(Collections.singletonList(PayPal.SCOPE_ADDRESS));
+        }
 
-    public void launchPayPal(View v) {
-        Intent intent = populateIntentExtras(new Intent(this, PayPalActivity.class));
-        startActivityForResult(intent, PAYPAL_REQUEST);
-    }
-
-    public void launchPaymentButton(View v) {
-        Intent intent = populateIntentExtras(new Intent(this, PaymentButtonActivity.class));
-        startActivityForResult(intent, PAYMENT_BUTTON_REQUEST);
-    }
-
-    public void launchCustom(View v) {
-        Intent intent = populateIntentExtras(new Intent(this, CustomFormActivity.class));
-        startActivityForResult(intent, CUSTOM_REQUEST);
-    }
-
-    private Intent populateIntentExtras(Intent intent) {
-        return intent.putExtra(EXTRA_AUTHORIZATION, getAuthorization())
-                .putExtra(EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
-                .putExtra(EXTRA_ANDROID_PAY_SHIPPING_ADDRESS_REQUIRED, Settings.isAndroidPayShippingAddressRequired(this))
-                .putExtra(EXTRA_ANDROID_PAY_PHONE_NUMBER_REQUIRED, Settings.isAndroidPayPhoneNumberRequired(this))
-                .putExtra(EXTRA_PAYPAL_ADDRESS_SCOPE_REQUESTED, Settings.isPayPalAddressScopeRequested(this));
+        return paymentRequest;
     }
 
     public void createTransaction(View v) {

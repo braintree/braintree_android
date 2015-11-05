@@ -12,7 +12,6 @@ import com.braintreepayments.api.AndroidPay;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.PaymentRequest;
-import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.PaymentButton;
 import com.braintreepayments.api.TokenizationClient;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
@@ -28,8 +27,6 @@ import com.google.android.gms.wallet.MaskedWallet;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 
-import java.util.Collections;
-
 public class CustomFormActivity extends Activity implements PaymentMethodNonceCreatedListener,
         OnClickListener {
 
@@ -37,7 +34,6 @@ public class CustomFormActivity extends Activity implements PaymentMethodNonceCr
 
     private BraintreeFragment mBraintreeFragment;
     private Cart mCart;
-    private boolean mIsBillingAgreement;
     private EditText mCardNumber;
     private EditText mExpirationDate;
 
@@ -46,7 +42,8 @@ public class CustomFormActivity extends Activity implements PaymentMethodNonceCr
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.custom);
 
-        PaymentButton paymentButton = (PaymentButton) findViewById(R.id.payment_button);
+        PaymentButton paymentButton = (PaymentButton) getFragmentManager()
+                .findFragmentById(R.id.payment_button);
         mCardNumber = (EditText) findViewById(R.id.card_number);
         mExpirationDate = (EditText) findViewById(R.id.card_expiration_date);
 
@@ -63,17 +60,14 @@ public class CustomFormActivity extends Activity implements PaymentMethodNonceCr
 
         mCart = getIntent().getParcelableExtra(MainActivity.EXTRA_ANDROID_PAY_CART);
 
-        PaymentRequest paymentRequest = new PaymentRequest()
-                .androidPayCart(mCart)
-                .androidPayShippingAddressRequired(getIntent().getBooleanExtra(MainActivity.EXTRA_ANDROID_PAY_SHIPPING_ADDRESS_REQUIRED, false))
-                .androidPayPhoneNumberRequired(getIntent().getBooleanExtra(MainActivity.EXTRA_ANDROID_PAY_PHONE_NUMBER_REQUIRED, false))
-                .androidPayRequestCode(ANDROID_PAY_REQUEST_CODE);
+        PaymentRequest paymentRequest = getIntent().getParcelableExtra(MainActivity.EXTRA_PAYMENT_REQUEST);
 
-        if (getIntent().getBooleanExtra(MainActivity.EXTRA_PAYPAL_ADDRESS_SCOPE_REQUESTED, false)) {
-            paymentRequest.paypalAdditionalScopes(Collections.singletonList(PayPal.SCOPE_ADDRESS));
+        try {
+            paymentButton.setPaymentRequest(paymentRequest);
+        } catch (InvalidArgumentException ignored) {
+            // already checked via BraintreeFragment.newInstance
         }
 
-        paymentButton.initialize(mBraintreeFragment, paymentRequest);
         paymentButton.setOnClickListener(this);
     }
 

@@ -87,7 +87,8 @@ public class BraintreeFragment extends Fragment {
      * @param activity The {@link Activity} to add the {@link Fragment} to.
      * @param authorization The tokenization key or client token to use.
      * @return {@link BraintreeFragment}
-     * @throws InvalidArgumentException If the client token is not valid json or cannot be parsed.
+     * @throws InvalidArgumentException If the tokenization key or client token is not valid or cannot be
+     *         parsed.
      */
     public static BraintreeFragment newInstance(Activity activity, String authorization)
             throws InvalidArgumentException {

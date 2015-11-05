@@ -1,21 +1,33 @@
 package com.braintreepayments.api;
 
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.ViewSwitcher;
 
 import com.braintreepayments.api.dropin.R;
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 /**
  * An intelligent button for handling non-card payment methods. This button will display payment
@@ -24,53 +36,140 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
  * Created {@link PaymentMethodNonce}s will be posted to
  * {@link PaymentMethodNonceCreatedListener}.
  */
-public class PaymentButton extends RelativeLayout implements OnClickListener {
+public class PaymentButton extends Fragment implements ConfigurationListener,
+        BraintreeResponseListener<Exception>, OnClickListener {
 
-    private BraintreeFragment mBraintreeFragment;
+    private static final String TAG = "com.braintreepayments.api.PaymentButton";
+    private static final String EXTRA_PAYMENT_REQUEST = "com.braintreepayments.api.EXTRA_PAYMENT_REQUEST";
+
+    @VisibleForTesting
+    BraintreeFragment mBraintreeFragment;
+
     private PaymentRequest mPaymentRequest;
     private ViewSwitcher mProgressViewSwitcher;
+    private OnClickListener mOnClickListener;
 
-    public PaymentButton(Context context) {
-        super(context);
+    public PaymentButton() {}
+
+    /**
+     * Create a new instance of {@link PaymentButton} using the {@link CheckoutRequest} and add it
+     * to the {@link Activity}'s {@link FragmentManager}.
+     *
+     * @param activity The {@link Activity} to add the {@link Fragment} to.
+     * @param paymentRequest The {@link PaymentRequest} to use to configure the
+     *        {@link PaymentButton}. *Note:* This {@link CheckoutRequest} must include a client key
+     *        or client token.
+     * @return {@link PaymentButton}
+     * @throws InvalidArgumentException If the client key or client token is not valid or cannot be
+     *         parsed.
+     */
+    public static PaymentButton newInstance(Activity activity, PaymentRequest paymentRequest) throws
+            InvalidArgumentException {
+        FragmentManager fm = activity.getFragmentManager();
+
+        PaymentButton paymentButton = (PaymentButton) fm.findFragmentByTag(TAG);
+        if (paymentButton == null) {
+            paymentButton = new PaymentButton();
+
+            Bundle bundle = new Bundle();
+            Authorization.fromString(paymentRequest.getAuthorization());
+            bundle.putParcelable(EXTRA_PAYMENT_REQUEST, paymentRequest);
+            paymentButton.setArguments(bundle);
+
+            fm.beginTransaction().add(paymentButton, TAG).commit();
+        }
+
+        return paymentButton;
     }
 
-    public PaymentButton(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    @Override
+    public void onInflate(Context context, AttributeSet attrs, Bundle savedInstanceState) {
+        super.onInflate(context, attrs, savedInstanceState);
+
+        TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.PaymentButtonAttributes);
+        String tokenizationKey = attributes.getString(R.styleable.PaymentButtonAttributes_tokenizationKey);
+        attributes.recycle();
+
+        if (Authorization.isTokenizationKey(tokenizationKey)) {
+            try {
+                setPaymentRequest(new PaymentRequest().tokenizationKey(tokenizationKey));
+            } catch (InvalidArgumentException ignored) {}
+        }
     }
 
-    public PaymentButton(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        try {
+            if (getArguments() != null) {
+                setPaymentRequest(
+                        (PaymentRequest) getArguments().getParcelable(EXTRA_PAYMENT_REQUEST));
+            }
+        } catch (InvalidArgumentException ignored) {}
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.bt_payment_button, container, false);
+        mProgressViewSwitcher = (ViewSwitcher) view.findViewById(R.id.bt_payment_method_view_switcher);
+        showProgress(true);
+
+        if (mPaymentRequest == null) {
+            view.setVisibility(GONE);
+        }
+
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        try {
+            setupBraintreeFragment();
+        } catch (InvalidArgumentException e) {
+            setVisibility(GONE);
+        }
     }
 
     /**
-     * Initialize the button. This method *MUST* be called or {@link PaymentButton} will not be
-     * displayed.
+     * Initialize the {@link PaymentButton}. This method *MUST* be called if the
+     * {@link PaymentButton} was adding using XML or {@link PaymentButton} will not be displayed.
      *
-     * @param fragment {@link BraintreeFragment}
      * @param paymentRequest {@link PaymentRequest} containing payment method options.
      */
-    public void initialize(BraintreeFragment fragment, PaymentRequest paymentRequest) {
-        inflate(getContext(), R.layout.bt_payment_button, this);
-        mProgressViewSwitcher = (ViewSwitcher) findViewById(R.id.bt_payment_method_view_switcher);
-        showProgress(true);
-
+    public void setPaymentRequest(PaymentRequest paymentRequest)
+            throws InvalidArgumentException {
         mPaymentRequest = paymentRequest;
+        if (mPaymentRequest == null) {
+            setVisibility(GONE);
+        } else {
+            setupBraintreeFragment();
+        }
+    }
 
-        mBraintreeFragment = fragment;
-        mBraintreeFragment.waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                setupButton();
-                showProgress(false);
-            }
-        });
-        mBraintreeFragment.setConfigurationErrorListener(new BraintreeResponseListener<Exception>() {
-            @Override
-            public void onResponse(Exception e) {
-                mBraintreeFragment.setConfigurationErrorListener(null);
-                setVisibility(GONE);
-            }
-        });
+    /**
+     * Set the on click listener to be called when the {@link PaymentButton} is clicked.
+     *
+     * @param listener {@link OnClickListener} to be called.
+     */
+    public void setOnClickListener(OnClickListener listener) {
+        mOnClickListener = listener;
+    }
+
+    @Override
+    public void onConfigurationFetched(Configuration configuration) {
+        mBraintreeFragment.setConfigurationErrorListener(null);
+        setupButton(configuration);
+    }
+
+    @Override
+    public void onResponse(Exception exception) {
+        mBraintreeFragment.setConfigurationErrorListener(null);
+        setVisibility(GONE);
     }
 
     @Override
@@ -85,12 +184,20 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
                     mPaymentRequest.getAndroidPayRequestCode());
         }
 
-        performClick();
+        if (mOnClickListener != null) {
+            mOnClickListener.onClick(getView());
+        }
     }
 
-    private void setupButton() {
-        boolean isPayPalEnabled = isPayPalEnabled();
-        boolean isAndroidPayEnabled = isAndroidPayEnabled();
+    private void setupButton(Configuration configuration) {
+        View view = getView();
+        if (view == null) {
+            setVisibility(GONE);
+            return;
+        }
+
+        boolean isPayPalEnabled = configuration.isPayPalEnabled();
+        boolean isAndroidPayEnabled = isAndroidPayEnabled(configuration);
         int buttonCount = 0;
         if (!isPayPalEnabled && !isAndroidPayEnabled) {
             setVisibility(GONE);
@@ -103,17 +210,18 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
             }
 
             if (isPayPalEnabled) {
-                enableButton(findViewById(R.id.bt_paypal_button), buttonCount);
+                enableButton(view.findViewById(R.id.bt_paypal_button), buttonCount);
             }
             if (isAndroidPayEnabled) {
-                enableButton(findViewById(R.id.bt_android_pay_button), buttonCount);
+                enableButton(view.findViewById(R.id.bt_android_pay_button), buttonCount);
             }
 
             if (isPayPalEnabled && buttonCount > 1) {
-                findViewById(R.id.bt_payment_button_divider).setVisibility(VISIBLE);
+                view.findViewById(R.id.bt_payment_button_divider).setVisibility(VISIBLE);
             }
 
             setVisibility(VISIBLE);
+            showProgress(false);
         }
     }
 
@@ -126,19 +234,41 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
         view.setLayoutParams(params);
     }
 
+    private void setVisibility(int visibility) {
+        if (getView() != null && getView().getVisibility() != visibility) {
+            getView().setVisibility(visibility);
+        }
+    }
+
     private void showProgress(boolean showing) {
-        mProgressViewSwitcher.setDisplayedChild(showing ? 1 : 0);
+        if (mProgressViewSwitcher != null &&
+                mProgressViewSwitcher.getDisplayedChild() != (showing ? 1 : 0)) {
+            mProgressViewSwitcher.setDisplayedChild(showing ? 1 : 0);
+        }
     }
 
-    @VisibleForTesting
-    protected boolean isPayPalEnabled() {
-        return mBraintreeFragment.getConfiguration().isPayPalEnabled();
+    private void setupBraintreeFragment() throws InvalidArgumentException {
+        if (getActivity() != null && mPaymentRequest != null && mBraintreeFragment == null) {
+            mBraintreeFragment = BraintreeFragment.newInstance(getActivity(),
+                    mPaymentRequest.getAuthorization());
+            mBraintreeFragment.setConfigurationErrorListener(this);
+
+            if (mBraintreeFragment.getConfiguration() != null) {
+                onConfigurationFetched(mBraintreeFragment.getConfiguration());
+            } else {
+                mBraintreeFragment.waitForConfiguration(this);
+
+                showProgress(true);
+                setVisibility(VISIBLE);
+            }
+        } else if (mBraintreeFragment != null && mBraintreeFragment.getConfiguration() != null) {
+            setupButton(mBraintreeFragment.getConfiguration());
+        }
     }
 
-    @VisibleForTesting
-    protected boolean isAndroidPayEnabled() {
+    private boolean isAndroidPayEnabled(Configuration configuration) {
         try {
-            return (mBraintreeFragment.getConfiguration().getAndroidPay().isEnabled(getContext())
+            return (configuration.getAndroidPay().isEnabled(mBraintreeFragment.getApplicationContext())
                     && mPaymentRequest.getAndroidPayCart() != null);
         } catch (NoClassDefFoundError e) {
             return false;

@@ -48,8 +48,7 @@ public class PayPalActivity extends Activity implements PaymentMethodNonceCreate
         super.onCreate(savedInstanceState);
         setContentView(R.layout.paypal);
 
-        Bundle extras = getIntent().getExtras();
-        String extraClientToken = extras.getString(MainActivity.EXTRA_AUTHORIZATION);
+        String extraClientToken = getIntent().getStringExtra(MainActivity.EXTRA_AUTHORIZATION);
         // Connect Views
         mLog = (TextView) findViewById(R.id.log);
         mBillingAgreementButton = (Button) findViewById(R.id.paypal_billing_agreement_button);

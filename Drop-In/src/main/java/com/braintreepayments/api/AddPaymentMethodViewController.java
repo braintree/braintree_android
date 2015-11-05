@@ -9,6 +9,7 @@ import android.widget.ScrollView;
 import com.braintreepayments.api.dropin.view.LoadingHeader;
 import com.braintreepayments.api.exceptions.BraintreeError;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.cardform.OnCardFormFieldFocusedListener;
@@ -59,14 +60,19 @@ public class AddPaymentMethodViewController extends BraintreeViewController
         mLoadingHeader = findView(com.braintreepayments.api.dropin.R.id.bt_header_container);
         mScrollView = findView(com.braintreepayments.api.dropin.R.id.bt_form_scroll_container);
         mDescription = findView(com.braintreepayments.api.dropin.R.id.bt_description_container);
-        mPaymentButton = findView(com.braintreepayments.api.dropin.R.id.bt_payment_button);
+        mPaymentButton = (PaymentButton) mActivity.getFragmentManager()
+                .findFragmentById(com.braintreepayments.api.dropin.R.id.bt_payment_button);
         mCardForm = findView(com.braintreepayments.api.dropin.R.id.bt_card_form);
         mSubmitButton = findView(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button);
 
         mPaymentButton.setOnClickListener(this);
 
         mPaymentRequest.androidPayRequestCode(AndroidPay.ANDROID_PAY_MASKED_WALLET_REQUEST_CODE);
-        mPaymentButton.initialize(mBraintreeFragment, mPaymentRequest);
+        try {
+            mPaymentButton.setPaymentRequest(mPaymentRequest);
+        } catch (InvalidArgumentException ignored) {
+            // already checked in BraintreePaymentActivity
+        }
 
         mCardForm.setRequiredFields(mActivity, true, true,
                 mBraintreeFragment.getConfiguration().isCvvChallengePresent(),
@@ -108,7 +114,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController
 
     @Override
     public void onClick(View v) {
-        if (v == mPaymentButton) {
+        if (v == mPaymentButton.getView()) {
             mIsSubmitting = true;
             mActivity.showLoadingView();
         } else if (v == mSubmitButton) {

@@ -30,7 +30,7 @@
 
             <include layout="@layout/bt_payment_description" />
 
-            <com.braintreepayments.api.PaymentButton
+            <fragment android:name="com.braintreepayments.api.PaymentButton"
                 android:id="@+id/bt_payment_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
