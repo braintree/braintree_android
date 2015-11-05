@@ -36,43 +36,42 @@ public class AbstractFptiRequest extends RestApiRequest {
         return true;
     }
 
+
+    /*-
+        sample request
+        {
+            "events":{
+                "actor":{
+                    "tracking_visitor_id":"912bddaa1390abe0eed4d1b541ff46e198",
+                    "tracking_visit_id":"982bddcd1390abe0d4d1b541ff46e12198"
+                },
+                "channel":"mobile",
+                "tracking_event":"1363303116",
+                "http_params":{
+                    "accept_charset":"UTF-8",
+                    "accept_lang":"en",
+                    "host_header":"L-MAA-00412669",
+                    "user_agent":"Mozilla/5.0 (Windows NT 6.1; WOW64)",
+                    "referrer":"http://en.wikipedia.org/wiki/Main_Page",
+                    "ip_address":"202.76.250.50"
+                },
+                "event_params":{
+                    "sv":"mobile",
+                    "ch":"ConsAppAndroid",
+                    "expn":"channel",
+                    "t":"1161775163140",
+                    "page":"main"
+                }
+            }
+        }
+     */
     @Override
     public String computeRequest() throws JSONException {
-
         String deviceId =
                 URLEncoderHelper.encode(getServerRequestEnvironment().getContextInspector()
                         .getInstallationGUID());
         String visitorTrackingToken = mTrackingLogData.mTrackingToken;
 
-        // @formatter:off
-        /*  sample request
-        {
-           "events":{
-               "actor":{
-                   "tracking_visitor_id":"912bddaa1390abe0eed4d1b541ff46e198",
-                   "tracking_visit_id":"982bddcd1390abe0d4d1b541ff46e12198"
-               },
-               "channel":"mobile",
-               "tracking_event":"1363303116",
-               "http_params":{
-                   "accept_charset":"UTF-8",
-                   "accept_lang":"en",
-                   "host_header":"L-MAA-00412669",
-                   "user_agent":"Mozilla/5.0 (Windows NT 6.1; WOW64)",
-                   "referrer":"http://en.wikipedia.org/wiki/Main_Page",
-                   "ip_address":"202.76.250.50"
-               },
-               "event_params":{
-                   "sv":"mobile",
-                   "ch":"ConsAppAndroid",
-                   "expn":"channel",
-                   "t":"1161775163140",
-                   "page":"main"
-               }
-           }
-        }
-        */
-        // @formatter:on
 
         JSONObject actor = new JSONObject();
         actor.accumulate("tracking_visitor_id", deviceId);
@@ -112,7 +111,7 @@ public class AbstractFptiRequest extends RestApiRequest {
     }
 
     @Override
-	public String getServerUrl(ApiInfo api) {
+    public String getServerUrl(ApiInfo api) {
         return "https://api.paypal.com/v1/tracking/events";
     }
 
