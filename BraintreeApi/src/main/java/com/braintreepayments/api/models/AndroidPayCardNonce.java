@@ -49,6 +49,16 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
         return "Google Wallet";
     }
 
+    /**
+     * @return Type of this card (e.g. Visa, MasterCard, American Express)
+     */
+    public String getCardType() {
+        return mCardType;
+    }
+
+    /**
+     * @return Last two digits of the user's underlying card, intended for display purposes.
+     */
     public String getLastTwo() {
         return mLastTwo;
     }

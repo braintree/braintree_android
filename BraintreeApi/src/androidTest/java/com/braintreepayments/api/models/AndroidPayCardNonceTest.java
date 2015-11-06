@@ -23,6 +23,7 @@ public class AndroidPayCardNonceTest {
         assertEquals("Google Wallet", androidPayCardNonce.getTypeLabel());
         assertEquals("fake-android-pay-nonce", androidPayCardNonce.getNonce());
         assertEquals("Android Pay", androidPayCardNonce.getDescription());
+        assertEquals("Visa", androidPayCardNonce.getCardType());
         assertEquals("11", androidPayCardNonce.getLastTwo());
     }
 }
