@@ -90,17 +90,12 @@ public class PayPalOneTouchCore {
 
         @Override
         public void route(ServerRequest serverRequest) {
-            Log.d(TAG, "OtcRequestRouter.route()");
             if(serverRequest instanceof ConfigFileRequest){
                 if (serverRequest.isSuccess()) {
                     ConfigFileRequest configFileRequest = (ConfigFileRequest) serverRequest;
 
                     this.mConfigManager.updateConfig(configFileRequest.minifiedJson, false);
                     // everything checks out.  Store original json file in prefs (since you can't store complex objects)
-
-                    Log.d(TAG, "Config file successfully updated.");
-                } else {
-                    Log.d(TAG, "Updating config file failed!");
                 }
             }
         }
@@ -148,7 +143,6 @@ public class PayPalOneTouchCore {
      * Must be called from Main thread!
      */
     public static boolean isWalletAppInstalled(Context context, boolean enableSecurityCheck){
-        Log.d(TAG, "isWalletAppInstalled()");
         initService(context);
 
         boolean isV2WalletAppInstalled = new V2WalletHelper().isValidV2TouchAuthenticatorInstalled(context, enableSecurityCheck);
@@ -369,7 +363,6 @@ public class PayPalOneTouchCore {
      * Lazily creates and returns a sContextInspector object
      */
     static synchronized ContextInspector getContextInspector(Context context) {
-        Log.d(TAG, "getContextInspector()");
         if(null == sContextInspector){
             sContextInspector = new ContextInspector(context, getCoreEnvironment().getPrefsFile());
         }
@@ -397,7 +390,6 @@ public class PayPalOneTouchCore {
             }
 
             if (!baseUrl.endsWith("/")) {
-                Log.w(TAG, baseUrl + " does not end with a slash, adding one.");
                 baseUrl += "/";
             }
 

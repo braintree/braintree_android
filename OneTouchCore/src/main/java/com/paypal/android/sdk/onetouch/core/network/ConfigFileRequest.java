@@ -18,8 +18,6 @@ import org.json.JSONObject;
  * Request that gets the config and parses it for the android recipes.
  */
 public class ConfigFileRequest extends ServerRequest {
-    private static final String TAG = ConfigFileRequest.class.getSimpleName();
-
     public String minifiedJson;
 
     public ConfigFileRequest(ServerRequestEnvironment env, CoreEnvironment coreEnv) {
@@ -42,17 +40,13 @@ public class ConfigFileRequest extends ServerRequest {
         try {
             OtcConfiguration otcConfiguration = new ConfigFileParser().getParsedConfig(rootObject);
             minifiedJson = rootObject.toString();
-            Log.d(TAG, "parsed config:" + otcConfiguration);
         } catch (JSONException e) {
-            Log.d(TAG, "config file parsing failed", e);
             parseError();
         }
     }
 
     @Override
     public void parseError() throws JSONException {
-        Log.d(TAG, "parseError()");
-
         setServerError(LibraryError.PARSE_RESPONSE_ERROR.toString(), "failed to parse config", null);
     }
 

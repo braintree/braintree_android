@@ -8,7 +8,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -76,11 +75,9 @@ public class ContextInspector {
                 (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         if (null == mgr) {
-            Log.w(Constants.PUBLIC_TAG, "Unable to retrieve Context.CONNECTIVITY_SERVICE. Ignoring.");
             return true;
         }
         if (null == mgr.getAllNetworkInfo()) {
-            Log.w(Constants.PUBLIC_TAG, "ConnectivityManager.getAllNetworkInfo() returned null. Ignoring.");
             return true;
         }
 
@@ -89,10 +86,6 @@ public class ContextInspector {
             if (info.isConnectedOrConnecting()) {
                 networkCount += 1;
             }
-        }
-
-        if (networkCount == 0) {
-            Log.d(TAG, "no network available");
         }
 
         return networkCount > 0;
@@ -121,7 +114,6 @@ public class ContextInspector {
             TelephonyManager m = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
             return m.getSimOperatorName();
         } catch (SecurityException e) {
-            Log.d(TAG, e.toString());
             return null;
         }
     }

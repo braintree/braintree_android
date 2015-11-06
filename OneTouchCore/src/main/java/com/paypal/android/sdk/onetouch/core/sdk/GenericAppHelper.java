@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
-import android.util.Log;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -53,7 +52,6 @@ public class GenericAppHelper {
                     subject,
                     issuer,
                     publicKeyHashCode)) {
-                Log.d(TAG, "PayPal wallet app cert is not what we expect");
             } else {
                 // everything valid, yay!
                 isValid = true;
@@ -100,7 +98,7 @@ public class GenericAppHelper {
 
                 return isValidCert;
             } catch (CertificateException e) {
-                Log.d(TAG, "exception parsing cert", e);
+                // ignore
             }
         }
         return false;

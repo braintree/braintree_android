@@ -137,7 +137,7 @@ public final class Result implements Parcelable {
                 jsonResponse = new JSONObject(jsonString);
             }
         } catch (JSONException e) {
-            Log.d(TAG, "Failed to read parceled JSON for mResponse: " + e);
+            Log.e(TAG, "Failed to read parceled JSON for mResponse", e);
         }
         this.mResponse = jsonResponse;
 
