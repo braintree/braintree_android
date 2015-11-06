@@ -15,8 +15,6 @@ import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.exceptions.ServerException;
-import com.braintreepayments.api.models.CoinbaseAccount;
-import com.braintreepayments.api.models.CoinbaseAccountBuilder;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.internal.HttpRequest;
 import com.braintreepayments.api.internal.HttpResponse;
@@ -61,7 +59,6 @@ public class BraintreeApi {
     private HttpRequest mHttpRequest;
 
     private VenmoAppSwitch mVenmoAppSwitch;
-    private Coinbase mCoinbase;
     private AndroidPay mAndroidPay;
     private Object mBraintreeData;
 
@@ -90,7 +87,6 @@ public class BraintreeApi {
 
         mBraintreeData = null;
         mVenmoAppSwitch = new VenmoAppSwitch(context, mConfiguration);
-        mCoinbase = new Coinbase(context, mConfiguration);
     }
 
     protected BraintreeApi(Context context, ClientToken clientToken) {
@@ -118,7 +114,6 @@ public class BraintreeApi {
 
         mBraintreeData = null;
         mVenmoAppSwitch = new VenmoAppSwitch(mContext, mConfiguration);
-        mCoinbase = new Coinbase(mContext, mConfiguration);
     }
 
     protected boolean isSetup() {
@@ -131,7 +126,6 @@ public class BraintreeApi {
 
         mBraintreeData = null;
         mVenmoAppSwitch = new VenmoAppSwitch(mContext, mConfiguration);
-        mCoinbase = new Coinbase(mContext, mConfiguration);
     }
 
     private Configuration getConfiguration() throws ErrorWithResponse, BraintreeException {
@@ -179,13 +173,6 @@ public class BraintreeApi {
         } catch (NoClassDefFoundError e) {
             return false;
         }
-    }
-
-    /**
-     * @return if Coinbase is enabled in the current environment.
-     */
-    protected boolean isCoinbaseEnabled() {
-        return mCoinbase.isAvailable();
     }
 
     /**
@@ -302,22 +289,6 @@ public class BraintreeApi {
     }
 
     /**
-     * Start the pay with Coinbase flow. This will switch to the Coinbase website.
-     *
-     * @param activity The {@link android.app.Activity} used to perform the web switch.
-     * @return A {@link java.lang.Boolean} if switching to Coinbase was successful.
-     * @throws java.io.UnsupportedEncodingException If the UTF-8 encoder was not available.
-     */
-    protected boolean startPayWithCoinbase(Activity activity) throws UnsupportedEncodingException {
-        Intent coinbaseIntent = mCoinbase.getLaunchIntent();
-        if (coinbaseIntent != null) {
-            activity.startActivity(coinbaseIntent);
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * Handles response from PayPal and returns a PayPalAccountBuilder which must be then passed to
      * {@link #create(com.braintreepayments.api.models.PaymentMethod.Builder)}. {@link #finishPayWithPayPal(android.app.Activity, int, android.content.Intent)}
      * will call this and {@link #create(com.braintreepayments.api.models.PaymentMethod.Builder)} for you
@@ -411,31 +382,6 @@ public class BraintreeApi {
         }
 
         return null;
-    }
-
-    /**
-     * Handles response from Coinbase after user authorization.
-     *
-     * @param data The {@link android.content.Intent} provided in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)} use store-in-vault Extra to specify vaulting
-     * @return The {@link com.braintreepayments.api.models.CoinbaseAccount} for the user or {@code null}
-     *         if the resultCode was not {@link android.app.Activity#RESULT_OK}.
-     * @throws com.braintreepayments.api.exceptions.BraintreeException If an error not due to validation
-     *         (server error, network issue, ect.) occurs
-     * @throws com.braintreepayments.api.exceptions.ErrorWithResponse If creation fails server side validation.
-     */
-    protected CoinbaseAccount finishPayWithCoinbase(Intent data) throws BraintreeException,
-            ErrorWithResponse {
-        Uri redirectUri = data.getParcelableExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL);
-        CoinbaseAccountBuilder coinbaseAccount = new CoinbaseAccountBuilder()
-                .code(mCoinbase.parseResponse(redirectUri))
-                .redirectUri(mCoinbase.getRedirectUri())
-                .source("coinbase-browser");
-
-        if(data.getBooleanExtra("store-in-vault", false)){
-            coinbaseAccount.storeInVault(true);
-        }
-
-        return create(coinbaseAccount);
     }
 
     /**

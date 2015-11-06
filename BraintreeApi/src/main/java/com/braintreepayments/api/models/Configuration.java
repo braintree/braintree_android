@@ -17,8 +17,6 @@ public class Configuration {
     @SerializedName("paypal") private PayPalConfiguration mPayPalConfiguration;
     @SerializedName("androidPay") private AndroidPayConfiguration mAndroidPayConfiguration;
     @SerializedName("venmo") private String mVenmo;
-    @SerializedName("coinbaseEnabled") private boolean mCoinbaseEnabled;
-    @SerializedName("coinbase") private CoinbaseConfiguration mCoinbaseConfiguration;
     @SerializedName("threeDSecureEnabled") private boolean mThreeDSecureEnabled;
     @SerializedName("merchantId") private String mMerchantId;
     @SerializedName("merchantAccountId") private String mMerchantAccountId;
@@ -88,21 +86,6 @@ public class Configuration {
         } else {
             return mVenmo;
         }
-    }
-
-    /**
-     * @return {@code true} if Coinbase is enabled, {@code false} otherwise.
-     */
-    @Beta
-    public boolean isCoinbaseEnabled() {
-        return (mCoinbaseEnabled && mCoinbaseConfiguration != null);
-    }
-
-    /**
-     * @return instance of {@link com.braintreepayments.api.models.CoinbaseConfiguration}.
-     */
-    public CoinbaseConfiguration getCoinbase() {
-        return mCoinbaseConfiguration;
     }
 
     /**

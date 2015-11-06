@@ -12,16 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <ImageButton
-        android:id="@+id/coinbase_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:src="@drawable/bt_logo_coinbase"
-        android:background="@color/bt_white"
-        android:visibility="gone"
-        android:onClick="onCoinbaseClick" />
-
     <EditText
         android:id="@+id/card_number"
         android:layout_width="match_parent"

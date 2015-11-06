@@ -20,7 +20,6 @@ import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
-import com.braintreepayments.api.models.CoinbaseAccountBuilder;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
@@ -62,7 +61,6 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        TestClientTokenBuilder.enableCoinbase(true);
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         setUpActivityTest(this, clientToken);
         mBraintreeApi = new BraintreeApi(mContext, clientToken);
@@ -70,13 +68,6 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
                 .cardNumber(VISA)
                 .expirationMonth("01")
                 .expirationYear("2018"));
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-
-        TestClientTokenBuilder.enableCoinbase(false);
     }
 
     public void testDisplaysALoadingViewWhileGettingPaymentMethods() {
@@ -127,20 +118,6 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
                 .getDrawable(R.drawable.bt_visa)).getBitmap();
 
         assertTrue(expected.sameAs(actual));
-    }
-
-    public void testDisplaysCoinbaseAccount()
-        throws IOException, ErrorWithResponse {
-
-        createCoinbase();
-
-        getActivity();
-
-        waitForPaymentMethodList();
-
-        assertSelectedPaymentMethodIs(R.string.bt_descriptor_coinbase);
-
-        onView(withId(R.id.bt_change_payment_method_link)).check(matches(withText(R.string.bt_change_payment_method)));
     }
 
     public void testDisplaysAddPaymentMethodIfOnlyOnePaymentMethodIsAvailable() {
@@ -372,11 +349,5 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
                 .cardNumber(AMEX)
                 .expirationMonth("01")
                 .expirationYear("2019")).getNonce();
-    }
-
-    private String createCoinbase() throws IOException, ErrorWithResponse {
-        SystemClock.sleep(1000);
-
-        return mBraintreeApi.create(new CoinbaseAccountBuilder().code("coinbase-code").storeInVault(true)).getNonce();
     }
 }

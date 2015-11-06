@@ -23,7 +23,6 @@ public class TestClientTokenBuilder {
     private static final int MERCHANT_WITH_POSTAL_CODE_VERIFICATION = 3;
     private static final int MERCHANT_WITH_CVV_AND_POSTAL_CODE_VERIFICATION = 4;
     private static final int MERCHANT_WITH_THREE_D_SECURE_ENABLED = 5;
-    private static final int MERCHANT_WITH_COINBASE_ENABLED = 6;
 
     private boolean mWithCustomer = true;
     private int mMerchantType = MERCHANT_WITHOUT_PAYPAL;
@@ -42,11 +41,6 @@ public class TestClientTokenBuilder {
 
     public TestClientTokenBuilder withPayPal() {
         mMerchantType = MERCHANT_WITH_PAYPAL;
-        return this;
-    }
-
-    public TestClientTokenBuilder withCoinbase() {
-        mMerchantType = MERCHANT_WITH_COINBASE_ENABLED;
         return this;
     }
 
@@ -117,9 +111,6 @@ public class TestClientTokenBuilder {
                 return getClientTokenFromGateway("integration2_merchant_id", "integration2_public_key");
             case MERCHANT_WITH_PAYPAL:
             case MERCHANT_WITH_THREE_D_SECURE_ENABLED:
-                return getClientTokenFromGateway("integration_merchant_id", "integration_public_key");
-            case MERCHANT_WITH_COINBASE_ENABLED:
-                enableCoinbase(true);
                 return getClientTokenFromGateway("integration_merchant_id", "integration_public_key");
             case MERCHANT_WITH_CVV_VERIFICATION:
                 return getClientTokenFromGateway("client_api_cvv_verification_merchant_id", "client_api_cvv_verification_public_key");
@@ -193,29 +184,6 @@ public class TestClientTokenBuilder {
                 clientTokenJson.put("paypal", clientTokenJson.getJSONObject("paypal").put("environment", "offline"));
             }
             return clientTokenJson.toString();
-        } catch (JSONException e) {
-            throw new RuntimeException("There was an error building your json request: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Enable Coinbase for integration_merchant_id
-     *
-     * @param enabled
-     */
-    public static void enableCoinbase(boolean enabled) {
-        try {
-            JSONObject json = new JSONObject();
-            json.put("public_key", "integration_public_key");
-            json.put("coinbase_merchant_options", new JSONObject().put("enabled", enabled));
-
-            String path = "/merchants/integration_merchant_id/client_api/testing/mock_coinbase_merchant_options";
-            Response response = TestClientTokenBuilder.request(path, "PUT", json.toString());
-
-            if (response.getCode() != 200) {
-                throw new RuntimeException("Setting Coinbase to " + enabled + " failed with response" +
-                        " code " + response.getCode() + " for merchant integration_merchant_id");
-            }
         } catch (JSONException e) {
             throw new RuntimeException("There was an error building your json request: " + e.getMessage());
         }

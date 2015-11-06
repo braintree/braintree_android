@@ -20,7 +20,6 @@ import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.models.AndroidPayCard;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
-import com.braintreepayments.api.models.CoinbaseAccount;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethod;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
@@ -319,13 +318,6 @@ public class Braintree {
      */
     public boolean isVenmoEnabled() {
         return mBraintreeApi.isVenmoEnabled();
-    }
-
-    /**
-     * @return if Coinbase is enabled in the current environment.
-     */
-    public boolean isCoinbaseEnabled() {
-        return mBraintreeApi.isCoinbaseEnabled();
     }
 
     /**
@@ -646,82 +638,6 @@ public class Braintree {
             });
         } else {
             sendAnalyticsEvent("venmo-app.fail");
-        }
-    }
-
-    /**
-     * Start the pay with Coinbase flow. This will switch to the Coinbase website.
-     *
-     * If an error occurs, the exception that occurred will be sent to
-     * {@link Braintree.ErrorListener#onRecoverableError(com.braintreepayments.api.exceptions.ErrorWithResponse)} or
-     * {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)} as appropriate.
-     *
-     * @param activity The {@link android.app.Activity} used to perform the web switch.
-     */
-    @Beta
-    public void startPayWithCoinbase(Activity activity) {
-        boolean payWithCoinbaseInitiated = false;
-        sendAnalyticsEvent("coinbase.initiate.started");
-        if (!mBraintreeApi.isCoinbaseEnabled()) {
-            sendAnalyticsEvent("coinbase.initiate.unavailable");
-            postUnrecoverableErrorToListeners(new AppSwitchNotAvailableException());
-        } else {
-            try {
-                payWithCoinbaseInitiated = mBraintreeApi.startPayWithCoinbase(activity);
-                sendAnalyticsEvent("coinbase.webswitch.started");
-            } catch (UnsupportedEncodingException e) {
-                postUnrecoverableErrorToListeners(e);
-                sendAnalyticsEvent("coinbase.initiate.exception");
-            }
-
-            if (!payWithCoinbaseInitiated) {
-                postUnrecoverableErrorToListeners(new AppSwitchNotAvailableException());
-                sendAnalyticsEvent("coinbase.initiate.failed");
-            }
-        }
-    }
-
-    /**
-     * Finish the Coinbase flow and create a {@link com.braintreepayments.api.models.CoinbaseAccount}
-     *
-     * If an error occurs, the exception that occurred will be sent to
-     * {@link Braintree.ErrorListener#onRecoverableError(com.braintreepayments.api.exceptions.ErrorWithResponse)} or
-     * {@link Braintree.ErrorListener#onUnrecoverableError(Throwable)} as appropriate.
-     *
-     * @param data The {@link android.content.Intent} provided in the {@link android.content.BroadcastReceiver}
-     */
-    @Beta
-    public synchronized void finishPayWithCoinbase(final Intent data) {
-        Uri redirectUri = data.getParcelableExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL);
-        String error = redirectUri != null ? redirectUri.getQueryParameter("error") : null;
-        if (error != null) {
-            if (error.equals("access_denied")) {
-                sendAnalyticsEvent("coinbase.webswitch.denied");
-            } else {
-                sendAnalyticsEvent("coinbase.webswitch.failed");
-            }
-        } else {
-            mExecutorService.submit(new Runnable() {
-                @Override
-                public void run() {
-                    sendAnalyticsEvent("coinbase.webswitch.authorized");
-
-                    try {
-                        CoinbaseAccount coinbaseAccount = mBraintreeApi.finishPayWithCoinbase(data);
-
-                        addPaymentMethodToCache(coinbaseAccount);
-                        postCreatedMethodToListeners(coinbaseAccount);
-                        postCreatedNonceToListeners(coinbaseAccount.getNonce());
-                        sendAnalyticsEvent("coinbase.tokenize.succeeded");
-                    } catch (BraintreeException e) {
-                        sendAnalyticsEvent("coinbase.tokenize.failed");
-                        postUnrecoverableErrorToListeners(e);
-                    } catch (ErrorWithResponse errorWithResponse) {
-                        sendAnalyticsEvent("coinbase.tokenize.failed");
-                        postRecoverableErrorToListeners(errorWithResponse);
-                    }
-                }
-            });
         }
     }
 

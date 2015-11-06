@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.test.AndroidTestCase;
 
@@ -17,28 +16,21 @@ import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.Card;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.ClientToken;
-import com.braintreepayments.api.models.CoinbaseAccount;
-import com.braintreepayments.api.models.CoinbaseAccountBuilder;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.google.gson.Gson;
 import com.paypal.android.sdk.payments.PayPalFuturePaymentActivity;
 
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.mockito.ArgumentCaptor;
 
-import java.io.UnsupportedEncodingException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.braintreepayments.testutils.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -156,48 +148,6 @@ public class BraintreeApiTest extends AndroidTestCase {
         braintreeApi.sendAnalyticsEvent("another-event", "TEST");
         assertEquals(2, requestCount.get());
         assertEquals(200, responseCode.get());
-    }
-
-    public void testPayWithCoinbase()
-            throws UnsupportedEncodingException, ErrorWithResponse, BraintreeException,
-            JSONException {
-        try {
-            ArgumentCaptor<Intent> launchIntentCaptor = ArgumentCaptor.forClass(Intent.class);
-            Activity mockActivity = mock(Activity.class);
-
-            BraintreeApi braintreeApi = spy(new BraintreeApi(mContext,
-                    new TestClientTokenBuilder().withCoinbase().build()));
-            braintreeApi.startPayWithCoinbase(mockActivity);
-
-            verify(mockActivity).startActivity(launchIntentCaptor.capture());
-
-            Intent launchIntent = launchIntentCaptor.getValue();
-            String requestedRedirectUri = Uri.parse(
-                    launchIntent.getStringExtra(BraintreeBrowserSwitchActivity.EXTRA_REQUEST_URL))
-                    .getQueryParameter("redirect_uri");
-            Uri responseUri = Uri.parse(requestedRedirectUri).buildUpon()
-                    .appendQueryParameter("code", "a-coinbase-code").build();
-
-            Intent coinbaseSuccessIntent = new Intent();
-            coinbaseSuccessIntent.putExtra(BraintreeBrowserSwitchActivity.EXTRA_REDIRECT_URL,
-                    responseUri);
-
-            CoinbaseAccount coinbaseAccount = braintreeApi.finishPayWithCoinbase(coinbaseSuccessIntent);
-
-            ArgumentCaptor<CoinbaseAccountBuilder> coinbaseAccountBuilderCaptor =
-                    ArgumentCaptor.forClass(CoinbaseAccountBuilder.class);
-            verify(braintreeApi).create(coinbaseAccountBuilderCaptor.capture());
-            JSONObject json = new JSONObject(coinbaseAccountBuilderCaptor.getValue().toJsonString())
-                    .getJSONObject("coinbaseAccount");
-
-            assertEquals("com.braintreepayments.api.test.braintree://coinbase", json.getString("redirect_uri"));
-            assertEquals("a-coinbase-code", json.getString("code"));
-            assertIsANonce(coinbaseAccount.getNonce());
-            assertEquals("satoshi@example.com", coinbaseAccount.getEmail());
-            assertEquals("Coinbase", coinbaseAccount.getTypeLabel());
-        } finally {
-            TestClientTokenBuilder.enableCoinbase(false);
-        }
     }
 
     public void testGetAndroidPayPaymentMethodTokenizationParametersReturnsParameters() {
