@@ -1,17 +1,12 @@
 package com.paypal.android.sdk.onetouch.core.encryption;
 
-import android.util.Log;
-
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Provider;
 import java.security.PublicKey;
-import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Map.Entry;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -36,21 +31,6 @@ public class OtcCrypto {
     private static final int AES_KEY_SIZE = 16;
     private static final int DIGEST_SIZE = 32;
     private static final int PUBLIC_KEY_SIZE = 256;
-
-    public OtcCrypto(){
-        //logAvailableProviders();
-    }
-
-    private void logAvailableProviders() {
-        for (Provider provider : Security.getProviders()) {
-            Log.d(TAG, String.format("\n----\nProvider: %s", provider.getName()));
-
-            for(Entry<Object, Object> providerProperty: provider.entrySet()) {
-                String entry = (String) providerProperty.getKey();
-                Log.d(TAG, String.format("  %s=%s", entry, providerProperty.getValue()));
-            }
-        }
-    }
 
     private byte[] dataDigest(byte[] data, byte[] key) throws NoSuchAlgorithmException, InvalidKeyException {
         Mac sha256HMAC = Mac.getInstance(HMAC_SHA256);

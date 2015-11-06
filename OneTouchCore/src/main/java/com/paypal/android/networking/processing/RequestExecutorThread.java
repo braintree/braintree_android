@@ -46,8 +46,6 @@ public class RequestExecutorThread extends Thread {
             // Add the new request to the list of pending requests
             mQueuedRequests.add(request);
 
-            Log.d(TAG, "Queued " + request.toLogString());
-
             // Wake up the thread so it'll pull one off the list
             mQueuedRequests.notifyAll();
         }
@@ -77,7 +75,6 @@ public class RequestExecutorThread extends Thread {
         while (this.isAlive()) {
             try {
                 Thread.sleep(10);
-                Log.d(TAG, "Waiting for " + getClass().getSimpleName() + " to die");
             } catch (InterruptedException e) {
             }
         }
@@ -85,9 +82,6 @@ public class RequestExecutorThread extends Thread {
 
     @Override
     public void run() {
-        Log.d(TAG, "Starting " + getClass().getSimpleName());
-
-
         // Run until stopped
         while (!mStopThread) {
             ServerRequest serverRequest = null;

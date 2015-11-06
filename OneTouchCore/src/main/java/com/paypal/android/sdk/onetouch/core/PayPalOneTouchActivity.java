@@ -47,8 +47,6 @@ public class PayPalOneTouchActivity extends Activity {
      */
     public static void Start(Activity activity, int requestCode, Request paypalRequest,
                              Protocol protocol) {
-        Log.i(TAG, "Start()");
-
         Intent intent = new Intent(activity, PayPalOneTouchActivity.class);
         intent.putExtras(activity.getIntent());
         intent.putExtra(EXTRA_REQUEST, paypalRequest);
@@ -60,7 +58,6 @@ public class PayPalOneTouchActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate()");
 
         mContextInspector = new ContextInspector(getApplicationContext(), new OtcEnvironment().getPrefsFile());
 
@@ -152,12 +149,6 @@ public class PayPalOneTouchActivity extends Activity {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        Log.i(TAG, "onResume");
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + data +")");
@@ -165,9 +156,6 @@ public class PayPalOneTouchActivity extends Activity {
         TrackingPoint pointToTrack;
         Result result;
 
-        if(null != data) {
-            logAllKeys(data.getExtras());
-        }
         switch (requestCode) {
             case V1_TOUCH_AUTHENTICATOR_REQUEST_CODE:
                 // fallthrough
@@ -193,14 +181,6 @@ public class PayPalOneTouchActivity extends Activity {
                             result = new Result();
                             pointToTrack = TrackingPoint.Cancel;
                         }
-
-
-                        //Intent returnIntent = new Intent();
-                        // result may include the "error" field, which we want to propagate
-                        // back up to Braintree
-
-                        // TODO do we still want to propagate all fields to Braintree?
-                        //returnIntent.putExtras(data.getExtras());
 
                         logAllKeysPublicly(data.getExtras());
                     }
@@ -270,23 +250,6 @@ public class PayPalOneTouchActivity extends Activity {
         return result;
     }
 
-    private void logAllKeys(Bundle bundle) {
-        if(null != bundle) {
-            for (String key : bundle.keySet()) {
-                Object value = bundle.get(key);
-                String message;
-                if (value == null) {
-                    message = String.format("%s:null", key);
-                } else {
-                    message =
-                            String.format("%s:%s (%s)", key, value.toString(), value.getClass()
-                                    .getName());
-                }
-
-                Log.d(TAG, message);
-            }
-        }
-    }
 
     private void logAllKeysPublicly(Bundle bundle) {
         for (String key : bundle.keySet()) {
@@ -302,17 +265,5 @@ public class PayPalOneTouchActivity extends Activity {
 
             Log.w(Constants.PUBLIC_TAG, message);
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.i(TAG, "onDestroy");
-    }
-
-    @Override
-    public void finish() {
-        super.finish();
-        Log.d(TAG, "finish");
     }
 }

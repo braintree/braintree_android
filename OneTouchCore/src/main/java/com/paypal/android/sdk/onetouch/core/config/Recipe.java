@@ -7,7 +7,6 @@ import com.paypal.android.sdk.onetouch.core.sdk.WalletAppHelper;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -137,8 +136,6 @@ public abstract class Recipe<T extends Recipe<T>> {
     public boolean isValidBrowserTarget(Context context, String browserSwitchUrl, String allowedBrowserPackage){
         Intent intent = getBrowserIntent(browserSwitchUrl, allowedBrowserPackage);
         boolean canIntentBeResolved = intent.resolveActivity(context.getPackageManager()) != null;
-
-        Log.d(TAG, "browser intent with package:" + intent.getPackage() + " can " + (canIntentBeResolved ? "" : "NOT ") + "be resolved");
 
         if(canIntentBeResolved){
             return true;

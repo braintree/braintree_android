@@ -2,8 +2,6 @@ package com.paypal.android.networking.bus;
 
 import com.paypal.android.networking.request.ServerRequest;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +27,6 @@ public class Dispatcher {
         synchronized (mRegisteredReceivers) {
             for (RegisteredReceiver registeredReceiver : mRegisteredReceivers) {
                 if (registeredReceiver.mReceiver == receiver) {
-                    Log.d(TAG, "Ignoring attempt to re-register listener " + receiver);
                     return;
                 }
             }
@@ -47,11 +44,7 @@ public class Dispatcher {
     }
 
     public void dispatch(ServerRequest request, long minimum_serial_number) {
-        Log.d(TAG, "dispatching " + request.toLogString());
-
         if (request.getSerialNumber() < minimum_serial_number) {
-            Log.d(TAG, "discarding " + request.toLogString());
-
             return;
         }
 

@@ -51,21 +51,14 @@ public class ConfigManager {
      * Triggers a config refresh if needed
      */
     public void touchConfig(){
-        if(mUseHardcodedConfig) {
-            Log.d(TAG, "not refreshing config from server, as we're going to use hardcoded config anyway");
-        } else {
+        if( !mUseHardcodedConfig) {
             boolean isAtLeastXHoursOld = isAtLeastXHoursOld();
             boolean isCurrentConfigDefaultOrNotPresent = mContextInspector.getBooleanPreference(PREFERENCES_CONFIG_IS_DEFAULT, true);
             boolean hasInitiatedUpdateInLastYSeconds = hasInitiatedUpdateInLastYSeconds();
 
-            Log.d(TAG, "touchConfig[isAtLeastXHoursOld:" + isAtLeastXHoursOld +
-                    ", isCurrentConfigDefaultOrNotPresent:" + isCurrentConfigDefaultOrNotPresent +
-                    ", hasInitiatedUpdateInLastYSeconds: " + hasInitiatedUpdateInLastYSeconds +"]");
-
             // only try to refresh the file if it's last updated X hours ago,
             // or is the default, and hasn't requested update in last Y seconds
             boolean shouldRefreshConfig = (isAtLeastXHoursOld || isCurrentConfigDefaultOrNotPresent) && !hasInitiatedUpdateInLastYSeconds ;
-            Log.d(TAG, "touchConfig will" + (shouldRefreshConfig ? " " : " NOT ") + "attempt to retrieve config.");
 
             if (shouldRefreshConfig){
                 mLastInitiatedUpdate = new Date();
@@ -127,12 +120,9 @@ public class ConfigManager {
         }
 
         if(useDefault) {
-            Log.d(TAG, "returning default config. File timestamp=" + config.getFileTimestamp());
             updateConfig(jsonConfig, true);
             // may need to update again if there was an error with stored prefs
             touchConfig();
-        } else {
-            Log.d(TAG, "returning config from prefs.  File timestamp=" + config.getFileTimestamp());
         }
 
         return config;

@@ -17,7 +17,6 @@ public abstract class AbstractRequestProcessor implements RequestProcessor {
 
     protected void parse(final ServerRequest serverRequest) {
         try {
-            Log.d(TAG, "parsing success response\n:" + serverRequest.getServerReply());
             serverRequest.parse();
         } catch (Exception e) {
             Log.e(Constants.PUBLIC_TAG, "Exception parsing server response", e);

@@ -11,7 +11,6 @@ import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import java.lang.ref.WeakReference;
 
@@ -126,10 +125,8 @@ public class ServerInterface implements ServerRequestEnvironment {
 
     @Override
     public String getUrl(ApiInfo api) {
-        Log.d(TAG, "mEnvironment:" + mEnvironment + " mEnvironment.getEndpoints():" + mEnvironment.getEndpoints());
         if (mEnvironment != null && mEnvironment.getEndpoints() != null) {
             String url = mEnvironment.getEndpoints().get(api.getName());
-            Log.d(TAG, "returning:" + url);
             return url;
         }
 

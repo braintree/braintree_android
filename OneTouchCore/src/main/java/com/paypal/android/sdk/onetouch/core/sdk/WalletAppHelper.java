@@ -3,7 +3,6 @@ package com.paypal.android.sdk.onetouch.core.sdk;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 public class WalletAppHelper extends GenericAppHelper {
     private static final String TAG = WalletAppHelper.class.getSimpleName();
@@ -59,13 +58,6 @@ public class WalletAppHelper extends GenericAppHelper {
 
     public boolean isWalletIntentSafe(Context context, String intentAction, String intentClass) {
         Intent intent = createSdkIntent(intentAction, intentClass);
-        boolean isIntentSafe = isGenericIntentSafe(context, intent);
-
-        if (!isIntentSafe) {
-            Log.d(TAG, "PayPal wallet app will not accept intent to: "
-                    + "[action:" + intentAction + ", class:" + intentClass + "]");
-        }
-
-        return isIntentSafe;
+        return isGenericIntentSafe(context, intent);
     }
 }

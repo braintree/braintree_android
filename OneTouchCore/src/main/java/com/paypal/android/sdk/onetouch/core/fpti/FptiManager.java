@@ -39,7 +39,6 @@ public class FptiManager {
     public void trackFpti(TrackingPoint point, String environmentName, Map<String, String> fptiDataBundle, Protocol protocol) {
         if(null == token || !token.isValid()){
             token = new FptiToken();
-            Log.d(TAG, "created new fpti token:" + token);
         }
 
         DeviceInspector deviceInspector = new DeviceInspector();

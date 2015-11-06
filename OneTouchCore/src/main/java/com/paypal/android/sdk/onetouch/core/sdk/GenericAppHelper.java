@@ -60,10 +60,9 @@ public class GenericAppHelper {
             }
 
         } catch (NameNotFoundException e) {
-            Log.d(TAG, packageName + " not found.");
+            // ignore
         }
 
-        Log.d(TAG, "returning isValid:" + isValid);
         return isValid;
     }
 
@@ -94,17 +93,11 @@ public class GenericAppHelper {
                 String issuer = x509Cert.getIssuerX500Principal().getName();
                 int publicKeyHashCode = x509Cert.getPublicKey().hashCode();
 
-                Log.d(TAG, "Certificate subject: " + subject);
-                Log.d(TAG, "Certificate issuer: " + issuer);
-                Log.d(TAG, "Certificate public key hash code: " + publicKeyHashCode);
-
                 boolean isValidCert =
                         inSubject.equals(subject)
                                 && inIssuer.equals(issuer)
                                 && inPublicKeyHashCode == publicKeyHashCode;
-                if (!isValidCert) {
-                    Log.d(TAG, "App cert is NOT valid.");
-                }
+
                 return isValidCert;
             } catch (CertificateException e) {
                 Log.d(TAG, "exception parsing cert", e);

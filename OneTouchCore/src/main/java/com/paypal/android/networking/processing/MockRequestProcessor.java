@@ -37,13 +37,8 @@ public abstract class MockRequestProcessor extends AbstractRequestProcessor {
         return new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "Mock executing " + serverRequest.toLogString() + " request: "
-                        + serverRequest.getComputedRequest());
-
                 if(isFailure(serverRequest)) {
                     String failure = getFailureReply();
-
-                    Log.d(serverRequest.getApiInfo().getName(), "mock failure:\n" + failure);
 
                     serverRequest.setServerReply(failure);
                     parseError(serverRequest, getFailureHttpStatusCode());
@@ -53,8 +48,6 @@ public abstract class MockRequestProcessor extends AbstractRequestProcessor {
                         throw new RuntimeException("Empty mock value for " + serverRequest.getApiInfo());
                     }
 
-                    Log.d(serverRequest.getApiInfo().getName(), "mock response:" + mockResponse);
-
                     serverRequest.setServerReply(mockResponse);
                     parse(serverRequest);
                 }
@@ -62,11 +55,9 @@ public abstract class MockRequestProcessor extends AbstractRequestProcessor {
                 // sleep and complete real requests only
                 if (!serverRequest.isTrackingRequest()) {
                     try {
-                        Log.d(TAG, "sleep for [" + mNetworkDelayInMs + " ms].");
                         Thread.sleep(mNetworkDelayInMs);
-                        Log.d(TAG, "end [" + mNetworkDelayInMs + " ms] sleep");
                     } catch (InterruptedException e) {
-                        Log.d(serverRequest.getApiInfo().getName(), "mock response interrupted");
+                        // ignore
                     }
 
                     mServerRequestEnvironment.completeServerRequest(serverRequest);

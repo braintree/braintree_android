@@ -15,13 +15,9 @@ public class ConfigFileParser {
     public OtcConfiguration getParsedConfig(JSONObject rootObject) throws JSONException {
         OtcConfiguration otcConfiguration = new OtcConfiguration();
         String os = rootObject.getString("os");
-        Log.d(TAG, "os:" + os);
 
         String file_timestamp = rootObject.getString("file_timestamp");
-        Log.d(TAG, "file_timestamp:" + file_timestamp);
         otcConfiguration.fileTimestamp(file_timestamp);
-
-        Log.d(TAG, "otcConfiguration.getFileTimestamp():" + otcConfiguration.getFileTimestamp());
 
         JSONObject oneDotZeroConfig = rootObject.getJSONObject("1.0");
 
@@ -36,7 +32,6 @@ public class ConfigFileParser {
                 otcConfiguration.withOauth2Recipe(recipe);
             }
         }
-        Log.d(TAG, "parsed " + otcConfiguration.getOauth2Recipes().size() + " oauth2 recipes");
 
 
         //parse checkout configs
@@ -50,7 +45,6 @@ public class ConfigFileParser {
                 otcConfiguration.withCheckoutRecipe(recipe);
             }
         }
-        Log.d(TAG, "parsed " + otcConfiguration.getCheckoutRecipes().size() + " checkout recipes");
 
         //parse billing agreement configs
         JSONArray billing_agreement_recipes_in_decreasing_priority_order =
@@ -63,8 +57,6 @@ public class ConfigFileParser {
                 otcConfiguration.withBillingAgreementRecipe(recipe);
             }
         }
-        Log.d(TAG, "parsed " + otcConfiguration.getBillingAgreementRecipes().size() + " billing agreement recipes");
-
 
         return otcConfiguration;
     }

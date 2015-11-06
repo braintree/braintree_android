@@ -54,9 +54,6 @@ public final class SdkRiskComponent {
                     }
                 });
 
-                Log.i(TAG, "Init risk component: " + sMetadataIdProvider.getLibraryVersion()
-                        + " returning new clientMetadataId:" + clientMetadataId);
-
                 return clientMetadataId;
 
             } catch (Throwable t) {
@@ -71,7 +68,6 @@ public final class SdkRiskComponent {
                 clientMetadataId = sMetadataIdProvider.generatePairingId();
             }
 
-            Log.i(TAG, "risk component already initialized, returning new clientMetadataId:" + clientMetadataId);
             return clientMetadataId;
         }
     }

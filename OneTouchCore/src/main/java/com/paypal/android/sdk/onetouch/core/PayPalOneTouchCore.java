@@ -68,7 +68,6 @@ public class PayPalOneTouchCore {
      * Must be called from Main thread!
      */
     public static void useHardcodedConfig(Context context, boolean useHardcodedConfig) {
-        Log.d(TAG, "useHardcodedConfig()");
         initService(context);
         sConfigManager.useHardcodedConfig(useHardcodedConfig);
     }
@@ -77,7 +76,6 @@ public class PayPalOneTouchCore {
      * Must be called from Main thread!
      */
     public static FptiManager getFptiManager(Context context) {
-        Log.d(TAG, "getFptiManager()");
         initService(context);
         return sFptiManager;
     }
@@ -112,7 +110,6 @@ public class PayPalOneTouchCore {
      * Must be called from Main thread!
      */
     private static void initService(Context context){
-        Log.d(TAG, "initService()");
         if(null == sServerInterface) {
             PayPalEnvironment env = getEnvironment(getEnvironmentName(), "https://api-m.paypal.com/v1/");
 
@@ -176,7 +173,6 @@ public class PayPalOneTouchCore {
      * Must be called from Main thread!
      */
     public static RequestTarget preflightRequest(Context context, Request request, boolean enableSecurityCheck){
-        Log.d(TAG, "preflightRequest()");
         initService(context);
 
         // calling this method functionally does nothing, but ensures that we send off FPTI data about wallet installs.
@@ -185,7 +181,6 @@ public class PayPalOneTouchCore {
         Recipe recipe = request.getRecipeToExecute(context, getConfig(context), enableSecurityCheck);
 
         if(null != recipe) {
-            Log.d(TAG, "found recipe:" + recipe);
             if(RequestTarget.browser == recipe.getTarget()){
                 request.trackFpti(context, TrackingPoint.PreflightBrowser, recipe.getProtocol());
             } else if(RequestTarget.wallet == recipe.getTarget()){
@@ -208,7 +203,6 @@ public class PayPalOneTouchCore {
      * @return true if the request was started successfully or false if PayPal authentication was not possible
      */
     public static PerformRequestStatus performRequest(Activity activity, Request request, int requestCode, boolean enableSecurityCheck, BrowserSwitchAdapter browserSwitchAdapter) {
-        Log.d(TAG, "performRequest()");
         initService(activity);
 
         // calling this method functionally does nothing, but ensures that we send off FPTI data about wallet installs.
@@ -256,7 +250,6 @@ public class PayPalOneTouchCore {
      * @return
      */
     static Intent getBrowserIntent(Context context, Request request) {
-        Log.d(TAG, "getBrowserIntent()");
         OtcConfiguration configuration = getConfig(context);
 
         try {
@@ -289,7 +282,6 @@ public class PayPalOneTouchCore {
      * @return
      */
     public static Result handleBrowserResponse(Context context, Uri uri, Request request) {
-        Log.d(TAG, "handleBrowserResponse()");
         initService(context);
         Result result = request.parseBrowserResponse(getContextInspector(context), uri);
         switch (result.getResultType()) {
@@ -323,7 +315,6 @@ public class PayPalOneTouchCore {
      * PayPal in a 'PayPal-Client-Metadata-Id' header.
      */
     public static final String getClientMetadataId(Context context) {
-        Log.d(TAG, "getClientMetadataId()");
         return SdkRiskComponent.getClientMetadataId(OTC_EXECUTOR_SERVICE, context,
                 getContextInspector(context).getInstallationGUID(),
                 BuildConfig.PRODUCT_VERSION,
@@ -360,7 +351,6 @@ public class PayPalOneTouchCore {
      * Please be sure to include this library version in tech support requests.
      */
     public static String getLibraryVersion(){
-        Log.d(TAG, "getLibraryVersion()");
         return BuildConfig.PRODUCT_VERSION;
     }
 
@@ -371,7 +361,6 @@ public class PayPalOneTouchCore {
      * Must be called from Main thread!
      */
     static OtcConfiguration getConfig(Context context) {
-        Log.d(TAG, "getConfig()");
         initService(context);
         return sConfigManager.getConfig();
     }
