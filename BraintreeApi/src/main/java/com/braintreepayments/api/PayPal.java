@@ -146,10 +146,11 @@ public class PayPal {
      * fall back to a browser switch.
      *
      * @param fragment A {@link BraintreeFragment} used to process the request.
+     * @param request A {@link PayPalRequest} used to customize the request.
      */
-    public static void requestBillingAgreement(BraintreeFragment fragment, PayPalRequest checkout) {
-        if (checkout.getAmount() == null) {
-            requestOneTimePayment(fragment, checkout, true);
+    public static void requestBillingAgreement(BraintreeFragment fragment, PayPalRequest request) {
+        if (request.getAmount() == null) {
+            requestOneTimePayment(fragment, request, true);
         } else {
             fragment.postCallback(new BraintreeException(
                     "There must be no amount specified for the Billing Agreement flow"));
@@ -161,12 +162,12 @@ public class PayPal {
      * fall back to a browser switch.
      *
      * @param fragment A {@link BraintreeFragment} used to process the request.
-     * @param checkout A {@link PayPalRequest} used to customize the request. An amount MUST be
+     * @param request A {@link PayPalRequest} used to customize the request. An amount MUST be
      *                 specified.
      */
-    public static void requestOneTimePayment(BraintreeFragment fragment, PayPalRequest checkout) {
-        if (checkout.getAmount() != null) {
-            requestOneTimePayment(fragment, checkout, false);
+    public static void requestOneTimePayment(BraintreeFragment fragment, PayPalRequest request) {
+        if (request.getAmount() != null) {
+            requestOneTimePayment(fragment, request, false);
         } else {
             fragment.postCallback(new BraintreeException(
                     "An amount must be specified for the Single Payment flow."));
@@ -179,13 +180,13 @@ public class PayPal {
      * <p>
      * This requires that the merchant uses a {@link com.braintreepayments.api.models.ClientToken}
      *
-     * @param fragment           A {@link BraintreeFragment} used to process the request.
-     * @param checkout           A {@link PayPalRequest} used to customize the request.
+     * @param fragment A {@link BraintreeFragment} used to process the request.
+     * @param request A {@link PayPalRequest} used to customize the request.
      * @param isBillingAgreement A boolean. If true, this will use the Billing Agreement. Otherwise,
-     * PayPal will perform a Single Payment.
+     *        PayPal will perform a Single Payment.
      */
     private static void requestOneTimePayment(final BraintreeFragment fragment,
-            final PayPalRequest checkout, final boolean isBillingAgreement) {
+            final PayPalRequest request, final boolean isBillingAgreement) {
         final HttpResponseCallback callback = new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
@@ -232,7 +233,7 @@ public class PayPal {
                 }
 
                 try {
-                    createPaymentResource(fragment, checkout, isBillingAgreement, callback);
+                    createPaymentResource(fragment, request, isBillingAgreement, callback);
                 } catch (JSONException | ErrorWithResponse | BraintreeException ex) {
                     fragment.postCallback(ex);
                 }
@@ -244,32 +245,32 @@ public class PayPal {
      * Create a PayPalPaymentResource on behalf of the merchant. To be used in the PayPal Checkout
      * flows for Single Payment and Billing Agreement.
      *
-     * @param fragment           A {@link BraintreeFragment} used to process the request.
-     * @param checkout           A {@link PayPalRequest} used to customize the request.
+     * @param fragment A {@link BraintreeFragment} used to process the request.
+     * @param request A {@link PayPalRequest} used to customize the request.
      * @param isBillingAgreement A boolean. If true, this will use the Billing Agreement. Otherwise,
      *        PayPal will perform a Single Payment.
      * @param callback A callback on the http request.
      */
     private static void createPaymentResource(BraintreeFragment fragment,
-            PayPalRequest checkout, boolean isBillingAgreement, HttpResponseCallback callback)
+            PayPalRequest request, boolean isBillingAgreement, HttpResponseCallback callback)
             throws JSONException, ErrorWithResponse, BraintreeException {
-        CheckoutRequest request = getCheckoutRequest(null, fragment.getApplicationContext(),
+        CheckoutRequest checkoutRequest = getCheckoutRequest(null, fragment.getApplicationContext(),
                 fragment.getConfiguration().getPayPal());
-        String currencyCode = checkout.getCurrencyCode();
+        String currencyCode = request.getCurrencyCode();
         if (currencyCode == null) {
             currencyCode = fragment.getConfiguration().getPayPal().getCurrencyIsoCode();
         }
 
         JSONObject experienceProfile = new JSONObject();
-        experienceProfile.put(NO_SHIPPING_KEY, !checkout.isShippingAddressRequired());
+        experienceProfile.put(NO_SHIPPING_KEY, !request.isShippingAddressRequired());
 
-        if (checkout.getLocaleCode() != null) {
-            experienceProfile.put(LOCALE_CODE_KEY, checkout.getLocaleCode());
+        if (request.getLocaleCode() != null) {
+            experienceProfile.put(LOCALE_CODE_KEY, request.getLocaleCode());
         }
 
         JSONObject parameters = new JSONObject()
-                .put(RETURN_URL_KEY, request.getSuccessUrl())
-                .put(CANCEL_URL_KEY, request.getCancelUrl());
+                .put(RETURN_URL_KEY, checkoutRequest.getSuccessUrl())
+                .put(CANCEL_URL_KEY, checkoutRequest.getCancelUrl());
 
         if (fragment.getAuthorization() instanceof ClientToken) {
             parameters.put(AUTHORIZATION_FINGERPRINT_KEY,
@@ -279,13 +280,13 @@ public class PayPal {
         }
 
         if (!isBillingAgreement) {
-            parameters.put(AMOUNT_KEY, checkout.getAmount())
+            parameters.put(AMOUNT_KEY, request.getAmount())
                     .put(CURRENCY_ISO_CODE_KEY, currencyCode);
         }
 
-        if (checkout.getShippingAddressOverride() != null && !checkout.getShippingAddressOverride().isEmpty()) {
+        if (request.getShippingAddressOverride() != null && !request.getShippingAddressOverride().isEmpty()) {
             experienceProfile.put(ADDRESS_OVERRIDE_KEY, true);
-            PostalAddress shippingAddress = checkout.getShippingAddressOverride();
+            PostalAddress shippingAddress = request.getShippingAddressOverride();
             parameters.put(PostalAddress.LINE_1_KEY, shippingAddress.getStreetAddress());
             parameters.put(PostalAddress.LINE_2_KEY, shippingAddress.getExtendedAddress());
             parameters.put(PostalAddress.LOCALITY_KEY, shippingAddress.getLocality());
