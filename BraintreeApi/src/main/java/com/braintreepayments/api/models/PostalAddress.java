@@ -25,6 +25,7 @@ public class PostalAddress implements Parcelable {
     public static final String COUNTRY_CODE_UNDERSCORE_KEY = "country_code";
     public static final String POSTAL_CODE_UNDERSCORE_KEY = "postal_code";
     public static final String RECIPIENT_NAME_UNDERSCORE_KEY = "recipient_name";
+
     private String mRecipientName;
     private String mStreetAddress;
     private String mExtendedAddress;
