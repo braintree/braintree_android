@@ -1,10 +1,10 @@
 package com.paypal.android.sdk.onetouch.core.base;
 
-import com.paypal.android.lib.riskcomponent.RiskComponent;
-import com.paypal.android.lib.riskcomponent.SourceApp;
-
 import android.content.Context;
 import android.util.Log;
+
+import com.paypal.android.sdk.onetouch.core.metadata.MetadataIdProvider;
+import com.paypal.android.sdk.onetouch.core.metadata.MetadataIdProviderImpl;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public final class SdkRiskComponent {
                 Map<String, Object> params;
                 if (null != pairingId) {
                     params = new HashMap<>();
-                    params.put(RiskComponent.RISK_MANAGER_PAIRING_ID, pairingId);
+                    params.put(MetadataIdProvider.PAIRING_ID, pairingId);
                 } else {
                     params = Collections.emptyMap();
                 }
@@ -43,7 +43,6 @@ public final class SdkRiskComponent {
                         sMetadataIdProvider.init(
                                 context,
                                 applicationGuid,
-                                SourceApp.MSDK,
                                 productVersion,
                                 params);
 

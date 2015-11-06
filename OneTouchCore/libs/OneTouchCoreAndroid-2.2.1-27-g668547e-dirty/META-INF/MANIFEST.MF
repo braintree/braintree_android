@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Vendor: PayPal, Inc.
-Implementation-Title: OneTouchCore-Android
-Implementation-Version: 668547ed926ad3018dc2448ba029f561c3953dd9
-
