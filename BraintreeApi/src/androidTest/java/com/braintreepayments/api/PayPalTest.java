@@ -682,7 +682,7 @@ public class PayPalTest {
             @Override
             public void onError(Exception error) {
                 assertTrue(error instanceof ConfigurationException);
-                assertEquals("PayPal is disabled or configuration is invalid",
+                assertEquals("PayPal is not enabled",
                         error.getMessage());
                 mLatch.countDown();
             }
