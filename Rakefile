@@ -103,12 +103,12 @@ task :release => :tests do
   puts "\nDone. Commits and tags have been created. If everything appears to be in order, hit ENTER to push."
   $stdin.gets
 
-  sh "git push origin master #{version}"
+  sh "git push origin 1.x #{version}"
 
   puts "\nPushed to GHE! Press ENTER to push to public Github."
   $stdin.gets
 
-  sh "git push github master #{version}"
+  sh "git push github 1.x #{version}"
 
   puts "\nUpdate client_releases.yml in the docs. Press ENTER when done."
   $stdin.gets
