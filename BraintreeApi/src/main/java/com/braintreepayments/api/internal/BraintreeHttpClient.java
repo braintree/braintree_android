@@ -44,11 +44,11 @@ import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
  */
 public class BraintreeHttpClient {
 
-    public static final String TAG = "BraintreeHttpClient";
     public static final String USER_AGENT = "braintree/android/" + BuildConfig.VERSION_NAME;
 
     public static boolean DEBUG = false;
 
+    private static final String TAG = "BraintreeHttpClient";
     private static final String METHOD_GET = "GET";
     private static final String METHOD_POST = "POST";
     private static final String UTF_8 = "UTF-8";
