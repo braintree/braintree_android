@@ -58,10 +58,10 @@ artifacts {
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.setArtifactId 'data'
+            pom.setArtifactId 'data_collector'
 
             pom.project {
-                name 'data'
+                name 'data_collector'
                 groupId = 'com.braintreepayments.api'
                 version = "${android.defaultConfig.versionName}"
                 packaging 'jar'

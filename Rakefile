@@ -32,15 +32,15 @@ task :publish_snapshot => :tests do
   braintree_api_build_file = "BraintreeApi/build.gradle"
   braintree_drop_in_build_file = "Drop-In/build.gradle"
 
-  sh "./gradlew clean :BraintreeData:uploadArchives"
+  sh "./gradlew clean :BraintreeDataCollector:uploadArchives"
 
-  replace_string(braintree_api_build_file, "compile project(':BraintreeData')", "compile 'com.braintreepayments.api:data:#{get_current_version}'")
+  replace_string(braintree_api_build_file, "compile project(':BraintreeDataCollector')", "compile 'com.braintreepayments.api:data_collector:#{get_current_version}'")
   sh "./gradlew clean :BraintreeApi:uploadArchives"
 
   replace_string(braintree_drop_in_build_file, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree:#{get_current_version}'")
   sh "./gradlew clean :Drop-In:uploadArchives"
 
-  replace_string(braintree_api_build_file, "compile 'com.braintreepayments.api:data:#{get_current_version}'", "compile project(':BraintreeData')")
+  replace_string(braintree_api_build_file, "compile 'com.braintreepayments.api:data_collector:#{get_current_version}'", "compile project(':BraintreeDataCollector')")
   replace_string(braintree_drop_in_build_file, "compile 'com.braintreepayments.api:braintree:#{get_current_version}'", "compile project(':BraintreeApi')")
 end
 
@@ -61,17 +61,17 @@ task :release => :tests do
   increment_version_code
   update_version(version)
 
-  sh "./gradlew clean :BraintreeData:uploadArchives"
-  puts "BraintreeData was uploaded, press ENTER to release it"
+  sh "./gradlew clean :BraintreeDataCollector:uploadArchives"
+  puts "BraintreeDataCollector was uploaded, press ENTER to release it"
   $stdin.gets
-  sh "./gradlew :BraintreeData:closeRepository"
+  sh "./gradlew :BraintreeDataCollector:closeRepository"
   puts "Sleeping for one minute to allow closing to finish"
   sleep 60
-  sh "./gradlew :BraintreeData:promoteRepository"
+  sh "./gradlew :BraintreeDataCollector:promoteRepository"
   puts "Sleeping for ten minutes to allow promotion to finish"
   sleep 600
 
-  replace_string(braintree_api_build_file, "compile project(':BraintreeData')", "compile 'com.braintreepayments.api:data:#{version}'")
+  replace_string(braintree_api_build_file, "compile project(':BraintreeDataCollector')", "compile 'com.braintreepayments.api:data_collector:#{version}'")
   sh "./gradlew clean :BraintreeApi:uploadArchives"
   puts "BraintreeApi was uploaded, press ENTER to release it"
   $stdin.gets
@@ -95,7 +95,7 @@ task :release => :tests do
   sh "git commit -am 'Release #{version}'"
   sh "git tag #{version} -am '#{version}'"
 
-  replace_string(braintree_api_build_file, "compile 'com.braintreepayments.api:data:#{version}'", "compile project(':BraintreeData')")
+  replace_string(braintree_api_build_file, "compile 'com.braintreepayments.api:data_collector:#{version}'", "compile project(':BraintreeDataCollector')")
   replace_string(braintree_drop_in_build_file, "compile 'com.braintreepayments.api:braintree:#{version}'", "compile project(':BraintreeApi')")
   update_version("#{version}-SNAPSHOT")
   sh "git commit -am 'Prepare for development'"

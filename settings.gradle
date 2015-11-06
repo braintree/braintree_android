@@ -1,5 +1,5 @@
 include ':BraintreeApi'
-include ':BraintreeData'
+include ':BraintreeDataCollector'
 include ':Drop-In'
 
 include ':TestUtils'
