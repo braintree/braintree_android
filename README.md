@@ -12,7 +12,7 @@ Next, read the [**full documentation**](https://developers.braintreepayments.com
 
 ## Help
 
-* [Read the docs](https://developers.braintreepayments.com/android/sdk/client)
+* [Read the docs](https://developers.braintreepayments.com/start/hello-client/android/v2)
 * Find a bug? [Open an issue](https://github.com/braintree/braintree_android/issues)
 * Want to contribute? [Check out contributing guidelines](CONTRIBUTING.md) and [submit a pull request](https://help.github.com/articles/creating-a-pull-request).
 
