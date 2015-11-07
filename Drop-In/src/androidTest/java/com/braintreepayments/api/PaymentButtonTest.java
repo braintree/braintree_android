@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.test.FlakyTest;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.util.Base64;
 import android.view.View;
@@ -172,7 +173,9 @@ public class PaymentButtonTest {
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
-                assertEquals("Protocol not found: nullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint", error.getMessage());
+                assertEquals(
+                        "Protocol not found: nullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint",
+                        error.getMessage());
                 latch.countDown();
             }
         });
@@ -275,6 +278,7 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 5000)
+    @FlakyTest(tolerance = 3)
     public void startsPayWithPayPal() throws InvalidArgumentException, JSONException {
         Looper.prepare();
         BraintreeFragment fragment = getFragment(true, true);

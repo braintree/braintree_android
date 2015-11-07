@@ -6,6 +6,7 @@ import android.os.Build.VERSION;
 import android.provider.Settings.Secure;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.test.FlakyTest;
 import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
@@ -160,6 +161,7 @@ public class AnalyticsManagerTest {
     public void flushEvents_sendsTwoBatchesWhenTwoFragmentsAreUsed() throws JSONException,
             InterruptedException {
         setup();
+
         BraintreeFragment fragment2 = generateFragment();
 
         mFragment.sendAnalyticsEvent("event1");
@@ -228,14 +230,15 @@ public class AnalyticsManagerTest {
     }
 
     @Test(timeout = 1000)
+    @FlakyTest(tolerance = 3)
     public void newRequest_sendsCorrectMetaData() throws JSONException {
         setup();
+
         String uuid = "testuuid";
+        AnalyticsManager.sendRequest(mFragment, "custom", "some-interesting-event");
         getTargetContext().getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE).edit()
                 .putString("braintreeUUID", uuid)
                 .commit();
-
-        AnalyticsManager.sendRequest(mFragment, "custom", "some-interesting-event");
         AnalyticsManager.flushEvents(mFragment);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -258,9 +261,10 @@ public class AnalyticsManagerTest {
         assertFalse(json.getString("sessionId").contains("-"));
     }
 
-    /* helper */
-    private void setup() throws JSONException {
+    public void setup() throws JSONException {
         mFragment = generateFragment();
+        getTargetContext().getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE).edit().clear()
+                .commit();
     }
 
     private BraintreeFragment generateFragment() {

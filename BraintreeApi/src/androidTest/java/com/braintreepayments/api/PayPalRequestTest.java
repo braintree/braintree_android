@@ -130,7 +130,7 @@ public class PayPalRequestTest {
         assertEquals("paypal_client_id", request.getClientId());
         assertEquals(configuration.getPayPal().getPrivacyUrl(), request.getPrivacyUrl());
         assertEquals(configuration.getPayPal().getUserAgreementUrl(), request.getUserAgreementUrl());
-        assertEquals("email https://uri.paypal.com/services/payments/futurepayments", request.getScopeString());
+        assertEquals("https://uri.paypal.com/services/payments/futurepayments email", request.getScopeString());
     }
 
     @Test(timeout = 1000)

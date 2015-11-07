@@ -317,7 +317,6 @@ public class PayPalTest {
 
         setBrowserSwitchResponse(
                 "onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN");
-
         PayPal.requestBillingAgreement(fragment, new PayPalRequest());
 
         mLatch.await();

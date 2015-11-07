@@ -175,16 +175,15 @@ public class ListPaymentMethodNonceTest extends BraintreePaymentActivityTestRunn
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
         Intent intent = getSinglePaymentMethodNonceIntent(clientToken)
                 .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken);
-        getActivity(intent);
+        BraintreePaymentActivity activity = getActivity(intent);
 
         waitForPaymentMethodNonceList();
-
         assertSelectedPaymentMethodIs(com.braintreepayments.api.dropin.R.string.bt_descriptor_visa);
 
         onView(withText(com.braintreepayments.api.dropin.R.string.bt_add_payment_method)).perform(
                 click());
-        performPayPalAdd();
 
+        performPayPalAdd(activity);
         assertSelectedPaymentMethodIs(com.braintreepayments.api.dropin.R.string.bt_descriptor_paypal);
     }
 

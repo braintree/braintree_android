@@ -70,7 +70,7 @@ public class PayPal {
     private static final String ADDRESS_OVERRIDE_KEY = "address_override";
     private static final String LOCALE_CODE_KEY = "locale_code";
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
-    private static final String TOKENIZATION_KEY = "client_key"; // TODO: change when Gateway accepts tokenization key
+    private static final String TOKENIZATION_KEY = "client_key";
     private static final String RETURN_URL_KEY = "return_url";
     private static final String CANCEL_URL_KEY = "cancel_url";
     private static final String EXPERIENCE_PROFILE_KEY = "experience_profile";

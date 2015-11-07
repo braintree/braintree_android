@@ -18,6 +18,7 @@ import com.braintreepayments.api.test.BraintreePaymentActivityTestRunner;
 import com.braintreepayments.cardform.view.ErrorEditText;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
+import org.json.JSONException;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
@@ -33,11 +34,9 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.braintreepayments.api.utils.Assertions.assertSelectedPaymentMethodIs;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.addCardAndAssertSuccess;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInCardForm;
-import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInOfflinePayPal;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.onAddPaymentFormHeader;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
@@ -48,7 +47,6 @@ import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static com.braintreepayments.testutils.ui.Matchers.withHint;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
-import static com.braintreepayments.testutils.ui.ViewHelper.FIFTEEN_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.TEN_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.THREE_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.TWO_SECONDS;
@@ -106,53 +104,28 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
     }
 
     @Test(timeout = 30000)
-    // TODO: Need a way to interact with the browser
     public void paypalCreatesAPaymentMethodNonceWithACustomer() {
         String clientToken = new TestClientTokenBuilder().withPayPal().build();
 
-        assertCreatePaymentMethodFromPayPal(clientToken, "jane.doe@example.com");
+        assertCreatePaymentMethodFromPayPal(clientToken);
     }
 
     @Test(timeout = 30000)
-    // TODO: Need a way to interact with the browser
     public void paypalCreatesAPaymentMethodNonceWithoutACustomer() {
         String clientToken = new TestClientTokenBuilder().withoutCustomer().withPayPal().build();
 
-        assertCreatePaymentMethodFromPayPal(clientToken, "jane.doe@example.com");
+        assertCreatePaymentMethodFromPayPal(clientToken);
     }
 
     @Test(timeout = 30000)
-    // TODO: Need a way to interact with the browser
     public void returnsToSelectPaymentMethodNonceViewAfterAddingAPayPalAccount() {
-        String clientToken = new TestClientTokenBuilder().withPayPal().build();
-        Intent intent = new PaymentRequest()
-                .clientToken(clientToken)
-                .getIntent(getTargetContext())
-                .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken);
-        getActivity(intent);
-
-        fillInOfflinePayPal();
+        String clientToken = new TestClientTokenBuilder().build();
+        BraintreePaymentActivity activity = getActivity(clientToken);
+        performPayPalAdd(activity);
 
         waitForPaymentMethodNonceList(TEN_SECONDS);
-        assertSelectedPaymentMethodIs(com.braintreepayments.api.dropin.R.string.bt_descriptor_paypal);
-    }
-
-    @Test(timeout = 30000)
-    // TODO: Need a way to interact with the browser
-    public void displaysLoadingViewWhileCreatingAPayPalAccount() {
-        String clientToken = new TestClientTokenBuilder().withPayPal().build();
-        Intent intent = new PaymentRequest()
-                .clientToken(clientToken)
-                .getIntent(getTargetContext())
-                .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken)
-                .putExtra(BraintreePaymentTestActivity.EXTRA_DELAY, THREE_SECONDS);
-        getActivity(intent);
-
-        fillInOfflinePayPal();
-
-        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_inflated_loading_view)).check(matches(isDisplayed()));
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_header)).check(matches(not(isDisplayed())));
-        waitForPaymentMethodNonceList().check(matches(isDisplayed()));
+        assertSelectedPaymentMethodIs(
+                com.braintreepayments.api.dropin.R.string.bt_descriptor_paypal);
     }
 
     @Test(timeout = 30000)
@@ -160,7 +133,8 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
         BraintreePaymentActivity activity = getActivity(new TestClientTokenBuilder().build(), 200);
 
         fillInCardForm();
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(
+                click());
 
         Button submitButton = (Button) activity.findViewById(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button);
         assertFalse(submitButton.isEnabled());
@@ -189,14 +163,20 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
 
         waitForAddPaymentFormHeader();
 
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_card_number)).perform(typeText(VISA));
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_expiration)).perform(typeText("1219"), closeSoftKeyboard());
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_cvv)).perform(typeText("200"));
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_card_number)).perform(
+                typeText(VISA));
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_expiration)).perform(
+                typeText("1219"), closeSoftKeyboard());
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_cvv)).perform(
+                typeText("200"));
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
 
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).check(matches(not(isEnabled())));
-        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button), isEnabled());
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).check(matches(isEnabled()));
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).check(
+                matches(not(isEnabled())));
+        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button),
+                isEnabled());
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).check(
+                matches(isEnabled()));
     }
 
     @Test(timeout = 30000)
@@ -230,10 +210,12 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
 
         waitForAddPaymentFormHeader();
 
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_paypal_button)).check(matches(not(isDisplayed())));
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_paypal_button)).check(
+                matches(not(isDisplayed())));
     }
 
     @Test(timeout = 30000)
+    @FlakyTest(tolerance = 3)
     public void backButtonExitsTheActivityIfThereAreNoPaymentMethodNoncesToSelectFrom() {
         Activity activity = getActivity(new TestClientTokenBuilder().build());
         waitForAddPaymentFormHeader();
@@ -243,23 +225,6 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
         getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
 
         assertTrue(activity.isFinishing());
-    }
-
-    @Test(timeout = 30000)
-    // TODO: Need a way to interact with the browser
-    public void backButtonInPayPalTakesYouBackToAddPaymentMethodView() {
-        String clientToken = new TestClientTokenBuilder().withPayPal().build();
-        Intent intent = new PaymentRequest()
-                .clientToken(clientToken)
-                .getIntent(getTargetContext())
-                .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken);
-        getActivity(intent);
-
-        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_paypal_button)).perform(click());
-        waitForView(withHint("Email")).check(matches(isDisplayed())).perform(closeSoftKeyboard());
-        getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
-
-        waitForAddPaymentFormHeader().check(matches(isDisplayed()));
     }
 
     @Test(timeout = 30000)
@@ -273,26 +238,8 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
 
         getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
 
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_header_container)).check(matches(isDisplayed()));
-    }
-
-    @Test(timeout = 30000)
-    // TODO: Need a way to interact with the browser
-    public void backButtonDuringPayPalAddDoesNothing() {
-        String clientToken = new TestClientTokenBuilder().withPayPal().build();
-        Intent intent = new PaymentRequest()
-                .clientToken(clientToken)
-                .getIntent(getTargetContext())
-                .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken)
-                .putExtra(BraintreePaymentTestActivity.EXTRA_DELAY, TWO_SECONDS);
-        getActivity(intent);
-        fillInOfflinePayPal();
-        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_inflated_loading_view)).check(
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_header_container)).check(
                 matches(isDisplayed()));
-
-        getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
-
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_inflated_loading_view)).check(matches(isDisplayed()));
     }
 
     @Test(timeout = 30000)
@@ -305,21 +252,19 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
     }
 
     @Test(timeout = 30000)
-    // TODO: Need a way to interact with the browser
-    public void upButtonIsShownAfterYouAddAPaymentMethod() {
-        String clientToken = new TestClientTokenBuilder().withPayPal().build();
-        Intent intent = new PaymentRequest()
-                .clientToken(clientToken)
-                .getIntent(getTargetContext())
-                .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken);
-        BraintreePaymentActivity activity = getActivity(intent);
-        performPayPalAdd();
+    public void upButtonIsShownAfterYouAddAPaymentMethod()
+            throws JSONException, InterruptedException {
+    String clientToken = new TestClientTokenBuilder().build();
+        BraintreePaymentActivity activity = getActivity(clientToken);
+        performPayPalAdd(activity);
 
         assertFalse("Expected up not to be present on action bar", checkHomeAsUpEnabled(activity));
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_change_payment_method_link)).perform(click());
+        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_change_payment_method_link)).perform(
+                click());
 
         assertTrue("Expected up to be present on action bar", checkHomeAsUpEnabled(activity));
     }
+
 
     @Test(timeout = 30000)
     public void displaysAnErrorWhenCardNumberFailsOnServer() {
@@ -336,9 +281,11 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
                 .perform(typeText(VISA), closeSoftKeyboard());
         onView(withHint(com.braintreepayments.api.dropin.R.string.bt_form_hint_expiration))
                 .perform(typeText("0619"), closeSoftKeyboard());
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(
+                click());
 
-        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button), isEnabled());
+        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button),
+                isEnabled());
 
         ErrorEditText editText = (ErrorEditText) activity.findViewById(
                 com.braintreepayments.api.dropin.R.id.bt_card_form_card_number);
@@ -348,7 +295,8 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
         LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(
                 com.braintreepayments.api.dropin.R.id.bt_header_container);
         assertEquals(HeaderState.ERROR, loadingHeader.getCurrentState());
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_header_container)).check(matches(isDisplayed()));
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_header_container)).check(
+                matches(isDisplayed()));
     }
 
     @Test(timeout = 30000)
@@ -366,9 +314,11 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
         Activity activity = getActivity(intent);
 
         waitForView(
-                withId(com.braintreepayments.api.dropin.R.id.bt_card_form_card_number)).perform(typeText(
-                VISA));
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_expiration)).perform(typeText(createExpirationDateOneMonthInTheFuture()), closeSoftKeyboard());
+                withId(com.braintreepayments.api.dropin.R.id.bt_card_form_card_number)).perform(
+                typeText(
+                        VISA));
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_expiration)).perform(
+                typeText(createExpirationDateOneMonthInTheFuture()), closeSoftKeyboard());
         waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button),
                 isEnabled());
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(
@@ -389,16 +339,20 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
 
     @Test(timeout = 30000)
     public void displaysAnErrorWhenPostalCodeFailsOnServer() {
-        BraintreePaymentActivity activity = getActivity(new TestClientTokenBuilder().withPostalCodeVerification().build());
+        BraintreePaymentActivity activity = getActivity(
+                new TestClientTokenBuilder().withPostalCodeVerification().build());
 
         waitForView(
                 withId(com.braintreepayments.api.dropin.R.id.bt_card_form_card_number)).perform(typeText(
                 VISA));
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_expiration)).perform(typeText(createExpirationDateOneMonthInTheFuture()), closeSoftKeyboard());
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_postal_code)).perform(typeText("20000"));
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_postal_code)).perform(typeText(
+                "20000"));
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(
+                click());
 
-        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button), isEnabled());
+        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button),
+                isEnabled());
 
         ErrorEditText editText = (ErrorEditText) activity.findViewById(
                 com.braintreepayments.api.dropin.R.id.bt_card_form_postal_code);
@@ -408,7 +362,8 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
         LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(
                 com.braintreepayments.api.dropin.R.id.bt_header_container);
         assertEquals(HeaderState.ERROR, loadingHeader.getCurrentState());
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_header_container)).check(matches(isDisplayed()));
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_header_container)).check(
+                matches(isDisplayed()));
     }
 
     @Test(timeout = 30000)
@@ -423,7 +378,8 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
 
         fillInCardForm();
 
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(
+                click());
         waitForActivityToFinish(activity);
 
         Map<String, Object> result = getActivityResult(activity);
@@ -433,7 +389,8 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
 
     @Test(timeout = 30000)
     public void errorIsShownWhenCvvDoesNotMatchForCvvVerificationMerchants() {
-        BraintreePaymentActivity activity = getActivity(new TestClientTokenBuilder().withCvvVerification().build());
+        BraintreePaymentActivity activity = getActivity(
+                new TestClientTokenBuilder().withCvvVerification().build());
         waitForAddPaymentFormHeader();
 
         onView(withHint("Card Number")).perform(typeText(VISA));
@@ -451,7 +408,8 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
         LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(
                 com.braintreepayments.api.dropin.R.id.bt_header_container);
         assertEquals(HeaderState.ERROR, loadingHeader.getCurrentState());
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_header_container)).check(matches(isDisplayed()));
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_header_container)).check(
+                matches(isDisplayed()));
     }
 
     @Test(timeout = 30000)
@@ -463,7 +421,8 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
         onView(withHint("Expiration")).perform(typeText("0619"), closeSoftKeyboard());
         onView(withHint("Postal Code")).perform(typeText("20000"));
 
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
+        onView(withId(
+                com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
         waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_header_message));
 
         ErrorEditText editText = (ErrorEditText) activity.findViewById(
@@ -512,17 +471,9 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
     }
 
     /* helpers */
-    private void assertCreatePaymentMethodFromPayPal(String clientToken, String descriptionEmail) {
+    private void assertCreatePaymentMethodFromPayPal(String clientToken) {
         BraintreePaymentActivity activity = getActivity(clientToken);
-
-        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_paypal_button)).perform(click());
-        waitForView(withHint("Email"), FIFTEEN_SECONDS).perform(typeText("bt_buyer_us@paypal.com"));
-        onView(withHint("Password")).perform(typeText("11111111"));
-        onView(withHint("Log In")).perform(click());
-        waitForPaymentMethodNonceList();
-
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_payment_method_description)).check(
-                matches(withText(descriptionEmail)));
+        performPayPalAdd(activity);
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_select_payment_method_submit_button)).perform(click());
 
         waitForActivityToFinish(activity);
