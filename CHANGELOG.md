@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 1.7.5
+
+* Update PayPal SDK to 2.11.2
+* Update BraintreeData to support API 23
+
 ## 1.7.4
 
 * Fixes
