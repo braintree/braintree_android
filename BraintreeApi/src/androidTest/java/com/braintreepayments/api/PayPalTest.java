@@ -36,21 +36,30 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 
 import java.util.concurrent.CountDownLatch;
 
+import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.Intents.intending;
+import static android.support.test.espresso.intent.matcher.BundleMatchers.hasEntry;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtraWithKey;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtras;
+import static android.support.test.espresso.intent.matcher.UriMatchers.hasHost;
+import static android.support.test.espresso.intent.matcher.UriMatchers.hasParamWithName;
+import static android.support.test.espresso.intent.matcher.UriMatchers.hasParamWithValue;
+import static android.support.test.espresso.intent.matcher.UriMatchers.hasPath;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.verifyAnalyticsEvent;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
-import static org.mockito.Mockito.verify;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.core.IsNot.not;
 
 @RunWith(AndroidJUnit4.class)
 public class PayPalTest {
@@ -76,28 +85,25 @@ public class PayPalTest {
         }
     }
 
-    //@Test(timeout = 10000)
+    @Test(timeout = 10000)
     @MediumTest
     public void authorizeAccount_startsBrowser() {
         Looper.prepare();
-        final BraintreeFragment fragment = getMockFragment(mActivity,
+        final BraintreeFragment fragment = getFragment(mActivity,
                 stringFromFixture("client_token.json"),
                 stringFromFixture("configuration_with_offline_paypal.json"));
 
         PayPal.authorizeAccount(fragment);
 
-        ArgumentCaptor<Intent> intentArgumentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivity(intentArgumentCaptor.capture());
-
-        Intent intent = intentArgumentCaptor.getValue();
-        assertEquals(Intent.ACTION_VIEW, intent.getAction());
-        Uri data = intent.getData();
-        assertEquals("checkout.paypal.com", data.getHost());
-        assertEquals("/one-touch-login/", data.getPath());
-        assertNotNull(data.getQueryParameter("payload"));
-        assertNotNull(data.getQueryParameter("payloadEnc"));
-        assertTrue(data.getQueryParameter("x-success").contains("success"));
-        assertTrue(data.getQueryParameter("x-cancel").contains("cancel"));
+        intended(allOf(
+                hasAction(equalTo(Intent.ACTION_VIEW)),
+                hasData(hasHost("checkout.paypal.com")),
+                hasData(hasPath("/one-touch-login/")),
+                hasData(hasParamWithName("payload")),
+                hasData(hasParamWithName("payloadEnc")),
+                hasData(hasParamWithValue("x-success", "com.braintreepayments.api.test.braintree://onetouch/v1/success")),
+                hasData(hasParamWithValue("x-cancel", "com.braintreepayments.api.test.braintree://onetouch/v1/cancel")),
+                hasExtras(allOf(hasEntry(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, true)))));
     }
 
     //@Test(timeout = 1000)
@@ -214,37 +220,33 @@ public class PayPalTest {
     public void requestBillingAgreement_startsBrowser() throws InvalidArgumentException {
         Looper.prepare();
         String authString = stringFromFixture("client_token.json");
-        final BraintreeFragment fragment = getMockFragment(mActivity, authString,
+        final BraintreeFragment fragment = getFragment(mActivity, authString,
                 stringFromFixture("configuration_with_offline_paypal.json"));
         fragment.mHttpClient = new BraintreeHttpClient(Authorization.fromString(authString)) {
             @Override
             public void post(String path, String data, HttpResponseCallback callback) {
                 if (path.contains("/paypal_hermes/setup_billing_agreement")) {
-                    callback.success(stringFromFixture("paypal_hermes_response.json"));
+                    callback.success(stringFromFixture("paypal_hermes_billing_agreement_response.json"));
                 }
             }
         };
 
         PayPal.requestBillingAgreement(fragment, new PayPalRequest());
 
-        ArgumentCaptor<Intent> intentArgumentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivity(intentArgumentCaptor.capture());
-
-        Intent intent = intentArgumentCaptor.getValue();
-        assertEquals(Intent.ACTION_VIEW, intent.getAction());
-        Uri data = intent.getData();
-        assertEquals("checkout.paypal.com", data.getHost());
-        assertEquals("/one-touch-login-sandbox/index.html", data.getPath());
-        assertEquals("create_payment_resource", data.getQueryParameter("action"));
-        assertEquals("1.00", data.getQueryParameter("amount"));
-        assertEquals("63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06|created_at=2015-10-13T18:49:48.371382792+0000&merchant_id=dcpspy2brwdjr3qn&public_key=9wwrzqk3vr3t4nc8",
-                data.getQueryParameter("authorization_fingerprint"));
-        assertEquals("USD", data.getQueryParameter("currency_iso_code"));
-        assertEquals("false", data.getQueryParameter("experience_profile[address_override]"));
-        assertEquals("false", data.getQueryParameter("experience_profile[no_shipping]"));
-        assertEquals("dcpspy2brwdjr3qn", data.getQueryParameter("merchant_id"));
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success", data.getQueryParameter("return_url"));
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/cancel", data.getQueryParameter("cancel_url"));
+        intended(allOf(
+                hasAction(equalTo(Intent.ACTION_VIEW)),
+                hasData(hasHost("checkout.paypal.com")),
+                hasData(hasPath("/one-touch-login-sandbox/index.html")),
+                hasData(hasParamWithValue("action", "create_payment_resource")),
+                hasData(not(hasParamWithName("amount"))),
+                hasData(hasParamWithValue("authorization_fingerprint", "63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06|created_at=2015-10-13T18:49:48.371382792+0000&merchant_id=dcpspy2brwdjr3qn&public_key=9wwrzqk3vr3t4nc8")),
+                hasData(not(hasParamWithName("currency_iso_code"))),
+                hasData(hasParamWithValue("experience_profile[address_override]", "false")),
+                hasData(hasParamWithValue("experience_profile[no_shipping]", "false")),
+                hasData(hasParamWithValue("merchant_id", "dcpspy2brwdjr3qn")),
+                hasData(hasParamWithValue("return_url", "com.braintreepayments.api.test.braintree://onetouch/v1/success")),
+                hasData(hasParamWithValue("cancel_url", "com.braintreepayments.api.test.braintree://onetouch/v1/cancel")),
+                hasExtras(allOf(hasEntry(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, true)))));
     }
 
     @Test(timeout = 10000)
@@ -352,11 +354,11 @@ public class PayPalTest {
     }
 
     @Test(timeout = 1000)
-    @MediumTest
+    @SmallTest
     public void checkout_startsBrowser() throws InvalidArgumentException {
         Looper.prepare();
         String authString = stringFromFixture("client_token.json");
-        final BraintreeFragment fragment = getMockFragment(mActivity, authString,
+        final BraintreeFragment fragment = getFragment(mActivity, authString,
                 stringFromFixture("configuration_with_offline_paypal.json"));
         fragment.mHttpClient = new BraintreeHttpClient(Authorization.fromString(authString)) {
             @Override
@@ -369,24 +371,24 @@ public class PayPalTest {
 
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1.00"));
 
-        ArgumentCaptor<Intent> intentArgumentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivity(intentArgumentCaptor.capture());
-
-        Intent intent = intentArgumentCaptor.getValue();
-        assertEquals(Intent.ACTION_VIEW, intent.getAction());
-        Uri data = intent.getData();
-        assertEquals("checkout.paypal.com", data.getHost());
-        assertEquals("/one-touch-login-sandbox/index.html", data.getPath());
-        assertEquals("create_payment_resource", data.getQueryParameter("action"));
-        assertEquals("1.00", data.getQueryParameter("amount"));
-        assertEquals("63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06|created_at=2015-10-13T18:49:48.371382792+0000&merchant_id=dcpspy2brwdjr3qn&public_key=9wwrzqk3vr3t4nc8",
-                data.getQueryParameter("authorization_fingerprint"));
-        assertEquals("USD", data.getQueryParameter("currency_iso_code"));
-        assertEquals("false", data.getQueryParameter("experience_profile[address_override]"));
-        assertEquals("false", data.getQueryParameter("experience_profile[no_shipping]"));
-        assertEquals("dcpspy2brwdjr3qn", data.getQueryParameter("merchant_id"));
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success", data.getQueryParameter("return_url"));
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/cancel", data.getQueryParameter("cancel_url"));
+        intended(allOf(
+                hasAction(equalTo(Intent.ACTION_VIEW)),
+                hasData(hasHost("checkout.paypal.com")),
+                hasData(hasPath("/one-touch-login-sandbox/index.html")),
+                hasData(hasParamWithValue("action", "create_payment_resource")),
+                hasData(hasParamWithValue("amount", "1.00")),
+                hasData(hasParamWithValue("authorization_fingerprint",
+                        "63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06|created_at=2015-10-13T18:49:48.371382792+0000&merchant_id=dcpspy2brwdjr3qn&public_key=9wwrzqk3vr3t4nc8")),
+                hasData(hasParamWithValue("currency_iso_code", "USD")),
+                hasData(hasParamWithValue("experience_profile[address_override]", "false")),
+                hasData(hasParamWithValue("experience_profile[no_shipping]", "false")),
+                hasData(hasParamWithValue("merchant_id", "dcpspy2brwdjr3qn")),
+                hasData(hasParamWithValue("return_url",
+                        "com.braintreepayments.api.test.braintree://onetouch/v1/success")),
+                hasData(hasParamWithValue("cancel_url",
+                        "com.braintreepayments.api.test.braintree://onetouch/v1/cancel")),
+                hasExtras(allOf(hasEntry(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH,
+                        true)))));
     }
 
     @Test(timeout = 1000)

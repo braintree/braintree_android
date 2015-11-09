@@ -64,14 +64,21 @@ public class BraintreeFragmentTestUtils {
         }
     }
 
-    public static BraintreeFragment getMockFragment(final Activity activity, String clientKeyOrToken, String configuration) {
+    /**
+     * Get a {@link org.mockito.Spy} {@link BraintreeFragment} with the given configuration string.
+     *
+     * @param activity
+     * @param authorization
+     * @param configuration
+     * @return
+     */
+    public static BraintreeFragment getMockFragment(final Activity activity, String authorization, String configuration) {
             Bundle bundle = new Bundle();
         bundle.putString(BraintreeFragment.EXTRA_CONFIGURATION, configuration);
         try {
-            BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity, clientKeyOrToken, bundle));
-            doNothing().when(fragment).fetchConfiguration();
+            BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity, authorization, bundle));
             when(fragment.getApplicationContext()).thenReturn(getTargetContext());
-            when(fragment.getAuthorization()).thenReturn(Authorization.fromString(clientKeyOrToken));
+            when(fragment.getAuthorization()).thenReturn(Authorization.fromString(authorization));
             when(fragment.getConfiguration()).thenReturn(Configuration.fromJson(configuration));
 
             getInstrumentation().waitForIdleSync();
@@ -114,18 +121,6 @@ public class BraintreeFragmentTestUtils {
         }
     }
 
-    private static void waitForFragmentTransaction(final Activity activity) throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                activity.getFragmentManager().executePendingTransactions();
-                latch.countDown();
-            }
-        });
-        latch.await();
-    }
-
     /**
      * Tokenize a card and return the {@link CardNonce} instance.
      *
@@ -157,5 +152,17 @@ public class BraintreeFragmentTestUtils {
 
     public static void verifyAnalyticsEvent(BraintreeFragment fragment, String event) {
         verify(fragment).sendAnalyticsEvent(eq(event));
+    }
+
+    private static void waitForFragmentTransaction(final Activity activity) throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.getFragmentManager().executePendingTransactions();
+                latch.countDown();
+            }
+        });
+        latch.await();
     }
 }
