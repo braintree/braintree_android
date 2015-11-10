@@ -6,7 +6,6 @@ import android.os.Build.VERSION;
 import android.provider.Settings.Secure;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.FlakyTest;
 import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
@@ -47,6 +46,8 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 @SmallTest
 public class AnalyticsManagerTest {
+
+    private static final String TEST_UUID = "testuuid";
 
     @Rule
     public final ActivityTestRule<TestActivity> mActivityTestRule =
@@ -230,15 +231,10 @@ public class AnalyticsManagerTest {
     }
 
     @Test(timeout = 1000)
-    @FlakyTest(tolerance = 3)
     public void newRequest_sendsCorrectMetaData() throws JSONException {
         setup();
 
-        String uuid = "testuuid";
         AnalyticsManager.sendRequest(mFragment, "custom", "some-interesting-event");
-        getTargetContext().getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE).edit()
-                .putString("braintreeUUID", uuid)
-                .commit();
         AnalyticsManager.flushEvents(mFragment);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -253,7 +249,7 @@ public class AnalyticsManagerTest {
         assertEquals(Build.MODEL, json.getString("deviceModel"));
         assertEquals(Secure.getString(getTargetContext().getContentResolver(), Secure.ANDROID_ID),
                 json.getString("androidId"));
-        assertEquals(uuid, json.getString("deviceAppGeneratedPersistentUuid"));
+        assertEquals(TEST_UUID, json.getString("deviceAppGeneratedPersistentUuid"));
         assertEquals("true", json.getString("isSimulator"));
         assertEquals("Portrait", json.getString("userInterfaceOrientation"));
         assertEquals("custom", json.getString("integrationType"));
@@ -262,9 +258,11 @@ public class AnalyticsManagerTest {
     }
 
     public void setup() throws JSONException {
-        mFragment = generateFragment();
-        getTargetContext().getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE).edit().clear()
+        getTargetContext().getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE)
+                .edit()
+                .putString("braintreeUUID", TEST_UUID)
                 .commit();
+        mFragment = generateFragment();
     }
 
     private BraintreeFragment generateFragment() {
