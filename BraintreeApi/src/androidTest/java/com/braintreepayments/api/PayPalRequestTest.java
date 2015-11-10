@@ -13,6 +13,8 @@ import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
+
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
@@ -126,11 +128,17 @@ public class PayPalRequestTest {
 
         assertEquals(AuthorizationRequest.ENVIRONMENT_MOCK, request.getEnvironment());
         assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/cancel", request.getCancelUrl());
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success", request.getSuccessUrl());
+        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success",
+                request.getSuccessUrl());
         assertEquals("paypal_client_id", request.getClientId());
         assertEquals(configuration.getPayPal().getPrivacyUrl(), request.getPrivacyUrl());
         assertEquals(configuration.getPayPal().getUserAgreementUrl(), request.getUserAgreementUrl());
-        assertEquals("https://uri.paypal.com/services/payments/futurepayments email", request.getScopeString());
+
+        String[] scopes = request.getScopeString().split(" ");
+        Arrays.sort(scopes);
+        assertEquals(2, scopes.length);
+        assertEquals("email", scopes[0]);
+        assertEquals("https://uri.paypal.com/services/payments/futurepayments", scopes[1]);
     }
 
     @Test(timeout = 1000)
