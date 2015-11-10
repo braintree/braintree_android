@@ -55,6 +55,7 @@ public class BraintreeHttpClient {
     protected final MonitoredThreadPoolExecutor mThreadPool = MonitoredThreadPoolExecutor.newCachedThreadPool();
 
     private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
+    private final TLSSocketFactory mTLSSocketFactory = new TLSSocketFactory();
     private final Authorization mAuthorization;
     private String mBaseUrl;
     private int mConnectTimeout = 30000; // 30 seconds
@@ -182,7 +183,7 @@ public class BraintreeHttpClient {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 
         if (connection instanceof HttpsURLConnection) {
-            ((HttpsURLConnection) connection).setSSLSocketFactory(BraintreeSSLSocketFactory.getSslSocketFactory());
+            ((HttpsURLConnection) connection).setSSLSocketFactory(mTLSSocketFactory);
         }
 
         connection.setRequestProperty("Content-Type", "application/json");
