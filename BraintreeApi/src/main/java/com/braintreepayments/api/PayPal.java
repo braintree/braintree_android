@@ -441,16 +441,16 @@ public class PayPal {
                 eventFragment = "paypal-single-payment.none.initiate.failed";
             } else {
                 if (requestStatus.isSuccess() &&
-                        requestStatus.getTarget() == RequestTarget.browser) {
+                        requestStatus.getRequestTarget() == RequestTarget.browser) {
                     eventFragment = "paypal-single-payment.webswitch.initiate.started";
                 } else if (!requestStatus.isSuccess() &&
-                        requestStatus.getTarget() == RequestTarget.browser) {
+                        requestStatus.getRequestTarget() == RequestTarget.browser) {
                     eventFragment = "paypal-single-payment.webswitch.initiate.failed";
                 } else if (requestStatus.isSuccess() &&
-                        requestStatus.getTarget() == RequestTarget.wallet) {
+                        requestStatus.getRequestTarget() == RequestTarget.wallet) {
                     eventFragment = "paypal-single-payment.appswitch.initiate.started";
                 } else if (!requestStatus.isSuccess() &&
-                        requestStatus.getTarget() == RequestTarget.wallet) {
+                        requestStatus.getRequestTarget() == RequestTarget.wallet) {
                     eventFragment = "paypal-single-payment.appswitch.initiate.failed";
                 }
             }
@@ -459,16 +459,16 @@ public class PayPal {
                 eventFragment = "paypal-future-payments.none.initiate.failed";
             } else {
                 if (requestStatus.isSuccess() &&
-                        requestStatus.getTarget() == RequestTarget.browser) {
+                        requestStatus.getRequestTarget() == RequestTarget.browser) {
                     eventFragment = "paypal-future-payments.webswitch.initiate.started";
                 } else if (!requestStatus.isSuccess() &&
-                        requestStatus.getTarget() == RequestTarget.browser) {
+                        requestStatus.getRequestTarget() == RequestTarget.browser) {
                     eventFragment = "paypal-future-payments.webswitch.initiate.failed";
                 } else if (requestStatus.isSuccess() &&
-                        requestStatus.getTarget() == RequestTarget.wallet) {
+                        requestStatus.getRequestTarget() == RequestTarget.wallet) {
                     eventFragment = "paypal-future-payments.appswitch.initiate.started";
                 } else if (!requestStatus.isSuccess() &&
-                        requestStatus.getTarget() == RequestTarget.wallet) {
+                        requestStatus.getRequestTarget() == RequestTarget.wallet) {
                     eventFragment = "paypal-future-payments.appswitch.initiate.failed";
                 }
             }
