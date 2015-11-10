@@ -236,6 +236,34 @@ public class PayPalOneTouchCore {
         return status;
     }
 
+    public static Intent getStartIntent(Activity activity,
+                                          Request request,
+                                          boolean enableSecurityCheck) {
+        initService(activity);
+
+        // calling this method functionally does nothing, but ensures that we send off FPTI data about wallet installs.
+        isWalletAppInstalled(activity, enableSecurityCheck);
+
+        Recipe recipe = request.getRecipeToExecute(activity, getConfig(activity), enableSecurityCheck);
+
+        if (null != recipe) {
+            // Set CMID for Single Payment and Billing Agreements
+            if (request.getClass() == BillingAgreementRequest.class) {
+                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(activity, ((BillingAgreementRequest) request).getPairingId()));
+            } else if (request.getClass() == CheckoutRequest.class) {
+                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(activity, ((CheckoutRequest) request).getPairingId()));
+            }
+
+            if (RequestTarget.wallet == recipe.getTarget()) {
+                request.trackFpti(activity, TrackingPoint.SwitchToWallet, recipe.getProtocol());
+                return PayPalOneTouchActivity.getStartIntent(activity, request, recipe.getProtocol());
+            } else {
+                return getBrowserIntent(activity, request);
+            }
+        }
+        return null;
+    }
+
     /**
      * Return the browser launch intent
      *

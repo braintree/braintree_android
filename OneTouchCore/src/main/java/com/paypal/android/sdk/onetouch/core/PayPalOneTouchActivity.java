@@ -1,13 +1,5 @@
 package com.paypal.android.sdk.onetouch.core;
 
-import com.paypal.android.sdk.onetouch.core.base.Constants;
-import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
-import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
-import com.paypal.android.sdk.onetouch.core.network.OtcEnvironment;
-import com.paypal.android.sdk.onetouch.core.sdk.ThemeManifestValidator;
-import com.paypal.android.sdk.onetouch.core.sdk.V1WalletHelper;
-import com.paypal.android.sdk.onetouch.core.sdk.V2WalletHelper;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -15,6 +7,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.paypal.android.sdk.onetouch.core.base.Constants;
+import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
+import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
+import com.paypal.android.sdk.onetouch.core.network.OtcEnvironment;
+import com.paypal.android.sdk.onetouch.core.sdk.ThemeManifestValidator;
+import com.paypal.android.sdk.onetouch.core.sdk.V1WalletHelper;
+import com.paypal.android.sdk.onetouch.core.sdk.V2WalletHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,12 +47,17 @@ public class PayPalOneTouchActivity extends Activity {
      */
     public static void Start(Activity activity, int requestCode, Request paypalRequest,
                              Protocol protocol) {
+        Intent intent = getStartIntent(activity, paypalRequest, protocol);
+
+        activity.startActivityForResult(intent, requestCode);
+    }
+
+    public static Intent getStartIntent(Activity activity, Request paypalRequest, Protocol protocol) {
         Intent intent = new Intent(activity, PayPalOneTouchActivity.class);
         intent.putExtras(activity.getIntent());
         intent.putExtra(EXTRA_REQUEST, paypalRequest);
         intent.putExtra(EXTRA_PROTOCOL, protocol);
-
-        activity.startActivityForResult(intent, requestCode);
+        return intent;
     }
 
     @Override
