@@ -7,7 +7,6 @@ import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.BraintreeException;
-import com.braintreepayments.api.exceptions.BraintreeSslException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.ServerException;
@@ -23,18 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.security.KeyStore;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.util.Collection;
 import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManagerFactory;
 
 import static java.net.HttpURLConnection.HTTP_ACCEPTED;
 import static java.net.HttpURLConnection.HTTP_CREATED;
@@ -58,6 +48,7 @@ public class HttpRequest {
     private String mBaseUrl;
     private String mAuthorizationFingerprint;
     private int mConnectTimeout = 0;
+    private final TLSSocketFactory mTLSSocketFactory = new TLSSocketFactory();
 
     public HttpRequest(String authorizationFingerprint) {
         mAuthorizationFingerprint = (authorizationFingerprint == null) ? "" : authorizationFingerprint;
@@ -170,7 +161,7 @@ public class HttpRequest {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 
         if (connection instanceof HttpsURLConnection) {
-            ((HttpsURLConnection) connection).setSSLSocketFactory(HttpRequest.getSslSocketFactory());
+            ((HttpsURLConnection) connection).setSSLSocketFactory(mTLSSocketFactory);
         }
 
         connection.setRequestProperty("Content-Type", "application/json");
@@ -226,40 +217,6 @@ public class HttpRequest {
     private void log(String message) {
         if (DEBUG && BuildConfig.DEBUG) {
             Log.d(TAG, message);
-        }
-    }
-
-    /**
-     * @return {@link javax.net.ssl.SSLSocketFactory}
-     * @see <a href="http://developer.android.com/training/articles/security-ssl.html#UnknownCa">Android Documentation</a>
-     * @see <a href="https://github.com/braintree/braintree_java/blob/95b96c356324d1532714f849402f830251ce8b81/src/main/java/com/braintreegateway/util/Http.java#L100">Braintree Java Client Library</a>
-     */
-    private static SSLSocketFactory getSslSocketFactory() throws BraintreeSslException {
-        try {
-            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            keyStore.load(null, null);
-
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            InputStream certStream = BraintreeGatewayCertificate.getCertInputStream();
-
-            Collection<? extends Certificate> certificates = cf.generateCertificates(certStream);
-            for (Certificate cert : certificates) {
-                if (cert instanceof X509Certificate) {
-                    String subject = ((X509Certificate) cert).getSubjectDN().getName();
-                    keyStore.setCertificateEntry(subject, cert);
-                }
-            }
-
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(
-                    TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(keyStore);
-
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(null, tmf.getTrustManagers(), null);
-
-            return sslContext.getSocketFactory();
-        } catch (Exception e) {
-            throw new BraintreeSslException(e);
         }
     }
 }
