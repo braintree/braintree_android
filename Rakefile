@@ -1,5 +1,8 @@
 require 'rake'
 
+BRAINTREE_API_BUILD_GRADLE = "BraintreeApi/build.gradle"
+DROP_IN_BUILD_GRADLE = "Drop-In/build.gradle"
+
 task :default => :tests
 
 desc "Run Android lint on all modules"
@@ -27,26 +30,20 @@ desc "Publish current version as a SNAPSHOT"
 task :publish_snapshot => :tests do
   abort("Version must contain '-SNAPSHOT'!") unless get_current_version.end_with?('-SNAPSHOT')
 
-  braintree_api_build_file = "BraintreeApi/build.gradle"
-  braintree_drop_in_build_file = "Drop-In/build.gradle"
-
   sh "./gradlew clean :BraintreeDataCollector:uploadArchives"
 
-  replace_string(braintree_api_build_file, "compile project(':BraintreeDataCollector')", "compile 'com.braintreepayments.api:data-collector:#{get_current_version}'")
+  replace_string(BRAINTREE_API_BUILD_GRADLE, "compile project(':BraintreeDataCollector')", "compile 'com.braintreepayments.api:data-collector:#{get_current_version}'")
   sh "./gradlew clean :BraintreeApi:uploadArchives"
 
-  replace_string(braintree_drop_in_build_file, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree:#{get_current_version}'")
+  replace_string(DROP_IN_BUILD_GRADLE, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree:#{get_current_version}'")
   sh "./gradlew clean :Drop-In:uploadArchives"
 
-  replace_string(braintree_api_build_file, "compile 'com.braintreepayments.api:data-collector:#{get_current_version}'", "compile project(':BraintreeDataCollector')")
-  replace_string(braintree_drop_in_build_file, "compile 'com.braintreepayments.api:braintree:#{get_current_version}'", "compile project(':BraintreeApi')")
+  replace_string(BRAINTREE_API_BUILD_GRADLE, "compile 'com.braintreepayments.api:data-collector:#{get_current_version}'", "compile project(':BraintreeDataCollector')")
+  replace_string(DROP_IN_BUILD_GRADLE, "compile 'com.braintreepayments.api:braintree:#{get_current_version}'", "compile project(':BraintreeApi')")
 end
 
 desc "Interactive release to publish new version"
 task :release => :tests do
-  braintree_api_build_file = "BraintreeApi/build.gradle"
-  braintree_drop_in_build_file = "Drop-In/build.gradle"
-
   last_version = `git tag | tail -1`.chomp
   puts "\nChanges since #{last_version}:"
   sh "git log --pretty=format:\"%h %ad%x20%s%x20%x28%an%x29\" --date=short #{last_version}.."
@@ -69,7 +66,7 @@ task :release => :tests do
   puts "Sleeping for ten minutes to allow promotion to finish"
   sleep 600
 
-  replace_string(braintree_api_build_file, "compile project(':BraintreeDataCollector')", "compile 'com.braintreepayments.api:data-collector:#{version}'")
+  replace_string(BRAINTREE_API_BUILD_GRADLE, "compile project(':BraintreeDataCollector')", "compile 'com.braintreepayments.api:data-collector:#{version}'")
   sh "./gradlew clean :BraintreeApi:uploadArchives"
   puts "BraintreeApi was uploaded, press ENTER to release it"
   $stdin.gets
@@ -80,7 +77,7 @@ task :release => :tests do
   puts "Sleeping for ten minutes to allow promotion to finish"
   sleep 600
 
-  replace_string(braintree_drop_in_build_file, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree:#{version}'")
+  replace_string(DROP_IN_BUILD_GRADLE, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree:#{version}'")
   sh "./gradlew clean :Drop-In:uploadArchives"
   puts "Drop-In was uploaded, press ENTER to release it"
   $stdin.gets
@@ -93,8 +90,8 @@ task :release => :tests do
   sh "git commit -am 'Release #{version}'"
   sh "git tag #{version} -am '#{version}'"
 
-  replace_string(braintree_api_build_file, "compile 'com.braintreepayments.api:data-collector:#{version}'", "compile project(':BraintreeDataCollector')")
-  replace_string(braintree_drop_in_build_file, "compile 'com.braintreepayments.api:braintree:#{version}'", "compile project(':BraintreeApi')")
+  replace_string(BRAINTREE_API_BUILD_GRADLE, "compile 'com.braintreepayments.api:data-collector:#{version}'", "compile project(':BraintreeDataCollector')")
+  replace_string(DROP_IN_BUILD_GRADLE, "compile 'com.braintreepayments.api:braintree:#{version}'", "compile project(':BraintreeApi')")
   update_version("#{version}-SNAPSHOT")
   sh "git commit -am 'Prepare for development'"
 
