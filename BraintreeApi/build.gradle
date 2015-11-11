@@ -136,7 +136,7 @@ uploadArchives {
                         it.optional = true
                     }
 
-                    if (it.artifactId == 'data') {
+                    if (it.artifactId == 'data-collector') {
                         it.optional = true
                     }
                 }
