@@ -62,7 +62,7 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 1000)
-    public void newInstance_returnsAPaymentButtonFromAClientKey() throws InvalidArgumentException {
+    public void newInstance_returnsAPaymentButtonFromATokenizationKey() throws InvalidArgumentException {
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY);
         PaymentButton paymentButton = PaymentButton.newInstance(mActivity, paymentRequest);
@@ -87,7 +87,7 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 1000, expected = InvalidArgumentException.class)
-    public void newInstance_throwsAnExceptionForABadClientKey() throws InvalidArgumentException {
+    public void newInstance_throwsAnExceptionForABadTokenizationKey() throws InvalidArgumentException {
         PaymentRequest paymentRequest = new PaymentRequest()
                 .clientToken("test_key_merchant");
         PaymentButton.newInstance(mActivity, paymentRequest);
