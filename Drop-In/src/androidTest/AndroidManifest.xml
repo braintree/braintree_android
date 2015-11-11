@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.braintreepayments.api.dropin.test">
 
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+
     <application
         android:theme="@android:style/Theme.Holo.Light">
 
