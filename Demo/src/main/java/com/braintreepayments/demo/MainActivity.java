@@ -20,16 +20,14 @@ import android.widget.TextView;
 
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.BraintreePaymentActivity;
-import com.braintreepayments.api.PaymentRequest;
 import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.PayPalSignatureVerification;
+import com.braintreepayments.api.PaymentRequest;
 import com.braintreepayments.api.ThreeDSecure;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.demo.internal.ApiClient;
-import com.braintreepayments.demo.internal.ApiClientRequestInterceptor;
 import com.braintreepayments.demo.models.ClientToken;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.LineItem;
@@ -37,7 +35,6 @@ import com.google.android.gms.wallet.LineItem;
 import java.util.Collections;
 
 import retrofit.Callback;
-import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
@@ -225,31 +222,26 @@ public class MainActivity extends Activity implements PaymentMethodNonceCreatedL
     }
 
     private void getClientToken() {
-        new RestAdapter.Builder()
-                .setEndpoint(Settings.getEnvironmentUrl(this))
-                .setRequestInterceptor(new ApiClientRequestInterceptor())
-                .build()
-                .create(ApiClient.class)
-                .getClientToken(Settings.getCustomerId(this),
-                        Settings.getThreeDSecureMerchantAccountId(this),
-                        new Callback<ClientToken>() {
-                            @Override
-                            public void success(ClientToken clientToken, Response response) {
-                                if (TextUtils.isEmpty(clientToken.getClientToken())) {
-                                    showDialog("Client token was empty");
-                                } else {
-                                    mClientToken = clientToken.getClientToken();
-                                    setup();
-                                }
-                            }
+        DemoApplication.getApiClient(this).getClientToken(Settings.getCustomerId(this),
+                Settings.getThreeDSecureMerchantAccountId(this),
+                new Callback<ClientToken>() {
+                    @Override
+                    public void success(ClientToken clientToken, Response response) {
+                        if (TextUtils.isEmpty(clientToken.getClientToken())) {
+                            showDialog("Client token was empty");
+                        } else {
+                            mClientToken = clientToken.getClientToken();
+                            setup();
+                        }
+                    }
 
-                            @Override
-                            public void failure(RetrofitError error) {
-                                showDialog("Unable to get a client token. Response Code: " +
-                                        error.getResponse().getStatus() + " Response body: " +
-                                        error.getResponse().getBody());
-                            }
-                        });
+                    @Override
+                    public void failure(RetrofitError error) {
+                        showDialog("Unable to get a client token. Response Code: " +
+                                error.getResponse().getStatus() + " Response body: " +
+                                error.getResponse().getBody());
+                    }
+                });
     }
 
     private void resetState() {

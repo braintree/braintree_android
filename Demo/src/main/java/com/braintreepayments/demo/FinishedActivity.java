@@ -7,12 +7,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.braintreepayments.api.dropin.view.SecureLoadingProgressBar;
-import com.braintreepayments.demo.internal.ApiClient;
-import com.braintreepayments.demo.internal.ApiClientRequestInterceptor;
 import com.braintreepayments.demo.models.Transaction;
 
 import retrofit.Callback;
-import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
@@ -50,18 +47,14 @@ public class FinishedActivity extends Activity {
             }
         };
 
-        ApiClient apiClient = new RestAdapter.Builder()
-                .setEndpoint(Settings.getEnvironmentUrl(this))
-                .setRequestInterceptor(new ApiClientRequestInterceptor())
-                .build()
-                .create(ApiClient.class);
-
         if (Settings.isThreeDSecureEnabled(this) && Settings.isThreeDSecureRequired(this)) {
-            apiClient.createTransaction(nonce, Settings.getThreeDSecureMerchantAccountId(this), true, callback);
+            DemoApplication.getApiClient(this).createTransaction(nonce,
+                    Settings.getThreeDSecureMerchantAccountId(this), true, callback);
         } else if (Settings.isThreeDSecureEnabled(this)) {
-            apiClient.createTransaction(nonce, Settings.getThreeDSecureMerchantAccountId(this), callback);
+            DemoApplication.getApiClient(this).createTransaction(nonce,
+                    Settings.getThreeDSecureMerchantAccountId(this), callback);
         } else {
-            apiClient.createTransaction(nonce, callback);
+            DemoApplication.getApiClient(this).createTransaction(nonce, callback);
         }
     }
 
