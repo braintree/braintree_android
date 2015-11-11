@@ -1,13 +1,13 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
+import android.app.Instrumentation.ActivityResult;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
-import android.os.SystemClock;
-import android.support.test.rule.ActivityTestRule;
+import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.FlakyTest;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.util.Base64;
 import android.view.View;
@@ -23,23 +23,38 @@ import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.test.TestActivity;
 import com.google.android.gms.wallet.Cart;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 
 import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
+import static android.support.test.espresso.core.deps.guava.base.Preconditions.checkNotNull;
+import static android.support.test.espresso.intent.Intents.intended;
+import static android.support.test.espresso.intent.Intents.intending;
+import static android.support.test.espresso.intent.matcher.BundleMatchers.hasEntry;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasData;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtras;
+import static android.support.test.espresso.intent.matcher.UriMatchers.hasHost;
+import static android.support.test.espresso.intent.matcher.UriMatchers.hasParamWithName;
+import static android.support.test.espresso.intent.matcher.UriMatchers.hasParamWithValue;
+import static android.support.test.espresso.intent.matcher.UriMatchers.hasPath;
+import static android.support.test.espresso.intent.matcher.UriMatchers.hasScheme;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.doNothing;
@@ -51,8 +66,8 @@ import static org.mockito.Mockito.verify;
 public class PaymentButtonTest {
 
     @Rule
-    public final ActivityTestRule<TestActivity> mActivityTestRule =
-            new ActivityTestRule<>(TestActivity.class);
+    public final IntentsTestRule<TestActivity> mActivityTestRule =
+            new IntentsTestRule<>(TestActivity.class);
 
     private Activity mActivity;
 
@@ -150,7 +165,7 @@ public class PaymentButtonTest {
 
     @Test(timeout = 1000)
     public void setPaymentRequest_initializesPaymentButton()
-            throws InvalidArgumentException, JSONException {
+            throws InvalidArgumentException, JSONException, InterruptedException {
         PaymentButton paymentButton = new PaymentButton();
         mActivity.getFragmentManager().beginTransaction().add(paymentButton, "test").commit();
         getInstrumentation().waitForIdleSync();
@@ -159,7 +174,6 @@ public class PaymentButtonTest {
 
         paymentButton.setPaymentRequest(new PaymentRequest().tokenizationKey(TOKENIZATION_KEY));
         getInstrumentation().waitForIdleSync();
-        SystemClock.sleep(100);
 
         assertEquals(View.VISIBLE, paymentButton.getView().getVisibility());
     }
@@ -278,52 +292,66 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 5000)
-    @FlakyTest(tolerance = 3)
-    public void startsPayWithPayPal() throws InvalidArgumentException, JSONException {
+    public void startsPayWithPayPal()
+            throws InvalidArgumentException, JSONException, InterruptedException {
         Looper.prepare();
-        BraintreeFragment fragment = getFragment(true, true);
+        getFragment(true, true);
         PaymentButton paymentButton = PaymentButton.newInstance(mActivity,
                 new PaymentRequest().tokenizationKey(TOKENIZATION_KEY));
         getInstrumentation().waitForIdleSync();
-        paymentButton.mBraintreeFragment = fragment;
 
         paymentButton.getView().findViewById(R.id.bt_paypal_button).performClick();
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivity(intentCaptor.capture());
-
-        Intent intent = intentCaptor.getValue();
-        String payload = intentCaptor.getValue().getData().getQueryParameter("payload");
-        String request = new String(Base64.decode(payload, Base64.DEFAULT));
-        assertTrue(intent.getDataString()
-                .startsWith("https://assets.staging.braintreepayments.com/one-touch-login"));
-        assertFalse(request.contains("address"));
+        intending(hasAction(equalTo(Intent.ACTION_VIEW))).respondWith(new ActivityResult(0, null));
+        intended(allOf(
+                hasAction(equalTo(Intent.ACTION_VIEW)),
+                hasData(hasScheme("https")),
+                hasData(hasHost("assets.staging.braintreepayments.com")),
+                hasData(hasPath("/one-touch-login/")),
+                hasData(hasParamWithName("payload")),
+                hasData(not(hasScope("address"))),
+                hasData(hasParamWithName("payloadEnc")),
+                hasData(hasParamWithValue("x-success",
+                        "com.braintreepayments.api.dropin.test.braintree://onetouch/v1/success")),
+                hasData(hasParamWithValue("x-cancel",
+                        "com.braintreepayments.api.dropin.test.braintree://onetouch/v1/cancel")),
+                hasExtras(allOf(hasEntry(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH,
+                        true)))));
     }
 
     @Test(timeout = 5000)
     public void startsPayWithPayPalWithAddressScope() throws InvalidArgumentException,
             JSONException, InterruptedException {
         Looper.prepare();
-        final BraintreeFragment fragment = getFragment(true, true);
+        getFragment(true, true);
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY)
                 .paypalAdditionalScopes(Collections.singletonList(PayPal.SCOPE_ADDRESS));
         PaymentButton paymentButton = PaymentButton.newInstance(mActivity, paymentRequest);
         getInstrumentation().waitForIdleSync();
-        paymentButton.mBraintreeFragment = fragment;
 
         paymentButton.getView().findViewById(R.id.bt_paypal_button).performClick();
 
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivity(intentCaptor.capture());
-
-        String payload = intentCaptor.getValue().getData().getQueryParameter("payload");
-        String request = new String(Base64.decode(payload, Base64.DEFAULT));
-        assertTrue(request.contains("address"));
+        intending(hasAction(equalTo(Intent.ACTION_VIEW))).respondWith(new ActivityResult(0, null));
+        intended(allOf(
+                hasAction(equalTo(Intent.ACTION_VIEW)),
+                hasData(hasScheme("https")),
+                hasData(hasHost("assets.staging.braintreepayments.com")),
+                hasData(hasPath("/one-touch-login/")),
+                hasData(hasParamWithName("payload")),
+                hasData(hasScope("address")),
+                hasData(hasParamWithName("payloadEnc")),
+                hasData(hasParamWithValue("x-success",
+                        "com.braintreepayments.api.dropin.test.braintree://onetouch/v1/success")),
+                hasData(hasParamWithValue("x-cancel",
+                        "com.braintreepayments.api.dropin.test.braintree://onetouch/v1/cancel")),
+                hasExtras(allOf(hasEntry(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH,
+                        true)))));
     }
 
-    @Test(timeout = 1000)
-    public void startsPayWithAndroidPay() throws JSONException, InvalidArgumentException {
+    @Test(timeout = 5000)
+    public void startsPayWithAndroidPay()
+            throws JSONException, InvalidArgumentException, InterruptedException {
         Looper.prepare();
         BraintreeFragment fragment = getFragment(true, true);
         PaymentRequest paymentRequest = new PaymentRequest()
@@ -335,7 +363,7 @@ public class PaymentButtonTest {
 
         paymentButton.getView().findViewById(R.id.bt_android_pay_button).performClick();
 
-        verify(fragment).getGoogleApiClient();
+        verify(fragment).sendAnalyticsEvent("android-pay.selected");
     }
 
     /** helpers */
@@ -361,5 +389,22 @@ public class PaymentButtonTest {
         getInstrumentation().waitForIdleSync();
 
         return fragment;
+    }
+
+    private Matcher<Uri> hasScope(final String scope) {
+        checkNotNull(scope);
+
+        return new TypeSafeMatcher<Uri>() {
+            @Override
+            public boolean matchesSafely(Uri uri) {
+                String payload = new String(Base64.decode(uri.getQueryParameter("payload"), Base64.DEFAULT));
+                return payload.contains(scope);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("has scope: " + scope);
+            }
+        };
     }
 }
