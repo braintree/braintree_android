@@ -44,8 +44,6 @@ import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
  */
 public class BraintreeHttpClient {
 
-    public static final String USER_AGENT = "braintree/android/" + BuildConfig.VERSION_NAME;
-
     public static boolean DEBUG = false;
 
     private static final String TAG = "BraintreeHttpClient";
@@ -64,6 +62,10 @@ public class BraintreeHttpClient {
 
     public BraintreeHttpClient(Authorization authorization) {
         mAuthorization = authorization;
+    }
+
+    public static String getUserAgent() {
+        return "braintree/android/" + BuildConfig.VERSION_NAME;
     }
 
     public void setBaseUrl(String baseUrl) {
@@ -184,7 +186,7 @@ public class BraintreeHttpClient {
         }
 
         connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestProperty("User-Agent", USER_AGENT);
+        connection.setRequestProperty("User-Agent", getUserAgent());
         connection.setRequestProperty("Accept-Language", Locale.getDefault().getLanguage());
 
         if (mAuthorization instanceof TokenizationKey) {

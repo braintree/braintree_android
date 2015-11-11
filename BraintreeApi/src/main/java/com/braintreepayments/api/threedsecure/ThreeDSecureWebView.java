@@ -40,7 +40,7 @@ public class ThreeDSecureWebView extends WebView {
         setId(android.R.id.widget_frame);
 
         WebSettings settings = getSettings();
-        settings.setUserAgentString(BraintreeHttpClient.USER_AGENT);
+        settings.setUserAgentString(BraintreeHttpClient.getUserAgent());
         settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         settings.setSupportMultipleWindows(true);
         settings.setJavaScriptEnabled(true);

@@ -1,13 +1,23 @@
 # Braintree Android SDK Release Notes
 
-## 2.0-SNAPSHOT
+## 2.0.0
 
-* 2.0 is still in Beta, API is subject to change
-* Added PayPal OneTouchCore 2.1.0
-* Major changes to architecture
-  * Major logic in Braintree now implemented with a Fragment
-  * Logic for specific payment methods now lives within dedicated classes
-  * Lifecycle cleanup is now handled by Braintree
+* Increase `minSdkVersion` to 15 (see [Platform Versions](http://developer.android.com/about/dashboards/index.html#Platform) for the current distribution of Android versions)
+* Remove Gson dependency
+* Replace `Braintree` class with headless `BraintreeFragment`
+  * Move methods for creating payment methods from central `Braintree` class to their own classes e.g. `PayPal#authorizeAccount`, `Card#tokenize`
+* Add support for Tokenization Keys in addition to Client Tokens
+* Rename PaymentMethod to PaymentMethodNonce
+* Rename BraintreeData module to BraintreeDataCollector
+* Update PayPal
+  * Remove [PayPal Android SDK](https://github.com/paypal/PayPal-Android-SDK) dependency
+  * Replace in-app log in with browser based log in
+  * Add support for PayPal billing agreements and one-time payments
+* Convert `PaymentButton` class from a view to a fragment
+* Create `PaymentRequest` class for specifying options in Drop-in and the `PaymentButton`
+* Remove Venmo One Touch. To join the beta for Pay with Venmo, contact [Braintree Support](mailto:support@braintreepayments.com)
+* Remove Coinbase
+* Many additional structural and name changes. For more details, see the [migration guide](https://developers.braintreepayments.com/reference/general/client-sdk-migration/android/v2) and the [source code](https://github.com/braintree/braintree_android)
 
 ## 1.7.4
 
