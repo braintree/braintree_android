@@ -7,4 +7,3 @@ Gemfile.lock
 .bundle
 *.iml
 build
-failed_test_screenshots

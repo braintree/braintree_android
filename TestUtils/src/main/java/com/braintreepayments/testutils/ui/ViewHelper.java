@@ -27,27 +27,18 @@ public class ViewHelper {
     public static final int TEN_SECONDS = 10000;
     public static final int FIFTEEN_SECONDS = 15000;
 
-    public static boolean sWaitingForView;
-
     public static ViewInteraction waitForView(final Matcher<View> viewFinder, Matcher<View> viewCondition, final long millis) {
         checkNotNull(viewFinder);
 
         final long endTime = System.currentTimeMillis() + millis;
-        ViewHelper.sWaitingForView = true;
-
         do {
             try {
                 ViewInteraction interaction = onView(viewFinder);
                 interaction.check(matches(viewCondition));
 
-                ViewHelper.sWaitingForView = false;
                 return interaction;
-            } catch (Exception ignored) {
-            } catch (Error ignored) {
-            }
+            } catch (Exception | Error ignored) {}
         } while (System.currentTimeMillis() < endTime);
-
-        ViewHelper.sWaitingForView = false;
 
         ViewInteraction interaction = onView(viewFinder);
         interaction.check(matches(viewCondition));

@@ -29,25 +29,17 @@ import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.setFailureHandler;
 
 @RunWith(AndroidJUnit4.class)
-public class BraintreePaymentActivityTestRunner implements FailureHandler {
-
-    @Rule
-    public TestName mTestName = new TestName();
+public class BraintreePaymentActivityTestRunner {
 
     @Rule
     public ActivityTestRule<BraintreePaymentTestActivity> mActivityTestRule =
             new ActivityTestRule<>(BraintreePaymentTestActivity.class, true, false);
-
-    private FailureHandler mDelegate;
 
     @SuppressWarnings("deprecation")
     @Before
     public void setUp() {
         BraintreeHttpClient.DEBUG = true;
         PayPalTestSignatureVerification.disableAppSwitchSignatureVerification();
-
-        mDelegate = new DefaultFailureHandler(getTargetContext());
-        setFailureHandler(this);
 
         ((KeyguardManager) getTargetContext().getSystemService(Context.KEYGUARD_SERVICE))
                 .newKeyguardLock("BraintreePaymentActivity")
@@ -74,17 +66,6 @@ public class BraintreePaymentActivityTestRunner implements FailureHandler {
     public BraintreePaymentActivity getActivity(Intent intent) {
         intent.setClass(getTargetContext(), BraintreePaymentTestActivity.class);
         return mActivityTestRule.launchActivity(intent);
-    }
-
-    @Override
-    public void handle(Throwable throwable, Matcher<View> matcher) {
-        if (!ViewHelper.sWaitingForView) {
-            Log.d("request_screenshot", mTestName.getMethodName() + "-" + System.currentTimeMillis());
-            SystemClock.sleep(500);
-        } else {
-            SystemClock.sleep(20);
-        }
-        mDelegate.handle(throwable, matcher);
     }
 
     @Test(timeout = 100)
