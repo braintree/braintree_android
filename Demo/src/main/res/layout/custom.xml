@@ -12,20 +12,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <EditText
-        android:id="@+id/card_number"
+    <com.braintreepayments.cardform.view.CardForm
+        android:id="@+id/card_form"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:inputType="number"
-        android:hint="@string/card_number"/>
-
-    <EditText
-        android:id="@+id/card_expiration_date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="date"
-        android:hint="@string/expiration_date"/>
+        android:layout_marginTop="30dp" />
 
     <Button
         android:id="@+id/purchase_button"

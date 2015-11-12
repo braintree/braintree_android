@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.EditText;
 
 import com.braintreepayments.api.AndroidPay;
 import com.braintreepayments.api.BraintreeFragment;
@@ -20,6 +19,8 @@ import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.cardform.OnCardFormSubmitListener;
+import com.braintreepayments.cardform.view.CardForm;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
@@ -29,13 +30,12 @@ import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 
 public class CustomFormActivity extends BaseActivity implements PaymentMethodNonceCreatedListener,
-        BraintreeErrorListener, OnClickListener {
+        BraintreeErrorListener, OnClickListener, OnCardFormSubmitListener {
 
     private static final int ANDROID_PAY_REQUEST_CODE = 1;
 
     private Cart mCart;
-    private EditText mCardNumber;
-    private EditText mExpirationDate;
+    private CardForm mCardForm;
     private Button mPurchaseButton;
 
     @Override
@@ -48,8 +48,10 @@ public class CustomFormActivity extends BaseActivity implements PaymentMethodNon
 
         mCart = getIntent().getParcelableExtra(MainActivity.EXTRA_ANDROID_PAY_CART);
 
-        mCardNumber = (EditText) findViewById(R.id.card_number);
-        mExpirationDate = (EditText) findViewById(R.id.card_expiration_date);
+        mCardForm = (CardForm) findViewById(R.id.card_form);
+        mCardForm.setRequiredFields(this, true, true, false, false, getString(R.string.purchase));
+        mCardForm.setOnCardFormSubmitListener(this);
+
         mPurchaseButton = (Button) findViewById(R.id.purchase_button);
 
         setProgressBarIndeterminateVisibility(true);
@@ -88,12 +90,18 @@ public class CustomFormActivity extends BaseActivity implements PaymentMethodNon
         setProgressBarIndeterminateVisibility(true);
     }
 
+    @Override
+    public void onCardFormSubmit() {
+        onPurchase(null);
+    }
+
     public void onPurchase(View v) {
         setProgressBarIndeterminateVisibility(true);
 
         CardBuilder cardBuilder = new CardBuilder()
-            .cardNumber(mCardNumber.getText().toString())
-            .expirationDate(mExpirationDate.getText().toString());
+                .cardNumber(mCardForm.getCardNumber())
+                .expirationMonth(mCardForm.getExpirationMonth())
+                .expirationYear(mCardForm.getExpirationYear());
 
         Card.tokenize(mBraintreeFragment, cardBuilder);
     }
