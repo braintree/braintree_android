@@ -44,6 +44,12 @@
         android:title="@string/paypal">
 
         <CheckBoxPreference
+            android:key="paypal_disable_signature_verification"
+            android:title="@string/paypal_disable_signature_verification"
+            android:summary="@string/paypal_disable_signature_verification_summary"
+            android:defaultValue="true" />
+
+        <CheckBoxPreference
             android:key="paypal_request_address_scope"
             android:title="@string/paypal_request_address_scope"
             android:summary="@string/paypal_request_address_scope_summary"

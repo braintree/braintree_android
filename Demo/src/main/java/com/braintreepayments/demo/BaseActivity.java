@@ -63,7 +63,8 @@ public abstract class BaseActivity extends Activity implements PaymentMethodNonc
             mActionBarSetup = true;
         }
 
-        PayPalSignatureVerification.enableAppSwitchSignatureVerification(false);
+        PayPalSignatureVerification.disableAppSwitchSignatureVerification(
+                Settings.isPayPalSignatureVerificationDisabled(this));
 
         if (mAuthorization == null || (Settings.useTokenizationKey(this) &&
                 !mAuthorization.equals(Settings.getEnvironmentTokenizationKey(this)))) {

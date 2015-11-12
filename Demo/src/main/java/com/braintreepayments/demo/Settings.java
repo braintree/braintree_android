@@ -108,4 +108,8 @@ public class Settings {
     public static boolean isThreeDSecureRequired(Context context) {
         return getPreferences(context).getBoolean("require_three_d_secure", true);
     }
+
+    public static boolean isPayPalSignatureVerificationDisabled(Context context) {
+        return getPreferences(context).getBoolean("paypal_disable_signature_verification", true);
+    }
 }
