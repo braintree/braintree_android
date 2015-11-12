@@ -5,6 +5,7 @@
     <!-- MainActivity -->
     <string name="reset">Reset</string>
     <string name="settings">Settings</string>
+    <string name="feedback">Feedback</string>
     <string name="nonce">Nonce</string>
     <string name="drop_in">Drop-In</string>
     <string name="paypal_button">@string/paypal</string>

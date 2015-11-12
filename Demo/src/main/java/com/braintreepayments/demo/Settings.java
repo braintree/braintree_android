@@ -8,6 +8,8 @@ public class Settings {
 
     protected static final String ENVIRONMENT = "environment";
 
+    private static final String VERSION = "version";
+
     private static final String SANDBOX_BASE_SERVER_URL = "https://braintree-sample-merchant.herokuapp.com";
     private static final String PRODUCTION_BASE_SERVER_URL = "https://executive-sample-merchant.herokuapp.com";
 
@@ -22,6 +24,14 @@ public class Settings {
         }
 
         return sSharedPreferences;
+    }
+
+    public static int getVersion(Context context) {
+        return getPreferences(context).getInt(VERSION, 0);
+    }
+
+    public static void setVersion(Context context) {
+        getPreferences(context).edit().putInt(VERSION, BuildConfig.VERSION_CODE).apply();
     }
 
     public static int getEnvironment(Context context) {

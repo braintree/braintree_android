@@ -21,7 +21,11 @@ import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.demo.internal.LogReporting;
 import com.braintreepayments.demo.models.ClientToken;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -35,12 +39,15 @@ public abstract class BaseActivity extends Activity implements PaymentMethodNonc
 
     protected String mAuthorization;
     protected BraintreeFragment mBraintreeFragment;
+    protected Logger mLogger;
 
     private boolean mActionBarSetup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mLogger = LoggerFactory.getLogger(getClass().getSimpleName());
 
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_AUTHORIZATION)) {
             mAuthorization = savedInstanceState.getString(KEY_AUTHORIZATION);
@@ -74,14 +81,17 @@ public abstract class BaseActivity extends Activity implements PaymentMethodNonc
 
     @Override
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+        mLogger.debug("Payment Method Nonce received: " + paymentMethodNonce.getTypeLabel());
     }
 
     @Override
     public void onCancel(int requestCode) {
+        mLogger.debug("Cancel received: " + requestCode);
     }
 
     @Override
     public void onError(Exception error) {
+        mLogger.debug("Error received (" + error.getClass() + "): "  + error.getMessage());
         showDialog("An error occurred (" + error.getClass() + "): " + error.getMessage());
     }
 
@@ -192,6 +202,8 @@ public abstract class BaseActivity extends Activity implements PaymentMethodNonc
             case R.id.settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
+            case R.id.feedback:
+                new LogReporting(this).collectAndSendLogs();
             default:
                 return false;
         }

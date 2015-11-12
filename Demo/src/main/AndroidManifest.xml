@@ -19,6 +19,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".SettingsActivity" android:label="@string/options" />
+        <activity android:name=".PaymentButtonActivity" android:label="@string/buy" />
+        <activity android:name=".CustomFormActivity" android:label="@string/buy" />
+        <activity android:name=".FinishedActivity" android:label="@string/purchase_complete" />
+        <activity android:name=".PayPalActivity" android:label="@string/paypal" />
+
         <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
             android:launchMode="singleTask">
             <intent-filter>
@@ -28,10 +34,17 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
-        <activity android:name=".SettingsActivity" android:label="@string/options" />
-        <activity android:name=".PaymentButtonActivity" android:label="@string/buy" />
-        <activity android:name=".CustomFormActivity" android:label="@string/buy" />
-        <activity android:name=".FinishedActivity" android:label="@string/purchase_complete" />
-        <activity android:name=".PayPalActivity" android:label="@string/paypal" />
+
+        <service android:name=".internal.LeakLoggerService" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 </manifest>
