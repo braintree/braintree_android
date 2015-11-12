@@ -32,14 +32,6 @@
         android:enabled="false" />
 
     <Button
-        android:id="@+id/paypal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/paypal_button"
-        android:onClick="launchPayPal"
-        android:enabled="false" />
-
-    <Button
         android:id="@+id/payment_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -53,6 +45,14 @@
         android:layout_height="wrap_content"
         android:text="@string/custom"
         android:onClick="launchCustom"
+        android:enabled="false" />
+
+    <Button
+        android:id="@+id/paypal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/paypal_button"
+        android:onClick="launchPayPal"
         android:enabled="false" />
 
     <Button
