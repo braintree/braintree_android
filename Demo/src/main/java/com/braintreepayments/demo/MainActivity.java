@@ -1,47 +1,38 @@
 package com.braintreepayments.demo;
 
-import android.app.ActionBar;
-import android.app.ActionBar.OnNavigationListener;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.PayPal;
-import com.braintreepayments.api.PayPalSignatureVerification;
 import com.braintreepayments.api.PaymentRequest;
 import com.braintreepayments.api.ThreeDSecure;
+import com.braintreepayments.api.dropin.utils.PaymentMethodType;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.models.AndroidPayCardNonce;
+import com.braintreepayments.api.models.CardNonce;
+import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.demo.models.ClientToken;
+import com.braintreepayments.api.models.PostalAddress;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.LineItem;
 
 import java.util.Collections;
 
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
-public class MainActivity extends Activity implements PaymentMethodNonceCreatedListener,
-        BraintreeErrorListener, OnNavigationListener {
+public class MainActivity extends BaseActivity implements PaymentMethodNonceCreatedListener,
+        BraintreeErrorListener {
 
-    static final String EXTRA_AUTHORIZATION = "authorization";
     static final String EXTRA_PAYMENT_REQUEST = "payment_request";
     static final String EXTRA_ANDROID_PAY_CART = "android_pay_cart";
 
@@ -50,19 +41,15 @@ public class MainActivity extends Activity implements PaymentMethodNonceCreatedL
     private static final int CUSTOM_REQUEST = 300;
     private static final int PAYPAL_REQUEST = 400;
 
-    /**
-     * Keys to store state on config changes.
-     */
-    private static final String KEY_CLIENT_TOKEN = "clientToken";
     private static final String KEY_NONCE = "nonce";
-    private static final String KEY_ENVIRONMENT = "environment";
 
-    private String mClientToken;
     private BraintreeFragment mBraintreeFragment;
-    private String mNonce;
-    private int mEnvironment;
+    private PaymentMethodNonce mNonce;
 
-    private TextView mNonceTextView;
+    private ImageView mNonceIcon;
+    private TextView mNonceString;
+    private TextView mNonceDetails;
+
     private Button mDropInButton;
     private Button mPayPalButton;
     private Button mPaymentButtonButton;
@@ -75,11 +62,10 @@ public class MainActivity extends Activity implements PaymentMethodNonceCreatedL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        // Warning, signature verification is disabled for this demo only, you should never
-        // do this as it opens a security hole
-        PayPalSignatureVerification.disableAppSwitchSignatureVerification();
+        mNonceIcon = (ImageView) findViewById(R.id.nonce_icon);
+        mNonceString = (TextView) findViewById(R.id.nonce);
+        mNonceDetails = (TextView) findViewById(R.id.nonce_details);
 
-        mNonceTextView = (TextView) findViewById(R.id.nonce);
         mDropInButton = (Button) findViewById(R.id.drop_in);
         mPayPalButton = (Button) findViewById(R.id.paypal);
         mPaymentButtonButton = (Button) findViewById(R.id.payment_button);
@@ -87,49 +73,18 @@ public class MainActivity extends Activity implements PaymentMethodNonceCreatedL
         mCreateTransactionButton = (Button) findViewById(R.id.create_transaction);
 
         if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(KEY_CLIENT_TOKEN)) {
-                mClientToken = savedInstanceState.getString(KEY_CLIENT_TOKEN);
-                setup();
-            }
             if (savedInstanceState.containsKey(KEY_NONCE)) {
-                mNonce = savedInstanceState.getString(KEY_NONCE);
+                mNonce = savedInstanceState.getParcelable(KEY_NONCE);
             }
-            mEnvironment = savedInstanceState.getInt(KEY_ENVIRONMENT);
-        } else {
-            mEnvironment = PreferenceManager.getDefaultSharedPreferences(this)
-                    .getInt(Settings.ENVIRONMENT, 0);
-        }
-        setupActionBar();
-        if (mClientToken == null && !Settings.useTokenizationKey(this)) {
-            getClientToken();
-        } else if (Settings.useTokenizationKey(this)) {
-            setup();
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (mClientToken != null && Settings.useTokenizationKey(this)) {
-            resetState();
-            setup();
-        } else if (mClientToken == null && !Settings.useTokenizationKey(this)) {
-            resetState();
-            getClientToken();
         }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mClientToken != null) {
-            outState.putString(KEY_CLIENT_TOKEN, mClientToken);
-        }
         if (mNonce != null) {
-            outState.putString(KEY_NONCE, mNonce);
+            outState.putParcelable(KEY_NONCE, mNonce);
         }
-        outState.putInt(KEY_ENVIRONMENT, mEnvironment);
     }
 
     public void launchDropIn(View v) {
@@ -137,14 +92,12 @@ public class MainActivity extends Activity implements PaymentMethodNonceCreatedL
     }
 
     public void launchPayPal(View v) {
-        Intent intent = new Intent(this, PayPalActivity.class)
-                .putExtra(EXTRA_AUTHORIZATION, getAuthorization());
+        Intent intent = new Intent(this, PayPalActivity.class);
         startActivityForResult(intent, PAYPAL_REQUEST);
     }
 
     public void launchPaymentButton(View v) {
         Intent intent = new Intent(this, PaymentButtonActivity.class)
-                .putExtra(EXTRA_AUTHORIZATION, getAuthorization())
                 .putExtra(EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
                 .putExtra(EXTRA_PAYMENT_REQUEST, getPaymentRequest());
         startActivityForResult(intent, PAYMENT_BUTTON_REQUEST);
@@ -152,7 +105,6 @@ public class MainActivity extends Activity implements PaymentMethodNonceCreatedL
 
     public void launchCustom(View v) {
         Intent intent = new Intent(this, CustomFormActivity.class)
-                .putExtra(EXTRA_AUTHORIZATION, getAuthorization())
                 .putExtra(EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
                 .putExtra(EXTRA_PAYMENT_REQUEST, getPaymentRequest());
         startActivityForResult(intent, CUSTOM_REQUEST);
@@ -160,7 +112,7 @@ public class MainActivity extends Activity implements PaymentMethodNonceCreatedL
 
     private PaymentRequest getPaymentRequest() {
         PaymentRequest paymentRequest = new PaymentRequest()
-                .clientToken(getAuthorization())
+                .clientToken(mAuthorization)
                 .androidPayCart(getAndroidPayCart())
                 .androidPayShippingAddressRequired(Settings.isAndroidPayShippingAddressRequired(this))
                 .androidPayPhoneNumberRequired(Settings.isAndroidPayPhoneNumberRequired(this))
@@ -182,19 +134,21 @@ public class MainActivity extends Activity implements PaymentMethodNonceCreatedL
         startActivity(intent);
 
         mCreateTransactionButton.setEnabled(false);
-        mNonceTextView.setText("");
-        mNonce = null;
+        clearNonce();
     }
 
     @Override
     public void onError(Exception error) {
+        super.onError(error);
+
         safelyCloseLoadingView();
-        showDialog("An error occurred (" + error.getClass() + "): " + error.getMessage());
     }
 
     @Override
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
-        displayNonce(paymentMethodNonce.getNonce());
+        super.onPaymentMethodNonceCreated(paymentMethodNonce);
+
+        displayNonce(paymentMethodNonce);
         safelyCloseLoadingView();
     }
 
@@ -207,11 +161,11 @@ public class MainActivity extends Activity implements PaymentMethodNonceCreatedL
         if (resultCode == RESULT_OK) {
             PaymentMethodNonce paymentMethodNonce =
                     data.getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE);
-            displayNonce(paymentMethodNonce.getNonce());
+            displayNonce(paymentMethodNonce);
             if (Settings.isThreeDSecureEnabled(this)) {
                 mLoading = ProgressDialog.show(this, getString(R.string.loading),
                         getString(R.string.loading), true, false);
-                ThreeDSecure.performVerification(mBraintreeFragment, mNonce, "1");
+                ThreeDSecure.performVerification(mBraintreeFragment, mNonce.getNonce(), "1");
             } else {
                 mCreateTransactionButton.setEnabled(true);
             }
@@ -221,76 +175,76 @@ public class MainActivity extends Activity implements PaymentMethodNonceCreatedL
         }
     }
 
-    private void getClientToken() {
-        DemoApplication.getApiClient(this).getClientToken(Settings.getCustomerId(this),
-                Settings.getThreeDSecureMerchantAccountId(this),
-                new Callback<ClientToken>() {
-                    @Override
-                    public void success(ClientToken clientToken, Response response) {
-                        if (TextUtils.isEmpty(clientToken.getClientToken())) {
-                            showDialog("Client token was empty");
-                        } else {
-                            mClientToken = clientToken.getClientToken();
-                            setup();
-                        }
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        showDialog("Unable to get a client token. Response Code: " +
-                                error.getResponse().getStatus() + " Response body: " +
-                                error.getResponse().getBody());
-                    }
-                });
-    }
-
-    private void resetState() {
+    @Override
+    protected void reset() {
         enableButtons(false);
         mCreateTransactionButton.setEnabled(false);
-        mNonceTextView.setText("");
 
-        if (mBraintreeFragment != null) {
-            getFragmentManager().beginTransaction().remove(mBraintreeFragment).commit();
-        }
-
-        mClientToken = null;
-        mBraintreeFragment = null;
-        mNonce = null;
-
-        if (!Settings.useTokenizationKey(this)) {
-            getClientToken();
-        } else {
-            setup();
-        }
+        clearNonce();
     }
 
-    private void setup() {
+    @Override
+    protected void onAuthorizationFetched() {
         try {
-            String authorization;
-            if (Settings.useTokenizationKey(this)) {
-                authorization = Settings.getEnvironmentTokenizationKey(this);
-            } else {
-                authorization = mClientToken;
-            }
-            mBraintreeFragment = BraintreeFragment.newInstance(this, authorization);
+            mBraintreeFragment = BraintreeFragment.newInstance(this, mAuthorization);
             enableButtons(true);
         } catch (InvalidArgumentException e) {
             showDialog(e.getMessage());
         }
     }
 
-    private String getAuthorization() {
-        if (Settings.useTokenizationKey(this)) {
-            return Settings.getEnvironmentTokenizationKey(this);
-        } else {
-            return mClientToken;
+    private void displayNonce(PaymentMethodNonce nonce) {
+        mNonce = nonce;
+
+        mNonceIcon.setImageResource(PaymentMethodType.forType(nonce.getTypeLabel()).getDrawable());
+        mNonceIcon.setVisibility(VISIBLE);
+
+        mNonceString.setText(getString(R.string.nonce) + ": " + mNonce.getNonce());
+        mNonceString.setVisibility(VISIBLE);
+
+        if (nonce instanceof CardNonce) {
+            CardNonce cardNonce = (CardNonce) mNonce;
+
+            String details = "Card Last Two: " + cardNonce.getLastTwo() + "\n";
+            details += "3DS isLiabilityShifted: " + cardNonce.getThreeDSecureInfo().isLiabilityShifted() + "\n";
+            details += "3DS isLiabilityShiftPossible: " + cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible() + "\n";
+
+            mNonceDetails.setText(details);
+        } else if (nonce instanceof PayPalAccountNonce) {
+            PayPalAccountNonce paypalAccountNonce = (PayPalAccountNonce) mNonce;
+
+            String details = "First name: " + paypalAccountNonce.getFirstName() + "\n";
+            details += "Last name: " + paypalAccountNonce.getLastName() + "\n";
+            details += "Email: " + paypalAccountNonce.getEmail() + "\n";
+            details += "Phone: " + paypalAccountNonce.getPhone() + "\n";
+            details += "Payer id: " + paypalAccountNonce.getPayerId() + "\n";
+            details += "Client metadata id: " + paypalAccountNonce.getClientMetadataId() + "\n";
+            details += "Billing address: " + formatAddress(paypalAccountNonce.getBillingAddress()) + "\n";
+            details += "Shipping address: " + formatAddress(paypalAccountNonce.getShippingAddress()) + "\n";
+
+            mNonceDetails.setText(details);
+        } else if (nonce instanceof AndroidPayCardNonce) {
+            AndroidPayCardNonce androidPayCardNonce = (AndroidPayCardNonce) mNonce;
+
+            mNonceDetails.setText("Underlying Card Last Two: " + androidPayCardNonce.getLastTwo());
         }
+
+        mNonceDetails.setVisibility(VISIBLE);
+
+        mCreateTransactionButton.setEnabled(true);
     }
 
-    private void displayNonce(String nonce) {
-        mNonce = nonce;
-        mNonceTextView.setText(getString(R.string.nonce) + ": " + nonce);
-        mCreateTransactionButton.setEnabled(true);
+    private void clearNonce() {
+        mNonceIcon.setVisibility(GONE);
+        mNonceString.setVisibility(GONE);
+        mNonceDetails.setVisibility(GONE);
+        mCreateTransactionButton.setEnabled(false);
+    }
+
+    private String formatAddress(PostalAddress address) {
+        return address.getRecipientName() + " " + address.getStreetAddress() + " " +
+            address.getExtendedAddress() + " " + address.getLocality() + " " + address.getRegion() +
+                " " + address.getPostalCode() + " " + address.getCountryCodeAlpha2();
     }
 
     private Cart getAndroidPayCart() {
@@ -318,57 +272,5 @@ public class MainActivity extends Activity implements PaymentMethodNonceCreatedL
         if (mLoading != null && mLoading.isShowing()) {
             mLoading.dismiss();
         }
-    }
-
-    private void showDialog(String message) {
-        new AlertDialog.Builder(this)
-                .setMessage(message)
-                .setPositiveButton(android.R.string.ok, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .show();
-    }
-
-    @SuppressWarnings({"deprecation", "ConstantConditions"})
-    private void setupActionBar() {
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.environments, android.R.layout.simple_spinner_dropdown_item);
-        actionBar.setListNavigationCallbacks(adapter, this);
-        actionBar.setSelectedNavigationItem(mEnvironment);
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        if (mEnvironment != itemPosition) {
-            mEnvironment = itemPosition;
-            Settings.setEnvironment(this, itemPosition);
-            resetState();
-        }
-        return true;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.reset) {
-            resetState();
-            return true;
-        } else if (item.getItemId() == R.id.settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
-            return true;
-        }
-        return false;
     }
 }

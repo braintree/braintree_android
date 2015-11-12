@@ -3,17 +3,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="bottom"
+    android:gravity="center"
     android:padding="10dp">
-
-    <TextView
-        android:id="@+id/log"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="10dp"
-        android:scrollbars="vertical"
-        android:singleLine="false"
-        />
 
     <Button
         android:id="@+id/paypal_future_payment_button"
@@ -45,14 +36,6 @@
         android:layout_height="wrap_content"
         android:text="@string/paypal_billing_agreement"
         android:onClick="launchBillingAgreement"
-        android:enabled="false" />
-
-    <Button
-        android:id="@+id/cancel_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Cancel"
-        android:onClick="cancelFinish"
         android:enabled="false" />
 
 </LinearLayout>

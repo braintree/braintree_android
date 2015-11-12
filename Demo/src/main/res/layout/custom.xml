@@ -7,9 +7,8 @@
     android:paddingRight="10dp"
     android:paddingTop="40dp">
 
-    <fragment
-        android:name="com.braintreepayments.api.PaymentButton"
-        android:id="@+id/payment_button"
+    <FrameLayout
+        android:id="@+id/payment_button_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -33,6 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:enabled="false"
         android:text="@string/purchase"
         android:onClick="onPurchase" />
 

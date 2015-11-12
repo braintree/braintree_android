@@ -40,9 +40,9 @@ import static android.view.View.VISIBLE;
 public class PaymentButton extends Fragment implements ConfigurationListener,
         BraintreeResponseListener<Exception>, OnClickListener {
 
-    private static final String TAG = "com.braintreepayments.api.PaymentButton";
-    private static final String EXTRA_PAYMENT_REQUEST =
-            "com.braintreepayments.api.EXTRA_PAYMENT_REQUEST";
+    public static final String TAG = "com.braintreepayments.api.PaymentButton";
+
+    private static final String EXTRA_PAYMENT_REQUEST = "com.braintreepayments.api.EXTRA_PAYMENT_REQUEST";
 
     @VisibleForTesting
     BraintreeFragment mBraintreeFragment;

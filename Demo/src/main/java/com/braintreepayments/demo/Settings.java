@@ -14,8 +14,14 @@ public class Settings {
     private static final String SANDBOX_TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn";
     private static final String PRODUCTION_TOKENIZATION_KEY = "production_t2wns2y2_dfy45jdj3dxkmz5m";
 
+    private static SharedPreferences sSharedPreferences;
+
     public static SharedPreferences getPreferences(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context);
+        if (sSharedPreferences == null) {
+            sSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+        }
+
+        return sSharedPreferences;
     }
 
     public static int getEnvironment(Context context) {
