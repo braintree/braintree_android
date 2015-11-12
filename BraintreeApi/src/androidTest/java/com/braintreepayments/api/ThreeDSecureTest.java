@@ -2,7 +2,6 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
@@ -10,11 +9,12 @@ import android.test.suitebuilder.annotation.SmallTest;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
-import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
+import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
@@ -40,8 +40,8 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 public class ThreeDSecureTest {
 
     @Rule
-    public final ActivityTestRule<TestActivity> mActivityTestRule =
-            new ActivityTestRule<>(TestActivity.class);
+    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
+            new BraintreeActivityTestRule<>(TestActivity.class);
 
     private Activity mActivity;
     private CountDownLatch mCountDownLatch;

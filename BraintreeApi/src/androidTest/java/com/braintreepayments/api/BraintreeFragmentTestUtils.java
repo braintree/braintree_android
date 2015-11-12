@@ -1,13 +1,12 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
-import android.os.Bundle;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 
@@ -18,6 +17,7 @@ import java.util.concurrent.CountDownLatch;
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -68,17 +68,17 @@ public class BraintreeFragmentTestUtils {
      * Get a {@link org.mockito.Spy} {@link BraintreeFragment} with the given configuration string.
      *
      * @param activity
-     * @param authorization
+     * @param authorizationString
      * @param configuration
      * @return
      */
-    public static BraintreeFragment getMockFragment(final Activity activity, String authorization, String configuration) {
-            Bundle bundle = new Bundle();
-        bundle.putString(BraintreeFragment.EXTRA_CONFIGURATION, configuration);
+    public static BraintreeFragment getMockFragment(final Activity activity, String authorizationString, String configuration) {
         try {
-            BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity, authorization, bundle));
+            Authorization authorization = Authorization.fromString(authorizationString);
+            writeMockConfiguration(authorization.getConfigUrl(), configuration);
+
+            BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity, authorizationString));
             when(fragment.getApplicationContext()).thenReturn(getTargetContext());
-            when(fragment.getAuthorization()).thenReturn(Authorization.fromString(authorization));
             when(fragment.getConfiguration()).thenReturn(Configuration.fromJson(configuration));
 
             getInstrumentation().waitForIdleSync();
@@ -102,14 +102,14 @@ public class BraintreeFragmentTestUtils {
         return getFragment(activity, authorization, null);
     }
 
-    public static BraintreeFragment getFragment(Activity activity, String authorization, String configurationString) {
+    public static BraintreeFragment getFragment(Activity activity, String authorizationString, String configurationString) {
         BraintreeFragment fragment;
-        Bundle args = new Bundle();
         try {
             if (configurationString != null) {
-                args.putString(BraintreeFragment.EXTRA_CONFIGURATION, configurationString);
+                Authorization authorization = Authorization.fromString(authorizationString);
+                writeMockConfiguration(authorization.getConfigUrl(), configurationString);
             }
-            fragment = BraintreeFragment.newInstance(activity, authorization, args);
+            fragment = BraintreeFragment.newInstance(activity, authorizationString);
 
             getInstrumentation().waitForIdleSync();
             waitForFragmentTransaction(activity);

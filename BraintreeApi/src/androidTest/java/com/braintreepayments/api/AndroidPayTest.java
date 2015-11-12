@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 
@@ -15,6 +14,7 @@ import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wallet.Cart;
@@ -50,8 +50,8 @@ import static org.mockito.Mockito.when;
 public class AndroidPayTest {
 
     @Rule
-    public final ActivityTestRule<TestActivity> mActivityTestRule =
-            new ActivityTestRule<>(TestActivity.class);
+    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
+            new BraintreeActivityTestRule<>(TestActivity.class);
 
     @Test(timeout = 1000)
     @SmallTest

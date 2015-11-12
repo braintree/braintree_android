@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
 
@@ -16,23 +15,20 @@ import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreeListener;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.TokenizationKey;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
-
-import org.json.JSONException;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -71,9 +67,9 @@ public class BraintreeFragment extends Fragment {
     private boolean mHasFetchedPaymentMethodNonces = false;
     private boolean mIsBrowserSwitching = false;
 
-    private BraintreeCancelListener mCancelListener;
     private ConfigurationListener mConfigurationListener;
     private BraintreeResponseListener<Exception> mConfigurationErrorListener;
+    private BraintreeCancelListener mCancelListener;
     private PaymentMethodNoncesUpdatedListener mPaymentMethodNoncesUpdatedListener;
     private PaymentMethodNonceCreatedListener mPaymentMethodNonceCreatedListener;
     private BraintreeErrorListener mErrorListener;
@@ -92,11 +88,6 @@ public class BraintreeFragment extends Fragment {
      */
     public static BraintreeFragment newInstance(Activity activity, String authorization)
             throws InvalidArgumentException {
-        return newInstance(activity, authorization, new Bundle());
-    }
-
-    protected static BraintreeFragment newInstance(Activity activity, String authorizationString,
-            Bundle bundle) throws InvalidArgumentException {
         FragmentManager fm = activity.getFragmentManager();
 
         String integrationType = "custom";
@@ -107,21 +98,14 @@ public class BraintreeFragment extends Fragment {
             }
         } catch (ClassNotFoundException ignored) {}
 
-        if (bundle.containsKey(EXTRA_CONFIGURATION)) {
-            try {
-                Configuration.fromJson(bundle.getString(EXTRA_CONFIGURATION));
-            } catch (JSONException e) {
-                throw new InvalidArgumentException(e.getMessage());
-            }
-        }
-
         BraintreeFragment braintreeFragment = (BraintreeFragment) fm.findFragmentByTag(TAG);
         if (braintreeFragment == null) {
             braintreeFragment = new BraintreeFragment();
+            Bundle bundle = new Bundle();
 
             try {
-                Authorization authorization = Authorization.fromString(authorizationString);
-                bundle.putParcelable(EXTRA_AUTHORIZATION_TOKEN, authorization);
+                Authorization auth = Authorization.fromString(authorization);
+                bundle.putParcelable(EXTRA_AUTHORIZATION_TOKEN, auth);
             } catch (InvalidArgumentException e) {
                 throw new InvalidArgumentException("Tokenization Key or client token was invalid.");
             }
@@ -153,13 +137,7 @@ public class BraintreeFragment extends Fragment {
             sendAnalyticsEvent("started.client-token");
         }
 
-        if (getArguments().getString(EXTRA_CONFIGURATION) == null) {
-            fetchConfiguration();
-        } else {
-            try {
-                setConfiguration(Configuration.fromJson(getArguments().getString(EXTRA_CONFIGURATION)));
-            } catch (JSONException ignored) {}
-        }
+        fetchConfiguration();
     }
 
     @Override
@@ -377,49 +355,27 @@ public class BraintreeFragment extends Fragment {
 
     @VisibleForTesting
     protected void fetchConfiguration() {
-        String configUrl = Uri.parse(mAuthorization.getConfigUrl())
-                .buildUpon()
-                .appendQueryParameter("configVersion", "3")
-                .build()
-                .toString();
-
-        getHttpClient().get(configUrl, new HttpResponseCallback() {
+        ConfigurationManager.getConfiguration(this, new ConfigurationListener() {
             @Override
-            public void success(String responseBody) {
-                try {
-                    setConfiguration(Configuration.fromJson(responseBody));
+            public void onConfigurationFetched(Configuration configuration) {
+                setConfiguration(configuration);
+                postOrQueueCallback(new QueuedCallback() {
+                    @Override
+                    public boolean shouldRun() {
+                        return mConfigurationListener != null;
+                    }
 
-                    postOrQueueCallback(new QueuedCallback() {
-                        @Override
-                        public boolean shouldRun() {
-                            return mConfigurationListener != null;
-                        }
-
-                        @Override
-                        public void run() {
-                            mConfigurationListener.onConfigurationFetched(getConfiguration());
-                        }
-                    });
-                    flushCallbacks();
-                } catch (final JSONException e) {
-                    postCallback(e);
-                    postOrQueueCallback(new QueuedCallback() {
-                        @Override
-                        public boolean shouldRun() {
-                            return mConfigurationErrorListener != null;
-                        }
-
-                        @Override
-                        public void run() {
-                            mConfigurationErrorListener.onResponse(e);
-                        }
-                    });
-                }
+                    @Override
+                    public void run() {
+                        mConfigurationListener.onConfigurationFetched(getConfiguration());
+                    }
+                });
+                flushCallbacks();
             }
-
+        }, new BraintreeResponseListener<Exception>() {
             @Override
-            public void failure(final Exception exception) {
-                postCallback(exception);
+            public void onResponse(final Exception e) {
+                postCallback(e);
                 postOrQueueCallback(new QueuedCallback() {
                     @Override
                     public boolean shouldRun() {
@@ -428,9 +384,10 @@ public class BraintreeFragment extends Fragment {
 
                     @Override
                     public void run() {
-                        mConfigurationErrorListener.onResponse(exception);
+                        mConfigurationErrorListener.onResponse(e);
                     }
                 });
+                flushCallbacks();
             }
         });
     }

@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Looper;
-import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.util.Base64;
@@ -20,6 +18,7 @@ import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Authorization;
+import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.google.android.gms.wallet.Cart;
 
@@ -49,6 +48,7 @@ import static android.support.test.espresso.intent.matcher.UriMatchers.hasParamW
 import static android.support.test.espresso.intent.matcher.UriMatchers.hasPath;
 import static android.support.test.espresso.intent.matcher.UriMatchers.hasScheme;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -66,8 +66,8 @@ import static org.mockito.Mockito.verify;
 public class PaymentButtonTest {
 
     @Rule
-    public final IntentsTestRule<TestActivity> mActivityTestRule =
-            new IntentsTestRule<>(TestActivity.class);
+    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
+            new BraintreeActivityTestRule<>(TestActivity.class);
 
     private Activity mActivity;
 
@@ -251,7 +251,8 @@ public class PaymentButtonTest {
         assertEquals(View.GONE,
                 paymentButton.getView().findViewById(R.id.bt_android_pay_button).getVisibility());
         assertEquals(View.GONE,
-                paymentButton.getView().findViewById(R.id.bt_payment_button_divider).getVisibility());
+                paymentButton.getView().findViewById(R.id.bt_payment_button_divider)
+                        .getVisibility());
     }
 
     @Test(timeout = 1000)
@@ -269,7 +270,8 @@ public class PaymentButtonTest {
         assertEquals(View.GONE,
                 paymentButton.getView().findViewById(R.id.bt_paypal_button).getVisibility());
         assertEquals(View.GONE,
-                paymentButton.getView().findViewById(R.id.bt_payment_button_divider).getVisibility());
+                paymentButton.getView().findViewById(R.id.bt_payment_button_divider)
+                        .getVisibility());
     }
 
     @Test(timeout = 1000)
@@ -380,10 +382,10 @@ public class PaymentButtonTest {
             configuration = stringFromFixture("configuration.json");
         }
 
-        Bundle bundle = new Bundle();
-        bundle.putString(BraintreeFragment.EXTRA_CONFIGURATION, configuration);
-        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity,
-                stringFromFixture("client_token.json"), bundle));
+        Authorization clientToken = Authorization.fromString(stringFromFixture("client_token.json"));
+
+        writeMockConfiguration(clientToken.getConfigUrl(), configuration);
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity, clientToken.toString()));
         doNothing().when(fragment).startActivity(any(Intent.class));
         doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
         getInstrumentation().waitForIdleSync();

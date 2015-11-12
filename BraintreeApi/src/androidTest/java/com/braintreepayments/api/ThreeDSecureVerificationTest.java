@@ -5,7 +5,6 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.os.SystemClock;
 import android.support.test.espresso.web.webdriver.Locator;
-import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.test.suitebuilder.annotation.MediumTest;
@@ -17,6 +16,7 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
@@ -48,8 +48,8 @@ public class ThreeDSecureVerificationTest {
     private static final String TEST_AMOUNT = "1";
 
     @Rule
-    public final ActivityTestRule<TestActivity> mActivityTestRule =
-            new ActivityTestRule<>(TestActivity.class);
+    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
+            new BraintreeActivityTestRule<>(TestActivity.class);
 
     private Activity mActivity;
     private CountDownLatch mCountDownLatch;

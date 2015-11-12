@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.SystemClock;
 import android.support.test.espresso.FailureHandler;
 import android.support.test.espresso.base.DefaultFailureHandler;
-import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +15,7 @@ import com.braintreepayments.api.BraintreePaymentTestActivity;
 import com.braintreepayments.api.PaymentRequest;
 import com.braintreepayments.api.PayPalTestSignatureVerification;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
+import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.testutils.ui.ViewHelper;
 
 import org.hamcrest.Matcher;
@@ -32,8 +32,8 @@ import static android.support.test.espresso.Espresso.setFailureHandler;
 public class BraintreePaymentActivityTestRunner {
 
     @Rule
-    public ActivityTestRule<BraintreePaymentTestActivity> mActivityTestRule =
-            new ActivityTestRule<>(BraintreePaymentTestActivity.class, true, false);
+    public BraintreeActivityTestRule<BraintreePaymentTestActivity> mActivityTestRule =
+            new BraintreeActivityTestRule<>(BraintreePaymentTestActivity.class, true, false);
 
     @SuppressWarnings("deprecation")
     @Before

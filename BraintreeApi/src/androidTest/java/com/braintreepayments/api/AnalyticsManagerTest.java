@@ -1,10 +1,8 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.provider.Settings.Secure;
-import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 
@@ -13,6 +11,7 @@ import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 
 import org.json.JSONArray;
@@ -29,6 +28,7 @@ import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
+import static com.braintreepayments.api.DeviceMetadata.getBraintreeSharedPreferences;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
@@ -36,6 +36,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -50,8 +51,8 @@ public class AnalyticsManagerTest {
     private static final String TEST_UUID = "testuuid";
 
     @Rule
-    public final ActivityTestRule<TestActivity> mActivityTestRule =
-            new ActivityTestRule<>(TestActivity.class);
+    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
+            new BraintreeActivityTestRule<>(TestActivity.class);
 
     private BraintreeFragment mFragment;
     private BraintreeHttpClient mHttpClient;
@@ -70,7 +71,8 @@ public class AnalyticsManagerTest {
         AnalyticsManager.sendRequest(mFragment, "custom", "some-interesting-event");
         AnalyticsManager.flushEvents(mFragment);
 
-        verify(mHttpClient).post(anyString(), anyString(), isNull(HttpResponseCallback.class));
+        verify(mHttpClient).post(anyString(), contains("some-interesting-event"),
+                isNull(HttpResponseCallback.class));
     }
 
     @Test(timeout = 1000)
@@ -258,7 +260,7 @@ public class AnalyticsManagerTest {
     }
 
     public void setup() throws JSONException {
-        getTargetContext().getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE)
+        getBraintreeSharedPreferences(getTargetContext())
                 .edit()
                 .putString("braintreeUUID", TEST_UUID)
                 .commit();

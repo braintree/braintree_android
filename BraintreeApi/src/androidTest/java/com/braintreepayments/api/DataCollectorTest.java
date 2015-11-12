@@ -1,11 +1,11 @@
 package com.braintreepayments.api;
 
-import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.text.TextUtils;
 
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 
 import org.json.JSONException;
@@ -24,8 +24,8 @@ import static org.mockito.Mockito.mock;
 public class DataCollectorTest {
 
     @Rule
-    public final ActivityTestRule<TestActivity> mActivityTestRule =
-            new ActivityTestRule<>(TestActivity.class);
+    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
+            new BraintreeActivityTestRule<>(TestActivity.class);
 
     @Test(timeout = 1000)
     @SmallTest

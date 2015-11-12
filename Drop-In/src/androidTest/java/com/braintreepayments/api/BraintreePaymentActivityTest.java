@@ -1,8 +1,9 @@
 package com.braintreepayments.api;
 
 import android.content.Intent;
-import android.support.test.rule.ActivityTestRule;
 import android.test.suitebuilder.annotation.LargeTest;
+
+import com.braintreepayments.testutils.BraintreeActivityTestRule;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,8 +16,8 @@ import static junit.framework.Assert.assertEquals;
 public class BraintreePaymentActivityTest {
 
     @Rule
-    public ActivityTestRule<BraintreePaymentActivity> mActivityTestRule =
-            new ActivityTestRule<>(BraintreePaymentActivity.class, true, false);
+    public BraintreeActivityTestRule<BraintreePaymentActivity> mActivityTestRule =
+            new BraintreeActivityTestRule<>(BraintreePaymentActivity.class, true, false);
 
     @Test(timeout = 30000)
     public void setsIntegrationTypeToDropinForDropinActivity() {

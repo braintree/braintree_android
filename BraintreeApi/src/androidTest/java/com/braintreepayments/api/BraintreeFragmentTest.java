@@ -1,8 +1,6 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
-import android.os.Bundle;
-import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
@@ -23,6 +21,7 @@ import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -61,8 +60,8 @@ import static org.mockito.Mockito.when;
 public class BraintreeFragmentTest {
 
     @Rule
-    public final ActivityTestRule<TestActivity> mActivityTestRule =
-            new ActivityTestRule<>(TestActivity.class);
+    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
+            new BraintreeActivityTestRule<>(TestActivity.class);
 
     private Activity mActivity;
     private String mClientToken;
@@ -103,14 +102,6 @@ public class BraintreeFragmentTest {
     @SmallTest
     public void newInstance_throwsAnExceptionForABadClientToken() throws InvalidArgumentException {
         BraintreeFragment.newInstance(mActivity, "{}");
-    }
-
-    @Test(timeout = 1000, expected = InvalidArgumentException.class)
-    @SmallTest
-    public void newInstance_throwsAnExceptionForBadConfiguration() throws InvalidArgumentException {
-        Bundle args = new Bundle();
-        args.putString(BraintreeFragment.EXTRA_CONFIGURATION, "Not a configuration string");
-        BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY, args);
     }
 
     @Test(timeout = 1000)
@@ -568,6 +559,7 @@ public class BraintreeFragmentTest {
         BraintreeFragment fragment = spy(getFragment(mActivity, clientToken));
         when(fragment.getConfiguration()).thenReturn(configuration);
         Authorization authorization = Authorization.fromString(clientToken);
+
         BraintreeHttpClient httpClient =
                 new BraintreeHttpClient(authorization) {
                     @Override
@@ -576,8 +568,10 @@ public class BraintreeFragmentTest {
                         super.post(url, params, new HttpResponseCallback() {
                             @Override
                             public void success(String responseBody) {
-                                assertTrue(params.contains("analytics.event"));
-                                mCountDownLatch.countDown();
+                                if (!params.contains("started")) {
+                                    assertTrue(params.contains("analytics.event"));
+                                    mCountDownLatch.countDown();
+                                }
                             }
 
                             @Override
@@ -611,8 +605,8 @@ public class BraintreeFragmentTest {
         fragment.onPause();
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(httpClient)
-                .post(eq("analytics_url"), captor.capture(), isNull(HttpResponseCallback.class));
+        verify(httpClient).post(eq("analytics_url"), captor.capture(),
+                isNull(HttpResponseCallback.class));
         assertTrue(new JSONObject(captor.getValue()).getJSONArray("analytics").length() < 5);
     }
 }
