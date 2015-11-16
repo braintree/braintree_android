@@ -5,7 +5,6 @@ import android.app.Instrumentation.ActivityResult;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Looper;
-import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.runner.intent.IntentCallback;
 import android.support.test.runner.intent.IntentMonitorRegistry;
@@ -27,6 +26,7 @@ import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.test.TestActivity;
+import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 import org.json.JSONException;
@@ -65,8 +65,8 @@ import static org.hamcrest.core.IsNot.not;
 public class PayPalTest {
 
     @Rule
-    public final IntentsTestRule<TestActivity> mActivityTestRule =
-            new IntentsTestRule<>(TestActivity.class);
+    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
+            new BraintreeActivityTestRule<>(TestActivity.class);
 
     private Activity mActivity;
     private CountDownLatch mLatch;
