@@ -54,4 +54,7 @@
     <string name="paypal_future_payment_address_scope">Future Payment (Address Scope)</string>
     <string name="paypal_single_payment">Single Payment</string>
     <string name="paypal_billing_agreement">Billing Agreement</string>
+
+    <!-- PayPalActivity -->
+    <string name="paypal_wallet_available">PayPal Wallet app available for app switch: %b</string>
 </resources>

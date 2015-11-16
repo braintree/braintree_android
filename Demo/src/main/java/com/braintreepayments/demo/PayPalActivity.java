@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.BraintreePaymentActivity;
@@ -14,12 +15,14 @@ import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import java.util.Collections;
 
 public class PayPalActivity extends BaseActivity implements PaymentMethodNonceCreatedListener,
         BraintreeErrorListener {
 
+    private TextView mPayPalAppIndicator;
     private Button mBillingAgreementButton;
     private Button mFuturePaymentAddressScopeButton;
     private Button mFuturePaymentButton;
@@ -33,12 +36,21 @@ public class PayPalActivity extends BaseActivity implements PaymentMethodNonceCr
         setContentView(R.layout.paypal);
         setUpAsBack();
 
+        mPayPalAppIndicator = (TextView) findViewById(R.id.paypal_wallet_app_indicator);
         mBillingAgreementButton = (Button) findViewById(R.id.paypal_billing_agreement_button);
         mFuturePaymentAddressScopeButton = (Button) findViewById(R.id.paypal_future_payment_address_scope_button);
         mFuturePaymentButton = (Button) findViewById(R.id.paypal_future_payment_button);
         mSinglePaymentButton = (Button) findViewById(R.id.paypal_single_payment_button);
 
         setProgressBarIndeterminateVisibility(true);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mPayPalAppIndicator.setText(getString(R.string.paypal_wallet_available,
+                PayPalOneTouchCore.isWalletAppInstalled(this, Settings.isPayPalSignatureVerificationDisabled(this))));
     }
 
     @Override
