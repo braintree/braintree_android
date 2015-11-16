@@ -1,8 +1,6 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
-import android.app.KeyguardManager;
-import android.content.Context;
 import android.os.SystemClock;
 import android.support.test.espresso.web.webdriver.Locator;
 import android.support.test.runner.AndroidJUnit4;
@@ -16,8 +14,8 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
+import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 import org.junit.Before;
@@ -27,7 +25,6 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -56,10 +53,6 @@ public class ThreeDSecureVerificationTest {
 
     @Before
     public void setUp() {
-        ((KeyguardManager) getTargetContext().getSystemService(Context.KEYGUARD_SERVICE))
-                .newKeyguardLock("ThreeDSecureVerificationTest")
-                .disableKeyguard();
-
         mActivity = mActivityTestRule.getActivity();
         mCountDownLatch = new CountDownLatch(1);
     }
