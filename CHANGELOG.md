@@ -1,5 +1,13 @@
 # Braintree Android SDK Release Notes
 
+## 2.0.1
+
+* Make support annotations an optional dependency
+* Cache configuration to prevent unnecessary network requests
+* Fixes
+  * Fix BraintreeDataCollector as an optional dependency
+  * Fix `PaymentRequest` crash when Google Play Services is not present
+
 ## 2.0.0
 
 * Increase `minSdkVersion` to 15 (see [Platform Versions](http://developer.android.com/about/dashboards/index.html#Platform) for the current distribution of Android versions)
