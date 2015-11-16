@@ -1,32 +1,21 @@
 package com.braintreepayments.api.test;
 
-import android.app.KeyguardManager;
-import android.content.Context;
 import android.content.Intent;
-import android.os.SystemClock;
-import android.support.test.espresso.FailureHandler;
-import android.support.test.espresso.base.DefaultFailureHandler;
 import android.support.test.runner.AndroidJUnit4;
-import android.util.Log;
-import android.view.View;
 
 import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.BraintreePaymentTestActivity;
-import com.braintreepayments.api.PaymentRequest;
 import com.braintreepayments.api.PayPalTestSignatureVerification;
+import com.braintreepayments.api.PaymentRequest;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.testutils.BraintreeActivityTestRule;
-import com.braintreepayments.testutils.ui.ViewHelper;
 
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static android.support.test.espresso.Espresso.setFailureHandler;
 
 @RunWith(AndroidJUnit4.class)
 public class BraintreePaymentActivityTestRunner {
@@ -35,15 +24,10 @@ public class BraintreePaymentActivityTestRunner {
     public BraintreeActivityTestRule<BraintreePaymentTestActivity> mActivityTestRule =
             new BraintreeActivityTestRule<>(BraintreePaymentTestActivity.class, true, false);
 
-    @SuppressWarnings("deprecation")
     @Before
     public void setUp() {
         BraintreeHttpClient.DEBUG = true;
         PayPalTestSignatureVerification.disableAppSwitchSignatureVerification();
-
-        ((KeyguardManager) getTargetContext().getSystemService(Context.KEYGUARD_SERVICE))
-                .newKeyguardLock("BraintreePaymentActivity")
-                .disableKeyguard();
     }
 
     public BraintreePaymentActivity getActivity(String clientToken) {

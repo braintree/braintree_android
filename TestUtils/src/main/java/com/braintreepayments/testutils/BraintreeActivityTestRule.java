@@ -1,9 +1,12 @@
 package com.braintreepayments.testutils;
 
 import android.app.Activity;
+import android.app.KeyguardManager;
+import android.content.Context;
 import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 
+import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.SharedPreferencesHelper.getSharedPreferences;
 
 public class BraintreeActivityTestRule<T extends Activity> extends ActivityTestRule<T> {
@@ -21,6 +24,10 @@ public class BraintreeActivityTestRule<T extends Activity> extends ActivityTestR
     protected void beforeActivityLaunched() {
         super.beforeActivityLaunched();
         getSharedPreferences().edit().clear().commit();
+
+        ((KeyguardManager) getTargetContext().getSystemService(Context.KEYGUARD_SERVICE))
+                .newKeyguardLock("BraintreeActivityTestRule")
+                .disableKeyguard();
     }
 
     @Override
