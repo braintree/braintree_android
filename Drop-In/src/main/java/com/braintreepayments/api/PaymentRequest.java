@@ -261,10 +261,15 @@ public class PaymentRequest implements Parcelable {
         dest.writeString(mAuthorization);
         dest.writeString(mAmount);
         dest.writeString(mCurrencyCode);
-        dest.writeParcelable(mAndroidPayCart, 0);
-        dest.writeByte(mAndroidPayShippingAddressRequired ? (byte) 1 : (byte) 0);
-        dest.writeByte(mAndroidPayPhoneNumberRequired ? (byte) 1 : (byte) 0);
-        dest.writeInt(mAndroidPayRequestCode);
+
+        try {
+            Cart.class.getClassLoader();
+            dest.writeParcelable(mAndroidPayCart, 0);
+            dest.writeByte(mAndroidPayShippingAddressRequired ? (byte) 1 : (byte) 0);
+            dest.writeByte(mAndroidPayPhoneNumberRequired ? (byte) 1 : (byte) 0);
+            dest.writeInt(mAndroidPayRequestCode);
+        } catch (NoClassDefFoundError ignored) {}
+
         dest.writeStringList(mPayPalAdditionalScopes);
         dest.writeString(mActionBarTitle);
         dest.writeInt(mActionBarLogo);
@@ -277,10 +282,14 @@ public class PaymentRequest implements Parcelable {
         mAuthorization = in.readString();
         mAmount = in.readString();
         mCurrencyCode = in.readString();
-        mAndroidPayCart = in.readParcelable(Cart.class.getClassLoader());
-        mAndroidPayShippingAddressRequired = in.readByte() != 0;
-        mAndroidPayPhoneNumberRequired = in.readByte() != 0;
-        mAndroidPayRequestCode = in.readInt();
+
+        try {
+            mAndroidPayCart = in.readParcelable(Cart.class.getClassLoader());
+            mAndroidPayShippingAddressRequired = in.readByte() != 0;
+            mAndroidPayPhoneNumberRequired = in.readByte() != 0;
+            mAndroidPayRequestCode = in.readInt();
+        } catch (NoClassDefFoundError ignored) {}
+
         mPayPalAdditionalScopes = in.createStringArrayList();
         mActionBarTitle = in.readString();
         mActionBarLogo = in.readInt();
