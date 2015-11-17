@@ -87,7 +87,10 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
             if(mEmail == null) {
                 mEmail = payerInfo.optString(EMAIL_KEY, null);
             }
-        } catch (JSONException ignored) {}
+        } catch (JSONException e) {
+            mBillingAddress = new PostalAddress();
+            mShippingAddress = new PostalAddress();
+        }
     }
 
     /**
