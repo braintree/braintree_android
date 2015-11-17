@@ -1,10 +1,12 @@
 package com.braintreepayments.api;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -82,10 +84,21 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
         return paymentButton;
     }
 
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onInflate(Activity activity, AttributeSet attrs, Bundle savedInstanceState) {
+        super.onInflate(activity, attrs, savedInstanceState);
+        getTokenizationKeyFromAttributes(activity, attrs);
+    }
+
+    @TargetApi(VERSION_CODES.M)
     @Override
     public void onInflate(Context context, AttributeSet attrs, Bundle savedInstanceState) {
         super.onInflate(context, attrs, savedInstanceState);
+        getTokenizationKeyFromAttributes(context, attrs);
+    }
 
+    private void getTokenizationKeyFromAttributes(Context context, AttributeSet attrs) {
         TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.PaymentButtonAttributes);
         String tokenizationKey = attributes.getString(R.styleable.PaymentButtonAttributes_tokenizationKey);
         attributes.recycle();
@@ -268,7 +281,8 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
 
     private boolean isAndroidPayEnabled(Configuration configuration) {
         try {
-            return (configuration.getAndroidPay().isEnabled(mBraintreeFragment.getApplicationContext())
+            return (configuration.getAndroidPay().isEnabled(
+                    mBraintreeFragment.getApplicationContext())
                     && mPaymentRequest.getAndroidPayCart() != null);
         } catch (NoClassDefFoundError e) {
             return false;
