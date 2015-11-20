@@ -43,9 +43,6 @@ public class BraintreeFragment extends Fragment {
 
     public static final String TAG = "com.braintreepayments.api.BraintreeFragment";
 
-    protected static final String EXTRA_CONFIGURATION =
-            "com.braintreepayments.api.EXTRA_CONFIGURATION";
-
     private static final String EXTRA_AUTHORIZATION_TOKEN =
             "com.braintreepayments.api.EXTRA_AUTHORIZATION_TOKEN";
     private static final String EXTRA_INTEGRATION_TYPE =
