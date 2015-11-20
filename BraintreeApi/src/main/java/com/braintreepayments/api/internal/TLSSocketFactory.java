@@ -1,6 +1,6 @@
 package com.braintreepayments.api.internal;
 
-import com.braintreepayments.api.exceptions.BraintreeSslException;
+import com.braintreepayments.api.exceptions.BraintreeSSLException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +28,7 @@ class TLSSocketFactory extends SSLSocketFactory {
      * @see <a href="http://developer.android.com/training/articles/security-ssl.html#UnknownCa">Android Documentation</a>
      * @see <a href="https://github.com/braintree/braintree_java/blob/95b96c356324d1532714f849402f830251ce8b81/src/main/java/com/braintreegateway/util/Http.java#L100">Braintree Java Client Library</a>
      */
-    TLSSocketFactory() throws BraintreeSslException {
+    TLSSocketFactory() throws BraintreeSSLException {
         InputStream certStream = null;
         try {
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -53,7 +53,7 @@ class TLSSocketFactory extends SSLSocketFactory {
             sslContext.init(null, tmf.getTrustManagers(), null);
             mInternalSSLSocketFactory = sslContext.getSocketFactory();
         } catch (Exception e) {
-            throw new BraintreeSslException(e);
+            throw new BraintreeSSLException(e.getMessage());
         } finally {
             try {
                 certStream.close();

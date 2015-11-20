@@ -8,6 +8,7 @@ import android.util.Log;
 import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.AuthorizationException;
+import com.braintreepayments.api.exceptions.BraintreeSSLException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.ServerException;
@@ -55,7 +56,8 @@ public class BraintreeHttpClient {
     protected final MonitoredThreadPoolExecutor mThreadPool = MonitoredThreadPoolExecutor.newCachedThreadPool();
 
     private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
-    private final TLSSocketFactory mTLSSocketFactory = new TLSSocketFactory();
+    private TLSSocketFactory mTLSSocketFactory;
+    private BraintreeSSLException mSSLException;
     private final Authorization mAuthorization;
     private String mBaseUrl;
     private int mConnectTimeout = 30000; // 30 seconds
@@ -63,6 +65,12 @@ public class BraintreeHttpClient {
 
     public BraintreeHttpClient(Authorization authorization) {
         mAuthorization = authorization;
+
+        try {
+            mTLSSocketFactory = new TLSSocketFactory();
+        } catch (BraintreeSSLException e) {
+            mSSLException = e;
+        }
     }
 
     public static String getUserAgent() {
@@ -89,6 +97,11 @@ public class BraintreeHttpClient {
      * @param callback The {@link HttpResponseCallback} to receive the response or error.
      */
     public void get(final String path, final HttpResponseCallback callback) {
+        if (mSSLException != null) {
+            postCallbackOnMainThread(callback, mSSLException);
+            return;
+        }
+
         mThreadPool.submit(new Runnable() {
             @Override
             public void run() {
@@ -136,6 +149,11 @@ public class BraintreeHttpClient {
      * @param callback The {@link HttpResponseCallback} to receive the response or error.
      */
     public void post(final String path, final String data, final HttpResponseCallback callback) {
+        if (mSSLException != null) {
+            postCallbackOnMainThread(callback, mSSLException);
+            return;
+        }
+
         mThreadPool.submit(new Runnable() {
             @Override
             public void run() {
