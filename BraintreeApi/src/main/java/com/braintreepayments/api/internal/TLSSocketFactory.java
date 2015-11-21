@@ -10,6 +10,8 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import javax.net.ssl.SSLContext;
@@ -98,10 +100,14 @@ class TLSSocketFactory extends SSLSocketFactory {
 
     private Socket enableTLSOnSocket(Socket socket) {
         if (socket instanceof SSLSocket) {
-            // We could enable TLSv1.2 only here, but we take a permissive approach for the client
-            // and leave it up to the server to require TLSv1.2
-            ((SSLSocket) socket).setEnabledProtocols(new String[]{"TLSv1", "TLSv1.1", "TLSv1.2"});
+            ArrayList<String> supportedProtocols =
+                    new ArrayList<>(Arrays.asList(((SSLSocket) socket).getSupportedProtocols()));
+            supportedProtocols.retainAll(Arrays.asList("TLSv1.2", "TLSv1.1", "TLSv1"));
+
+            ((SSLSocket)socket).setEnabledProtocols(supportedProtocols.toArray(
+                    new String[supportedProtocols.size()]));
         }
+
         return socket;
     }
 }
