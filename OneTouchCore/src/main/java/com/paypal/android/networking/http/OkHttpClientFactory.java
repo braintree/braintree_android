@@ -2,6 +2,7 @@ package com.paypal.android.networking.http;
 
 import android.util.Log;
 
+import com.paypal.android.sdk.onetouch.core.metadata.ad;
 import com.squareup.okhttp.CertificatePinner;
 import com.squareup.okhttp.ConnectionSpec;
 import com.squareup.okhttp.OkHttpClient;
@@ -37,17 +38,19 @@ public class OkHttpClientFactory {
      * @return OkHttpClient instance
      */
     public static OkHttpClient getOkHttpClient(int networkTimeout, boolean isTrustAll, boolean useSslPinning, String userAgent, String baseUrl) {
-        Log.d(TAG, "Creating okhttp client.  networkTimeout=" + networkTimeout + ", isTrustAll=" + isTrustAll +
-                ", useSslPinning=" + useSslPinning + ", userAgent=" + userAgent + ", baseUrl=" + baseUrl);
+        Log.d(TAG, "Creating okhttp client.  networkTimeout=" + networkTimeout + ", isTrustAll=" +
+                isTrustAll +
+                ", useSslPinning=" + useSslPinning + ", userAgent=" + userAgent + ", baseUrl=" +
+                baseUrl);
 
         OkHttpClient client = new OkHttpClient().setConnectionSpecs(
                 Arrays.asList(ConnectionSpec.MODERN_TLS));
 
         client.setConnectTimeout(Integer.valueOf(networkTimeout).longValue(), TimeUnit.SECONDS);
         client.interceptors().add(new UserAgentInterceptor(userAgent));
-        client.interceptors().add(new Tlsv1_0UnavailableInterceptor());
         try {
-            client.setSslSocketFactory(new TlsSocketFactory());
+            // TODO unobfuscate this dyson TLSSocketFactory
+            client.setSslSocketFactory(new ad());
             if (isTrustAll) {
                 // Trust All Socket Factory
                 client.setSslSocketFactory(getTrustAllSocketFactory());

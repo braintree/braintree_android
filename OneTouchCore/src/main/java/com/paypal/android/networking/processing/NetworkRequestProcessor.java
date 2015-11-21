@@ -1,20 +1,18 @@
 package com.paypal.android.networking.processing;
 
+import android.text.TextUtils;
+import android.util.Log;
+
 import com.paypal.android.networking.EnvironmentManager;
 import com.paypal.android.networking.events.LibraryError;
 import com.paypal.android.networking.events.RequestError;
 import com.paypal.android.networking.events.ThrowableEvent;
 import com.paypal.android.networking.http.OkHttpClientFactory;
-import com.paypal.android.networking.http.Tlsv1_0UnavailableException;
 import com.paypal.android.networking.request.ServerRequest;
 import com.paypal.android.networking.request.ServerRequestEnvironment;
 import com.paypal.android.sdk.onetouch.core.base.Constants;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
-
-import android.text.TextUtils;
-import android.util.Log;
-
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.Interceptor;
@@ -34,6 +32,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.SSLException;
 
 /**
  * Processor handles all non-mock interactions on serverRequests.
@@ -272,7 +272,7 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
             }
 
         } else if (e != null) {
-            if (e instanceof Tlsv1_0UnavailableException) {
+            if (e instanceof SSLException && "Connection closed by peer".equals(e.getMessage())) {
                 serverRequest.setError(new ThrowableEvent(LibraryError.DEVICE_OS_TOO_OLD, e));
             } else {
                 serverRequest.setError(new ThrowableEvent(LibraryError.SERVER_COMMUNICATION_ERROR, e));
