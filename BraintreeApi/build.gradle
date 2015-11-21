@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 
-def paypalVersion = 'PayPalAndroidSDK-2.12.0.jar'
+def paypalVersion = 'PayPalAndroidSDK-2.12.1.jar'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
