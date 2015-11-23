@@ -33,7 +33,7 @@ public class PayPalActivity extends BaseActivity implements PaymentMethodNonceCr
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.paypal);
+        setContentView(R.layout.paypal_activity);
         setUpAsBack();
 
         mPayPalAppIndicator = (TextView) findViewById(R.id.paypal_wallet_app_indicator);

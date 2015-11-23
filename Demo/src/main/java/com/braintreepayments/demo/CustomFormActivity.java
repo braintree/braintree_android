@@ -43,7 +43,7 @@ public class CustomFormActivity extends BaseActivity implements PaymentMethodNon
         super.onCreate(onSaveInstanceState);
 
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.custom);
+        setContentView(R.layout.custom_activity);
         setUpAsBack();
 
         mCart = getIntent().getParcelableExtra(MainActivity.EXTRA_ANDROID_PAY_CART);

@@ -60,7 +60,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.main_activity);
 
         mNonceIcon = (ImageView) findViewById(R.id.nonce_icon);
         mNonceString = (TextView) findViewById(R.id.nonce);

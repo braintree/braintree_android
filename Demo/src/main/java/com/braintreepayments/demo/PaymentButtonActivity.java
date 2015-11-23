@@ -36,7 +36,7 @@ public class PaymentButtonActivity extends BaseActivity
         super.onCreate(onSaveInstanceState);
 
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.payment_button);
+        setContentView(R.layout.payment_button_activity);
         setUpAsBack();
 
         mCart = getIntent().getParcelableExtra(MainActivity.EXTRA_ANDROID_PAY_CART);
