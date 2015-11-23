@@ -21,7 +21,9 @@
     <string name="card_number">Card Number</string>
     <string name="expiration_date">Expiration Date</string>
 
-    <!-- FinishedActivity -->
+    <!-- CreateTransactionActivity -->
+    <string name="processing_transaction">Processing Transaction</string>
+    <string name="transaction_failed">Transaction Failed</string>
     <string name="transaction_complete">Transaction Complete</string>
     <string name="purchase_complete">Purchase Complete</string>
 

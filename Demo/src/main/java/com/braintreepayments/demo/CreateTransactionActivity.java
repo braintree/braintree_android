@@ -7,13 +7,14 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.braintreepayments.api.dropin.view.SecureLoadingProgressBar;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.demo.models.Transaction;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class FinishedActivity extends Activity {
+public class CreateTransactionActivity extends Activity {
 
     public static final String EXTRA_PAYMENT_METHOD_NONCE = "nonce";
 
@@ -22,26 +23,37 @@ public class FinishedActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.finished);
+        setContentView(R.layout.create_transaction_activity);
         mLoadingSpinner = (SecureLoadingProgressBar) findViewById(R.id.loading_spinner);
+        setTitle(R.string.processing_transaction);
 
-        sendNonceToServer(getIntent().getStringExtra(EXTRA_PAYMENT_METHOD_NONCE));
+        sendNonceToServer(
+                ((PaymentMethodNonce) getIntent().getParcelableExtra(EXTRA_PAYMENT_METHOD_NONCE))
+                        .getNonce());
     }
 
     private void sendNonceToServer(String nonce) {
         Callback<Transaction> callback = new Callback<Transaction>() {
             @Override
             public void success(Transaction transaction, Response response) {
-                if (TextUtils.isEmpty(transaction.getMessage())) {
-                    showMessage("Message was empty");
+                if (transaction.getMessage() != null &&
+                        transaction.getMessage().startsWith("created")) {
+                    setStatus(R.string.transaction_complete);
+                    setMessage(transaction.getMessage());
                 } else {
-                    showMessage(transaction.getMessage());
+                    setStatus(R.string.transaction_failed);
+                    if (TextUtils.isEmpty(transaction.getMessage())) {
+                        setMessage("Server response was empty or malformed");
+                    } else {
+                        setMessage(transaction.getMessage());
+                    }
                 }
             }
 
             @Override
             public void failure(RetrofitError error) {
-                showMessage("Unable to create a transaction. Response Code: " +
+                setStatus(R.string.transaction_failed);
+                setMessage("Unable to create a transaction. Response Code: " +
                         error.getResponse().getStatus() + " Response body: " +
                         error.getResponse().getBody());
             }
@@ -58,13 +70,18 @@ public class FinishedActivity extends Activity {
         }
     }
 
-    private void showMessage(String message) {
+    private void setStatus(int message) {
         mLoadingSpinner.setVisibility(View.GONE);
-        findViewById(R.id.thanks).setVisibility(View.VISIBLE);
-        if (message != null) {
-            TextView textView = (TextView) findViewById(R.id.transaction_id);
-            textView.setText(message);
-            textView.setVisibility(View.VISIBLE);
-        }
+        setTitle(message);
+        TextView status = (TextView) findViewById(R.id.transaction_status);
+        status.setText(message);
+        status.setVisibility(View.VISIBLE);
+    }
+
+    private void setMessage(String message) {
+        mLoadingSpinner.setVisibility(View.GONE);
+        TextView textView = (TextView) findViewById(R.id.transaction_message);
+        textView.setText(message);
+        textView.setVisibility(View.VISIBLE);
     }
 }

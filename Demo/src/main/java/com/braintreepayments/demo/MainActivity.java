@@ -129,8 +129,8 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
     }
 
     public void createTransaction(View v) {
-        Intent intent = new Intent(this, FinishedActivity.class)
-                .putExtra(FinishedActivity.EXTRA_PAYMENT_METHOD_NONCE, mNonce);
+        Intent intent = new Intent(this, CreateTransactionActivity.class)
+                .putExtra(CreateTransactionActivity.EXTRA_PAYMENT_METHOD_NONCE, mNonce);
         startActivity(intent);
 
         mCreateTransactionButton.setEnabled(false);
