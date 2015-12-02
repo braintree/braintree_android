@@ -1,15 +1,14 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
+import com.braintreepayments.api.exceptions.BrowserSwitchException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
@@ -29,7 +28,6 @@ import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 import com.paypal.android.sdk.onetouch.core.Request;
 import com.paypal.android.sdk.onetouch.core.RequestTarget;
 import com.paypal.android.sdk.onetouch.core.Result;
-import com.paypal.android.sdk.onetouch.core.ResultType;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -344,46 +342,32 @@ public class PayPal {
      * The result from PayPal's request.
      *
      * @param fragment A {@link BraintreeFragment} used to process the request.
-     * @param resultCode The result code from the request.
      * @param data Data associated with the result.
      */
-    protected static void onActivityResult(final BraintreeFragment fragment, int resultCode,
-            Intent data) {
-        if (resultCode == Activity.RESULT_OK && data != null) {
-            try {
-                boolean isAppSwitch = isAppSwitch(data);
-                Result result = getResultFromIntent(fragment.getActivity(), data);
-                ResultType resultType = result.getResultType();
-                switch (resultType) {
-                    case Error:
-                        sendAnalyticsEventForSwitchResult(fragment, isAppSwitch, "failed");
-                        break;
-                    case Cancel:
-                        onCancel(fragment, result, isAppSwitch);
-                        break;
-                    case Success:
-                        onSuccess(fragment, data, result);
-                        break;
-                }
-            } catch (InvalidArgumentException error) {
-                fragment.postCallback(error);
+    protected static void onActivityResult(final BraintreeFragment fragment, Intent data) {
+        if (data != null) {
+            boolean isAppSwitch = isAppSwitch(data);
+            Result result = getResultFromIntent(fragment.getActivity(), data);
+            switch (result.getResultType()) {
+                case Error:
+                    fragment.postCallback(new BrowserSwitchException(result.getError().getMessage()));
+                    sendAnalyticsEventForSwitchResult(fragment, isAppSwitch, "failed");
+                    break;
+                case Cancel:
+                    fragment.postCancelCallback(PAYPAL_REQUEST_CODE);
+                    sendAnalyticsEventForSwitchResult(fragment, isAppSwitch, "canceled");
+                    break;
+                case Success:
+                    onSuccess(fragment, data, result);
+                    sendAnalyticsEventForSwitchResult(fragment, isAppSwitch, "succeeded");
+                    break;
             }
+        } else {
+            fragment.postCancelCallback(PAYPAL_REQUEST_CODE);
         }
     }
 
-    private static void onCancel(final BraintreeFragment fragment, Result result,
-            boolean isAppSwitch) {
-        if (result != null && result.getError() == null) {
-            sendAnalyticsEventForSwitchResult(fragment, isAppSwitch, "canceled");
-        } else if (result.getError() != null) {
-            sendAnalyticsEventForSwitchResult(fragment, isAppSwitch, "canceled-with-error");
-        }
-    }
-
-    private static void onSuccess(final BraintreeFragment fragment, Intent data, Result result)
-            throws InvalidArgumentException {
-        sendAnalyticsEventForSwitchResult(fragment, isAppSwitch(data), "succeeded");
-
+    private static void onSuccess(final BraintreeFragment fragment, Intent data, Result result) {
         TokenizationClient.tokenize(fragment, parseResponse(result, data),
                 new PaymentMethodNonceCallback() {
                     @Override
@@ -405,8 +389,7 @@ public class PayPal {
      * @param intent The {@link Intent} returned in result.
      * @return A {@link PayPalAccountBuilder} or null if the intent is invalid.
      */
-    private static PayPalAccountBuilder parseResponse(Result result, Intent intent) throws
-            InvalidArgumentException {
+    private static PayPalAccountBuilder parseResponse(Result result, Intent intent) {
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
                 .clientMetadataId(sPendingRequest.getClientMetadataId());
 

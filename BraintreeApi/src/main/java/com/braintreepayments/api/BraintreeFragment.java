@@ -153,11 +153,9 @@ public class BraintreeFragment extends Fragment {
         }
 
         if (mIsBrowserSwitching) {
-            onActivityResult(PayPal.PAYPAL_REQUEST_CODE,
-                    BraintreeBrowserSwitchActivity.sLastBrowswerSwitchResultCode,
+            onActivityResult(PayPal.PAYPAL_REQUEST_CODE, Activity.RESULT_FIRST_USER,
                     BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse);
 
-            BraintreeBrowserSwitchActivity.sLastBrowswerSwitchResultCode = Activity.RESULT_CANCELED;
             BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = null;
             mIsBrowserSwitching = false;
         }
@@ -186,7 +184,6 @@ public class BraintreeFragment extends Fragment {
     @Override
     public void startActivity(Intent intent) {
         if (intent.hasExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH)) {
-            BraintreeBrowserSwitchActivity.sLastBrowswerSwitchResultCode = Activity.RESULT_CANCELED;
             BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = null;
             mIsBrowserSwitching = true;
             getActivity().startActivity(intent);
@@ -201,7 +198,7 @@ public class BraintreeFragment extends Fragment {
 
         switch (requestCode) {
             case PayPal.PAYPAL_REQUEST_CODE:
-                PayPal.onActivityResult(this, resultCode, data);
+                PayPal.onActivityResult(this, data);
                 break;
             case ThreeDSecure.THREE_D_SECURE_REQUEST_CODE:
                 ThreeDSecure.onActivityResult(this, resultCode, data);
@@ -209,17 +206,7 @@ public class BraintreeFragment extends Fragment {
         }
 
         if (resultCode == Activity.RESULT_CANCELED) {
-            postOrQueueCallback(new QueuedCallback() {
-                @Override
-                public boolean shouldRun() {
-                    return mCancelListener != null;
-                }
-
-                @Override
-                public void run() {
-                    mCancelListener.onCancel(requestCode);
-                }
-            });
+            postCancelCallback(requestCode);
         }
     }
 
@@ -281,6 +268,20 @@ public class BraintreeFragment extends Fragment {
 
     protected void sendAnalyticsEvent(final String eventFragment) {
         AnalyticsManager.sendRequest(this, mIntegrationType, eventFragment);
+    }
+
+    protected void postCancelCallback(final int requestCode) {
+        postOrQueueCallback(new QueuedCallback() {
+            @Override
+            public boolean shouldRun() {
+                return mCancelListener != null;
+            }
+
+            @Override
+            public void run() {
+                mCancelListener.onCancel(requestCode);
+            }
+        });
     }
 
     protected void postCallback(final PaymentMethodNonce paymentMethodNonce) {
