@@ -40,9 +40,7 @@ public class BraintreeActivityTestRule<T extends Activity> extends ActivityTestR
     protected void afterActivityFinished() {
         super.afterActivityFinished();
 
-        try {
-            Intents.release();
-        } catch (IllegalStateException ignored) {}
+        Intents.release();
 
         getSharedPreferences().edit().clear().commit();
     }
