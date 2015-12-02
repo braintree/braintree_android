@@ -31,7 +31,8 @@ public final class Result implements Parcelable {
      * Construct a PayPalOneTouchResult for a failure
      *
      * @param error The error to return to the caller
-     * @note the error may come from the remote authenticator or directly from lib-otc (e.g. due to response parsing errors)
+     * @note the error may come from the remote authenticator or directly from lib-otc (e.g. due to
+     * response parsing errors)
      */
     Result(Throwable error) {
         this(ResultType.Error, null, null, null, null, error);
@@ -47,7 +48,8 @@ public final class Result implements Parcelable {
     /**
      * Construct a PayPalOneTouchResult for any generic data.  For internal use only.
      */
-    private Result(ResultType resultType, String environment, ResponseType responseType, JSONObject response, String userEmail, Throwable error) {
+    private Result(ResultType resultType, String environment, ResponseType responseType,
+            JSONObject response, String userEmail, Throwable error) {
         assert resultType != null;
         this.mEnvironment = environment;
         this.mResultType = resultType;
@@ -72,20 +74,19 @@ public final class Result implements Parcelable {
             client.put("platform", "Android");
             client.put("product_name", BuildConfig.PRODUCT_NAME);
 
-
             JSONObject response = new JSONObject();
             response.put("client", client);
 
-            if(null != mResponse) {
+            if (null != mResponse) {
                 JSONObject result = mResponse;
                 response.put("response", result);
             }
 
-            if(null != mResponseType) {
+            if (null != mResponseType) {
                 response.put("response_type", mResponseType.name());
             }
 
-            if(null != mUserEmail) {
+            if (null != mUserEmail) {
                 JSONObject user = new JSONObject();
                 user.put("display_string", mUserEmail);
                 response.put("user", user);
@@ -116,7 +117,7 @@ public final class Result implements Parcelable {
         dest.writeValue(this.mEnvironment);
         dest.writeValue(this.mResultType);
         dest.writeValue(this.mResponseType);
-        if(null != this.mResponse) {
+        if (null != this.mResponse) {
             dest.writeValue(this.mResponse.toString());
         } else {
             dest.writeValue(null);
@@ -133,7 +134,7 @@ public final class Result implements Parcelable {
         JSONObject jsonResponse = null;
         try {
             String jsonString = (String) in.readValue(null);
-            if(null != jsonString){
+            if (null != jsonString) {
                 jsonResponse = new JSONObject(jsonString);
             }
         } catch (JSONException e) {

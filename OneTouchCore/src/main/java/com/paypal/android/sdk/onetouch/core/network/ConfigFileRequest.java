@@ -9,8 +9,6 @@ import com.paypal.android.sdk.onetouch.core.config.ConfigFileParser;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.network.OtcApiName.ApiName;
 
-import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,7 +45,8 @@ public class ConfigFileRequest extends ServerRequest {
 
     @Override
     public void parseError() throws JSONException {
-        setServerError(LibraryError.PARSE_RESPONSE_ERROR.toString(), "failed to parse config", null);
+        setServerError(LibraryError.PARSE_RESPONSE_ERROR.toString(), "failed to parse config",
+                null);
     }
 
     @Override

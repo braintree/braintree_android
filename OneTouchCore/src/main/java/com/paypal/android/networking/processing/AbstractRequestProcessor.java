@@ -1,11 +1,11 @@
 package com.paypal.android.networking.processing;
 
+import android.util.Log;
+
 import com.paypal.android.networking.events.LibraryError;
 import com.paypal.android.networking.events.ThrowableEvent;
 import com.paypal.android.networking.request.ServerRequest;
 import com.paypal.android.sdk.onetouch.core.base.Constants;
-
-import android.util.Log;
 
 import org.json.JSONException;
 
@@ -34,7 +34,8 @@ public abstract class AbstractRequestProcessor implements RequestProcessor {
             Log.e(Constants.PUBLIC_TAG, "Exception parsing server response", e);
             serverRequest.setServerError(
                     LibraryError.INTERNAL_SERVER_ERROR.toString(), statusCode
-                            + " http response received.  Response not parsable: " + e.getMessage(), null);
+                            + " http response received.  Response not parsable: " + e.getMessage(),
+                    null);
         }
     }
 }

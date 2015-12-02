@@ -1,10 +1,9 @@
 package com.paypal.android.networking.processing;
 
+import android.text.TextUtils;
+
 import com.paypal.android.networking.request.ServerRequest;
 import com.paypal.android.networking.request.ServerRequestEnvironment;
-
-import android.text.TextUtils;
-import android.util.Log;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -16,7 +15,8 @@ public abstract class MockRequestProcessor extends AbstractRequestProcessor {
     private final ThreadPoolExecutor mThreadPoolExecutor;
     private final int mNetworkDelayInMs;
 
-    public MockRequestProcessor(int networkDelayInMs, ServerRequestEnvironment serverRequestEnvironment) {
+    public MockRequestProcessor(int networkDelayInMs,
+            ServerRequestEnvironment serverRequestEnvironment) {
         this.mNetworkDelayInMs = networkDelayInMs;
         this.mServerRequestEnvironment = serverRequestEnvironment;
         this.mThreadPoolExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
@@ -37,15 +37,16 @@ public abstract class MockRequestProcessor extends AbstractRequestProcessor {
         return new Runnable() {
             @Override
             public void run() {
-                if(isFailure(serverRequest)) {
+                if (isFailure(serverRequest)) {
                     String failure = getFailureReply();
 
                     serverRequest.setServerReply(failure);
                     parseError(serverRequest, getFailureHttpStatusCode());
                 } else {
-                    String mockResponse =  serverRequest.getMockResponse();
+                    String mockResponse = serverRequest.getMockResponse();
                     if (TextUtils.isEmpty(mockResponse)) {
-                        throw new RuntimeException("Empty mock value for " + serverRequest.getApiInfo());
+                        throw new RuntimeException(
+                                "Empty mock value for " + serverRequest.getApiInfo());
                     }
 
                     serverRequest.setServerReply(mockResponse);
@@ -66,9 +67,9 @@ public abstract class MockRequestProcessor extends AbstractRequestProcessor {
         };
     }
 
-
     /**
      * Returns true if this request should be a mock failure
+     *
      * @param serverRequest
      * @return
      */
@@ -76,12 +77,14 @@ public abstract class MockRequestProcessor extends AbstractRequestProcessor {
 
     /**
      * The failure string if #isFailure returns true
+     *
      * @return
      */
     protected abstract String getFailureReply();
 
     /**
      * If there's a failure, this method will be called to retrieve the http status code
+     *
      * @return
      */
     protected abstract int getFailureHttpStatusCode();

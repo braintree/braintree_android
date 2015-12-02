@@ -17,16 +17,18 @@ public final class SdkRiskComponent {
     private static MetadataIdProvider sMetadataIdProvider;
 
     /**
-     * Starts the risk component if it hasn't been initialized yet.  Otherwise, just generate a clientMetadataId.
-     *
+     * Starts the risk component if it hasn't been initialized yet.  Otherwise, just generate a
+     * clientMetadataId.
+     * <p>
      * Warning!  The init() method MUST be run on the main thread!
      *
      * @param context
      * @return the clientMetadataId
      */
-    public static synchronized final String getClientMetadataId(ExecutorService executorService, Context context,
-                                                   String applicationGuid,
-                                                   String productVersion, String pairingId) {
+    public static synchronized final String getClientMetadataId(ExecutorService executorService,
+            Context context,
+            String applicationGuid,
+            String productVersion, String pairingId) {
         if (null == sMetadataIdProvider) {
             try {
                 sMetadataIdProvider = new MetadataIdProviderImpl();
@@ -57,7 +59,8 @@ public final class SdkRiskComponent {
                 return clientMetadataId;
 
             } catch (Throwable t) {
-                Log.e(Constants.PUBLIC_TAG, "An internal component failed to initialize: " + t.getMessage());
+                Log.e(Constants.PUBLIC_TAG,
+                        "An internal component failed to initialize: " + t.getMessage());
                 return null;
             }
         } else {

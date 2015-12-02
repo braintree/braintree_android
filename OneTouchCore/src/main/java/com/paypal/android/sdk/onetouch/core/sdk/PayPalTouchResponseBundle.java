@@ -26,8 +26,8 @@ public final class PayPalTouchResponseBundle implements Parcelable {
     private final String webURL;
 
     public PayPalTouchResponseBundle(String version, String display_name, String access_token,
-                              String response_type, String authorization_code, String expires_in,
-                              String scope, String email, String photo_url, String error, String webURL) {
+            String response_type, String authorization_code, String expires_in,
+            String scope, String email, String photo_url, String error, String webURL) {
         this.version = version;
         this.display_name = display_name;
         this.access_token = access_token;
@@ -68,7 +68,7 @@ public final class PayPalTouchResponseBundle implements Parcelable {
     }
 
     private PayPalTouchResponseBundle(Parcel source) {
-        this(   source.readString(),
+        this(source.readString(),
                 source.readString(),
                 source.readString(),
                 source.readString(),

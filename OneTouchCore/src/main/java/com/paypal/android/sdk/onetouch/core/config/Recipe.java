@@ -1,12 +1,12 @@
 package com.paypal.android.sdk.onetouch.core.config;
 
-import com.paypal.android.sdk.onetouch.core.Protocol;
-import com.paypal.android.sdk.onetouch.core.RequestTarget;
-import com.paypal.android.sdk.onetouch.core.sdk.WalletAppHelper;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+
+import com.paypal.android.sdk.onetouch.core.Protocol;
+import com.paypal.android.sdk.onetouch.core.RequestTarget;
+import com.paypal.android.sdk.onetouch.core.sdk.WalletAppHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,7 +35,7 @@ public abstract class Recipe<T extends Recipe<T>> {
     }
 
     public T protocol(String protocol) {
-        switch(protocol){
+        switch (protocol) {
             case "0":
                 this.protocol = Protocol.v0;
                 break;
@@ -69,7 +69,6 @@ public abstract class Recipe<T extends Recipe<T>> {
         return new ArrayList<>(targetPackagesInReversePriorityOrder);
     }
 
-
     public T supportedLocale(String supportedLocale) {
         this.supportedLocales.add(supportedLocale);
         return getThis();
@@ -100,7 +99,7 @@ public abstract class Recipe<T extends Recipe<T>> {
     public abstract T getThis();
 
     public boolean isValidAppTarget(Context context, boolean isSecurityEnabled) {
-        for(String allowedWalletTarget: getTargetPackagesInReversePriorityOrder()) {
+        for (String allowedWalletTarget : getTargetPackagesInReversePriorityOrder()) {
             boolean isConfiguredToAcceptIntent = new WalletAppHelper().isWalletIntentSafe(
                     context,
                     getTargetIntentAction(),
@@ -109,12 +108,15 @@ public abstract class Recipe<T extends Recipe<T>> {
             String locale = Locale.getDefault().toString();
 
             // if no locales are specified, then presumed to be allowed for all
-            boolean isLocaleAllowed = supportedLocales.isEmpty() || supportedLocales.contains(locale);
+            boolean isLocaleAllowed =
+                    supportedLocales.isEmpty() || supportedLocales.contains(locale);
 
-            boolean isValidTarget = new WalletAppHelper().isValidGenericAuthenticatorInstalled(context, isSecurityEnabled, allowedWalletTarget)
+            boolean isValidTarget = new WalletAppHelper()
+                    .isValidGenericAuthenticatorInstalled(context, isSecurityEnabled,
+                            allowedWalletTarget)
                     && isConfiguredToAcceptIntent && isLocaleAllowed;
 
-            if(isValidTarget){
+            if (isValidTarget) {
                 return true;
             }
         }
@@ -123,9 +125,10 @@ public abstract class Recipe<T extends Recipe<T>> {
     }
 
     public boolean isValidBrowserTarget(Context context, String browserSwitchUrl) {
-        for(String allowedBrowserPackage: getTargetPackagesInReversePriorityOrder()) {
-            boolean canBeResolved = isValidBrowserTarget(context, browserSwitchUrl, allowedBrowserPackage);
-            if(canBeResolved){
+        for (String allowedBrowserPackage : getTargetPackagesInReversePriorityOrder()) {
+            boolean canBeResolved =
+                    isValidBrowserTarget(context, browserSwitchUrl, allowedBrowserPackage);
+            if (canBeResolved) {
                 return true;
             }
         }
@@ -133,11 +136,12 @@ public abstract class Recipe<T extends Recipe<T>> {
         return false;
     }
 
-    public boolean isValidBrowserTarget(Context context, String browserSwitchUrl, String allowedBrowserPackage){
+    public boolean isValidBrowserTarget(Context context, String browserSwitchUrl,
+            String allowedBrowserPackage) {
         Intent intent = getBrowserIntent(browserSwitchUrl, allowedBrowserPackage);
         boolean canIntentBeResolved = intent.resolveActivity(context.getPackageManager()) != null;
 
-        if(canIntentBeResolved){
+        if (canIntentBeResolved) {
             return true;
         }
 
@@ -160,7 +164,9 @@ public abstract class Recipe<T extends Recipe<T>> {
 
     @Override
     public String toString() {
-        return "Recipe(target=" + target + ", protocol=" + protocol + ", packages=" + targetPackagesInReversePriorityOrder +
-                ", targetComponent=" + targetComponent + ", targetIntentAction=" + targetIntentAction + ", supportedLocales=" + supportedLocales +")";
+        return "Recipe(target=" + target + ", protocol=" + protocol + ", packages=" +
+                targetPackagesInReversePriorityOrder +
+                ", targetComponent=" + targetComponent + ", targetIntentAction=" +
+                targetIntentAction + ", supportedLocales=" + supportedLocales + ")";
     }
 }

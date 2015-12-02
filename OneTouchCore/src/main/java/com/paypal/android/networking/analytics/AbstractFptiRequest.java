@@ -22,7 +22,8 @@ public class AbstractFptiRequest extends RestApiRequest {
 
     private final TrackingLogData mTrackingLogData;
 
-    public AbstractFptiRequest(ApiInfo apiInfo, ServerRequestEnvironment env, CoreEnvironment coreEnv, TrackingLogData logData) {
+    public AbstractFptiRequest(ApiInfo apiInfo, ServerRequestEnvironment env,
+            CoreEnvironment coreEnv, TrackingLogData logData) {
         super(apiInfo, env, coreEnv, null /* no auth needed for FPTI */);
         this.mTrackingLogData = logData;
 
@@ -35,7 +36,6 @@ public class AbstractFptiRequest extends RestApiRequest {
     public boolean isTrackingRequest() {
         return true;
     }
-
 
     /*-
         sample request
@@ -71,7 +71,6 @@ public class AbstractFptiRequest extends RestApiRequest {
                 URLEncoderHelper.encode(getServerRequestEnvironment().getContextInspector()
                         .getInstallationGUID());
         String visitorTrackingToken = mTrackingLogData.mTrackingToken;
-
 
         JSONObject actor = new JSONObject();
         actor.accumulate("tracking_visitor_id", deviceId);

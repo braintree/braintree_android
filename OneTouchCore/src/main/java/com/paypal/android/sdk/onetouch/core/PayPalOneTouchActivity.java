@@ -24,8 +24,10 @@ import java.util.Locale;
 public class PayPalOneTouchActivity extends Activity {
     private static final String TAG = PayPalOneTouchActivity.class.getSimpleName();
 
-    private static final String EXTRA_REQUEST = "com.paypal.android.sdk.onetouch.core.EXTRA_REQUEST";
-    private static final String EXTRA_PROTOCOL = "com.paypal.android.sdk.onetouch.core.EXTRA_PROTOCOL";
+    private static final String EXTRA_REQUEST =
+            "com.paypal.android.sdk.onetouch.core.EXTRA_REQUEST";
+    private static final String EXTRA_PROTOCOL =
+            "com.paypal.android.sdk.onetouch.core.EXTRA_PROTOCOL";
 
     /**
      * Parcelable Extra containing a {@link Result} in the activity result
@@ -46,13 +48,14 @@ public class PayPalOneTouchActivity extends Activity {
      * @param activity the Activity who will receive the results
      */
     public static void Start(Activity activity, int requestCode, Request paypalRequest,
-                             Protocol protocol) {
+            Protocol protocol) {
         Intent intent = getStartIntent(activity, paypalRequest, protocol);
 
         activity.startActivityForResult(intent, requestCode);
     }
 
-    public static Intent getStartIntent(Activity activity, Request paypalRequest, Protocol protocol) {
+    public static Intent getStartIntent(Activity activity, Request paypalRequest,
+            Protocol protocol) {
         Intent intent = new Intent(activity, PayPalOneTouchActivity.class);
         intent.putExtras(activity.getIntent());
         intent.putExtra(EXTRA_REQUEST, paypalRequest);
@@ -64,7 +67,8 @@ public class PayPalOneTouchActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mContextInspector = new ContextInspector(getApplicationContext(), new OtcEnvironment().getPrefsFile());
+        mContextInspector =
+                new ContextInspector(getApplicationContext(), new OtcEnvironment().getPrefsFile());
 
         if (savedInstanceState == null) {
             // only validate on first instantiation
@@ -87,7 +91,7 @@ public class PayPalOneTouchActivity extends Activity {
 
         mPaypalRequest = getIntent().getParcelableExtra(EXTRA_REQUEST);
         Protocol protocol =
-                ( Protocol ) getIntent().getSerializableExtra(EXTRA_PROTOCOL);
+                (Protocol) getIntent().getSerializableExtra(EXTRA_PROTOCOL);
 
         if (mIsFirstInstantiation) {
             doAuthenticatorRequest(mPaypalRequest, protocol);
@@ -98,7 +102,7 @@ public class PayPalOneTouchActivity extends Activity {
         Intent intent;
         int requestCode;
 
-        if(Protocol.v1 == protocol) {
+        if (Protocol.v1 == protocol) {
             intent = new V1WalletHelper().getPayPalTouchIntent();
             intent.putExtra("version", "1.0");
             requestCode = V1_TOUCH_AUTHENTICATOR_REQUEST_CODE;
@@ -118,7 +122,7 @@ public class PayPalOneTouchActivity extends Activity {
         intent.putExtra("environment", request.getEnvironment());
         intent.putExtra("environment_url", request.getEnvironmentUrl());
 
-        if(request instanceof AuthorizationRequest) {
+        if (request instanceof AuthorizationRequest) {
             AuthorizationRequest authorizationRequest = (AuthorizationRequest) request;
             intent.putExtra("scope", authorizationRequest.getScopeString());
             intent.putExtra("response_type", "code");
@@ -132,7 +136,8 @@ public class PayPalOneTouchActivity extends Activity {
         } else {
             CheckoutRequest checkoutRequest = (CheckoutRequest) request;
             intent.putExtra("response_type", "web");
-            String webURL = checkoutRequest.getBrowserSwitchUrl(getApplicationContext(), PayPalOneTouchCore.getConfig(getApplicationContext()));
+            String webURL = checkoutRequest.getBrowserSwitchUrl(getApplicationContext(),
+                    PayPalOneTouchCore.getConfig(getApplicationContext()));
             intent.putExtra("webURL", webURL);
 
             // only checkoutRequest actually cares about correlating request/response, since there's no v3 consent support.
@@ -143,7 +148,8 @@ public class PayPalOneTouchActivity extends Activity {
                     " with webURL\"" + intent.getStringExtra("webURL") + "\" from Authenticator.");
         }
 
-        Log.i(TAG, "startActivityForResult(" + intent + ", " + requestCode + ") extras: " + intent.getExtras());
+        Log.i(TAG, "startActivityForResult(" + intent + ", " + requestCode + ") extras: " +
+                intent.getExtras());
 
         startActivityForResult(intent, requestCode);
     }
@@ -156,7 +162,7 @@ public class PayPalOneTouchActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + data +")");
+        Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + data + ")");
 
         TrackingPoint pointToTrack;
         Result result;
@@ -167,20 +173,23 @@ public class PayPalOneTouchActivity extends Activity {
             case V2_TOUCH_AUTHENTICATOR_REQUEST_CODE:
                 if (null != data
                         && null != data.getExtras()
-                        && !data.getExtras().isEmpty()){
+                        && !data.getExtras().isEmpty()) {
 
                     Bundle bundle = data.getExtras();
-                    boolean isValidResponse = mPaypalRequest.validateV1V2Response(mContextInspector, bundle);
+                    boolean isValidResponse =
+                            mPaypalRequest.validateV1V2Response(mContextInspector, bundle);
 
-                    if(resultCode == RESULT_OK && isValidResponse){
+                    if (resultCode == RESULT_OK && isValidResponse) {
                         result = processResponseIntent(bundle);
                         pointToTrack = TrackingPoint.Return;
                     } else {
-                        if(bundle.containsKey("error")){
-                            result = new Result(new WalletSwitchException(bundle.getString("error")));
+                        if (bundle.containsKey("error")) {
+                            result = new Result(
+                                    new WalletSwitchException(bundle.getString("error")));
                             pointToTrack = TrackingPoint.Error;
-                        } else if(!isValidResponse) {
-                            result = new Result(new ResponseParsingException("invalid wallet response"));
+                        } else if (!isValidResponse) {
+                            result = new Result(
+                                    new ResponseParsingException("invalid wallet response"));
                             pointToTrack = TrackingPoint.Error;
                         } else {
                             result = new Result();
@@ -218,20 +227,20 @@ public class PayPalOneTouchActivity extends Activity {
     private Result processResponseIntent(Bundle bundle) {
         Result result;
         String error = bundle.getString("error");
-        if(!TextUtils.isEmpty(error)){
+        if (!TextUtils.isEmpty(error)) {
             result = new Result(new WalletSwitchException(error));
         } else {
             String environment = bundle.getString("environment");
             String bundleResponseType = bundle.getString("response_type").toLowerCase(Locale.US);
             ResponseType response_type;
-            if("code".equals(bundleResponseType)){
+            if ("code".equals(bundleResponseType)) {
                 response_type = ResponseType.authorization_code;
             } else {
                 response_type = ResponseType.web;
             }
 
             try {
-                if(ResponseType.web == response_type){
+                if (ResponseType.web == response_type) {
                     String webURL = bundle.getString("webURL");
                     result = new Result(
                             environment,
@@ -254,7 +263,6 @@ public class PayPalOneTouchActivity extends Activity {
         }
         return result;
     }
-
 
     private void logAllKeysPublicly(Bundle bundle) {
         for (String key : bundle.keySet()) {

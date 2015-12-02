@@ -9,8 +9,6 @@ import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
 import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;
 import com.paypal.android.sdk.onetouch.core.network.FptiRequest;
 
-import android.util.Log;
-
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -28,33 +26,36 @@ public class FptiManager {
     private FptiToken token;
 
     public FptiManager(ServerInterface serverInterface,
-                       CoreEnvironment coreEnvironment,
-                       ContextInspector contextInspector){
+            CoreEnvironment coreEnvironment,
+            ContextInspector contextInspector) {
         this.mServerInterface = serverInterface;
         this.mCoreEnvironment = coreEnvironment;
         this.mContextInspector = contextInspector;
     }
 
-
-    public void trackFpti(TrackingPoint point, String environmentName, Map<String, String> fptiDataBundle, Protocol protocol) {
-        if(null == token || !token.isValid()){
+    public void trackFpti(TrackingPoint point, String environmentName,
+            Map<String, String> fptiDataBundle, Protocol protocol) {
+        if (null == token || !token.isValid()) {
             token = new FptiToken();
         }
 
         DeviceInspector deviceInspector = new DeviceInspector();
 
-        String abcde = "mobile:otc:" + point.getCd() + ":" + (null != protocol?protocol.name():"");  // also known as 'pagename'
+        String abcde = "mobile:otc:" + point.getCd() + ":" +
+                (null != protocol ? protocol.name() : "");  // also known as 'pagename'
         String xyz = "Android:" + environmentName + ":";
-        String abcdexyz_error = abcde + ":" + xyz + (point.hasError()?"|error":""); //also known as 'pageName2'
-
+        String abcdexyz_error =
+                abcde + ":" + xyz + (point.hasError() ? "|error" : ""); //also known as 'pageName2'
 
         // params in alphabetical order
         Map<String, String> params = new HashMap<>(fptiDataBundle);
-        params.put("apid", mContextInspector.getApplicationInfoName() + "|" + BuildConfig.PRODUCT_VERSION + "|"
-                + mContextInspector.getContext().getPackageName());
+        params.put("apid",
+                mContextInspector.getApplicationInfoName() + "|" + BuildConfig.PRODUCT_VERSION + "|"
+                        + mContextInspector.getContext().getPackageName());
         params.put("bchn", "otc");
         params.put("bzsr", "mobile");
-        params.put("e", "im"); // always say 'impression' for OTC, as opposed to 'cl' click to match iOS
+        params.put("e",
+                "im"); // always say 'impression' for OTC, as opposed to 'cl' click to match iOS
         params.put("g", getGmtOffsetInMinutes());
         params.put("lgin", "out");
         params.put("mapv", BuildConfig.PRODUCT_VERSION);
@@ -79,7 +80,7 @@ public class FptiManager {
         return Integer.toString(mGMTOffset / 1000 / 60);
     }
 
-    private class FptiToken{
+    private class FptiToken {
         public static final int FPTI_TOKEN_VALIDITY_IN_HOURS = 30;
         public String mToken;
 
@@ -96,7 +97,6 @@ public class FptiManager {
         public boolean isValid() {
             return mValidUntil > System.currentTimeMillis();
         }
-
 
         /**
          * Creates a token, good for 30 hours
@@ -129,7 +129,8 @@ public class FptiManager {
 
         @Override
         public String toString() {
-            return FptiToken.class.getSimpleName() + "[mToken=" + mToken + ", mValidUntil=" + mValidUntil + "]";
+            return FptiToken.class.getSimpleName() + "[mToken=" + mToken + ", mValidUntil=" +
+                    mValidUntil + "]";
         }
     }
 }

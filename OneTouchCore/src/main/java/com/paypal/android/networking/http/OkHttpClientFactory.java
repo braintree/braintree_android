@@ -26,18 +26,19 @@ public class OkHttpClientFactory {
     private static final String TAG = OkHttpClientFactory.class.getSimpleName();
     private static final String SSL_CONTEXT_PROTOCOL_ACCEPT_ALL = "TLSv1";
 
-
     /**
      * Generate an OkHttpClient used for network communication for API operations
      *
      * @param networkTimeout Network Timeout
      * @param isTrustAll To Trust All Connections
-     * @param useSslPinning Whether to use SSL Pinning Ability. Generally used for sandbox and live only.
+     * @param useSslPinning Whether to use SSL Pinning Ability. Generally used for sandbox and live
+     * only.
      * @param userAgent User Agent String
      * @param baseUrl Base URL of the Request.
      * @return OkHttpClient instance
      */
-    public static OkHttpClient getOkHttpClient(int networkTimeout, boolean isTrustAll, boolean useSslPinning, String userAgent, String baseUrl) {
+    public static OkHttpClient getOkHttpClient(int networkTimeout, boolean isTrustAll,
+            boolean useSslPinning, String userAgent, String baseUrl) {
         Log.d(TAG, "Creating okhttp client.  networkTimeout=" + networkTimeout + ", isTrustAll=" +
                 isTrustAll +
                 ", useSslPinning=" + useSslPinning + ", userAgent=" + userAgent + ", baseUrl=" +
@@ -63,7 +64,6 @@ public class OkHttpClientFactory {
             throw new RuntimeException(e);
         }
 
-
         return client;
     }
 
@@ -74,16 +74,19 @@ public class OkHttpClientFactory {
      * @throws NoSuchAlgorithmException
      * @throws KeyManagementException
      */
-    private static SSLSocketFactory getTrustAllSocketFactory() throws NoSuchAlgorithmException, KeyManagementException {
+    private static SSLSocketFactory getTrustAllSocketFactory()
+            throws NoSuchAlgorithmException, KeyManagementException {
         // Create a trust manager that does not validate certificate chains
-        final TrustManager[] trustAllCerts = new TrustManager[] {
+        final TrustManager[] trustAllCerts = new TrustManager[]{
                 new X509TrustManager() {
                     @Override
-                    public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                    public void checkClientTrusted(java.security.cert.X509Certificate[] chain,
+                            String authType) throws CertificateException {
                     }
 
                     @Override
-                    public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                    public void checkServerTrusted(java.security.cert.X509Certificate[] chain,
+                            String authType) throws CertificateException {
                     }
 
                     @Override
@@ -107,7 +110,8 @@ public class OkHttpClientFactory {
      * @return CertificatePinner
      * @throws URISyntaxException
      */
-    private static CertificatePinner getCertificatePinner(String baseUrl) throws URISyntaxException {
+    private static CertificatePinner getCertificatePinner(String baseUrl)
+            throws URISyntaxException {
         String host = getDomainName(baseUrl);
         return new CertificatePinner.Builder()
                 .add(host, "sha1/u8I+KQuzKHcdrT6iTb30I70GsD0=")
@@ -119,7 +123,8 @@ public class OkHttpClientFactory {
     }
 
     /**
-     * Returns an Accept All Host Name verifier. This is used for testing other than sandbox and live.
+     * Returns an Accept All Host Name verifier. This is used for testing other than sandbox and
+     * live.
      *
      * @return HostnameVerifier
      */

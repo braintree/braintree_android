@@ -1,11 +1,5 @@
 package com.paypal.android.sdk.onetouch.core;
 
-import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
-import com.paypal.android.sdk.onetouch.core.config.CheckoutRecipe;
-import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
-import com.paypal.android.sdk.onetouch.core.config.Recipe;
-import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
-
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +7,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
+import com.paypal.android.sdk.onetouch.core.config.CheckoutRecipe;
+import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
+import com.paypal.android.sdk.onetouch.core.config.Recipe;
+import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,7 +38,6 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
         return mPairingId;
     }
 
-
     public CheckoutRequest pairingId(String pairingId) {
         this.mPairingId = pairingId;
         return this;
@@ -55,7 +54,7 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
     }
 
     protected void selectTokenQueryParamKey(String url) {
-        if(!TextUtils.isEmpty(url) && url.contains("ba_token")) {
+        if (!TextUtils.isEmpty(url) && url.contains("ba_token")) {
             mTokenQueryParamKey = TOKEN_QUERY_PARAM_KEY_BA_TOKEN;
         } else {
             mTokenQueryParamKey = TOKEN_QUERY_PARAM_KEY_TOKEN;
@@ -65,7 +64,8 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
     @Override
     public String toString() {
         return String.format(
-                CheckoutRequest.class.getSimpleName() + ": {" + getBaseRequestToString() +  ", approvalURL: %s}",
+                CheckoutRequest.class.getSimpleName() + ": {" + getBaseRequestToString() +
+                        ", approvalURL: %s}",
                 mApprovalUrl);
     }
 
@@ -95,7 +95,7 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
 
     /**
      * required by {@link android.os.Parcelable}
-    */
+     */
     public static final Creator<CheckoutRequest> CREATOR =
             new Creator<CheckoutRequest>() {
 
@@ -127,21 +127,22 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
 
     @Override
     public void persistRequiredFields(ContextInspector contextInspector) {
-        contextInspector.setPreference(PREFS_HERMES_TOKEN, Uri.parse(mApprovalUrl).getQueryParameter(mTokenQueryParamKey));
+        contextInspector.setPreference(PREFS_HERMES_TOKEN,
+                Uri.parse(mApprovalUrl).getQueryParameter(mTokenQueryParamKey));
     }
 
     @Override
     public Result parseBrowserResponse(ContextInspector contextInspector, Uri uri) {
         String status = uri.getLastPathSegment();
 
-        if(!Uri.parse(getSuccessUrl()).getLastPathSegment().equals(status)){
+        if (!Uri.parse(getSuccessUrl()).getLastPathSegment().equals(status)) {
             // return cancel result
             return new Result();
         }
 
         String persistedXoToken = contextInspector.getStringPreference(PREFS_HERMES_TOKEN);
         String responseXoToken = uri.getQueryParameter(mTokenQueryParamKey);
-        if(null != responseXoToken && TextUtils.equals(persistedXoToken, responseXoToken)) {
+        if (null != responseXoToken && TextUtils.equals(persistedXoToken, responseXoToken)) {
             try {
                 JSONObject response = new JSONObject();
                 response.put("webURL", uri.toString());
@@ -154,7 +155,8 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
                 return new Result(new ResponseParsingException(e));
             }
         } else {
-            return new Result(new BrowserSwitchException("The response contained inconsistent data."));
+            return new Result(
+                    new BrowserSwitchException("The response contained inconsistent data."));
         }
     }
 
@@ -162,7 +164,7 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
     public boolean validateV1V2Response(ContextInspector contextInspector, Bundle extras) {
         String persistedXoToken = contextInspector.getStringPreference(PREFS_HERMES_TOKEN);
         String webUrl = extras.getString("webURL");
-        if(null != webUrl) {
+        if (null != webUrl) {
             String responseXoToken = Uri.parse(webUrl).getQueryParameter(mTokenQueryParamKey);
             if (null != responseXoToken && TextUtils.equals(persistedXoToken, responseXoToken)) {
                 // they match yay!
@@ -179,13 +181,14 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
     }
 
     @Override
-    public Recipe getRecipeToExecute(Context context, OtcConfiguration config, boolean isSecurityEnabled) {
-        for(CheckoutRecipe recipe: config.getCheckoutRecipes()){
-            if(RequestTarget.wallet == recipe.getTarget()){
-                if (recipe.isValidAppTarget(context, isSecurityEnabled)){
+    public Recipe getRecipeToExecute(Context context, OtcConfiguration config,
+            boolean isSecurityEnabled) {
+        for (CheckoutRecipe recipe : config.getCheckoutRecipes()) {
+            if (RequestTarget.wallet == recipe.getTarget()) {
+                if (recipe.isValidAppTarget(context, isSecurityEnabled)) {
                     return recipe;
                 }
-            } else if(RequestTarget.browser == recipe.getTarget()){
+            } else if (RequestTarget.browser == recipe.getTarget()) {
                 String browserSwitchUrl = getBrowserSwitchUrl(context, config);
 
                 if (recipe.isValidBrowserTarget(context, browserSwitchUrl)) {
@@ -203,7 +206,8 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
         Map<String, String> fptiDataBundle = new HashMap<>();
         fptiDataBundle.put("fltk", ecToken);
         fptiDataBundle.put("clid", getClientId());
-        PayPalOneTouchCore.getFptiManager(context).trackFpti(trackingPoint, getEnvironment(), fptiDataBundle, protocol);
+        PayPalOneTouchCore.getFptiManager(context)
+                .trackFpti(trackingPoint, getEnvironment(), fptiDataBundle, protocol);
     }
 
 }

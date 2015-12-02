@@ -18,7 +18,7 @@ public class ThemeManifestValidator {
      * Validates that the theme is translucent
      */
     public void validateTheme(Class<? extends Activity> clazz) {
-        try{
+        try {
             PackageManager packageManager = context.getPackageManager();
             PackageInfo packageInfo =
                     packageManager.getPackageInfo(
@@ -28,8 +28,9 @@ public class ThemeManifestValidator {
             if (null != activityInfos) {
                 for (ActivityInfo activityInfo : activityInfos) {
                     if (activityInfo.name.equals(clazz.getName())
-                            && activityInfo.getThemeResource() != android.R.style.Theme_Translucent_NoTitleBar) {
-                        throw new RuntimeException("Theme for " +  clazz.getName() + " should be " +
+                            && activityInfo.getThemeResource() !=
+                            android.R.style.Theme_Translucent_NoTitleBar) {
+                        throw new RuntimeException("Theme for " + clazz.getName() + " should be " +
                                 "\"@android:style/Theme.Translucent.NoTitleBar\"");
                     }
                 }

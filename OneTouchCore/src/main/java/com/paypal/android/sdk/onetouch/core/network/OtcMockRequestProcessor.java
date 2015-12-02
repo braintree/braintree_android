@@ -5,7 +5,8 @@ import com.paypal.android.networking.request.ServerRequest;
 import com.paypal.android.networking.request.ServerRequestEnvironment;
 
 public class OtcMockRequestProcessor extends MockRequestProcessor {
-    public OtcMockRequestProcessor(int networkDelayInMs, ServerRequestEnvironment serverRequestEnvironment) {
+    public OtcMockRequestProcessor(int networkDelayInMs,
+            ServerRequestEnvironment serverRequestEnvironment) {
         super(networkDelayInMs, serverRequestEnvironment);
     }
 

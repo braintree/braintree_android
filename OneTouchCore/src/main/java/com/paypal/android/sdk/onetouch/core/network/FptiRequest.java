@@ -8,7 +8,7 @@ import com.paypal.android.sdk.onetouch.core.network.OtcApiName.ApiName;
 
 public class FptiRequest extends AbstractFptiRequest {
     public FptiRequest(ServerRequestEnvironment env,
-                       CoreEnvironment coreEnv, TrackingLogData logData) {
+            CoreEnvironment coreEnv, TrackingLogData logData) {
         super(new OtcApiName(ApiName.FptiRequest), env, coreEnv, logData);
     }
 }

@@ -29,7 +29,7 @@ public class OAuth2Recipe extends Recipe<OAuth2Recipe> {
     }
 
     public boolean isValidForScopes(Set<String> scopes) {
-        if(isValidForAllScopes){
+        if (isValidForAllScopes) {
             return true;
         } else {
             return scopes.containsAll(scopes);
@@ -41,24 +41,23 @@ public class OAuth2Recipe extends Recipe<OAuth2Recipe> {
     }
 
     /**
-     * 1. Look for exact match of environment. (Could be mock, live, or a particular host:port.)
-     * 2. If environment is anything other than mock or live, then look for develop.
-     * 3. Look for live. (There should always be a live endpoint specified in any v3 browser-switch recipe.)
+     * 1. Look for exact match of environment. (Could be mock, live, or a particular host:port.) 2.
+     * If environment is anything other than mock or live, then look for develop. 3. Look for live.
+     * (There should always be a live endpoint specified in any v3 browser-switch recipe.)
      *
      * @param environment
      * @return
      */
-    public ConfigEndpoint getEndpoint(String environment){
+    public ConfigEndpoint getEndpoint(String environment) {
         ConfigEndpoint configEndpoint;
-        if(endpoints.containsKey(environment)) {
+        if (endpoints.containsKey(environment)) {
             configEndpoint = endpoints.get(environment);
-        } else if(endpoints.containsKey(DEVELOP)){
+        } else if (endpoints.containsKey(DEVELOP)) {
             configEndpoint = endpoints.get(DEVELOP);
         } else {
             // default to live as fallback
             configEndpoint = endpoints.get(EnvironmentManager.LIVE);
         }
-
 
         return configEndpoint;
     }

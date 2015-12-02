@@ -1,10 +1,10 @@
 package com.paypal.android.networking.request;
 
+import android.util.Log;
+
 import com.paypal.android.networking.events.ErrorBase;
 import com.paypal.android.networking.events.RequestError;
 import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
-
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,8 +24,8 @@ public abstract class ServerRequest {
     private static long sNextSerialNumber = 1;
 
     /**
-     * request header info generally setup by the ComputeRequest override and
-     * used by the execute method
+     * request header info generally setup by the ComputeRequest override and used by the execute
+     * method
      */
     private final Map<String, String> mRequestHeaders;
 
@@ -46,8 +46,7 @@ public abstract class ServerRequest {
     private ErrorBase mError;
 
     /**
-     * The http status code from the response, or null if not provided or
-     * processed yet.
+     * The http status code from the response, or null if not provided or processed yet.
      */
     private Integer httpStatusCode;
 
@@ -57,7 +56,7 @@ public abstract class ServerRequest {
     private String mPayPalDebugId;
 
     public ServerRequest(ApiInfo apiInfo, ServerRequestEnvironment env,
-                         CoreEnvironment coreEnv) {
+            CoreEnvironment coreEnv) {
         this(apiInfo, env, coreEnv, null);
     }
 
@@ -135,14 +134,14 @@ public abstract class ServerRequest {
     /**
      * Execute something before this request is sent
      */
-    public void preExecute(){
+    public void preExecute() {
         // do nothing by default
     }
 
     /**
      * Execute something after this request is sent
      */
-    public void postExecute(){
+    public void postExecute() {
         // do nothing by default
     }
 
@@ -164,20 +163,19 @@ public abstract class ServerRequest {
     public abstract void parseError() throws JSONException;
 
     /**
-     * Does this ServerRequest want to not call the remote server but use data
-     * from a file in place of the actual server response
+     * Does this ServerRequest want to not call the remote server but use data from a file in place
+     * of the actual server response
      *
-     * @return a string that will be used to load the mock response. The
-     * returned string must be a non-null file contained in the app's
-     * assets/mock_responses directory.
+     * @return a string that will be used to load the mock response. The returned string must be a
+     * non-null file contained in the app's assets/mock_responses directory.
      */
     public abstract String getMockResponse();
 
     /**
      * obtain the endpoint given the API/Server, if not found log an mError
      */
-	public String getServerUrl(ApiInfo api) {
-		String url = mServerRequestEnvironment.getUrl(api);
+    public String getServerUrl(ApiInfo api) {
+        String url = mServerRequestEnvironment.getUrl(api);
         if (url != null) {
             if (mUrlSuffix != null) {
                 return url + mUrlSuffix;
@@ -187,7 +185,7 @@ public abstract class ServerRequest {
 
         // Don't return null, because there'll be an InvalidArgumentException down the line anyway.
         throw new RuntimeException("API " + api.toString() + " has no record for server "
-				+ mServerRequestEnvironment.environmentName());
+                + mServerRequestEnvironment.environmentName());
     }
 
     public boolean isTrackingRequest() {
@@ -195,8 +193,8 @@ public abstract class ServerRequest {
     }
 
     /**
-     * Returns the nextValue of the server reply. Throws a JSONException if the
-     * response is not valid json.
+     * Returns the nextValue of the server reply. Throws a JSONException if the response is not
+     * valid json.
      *
      * @return
      * @throws JSONException

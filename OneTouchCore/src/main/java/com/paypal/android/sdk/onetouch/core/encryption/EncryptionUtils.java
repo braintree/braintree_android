@@ -13,6 +13,7 @@ import java.security.cert.X509Certificate;
  */
 public class EncryptionUtils {
     private static final SecureRandom RANDOM;
+
     static {
         PRNGFixes.apply();
         RANDOM = new SecureRandom();
@@ -24,8 +25,8 @@ public class EncryptionUtils {
         return output;
     }
 
-
-    public static X509Certificate getX509CertificateFromBase64String(String certificateBase64) throws CertificateException {
+    public static X509Certificate getX509CertificateFromBase64String(String certificateBase64)
+            throws CertificateException {
 
         byte[] certificate = Base64.decode(certificateBase64, Base64.DEFAULT);
 
@@ -36,6 +37,7 @@ public class EncryptionUtils {
 
     /**
      * Returns String of byte array.  Did not use library as none are built into Android.
+     *
      * @param array
      * @return
      */
@@ -50,7 +52,6 @@ public class EncryptionUtils {
             hexString.append(Integer.toHexString(intVal));
         }
 
-
         return hexString.toString().toUpperCase();
     }
 
@@ -62,13 +63,14 @@ public class EncryptionUtils {
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
             data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i+1), 16));
+                    + Character.digit(s.charAt(i + 1), 16));
         }
         return data;
     }
 
     /**
      * Do not use Arrays.equals because of http://codahale.com/a-lesson-in-timing-attacks/
+     *
      * @param a
      * @param b
      * @return

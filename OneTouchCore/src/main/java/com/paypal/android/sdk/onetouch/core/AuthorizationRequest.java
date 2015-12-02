@@ -1,5 +1,15 @@
 package com.paypal.android.sdk.onetouch.core;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.text.TextUtils;
+import android.util.Base64;
+import android.util.Log;
+
 import com.paypal.android.networking.EnvironmentManager;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;
@@ -12,16 +22,6 @@ import com.paypal.android.sdk.onetouch.core.encryption.InvalidEncryptionDataExce
 import com.paypal.android.sdk.onetouch.core.encryption.OtcCrypto;
 import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
 import com.paypal.android.sdk.onetouch.core.network.OtcEnvironment;
-
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.text.TextUtils;
-import android.util.Base64;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,7 +57,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     private final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
 
     private static final String PREFS_ENCRYPTION_KEY = "com.paypal.otc.key";
-    private static final String PREFS_MSG_GUID = "com.paypal.otc.msg_guid" ;
+    private static final String PREFS_MSG_GUID = "com.paypal.otc.msg_guid";
 
     private final OtcCrypto mOtcCrypto = new OtcCrypto();
     private String mPrivacyUrl;
@@ -85,8 +85,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         this.mScopes = new HashSet<>();
     }
 
-
-    public AuthorizationRequest withAdditionalPayloadAttribute(String key, String value){
+    public AuthorizationRequest withAdditionalPayloadAttribute(String key, String value) {
         this.mAdditionalPayloadAttributes.put(key, value);
         return this;
     }
@@ -94,8 +93,9 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     public AuthorizationRequest withScopeValue(String scopeValue) {
         Matcher matcher = WHITESPACE_PATTERN.matcher(scopeValue);
         boolean found = matcher.find();
-        if(found){
-            throw new IllegalArgumentException("scopes must be provided individually, with no whitespace");
+        if (found) {
+            throw new IllegalArgumentException(
+                    "scopes must be provided individually, with no whitespace");
         }
 
         mScopes.add(scopeValue);
@@ -125,11 +125,11 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         return mUserAgreementUrl;
     }
 
-
     @Override
     public String toString() {
         return String.format(
-                AuthorizationRequest.class.getSimpleName() + ": {" + getBaseRequestToString() + ", " +
+                AuthorizationRequest.class.getSimpleName() + ": {" + getBaseRequestToString() +
+                        ", " +
                         "privacyUrl:%s, userAgreementUrl:%s, scopeValues:%s}",
                 getClientId(),
                 mPrivacyUrl,
@@ -176,7 +176,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
 
     /**
      * required by {@link Parcelable}
-    */
+     */
     public static final Parcelable.Creator<AuthorizationRequest> CREATOR =
             new Creator<AuthorizationRequest>() {
 
@@ -196,13 +196,15 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         return this;
     }
 
-
     public String getScopeString() {
         return TextUtils.join(" ", getScopes());
     }
 
     @Override
-    public String getBrowserSwitchUrl(Context context, OtcConfiguration config) throws CertificateException, UnsupportedEncodingException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, JSONException, BadPaddingException, InvalidEncryptionDataException, InvalidKeyException, InvalidKeySpecException {
+    public String getBrowserSwitchUrl(Context context, OtcConfiguration config)
+            throws CertificateException, UnsupportedEncodingException, NoSuchPaddingException,
+            NoSuchAlgorithmException, IllegalBlockSizeException, JSONException, BadPaddingException,
+            InvalidEncryptionDataException, InvalidKeyException, InvalidKeySpecException {
 
         String xSource = context.getPackageName();
 
@@ -210,12 +212,14 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
 
         ConfigEndpoint configEndpoint = recipe.getEndpoint(getEnvironment());
         Log.d(TAG, "selected environment: " + getEnvironment());
-        Log.d(TAG, "selected configEndpoint:" + configEndpoint.getName() + " with url: " + configEndpoint.getUrl());
+        Log.d(TAG, "selected configEndpoint:" + configEndpoint.getName() + " with url: " +
+                configEndpoint.getUrl());
 
         String certificateBase64 = configEndpoint.getCertificate();
-        X509Certificate cert = EncryptionUtils.getX509CertificateFromBase64String(certificateBase64);
+        X509Certificate cert =
+                EncryptionUtils.getX509CertificateFromBase64String(certificateBase64);
 
-        String url =  configEndpoint.getUrl()
+        String url = configEndpoint.getUrl()
                 + "?payload=" + URLEncoder.encode(buildPayload(context, cert), "utf-8")
                 + "&payloadEnc=" + URLEncoder.encode(buildPayloadEnc(cert), "utf-8")
                 + "&x-source=" + xSource
@@ -239,12 +243,13 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     }
 
     public boolean validResponse(ContextInspector contextInspector, String msgGUID) {
-        String prefsMsgGUID = contextInspector.getStringPreference(AuthorizationRequest.PREFS_MSG_GUID);
+        String prefsMsgGUID =
+                contextInspector.getStringPreference(AuthorizationRequest.PREFS_MSG_GUID);
         String prefsSymmetricKey = getStoredSymmetricKey(contextInspector);
 
-        if (TextUtils.isEmpty(prefsMsgGUID)){
+        if (TextUtils.isEmpty(prefsMsgGUID)) {
             Log.e(TAG, "stored msg_GUID is empty");
-        } else if (!msgGUID.equals(prefsMsgGUID)){
+        } else if (!msgGUID.equals(prefsMsgGUID)) {
             Log.e(TAG, "msgGUIDs do not match");
         } else if (TextUtils.isEmpty(prefsSymmetricKey)) {
             Log.e(TAG, "empty symmetric key");
@@ -254,17 +259,16 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         return false;
     }
 
-
-
-
     private class RFC3339DateFormat extends SimpleDateFormat {
         RFC3339DateFormat() {
             super("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US);
         }
     }
 
-    private String buildPayloadEnc(Certificate cert) throws NoSuchPaddingException, NoSuchAlgorithmException,
-            IllegalBlockSizeException, BadPaddingException, CertificateException, InvalidEncryptionDataException,
+    private String buildPayloadEnc(Certificate cert)
+            throws NoSuchPaddingException, NoSuchAlgorithmException,
+            IllegalBlockSizeException, BadPaddingException, CertificateException,
+            InvalidEncryptionDataException,
             InvalidKeyException, InvalidKeySpecException, JSONException {
 
         JSONObject payloadEnc = getJsonObjectToEncrypt();
@@ -273,7 +277,6 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         String base64output = Base64.encodeToString(output, Base64.NO_WRAP | Base64.DEFAULT);
         return base64output;
     }
-
 
     private JSONObject getJsonObjectToEncrypt() throws JSONException {
         JSONObject payloadEnc = new JSONObject();
@@ -284,9 +287,9 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         return payloadEnc;
     }
 
-
     private String buildPayload(Context context, X509Certificate cert) {
-        ContextInspector contextInspector = new ContextInspector(context, new OtcEnvironment().getPrefsFile());
+        ContextInspector contextInspector =
+                new ContextInspector(context, new OtcEnvironment().getPrefsFile());
 
         JSONObject payload = new JSONObject();
         try {
@@ -310,18 +313,20 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
             // If this is false, Braintree will not offer KMLI (won't save cookies)
             payload.put("android_chrome_available", isChromeAvailable(context));
 
-            for (Entry<String, String> entry: mAdditionalPayloadAttributes.entrySet()){
+            for (Entry<String, String> entry : mAdditionalPayloadAttributes.entrySet()) {
                 payload.put(entry.getKey(), entry.getValue());
             }
 
-            return Base64.encodeToString(payload.toString().getBytes(), Base64.NO_WRAP | Base64.DEFAULT);
+            return Base64
+                    .encodeToString(payload.toString().getBytes(), Base64.NO_WRAP | Base64.DEFAULT);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private boolean isChromeAvailable(Context context){
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.paypal.com"/*dummy url here*/));
+    private boolean isChromeAvailable(Context context) {
+        Intent intent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("https://www.paypal.com"/*dummy url here*/));
         intent.setPackage("com.android.chrome");
         return intent.resolveActivity(context.getPackageManager()) != null;
     }
@@ -334,7 +339,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     public Result parseBrowserResponse(ContextInspector contextInspector, Uri uri) {
         String status = uri.getLastPathSegment();
 
-        if(!Uri.parse(getSuccessUrl()).getLastPathSegment().equals(status)){
+        if (!Uri.parse(getSuccessUrl()).getLastPathSegment().equals(status)) {
             return new Result();
         }
 
@@ -348,25 +353,28 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
             JSONObject payloadJson = new JSONObject(new String(base64Payload));
             Log.i(TAG, "unencrypted data: " + payloadJson.toString(4));
 
-            if(payloadJson.has("msg_GUID")){
+            if (payloadJson.has("msg_GUID")) {
                 String msgGUID = payloadJson.optString("msg_GUID");
 
-                if (isSuccessResponse(status, payloadEnc, msgGUID) && this.validResponse(contextInspector, msgGUID)) {
+                if (isSuccessResponse(status, payloadEnc, msgGUID) &&
+                        this.validResponse(contextInspector, msgGUID)) {
                     // we can decrypt
-                    JSONObject decryptedPayloadEnc = getDecryptedPayload(payloadEnc, this.getStoredSymmetricKey(contextInspector));
+                    JSONObject decryptedPayloadEnc = getDecryptedPayload(payloadEnc,
+                            this.getStoredSymmetricKey(contextInspector));
                     Log.i(TAG, "decrypted payload: " + decryptedPayloadEnc.toString(4));
 
                     String error = payloadJson.optString("error");
 
                     // the string 'null' is coming back in production for some reason
-                    if(!TextUtils.isEmpty(error) && !"null".equals(error)){
+                    if (!TextUtils.isEmpty(error) && !"null".equals(error)) {
                         return new Result(new BrowserSwitchException(error));
                     } else {
                         // Based on this interpretation, construct the PayPalOneTouchResult to
                         // reflect the response we've received.
                         return new Result(payloadJson.optString("environment"),
                                 ResponseType.authorization_code,
-                                new JSONObject().put("code", decryptedPayloadEnc.getString("payment_code")),
+                                new JSONObject()
+                                        .put("code", decryptedPayloadEnc.getString("payment_code")),
                                 decryptedPayloadEnc.getString("email")
                         );
                     }
@@ -378,7 +386,8 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
                 }
             } else {
                 // missing msg_GUID in response
-                return new Result(new ResponseParsingException("Response was missing some information"));
+                return new Result(
+                        new ResponseParsingException("Response was missing some information"));
             }
 
         } catch (JSONException
@@ -402,21 +411,22 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     }
 
     @Override
-    public Recipe getRecipeToExecute(Context context, OtcConfiguration config, boolean isSecurityEnabled) {
-        for(OAuth2Recipe recipe: config.getOauth2Recipes()){
+    public Recipe getRecipeToExecute(Context context, OtcConfiguration config,
+            boolean isSecurityEnabled) {
+        for (OAuth2Recipe recipe : config.getOauth2Recipes()) {
             // don't even look at them if they can't handle the scopes.  You CAN'T HANDLE THE SCOPE!
-            if(recipe.isValidForScopes(getScopes())){
-                if(RequestTarget.wallet == recipe.getTarget()){
-                    if (recipe.isValidAppTarget(context, isSecurityEnabled)){
+            if (recipe.isValidForScopes(getScopes())) {
+                if (RequestTarget.wallet == recipe.getTarget()) {
+                    if (recipe.isValidAppTarget(context, isSecurityEnabled)) {
                         return recipe;
                     }
-                } else if(RequestTarget.browser == recipe.getTarget()){
+                } else if (RequestTarget.browser == recipe.getTarget()) {
                     try {
                         String browserSwitchUrl = getBrowserSwitchUrl(context, config);
 
                         Log.d(TAG, "generated url:" + browserSwitchUrl);
 
-                        if(recipe.isValidBrowserTarget(context, browserSwitchUrl)){
+                        if (recipe.isValidBrowserTarget(context, browserSwitchUrl)) {
                             return recipe;
                         }
                     } catch (CertificateException | UnsupportedEncodingException | NoSuchPaddingException | NoSuchAlgorithmException
@@ -436,14 +446,14 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
 
         fptiDataBundle.put("clid", getClientId());
 
-        PayPalOneTouchCore.getFptiManager(context).trackFpti(trackingPoint, getEnvironment(), fptiDataBundle, protocol);
+        PayPalOneTouchCore.getFptiManager(context)
+                .trackFpti(trackingPoint, getEnvironment(), fptiDataBundle, protocol);
     }
 
-
     private boolean isSuccessResponse(String status, String payloadEnc, String msgGUID) {
-        if(TextUtils.isEmpty(msgGUID)){
+        if (TextUtils.isEmpty(msgGUID)) {
             Log.e(TAG, "response msgGUID is empty");
-        } else if (TextUtils.isEmpty(payloadEnc)){
+        } else if (TextUtils.isEmpty(payloadEnc)) {
             Log.e(TAG, "empty payloadEnc");
         } else {
             // success yay!
@@ -452,7 +462,10 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         return false;
     }
 
-    private JSONObject getDecryptedPayload(String payloadEnc, String symmetricKey) throws IllegalBlockSizeException, InvalidKeyException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, NoSuchPaddingException, BadPaddingException, InvalidEncryptionDataException, JSONException {
+    private JSONObject getDecryptedPayload(String payloadEnc, String symmetricKey)
+            throws IllegalBlockSizeException, InvalidKeyException, NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException, NoSuchPaddingException, BadPaddingException,
+            InvalidEncryptionDataException, JSONException {
         byte[] base64PayloadEnc = Base64.decode(payloadEnc, Base64.DEFAULT);
         // convert key to bytes
         byte[] key = EncryptionUtils.hexStringToByteArray(symmetricKey);

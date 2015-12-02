@@ -32,7 +32,6 @@ public enum PayPalScope {
             true
     ),
 
-
     /**
      * openid
      */
@@ -63,21 +62,18 @@ public enum PayPalScope {
     PHONE(
             "phone",
             true
-    ),
-    ;
+    ),;
 
-
-    public static final Collection<String> PROFILE_SHARING_SCOPE_URIS = new HashSet<String>(){{
-       for(PayPalScope scope: PayPalScope.values()){
-           if(scope.isProfileSharingScope){
-               add(scope.getScopeUri());
-           }
-       }
+    public static final Collection<String> PROFILE_SHARING_SCOPE_URIS = new HashSet<String>() {{
+        for (PayPalScope scope : PayPalScope.values()) {
+            if (scope.isProfileSharingScope) {
+                add(scope.getScopeUri());
+            }
+        }
     }};
 
-
-    public static final Collection<String> SCOPE_URIS = new HashSet<String>(){{
-        for(PayPalScope scope: PayPalScope.values()){
+    public static final Collection<String> SCOPE_URIS = new HashSet<String>() {{
+        for (PayPalScope scope : PayPalScope.values()) {
             add(scope.getScopeUri());
         }
     }};

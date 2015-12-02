@@ -1,11 +1,11 @@
 package com.paypal.android.sdk.onetouch.core;
 
+import android.content.Context;
+import android.os.Parcel;
+
 import com.paypal.android.sdk.onetouch.core.config.BillingAgreementRecipe;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
-
-import android.content.Context;
-import android.os.Parcel;
 
 public class BillingAgreementRequest extends CheckoutRequest {
     private static final String TAG = BillingAgreementRequest.class.getSimpleName();
@@ -66,13 +66,14 @@ public class BillingAgreementRequest extends CheckoutRequest {
     }
 
     @Override
-    public Recipe getRecipeToExecute(Context context, OtcConfiguration config, boolean isSecurityEnabled) {
-        for(BillingAgreementRecipe recipe: config.getBillingAgreementRecipes()){
-            if(RequestTarget.wallet == recipe.getTarget()){
-                if (recipe.isValidAppTarget(context, isSecurityEnabled)){
+    public Recipe getRecipeToExecute(Context context, OtcConfiguration config,
+            boolean isSecurityEnabled) {
+        for (BillingAgreementRecipe recipe : config.getBillingAgreementRecipes()) {
+            if (RequestTarget.wallet == recipe.getTarget()) {
+                if (recipe.isValidAppTarget(context, isSecurityEnabled)) {
                     return recipe;
                 }
-            } else if(RequestTarget.browser == recipe.getTarget()){
+            } else if (RequestTarget.browser == recipe.getTarget()) {
                 String browserSwitchUrl = getBrowserSwitchUrl(context, config);
 
                 if (recipe.isValidBrowserTarget(context, browserSwitchUrl)) {

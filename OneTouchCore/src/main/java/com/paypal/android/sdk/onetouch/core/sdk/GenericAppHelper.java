@@ -24,21 +24,18 @@ public class GenericAppHelper {
         return isIntentSafe;
     }
 
-
-
     /**
-     * Returns true if the authenticator (p2p app) is present, we're in an
-     * environment that supports authenticator, and all the right permissions
-     * are present in the wallet app.
+     * Returns true if the authenticator (p2p app) is present, we're in an environment that supports
+     * authenticator, and all the right permissions are present in the wallet app.
      *
      * @return
      */
     protected boolean isValidAuthenticatorInstalled(Context context,
-                                                    boolean isAuthenticatorSecurityEnabled,
-                                                    String packageName,
-                                                    String subject,
-                                                    String issuer,
-                                                    int publicKeyHashCode) {
+            boolean isAuthenticatorSecurityEnabled,
+            String packageName,
+            String subject,
+            String issuer,
+            int publicKeyHashCode) {
         boolean isValid = false;
 
         PackageManager pm = context.getPackageManager();
@@ -47,7 +44,7 @@ public class GenericAppHelper {
             pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA
                     | PackageManager.GET_PERMISSIONS);
 
-           if (isAuthenticatorSecurityEnabled && !isSignatureValid(pm,
+            if (isAuthenticatorSecurityEnabled && !isSignatureValid(pm,
                     packageName,
                     subject,
                     issuer,
@@ -64,10 +61,8 @@ public class GenericAppHelper {
         return isValid;
     }
 
-
     /**
-     * Validate wallet app has the correct signature, to prevent malicious
-     * wallet apps. See <a href=
+     * Validate wallet app has the correct signature, to prevent malicious wallet apps. See <a href=
      * "http://stackoverflow.com/questions/16303549/how-can-i-verify-whether-another-app-on-the-system-is-genuine"
      * >reference</a>
      *
@@ -75,7 +70,8 @@ public class GenericAppHelper {
      * @return
      * @throws android.content.pm.PackageManager.NameNotFoundException
      */
-    private boolean isSignatureValid(PackageManager pm, String packageName, String inSubject, String inIssuer, int inPublicKeyHashCode) throws NameNotFoundException {
+    private boolean isSignatureValid(PackageManager pm, String packageName, String inSubject,
+            String inIssuer, int inPublicKeyHashCode) throws NameNotFoundException {
         Signature[] sigs =
                 pm.getPackageInfo(packageName, PackageManager.GET_SIGNATURES).signatures;
         for (Signature sig : sigs) {

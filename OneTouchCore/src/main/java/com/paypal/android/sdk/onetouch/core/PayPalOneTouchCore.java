@@ -1,5 +1,11 @@
 package com.paypal.android.sdk.onetouch.core;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
+
 import com.paypal.android.networking.EnvironmentManager;
 import com.paypal.android.networking.PayPalEnvironment;
 import com.paypal.android.networking.ServerInterface;
@@ -23,13 +29,6 @@ import com.paypal.android.sdk.onetouch.core.network.OtcEnvironment;
 import com.paypal.android.sdk.onetouch.core.network.OtcMockRequestProcessor;
 import com.paypal.android.sdk.onetouch.core.sdk.V1WalletHelper;
 import com.paypal.android.sdk.onetouch.core.sdk.V2WalletHelper;
-
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.util.Log;
-
 import com.squareup.okhttp.Interceptor;
 
 import org.json.JSONException;
@@ -49,7 +48,7 @@ import javax.crypto.NoSuchPaddingException;
 
 /**
  * Central class for One Touch functionality.
- *
+ * <p>
  * Note that all public methods should call initService which starts the config file querying
  */
 public class PayPalOneTouchCore {
@@ -57,7 +56,6 @@ public class PayPalOneTouchCore {
     private static final ExecutorService OTC_EXECUTOR_SERVICE = Executors.newCachedThreadPool();
     private static final int NETWORK_TIMEOUT = 90000;
     private static final int MOCK_NETWORK_DELAY_IN_MS = 1000;
-
 
     private static ServerInterface sServerInterface;
     private static ConfigManager sConfigManager;
@@ -80,7 +78,6 @@ public class PayPalOneTouchCore {
         return sFptiManager;
     }
 
-
     private static class OtcRequestRouter implements RequestRouter {
         private final ConfigManager mConfigManager;
 
@@ -90,7 +87,7 @@ public class PayPalOneTouchCore {
 
         @Override
         public void route(ServerRequest serverRequest) {
-            if(serverRequest instanceof ConfigFileRequest){
+            if (serverRequest instanceof ConfigFileRequest) {
                 if (serverRequest.isSuccess()) {
                     ConfigFileRequest configFileRequest = (ConfigFileRequest) serverRequest;
 
@@ -104,20 +101,24 @@ public class PayPalOneTouchCore {
     /**
      * Must be called from Main thread!
      */
-    private static void initService(Context context){
-        if(null == sServerInterface) {
-            PayPalEnvironment env = getEnvironment(getEnvironmentName(), "https://api-m.paypal.com/v1/");
+    private static void initService(Context context) {
+        if (null == sServerInterface) {
+            PayPalEnvironment env =
+                    getEnvironment(getEnvironmentName(), "https://api-m.paypal.com/v1/");
 
             sServerInterface =
                     new ServerInterface(getContextInspector(context), env, getCoreEnvironment());
 
-            sConfigManager = new ConfigManager(getContextInspector(context), sServerInterface, getCoreEnvironment());
+            sConfigManager = new ConfigManager(getContextInspector(context), sServerInterface,
+                    getCoreEnvironment());
 
             // Create Request Processor based on Mock mode or not
             RequestProcessor requestProcessor = EnvironmentManager.isMock(getEnvironmentName()) ?
                     new OtcMockRequestProcessor(MOCK_NETWORK_DELAY_IN_MS, sServerInterface) :
-                    new NetworkRequestProcessor(getContextInspector(context), getEnvironmentName(), getCoreEnvironment(),
-                            sServerInterface, NETWORK_TIMEOUT, true, Collections.<Interceptor>emptyList());
+                    new NetworkRequestProcessor(getContextInspector(context), getEnvironmentName(),
+                            getCoreEnvironment(),
+                            sServerInterface, NETWORK_TIMEOUT, true,
+                            Collections.<Interceptor>emptyList());
             ;
 
             RequestExecutorThread mExecutor = new RequestExecutorThread(sServerInterface,
@@ -128,56 +129,62 @@ public class PayPalOneTouchCore {
             // register listener immediately before touching config for the first time
             sServerInterface.register(new OtcRequestRouter(sConfigManager));
 
-            sFptiManager = new FptiManager(sServerInterface, getCoreEnvironment(), getContextInspector(context));
+            sFptiManager = new FptiManager(sServerInterface, getCoreEnvironment(),
+                    getContextInspector(context));
         }
 
         // always touch config
         sConfigManager.touchConfig();
     }
 
-
     /**
-     * Return true if the modern wallet app is installed (one that has either v1 or v2 touch intents).
-     * Returns false if the wallet app is older than the touch releases, or not present.
-     *
+     * Return true if the modern wallet app is installed (one that has either v1 or v2 touch
+     * intents). Returns false if the wallet app is older than the touch releases, or not present.
+     * <p>
      * Must be called from Main thread!
      */
-    public static boolean isWalletAppInstalled(Context context, boolean enableSecurityCheck){
+    public static boolean isWalletAppInstalled(Context context, boolean enableSecurityCheck) {
         initService(context);
 
-        boolean isV2WalletAppInstalled = new V2WalletHelper().isValidV2TouchAuthenticatorInstalled(context, enableSecurityCheck);
-        sFptiManager.trackFpti((isV2WalletAppInstalled) ? TrackingPoint.WalletIsPresent : TrackingPoint.WalletIsAbsent, ""/*no environment set yet*/,
+        boolean isV2WalletAppInstalled = new V2WalletHelper()
+                .isValidV2TouchAuthenticatorInstalled(context, enableSecurityCheck);
+        sFptiManager.trackFpti((isV2WalletAppInstalled) ? TrackingPoint.WalletIsPresent :
+                        TrackingPoint.WalletIsAbsent, ""/*no environment set yet*/,
                 Collections.<String, String>emptyMap(), Protocol.v2);
 
         boolean isV1WalletAppInstalled = false;
-        if(!isV2WalletAppInstalled) {
-            isV1WalletAppInstalled = new V1WalletHelper().isValidV1TouchAuthenticatorInstalled(context, enableSecurityCheck);
-            sFptiManager.trackFpti((isV1WalletAppInstalled) ? TrackingPoint.WalletIsPresent : TrackingPoint.WalletIsAbsent, ""/*no environment set yet*/,
+        if (!isV2WalletAppInstalled) {
+            isV1WalletAppInstalled = new V1WalletHelper()
+                    .isValidV1TouchAuthenticatorInstalled(context, enableSecurityCheck);
+            sFptiManager.trackFpti((isV1WalletAppInstalled) ? TrackingPoint.WalletIsPresent :
+                            TrackingPoint.WalletIsAbsent, ""/*no environment set yet*/,
                     Collections.<String, String>emptyMap(), Protocol.v1);
         }
         return isV2WalletAppInstalled || isV1WalletAppInstalled;
     }
 
-
     /**
-     * Returns the expected target of the request, or null if none can handle.
-     * Note that there is a very small possibility that between the time you do this preflight and the time that the
-     * request is actually performed, OTC might receive updated configuration information from PayPal's servers which will change this outcome.
-     *
+     * Returns the expected target of the request, or null if none can handle. Note that there is a
+     * very small possibility that between the time you do this preflight and the time that the
+     * request is actually performed, OTC might receive updated configuration information from
+     * PayPal's servers which will change this outcome.
+     * <p>
      * Must be called from Main thread!
      */
-    public static RequestTarget preflightRequest(Context context, Request request, boolean enableSecurityCheck){
+    public static RequestTarget preflightRequest(Context context, Request request,
+            boolean enableSecurityCheck) {
         initService(context);
 
         // calling this method functionally does nothing, but ensures that we send off FPTI data about wallet installs.
         isWalletAppInstalled(context, enableSecurityCheck);
 
-        Recipe recipe = request.getRecipeToExecute(context, getConfig(context), enableSecurityCheck);
+        Recipe recipe =
+                request.getRecipeToExecute(context, getConfig(context), enableSecurityCheck);
 
-        if(null != recipe) {
-            if(RequestTarget.browser == recipe.getTarget()){
+        if (null != recipe) {
+            if (RequestTarget.browser == recipe.getTarget()) {
                 request.trackFpti(context, TrackingPoint.PreflightBrowser, recipe.getProtocol());
-            } else if(RequestTarget.wallet == recipe.getTarget()){
+            } else if (RequestTarget.wallet == recipe.getTarget()) {
                 request.trackFpti(context, TrackingPoint.PreflightWallet, recipe.getProtocol());
             } else {
                 // will never happen - only two enums possible
@@ -190,19 +197,24 @@ public class PayPalOneTouchCore {
     }
 
     /**
-     * Attempt to start a PayPal authentication request using the best possible authentication mechanism, wallet or browser
+     * Attempt to start a PayPal authentication request using the best possible authentication
+     * mechanism, wallet or browser
      * <p>
      * Must be called from Main thread!
      *
-     * @return true if the request was started successfully or false if PayPal authentication was not possible
+     * @return true if the request was started successfully or false if PayPal authentication was
+     * not possible
      */
-    public static PerformRequestStatus performRequest(Activity activity, Request request, int requestCode, boolean enableSecurityCheck, BrowserSwitchAdapter browserSwitchAdapter) {
+    public static PerformRequestStatus performRequest(Activity activity, Request request,
+            int requestCode, boolean enableSecurityCheck,
+            BrowserSwitchAdapter browserSwitchAdapter) {
         initService(activity);
 
         // calling this method functionally does nothing, but ensures that we send off FPTI data about wallet installs.
         isWalletAppInstalled(activity, enableSecurityCheck);
 
-        Recipe recipe = request.getRecipeToExecute(activity, getConfig(activity), enableSecurityCheck);
+        Recipe recipe =
+                request.getRecipeToExecute(activity, getConfig(activity), enableSecurityCheck);
 
         PerformRequestStatus status;
         if (null == recipe) {
@@ -211,24 +223,29 @@ public class PayPalOneTouchCore {
 
             // Set CMID for Single Payment and Billing Agreements
             if (request.getClass() == BillingAgreementRequest.class) {
-                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(activity, ((BillingAgreementRequest) request).getPairingId()));
+                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(activity,
+                        ((BillingAgreementRequest) request).getPairingId()));
             } else if (request.getClass() == CheckoutRequest.class) {
-                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(activity, ((CheckoutRequest) request).getPairingId()));
+                request.clientMetadataId(PayPalOneTouchCore
+                        .getClientMetadataId(activity, ((CheckoutRequest) request).getPairingId()));
             }
 
             if (RequestTarget.wallet == recipe.getTarget()) {
                 request.trackFpti(activity, TrackingPoint.SwitchToWallet, recipe.getProtocol());
                 PayPalOneTouchActivity.Start(activity, requestCode, request, recipe.getProtocol());
-                status = new PerformRequestStatus(true, RequestTarget.wallet, request.getClientMetadataId());
+                status = new PerformRequestStatus(true, RequestTarget.wallet,
+                        request.getClientMetadataId());
             } else {
                 Intent browserIntent = getBrowserIntent(activity, request);
 
                 if (browserIntent != null) {
                     browserSwitchAdapter.handleBrowserSwitchIntent(browserIntent);
 
-                    status = new PerformRequestStatus(true, RequestTarget.browser, request.getClientMetadataId());
+                    status = new PerformRequestStatus(true, RequestTarget.browser,
+                            request.getClientMetadataId());
                 } else {
-                    status = new PerformRequestStatus(false, RequestTarget.browser, request.getClientMetadataId());
+                    status = new PerformRequestStatus(false, RequestTarget.browser,
+                            request.getClientMetadataId());
                 }
             }
         }
@@ -237,26 +254,30 @@ public class PayPalOneTouchCore {
     }
 
     public static Intent getStartIntent(Activity activity,
-                                          Request request,
-                                          boolean enableSecurityCheck) {
+            Request request,
+            boolean enableSecurityCheck) {
         initService(activity);
 
         // calling this method functionally does nothing, but ensures that we send off FPTI data about wallet installs.
         isWalletAppInstalled(activity, enableSecurityCheck);
 
-        Recipe recipe = request.getRecipeToExecute(activity, getConfig(activity), enableSecurityCheck);
+        Recipe recipe =
+                request.getRecipeToExecute(activity, getConfig(activity), enableSecurityCheck);
 
         if (null != recipe) {
             // Set CMID for Single Payment and Billing Agreements
             if (request.getClass() == BillingAgreementRequest.class) {
-                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(activity, ((BillingAgreementRequest) request).getPairingId()));
+                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(activity,
+                        ((BillingAgreementRequest) request).getPairingId()));
             } else if (request.getClass() == CheckoutRequest.class) {
-                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(activity, ((CheckoutRequest) request).getPairingId()));
+                request.clientMetadataId(PayPalOneTouchCore
+                        .getClientMetadataId(activity, ((CheckoutRequest) request).getPairingId()));
             }
 
             if (RequestTarget.wallet == recipe.getTarget()) {
                 request.trackFpti(activity, TrackingPoint.SwitchToWallet, recipe.getProtocol());
-                return PayPalOneTouchActivity.getStartIntent(activity, request, recipe.getProtocol());
+                return PayPalOneTouchActivity
+                        .getStartIntent(activity, request, recipe.getProtocol());
             } else {
                 return getBrowserIntent(activity, request);
             }
@@ -266,7 +287,7 @@ public class PayPalOneTouchCore {
 
     /**
      * Return the browser launch intent
-     *
+     * <p>
      * Must be called from Main thread!
      *
      * @return
@@ -281,10 +302,11 @@ public class PayPalOneTouchCore {
 
             Recipe<?> recipe = request.getBrowserSwitchRecipe(configuration);
 
-            for(String allowedBrowserPackage: recipe.getTargetPackagesInReversePriorityOrder() ){
-                boolean canIntentBeResolved = recipe.isValidBrowserTarget(context, url, allowedBrowserPackage);
+            for (String allowedBrowserPackage : recipe.getTargetPackagesInReversePriorityOrder()) {
+                boolean canIntentBeResolved =
+                        recipe.isValidBrowserTarget(context, url, allowedBrowserPackage);
 
-                if(canIntentBeResolved){
+                if (canIntentBeResolved) {
                     request.trackFpti(context, TrackingPoint.SwitchToBrowser, recipe.getProtocol());
                     return Recipe.getBrowserIntent(url, allowedBrowserPackage);
                 }
@@ -301,6 +323,7 @@ public class PayPalOneTouchCore {
 
     /**
      * Must be called from Main thread!
+     *
      * @return
      */
     public static Result handleBrowserResponse(Context context, Uri uri, Request request) {
@@ -320,21 +343,18 @@ public class PayPalOneTouchCore {
         return result;
     }
 
-
     /**
-     * Gets a Client Metadata ID at the time of future payment
-     * activity. Once a user has consented to future payments, when the user
-     * subsequently initiates a PayPal payment from their device to be completed
-     * by your server, PayPal uses a Correlation ID to verify that the payment
-     * is originating from a valid, user-consented device+application. This
-     * helps reduce fraud and decrease declines. This method MUST be called
-     * prior to initiating a pre-consented payment (a "future payment") from a
-     * mobile device. Pass the result to your server, to include in the payment
-     * request sent to PayPal. Do not otherwise cache or store this value.
+     * Gets a Client Metadata ID at the time of future payment activity. Once a user has consented
+     * to future payments, when the user subsequently initiates a PayPal payment from their device
+     * to be completed by your server, PayPal uses a Correlation ID to verify that the payment is
+     * originating from a valid, user-consented device+application. This helps reduce fraud and
+     * decrease declines. This method MUST be called prior to initiating a pre-consented payment (a
+     * "future payment") from a mobile device. Pass the result to your server, to include in the
+     * payment request sent to PayPal. Do not otherwise cache or store this value.
      *
      * @param context The application context
-     * @return The applicationCorrelationID - Your server will send this to
-     * PayPal in a 'PayPal-Client-Metadata-Id' header.
+     * @return The applicationCorrelationID - Your server will send this to PayPal in a
+     * 'PayPal-Client-Metadata-Id' header.
      */
     public static final String getClientMetadataId(Context context) {
         return SdkRiskComponent.getClientMetadataId(OTC_EXECUTOR_SERVICE, context,
@@ -344,20 +364,18 @@ public class PayPalOneTouchCore {
     }
 
     /**
-     * Gets a Client Metadata ID at the time of future payment
-     * activity. Once a user has consented to future payments, when the user
-     * subsequently initiates a PayPal payment from their device to be completed
-     * by your server, PayPal uses a Correlation ID to verify that the payment
-     * is originating from a valid, user-consented device+application. This
-     * helps reduce fraud and decrease declines. This method MUST be called
-     * prior to initiating a pre-consented payment (a "future payment") from a
-     * mobile device. Pass the result to your server, to include in the payment
-     * request sent to PayPal. Do not otherwise cache or store this value.
+     * Gets a Client Metadata ID at the time of future payment activity. Once a user has consented
+     * to future payments, when the user subsequently initiates a PayPal payment from their device
+     * to be completed by your server, PayPal uses a Correlation ID to verify that the payment is
+     * originating from a valid, user-consented device+application. This helps reduce fraud and
+     * decrease declines. This method MUST be called prior to initiating a pre-consented payment (a
+     * "future payment") from a mobile device. Pass the result to your server, to include in the
+     * payment request sent to PayPal. Do not otherwise cache or store this value.
      *
      * @param context The application context
      * @param pairingId The desired pairing id
-     * @return The applicationCorrelationID - Your server will send this to
-     * PayPal in a 'PayPal-Client-Metadata-Id' header.
+     * @return The applicationCorrelationID - Your server will send this to PayPal in a
+     * 'PayPal-Client-Metadata-Id' header.
      */
     public static final String getClientMetadataId(Context context, String pairingId) {
         Log.d(TAG, "getClientMetadataId(pairingId)");
@@ -369,17 +387,16 @@ public class PayPalOneTouchCore {
 
     /**
      * @return The version of the SDK library in use. Version numbering follows http://semver.org/.
-     *
+     * <p>
      * Please be sure to include this library version in tech support requests.
      */
-    public static String getLibraryVersion(){
+    public static String getLibraryVersion() {
         return BuildConfig.PRODUCT_VERSION;
     }
 
-
     /**
      * Returns the currently active config.
-     *
+     * <p>
      * Must be called from Main thread!
      */
     static OtcConfiguration getConfig(Context context) {
@@ -391,12 +408,11 @@ public class PayPalOneTouchCore {
      * Lazily creates and returns a sContextInspector object
      */
     static synchronized ContextInspector getContextInspector(Context context) {
-        if(null == sContextInspector){
+        if (null == sContextInspector) {
             sContextInspector = new ContextInspector(context, getCoreEnvironment().getPrefsFile());
         }
         return sContextInspector;
     }
-
 
     private static CoreEnvironment getCoreEnvironment() {
         return new OtcEnvironment();
@@ -421,9 +437,9 @@ public class PayPalOneTouchCore {
                 baseUrl += "/";
             }
 
-            for(OtcApiName apiInfo: OtcApiName.getAllValues()){
+            for (OtcApiName apiInfo : OtcApiName.getAllValues()) {
                 String url;
-                if(apiInfo.isOverrideBaseUrl()){
+                if (apiInfo.isOverrideBaseUrl()) {
                     url = apiInfo.getUrl();
                 } else {
                     url = baseUrl + apiInfo.getUrl();

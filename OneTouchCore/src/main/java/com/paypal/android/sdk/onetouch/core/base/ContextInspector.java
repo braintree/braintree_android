@@ -25,7 +25,6 @@ public class ContextInspector {
     private final String mPrefsFileName;
     private final Crypto mCrypto;
 
-
     public ContextInspector(Context context, String prefsFileName, CryptoFactory cryptoFactory) {
         if (null == context) {
             throw new NullPointerException("context == null");
@@ -111,7 +110,8 @@ public class ContextInspector {
 
     public String getSimOperatorName() {
         try {
-            TelephonyManager m = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+            TelephonyManager m =
+                    (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
             return m.getSimOperatorName();
         } catch (SecurityException e) {
             return null;
@@ -119,16 +119,17 @@ public class ContextInspector {
     }
 
     /**
-     * @return the installation GUID / the device's identifier. this has been a
-     * bunch of different things over time but now is an installation GUID. it
-     * is not stable across uninstalls but it's the best we can do.
-     *
-     * Skips the usual encryption/decryption, because this ID is stored in plaintext and used to seed the
-     * encryptor/decryptor.
+     * @return the installation GUID / the device's identifier. this has been a bunch of different
+     * things over time but now is an installation GUID. it is not stable across uninstalls but it's
+     * the best we can do.
+     * <p>
+     * Skips the usual encryption/decryption, because this ID is stored in plaintext and used to
+     * seed the encryptor/decryptor.
      */
     public String getInstallationGUID() {
-        String existingGUID = mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE).getString(
-                INSTALL_GUID, null);
+        String existingGUID =
+                mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE).getString(
+                        INSTALL_GUID, null);
         if (existingGUID != null) {
             return existingGUID;
         } else {
@@ -148,16 +149,15 @@ public class ContextInspector {
      * @return the persisted value or default value if it does not exist
      */
     public String getStringPreference(String key) {
-        return mCrypto.decryptIt(mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE).getString(
-                key, null));
+        return mCrypto.decryptIt(
+                mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE).getString(
+                        key, null));
     }
-
 
     public long getLongPreference(String key, long defaultValue) {
         return mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE).getLong(
                 key, defaultValue);
     }
-
 
     public boolean getBooleanPreference(String key, boolean defaultValue) {
         return mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE).getBoolean(

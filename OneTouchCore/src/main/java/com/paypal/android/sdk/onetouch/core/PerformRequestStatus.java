@@ -8,7 +8,8 @@ public class PerformRequestStatus {
     private final RequestTarget mRequestTarget;
     private final String mClientMetadataId;
 
-    protected PerformRequestStatus(boolean success, RequestTarget requestTarget, String clientMetadataId) {
+    protected PerformRequestStatus(boolean success, RequestTarget requestTarget,
+            String clientMetadataId) {
         this.mSuccess = success;
         this.mRequestTarget = requestTarget;
         this.mClientMetadataId = clientMetadataId;
@@ -29,6 +30,7 @@ public class PerformRequestStatus {
     @Override
     public String toString() {
         return PerformRequestStatus.class.getSimpleName()
-                + "[mSuccess=" + mSuccess + ", mRequestTarget=" + mRequestTarget + ", mClientMetadataId=" + mClientMetadataId + "]";
+                + "[mSuccess=" + mSuccess + ", mRequestTarget=" + mRequestTarget +
+                ", mClientMetadataId=" + mClientMetadataId + "]";
     }
 }

@@ -53,12 +53,12 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
     private final ConcurrentLinkedQueue<Runnable> mQueue;
 
     public NetworkRequestProcessor(ContextInspector contextInspector,
-                                   String environmentName,
-                                   CoreEnvironment coreEnvironment,
-                                   ServerRequestEnvironment serverRequestEnvironment,
-                                   int networkTimeout,
-                                   boolean enableStageSsl,
-                                   List<? extends Interceptor> additionalInterceptors) {
+            String environmentName,
+            CoreEnvironment coreEnvironment,
+            ServerRequestEnvironment serverRequestEnvironment,
+            int networkTimeout,
+            boolean enableStageSsl,
+            List<? extends Interceptor> additionalInterceptors) {
         this.mContextInspector = contextInspector;
         this.mEnvironmentName = environmentName;
         this.mCoreEnvironment = coreEnvironment;
@@ -73,15 +73,17 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
         boolean useSslPinning = !isStageEnv;
 
         mHttpClient = OkHttpClientFactory.getOkHttpClient(networkTimeout, isTrustAll, useSslPinning,
-                coreEnvironment.getUserAgent(), this.mServerRequestEnvironment.environmentBaseUrl());
+                coreEnvironment.getUserAgent(),
+                this.mServerRequestEnvironment.environmentBaseUrl());
 
         mHttpClient.interceptors().addAll(additionalInterceptors);
         mHttpClient.interceptors().add(new HeaderLoggingInterceptor());
 
         mTrackingHttpClient = OkHttpClientFactory.getOkHttpClient(networkTimeout, false, false,
-                coreEnvironment.getUserAgent(), this.mServerRequestEnvironment.environmentBaseUrl());
+                coreEnvironment.getUserAgent(),
+                this.mServerRequestEnvironment.environmentBaseUrl());
         mTrackingHttpClient.interceptors().add(new HeaderLoggingInterceptor());
-        
+
         mScheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         mQueue = new ConcurrentLinkedQueue<>();
     }
@@ -109,15 +111,18 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
                 Log.d(TAG, serverRequest.toLogString() + " endpoint: " + endpoint);
                 Log.d(
                         TAG,
-                        serverRequest.toLogString() + " request: " + serverRequest.getComputedRequest());
+                        serverRequest.toLogString() + " request: " +
+                                serverRequest.getComputedRequest());
                 scheduleDelayedTrackingRequest(serverRequest, endpoint);
             } else {
                 // lower log levels in release
                 Log.i(TAG, serverRequest.toLogString() + " endpoint: " + endpoint);
                 Log.i(
                         TAG,
-                        serverRequest.toLogString() + " request: " + serverRequest.getComputedRequest());
-                executeHttpMethod(serverRequest, endpoint, mHttpClient, new GenericHttpResponseHandler(serverRequest));
+                        serverRequest.toLogString() + " request: " +
+                                serverRequest.getComputedRequest());
+                executeHttpMethod(serverRequest, endpoint, mHttpClient,
+                        new GenericHttpResponseHandler(serverRequest));
             }
             // successfully started thread
             return true;
@@ -136,15 +141,17 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
      * Schedules Delayed Tracking Request for FPTI requests.
      *
      * @param serverRequest serverRequest Object
-     * @param endpoint      URL
+     * @param endpoint URL
      */
-    private void scheduleDelayedTrackingRequest(final ServerRequest serverRequest, final String endpoint) {
+    private void scheduleDelayedTrackingRequest(final ServerRequest serverRequest,
+            final String endpoint) {
         mQueue.offer(new Runnable() {
             @Override
             public void run() {
                 try {
-                    executeHttpMethod(serverRequest, endpoint, mTrackingHttpClient, new TrackingRequestResponseHandler(
-                            serverRequest));
+                    executeHttpMethod(serverRequest, endpoint, mTrackingHttpClient,
+                            new TrackingRequestResponseHandler(
+                                    serverRequest));
                 } catch (IOException e) {
                     // ignore, it's just FPTI
                 }
@@ -165,12 +172,13 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
      * Executes HTTP Calls.
      *
      * @param serverRequest serverRequest Object
-     * @param endpoint      URL
-     * @param clientToUse   which client to use for making this call.
-     * @param handlerToUse  Callback Handler
+     * @param endpoint URL
+     * @param clientToUse which client to use for making this call.
+     * @param handlerToUse Callback Handler
      * @throws IOException
      */
-    private void executeHttpMethod(ServerRequest serverRequest, String endpoint, OkHttpClient clientToUse, Callback handlerToUse) throws IOException {
+    private void executeHttpMethod(ServerRequest serverRequest, String endpoint,
+            OkHttpClient clientToUse, Callback handlerToUse) throws IOException {
         Request request;
         switch (serverRequest.getApiInfo().getMethod()) {
             case GET:
@@ -216,7 +224,7 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
     /**
      * Concat endpoints and request String
      *
-     * @param endpoint        URL
+     * @param endpoint URL
      * @param computedRequest Request string
      * @return Concatenated string
      */
@@ -251,10 +259,11 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
      * Handler method to properly handle failures. Both IOException or HTTPExceptions are handled.
      *
      * @param serverRequest serverRequest Object
-     * @param response      Response received from HTTP Request
-     * @param e             Exception Object
+     * @param response Response received from HTTP Request
+     * @param e Exception Object
      */
-    private void handleFailure(final ServerRequest serverRequest, Response response, IOException e) {
+    private void handleFailure(final ServerRequest serverRequest, Response response,
+            IOException e) {
         Log.d(TAG, serverRequest.toLogString() + " failure.");
 
         if (response != null) {
@@ -275,7 +284,8 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
             if (e instanceof SSLException && "Connection closed by peer".equals(e.getMessage())) {
                 serverRequest.setError(new ThrowableEvent(LibraryError.DEVICE_OS_TOO_OLD, e));
             } else {
-                serverRequest.setError(new ThrowableEvent(LibraryError.SERVER_COMMUNICATION_ERROR, e));
+                serverRequest
+                        .setError(new ThrowableEvent(LibraryError.SERVER_COMMUNICATION_ERROR, e));
             }
         } else {
             throw new RuntimeException("Both Response or Exception cannot be null");
@@ -297,7 +307,6 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
 
     /**
      * Workaround for crash documented here: https://github.com/square/okhttp/issues/1592
-     *
      */
     private void safelyCancelRequest(final OkHttpClient client) {
         client.getDispatcher().getExecutorService().execute(new Runnable() {

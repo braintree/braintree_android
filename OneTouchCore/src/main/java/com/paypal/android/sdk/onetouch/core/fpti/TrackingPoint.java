@@ -15,11 +15,9 @@ public enum TrackingPoint {
     Return("switchback", "return"),
     Error("switchback", "cancel", true);
 
-
     private final String c;
     private final String d;
     private final boolean hasError;
-
 
     TrackingPoint(String c, String d, boolean hasError) {
         this.c = c;
@@ -34,7 +32,8 @@ public enum TrackingPoint {
     public String getCd() {
         return c + ":" + d;
     }
-    public boolean hasError(){
+
+    public boolean hasError() {
         return hasError;
     }
 }

@@ -3,8 +3,7 @@ package com.paypal.android.networking.events;
 public enum LibraryError {
 
     /**
-     * A problem occurred on the server, and was reported back to the client.
-     * (500 error)
+     * A problem occurred on the server, and was reported back to the client. (500 error)
      */
     INTERNAL_SERVER_ERROR,
 

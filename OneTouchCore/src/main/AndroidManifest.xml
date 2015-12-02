@@ -1,10 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.paypal.android.sdk.onetouch.core">
+    package="com.paypal.android.sdk.onetouch.core">
 
     <application>
 
         <activity android:name="com.paypal.android.sdk.onetouch.core.PayPalOneTouchActivity"
-                  android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
     </application>
 

@@ -1,6 +1,5 @@
 package com.paypal.android.networking;
 
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,7 +12,7 @@ public class EnvironmentManager {
     public static final String MOCK = "mock";
 
     // Don't touch these!
-    public static final List<String> UNTOUCHABLE_ENDPOINTS = Arrays.asList(LIVE, SANDBOX,MOCK);
+    public static final List<String> UNTOUCHABLE_ENDPOINTS = Arrays.asList(LIVE, SANDBOX, MOCK);
 
     public static final String LIVE_API_M_ENDPOINT = "https://api-m.paypal.com/v1/";
     public static final String SANDBOX_API_M_ENDPOINT = "https://api-m.sandbox.paypal.com/v1/";
@@ -41,8 +40,7 @@ public class EnvironmentManager {
     }
 
     /**
-     * @return <code>true</code> if the environment is a stage (not mock,
-     * sandbox, or live).
+     * @return <code>true</code> if the environment is a stage (not mock, sandbox, or live).
      */
     public static boolean isStage(String environmentName) {
         return !(isLive(environmentName) || isSandbox(environmentName) || isMock(environmentName));

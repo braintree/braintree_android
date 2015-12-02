@@ -2,9 +2,9 @@ package com.paypal.android.networking.events;
 
 /**
  * the root of the Error objects that can be produced during an API request
- *
- * this roughly corresponds to the PayPal standard of most errors having a code,
- * a short message and a long message
+ * <p>
+ * this roughly corresponds to the PayPal standard of most errors having a code, a short message and
+ * a long message
  */
 abstract public class ErrorBase {
     protected String mErrorCode;
@@ -14,7 +14,7 @@ abstract public class ErrorBase {
 
     @Override
     public String toString() {
-        return "ErrorBase[mErrorCode=" + mErrorCode + " mErrorMsgShort="+ mErrorMsgShort + "]";
+        return "ErrorBase[mErrorCode=" + mErrorCode + " mErrorMsgShort=" + mErrorMsgShort + "]";
     }
 
     public ErrorBase() {

@@ -21,10 +21,9 @@ import java.security.Security;
 
 /**
  * Fixes for the output of the default PRNG having low entropy.
- *
- * The fixes need to be applied via {@link #apply()} before any use of Java
- * Cryptography Architecture primitives. A good place to invoke them is in the
- * application's {@code onCreate}.
+ * <p>
+ * The fixes need to be applied via {@link #apply()} before any use of Java Cryptography
+ * Architecture primitives. A good place to invoke them is in the application's {@code onCreate}.
  */
 
 final class PRNGFixes {
@@ -48,8 +47,7 @@ final class PRNGFixes {
     }
 
     /**
-     * Applies the fix for OpenSSL PRNG having low entropy. Does nothing if the
-     * fix is not needed.
+     * Applies the fix for OpenSSL PRNG having low entropy. Does nothing if the fix is not needed.
      *
      * @throws SecurityException if the fix is needed but could not be applied.
      */
@@ -82,9 +80,9 @@ final class PRNGFixes {
     }
 
     /**
-     * Installs a Linux PRNG-backed {@code SecureRandom} implementation as the
-     * default. Does nothing if the implementation is already the default or if
-     * there is not need to install the implementation.
+     * Installs a Linux PRNG-backed {@code SecureRandom} implementation as the default. Does nothing
+     * if the implementation is already the default or if there is not need to install the
+     * implementation.
      *
      * @throws SecurityException if the fix is needed but could not be applied.
      */
@@ -132,8 +130,8 @@ final class PRNGFixes {
     }
 
     /**
-     * {@code Provider} of {@code SecureRandom} engines which pass through
-     * all requests to the Linux PRNG.
+     * {@code Provider} of {@code SecureRandom} engines which pass through all requests to the Linux
+     * PRNG.
      */
     private static class LinuxPRNGSecureRandomProvider extends Provider {
 
@@ -152,8 +150,7 @@ final class PRNGFixes {
     }
 
     /**
-     * {@link SecureRandomSpi} which passes all requests to the Linux PRNG
-     * ({@code /dev/urandom}).
+     * {@link SecureRandomSpi} which passes all requests to the Linux PRNG ({@code /dev/urandom}).
      */
     public static class LinuxPRNGSecureRandom extends SecureRandomSpi {
 
@@ -174,25 +171,22 @@ final class PRNGFixes {
         private static final Object sLock = new Object();
 
         /**
-         * Input stream for reading from Linux PRNG or {@code null} if not yet
-         * opened.
+         * Input stream for reading from Linux PRNG or {@code null} if not yet opened.
          *
          * @GuardedBy("sLock")
          */
         private static DataInputStream sUrandomIn;
 
         /**
-         * Output stream for writing to Linux PRNG or {@code null} if not yet
-         * opened.
+         * Output stream for writing to Linux PRNG or {@code null} if not yet opened.
          *
          * @GuardedBy("sLock")
          */
         private static OutputStream sUrandomOut;
 
         /**
-         * Whether this engine instance has been seeded. This is needed because
-         * each instance needs to seed itself if the client does not explicitly
-         * seed it.
+         * Whether this engine instance has been seeded. This is needed because each instance needs
+         * to seed itself if the client does not explicitly seed it.
          */
         private boolean mSeeded;
 
@@ -273,8 +267,7 @@ final class PRNGFixes {
     }
 
     /**
-     * Generates a device- and invocation-specific seed to be mixed into the
-     * Linux PRNG.
+     * Generates a device- and invocation-specific seed to be mixed into the Linux PRNG.
      */
     private static byte[] generateSeed() {
         try {

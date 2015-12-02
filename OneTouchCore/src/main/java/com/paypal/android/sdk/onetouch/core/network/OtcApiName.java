@@ -6,11 +6,10 @@ import com.paypal.android.networking.request.ApiInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class OtcApiName implements ApiInfo {
     private final ApiName mApiName;
 
-    public OtcApiName(ApiName apiName){
+    public OtcApiName(ApiName apiName) {
         this.mApiName = apiName;
     }
 
@@ -53,13 +52,12 @@ public class OtcApiName implements ApiInfo {
         /**
          * Config file location
          */
-        ConfigFileRequest(HttpMethod.GET, "https://www.paypalobjects.com/webstatic/otc/otc-config.android.json", true);
-
+        ConfigFileRequest(HttpMethod.GET,
+                "https://www.paypalobjects.com/webstatic/otc/otc-config.android.json", true);
 
         private HttpMethod mHttpMethod;
         private String mUrl;
         private boolean mOverrideBaseUrl;
-
 
         ApiName(HttpMethod mHttpMethod, String url, boolean overrideBaseUrl) {
             this.mHttpMethod = mHttpMethod;
@@ -79,7 +77,7 @@ public class OtcApiName implements ApiInfo {
             return mUrl;
         }
 
-        boolean isOverrideBaseUrl(){
+        boolean isOverrideBaseUrl() {
             return mOverrideBaseUrl;
         }
     }

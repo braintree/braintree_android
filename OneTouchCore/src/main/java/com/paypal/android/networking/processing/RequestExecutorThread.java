@@ -1,12 +1,12 @@
 package com.paypal.android.networking.processing;
 
+import android.util.Log;
+
 import com.paypal.android.networking.events.LibraryError;
 import com.paypal.android.networking.events.RequestError;
 import com.paypal.android.networking.request.ServerRequest;
 import com.paypal.android.networking.request.ServerRequestEnvironment;
 import com.paypal.android.sdk.onetouch.core.base.Constants;
-
-import android.util.Log;
 
 import org.json.JSONException;
 
@@ -16,8 +16,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * This is a thread so that requests to send off are released from the main UI
- * thread as soon as possible.
+ * This is a thread so that requests to send off are released from the main UI thread as soon as
+ * possible.
  */
 public class RequestExecutorThread extends Thread {
     private static final String TAG = RequestExecutorThread.class.getSimpleName();
@@ -34,7 +34,7 @@ public class RequestExecutorThread extends Thread {
     private final RequestProcessor mRequestProcessor;
 
     public RequestExecutorThread(ServerRequestEnvironment env,
-                          RequestProcessor requestProcessor) {
+            RequestProcessor requestProcessor) {
         this.mServerRequestEnvironment = env;
         this.mRequestProcessor = requestProcessor;
 
@@ -104,7 +104,7 @@ public class RequestExecutorThread extends Thread {
             }// end synchronized
 
             // will be null iff the app is shutting down
-            if(null != serverRequest) {
+            if (null != serverRequest) {
                 /*
                     execute the request outside outside the synchronized block to allow the main
                     thread to add more mQueuedRequests.  Made this change because getRiskPayload

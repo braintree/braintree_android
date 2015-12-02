@@ -1,10 +1,10 @@
 package com.paypal.android.sdk.onetouch.core.network;
 
+import android.text.TextUtils;
+
 import com.paypal.android.sdk.onetouch.core.BuildConfig;
 import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
 import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;
-
-import android.text.TextUtils;
 
 public class OtcEnvironment implements CoreEnvironment {
     @Override
@@ -34,10 +34,10 @@ public class OtcEnvironment implements CoreEnvironment {
 
     private String getFeatureString() {
         StringBuilder featureList = new StringBuilder();
-        if(BuildConfig.DEBUG){
+        if (BuildConfig.DEBUG) {
             featureList.append("debug; ");
         }
-        if(!TextUtils.isEmpty(BuildConfig.PRODUCT_FEATURES)) {
+        if (!TextUtils.isEmpty(BuildConfig.PRODUCT_FEATURES)) {
             featureList.append(BuildConfig.PRODUCT_FEATURES).append(" ");
         }
 

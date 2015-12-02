@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * Logs all headers
  */
@@ -21,8 +20,9 @@ public class HeaderLoggingInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request originalRequest = chain.request();
 
-        for (Map.Entry<String, List<String>> header : originalRequest.headers().toMultimap().entrySet()) {
-            for(String headerValue: header.getValue()) {
+        for (Map.Entry<String, List<String>> header : originalRequest.headers().toMultimap()
+                .entrySet()) {
+            for (String headerValue : header.getValue()) {
                 Log.d(TAG, header.getKey() + "=" + headerValue);
             }
         }

@@ -17,8 +17,9 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * TODO - check older phones to verify they have AES/RSA.  If not, we'll need to package BouncyCastle with the SDK.
- *
+ * TODO - check older phones to verify they have AES/RSA.  If not, we'll need to package
+ * BouncyCastle with the SDK.
+ * <p>
  * http://www.unwesen.de/2011/06/12/encryption-on-android-bouncycastle/
  */
 public class OtcCrypto {
@@ -32,7 +33,8 @@ public class OtcCrypto {
     private static final int DIGEST_SIZE = 32;
     private static final int PUBLIC_KEY_SIZE = 256;
 
-    private byte[] dataDigest(byte[] data, byte[] key) throws NoSuchAlgorithmException, InvalidKeyException {
+    private byte[] dataDigest(byte[] data, byte[] key)
+            throws NoSuchAlgorithmException, InvalidKeyException {
         Mac sha256HMAC = Mac.getInstance(HMAC_SHA256);
         SecretKeySpec digestKey = new SecretKeySpec(key, HMAC_SHA256);
         sha256HMAC.init(digestKey);
@@ -44,7 +46,10 @@ public class OtcCrypto {
         return EncryptionUtils.generateRandomData(ENCRYPTION_KEY_SIZE);
     }
 
-    public byte[] encryptAESCTRData(byte[] plainData, byte[] key) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+    public byte[] encryptAESCTRData(byte[] plainData, byte[] key)
+            throws NoSuchPaddingException, NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException,
+            IllegalBlockSizeException {
         // setup key, digest key and nonce
         byte[] encryptionKey = new byte[AES_KEY_SIZE];
         System.arraycopy(key, 0, encryptionKey, 0, AES_KEY_SIZE);
@@ -79,7 +84,10 @@ public class OtcCrypto {
         return output;
     }
 
-    public byte[] encryptRSAData(byte[] plainData, Certificate certificate) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, CertificateException, InvalidEncryptionDataException {
+    public byte[] encryptRSAData(byte[] plainData, Certificate certificate)
+            throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException,
+            InvalidKeyException, BadPaddingException, IllegalBlockSizeException,
+            CertificateException, InvalidEncryptionDataException {
         // data cannot be bigger than 256 bytes
         if (plainData.length > PUBLIC_KEY_SIZE) {
             throw new InvalidEncryptionDataException("Data is too large for public key encryption");
@@ -93,7 +101,10 @@ public class OtcCrypto {
         return output;
     }
 
-    public byte[] decryptAESCTRData(byte[] cipherData, byte[] key) throws IllegalBlockSizeException, InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, InvalidAlgorithmParameterException, NoSuchPaddingException, BadPaddingException, InvalidEncryptionDataException {
+    public byte[] decryptAESCTRData(byte[] cipherData, byte[] key)
+            throws IllegalBlockSizeException, InvalidKeyException, NoSuchAlgorithmException,
+            IllegalArgumentException, InvalidAlgorithmParameterException, NoSuchPaddingException,
+            BadPaddingException, InvalidEncryptionDataException {
         // we should have at least 1 byte of data
         if (cipherData.length < DIGEST_SIZE + NONCE_SIZE) {
             throw new InvalidEncryptionDataException("data is too small");
@@ -109,8 +120,8 @@ public class OtcCrypto {
         System.arraycopy(cipherData, 0, signature, 0, DIGEST_SIZE);
 
         // extract the rest to calculate digest and compare it to the signature
-        byte[] signedData = new byte[cipherData.length-DIGEST_SIZE];
-        System.arraycopy(cipherData, DIGEST_SIZE, signedData, 0, cipherData.length-DIGEST_SIZE);
+        byte[] signedData = new byte[cipherData.length - DIGEST_SIZE];
+        System.arraycopy(cipherData, DIGEST_SIZE, signedData, 0, cipherData.length - DIGEST_SIZE);
         byte[] digest = dataDigest(signedData, digestKey);
         if (!EncryptionUtils.isEqual(digest, signature)) {
             throw new IllegalArgumentException("Signature mismatch");
@@ -126,9 +137,8 @@ public class OtcCrypto {
 
         Cipher cipher = Cipher.getInstance(AES_CTR_ALGO);
         cipher.init(Cipher.DECRYPT_MODE, keySpec, nonceSpec);
-        byte[] output = cipher.doFinal(signedData, NONCE_SIZE, signedData.length-NONCE_SIZE);
+        byte[] output = cipher.doFinal(signedData, NONCE_SIZE, signedData.length - NONCE_SIZE);
         return output;
     }
-
 
 }

@@ -1,5 +1,8 @@
 package com.paypal.android.networking;
 
+import android.os.Handler;
+import android.os.Message;
+
 import com.paypal.android.networking.bus.Dispatcher;
 import com.paypal.android.networking.bus.RequestRouter;
 import com.paypal.android.networking.processing.RequestExecutorThread;
@@ -8,9 +11,6 @@ import com.paypal.android.networking.request.ServerRequest;
 import com.paypal.android.networking.request.ServerRequestEnvironment;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
-
-import android.os.Handler;
-import android.os.Message;
 
 import java.lang.ref.WeakReference;
 
@@ -25,18 +25,18 @@ public class ServerInterface implements ServerRequestEnvironment {
     private final Dispatcher mDispatcher;
 
     /**
-     * Handler is on the main thread, because ServerInterface is created on the
-     * main thread, so all invocations get posted back to main thread.
+     * Handler is on the main thread, because ServerInterface is created on the main thread, so all
+     * invocations get posted back to main thread.
      */
     private final UiHandler mUiHandler;
 
     /**
      * Static class because of the following lint message:
-     * 
-     * Messages enqueued on the application thread's MessageQueue also retain
-     * their target Handler. If the Handler is an inner class, its outer class
-     * will be retained as well. To void leaking the outer class, declass the
-     * Handler as a static nested class with a WeakReference to its outer class.
+     * <p>
+     * Messages enqueued on the application thread's MessageQueue also retain their target Handler.
+     * If the Handler is an inner class, its outer class will be retained as well. To void leaking
+     * the outer class, declass the Handler as a static nested class with a WeakReference to its
+     * outer class.
      */
     private static class UiHandler extends Handler {
         WeakReference<ServerInterface> serverInterfaceRef;
@@ -59,7 +59,7 @@ public class ServerInterface implements ServerRequestEnvironment {
     }
 
     public ServerInterface(ContextInspector contextInspector, PayPalEnvironment environment,
-                           CoreEnvironment coreEnv) {
+            CoreEnvironment coreEnv) {
         this.mContextInspector = contextInspector;
         this.mEnvironment = environment;
         this.mCoreEnvironment = coreEnv;
@@ -68,13 +68,12 @@ public class ServerInterface implements ServerRequestEnvironment {
     }
 
     public void setExecutor(RequestExecutorThread executor) {
-        if (mExecutor != null){
+        if (mExecutor != null) {
             // due to weird dependency issues, we must do this outside of constructor.  should never be called twice.
             throw new IllegalStateException();
         }
         mExecutor = executor;
     }
-
 
     @Override
     public void completeServerRequest(ServerRequest serverRequest) {
@@ -93,6 +92,7 @@ public class ServerInterface implements ServerRequestEnvironment {
 
     /**
      * Dispatches reply on main thread!
+     *
      * @param dispatchable
      */
     private void dispatchReply(ServerRequest dispatchable) {
@@ -143,7 +143,7 @@ public class ServerInterface implements ServerRequestEnvironment {
         return mContextInspector;
     }
 
-    public String environmentBaseUrl(){
+    public String environmentBaseUrl() {
         return mEnvironment.getBaseUrl();
     }
 
