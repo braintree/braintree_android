@@ -80,7 +80,7 @@ public class PaymentButtonTest {
     public void newInstance_returnsAPaymentButtonFromATokenizationKey() throws InvalidArgumentException {
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY);
-        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, paymentRequest);
+        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, 0, paymentRequest);
 
         assertNotNull(paymentButton);
     }
@@ -90,7 +90,7 @@ public class PaymentButtonTest {
             throws InvalidArgumentException {
         PaymentRequest paymentRequest = new PaymentRequest()
                 .clientToken(stringFromFixture("client_token.json"));
-        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, paymentRequest);
+        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, 0, paymentRequest);
 
         assertNotNull(paymentButton);
     }
@@ -98,30 +98,30 @@ public class PaymentButtonTest {
     @Test(timeout = 1000, expected = InvalidArgumentException.class)
     public void newInstance_throwsAnExceptionWhenCheckoutRequestIsMissingAuthorization()
             throws InvalidArgumentException {
-        PaymentButton.newInstance(mActivity, new PaymentRequest());
+        PaymentButton.newInstance(mActivity, 0, new PaymentRequest());
     }
 
     @Test(timeout = 1000, expected = InvalidArgumentException.class)
     public void newInstance_throwsAnExceptionForABadTokenizationKey() throws InvalidArgumentException {
         PaymentRequest paymentRequest = new PaymentRequest()
                 .clientToken("test_key_merchant");
-        PaymentButton.newInstance(mActivity, paymentRequest);
+        PaymentButton.newInstance(mActivity, 0, paymentRequest);
     }
 
     @Test(timeout = 1000, expected = InvalidArgumentException.class)
     public void newInstance_throwsAnExceptionForABadClientToken() throws InvalidArgumentException {
         PaymentRequest paymentRequest = new PaymentRequest()
                 .clientToken("{}");
-        PaymentButton.newInstance(mActivity, paymentRequest);
+        PaymentButton.newInstance(mActivity, 0, paymentRequest);
     }
 
     @Test(timeout = 1000)
     public void newInstance_returnsAnExistingInstance() throws InvalidArgumentException {
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY);
-        PaymentButton paymentButton1 = PaymentButton.newInstance(mActivity, paymentRequest);
+        PaymentButton paymentButton1 = PaymentButton.newInstance(mActivity, 0, paymentRequest);
         getInstrumentation().waitForIdleSync();
-        PaymentButton paymentButton2 = PaymentButton.newInstance(mActivity, paymentRequest);
+        PaymentButton paymentButton2 = PaymentButton.newInstance(mActivity, 0, paymentRequest);
 
         assertEquals(paymentButton1, paymentButton2);
     }
@@ -145,7 +145,7 @@ public class PaymentButtonTest {
         };
         getInstrumentation().waitForIdleSync();
 
-        PaymentButton paymentButton = PaymentButton.newInstance(mActivity,
+        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, android.R.id.content,
                 new PaymentRequest().tokenizationKey(TOKENIZATION_KEY));
         getInstrumentation().waitForIdleSync();
 
@@ -195,7 +195,8 @@ public class PaymentButtonTest {
         });
         PaymentRequest paymentRequest = new PaymentRequest()
                 .clientToken(stringFromFixture("client_token_with_bad_config_url.json"));
-        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, paymentRequest);
+        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, android.R.id.content,
+                paymentRequest);
         getInstrumentation().waitForIdleSync();
 
         latch.await();
@@ -204,7 +205,7 @@ public class PaymentButtonTest {
 
     @Test(timeout = 1000)
     public void callsOnClickListener() throws InvalidArgumentException, InterruptedException {
-        PaymentButton paymentButton = PaymentButton.newInstance(mActivity,
+        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, android.R.id.content,
                 new PaymentRequest().tokenizationKey(TOKENIZATION_KEY));
         getInstrumentation().waitForIdleSync();
         final CountDownLatch latch = new CountDownLatch(1);
@@ -221,7 +222,7 @@ public class PaymentButtonTest {
 
     @Test(timeout = 1000)
     public void doesNotCrashWhenNoOnClickListenerIsSet() throws InvalidArgumentException {
-        PaymentButton paymentButton = PaymentButton.newInstance(mActivity,
+        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, 0,
                 new PaymentRequest().tokenizationKey(TOKENIZATION_KEY));
         getInstrumentation().waitForIdleSync();
 
@@ -231,7 +232,7 @@ public class PaymentButtonTest {
     @Test(timeout = 1000)
     public void notVisibleWhenNoMethodsAreEnabled() throws InvalidArgumentException, JSONException {
         getFragment(false, false);
-        PaymentButton paymentButton = PaymentButton.newInstance(mActivity,
+        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, android.R.id.content,
                 new PaymentRequest().tokenizationKey(TOKENIZATION_KEY));
         getInstrumentation().waitForIdleSync();
 
@@ -241,7 +242,7 @@ public class PaymentButtonTest {
     @Test(timeout = 1000)
     public void onlyShowsPayPal() throws InvalidArgumentException, JSONException {
         getFragment(true, false);
-        PaymentButton paymentButton = PaymentButton.newInstance(mActivity,
+        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, android.R.id.content,
                 new PaymentRequest().tokenizationKey(TOKENIZATION_KEY));
         getInstrumentation().waitForIdleSync();
 
@@ -261,7 +262,8 @@ public class PaymentButtonTest {
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY)
                 .androidPayCart(Cart.newBuilder().build());
-        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, paymentRequest);
+        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, android.R.id.content,
+                paymentRequest);
         getInstrumentation().waitForIdleSync();
 
         assertEquals(View.VISIBLE, paymentButton.getView().getVisibility());
@@ -280,7 +282,8 @@ public class PaymentButtonTest {
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY)
                 .androidPayCart(Cart.newBuilder().build());
-        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, paymentRequest);
+        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, android.R.id.content,
+                paymentRequest);
         getInstrumentation().waitForIdleSync();
 
         assertEquals(View.VISIBLE, paymentButton.getView().getVisibility());
@@ -298,7 +301,7 @@ public class PaymentButtonTest {
             throws InvalidArgumentException, JSONException, InterruptedException {
         Looper.prepare();
         getFragment(true, true);
-        PaymentButton paymentButton = PaymentButton.newInstance(mActivity,
+        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, android.R.id.content,
                 new PaymentRequest().tokenizationKey(TOKENIZATION_KEY));
         getInstrumentation().waitForIdleSync();
 
@@ -329,7 +332,8 @@ public class PaymentButtonTest {
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY)
                 .paypalAdditionalScopes(Collections.singletonList(PayPal.SCOPE_ADDRESS));
-        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, paymentRequest);
+        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, android.R.id.content,
+                paymentRequest);
         getInstrumentation().waitForIdleSync();
 
         paymentButton.getView().findViewById(R.id.bt_paypal_button).performClick();
@@ -359,7 +363,8 @@ public class PaymentButtonTest {
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY)
                 .androidPayCart(Cart.newBuilder().build());
-        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, paymentRequest);
+        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, android.R.id.content,
+                paymentRequest);
         getInstrumentation().waitForIdleSync();
         paymentButton.mBraintreeFragment = fragment;
 

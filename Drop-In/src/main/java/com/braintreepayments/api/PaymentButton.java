@@ -61,12 +61,14 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
      * @param paymentRequest The {@link PaymentRequest} to use to configure the
      *        {@link PaymentButton}. *Note:* This {@link CheckoutRequest} must include a client key
      *        or client token.
+     * @param containerViewId Optional identifier of the container this fragment is to be placed in.
+     *        If 0, it will not be placed in a container.
      * @return {@link PaymentButton}
      * @throws InvalidArgumentException If the client key or client token is not valid or cannot be
      *         parsed.
      */
-    public static PaymentButton newInstance(Activity activity, PaymentRequest paymentRequest) throws
-            InvalidArgumentException {
+    public static PaymentButton newInstance(Activity activity, int containerViewId,
+            PaymentRequest paymentRequest) throws InvalidArgumentException {
         FragmentManager fm = activity.getFragmentManager();
 
         PaymentButton paymentButton = (PaymentButton) fm.findFragmentByTag(TAG);
@@ -78,7 +80,7 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
             bundle.putParcelable(EXTRA_PAYMENT_REQUEST, paymentRequest);
             paymentButton.setArguments(bundle);
 
-            fm.beginTransaction().add(paymentButton, TAG).commit();
+            fm.beginTransaction().add(containerViewId, paymentButton, TAG).commit();
         }
 
         return paymentButton;
