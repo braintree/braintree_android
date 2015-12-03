@@ -97,8 +97,16 @@ public class Settings {
         return getPreferences(context).getBoolean("android_pay_require_phone_number", false);
     }
 
+    public static String getPayPalPaymentType(Context context) {
+        return getPreferences(context).getString("paypal_payment_type", context.getString(R.string.paypal_billing_agreement));
+    }
+
     public static boolean isPayPalAddressScopeRequested(Context context) {
         return getPreferences(context).getBoolean("paypal_request_address_scope", false);
+    }
+
+    public static boolean isPayPalSignatureVerificationDisabled(Context context) {
+        return getPreferences(context).getBoolean("paypal_disable_signature_verification", true);
     }
 
     public static boolean isThreeDSecureEnabled(Context context) {
@@ -107,9 +115,5 @@ public class Settings {
 
     public static boolean isThreeDSecureRequired(Context context) {
         return getPreferences(context).getBoolean("require_three_d_secure", true);
-    }
-
-    public static boolean isPayPalSignatureVerificationDisabled(Context context) {
-        return getPreferences(context).getBoolean("paypal_disable_signature_verification", true);
     }
 }

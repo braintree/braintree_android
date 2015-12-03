@@ -29,6 +29,8 @@
 
     <!-- Settings -->
     <string name="options">Options</string>
+    <string name="sandbox">Sandbox</string>
+    <string name="production">Production</string>
     <string name="authorization">Authorization</string>
     <string name="tokenization_key">Use Tokenization Key</string>
     <string name="tokenization_key_summary">Use tokenization key for authorizing requests</string>
@@ -44,7 +46,7 @@
     <string name="android_pay_require_phone_number_summary">Require phone number from the user</string>
     <string name="paypal">PayPal</string>
     <string name="paypal_request_address_scope">Request Address Scope</string>
-    <string name="paypal_request_address_scope_summary">Request address scope from the user (Payment Button &amp; Custom only)</string>
+    <string name="paypal_request_address_scope_summary">Request address scope from the user</string>
     <string name="three_d_secure">3D Secure</string>
     <string name="enable_three_d_secure">Enable 3D Secure</string>
     <string name="enable_three_d_secure_summary">3D Secure will automatically be run on all Card payment methods</string>
@@ -56,6 +58,7 @@
     <string name="paypal_future_payment_address_scope">Future Payment (Address Scope)</string>
     <string name="paypal_single_payment">Single Payment</string>
     <string name="paypal_billing_agreement">Billing Agreement</string>
+    <string name="paypal_payment_type">Payment Type</string>
 
     <!-- PayPalActivity -->
     <string name="paypal_wallet_available">PayPal Wallet app available for app switch: %b</string>

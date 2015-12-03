@@ -7,10 +7,29 @@
     android:paddingRight="10dp"
     android:paddingTop="40dp">
 
-    <FrameLayout
-        android:id="@+id/payment_button_container"
+    <ImageButton
+        android:id="@+id/paypal_button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/bt_logo_paypal"
+        android:background="@color/bt_white"
+        android:contentDescription="@string/bt_pay_with_paypal"
+        android:visibility="gone"
+        android:onClick="launchPayPal" />
+
+    <ImageButton
+        android:id="@+id/android_pay_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/bt_logo_android_pay"
+        android:background="@color/bt_white"
+        android:contentDescription="@string/bt_pay_with_android_pay"
+        android:visibility="gone"
+        android:onClick="launchAndroidPay" />
 
     <com.braintreepayments.cardform.view.CardForm
         android:id="@+id/card_form"

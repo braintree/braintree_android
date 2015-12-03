@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="environments">
-        <item name="sandbox">Sandbox</item>
-        <item name="production">Production</item>
+        <item name="sandbox">@string/sandbox</item>
+        <item name="production">@string/production</item>
+    </string-array>
+
+    <string-array name="paypal_payment_types">
+        <item name="checkout">@string/paypal_single_payment</item>
+        <item name="future_payment">@string/paypal_future_payment</item>
+        <item name="billing_agreement">@string/paypal_billing_agreement</item>
+    </string-array>
+
+    <string-array name="paypal_payment_types_values">
+        <item name="checkout">@string/paypal_single_payment</item>
+        <item name="future_payment">@string/paypal_future_payment</item>
+        <item name="billing_agreement">@string/paypal_billing_agreement</item>
     </string-array>
 </resources>
