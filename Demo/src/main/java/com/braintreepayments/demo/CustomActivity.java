@@ -29,7 +29,7 @@ import com.google.android.gms.wallet.MaskedWallet;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 
-public class CustomFormActivity extends BaseActivity implements PaymentMethodNonceCreatedListener,
+public class CustomActivity extends BaseActivity implements PaymentMethodNonceCreatedListener,
         BraintreeErrorListener, OnClickListener, OnCardFormSubmitListener {
 
     private static final int ANDROID_PAY_REQUEST_CODE = 1;

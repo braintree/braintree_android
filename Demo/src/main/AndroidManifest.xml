@@ -21,7 +21,7 @@
         </activity>
         <activity android:name=".SettingsActivity" android:label="@string/options" />
         <activity android:name=".PaymentButtonActivity" android:label="@string/buy" />
-        <activity android:name=".CustomFormActivity" android:label="@string/buy" />
+        <activity android:name=".CustomActivity" android:label="@string/buy" />
         <activity android:name=".CreateTransactionActivity" />
         <activity android:name=".PayPalActivity" android:label="@string/paypal" />
 

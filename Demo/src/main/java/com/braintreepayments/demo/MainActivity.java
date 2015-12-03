@@ -104,7 +104,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
     }
 
     public void launchCustom(View v) {
-        Intent intent = new Intent(this, CustomFormActivity.class)
+        Intent intent = new Intent(this, CustomActivity.class)
                 .putExtra(EXTRA_ANDROID_PAY_CART, getAndroidPayCart())
                 .putExtra(EXTRA_PAYMENT_REQUEST, getPaymentRequest());
         startActivityForResult(intent, CUSTOM_REQUEST);
