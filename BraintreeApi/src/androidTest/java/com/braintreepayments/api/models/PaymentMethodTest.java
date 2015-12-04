@@ -18,7 +18,7 @@ public class PaymentMethodTest extends AndroidTestCase {
 
         assertEquals(1, paymentMethods.size());
         assertTrue(paymentMethods.get(0) instanceof AndroidPayCard);
-        assertEquals("Google Wallet", paymentMethods.get(0).getTypeLabel());
+        assertEquals("Android Pay", paymentMethods.get(0).getTypeLabel());
         assertEquals("fake-android-pay-nonce", paymentMethods.get(0).getNonce());
         assertEquals("Android Pay", paymentMethods.get(0).getDescription());
         assertEquals("11", ((AndroidPayCard) paymentMethods.get(0)).getLastTwo());

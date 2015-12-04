@@ -730,8 +730,8 @@ public class Braintree {
     }
 
     /**
-     * Get Braintree specific tokenization parameters for Android Pay. Useful for existing Google Wallet
-     * or Android Pay integrations, or when full control over the {@link com.google.android.gms.wallet.MaskedWalletRequest}
+     * Get Braintree specific tokenization parameters for Android Pay. Useful for existing
+     * Android Pay integrations, or when full control over the {@link com.google.android.gms.wallet.MaskedWalletRequest}
      * and {@link com.google.android.gms.wallet.FullWalletRequest} is required.
      *
      * These parameters should be supplied to the

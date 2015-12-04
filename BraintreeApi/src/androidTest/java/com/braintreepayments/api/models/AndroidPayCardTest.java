@@ -11,7 +11,7 @@ public class AndroidPayCardTest extends AndroidTestCase {
 
         AndroidPayCard androidPayCard = AndroidPayCard.fromJson(androidPayString);
 
-        assertEquals("Google Wallet", androidPayCard.getTypeLabel());
+        assertEquals("Android Pay", androidPayCard.getTypeLabel());
         assertEquals("fake-android-pay-nonce", androidPayCard.getNonce());
         assertEquals("Android Pay", androidPayCard.getDescription());
         assertEquals("11", androidPayCard.getLastTwo());

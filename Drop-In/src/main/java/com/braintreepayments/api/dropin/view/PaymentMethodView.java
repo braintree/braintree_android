@@ -31,7 +31,7 @@ public class PaymentMethodView extends RelativeLayout {
         MAESTRO(R.drawable.bt_maestro, R.string.bt_descriptor_maestro, "Maestro"),
         PAYPAL(R.drawable.bt_paypal, R.string.bt_descriptor_paypal, "PayPal"),
         COINBASE(R.drawable.bt_coinbase, R.string.bt_descriptor_coinbase, "Coinbase"),
-        ANDROID_PAY(R.drawable.bt_android_pay, R.string.bt_descriptor_android_pay, "Google Wallet"),
+        ANDROID_PAY(R.drawable.bt_android_pay, R.string.bt_descriptor_android_pay, "Android Pay"),
         UNKNOWN(UNKNOWN_IMAGE_ID, R.string.bt_descriptor_unknown, "unknown");
 
         private final int mPictureResId;
