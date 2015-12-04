@@ -20,7 +20,7 @@ public class AndroidPayCardNonceTest {
 
         AndroidPayCardNonce androidPayCardNonce = AndroidPayCardNonce.fromJson(androidPayString);
 
-        assertEquals("Google Wallet", androidPayCardNonce.getTypeLabel());
+        assertEquals("Android Pay", androidPayCardNonce.getTypeLabel());
         assertEquals("fake-android-pay-nonce", androidPayCardNonce.getNonce());
         assertEquals("Android Pay", androidPayCardNonce.getDescription());
         assertEquals("Visa", androidPayCardNonce.getCardType());

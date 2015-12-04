@@ -5,7 +5,7 @@ import com.braintreepayments.api.dropin.R;
 public enum PaymentMethodType {
 
     AMEX(R.drawable.bt_amex, R.string.bt_descriptor_amex, "American Express"),
-    ANDROID_PAY(R.drawable.bt_android_pay, R.string.bt_descriptor_android_pay, "Google Wallet"),
+    ANDROID_PAY(R.drawable.bt_android_pay, R.string.bt_descriptor_android_pay, "Android Pay"),
     DINERS(R.drawable.bt_diners, R.string.bt_descriptor_diners, "Diners"),
     DISCOVER(R.drawable.bt_discover, R.string.bt_descriptor_discover, "Discover"),
     JCB(R.drawable.bt_jcb, R.string.bt_descriptor_jcb, "JCB"),
