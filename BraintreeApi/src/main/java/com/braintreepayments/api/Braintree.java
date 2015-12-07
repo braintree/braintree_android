@@ -556,6 +556,8 @@ public class Braintree {
             PayPalAccountBuilder payPalAccountBuilder = mBraintreeApi.handlePayPalResponse(null, resultCode, data);
             if (payPalAccountBuilder != null) {
                 create(payPalAccountBuilder);
+            } else {
+                postUnrecoverableErrorToListeners(new BraintreeException("Intent did not contain a PayPal response"));
             }
         } catch (ConfigurationException e) {
             postUnrecoverableErrorToListeners(e);
@@ -583,6 +585,8 @@ public class Braintree {
                     resultCode, data);
             if (payPalAccountBuilder != null) {
                 create(payPalAccountBuilder);
+            } else {
+                postUnrecoverableErrorToListeners(new BraintreeException("Intent did not contain a PayPal response"));
             }
         } catch (ConfigurationException e) {
             postUnrecoverableErrorToListeners(e);

@@ -308,7 +308,8 @@ public class BraintreeTest extends AndroidTestCase {
         verify(braintreeApi).sendAnalyticsEvent("custom.android.add-paypal.start", "custom");
     }
 
-    public void testFinishPayWithPayPalDoesNothingOnNullBuilder() throws ConfigurationException {
+    public void testFinishPayWithPayPalPostsUnrecoverableErrorOnNullBuilder()
+            throws ConfigurationException, InterruptedException {
         Intent intent = new Intent();
         BraintreeApi braintreeApi = mock(BraintreeApi.class);
         when(braintreeApi.handlePayPalResponse(any(Activity.class), eq(PayPalFuturePaymentActivity.RESULT_CANCELED), eq(intent))).
@@ -316,38 +317,19 @@ public class BraintreeTest extends AndroidTestCase {
 
         Braintree braintree = new Braintree(TEST_CLIENT_TOKEN_KEY, braintreeApi);
 
-        final AtomicBoolean listenerWasCalled = new AtomicBoolean(false);
+        final CountDownLatch latch = new CountDownLatch(1);
         braintree.addListener(new SimpleListener() {
             @Override
-            public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
-                listenerWasCalled.set(true);
-            }
-
-            @Override
-            public void onPaymentMethodCreated(PaymentMethod paymentMethod) {
-                listenerWasCalled.set(true);
-            }
-
-            @Override
-            public void onPaymentMethodNonce(String paymentMethodNonce) {
-                listenerWasCalled.set(true);
-            }
-
-            @Override
             public void onUnrecoverableError(Throwable throwable) {
-                listenerWasCalled.set(true);
-            }
-
-            @Override
-            public void onRecoverableError(ErrorWithResponse error) {
-                listenerWasCalled.set(true);
+                assertTrue(throwable instanceof BraintreeException);
+                assertEquals("Intent did not contain a PayPal response", throwable.getMessage());
+                latch.countDown();
             }
         });
 
         braintree.finishPayWithPayPal(null, PayPalFuturePaymentActivity.RESULT_CANCELED, intent);
-        SystemClock.sleep(50);
 
-        assertFalse("Expected no listeners to fire but one did fire", listenerWasCalled.get());
+        latch.await();
     }
 
     public void testStartPayWithVenmoSendsAnalyticsEvent() {
