@@ -1,9 +1,10 @@
-package com.paypal.android.sdk.onetouch.core;
+package com.paypal.android.sdk.onetouch.core.exception;
 
 /**
- * Exception for whenever the Wallet app has returned an 'error' in its response.
+ * Exception for whenever the browser has returned an 'error' in its response.
  */
-class BrowserSwitchException extends Exception {
+public class BrowserSwitchException extends Exception {
+
     public BrowserSwitchException(String detailMessage) {
         super(detailMessage);
     }

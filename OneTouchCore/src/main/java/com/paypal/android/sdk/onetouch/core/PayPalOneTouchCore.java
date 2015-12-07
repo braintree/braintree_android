@@ -20,7 +20,7 @@ import com.paypal.android.sdk.onetouch.core.base.SdkRiskComponent;
 import com.paypal.android.sdk.onetouch.core.config.ConfigManager;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
-import com.paypal.android.sdk.onetouch.core.encryption.InvalidEncryptionDataException;
+import com.paypal.android.sdk.onetouch.core.exception.InvalidEncryptionDataException;
 import com.paypal.android.sdk.onetouch.core.fpti.FptiManager;
 import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
 import com.paypal.android.sdk.onetouch.core.network.ConfigFileRequest;

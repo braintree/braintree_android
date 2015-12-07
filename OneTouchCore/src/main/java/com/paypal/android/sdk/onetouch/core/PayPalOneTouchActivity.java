@@ -10,6 +10,8 @@ import android.util.Log;
 
 import com.paypal.android.sdk.onetouch.core.base.Constants;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
+import com.paypal.android.sdk.onetouch.core.exception.ResponseParsingException;
+import com.paypal.android.sdk.onetouch.core.exception.WalletSwitchException;
 import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
 import com.paypal.android.sdk.onetouch.core.network.OtcEnvironment;
 import com.paypal.android.sdk.onetouch.core.sdk.ThemeManifestValidator;

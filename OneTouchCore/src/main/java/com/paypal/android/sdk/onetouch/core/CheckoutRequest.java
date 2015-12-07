@@ -12,6 +12,8 @@ import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.config.CheckoutRecipe;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
+import com.paypal.android.sdk.onetouch.core.exception.BrowserSwitchException;
+import com.paypal.android.sdk.onetouch.core.exception.ResponseParsingException;
 import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
 
 import org.json.JSONException;

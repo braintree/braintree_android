@@ -1,5 +1,7 @@
 package com.paypal.android.sdk.onetouch.core.encryption;
 
+import com.paypal.android.sdk.onetouch.core.exception.InvalidEncryptionDataException;
+
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;

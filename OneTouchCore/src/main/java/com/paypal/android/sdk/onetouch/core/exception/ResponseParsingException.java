@@ -1,6 +1,7 @@
-package com.paypal.android.sdk.onetouch.core;
+package com.paypal.android.sdk.onetouch.core.exception;
 
-class ResponseParsingException extends Exception {
+public class ResponseParsingException extends Exception {
+
     public ResponseParsingException(String detailMessage) {
         super(detailMessage);
     }

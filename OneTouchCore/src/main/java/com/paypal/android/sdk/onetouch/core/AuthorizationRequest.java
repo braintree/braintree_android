@@ -18,8 +18,10 @@ import com.paypal.android.sdk.onetouch.core.config.OAuth2Recipe;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
 import com.paypal.android.sdk.onetouch.core.encryption.EncryptionUtils;
-import com.paypal.android.sdk.onetouch.core.encryption.InvalidEncryptionDataException;
+import com.paypal.android.sdk.onetouch.core.exception.InvalidEncryptionDataException;
 import com.paypal.android.sdk.onetouch.core.encryption.OtcCrypto;
+import com.paypal.android.sdk.onetouch.core.exception.BrowserSwitchException;
+import com.paypal.android.sdk.onetouch.core.exception.ResponseParsingException;
 import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
 import com.paypal.android.sdk.onetouch.core.network.OtcEnvironment;
 
