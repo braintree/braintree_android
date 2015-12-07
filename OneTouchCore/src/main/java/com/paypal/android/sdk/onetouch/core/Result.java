@@ -11,6 +11,7 @@ import org.json.JSONObject;
  * Provides all the information associated with a login request for an authorization code.<br/>
  */
 public final class Result implements Parcelable {
+
     private static final String TAG = Result.class.getSimpleName();
 
     private final String mEnvironment;
@@ -51,12 +52,12 @@ public final class Result implements Parcelable {
     private Result(ResultType resultType, String environment, ResponseType responseType,
             JSONObject response, String userEmail, Throwable error) {
         assert resultType != null;
-        this.mEnvironment = environment;
-        this.mResultType = resultType;
-        this.mResponseType = responseType;
-        this.mResponse = response;
-        this.mUserEmail = userEmail;
-        this.mError = error;
+        mEnvironment = environment;
+        mResultType = resultType;
+        mResponseType = responseType;
+        mResponse = response;
+        mUserEmail = userEmail;
+        mError = error;
     }
 
     public ResultType getResultType() {
@@ -114,22 +115,22 @@ public final class Result implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeValue(this.mEnvironment);
-        dest.writeValue(this.mResultType);
-        dest.writeValue(this.mResponseType);
-        if (null != this.mResponse) {
-            dest.writeValue(this.mResponse.toString());
+        dest.writeValue(mEnvironment);
+        dest.writeValue(mResultType);
+        dest.writeValue(mResponseType);
+        if (null != mResponse) {
+            dest.writeValue(mResponse.toString());
         } else {
             dest.writeValue(null);
         }
-        dest.writeValue(this.mUserEmail);
-        dest.writeValue(this.mError);
+        dest.writeValue(mUserEmail);
+        dest.writeValue(mError);
     }
 
     private Result(Parcel in) {
-        this.mEnvironment = (String) in.readValue(null);
-        this.mResultType = (ResultType) in.readValue(ResultType.class.getClassLoader());
-        this.mResponseType = (ResponseType) in.readValue(ResponseType.class.getClassLoader());
+        mEnvironment = (String) in.readValue(null);
+        mResultType = (ResultType) in.readValue(ResultType.class.getClassLoader());
+        mResponseType = (ResponseType) in.readValue(ResponseType.class.getClassLoader());
 
         JSONObject jsonResponse = null;
         try {
@@ -140,10 +141,10 @@ public final class Result implements Parcelable {
         } catch (JSONException e) {
             Log.e(TAG, "Failed to read parceled JSON for mResponse", e);
         }
-        this.mResponse = jsonResponse;
+        mResponse = jsonResponse;
 
-        this.mUserEmail = (String) in.readValue(null);
-        this.mError = (Throwable) in.readValue(null);
+        mUserEmail = (String) in.readValue(null);
+        mError = (Throwable) in.readValue(null);
     }
 
     public static final Parcelable.Creator<Result> CREATOR = new Parcelable.Creator<Result>() {

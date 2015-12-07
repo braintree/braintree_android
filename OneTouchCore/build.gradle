@@ -33,7 +33,7 @@ android {
 
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 23
+        targetSdkVersion rootProject.ext.targetSdkVersion
 
         buildConfigField "String", "PRODUCT_NAME", "\"${product_name}\""
         buildConfigField "String", "PRODUCT_VERSION", "\"${product_version}\""
@@ -41,7 +41,6 @@ android {
         buildConfigField "String", "BUILD_TIME", "\"${build_time}\""
         buildConfigField "String", "LATEST_SHA1", "\"${latest_sha1}\""
         buildConfigField "String", "CONFIG_FILE", "\"${configFile}\""
-
     }
 
     lintOptions {
@@ -52,4 +51,6 @@ android {
 dependencies {
     compile files('libs/' + paypalVersion)
     compile 'com.squareup.okhttp:okhttp:2.5.0'
+
+    testCompile project(':TestUtils')
 }
