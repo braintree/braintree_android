@@ -2,6 +2,9 @@ package com.paypal.android.sdk.onetouch.core;
 
 import android.os.Parcel;
 
+import com.paypal.android.sdk.onetouch.core.enums.ResponseType;
+import com.paypal.android.sdk.onetouch.core.enums.ResultType;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;

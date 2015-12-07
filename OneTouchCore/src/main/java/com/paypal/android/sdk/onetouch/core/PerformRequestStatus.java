@@ -1,5 +1,7 @@
 package com.paypal.android.sdk.onetouch.core;
 
+import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
+
 /**
  * wrapper for the status of a request.
  */

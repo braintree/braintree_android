@@ -26,8 +26,8 @@ import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchActivity;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 import com.paypal.android.sdk.onetouch.core.Request;
-import com.paypal.android.sdk.onetouch.core.RequestTarget;
 import com.paypal.android.sdk.onetouch.core.Result;
+import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
 
 import org.json.JSONException;
 import org.json.JSONObject;

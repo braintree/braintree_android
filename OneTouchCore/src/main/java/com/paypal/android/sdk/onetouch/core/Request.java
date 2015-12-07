@@ -9,6 +9,7 @@ import com.paypal.android.networking.EnvironmentManager;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
+import com.paypal.android.sdk.onetouch.core.enums.Protocol;
 import com.paypal.android.sdk.onetouch.core.exception.InvalidEncryptionDataException;
 import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
 

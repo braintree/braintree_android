@@ -1,4 +1,4 @@
-package com.paypal.android.sdk.onetouch.core;
+package com.paypal.android.sdk.onetouch.core.enums;
 
 /**
  * Enum indicating the protocol version used to communicate to PayPal wallet or browser

@@ -6,6 +6,7 @@ import android.os.Parcel;
 import com.paypal.android.sdk.onetouch.core.config.BillingAgreementRecipe;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
+import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
 
 public class BillingAgreementRequest extends CheckoutRequest {
     private static final String TAG = BillingAgreementRequest.class.getSimpleName();

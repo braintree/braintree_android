@@ -1,7 +1,7 @@
 package com.paypal.android.sdk.onetouch.core.config;
 
 import com.paypal.android.networking.EnvironmentManager;
-import com.paypal.android.sdk.onetouch.core.RequestTarget;
+import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
 
 import org.json.JSONArray;
 import org.json.JSONException;

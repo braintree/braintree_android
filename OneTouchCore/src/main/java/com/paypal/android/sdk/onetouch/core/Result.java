@@ -4,6 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.paypal.android.sdk.onetouch.core.enums.ResponseType;
+import com.paypal.android.sdk.onetouch.core.enums.ResultType;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

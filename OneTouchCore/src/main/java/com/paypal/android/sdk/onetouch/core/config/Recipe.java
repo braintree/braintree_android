@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-import com.paypal.android.sdk.onetouch.core.Protocol;
-import com.paypal.android.sdk.onetouch.core.RequestTarget;
+import com.paypal.android.sdk.onetouch.core.enums.Protocol;
+import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
 import com.paypal.android.sdk.onetouch.core.sdk.WalletAppHelper;
 
 import java.util.ArrayList;

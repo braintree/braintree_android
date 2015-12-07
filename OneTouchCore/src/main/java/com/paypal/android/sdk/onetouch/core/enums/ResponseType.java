@@ -1,4 +1,4 @@
-package com.paypal.android.sdk.onetouch.core;
+package com.paypal.android.sdk.onetouch.core.enums;
 
 /**
  * Enum containing the supported ResponseTypes

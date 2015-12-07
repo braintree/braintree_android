@@ -3,7 +3,7 @@ package com.paypal.android.sdk.onetouch.core.fpti;
 import com.paypal.android.networking.ServerInterface;
 import com.paypal.android.networking.analytics.TrackingLogData;
 import com.paypal.android.sdk.onetouch.core.BuildConfig;
-import com.paypal.android.sdk.onetouch.core.Protocol;
+import com.paypal.android.sdk.onetouch.core.enums.Protocol;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
 import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;

@@ -1,6 +1,6 @@
 package com.paypal.android.sdk.onetouch.core.config;
 
-import com.paypal.android.sdk.onetouch.core.RequestTarget;
+import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
 
 import java.util.ArrayList;
 import java.util.List;
