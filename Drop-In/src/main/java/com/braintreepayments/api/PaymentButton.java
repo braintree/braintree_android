@@ -34,15 +34,15 @@ import static android.view.View.VISIBLE;
 /**
  * An intelligent button for handling non-card payment methods. This button will display payment
  * methods depending on their availability.
- *
- * Created {@link PaymentMethodNonce}s will be posted to
- * {@link PaymentMethodNonceCreatedListener}.
+ * <p>
+ * Created {@link PaymentMethodNonce}s will be posted to {@link PaymentMethodNonceCreatedListener}.
  */
 public class PaymentButton extends Fragment implements ConfigurationListener,
         BraintreeResponseListener<Exception>, OnClickListener {
 
     private static final String TAG = "com.braintreepayments.api.PaymentButton";
-    private static final String EXTRA_PAYMENT_REQUEST = "com.braintreepayments.api.EXTRA_PAYMENT_REQUEST";
+    private static final String EXTRA_PAYMENT_REQUEST =
+            "com.braintreepayments.api.EXTRA_PAYMENT_REQUEST";
 
     @VisibleForTesting
     BraintreeFragment mBraintreeFragment;
@@ -64,8 +64,8 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
      * @param containerViewId Optional identifier of the container this fragment is to be placed in.
      *        If 0, it will not be placed in a container.
      * @return {@link PaymentButton}
-     * @throws InvalidArgumentException If the client key or client token is not valid or cannot be
-     *         parsed.
+     * @throws InvalidArgumentException If the client key or tokenization key is not valid or
+     * cannot be parsed.
      */
     public static PaymentButton newInstance(Activity activity, int containerViewId,
             PaymentRequest paymentRequest) throws InvalidArgumentException {
@@ -129,7 +129,8 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bt_payment_button, container, false);
-        mProgressViewSwitcher = (ViewSwitcher) view.findViewById(R.id.bt_payment_method_view_switcher);
+        mProgressViewSwitcher =
+                (ViewSwitcher) view.findViewById(R.id.bt_payment_method_view_switcher);
         showProgress(true);
 
         if (mPaymentRequest == null) {
@@ -151,8 +152,8 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
     }
 
     /**
-     * Initialize the {@link PaymentButton}. This method *MUST* be called if the
-     * {@link PaymentButton} was adding using XML or {@link PaymentButton} will not be displayed.
+     * Initialize the {@link PaymentButton}. This method *MUST* be called if the {@link
+     * PaymentButton} was adding using XML or {@link PaymentButton} will not be displayed.
      *
      * @param paymentRequest {@link PaymentRequest} containing payment method options.
      */
@@ -190,7 +191,10 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.bt_paypal_button) {
-            PayPal.authorizeAccount(mBraintreeFragment, mPaymentRequest.getPayPalAdditionalScopes());
+            PayPal.authorizeAccount(mBraintreeFragment,
+                    mPaymentRequest.getPayPalAdditionalScopes());
+        } else if (v.getId() == R.id.bt_venmo_button) {
+            Venmo.authorizeAccount(mBraintreeFragment);
         } else if (v.getId() == R.id.bt_android_pay_button) {
             AndroidPay.performMaskedWalletRequest(mBraintreeFragment,
                     mPaymentRequest.getAndroidPayCart(),
@@ -204,7 +208,7 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
         }
     }
 
-    private void setupButton(Configuration configuration) {
+    void setupButton(Configuration configuration) {
         View view = getView();
         if (view == null) {
             setVisibility(GONE);
@@ -212,12 +216,16 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
         }
 
         boolean isPayPalEnabled = configuration.isPayPalEnabled();
+        boolean isVenmoEnabled = configuration.getPayWithVenmo().isEnabled(mBraintreeFragment.getApplicationContext());
         boolean isAndroidPayEnabled = isAndroidPayEnabled(configuration);
         int buttonCount = 0;
-        if (!isPayPalEnabled && !isAndroidPayEnabled) {
+        if (!isPayPalEnabled && !isVenmoEnabled && !isAndroidPayEnabled) {
             setVisibility(GONE);
         } else {
             if (isPayPalEnabled) {
+                buttonCount++;
+            }
+            if (isVenmoEnabled) {
                 buttonCount++;
             }
             if (isAndroidPayEnabled) {
@@ -227,12 +235,20 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
             if (isPayPalEnabled) {
                 enableButton(view.findViewById(R.id.bt_paypal_button), buttonCount);
             }
+            if (isVenmoEnabled) {
+                enableButton(view.findViewById(R.id.bt_venmo_button), buttonCount);
+            }
             if (isAndroidPayEnabled) {
                 enableButton(view.findViewById(R.id.bt_android_pay_button), buttonCount);
             }
 
             if (isPayPalEnabled && buttonCount > 1) {
                 view.findViewById(R.id.bt_payment_button_divider).setVisibility(VISIBLE);
+            } else if (isVenmoEnabled && buttonCount > 1) {
+                view.findViewById(R.id.bt_payment_button_divider_2).setVisibility(VISIBLE);
+            }
+            if (buttonCount > 2) {
+                view.findViewById(R.id.bt_payment_button_divider_2).setVisibility(VISIBLE);
             }
 
             setVisibility(VISIBLE);
@@ -244,8 +260,9 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
         view.setVisibility(VISIBLE);
         view.setOnClickListener(this);
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.MATCH_PARENT, 3f / buttonCount);
+        LinearLayout.LayoutParams params =
+                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT, 3f / buttonCount);
         view.setLayoutParams(params);
     }
 
@@ -281,6 +298,7 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
         }
     }
 
+    @VisibleForTesting
     private boolean isAndroidPayEnabled(Configuration configuration) {
         try {
             return (configuration.getAndroidPay().isEnabled(

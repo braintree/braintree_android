@@ -31,6 +31,7 @@ import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.VenmoAccountNonce;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -47,35 +48,40 @@ public class BraintreePaymentActivity extends Activity implements
     /**
      * {@link PaymentMethodNonce} returned by successfully exiting the flow.
      */
-    public static final String EXTRA_PAYMENT_METHOD_NONCE = "com.braintreepayments.api.dropin.EXTRA_PAYMENT_METHOD_NONCE";
+    public static final String EXTRA_PAYMENT_METHOD_NONCE =
+            "com.braintreepayments.api.dropin.EXTRA_PAYMENT_METHOD_NONCE";
 
     /**
-     * Error messages are returned as the value of this key in the data intent in {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
-     * if {@code responseCode} is not {@link android.app.Activity#RESULT_OK} or {@link android.app.Activity#RESULT_CANCELED}
+     * Error messages are returned as the value of this key in the data intent in {@link
+     * android.app.Activity#onActivityResult(int, int, android.content.Intent)} if {@code
+     * responseCode} is not {@link android.app.Activity#RESULT_OK} or {@link
+     * android.app.Activity#RESULT_CANCELED}
      */
-    public static final String EXTRA_ERROR_MESSAGE = "com.braintreepayments.api.dropin.EXTRA_ERROR_MESSAGE";
+    public static final String EXTRA_ERROR_MESSAGE =
+            "com.braintreepayments.api.dropin.EXTRA_ERROR_MESSAGE";
 
     /**
-     * The payment method flow halted due to a resolvable error (authentication, authorization, SDK upgrade required).
-     * The reason for the error will be returned in a future release.
+     * The payment method flow halted due to a resolvable error (authentication, authorization, SDK
+     * upgrade required). The reason for the error will be returned in a future release.
      */
     public static final int BRAINTREE_RESULT_DEVELOPER_ERROR = 2;
 
     /**
-     * The payment method flow halted due to an error from the Braintree gateway.
-     * The best recovery path is to try again with a new client token.
+     * The payment method flow halted due to an error from the Braintree gateway. The best recovery
+     * path is to try again with a new client token.
      */
     public static final int BRAINTREE_RESULT_SERVER_ERROR = 3;
 
     /**
-     * The payment method flow halted due to the Braintree gateway going down for maintenance.
-     * Try again later.
+     * The payment method flow halted due to the Braintree gateway going down for maintenance. Try
+     * again later.
      */
     public static final int BRAINTREE_RESULT_SERVER_UNAVAILABLE = 4;
 
     static final String EXTRA_CHECKOUT_REQUEST = "com.braintreepayments.api.EXTRA_CHECKOUT_REQUEST";
 
-    private static final String ON_PAYMENT_METHOD_ADD_FORM_KEY = "com.braintreepayments.api.dropin.PAYMENT_METHOD_ADD_FORM";
+    private static final String ON_PAYMENT_METHOD_ADD_FORM_KEY =
+            "com.braintreepayments.api.dropin.PAYMENT_METHOD_ADD_FORM";
 
     @VisibleForTesting
     protected BraintreeFragment mBraintreeFragment;
@@ -109,7 +115,8 @@ public class BraintreePaymentActivity extends Activity implements
                 waitForData();
             }
         } catch (InvalidArgumentException e) {
-            setResult(BRAINTREE_RESULT_DEVELOPER_ERROR, new Intent().putExtra(EXTRA_ERROR_MESSAGE, e));
+            setResult(BRAINTREE_RESULT_DEVELOPER_ERROR,
+                    new Intent().putExtra(EXTRA_ERROR_MESSAGE, e));
             finish();
         }
     }
@@ -153,6 +160,9 @@ public class BraintreePaymentActivity extends Activity implements
         } else if (paymentMethodNonce instanceof AndroidPayCardNonce) {
             mBraintreeFragment.sendAnalyticsEvent("add-android-pay.success");
             finishCreate();
+        } else if (paymentMethodNonce instanceof VenmoAccountNonce) {
+            mBraintreeFragment.sendAnalyticsEvent("add-pay-with-venmo.success");
+            finishCreate();
         }
     }
 
@@ -187,7 +197,8 @@ public class BraintreePaymentActivity extends Activity implements
             mAddPaymentMethodViewController.setErrors((ErrorWithResponse) error);
         } else {
             // Falling back to add payment method if getPaymentMethodNonces fails
-            if (StubbedView.LOADING_VIEW.mCurrentView && !mHavePaymentMethodNoncesBeenReceived.get() &&
+            if (StubbedView.LOADING_VIEW.mCurrentView &&
+                    !mHavePaymentMethodNoncesBeenReceived.get() &&
                     mBraintreeFragment.getConfiguration() != null) {
                 mBraintreeFragment.sendAnalyticsEvent("appeared");
                 mHavePaymentMethodNoncesBeenReceived.set(true);
@@ -326,7 +337,8 @@ public class BraintreePaymentActivity extends Activity implements
 
     @Override
     public void onBackPressed() {
-        if (StubbedView.CARD_FORM.mCurrentView && mBraintreeFragment.getCachedPaymentMethodNonces().size() > 0) {
+        if (StubbedView.CARD_FORM.mCurrentView &&
+                mBraintreeFragment.getCachedPaymentMethodNonces().size() > 0) {
             initSelectPaymentMethodNonceView();
         } else if (mAddPaymentMethodViewController != null &&
                 mAddPaymentMethodViewController.isSubmitting()) {

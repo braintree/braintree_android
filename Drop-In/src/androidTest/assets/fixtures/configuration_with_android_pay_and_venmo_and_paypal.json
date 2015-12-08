@@ -1,0 +1,30 @@
+{
+  "clientApiUrl": "client-api-url",
+  "environment": "environment",
+  "merchantId": "merchant-id",
+  "androidPay": {
+    "enabled": true,
+    "displayName": "Android Pay Merchant",
+    "environment": "sandbox",
+    "googleAuthorizationFingerprint": "google-auth-fingerprint",
+    "supportedNetworks": [
+      "visa",
+      "mastercard",
+      "amex",
+      "discover"
+    ]
+  },
+  "paypalEnabled": true,
+  "paypal": {
+    "displayName": "paypal_merchant",
+    "clientId": "paypal_client_id",
+    "privacyUrl": "http://www.example.com/privacy",
+    "userAgreementUrl": "http://www.example.com/user_agreement",
+    "baseUrl": "http://localhost:9000",
+    "directBaseUrl": "https://braintree.paypal.com",
+    "environment": "custom"
+  },
+  "payWithVenmo" : {
+    "accessToken" : "access-token"
+  }
+}

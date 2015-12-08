@@ -19,6 +19,8 @@ public class Configuration {
     private static final String PAYPAL_KEY = "paypal";
     private static final String ANDROID_PAY_KEY = "androidPay";
     private static final String THREE_D_SECURE_ENABLED_KEY = "threeDSecureEnabled";
+    private static final String PAY_WITH_VENMO_KEY = "payWithVenmo";
+
 
     private String mConfigurationString;
     private String mClientApiUrl;
@@ -31,6 +33,7 @@ public class Configuration {
     private PayPalConfiguration mPayPalConfiguration;
     private AndroidPayConfiguration mAndroidPayConfiguration;
     private boolean mThreeDSecureEnabled;
+    private VenmoConfiguration mVenmoConfiguration;
 
     /**
      * Creates a new {@link com.braintreepayments.api.models.Configuration} instance from a json string.
@@ -48,11 +51,14 @@ public class Configuration {
         configuration.mEnvironment = json.getString(ENVIRONMENT_KEY);
         configuration.mPaypalEnabled = json.optBoolean(PAYPAL_ENABLED_KEY, false);
         configuration.mPayPalConfiguration = PayPalConfiguration.fromJson(json.optJSONObject(PAYPAL_KEY));
-        configuration.mAndroidPayConfiguration = AndroidPayConfiguration.fromJson(json.optJSONObject(ANDROID_PAY_KEY));
+        configuration.mAndroidPayConfiguration = AndroidPayConfiguration.fromJson(
+                json.optJSONObject(ANDROID_PAY_KEY));
         configuration.mThreeDSecureEnabled = json.optBoolean(THREE_D_SECURE_ENABLED_KEY, false);
         configuration.mMerchantId = json.getString(MERCHANT_ID_KEY);
         configuration.mMerchantAccountId = json.optString(MERCHANT_ACCOUNT_ID_KEY, null);
         configuration.mAnalyticsConfiguration = AnalyticsConfiguration.fromJson(json.optJSONObject(ANALYTICS_KEY));
+        configuration.mVenmoConfiguration = VenmoConfiguration
+                .fromJson(json.optJSONObject(PAY_WITH_VENMO_KEY));
 
         return configuration;
     }
@@ -138,6 +144,13 @@ public class Configuration {
      */
     public AnalyticsConfiguration getAnalytics() {
         return mAnalyticsConfiguration;
+    }
+
+    /**
+     * @return instance of {@link VenmoConfiguration}
+     */
+    public VenmoConfiguration getPayWithVenmo() {
+        return mVenmoConfiguration;
     }
 
     private boolean isChallengePresent(String requestedChallenge) {

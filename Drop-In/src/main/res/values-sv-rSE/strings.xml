@@ -16,6 +16,7 @@
     <string name="bt_card_descriptor">slutar p&#xE5; %s</string>
 
     <string name="bt_pay_with_paypal">Betala med PayPal</string>
+    <string name="bt_pay_with_venmo">Betala med Venmo</string>
 
     <string name="bt_descriptor_visa">Visa</string>
     <string name="bt_descriptor_mastercard">MasterCard</string>

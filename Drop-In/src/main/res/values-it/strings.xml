@@ -16,6 +16,7 @@
     <string name="bt_card_descriptor">termina in %s</string>
 
     <string name="bt_pay_with_paypal">Paga con PayPal</string>
+    <string name="bt_pay_with_venmo">Paga con Venmo</string>
 
     <string name="bt_descriptor_visa">Visa</string>
     <string name="bt_descriptor_mastercard">MasterCard</string>

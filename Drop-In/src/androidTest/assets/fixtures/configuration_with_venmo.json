@@ -1,0 +1,8 @@
+{
+  "clientApiUrl": "client-api-url",
+  "environment": "environment",
+  "merchantId": "merchant-id",
+  "payWithVenmo" : {
+    "accessToken" : "access-token"
+  }
+}

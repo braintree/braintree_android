@@ -203,6 +203,9 @@ public class BraintreeFragment extends Fragment {
             case ThreeDSecure.THREE_D_SECURE_REQUEST_CODE:
                 ThreeDSecure.onActivityResult(this, resultCode, data);
                 break;
+            case Venmo.VENMO_REQUEST_CODE:
+                Venmo.onActivityResult(this, resultCode, data);
+                break;
         }
 
         if (resultCode == Activity.RESULT_CANCELED) {
