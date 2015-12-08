@@ -210,13 +210,14 @@ public class PayPalOneTouchCore {
     public static PerformRequestStatus performRequest(Activity activity, Request request,
             int requestCode, boolean enableSecurityCheck,
             BrowserSwitchAdapter browserSwitchAdapter) {
-        initService(activity);
+        Context context = activity.getApplicationContext();
+        initService(context);
 
         // calling this method functionally does nothing, but ensures that we send off FPTI data about wallet installs.
-        isWalletAppInstalled(activity, enableSecurityCheck);
+        isWalletAppInstalled(context, enableSecurityCheck);
 
         Recipe recipe =
-                request.getRecipeToExecute(activity, getConfig(activity), enableSecurityCheck);
+                request.getRecipeToExecute(context, getConfig(context), enableSecurityCheck);
 
         PerformRequestStatus status;
         if (null == recipe) {
@@ -225,20 +226,20 @@ public class PayPalOneTouchCore {
 
             // Set CMID for Single Payment and Billing Agreements
             if (request.getClass() == BillingAgreementRequest.class) {
-                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(activity,
+                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(context,
                         ((BillingAgreementRequest) request).getPairingId()));
             } else if (request.getClass() == CheckoutRequest.class) {
-                request.clientMetadataId(PayPalOneTouchCore
-                        .getClientMetadataId(activity, ((CheckoutRequest) request).getPairingId()));
+                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(context,
+                        ((CheckoutRequest) request).getPairingId()));
             }
 
             if (RequestTarget.wallet == recipe.getTarget()) {
-                request.trackFpti(activity, TrackingPoint.SwitchToWallet, recipe.getProtocol());
+                request.trackFpti(context, TrackingPoint.SwitchToWallet, recipe.getProtocol());
                 PayPalOneTouchActivity.Start(activity, requestCode, request, recipe.getProtocol());
                 status = new PerformRequestStatus(true, RequestTarget.wallet,
                         request.getClientMetadataId());
             } else {
-                Intent browserIntent = getBrowserIntent(activity, request);
+                Intent browserIntent = getBrowserIntent(context, request);
 
                 if (browserIntent != null) {
                     browserSwitchAdapter.handleBrowserSwitchIntent(browserIntent);
@@ -255,33 +256,33 @@ public class PayPalOneTouchCore {
         return status;
     }
 
-    public static Intent getStartIntent(Activity activity,
-            Request request,
+    public static Intent getStartIntent(Activity activity, Request request,
             boolean enableSecurityCheck) {
-        initService(activity);
+        Context context = activity.getApplicationContext();
+        initService(context);
 
         // calling this method functionally does nothing, but ensures that we send off FPTI data about wallet installs.
-        isWalletAppInstalled(activity, enableSecurityCheck);
+        isWalletAppInstalled(context, enableSecurityCheck);
 
         Recipe recipe =
-                request.getRecipeToExecute(activity, getConfig(activity), enableSecurityCheck);
+                request.getRecipeToExecute(context, getConfig(context), enableSecurityCheck);
 
         if (null != recipe) {
             // Set CMID for Single Payment and Billing Agreements
             if (request.getClass() == BillingAgreementRequest.class) {
-                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(activity,
+                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(context,
                         ((BillingAgreementRequest) request).getPairingId()));
             } else if (request.getClass() == CheckoutRequest.class) {
-                request.clientMetadataId(PayPalOneTouchCore
-                        .getClientMetadataId(activity, ((CheckoutRequest) request).getPairingId()));
+                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(context,
+                        ((CheckoutRequest) request).getPairingId()));
             }
 
             if (RequestTarget.wallet == recipe.getTarget()) {
-                request.trackFpti(activity, TrackingPoint.SwitchToWallet, recipe.getProtocol());
-                return PayPalOneTouchActivity
-                        .getStartIntent(activity, request, recipe.getProtocol());
+                request.trackFpti(context, TrackingPoint.SwitchToWallet, recipe.getProtocol());
+                return PayPalOneTouchActivity.getStartIntent(activity, request,
+                        recipe.getProtocol());
             } else {
-                return getBrowserIntent(activity, request);
+                return getBrowserIntent(context, request);
             }
         }
         return null;
