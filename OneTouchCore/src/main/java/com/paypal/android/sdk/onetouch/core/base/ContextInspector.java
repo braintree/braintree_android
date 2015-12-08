@@ -2,12 +2,6 @@ package com.paypal.android.sdk.onetouch.core.base;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.telephony.TelephonyManager;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -61,61 +55,6 @@ public class ContextInspector {
                 };
             }
         });
-    }
-
-    /**
-     * Returns true if any network is connected or connecting.
-     *
-     * @return
-     */
-    public boolean isNetworkAvailable() {
-        int networkCount = 0;
-        ConnectivityManager mgr =
-                (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        if (null == mgr) {
-            return true;
-        }
-        if (null == mgr.getAllNetworkInfo()) {
-            return true;
-        }
-
-        // Iterate over all of the available networks
-        for (NetworkInfo info : mgr.getAllNetworkInfo()) {
-            if (info.isConnectedOrConnecting()) {
-                networkCount += 1;
-            }
-        }
-
-        return networkCount > 0;
-    }
-
-    public int getPhoneType() {
-        TelephonyManager telephonyManager =
-                (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-
-        return telephonyManager.getPhoneType();
-    }
-
-    public String getApplicationInfoName() {
-        try {
-            PackageManager packageManager = mContext.getPackageManager();
-            PackageInfo i = packageManager.getPackageInfo(mContext.getPackageName(), 0);
-            String name = i.applicationInfo.loadLabel(packageManager).toString();
-            return name;
-        } catch (NameNotFoundException e) {
-            return null;
-        }
-    }
-
-    public String getSimOperatorName() {
-        try {
-            TelephonyManager m =
-                    (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-            return m.getSimOperatorName();
-        } catch (SecurityException e) {
-            return null;
-        }
     }
 
     /**

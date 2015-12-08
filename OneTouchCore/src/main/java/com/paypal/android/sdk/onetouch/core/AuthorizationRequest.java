@@ -18,15 +18,14 @@ import com.paypal.android.sdk.onetouch.core.config.OAuth2Recipe;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
 import com.paypal.android.sdk.onetouch.core.encryption.EncryptionUtils;
+import com.paypal.android.sdk.onetouch.core.encryption.OtcCrypto;
 import com.paypal.android.sdk.onetouch.core.enums.Protocol;
 import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
 import com.paypal.android.sdk.onetouch.core.enums.ResponseType;
-import com.paypal.android.sdk.onetouch.core.exception.InvalidEncryptionDataException;
-import com.paypal.android.sdk.onetouch.core.encryption.OtcCrypto;
 import com.paypal.android.sdk.onetouch.core.exception.BrowserSwitchException;
+import com.paypal.android.sdk.onetouch.core.exception.InvalidEncryptionDataException;
 import com.paypal.android.sdk.onetouch.core.exception.ResponseParsingException;
 import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
-import com.paypal.android.sdk.onetouch.core.network.OtcEnvironment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -293,9 +292,6 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     }
 
     private String buildPayload(Context context, X509Certificate cert) {
-        ContextInspector contextInspector =
-                new ContextInspector(context, new OtcEnvironment().getPrefsFile());
-
         JSONObject payload = new JSONObject();
         try {
             // roman says this should be a number
@@ -304,7 +300,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
             //payload.put("app_guid", contextInspector.getInstallationGUID());
             payload.put("client_id", getClientId());
             // Roman confirmed this is correct, but is not ever read from the app.
-            payload.put("app_name", contextInspector.getApplicationInfoName());
+            payload.put("app_name", DeviceInspector.getApplicationInfoName(context));
             payload.put("environment", getEnvironment());
             payload.put("environment_url", getEnvironmentUrl());
             payload.put("scope", getScopeString());

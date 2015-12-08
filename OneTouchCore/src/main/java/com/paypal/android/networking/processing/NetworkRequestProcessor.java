@@ -13,6 +13,7 @@ import com.paypal.android.networking.request.ServerRequestEnvironment;
 import com.paypal.android.sdk.onetouch.core.base.Constants;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
+import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.Interceptor;
@@ -97,7 +98,7 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
     @Override
     public boolean execute(final ServerRequest serverRequest) {
 
-        if (!mContextInspector.isNetworkAvailable()) {
+        if (!DeviceInspector.isNetworkAvailable(mContextInspector.getContext())) {
             serverRequest.setError(new RequestError(LibraryError.SERVER_COMMUNICATION_ERROR
                     .toString()));
             return false;

@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.paypal.android.sdk.onetouch.core.base.Constants;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
+import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;
 import com.paypal.android.sdk.onetouch.core.enums.Protocol;
 import com.paypal.android.sdk.onetouch.core.enums.ResponseType;
 import com.paypal.android.sdk.onetouch.core.exception.ResponseParsingException;
@@ -122,7 +123,8 @@ public class PayPalOneTouchActivity extends Activity {
 
         intent.putExtra("client_id", request.getClientId());
         // Roman confirmed this is correct, but is not ever read from the app.
-        intent.putExtra("app_name", mContextInspector.getApplicationInfoName());
+        intent.putExtra("app_name",
+                DeviceInspector.getApplicationInfoName(mContextInspector.getContext()));
         intent.putExtra("environment", request.getEnvironment());
         intent.putExtra("environment_url", request.getEnvironmentUrl());
 

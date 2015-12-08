@@ -49,9 +49,9 @@ public class FptiManager {
 
         // params in alphabetical order
         Map<String, String> params = new HashMap<>(fptiDataBundle);
-        params.put("apid",
-                mContextInspector.getApplicationInfoName() + "|" + BuildConfig.PRODUCT_VERSION + "|"
-                        + mContextInspector.getContext().getPackageName());
+        params.put("apid", DeviceInspector.getApplicationInfoName(mContextInspector.getContext()) +
+                "|" + BuildConfig.PRODUCT_VERSION + "|" +
+                mContextInspector.getContext().getPackageName());
         params.put("bchn", "otc");
         params.put("bzsr", "mobile");
         params.put("e",
@@ -59,7 +59,7 @@ public class FptiManager {
         params.put("g", getGmtOffsetInMinutes());
         params.put("lgin", "out");
         params.put("mapv", BuildConfig.PRODUCT_VERSION);
-        params.put("mcar", mContextInspector.getSimOperatorName());
+        params.put("mcar", DeviceInspector.getSimOperatorName(mContextInspector.getContext()));
         params.put("mdvs", deviceInspector.getDeviceName());
         params.put("mosv", deviceInspector.getOs());
         params.put("page", abcdexyz_error);
