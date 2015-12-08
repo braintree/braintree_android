@@ -1,7 +1,5 @@
 apply plugin: 'com.android.library'
 
-def paypalVersion = 'PayPalAndroidSDK-2.12.1.jar'
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -27,9 +25,9 @@ configurations {
 dependencies {
     compile 'com.google.code.gson:gson:[2.2.4,3.0)'
     compile 'com.google.android.gms:play-services-wallet:[8.0.0,9.0.0)'
+    compile 'com.paypal.sdk:paypal-partner-android-sdk:2.12.2'
 
     compile project(':BraintreeData')
-    compile files('libs/' + paypalVersion)
 
     lintChecks project(path: ":Lint", configuration: "lintChecks")
 
@@ -92,13 +90,6 @@ task sourcesJar(type: Jar) {
 
 task releaseJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompile) {
     from projectDir.path + '/build/intermediates/classes/release/'
-    from {
-        configurations.compile.findAll {
-            it.getName() == paypalVersion
-        }.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
     exclude { details -> details.file.name.endsWith('.xml') }
 }
 
@@ -107,7 +98,7 @@ task fullJar(type: Jar, dependsOn: releaseJar) {
     from zipTree(releaseJar.archivePath)
     from {
         configurations.compile.findAll {
-            it.getName() != paypalVersion && !it.getName().startsWith("play-services") && !it.getName().startsWith("support")
+            !it.getName().startsWith("play-services") && !it.getName().startsWith("support")
         }.collect {
             it.isDirectory() ? null : zipTree(it)
         }
