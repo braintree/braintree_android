@@ -25,7 +25,7 @@ public final class SdkRiskComponent {
      * @param context
      * @return the clientMetadataId
      */
-    public static synchronized final String getClientMetadataId(ExecutorService executorService,
+    public static synchronized String getClientMetadataId(ExecutorService executorService,
             Context context,
             String applicationGuid,
             String productVersion, String pairingId) {

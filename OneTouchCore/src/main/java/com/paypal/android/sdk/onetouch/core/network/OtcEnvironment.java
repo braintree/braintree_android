@@ -19,17 +19,14 @@ public class OtcEnvironment implements CoreEnvironment {
 
     @Override
     public String getUserAgent() {
-        DeviceInspector deviceInspector = new DeviceInspector();
         String productName = BuildConfig.PRODUCT_NAME;
         String version = BuildConfig.PRODUCT_VERSION;
-        String osDetails = deviceInspector.getOs();
-        String deviceName = deviceInspector.getDeviceName();
+        String osDetails = DeviceInspector.getOs();
+        String deviceName = DeviceInspector.getDeviceName();
         String featuresString = getFeatureString();
 
-        String userAgentString = String.format("PayPalSDK/%s %s (%s; %s; %s)", productName,
-                version, osDetails, deviceName, featuresString);
-
-        return userAgentString;
+        return String.format("PayPalSDK/%s %s (%s; %s; %s)", productName, version, osDetails,
+                deviceName, featuresString);
     }
 
     private String getFeatureString() {

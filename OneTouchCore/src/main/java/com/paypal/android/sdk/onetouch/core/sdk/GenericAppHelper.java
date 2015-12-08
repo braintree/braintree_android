@@ -20,8 +20,7 @@ public class GenericAppHelper {
     public boolean isGenericIntentSafe(Context context, Intent intent) {
         PackageManager pm = context.getPackageManager();
         List<ResolveInfo> activities = pm.queryIntentActivities(intent, 0);
-        boolean isIntentSafe = (null != activities) && activities.size() > 0;
-        return isIntentSafe;
+        return (null != activities) && activities.size() > 0;
     }
 
     /**
@@ -87,15 +86,9 @@ public class GenericAppHelper {
                 String issuer = x509Cert.getIssuerX500Principal().getName();
                 int publicKeyHashCode = x509Cert.getPublicKey().hashCode();
 
-                boolean isValidCert =
-                        inSubject.equals(subject)
-                                && inIssuer.equals(issuer)
-                                && inPublicKeyHashCode == publicKeyHashCode;
-
-                return isValidCert;
-            } catch (CertificateException e) {
-                // ignore
-            }
+                return inSubject.equals(subject) && inIssuer.equals(issuer) &&
+                        inPublicKeyHashCode == publicKeyHashCode;
+            } catch (CertificateException ignored) {}
         }
         return false;
     }

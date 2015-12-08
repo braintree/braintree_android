@@ -8,11 +8,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ConfigFileParser {
+
     private static final String TAG = ConfigFileParser.class.getSimpleName();
 
     public OtcConfiguration getParsedConfig(JSONObject rootObject) throws JSONException {
         OtcConfiguration otcConfiguration = new OtcConfiguration();
-        String os = rootObject.getString("os");
 
         String file_timestamp = rootObject.getString("file_timestamp");
         otcConfiguration.fileTimestamp(file_timestamp);

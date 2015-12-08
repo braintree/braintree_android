@@ -274,7 +274,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         JSONObject payloadEnc = getJsonObjectToEncrypt();
         byte[] output = mOtcCrypto.encryptRSAData(payloadEnc.toString().getBytes(), cert);
 
-        return Base64.encodeToString(output, Base64.NO_WRAP | Base64.DEFAULT);
+        return Base64.encodeToString(output, Base64.NO_WRAP);
     }
 
     private JSONObject getJsonObjectToEncrypt() throws JSONException {
@@ -282,7 +282,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         payloadEnc.put("timestamp", new RFC3339DateFormat().format(new Date()));
         payloadEnc.put("msg_GUID", mMsgGuid);
         payloadEnc.put("sym_key", EncryptionUtils.byteArrayToHexString(mEncryptionKey));
-        payloadEnc.put("device_name", new DeviceInspector().getDeviceName());
+        payloadEnc.put("device_name", DeviceInspector.getDeviceName());
         return payloadEnc;
     }
 
@@ -314,7 +314,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
             }
 
             return Base64
-                    .encodeToString(payload.toString().getBytes(), Base64.NO_WRAP | Base64.DEFAULT);
+                    .encodeToString(payload.toString().getBytes(), Base64.NO_WRAP);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -352,11 +352,11 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
             if (payloadJson.has("msg_GUID")) {
                 String msgGUID = payloadJson.optString("msg_GUID");
 
-                if (isSuccessResponse(status, payloadEnc, msgGUID) &&
-                        this.validResponse(contextInspector, msgGUID)) {
+                if (isSuccessResponse(payloadEnc, msgGUID) &&
+                        validResponse(contextInspector, msgGUID)) {
                     // we can decrypt
                     JSONObject decryptedPayloadEnc = getDecryptedPayload(payloadEnc,
-                            this.getStoredSymmetricKey(contextInspector));
+                            getStoredSymmetricKey(contextInspector));
                     Log.i(TAG, "decrypted payload: " + decryptedPayloadEnc.toString(4));
 
                     String error = payloadJson.optString("error");
@@ -385,7 +385,6 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
                 return new Result(
                         new ResponseParsingException("Response was missing some information"));
             }
-
         } catch (JSONException
                 | InvalidAlgorithmParameterException
                 | NoSuchAlgorithmException
@@ -446,7 +445,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
                 .trackFpti(trackingPoint, getEnvironment(), fptiDataBundle, protocol);
     }
 
-    private boolean isSuccessResponse(String status, String payloadEnc, String msgGUID) {
+    private boolean isSuccessResponse(String payloadEnc, String msgGUID) {
         if (TextUtils.isEmpty(msgGUID)) {
             Log.e(TAG, "response msgGUID is empty");
         } else if (TextUtils.isEmpty(payloadEnc)) {

@@ -127,8 +127,7 @@ public class ServerInterface implements ServerRequestEnvironment {
     @Override
     public String getUrl(ApiInfo api) {
         if (mEnvironment != null && mEnvironment.getEndpoints() != null) {
-            String url = mEnvironment.getEndpoints().get(api.getName());
-            return url;
+            return mEnvironment.getEndpoints().get(api.getName());
         }
 
         return null;

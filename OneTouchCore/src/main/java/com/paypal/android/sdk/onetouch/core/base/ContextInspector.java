@@ -89,19 +89,18 @@ public class ContextInspector {
      * @return the persisted value or default value if it does not exist
      */
     public String getStringPreference(String key) {
-        return mCrypto.decryptIt(
-                mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE).getString(
-                        key, null));
+        return mCrypto.decryptIt(mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE)
+                        .getString(key, null));
     }
 
     public long getLongPreference(String key, long defaultValue) {
-        return mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE).getLong(
-                key, defaultValue);
+        return mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE)
+                .getLong(key, defaultValue);
     }
 
     public boolean getBooleanPreference(String key, boolean defaultValue) {
-        return mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE).getBoolean(
-                key, defaultValue);
+        return mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE)
+                .getBoolean(key, defaultValue);
     }
 
     /**

@@ -211,8 +211,7 @@ public abstract class ServerRequest {
             throw new JSONException("could not parse:" + serverReply + "\nnextValue:"
                     + nextValue);
         }
-        JSONObject j = (JSONObject) nextValue;
-        return j;
+        return (JSONObject) nextValue;
     }
 
     /**

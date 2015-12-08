@@ -75,8 +75,7 @@ public class RequestExecutorThread extends Thread {
         while (this.isAlive()) {
             try {
                 Thread.sleep(10);
-            } catch (InterruptedException e) {
-            }
+            } catch (InterruptedException ignored) {}
         }
     }
 
@@ -93,8 +92,7 @@ public class RequestExecutorThread extends Thread {
                 if (mQueuedRequests.isEmpty()) {
                     try {
                         mQueuedRequests.wait();
-                    } catch (InterruptedException e) {
-                    }
+                    } catch (InterruptedException ignored) {}
                 }
 
                 // We have some requests...get one to process

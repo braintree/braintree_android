@@ -20,15 +20,11 @@ public class V2WalletHelper extends WalletAppHelper {
     }};
 
     public Intent getPayPalTouchIntent() {
-        Intent intent = createSdkIntent(V2_TOUCH_SDK_INTENT, V2_TOUCH_SDK_INTENT);
-        return intent;
+        return createSdkIntent(V2_TOUCH_SDK_INTENT, V2_TOUCH_SDK_INTENT);
     }
 
     public boolean isValidV1Scope(String scope) {
-        if (!V2_AUTHENTICATOR_SCOPES.contains(scope)) {
-            return true;
-        }
-        return false;
+        return !V2_AUTHENTICATOR_SCOPES.contains(scope);
     }
 
     public boolean isValidV2TouchAuthenticatorInstalled(Context context,

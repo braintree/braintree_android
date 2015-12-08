@@ -93,8 +93,7 @@ public class OtcCrypto {
 
         Cipher rsaCipher = Cipher.getInstance(RSA_ALGO);
         rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey);
-        byte[] output = rsaCipher.doFinal(plainData);
-        return output;
+        return rsaCipher.doFinal(plainData);
     }
 
     public byte[] decryptAESCTRData(byte[] cipherData, byte[] key)

@@ -26,11 +26,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CheckoutRequest extends Request<CheckoutRequest> implements Parcelable {
+
     private static final String TAG = CheckoutRequest.class.getSimpleName();
 
     private static final String PREFS_HERMES_TOKEN = "com.paypal.otc.hermes.token";
     private static final String TOKEN_QUERY_PARAM_KEY_TOKEN = "token";
     private static final String TOKEN_QUERY_PARAM_KEY_BA_TOKEN = "ba_token";
+
     protected String mApprovalUrl;
     protected String mTokenQueryParamKey;
     protected String mPairingId;
@@ -44,12 +46,12 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
     }
 
     public CheckoutRequest pairingId(String pairingId) {
-        this.mPairingId = pairingId;
+        mPairingId = pairingId;
         return this;
     }
 
     public CheckoutRequest approvalURL(String approvalURL) {
-        this.mApprovalUrl = approvalURL;
+        mApprovalUrl = approvalURL;
         selectTokenQueryParamKey(approvalURL);
         return this;
     }

@@ -5,12 +5,9 @@ import com.paypal.android.networking.request.ServerRequest;
 import com.paypal.android.networking.request.ServerRequestEnvironment;
 import com.paypal.android.sdk.onetouch.core.BuildConfig;
 import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
-import com.paypal.android.sdk.onetouch.core.config.ConfigFileParser;
-import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.network.OtcApiName.ApiName;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Request that gets the config and parses it for the android recipes.
@@ -33,14 +30,7 @@ public class ConfigFileRequest extends ServerRequest {
 
     @Override
     public void parse() throws JSONException {
-        JSONObject rootObject = getParsedJsonRootObject();
-
-        try {
-            OtcConfiguration otcConfiguration = new ConfigFileParser().getParsedConfig(rootObject);
-            minifiedJson = rootObject.toString();
-        } catch (JSONException e) {
-            parseError();
-        }
+        minifiedJson = getParsedJsonRootObject().toString();
     }
 
     @Override

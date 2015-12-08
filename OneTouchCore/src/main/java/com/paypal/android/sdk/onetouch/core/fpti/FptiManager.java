@@ -39,8 +39,6 @@ public class FptiManager {
             token = new FptiToken();
         }
 
-        DeviceInspector deviceInspector = new DeviceInspector();
-
         String abcde = "mobile:otc:" + point.getCd() + ":" +
                 (null != protocol ? protocol.name() : "");  // also known as 'pagename'
         String xyz = "Android:" + environmentName + ":";
@@ -60,8 +58,8 @@ public class FptiManager {
         params.put("lgin", "out");
         params.put("mapv", BuildConfig.PRODUCT_VERSION);
         params.put("mcar", DeviceInspector.getSimOperatorName(mContextInspector.getContext()));
-        params.put("mdvs", deviceInspector.getDeviceName());
-        params.put("mosv", deviceInspector.getOs());
+        params.put("mdvs", DeviceInspector.getDeviceName());
+        params.put("mosv", DeviceInspector.getOs());
         params.put("page", abcdexyz_error);
         params.put("pgrp", abcde);
         params.put("rsta", Locale.getDefault().toString());

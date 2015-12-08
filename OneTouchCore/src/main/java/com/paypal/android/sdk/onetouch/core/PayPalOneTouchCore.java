@@ -358,7 +358,7 @@ public class PayPalOneTouchCore {
      * @return The applicationCorrelationID - Your server will send this to PayPal in a
      * 'PayPal-Client-Metadata-Id' header.
      */
-    public static final String getClientMetadataId(Context context) {
+    public static String getClientMetadataId(Context context) {
         return SdkRiskComponent.getClientMetadataId(OTC_EXECUTOR_SERVICE, context,
                 getContextInspector(context).getInstallationGUID(),
                 BuildConfig.PRODUCT_VERSION,
@@ -379,7 +379,7 @@ public class PayPalOneTouchCore {
      * @return The applicationCorrelationID - Your server will send this to PayPal in a
      * 'PayPal-Client-Metadata-Id' header.
      */
-    public static final String getClientMetadataId(Context context, String pairingId) {
+    public static String getClientMetadataId(Context context, String pairingId) {
         Log.d(TAG, "getClientMetadataId(pairingId)");
         return SdkRiskComponent.getClientMetadataId(OTC_EXECUTOR_SERVICE, context,
                 getContextInspector(context).getInstallationGUID(),
