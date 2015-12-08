@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 public final class SdkRiskComponent {
-    private static final String TAG = SdkRiskComponent.class.getSimpleName();
 
     private static MetadataIdProvider sMetadataIdProvider;
 
@@ -25,10 +24,8 @@ public final class SdkRiskComponent {
      * @param context
      * @return the clientMetadataId
      */
-    public static synchronized String getClientMetadataId(ExecutorService executorService,
-            Context context,
-            String applicationGuid,
-            String productVersion, String pairingId) {
+    public static String getClientMetadataId(ExecutorService executorService, Context context,
+            String applicationGuid, String productVersion, String pairingId) {
         if (null == sMetadataIdProvider) {
             try {
                 sMetadataIdProvider = new MetadataIdProviderImpl();
@@ -41,12 +38,8 @@ public final class SdkRiskComponent {
                     params = Collections.emptyMap();
                 }
 
-                String clientMetadataId =
-                        sMetadataIdProvider.init(
-                                context,
-                                applicationGuid,
-                                productVersion,
-                                params);
+                String clientMetadataId = sMetadataIdProvider.init(context, applicationGuid,
+                        productVersion, params);
 
                 executorService.submit(new Runnable() {
                     // don't run this on main UI thread.
@@ -57,10 +50,9 @@ public final class SdkRiskComponent {
                 });
 
                 return clientMetadataId;
-
             } catch (Throwable t) {
-                Log.e(Constants.PUBLIC_TAG,
-                        "An internal component failed to initialize: " + t.getMessage());
+                Log.e(Constants.PUBLIC_TAG, "An internal component failed to initialize: " +
+                        t.getMessage());
                 return null;
             }
         } else {
@@ -74,5 +66,4 @@ public final class SdkRiskComponent {
             return clientMetadataId;
         }
     }
-
 }

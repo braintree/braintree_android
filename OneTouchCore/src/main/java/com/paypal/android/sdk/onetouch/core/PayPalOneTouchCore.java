@@ -410,7 +410,7 @@ public class PayPalOneTouchCore {
     /**
      * Lazily creates and returns a sContextInspector object
      */
-    static synchronized ContextInspector getContextInspector(Context context) {
+    static ContextInspector getContextInspector(Context context) {
         if (null == sContextInspector) {
             sContextInspector = new ContextInspector(context, getCoreEnvironment().getPrefsFile());
         }
