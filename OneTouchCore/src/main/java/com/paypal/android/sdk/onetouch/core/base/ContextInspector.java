@@ -73,10 +73,11 @@ public class ContextInspector {
             return existingGUID;
         } else {
             String newGuid = UUID.randomUUID().toString();
-            SharedPreferences.Editor editor =
-                    mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE).edit();
-            editor.putString(INSTALL_GUID, newGuid);
-            editor.commit();
+            mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE)
+                    .edit()
+                    .putString(INSTALL_GUID, newGuid)
+                    .apply();
+
             return newGuid;
         }
     }
@@ -110,10 +111,10 @@ public class ContextInspector {
      * @param value to persist
      */
     public void setPreference(String key, String value) {
-        SharedPreferences.Editor editor =
-                mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE).edit();
-        editor.putString(key, mCrypto.encryptIt(value));
-        editor.commit();
+        mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE)
+                .edit()
+                .putString(key, mCrypto.encryptIt(value))
+                .apply();
     }
 
     /**
@@ -136,7 +137,7 @@ public class ContextInspector {
                 throw new RuntimeException(value.getClass() + " not supported");
             }
         }
-        editor.commit();
+        editor.apply();
     }
 
     public Context getContext() {

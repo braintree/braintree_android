@@ -51,6 +51,6 @@ public class ConfigFileRequest extends ServerRequest {
 
     @Override
     public String getMockResponse() {
-        return BuildConfig.CONFIG_FILE;
+        return BuildConfig.CONFIGURATION;
     }
 }

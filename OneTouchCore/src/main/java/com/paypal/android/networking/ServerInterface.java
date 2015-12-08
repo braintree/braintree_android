@@ -15,6 +15,7 @@ import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
 import java.lang.ref.WeakReference;
 
 public class ServerInterface implements ServerRequestEnvironment {
+
     private static final String TAG = ServerInterface.class.getSimpleName();
 
     private static final int MSG_COMPLETED_SERVER_REQUEST = 2;
@@ -39,17 +40,17 @@ public class ServerInterface implements ServerRequestEnvironment {
      * outer class.
      */
     private static class UiHandler extends Handler {
-        WeakReference<ServerInterface> serverInterfaceRef;
+        WeakReference<ServerInterface> mServerInterfaceRef;
 
         public UiHandler(ServerInterface serverInterface) {
-            this.serverInterfaceRef = new WeakReference<ServerInterface>(serverInterface);
+            mServerInterfaceRef = new WeakReference<>(serverInterface);
         }
 
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_COMPLETED_SERVER_REQUEST:
-                    ServerInterface serverInterface = serverInterfaceRef.get();
+                    ServerInterface serverInterface = mServerInterfaceRef.get();
                     if (null != serverInterface) {
                         serverInterface.dispatchReply((ServerRequest) msg.obj);
                     }
@@ -60,11 +61,11 @@ public class ServerInterface implements ServerRequestEnvironment {
 
     public ServerInterface(ContextInspector contextInspector, PayPalEnvironment environment,
             CoreEnvironment coreEnv) {
-        this.mContextInspector = contextInspector;
-        this.mEnvironment = environment;
-        this.mCoreEnvironment = coreEnv;
-        this.mDispatcher = new Dispatcher();
-        this.mUiHandler = new UiHandler(this);
+        mContextInspector = contextInspector;
+        mEnvironment = environment;
+        mCoreEnvironment = coreEnv;
+        mDispatcher = new Dispatcher();
+        mUiHandler = new UiHandler(this);
     }
 
     public void setExecutor(RequestExecutorThread executor) {

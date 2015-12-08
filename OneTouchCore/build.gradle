@@ -21,7 +21,7 @@ ext {
     build_time = new Date().format("MM/dd/yyyy HH:mm:ss Z")
 
     configFileText = new File("${projectDir}/otc-config.android.json").getText('UTF-8')
-    configFile = JsonOutput.toJson(new JsonSlurper().parseText(configFileText)).replaceAll("\"", "\\\\\"")
+    config = JsonOutput.toJson(new JsonSlurper().parseText(configFileText)).replaceAll("\"", "\\\\\"")
 }
 
 // TODO rename this file to indicate it's just dyson
@@ -40,7 +40,7 @@ android {
         buildConfigField "String", "PRODUCT_FEATURES", "\"\""
         buildConfigField "String", "BUILD_TIME", "\"${build_time}\""
         buildConfigField "String", "LATEST_SHA1", "\"${latest_sha1}\""
-        buildConfigField "String", "CONFIG_FILE", "\"${configFile}\""
+        buildConfigField "String", "CONFIGURATION", "\"${config}\""
     }
 
     lintOptions {

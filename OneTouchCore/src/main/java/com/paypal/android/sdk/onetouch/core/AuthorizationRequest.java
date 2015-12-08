@@ -56,26 +56,26 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 public class AuthorizationRequest extends Request<AuthorizationRequest> implements Parcelable {
-    private static final String TAG = AuthorizationRequest.class.getSimpleName();
 
-    private final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
+    private static final String TAG = AuthorizationRequest.class.getSimpleName();
 
     private static final String PREFS_ENCRYPTION_KEY = "com.paypal.otc.key";
     private static final String PREFS_MSG_GUID = "com.paypal.otc.msg_guid";
-
-    private final OtcCrypto mOtcCrypto = new OtcCrypto();
-    private String mPrivacyUrl;
-    private String mUserAgreementUrl;
-    private final HashSet<String> mScopes;
-    private final HashMap<String, String> mAdditionalPayloadAttributes;
-
-    private final String msgGuid;
-    private final byte[] encryptionKey;
 
     // Environments
     public static final String ENVIRONMENT_LIVE = EnvironmentManager.LIVE;
     public static final String ENVIRONMENT_MOCK = EnvironmentManager.MOCK;
     public static final String ENVIRONMENT_SANDBOX = EnvironmentManager.SANDBOX;
+
+    private final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
+    private final OtcCrypto mOtcCrypto = new OtcCrypto();
+    private final HashSet<String> mScopes;
+    private final HashMap<String, String> mAdditionalPayloadAttributes;
+    private final String mMsgGuid;
+    private final byte[] mEncryptionKey;
+
+    private String mPrivacyUrl;
+    private String mUserAgreementUrl;
 
     /**
      * Constructs a new `PayPalAuthorizationRequest` with ids initialized.
@@ -83,14 +83,14 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     public AuthorizationRequest(Context context) {
         clientMetadataId(PayPalOneTouchCore.getClientMetadataId(context));
 
-        this.msgGuid = UUID.randomUUID().toString();
-        this.encryptionKey = mOtcCrypto.generateRandom256BitKey();
-        this.mAdditionalPayloadAttributes = new HashMap<>();
-        this.mScopes = new HashSet<>();
+        mMsgGuid = UUID.randomUUID().toString();
+        mEncryptionKey = mOtcCrypto.generateRandom256BitKey();
+        mAdditionalPayloadAttributes = new HashMap<>();
+        mScopes = new HashSet<>();
     }
 
     public AuthorizationRequest withAdditionalPayloadAttribute(String key, String value) {
-        this.mAdditionalPayloadAttributes.put(key, value);
+        mAdditionalPayloadAttributes.put(key, value);
         return this;
     }
 
@@ -112,7 +112,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     }
 
     public AuthorizationRequest privacyUrl(String privacyUrl) {
-        this.mPrivacyUrl = privacyUrl;
+        mPrivacyUrl = privacyUrl;
         return this;
     }
 
@@ -121,7 +121,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     }
 
     public AuthorizationRequest userAgreementUrl(String userAgreementUrl) {
-        this.mUserAgreementUrl = userAgreementUrl;
+        mUserAgreementUrl = userAgreementUrl;
         return this;
     }
 
@@ -151,14 +151,13 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         dest.writeString(getClientMetadataId());
         dest.writeString(getClientId());
         dest.writeString(getEnvironment());
-
         dest.writeString(mPrivacyUrl);
         dest.writeString(mUserAgreementUrl);
         dest.writeSerializable(mScopes);
         dest.writeSerializable(mAdditionalPayloadAttributes);
-        dest.writeString(msgGuid);
-        dest.writeInt(encryptionKey.length);
-        dest.writeByteArray(encryptionKey);
+        dest.writeString(mMsgGuid);
+        dest.writeInt(mEncryptionKey.length);
+        dest.writeByteArray(mEncryptionKey);
     }
 
     /**
@@ -168,14 +167,13 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         clientMetadataId(source.readString());
         clientId(source.readString());
         environment(source.readString());
-
         mPrivacyUrl = source.readString();
         mUserAgreementUrl = source.readString();
         mScopes = (HashSet) source.readSerializable();
         mAdditionalPayloadAttributes = (HashMap) source.readSerializable();
-        msgGuid = source.readString();
-        encryptionKey = new byte[source.readInt()];
-        source.readByteArray(encryptionKey);
+        mMsgGuid = source.readString();
+        mEncryptionKey = new byte[source.readInt()];
+        source.readByteArray(mEncryptionKey);
     }
 
     /**
@@ -223,14 +221,12 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         X509Certificate cert =
                 EncryptionUtils.getX509CertificateFromBase64String(certificateBase64);
 
-        String url = configEndpoint.getUrl()
+        return configEndpoint.getUrl()
                 + "?payload=" + URLEncoder.encode(buildPayload(context, cert), "utf-8")
                 + "&payloadEnc=" + URLEncoder.encode(buildPayloadEnc(cert), "utf-8")
                 + "&x-source=" + xSource
                 + "&x-success=" + getSuccessUrl()
                 + "&x-cancel=" + getCancelUrl();
-
-        return url;
     }
 
     @Override
@@ -241,8 +237,8 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     @Override
     public void persistRequiredFields(ContextInspector contextInspector) {
         Map<String, String> prefs = new HashMap<>();
-        prefs.put(PREFS_MSG_GUID, msgGuid);
-        prefs.put(PREFS_ENCRYPTION_KEY, EncryptionUtils.byteArrayToHexString(this.encryptionKey));
+        prefs.put(PREFS_MSG_GUID, mMsgGuid);
+        prefs.put(PREFS_ENCRYPTION_KEY, EncryptionUtils.byteArrayToHexString(mEncryptionKey));
         contextInspector.setPreferences(prefs);
     }
 
@@ -278,15 +274,14 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         JSONObject payloadEnc = getJsonObjectToEncrypt();
         byte[] output = mOtcCrypto.encryptRSAData(payloadEnc.toString().getBytes(), cert);
 
-        String base64output = Base64.encodeToString(output, Base64.NO_WRAP | Base64.DEFAULT);
-        return base64output;
+        return Base64.encodeToString(output, Base64.NO_WRAP | Base64.DEFAULT);
     }
 
     private JSONObject getJsonObjectToEncrypt() throws JSONException {
         JSONObject payloadEnc = new JSONObject();
         payloadEnc.put("timestamp", new RFC3339DateFormat().format(new Date()));
-        payloadEnc.put("msg_GUID", msgGuid);
-        payloadEnc.put("sym_key", EncryptionUtils.byteArrayToHexString(this.encryptionKey));
+        payloadEnc.put("msg_GUID", mMsgGuid);
+        payloadEnc.put("sym_key", EncryptionUtils.byteArrayToHexString(mEncryptionKey));
         payloadEnc.put("device_name", new DeviceInspector().getDeviceName());
         return payloadEnc;
     }
@@ -457,7 +452,6 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         } else if (TextUtils.isEmpty(payloadEnc)) {
             Log.e(TAG, "empty payloadEnc");
         } else {
-            // success yay!
             return true;
         }
         return false;

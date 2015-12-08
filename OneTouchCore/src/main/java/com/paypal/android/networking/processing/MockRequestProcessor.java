@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public abstract class MockRequestProcessor extends AbstractRequestProcessor {
+
     private static final String TAG = MockRequestProcessor.class.getSimpleName();
 
     private final ServerRequestEnvironment mServerRequestEnvironment;
@@ -17,9 +18,9 @@ public abstract class MockRequestProcessor extends AbstractRequestProcessor {
 
     public MockRequestProcessor(int networkDelayInMs,
             ServerRequestEnvironment serverRequestEnvironment) {
-        this.mNetworkDelayInMs = networkDelayInMs;
-        this.mServerRequestEnvironment = serverRequestEnvironment;
-        this.mThreadPoolExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+        mNetworkDelayInMs = networkDelayInMs;
+        mServerRequestEnvironment = serverRequestEnvironment;
+        mThreadPoolExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
     }
 
     @Override

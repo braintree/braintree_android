@@ -20,6 +20,7 @@ import java.util.List;
  * possible.
  */
 public class RequestExecutorThread extends Thread {
+
     private static final String TAG = RequestExecutorThread.class.getSimpleName();
 
     private final ServerRequestEnvironment mServerRequestEnvironment;
@@ -33,10 +34,9 @@ public class RequestExecutorThread extends Thread {
 
     private final RequestProcessor mRequestProcessor;
 
-    public RequestExecutorThread(ServerRequestEnvironment env,
-            RequestProcessor requestProcessor) {
-        this.mServerRequestEnvironment = env;
-        this.mRequestProcessor = requestProcessor;
+    public RequestExecutorThread(ServerRequestEnvironment env, RequestProcessor requestProcessor) {
+        mServerRequestEnvironment = env;
+        mRequestProcessor = requestProcessor;
 
         start();
     }

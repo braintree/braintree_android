@@ -54,6 +54,7 @@ import javax.crypto.NoSuchPaddingException;
  * Note that all public methods should call initService which starts the config file querying
  */
 public class PayPalOneTouchCore {
+
     private static final String TAG = PayPalOneTouchCore.class.getSimpleName();
     private static final ExecutorService OTC_EXECUTOR_SERVICE = Executors.newCachedThreadPool();
     private static final int NETWORK_TIMEOUT = 90000;
@@ -121,7 +122,6 @@ public class PayPalOneTouchCore {
                             getCoreEnvironment(),
                             sServerInterface, NETWORK_TIMEOUT, true,
                             Collections.<Interceptor>emptyList());
-            ;
 
             RequestExecutorThread mExecutor = new RequestExecutorThread(sServerInterface,
                     requestProcessor);

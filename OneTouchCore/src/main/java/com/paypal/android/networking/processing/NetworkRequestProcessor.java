@@ -53,17 +53,14 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
     private final ScheduledExecutorService mScheduledExecutorService;
     private final ConcurrentLinkedQueue<Runnable> mQueue;
 
-    public NetworkRequestProcessor(ContextInspector contextInspector,
-            String environmentName,
-            CoreEnvironment coreEnvironment,
-            ServerRequestEnvironment serverRequestEnvironment,
-            int networkTimeout,
-            boolean enableStageSsl,
+    public NetworkRequestProcessor(ContextInspector contextInspector, String environmentName,
+            CoreEnvironment coreEnvironment, ServerRequestEnvironment serverRequestEnvironment,
+            int networkTimeout, boolean enableStageSsl,
             List<? extends Interceptor> additionalInterceptors) {
-        this.mContextInspector = contextInspector;
-        this.mEnvironmentName = environmentName;
-        this.mCoreEnvironment = coreEnvironment;
-        this.mServerRequestEnvironment = serverRequestEnvironment;
+        mContextInspector = contextInspector;
+        mEnvironmentName = environmentName;
+        mCoreEnvironment = coreEnvironment;
+        mServerRequestEnvironment = serverRequestEnvironment;
 
         boolean isStageEnv = EnvironmentManager.isStage(environmentName);
         // only trustall if a stage, and stageSSL turned off
@@ -97,7 +94,6 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
      */
     @Override
     public boolean execute(final ServerRequest serverRequest) {
-
         if (!DeviceInspector.isNetworkAvailable(mContextInspector.getContext())) {
             serverRequest.setError(new RequestError(LibraryError.SERVER_COMMUNICATION_ERROR
                     .toString()));
@@ -322,43 +318,42 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
      * Handler Class for Generic HTTP Responses
      */
     private final class GenericHttpResponseHandler implements Callback {
-        private final ServerRequest serverRequest;
+
+        private final ServerRequest mServerRequest;
 
         private GenericHttpResponseHandler(ServerRequest serverRequest) {
-            this.serverRequest = serverRequest;
+            mServerRequest = serverRequest;
         }
 
         @Override
         public void onResponse(Response response) throws IOException {
             try {
                 String paypalDebugId = response.header("paypal-debug-id");
-                serverRequest.setServerReply(response.body().string());
+                mServerRequest.setServerReply(response.body().string());
                 if (!response.isSuccessful()) {
                     if (!TextUtils.isEmpty(paypalDebugId)) {
                         Log.w(Constants.PUBLIC_TAG, getDebugString(paypalDebugId));
                     }
-                    handleFailure(serverRequest, response, null);
+                    handleFailure(mServerRequest, response, null);
                     return;
                 }
 
-                serverRequest.setPayPalDebugId(paypalDebugId);
+                mServerRequest.setPayPalDebugId(paypalDebugId);
 
                 // lower log levels in release
-                Log.i(
-                        TAG,
-                        serverRequest.toLogString() + " success. response: "
-                                + serverRequest.getServerReply());
+                Log.i(TAG, mServerRequest.toLogString() + " success. response: " +
+                        mServerRequest.getServerReply());
 
                 // log the debug ID header for the developer
                 if (!TextUtils.isEmpty(paypalDebugId)) {
                     Log.w(Constants.PUBLIC_TAG, getDebugString(paypalDebugId));
                 }
 
-                if (serverRequest.isSuccess()) {
-                    parse(serverRequest);
+                if (mServerRequest.isSuccess()) {
+                    parse(mServerRequest);
                 }
 
-                mServerRequestEnvironment.completeServerRequest(serverRequest);
+                mServerRequestEnvironment.completeServerRequest(mServerRequest);
             } catch (Throwable throwable) {
                 Log.e(Constants.PUBLIC_TAG, "exception in response handler", throwable);
                 throw throwable;
@@ -368,13 +363,13 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
         @Override
         public void onFailure(Request request, IOException e) {
             try {
-                serverRequest.setServerReply(e.getMessage());
+                mServerRequest.setServerReply(e.getMessage());
                 String paypalDebugId = request.header("PayPal-Debug-Id");
                 // log the debug ID header for the developer
                 if (!TextUtils.isEmpty(paypalDebugId)) {
                     Log.w(Constants.PUBLIC_TAG, getDebugString(paypalDebugId));
                 }
-                handleFailure(serverRequest, null, e);
+                handleFailure(mServerRequest, null, e);
             } catch (Throwable throwable) {
                 Log.e(Constants.PUBLIC_TAG, "exception in response handler", throwable);
                 throw throwable;
@@ -383,7 +378,7 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
 
         private String getDebugString(String ppDebugIdHeader) {
             return String.format(
-                    Locale.US, serverRequest.toLogString() + " PayPal Debug-ID: %s [%s, %s]",
+                    Locale.US, mServerRequest.toLogString() + " PayPal Debug-ID: %s [%s, %s]",
                     ppDebugIdHeader, mEnvironmentName, mCoreEnvironment.getVersion() + ";"
                             + ((mCoreEnvironment.isDebug()) ? "debug" : "release"));
         }
@@ -394,24 +389,24 @@ public class NetworkRequestProcessor extends AbstractRequestProcessor {
      * Response Handler Class for Tracking Requests
      */
     private final class TrackingRequestResponseHandler implements Callback {
-        private final ServerRequest trackingRequest;
+
+        private final ServerRequest mTrackingRequest;
 
         private TrackingRequestResponseHandler(ServerRequest trackingRequest) {
-            this.trackingRequest = trackingRequest;
+            mTrackingRequest = trackingRequest;
         }
 
         @Override
         public void onResponse(Response response) throws IOException {
-            trackingRequest.setServerReply(response.body().string());
-            Log.d(TAG, trackingRequest.toLogString() + " success");
+            mTrackingRequest.setServerReply(response.body().string());
+            Log.d(TAG, mTrackingRequest.toLogString() + " success");
             // don't dispatch tracking requests
         }
 
         @Override
         public void onFailure(Request request, IOException e) {
-            trackingRequest.setServerReply(e.getMessage());
-            Log.d(TAG, trackingRequest.toLogString() + " failure: " + e.getMessage());
+            mTrackingRequest.setServerReply(e.getMessage());
+            Log.d(TAG, mTrackingRequest.toLogString() + " failure: " + e.getMessage());
         }
     }
-
 }

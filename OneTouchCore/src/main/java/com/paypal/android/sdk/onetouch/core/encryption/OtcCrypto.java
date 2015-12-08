@@ -18,13 +18,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-/**
- * TODO - check older phones to verify they have AES/RSA.  If not, we'll need to package
- * BouncyCastle with the SDK.
- * <p>
- * http://www.unwesen.de/2011/06/12/encryption-on-android-bouncycastle/
- */
 public class OtcCrypto {
+
     private static final String TAG = OtcCrypto.class.getSimpleName();
     private static final int ENCRYPTION_KEY_SIZE = 32;
     private static final String HMAC_SHA256 = "HmacSHA256";
@@ -40,8 +35,7 @@ public class OtcCrypto {
         Mac sha256HMAC = Mac.getInstance(HMAC_SHA256);
         SecretKeySpec digestKey = new SecretKeySpec(key, HMAC_SHA256);
         sha256HMAC.init(digestKey);
-        byte[] output = sha256HMAC.doFinal(data);
-        return output;
+        return sha256HMAC.doFinal(data);
     }
 
     public byte[] generateRandom256BitKey() {
@@ -139,8 +133,6 @@ public class OtcCrypto {
 
         Cipher cipher = Cipher.getInstance(AES_CTR_ALGO);
         cipher.init(Cipher.DECRYPT_MODE, keySpec, nonceSpec);
-        byte[] output = cipher.doFinal(signedData, NONCE_SIZE, signedData.length - NONCE_SIZE);
-        return output;
+        return cipher.doFinal(signedData, NONCE_SIZE, signedData.length - NONCE_SIZE);
     }
-
 }

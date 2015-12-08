@@ -100,8 +100,7 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
     }
 
     /**
-     * Supplies the implementing class type. Useful only for using the Abstract Builder pattern. Not
-     * to be confused with youAreNotGonnaBelieveThis() or nowHearThis()
+     * Supplies the implementing class type. Useful only for using the Abstract Builder pattern.
      *
      * @return
      */

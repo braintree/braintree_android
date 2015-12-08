@@ -19,6 +19,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 @SuppressWarnings("nls")
 public abstract class ServerRequest {
+
     private static final String TAG = ServerRequest.class.getSimpleName();
 
     private static long sNextSerialNumber = 1;
@@ -48,7 +49,7 @@ public abstract class ServerRequest {
     /**
      * The http status code from the response, or null if not provided or processed yet.
      */
-    private Integer httpStatusCode;
+    private Integer mHttpStatusCode;
 
     /**
      * returned in PayPal-Debug-Id header
@@ -62,12 +63,12 @@ public abstract class ServerRequest {
 
     public ServerRequest(ApiInfo apiInfo, ServerRequestEnvironment env,
             CoreEnvironment coreEnv, String urlSuffix) {
-        this.mSerialNumber = getNextSerialNumber();
-        this.mApiInfo = apiInfo;
-        this.mUrlSuffix = urlSuffix;
-        this.mServerRequestEnvironment = env;
-        this.mCoreEnvironment = coreEnv;
-        this.mRequestHeaders = new LinkedHashMap<>();
+        mSerialNumber = getNextSerialNumber();
+        mApiInfo = apiInfo;
+        mUrlSuffix = urlSuffix;
+        mServerRequestEnvironment = env;
+        mCoreEnvironment = coreEnv;
+        mRequestHeaders = new LinkedHashMap<>();
     }
 
     public static long getNextSerialNumber() {
@@ -220,7 +221,7 @@ public abstract class ServerRequest {
      * @return
      */
     public String toLogString() {
-        return this.getClass().getSimpleName() + " SN:" + this.getSerialNumber();
+        return getClass().getSimpleName() + " SN:" + getSerialNumber();
     }
 
     public void setServerError(String errorCode, String shortMessage, String longMessage) {
@@ -253,11 +254,11 @@ public abstract class ServerRequest {
     }
 
     public void setHttpStatusCode(Integer statusCode) {
-        this.httpStatusCode = statusCode;
+        mHttpStatusCode = statusCode;
     }
 
     public Integer getHttpStatusCode() {
-        return this.httpStatusCode;
+        return mHttpStatusCode;
     }
 
     public ServerRequestEnvironment getServerRequestEnvironment() {

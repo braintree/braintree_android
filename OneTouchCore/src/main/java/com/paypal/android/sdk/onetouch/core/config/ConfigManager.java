@@ -104,7 +104,7 @@ public class ConfigManager {
         String jsonConfig = mContextInspector.getStringPreference(PREFERENCES_CONFIG_FILE);
 
         if (null == jsonConfig || mUseHardcodedConfig) {
-            jsonConfig = BuildConfig.CONFIG_FILE;
+            jsonConfig = BuildConfig.CONFIGURATION;
             useDefault = true;
         }
 
@@ -116,7 +116,7 @@ public class ConfigManager {
             Log.e(TAG, "exception parsing config", e);
 
             try {
-                jsonConfig = BuildConfig.CONFIG_FILE;
+                jsonConfig = BuildConfig.CONFIGURATION;
                 useDefault = true;
                 config = getOtcConfiguration(jsonConfig);
 
@@ -133,7 +133,6 @@ public class ConfigManager {
         }
 
         return config;
-
     }
 
     private OtcConfiguration getOtcConfiguration(String jsonConfig) throws JSONException {

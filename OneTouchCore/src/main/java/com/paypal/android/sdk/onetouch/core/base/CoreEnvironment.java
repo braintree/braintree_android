@@ -35,7 +35,7 @@ public interface CoreEnvironment {
 
     /**
      * Library projects' BuildConfig doesn't work right, so the parent project needs to specify
-     * this.  Blargh.
+     * this.
      */
     boolean isDebug();
 }

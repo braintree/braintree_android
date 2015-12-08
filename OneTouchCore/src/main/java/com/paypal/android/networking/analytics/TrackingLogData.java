@@ -8,7 +8,7 @@ public class TrackingLogData {
     public final Map<String, String> mParams;
 
     public TrackingLogData(String trackingToken, Map<String, String> params) {
-        this.mParams = params;
-        this.mTrackingToken = trackingToken;
+        mParams = params;
+        mTrackingToken = trackingToken;
     }
 }
