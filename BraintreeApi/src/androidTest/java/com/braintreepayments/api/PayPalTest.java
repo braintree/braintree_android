@@ -28,6 +28,8 @@ import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
+import com.paypal.android.sdk.onetouch.core.PayPalOneTouchActivity;
+import com.paypal.android.sdk.onetouch.core.Result;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,6 +39,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.espresso.intent.Intents.intended;
@@ -690,6 +694,51 @@ public class PayPalTest {
         });
 
         PayPal.authorizeAccount(fragment);
+
+        mLatch.await();
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void onActivityResult_postsCancelWhenResultIsCanceled() throws InterruptedException,
+            IllegalAccessException, InvocationTargetException, InstantiationException {
+        final BraintreeFragment fragment = getMockFragment(mActivity,
+                stringFromFixture("client_token.json"),
+                stringFromFixture("configuration_with_analytics.json"));
+        Constructor constructor = Result.class.getDeclaredConstructors()[0];
+        constructor.setAccessible(true);
+        Intent intent = new Intent()
+                .putExtra(PayPalOneTouchActivity.EXTRA_ONE_TOUCH_RESULT,
+                        (Result) constructor.newInstance());
+        fragment.addListener(new BraintreeCancelListener() {
+            @Override
+            public void onCancel(int requestCode) {
+                assertEquals(PayPal.PAYPAL_REQUEST_CODE, requestCode);
+                mLatch.countDown();
+            }
+        });
+
+        PayPal.onActivityResult(fragment, intent);
+
+        mLatch.await();
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void onActivityResult_postsCancelWhenIntentIsNull() throws InterruptedException,
+            IllegalAccessException, InvocationTargetException, InstantiationException {
+        final BraintreeFragment fragment = getMockFragment(mActivity,
+                stringFromFixture("client_token.json"),
+                stringFromFixture("configuration_with_analytics.json"));
+        fragment.addListener(new BraintreeCancelListener() {
+            @Override
+            public void onCancel(int requestCode) {
+                assertEquals(PayPal.PAYPAL_REQUEST_CODE, requestCode);
+                mLatch.countDown();
+            }
+        });
+
+        PayPal.onActivityResult(fragment, null);
 
         mLatch.await();
     }

@@ -46,7 +46,7 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
 
     @Override
     public String getTypeLabel() {
-        return "Google Wallet";
+        return "Android Pay";
     }
 
     /**

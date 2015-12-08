@@ -60,7 +60,7 @@ public class PaymentMethodNonceTest {
                 parsePaymentMethodNonces(getPaymentMethodsResponse);
 
         assertTrue(paymentMethodNonces.get(2) instanceof AndroidPayCardNonce);
-        assertEquals("Google Wallet", paymentMethodNonces.get(2).getTypeLabel());
+        assertEquals("Android Pay", paymentMethodNonces.get(2).getTypeLabel());
         assertEquals("fake-android-pay-nonce", paymentMethodNonces.get(2).getNonce());
         assertEquals("Android Pay", paymentMethodNonces.get(2).getDescription());
         assertEquals("11", ((AndroidPayCardNonce) paymentMethodNonces.get(2)).getLastTwo());

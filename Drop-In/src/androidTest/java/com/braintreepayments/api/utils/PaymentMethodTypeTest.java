@@ -25,7 +25,7 @@ public class PaymentMethodTypeTest {
         assertEquals(PaymentMethodType.DINERS, PaymentMethodType.forType("Diners"));
         assertEquals(PaymentMethodType.MAESTRO, PaymentMethodType.forType("Maestro"));
         assertEquals(PaymentMethodType.PAYPAL, PaymentMethodType.forType("PayPal"));
-        assertEquals(PaymentMethodType.ANDROID_PAY, PaymentMethodType.forType("Google Wallet"));
+        assertEquals(PaymentMethodType.ANDROID_PAY, PaymentMethodType.forType("Android Pay"));
         assertEquals(PaymentMethodType.UNKNOWN, PaymentMethodType.forType("unknown"));
     }
 
@@ -72,7 +72,7 @@ public class PaymentMethodTypeTest {
         assertEquals("Diners", PaymentMethodType.DINERS.getCanonicalName());
         assertEquals("Maestro", PaymentMethodType.MAESTRO.getCanonicalName());
         assertEquals("PayPal", PaymentMethodType.PAYPAL.getCanonicalName());
-        assertEquals("Google Wallet", PaymentMethodType.ANDROID_PAY.getCanonicalName());
+        assertEquals("Android Pay", PaymentMethodType.ANDROID_PAY.getCanonicalName());
         assertEquals("unknown", PaymentMethodType.UNKNOWN.getCanonicalName());
     }
 
