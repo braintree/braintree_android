@@ -13,13 +13,18 @@ import org.json.JSONException;
  * Request that gets the config and parses it for the android recipes.
  */
 public class ConfigFileRequest extends ServerRequest {
-    public String minifiedJson;
+
+    private String mMinifiedJson;
 
     public ConfigFileRequest(ServerRequestEnvironment env, CoreEnvironment coreEnv) {
         super(new OtcApiName(ApiName.ConfigFileRequest), env, coreEnv, null);
 
         // TODO put header to enable gzip?  "text/html", "application/x-javascript", "text/css", or another one for json?
         //putHeader();
+    }
+
+    public String getMinifiedJson() {
+        return mMinifiedJson;
     }
 
     @Override
@@ -30,7 +35,7 @@ public class ConfigFileRequest extends ServerRequest {
 
     @Override
     public void parse() throws JSONException {
-        minifiedJson = getParsedJsonRootObject().toString();
+        mMinifiedJson = getParsedJsonRootObject().toString();
     }
 
     @Override

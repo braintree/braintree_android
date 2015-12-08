@@ -85,7 +85,7 @@ public class PayPalOneTouchCore {
         private final ConfigManager mConfigManager;
 
         public OtcRequestRouter(ConfigManager configManager) {
-            this.mConfigManager = configManager;
+            mConfigManager = configManager;
         }
 
         @Override
@@ -94,7 +94,7 @@ public class PayPalOneTouchCore {
                 if (serverRequest.isSuccess()) {
                     ConfigFileRequest configFileRequest = (ConfigFileRequest) serverRequest;
 
-                    this.mConfigManager.updateConfig(configFileRequest.minifiedJson, false);
+                    mConfigManager.updateConfig(configFileRequest.getMinifiedJson(), false);
                     // everything checks out.  Store original json file in prefs (since you can't store complex objects)
                 }
             }
