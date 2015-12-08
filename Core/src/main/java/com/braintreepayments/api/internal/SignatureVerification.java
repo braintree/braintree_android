@@ -43,8 +43,9 @@ public class SignatureVerification {
         } catch (NameNotFoundException e) {
             return false;
         }
+
         InputStream certStream = null;
-        boolean validated = signatures.length != 0;
+        boolean validated = (signatures.length != 0);
         for (Signature signature : signatures) {
             try {
                 certStream = new ByteArrayInputStream(signature.toByteArray());

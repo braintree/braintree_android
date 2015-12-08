@@ -5,8 +5,6 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.util.Log;
 
-import com.braintreepayments.api.BuildConfig;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -15,36 +13,27 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
+@LargeTest
 public class SignatureVerificationTest {
 
     @Test(timeout = 15000)
-    @LargeTest
     public void isSignatureValid_returnsFalseWhenAppNotInstalled() {
-        if (!BuildConfig.RUN_ALL_TESTS) {
-            return;
-        }
-
-        Log.d("request_command", "uninstall fakewallet");
+        Log.d("request_command", "uninstall paypal wallet");
         SystemClock.sleep(10000);
 
         assertFalse(checkSignature());
     }
 
     @Test(timeout = 65000)
-    @LargeTest
     public void isSignatureValid_returnsTrueWhenAppIsInstalled() {
-        if (!BuildConfig.RUN_ALL_TESTS) {
-            return;
-        }
-
-        Log.d("request_command", "install fakewallet");
+        Log.d("request_command", "install paypal wallet");
         SystemClock.sleep(60000);
 
         assertTrue(checkSignature());
     }
 
     private boolean checkSignature() {
-        return SignatureVerification.isSignatureValid(getTargetContext(), "com.braintreepayments.fake.wallet",
-                "CN=Android Debug,O=Android,C=US", "CN=Android Debug,O=Android,C=US", 496242318);
+        return SignatureVerification.isSignatureValid(getTargetContext(),
+                "com.paypal.android.p2pmobile", "O=Paypal", "O=Paypal", 34172764);
     }
 }

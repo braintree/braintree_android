@@ -3,9 +3,13 @@ package com.paypal.android.sdk.onetouch.core.sdk;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 
-public class WalletAppHelper extends GenericAppHelper {
-    private static final String TAG = WalletAppHelper.class.getSimpleName();
+import com.braintreepayments.api.internal.SignatureVerification;
+
+import java.util.List;
+
+public class WalletAppHelper {
 
     private static final String WALLET_APP_PACKAGE = "com.paypal.android.p2pmobile";
     private static final String WALLET_APP_CERT_SUBJECT = "O=Paypal";
@@ -43,21 +47,20 @@ public class WalletAppHelper extends GenericAppHelper {
      * @param context
      * @param isAuthenticatorSecurityEnabled
      * @param appPackage
-     * @return
+     * @return {@code true} if the authenticator (p2p app) is present, we're in an environment that
+     * supports authenticator, and all the right permissions are present in the wallet app.
+     * Otherwise returns {@code false}.
      */
     public boolean isValidGenericAuthenticatorInstalled(Context context,
-            boolean isAuthenticatorSecurityEnabled,
-            String appPackage) {
-        return isValidAuthenticatorInstalled(context,
-                isAuthenticatorSecurityEnabled,
-                appPackage,
-                WALLET_APP_CERT_SUBJECT,
-                WALLET_APP_CERT_ISSUER,
-                WALLET_APP_PUBLIC_KEY_HASH_CODE);
+            boolean isAuthenticatorSecurityEnabled, String appPackage) {
+        return (isAuthenticatorSecurityEnabled && SignatureVerification.isSignatureValid(context,
+                appPackage, WALLET_APP_CERT_SUBJECT, WALLET_APP_CERT_ISSUER,
+                WALLET_APP_PUBLIC_KEY_HASH_CODE));
     }
 
     public boolean isWalletIntentSafe(Context context, String intentAction, String intentClass) {
         Intent intent = createSdkIntent(intentAction, intentClass);
-        return isGenericIntentSafe(context, intent);
+        List<ResolveInfo> activities = context.getPackageManager().queryIntentActivities(intent, 0);
+        return (null != activities) && activities.size() > 0;
     }
 }
