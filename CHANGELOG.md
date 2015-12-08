@@ -1,5 +1,14 @@
 # Braintree Android SDK Release Notes
 
+## 2.1.0
+
+* Pay with Venmo
+* `PaymentButton#newInstance` now accepts a container id to add `PaymentButton` to that container
+* Android Pay assets
+* Fixes
+  * Add `onInflate` method for Android versions < 23
+  * PayPal cancel events (fixes [#63](https://github.com/braintree/braintree_android/issues/63))
+
 ## 2.0.1
 
 * Make support annotations an optional dependency
