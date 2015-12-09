@@ -1,10 +1,10 @@
 package com.braintreepayments.api.internal;
 
-import com.braintreepayments.api.exceptions.BraintreeSSLException;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+
+import javax.net.ssl.SSLException;
 
 class BraintreeGatewayCertificate {
 
@@ -361,11 +361,11 @@ class BraintreeGatewayCertificate {
         "W/POuZ6lcg5Ktz885hZo+L7tdEy8W9ViH0Pd\n" +
         "-----END CERTIFICATE-----\n";
 
-    static InputStream getCertInputStream() throws BraintreeSSLException {
+    static InputStream getCertInputStream() throws SSLException {
         try {
             return new ByteArrayInputStream(CERTIFICATE.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {
-            throw new BraintreeSSLException(e.getMessage());
+            throw new SSLException(e.getMessage());
         }
     }
 }

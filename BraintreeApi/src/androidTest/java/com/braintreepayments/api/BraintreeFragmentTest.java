@@ -196,7 +196,7 @@ public class BraintreeFragmentTest {
             @Override
             public void onError(Exception error) {
                 assertEquals(
-                        "Protocol not found: nullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint",
+                        "Protocol not found: nullnullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint",
                         error.getMessage());
                 mCountDownLatch.countDown();
             }
@@ -215,7 +215,7 @@ public class BraintreeFragmentTest {
             @Override
             public void onResponse(Exception error) {
                 assertEquals(
-                        "Protocol not found: nullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint",
+                        "Protocol not found: nullnullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint",
                         error.getMessage());
                 mCountDownLatch.countDown();
             }

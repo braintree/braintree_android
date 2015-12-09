@@ -1,7 +1,5 @@
 package com.braintreepayments.api.internal;
 
-import android.os.SystemClock;
-
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.models.TokenizationKey;
@@ -22,25 +20,6 @@ import static org.mockito.Mockito.when;
 
 public class BraintreeHttpClientTestUtils {
 
-    /**
-     * Check if the given {@link BraintreeHttpClient} is idle.
-     *
-     * @param httpClient
-     * @return
-     */
-    public static boolean isHttpClientIdle(BraintreeHttpClient httpClient) {
-        return httpClient.mThreadPool.isIdle();
-    }
-
-    public static void waitForHttpClientToIdle(BraintreeHttpClient httpClient) {
-        do {
-            if (isHttpClientIdle(httpClient)) {
-                return;
-            }
-            SystemClock.sleep(10);
-        } while (true);
-    }
-
     public static BraintreeHttpClient clientWithExpectedResponse(int responseCode, String response)
             throws IOException, ErrorWithResponse, InvalidArgumentException {
         HttpURLConnection connection = mock(HttpURLConnection.class);
@@ -50,19 +29,6 @@ public class BraintreeHttpClientTestUtils {
             .thenReturn(streamFromString(response));
         when(connection.getErrorStream()).thenReturn(streamFromString(response))
             .thenReturn(streamFromString(response));
-
-        BraintreeHttpClient httpClient = spy(new BraintreeHttpClient(
-                TokenizationKey.fromString(TOKENIZATION_KEY)));
-        doReturn(connection).when(httpClient).init(anyString());
-
-        return httpClient;
-    }
-
-    public static BraintreeHttpClient clientWithExpectedException(Throwable throwable)
-            throws IOException, InvalidArgumentException {
-        HttpURLConnection connection = mock(HttpURLConnection.class);
-        when(connection.getOutputStream()).thenReturn(mock(OutputStream.class));
-        when(connection.getResponseCode()).thenThrow(throwable);
 
         BraintreeHttpClient httpClient = spy(new BraintreeHttpClient(
                 TokenizationKey.fromString(TOKENIZATION_KEY)));

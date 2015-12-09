@@ -1,34 +1,29 @@
 package com.braintreepayments.api.internal;
 
-import android.os.Looper;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.BuildConfig;
-import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.AuthorizationException;
-import com.braintreepayments.api.exceptions.DownForMaintenanceException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.exceptions.ServerException;
-import com.braintreepayments.api.exceptions.UnexpectedException;
-import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.testutils.EnvironmentHelper;
 
+import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
-import java.util.Locale;
+import java.net.MalformedURLException;
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.api.internal.BraintreeHttpClientTestUtils.clientWithExpectedException;
 import static com.braintreepayments.api.internal.BraintreeHttpClientTestUtils.clientWithExpectedResponse;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
@@ -46,8 +41,38 @@ public class BraintreeHttpClientTest {
 
     @Before
     public void setup() throws Exception {
-        BraintreeHttpClient.DEBUG = true;
         mCountDownLatch = new CountDownLatch(1);
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void getUserAgent_returnsCorrectUserAgent() {
+        assertEquals("braintree/android/" + BuildConfig.VERSION_NAME,
+                BraintreeHttpClient.getUserAgent());
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void sendsUserAgent() throws IOException, InvalidArgumentException {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY));
+
+        HttpURLConnection connection = httpClient.init("http://example.com/");
+
+        assertEquals("braintree/android/" + BuildConfig.VERSION_NAME,
+                connection.getRequestProperty("User-Agent"));
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void usesBraintreeTLSSocketFactory() throws IOException, NoSuchFieldException,
+            IllegalAccessException, InvalidArgumentException {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY));
+
+        Field sslSocketFactory = httpClient.getClass().getSuperclass().getDeclaredField("mSSLSocketFactory");
+        sslSocketFactory.setAccessible(true);
+        assertTrue(sslSocketFactory.get(httpClient) instanceof BraintreeTLSSocketFactory);
     }
 
     @Test(timeout = 1000)
@@ -114,68 +139,11 @@ public class BraintreeHttpClientTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void sendsUserAgent() throws IOException, InvalidArgumentException {
+    public void postsErrorWhenBaseUrlIsNotSet()
+            throws InterruptedException, IOException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
                 TokenizationKey.fromString(TOKENIZATION_KEY));
-
-        HttpURLConnection connection = httpClient.init("http://example.com/");
-
-        assertEquals("braintree/android/" + BuildConfig.VERSION_NAME,
-                connection.getRequestProperty("User-Agent"));
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void sendsAcceptLanguageHeader() throws IOException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(
-                TokenizationKey.fromString(TOKENIZATION_KEY));
-
-        HttpURLConnection connection = httpClient.init("http://example.com/");
-
-        assertEquals(Locale.getDefault().getLanguage(),
-                connection.getRequestProperty("Accept-Language"));
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void sendsContentType() throws IOException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(
-                TokenizationKey.fromString(TOKENIZATION_KEY));
-
-        HttpURLConnection connection = httpClient.init("http://example.com/");
-
-        assertEquals("application/json", connection.getRequestProperty("Content-Type"));
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void setsDefaultConnectTimeoutOf30Seconds() throws IOException,
-            InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(
-                TokenizationKey.fromString(TOKENIZATION_KEY));
-
-        HttpURLConnection connection = httpClient.init("http://example.com/");
-
-        assertEquals(30000, connection.getConnectTimeout());
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void setDefaultReadTimeoutOf60Seconds() throws IOException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(
-                TokenizationKey.fromString(TOKENIZATION_KEY));
-
-        HttpURLConnection connection = httpClient.init("http://example.com/");
-
-        assertEquals(30000, connection.getReadTimeout());
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void throwsErrorWhenBaseUrlIsNotSet()
-            throws InterruptedException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(
-                TokenizationKey.fromString(TOKENIZATION_KEY));
+        final CountDownLatch countDownLatch = new CountDownLatch(2);
 
         httpClient.get("/", new HttpResponseCallback() {
             @Override
@@ -185,46 +153,60 @@ public class BraintreeHttpClientTest {
 
             @Override
             public void failure(Exception exception) {
-                assertEquals("Protocol not found: null/", exception.getMessage());
-                mCountDownLatch.countDown();
+                assertEquals(MalformedURLException.class, exception.getClass());
+                assertEquals("Protocol not found: nullnull/", exception.getMessage());
+                countDownLatch.countDown();
             }
         });
 
-        mCountDownLatch.await();
+        httpClient.post("/", "{}", new HttpResponseCallback() {
+            @Override
+            public void success(String responseBody) {
+                fail("Request was successful");
+            }
+
+            @Override
+            public void failure(Exception exception) {
+                assertEquals(MalformedURLException.class, exception.getClass());
+                assertEquals("Protocol not found: null/", exception.getMessage());
+                countDownLatch.countDown();
+            }
+        });
+
+        countDownLatch.await();
     }
 
     @Test(timeout = 1000)
     @SmallTest
-    public void throwsErrorWhenURLIsNull() throws InterruptedException, InvalidArgumentException {
+    public void postsErrorWhenBaseUrlIsNull()
+            throws InterruptedException, InvalidArgumentException, IOException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
                 TokenizationKey.fromString(TOKENIZATION_KEY));
         httpClient.setBaseUrl(null);
 
-        httpClient.get("/", new HttpResponseCallback() {
-            @Override
-            public void success(String responseBody) {
-                fail("Request was successful");
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                assertEquals("Protocol not found: /",
-                        exception.getMessage());
-                mCountDownLatch.countDown();
-            }
-        });
-
-        mCountDownLatch.await();
+        assertExceptionIsPosted(httpClient, MalformedURLException.class, "Protocol not found: /");
     }
+
 
     @Test(timeout = 1000)
     @SmallTest
-    public void throwsErrorWhenURLIsEmpty() throws InterruptedException, InvalidArgumentException {
+    public void postsErrorWhenBaseUrlIsEmpty()
+            throws InterruptedException, IOException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
                 TokenizationKey.fromString(TOKENIZATION_KEY));
         httpClient.setBaseUrl("");
 
-        httpClient.get("/", new HttpResponseCallback() {
+        assertExceptionIsPosted(httpClient, MalformedURLException.class, "Protocol not found: /");
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void postsErrorWhenPathIsNull() throws InterruptedException, InvalidArgumentException {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                TokenizationKey.fromString(TOKENIZATION_KEY));
+        final CountDownLatch countDownLatch = new CountDownLatch(2);
+
+        httpClient.get(null, new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
                 fail("Request was successful");
@@ -232,7 +214,46 @@ public class BraintreeHttpClientTest {
 
             @Override
             public void failure(Exception exception) {
-                assertEquals("Protocol not found: /",
+                assertEquals(IllegalArgumentException.class, exception.getClass());
+                assertEquals("Path cannot be null", exception.getMessage());
+                countDownLatch.countDown();
+            }
+        });
+
+        httpClient.post(null, "{}", new HttpResponseCallback() {
+            @Override
+            public void success(String responseBody) {
+                fail("Request was successful");
+            }
+
+            @Override
+            public void failure(Exception exception) {
+                assertEquals(IllegalArgumentException.class, exception.getClass());
+                assertEquals("Path cannot be null", exception.getMessage());
+                countDownLatch.countDown();
+            }
+        });
+
+        countDownLatch.await();
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void postsErrorWhenClientTokenIsUsedAndInvalidJsonIsSent()
+            throws InvalidArgumentException, InterruptedException {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(
+                Authorization.fromString(stringFromFixture("client_token.json")));
+
+        httpClient.post("/", "not json", new HttpResponseCallback() {
+            @Override
+            public void success(String responseBody) {
+                fail("Request was successful");
+            }
+
+            @Override
+            public void failure(Exception exception) {
+                assertTrue(exception instanceof JSONException);
+                assertEquals("Value not of type java.lang.String cannot be converted to JSONObject",
                         exception.getMessage());
                 mCountDownLatch.countDown();
             }
@@ -243,147 +264,22 @@ public class BraintreeHttpClientTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void successCallbacksHappenOnMainThread()
-            throws IOException, ErrorWithResponse, InterruptedException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = clientWithExpectedResponse(200, "");
-        final CountDownLatch countDownLatch = new CountDownLatch(2);
+    public void throwsAuthorizationExceptionWithCorrectMessageOn403() throws IOException,
+            InterruptedException, ErrorWithResponse, InvalidArgumentException {
+        BraintreeHttpClient httpClient = clientWithExpectedResponse(403,
+                stringFromFixture("error_response.json"));
 
-        httpClient.get("/", new HttpResponseCallback() {
-            @Override
-            public void success(String responseBody) {
-                assertEquals(Looper.getMainLooper(), Looper.myLooper());
-                countDownLatch.countDown();
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                fail("Request failed");
-            }
-        });
-
-        httpClient.post("/", "{}", new HttpResponseCallback() {
-            @Override
-            public void success(String responseBody) {
-                assertEquals(Looper.getMainLooper(), Looper.myLooper());
-                countDownLatch.countDown();
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                fail("Request failed");
-            }
-        });
-
-        countDownLatch.await();
+        assertExceptionIsPosted(httpClient, AuthorizationException.class, "There was an error");
     }
 
     @Test(timeout = 1000)
     @SmallTest
-    public void failureCallbacksHappenOnMainThread()
-            throws InterruptedException, IOException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = clientWithExpectedException(new IOException());
-        final CountDownLatch countDownLatch = new CountDownLatch(2);
-
-        httpClient.get("/", new HttpResponseCallback() {
-            @Override
-            public void success(String responseBody) {
-                fail("Request was successful");
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                assertEquals(Looper.getMainLooper(), Looper.myLooper());
-                countDownLatch.countDown();
-            }
-        });
-
-        httpClient.post("/", "{}", new HttpResponseCallback() {
-            @Override
-            public void success(String responseBody) {
-                fail("Request was successful");
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                assertEquals(Looper.getMainLooper(), Looper.myLooper());
-                countDownLatch.countDown();
-            }
-        });
-
-        countDownLatch.await();
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void throwsIOExceptionWhenHttpRequestBlowsUp()
-            throws IOException, InterruptedException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = clientWithExpectedException(new IOException());
-
-        assertExceptionIsThrown(httpClient, IOException.class, null);
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void throwsServerErrorWhenServerReturns500() throws IOException, InterruptedException,
+    public void throwsErrorWithResponseOn422() throws IOException, InterruptedException,
             ErrorWithResponse, InvalidArgumentException {
-        BraintreeHttpClient httpClient = clientWithExpectedResponse(500, "");
-
-        assertExceptionIsThrown(httpClient, ServerException.class, null);
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void throwsDownForMaintenanceWhenServerIsDown()
-            throws IOException, InterruptedException, ErrorWithResponse, InvalidArgumentException {
-        BraintreeHttpClient httpClient = clientWithExpectedResponse(503, "");
-
-        assertExceptionIsThrown(httpClient, DownForMaintenanceException.class, null);
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void throwsUpgradeRequiredExceptionOn426()
-            throws IOException, InterruptedException, ErrorWithResponse, InvalidArgumentException {
-        BraintreeHttpClient httpClient = clientWithExpectedResponse(426, "");
-
-        assertExceptionIsThrown(httpClient, UpgradeRequiredException.class, null);
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void throwsAuthenticationExceptionOn401()
-            throws IOException, InterruptedException, ErrorWithResponse, InvalidArgumentException {
-        BraintreeHttpClient httpClient = clientWithExpectedResponse(401, "");
-
-        assertExceptionIsThrown(httpClient, AuthenticationException.class, null);
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void throwsAuthorizationExceptionOn403()
-            throws IOException, InterruptedException, ErrorWithResponse, InvalidArgumentException {
-        BraintreeHttpClient httpClient = clientWithExpectedResponse(403, stringFromFixture("error_response.json"));
-
-        assertExceptionIsThrown(httpClient, AuthorizationException.class, "There was an error");
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void throwsErrorWithResponseOn422()
-            throws IOException, InterruptedException, ErrorWithResponse, InvalidArgumentException {
         BraintreeHttpClient httpClient = clientWithExpectedResponse(422,
                 stringFromFixture("error_response.json"));
 
-        assertExceptionIsThrown(httpClient, ErrorWithResponse.class, "There was an error");
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void throwsUnknownExceptionOnUnrecognizedStatusCode()
-            throws IOException, InterruptedException, ErrorWithResponse, InvalidArgumentException {
-        BraintreeHttpClient httpClient = clientWithExpectedResponse(418, "");
-
-        assertExceptionIsThrown(httpClient, UnexpectedException.class, null);
+        assertExceptionIsPosted(httpClient, ErrorWithResponse.class, "There was an error");
     }
 
     @Test(timeout = 5000)
@@ -465,7 +361,7 @@ public class BraintreeHttpClientTest {
     }
 
     /* helpers */
-    private void assertExceptionIsThrown(BraintreeHttpClient httpClient,
+    private void assertExceptionIsPosted(BraintreeHttpClient httpClient,
             final Class<? extends Exception> exceptionType, final String exceptionMessage)
             throws IOException, InterruptedException {
         final CountDownLatch countDownLatch = new CountDownLatch(2);
