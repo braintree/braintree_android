@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLException;
@@ -190,6 +191,7 @@ public class HttpClient {
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("User-Agent", mUserAgent);
         connection.setRequestProperty("Accept-Language", Locale.getDefault().getLanguage());
+        connection.setRequestProperty("Accept-Encoding", "gzip");
         connection.setConnectTimeout(mConnectTimeout);
         connection.setReadTimeout(mReadTimeout);
 
@@ -198,24 +200,24 @@ public class HttpClient {
 
     protected String parseResponse(HttpURLConnection connection) throws Exception {
         int responseCode = connection.getResponseCode();
-
+        boolean gzip = "gzip".equals(connection.getContentEncoding());
         switch(responseCode) {
             case HTTP_OK: case HTTP_CREATED: case HTTP_ACCEPTED:
-                return readStream(connection.getInputStream());
+                return readStream(connection.getInputStream(), gzip);
             case HTTP_UNAUTHORIZED:
-                throw new AuthenticationException(readStream(connection.getErrorStream()));
+                throw new AuthenticationException(readStream(connection.getErrorStream(), gzip));
             case HTTP_FORBIDDEN:
-                throw new AuthorizationException(readStream(connection.getErrorStream()));
+                throw new AuthorizationException(readStream(connection.getErrorStream(), gzip));
             case 422: // HTTP_UNPROCESSABLE_ENTITY
-                throw new UnprocessableEntityException(readStream(connection.getErrorStream()));
+                throw new UnprocessableEntityException(readStream(connection.getErrorStream(), gzip));
             case 426: // HTTP_UPGRADE_REQUIRED
-                throw new UpgradeRequiredException(readStream(connection.getErrorStream()));
+                throw new UpgradeRequiredException(readStream(connection.getErrorStream(), gzip));
             case HTTP_INTERNAL_ERROR:
-                throw new ServerException(readStream(connection.getErrorStream()));
+                throw new ServerException(readStream(connection.getErrorStream(), gzip));
             case HTTP_UNAVAILABLE:
-                throw new DownForMaintenanceException(readStream(connection.getErrorStream()));
+                throw new DownForMaintenanceException(readStream(connection.getErrorStream(), gzip));
             default:
-                throw new UnexpectedException(readStream(connection.getErrorStream()));
+                throw new UnexpectedException(readStream(connection.getErrorStream(), gzip));
         }
     }
 
@@ -246,9 +248,13 @@ public class HttpClient {
     }
 
     @Nullable
-    private String readStream(InputStream in) throws IOException {
+    private String readStream(InputStream in, boolean gzip) throws IOException {
         if (in == null) {
             return null;
+        }
+
+        if (gzip) {
+            in = new GZIPInputStream(in);
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
