@@ -2,10 +2,12 @@ package com.braintreepayments.demo.test.utilities;
 
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Spinner;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
@@ -43,7 +45,23 @@ public class TestHelper {
     public static void installPayPalWallet() {
         if (!isAppInstalled(PAYPAL_WALLET_PACKAGE_NAME)) {
             Log.d("request_command", "install paypal wallet");
-            SystemClock.sleep(45000);
+
+            final CountDownLatch lock = new CountDownLatch(1);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while(true) {
+                        if(isAppInstalled(PAYPAL_WALLET_PACKAGE_NAME)) {
+                            lock.countDown();
+                            break;
+                        }
+                    }
+                }
+            });
+            try {
+                lock.await(45, TimeUnit.SECONDS);
+            } catch (InterruptedException ignored) {}
+
             assertTrue(isAppInstalled(PAYPAL_WALLET_PACKAGE_NAME));
         }
     }
@@ -51,7 +69,23 @@ public class TestHelper {
     public static void uninstallPayPalWallet() {
         if (isAppInstalled(PAYPAL_WALLET_PACKAGE_NAME)) {
             Log.d("request_command", "uninstall paypal wallet");
-            SystemClock.sleep(5000);
+
+            final CountDownLatch lock = new CountDownLatch(1);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while(true) {
+                        if(!isAppInstalled(PAYPAL_WALLET_PACKAGE_NAME)) {
+                            lock.countDown();
+                            break;
+                        }
+                    }
+                }
+            });
+            try {
+                lock.await(5, TimeUnit.SECONDS);
+            } catch (InterruptedException ignored) {}
+
             assertFalse(isAppInstalled(PAYPAL_WALLET_PACKAGE_NAME));
         }
     }
