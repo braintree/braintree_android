@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 
-def paypalVersion = 'OneTouchCoreAndroid-2.4.1.jar'
+def paypalVersion = 'OneTouchCoreAndroid-2.4.2.jar'
 def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"';
 
 android {
