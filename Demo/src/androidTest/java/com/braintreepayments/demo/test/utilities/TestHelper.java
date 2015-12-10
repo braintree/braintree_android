@@ -20,23 +20,25 @@ public class TestHelper {
 
     private static final String PAYPAL_WALLET_PACKAGE_NAME = "com.paypal.android.p2pmobile";
 
-    public static void clearPreferences() {
+    public void setup() {
+        clearPreferences();
+        launchDemoApp();
+        ensureEnvironmentIsSandbox();
+    }
+
+    private void clearPreferences() {
         PreferenceManager.getDefaultSharedPreferences(getTargetContext())
                 .edit()
                 .clear()
                 .commit();
     }
 
-    public static void launchDemoApp() {
+    private void launchDemoApp() {
         onDevice().onHomeScreen().launchApp("com.braintreepayments.demo");
     }
 
-    public static void ensureEnvironmentIsSandbox() {
+    private void ensureEnvironmentIsSandbox() {
         ensureEnvironmentIs("Sandbox");
-    }
-
-    public static void ensureEnvironmentIsProduction() {
-        ensureEnvironmentIs("Production");
     }
 
     private static void ensureEnvironmentIs(String environment) {

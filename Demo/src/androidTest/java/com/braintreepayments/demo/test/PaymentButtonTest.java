@@ -1,18 +1,15 @@
 package com.braintreepayments.demo.test;
 
-import android.os.SystemClock;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
+
+import com.braintreepayments.demo.test.utilities.TestHelper;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static com.braintreepayments.demo.test.utilities.TestHelper.clearPreferences;
-import static com.braintreepayments.demo.test.utilities.TestHelper.ensureEnvironmentIsSandbox;
-import static com.braintreepayments.demo.test.utilities.TestHelper.launchDemoApp;
-import static com.braintreepayments.demo.test.utilities.TestHelper.uninstallPayPalWallet;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAction.setText;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
@@ -24,13 +21,11 @@ import static org.hamcrest.CoreMatchers.containsString;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class PaymentButtonTest {
+public class PaymentButtonTest extends TestHelper {
 
     @Before
     public void setup() {
-        clearPreferences();
-        launchDemoApp();
-        ensureEnvironmentIsSandbox();
+        super.setup();
         onDevice(withText("Payment Button")).waitForEnabled().perform(click());
     }
 
@@ -39,7 +34,6 @@ public class PaymentButtonTest {
     public void tokenizesPayPal() {
         uninstallPayPalWallet();
 
-        SystemClock.sleep(5000);
         onDevice(withContentDescription("Pay with PayPal")).waitForEnabled().perform(click());
         onDevice(withContentDescription("Email")).perform(click(), setText("test@paypal.com"));
         onDevice().pressDPadDown().typeText("password");

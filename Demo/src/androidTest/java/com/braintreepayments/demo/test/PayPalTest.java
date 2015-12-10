@@ -5,16 +5,12 @@ import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 
+import com.braintreepayments.demo.test.utilities.TestHelper;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static com.braintreepayments.demo.test.utilities.TestHelper.clearPreferences;
-import static com.braintreepayments.demo.test.utilities.TestHelper.ensureEnvironmentIsSandbox;
-import static com.braintreepayments.demo.test.utilities.TestHelper.installPayPalWallet;
-import static com.braintreepayments.demo.test.utilities.TestHelper.isAppInstalled;
-import static com.braintreepayments.demo.test.utilities.TestHelper.launchDemoApp;
-import static com.braintreepayments.demo.test.utilities.TestHelper.uninstallPayPalWallet;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAction.setText;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
@@ -26,13 +22,11 @@ import static org.hamcrest.Matchers.containsString;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class PayPalTest {
+public class PayPalTest extends TestHelper {
 
     @Before
     public void setup() {
-        clearPreferences();
-        launchDemoApp();
-        ensureEnvironmentIsSandbox();
+        super.setup();
         onDevice(withText("PayPal")).waitForEnabled().perform(click());
     }
 

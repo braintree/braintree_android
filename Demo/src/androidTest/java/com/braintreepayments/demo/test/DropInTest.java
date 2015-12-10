@@ -3,13 +3,12 @@ package com.braintreepayments.demo.test;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 
+import com.braintreepayments.demo.test.utilities.TestHelper;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static com.braintreepayments.demo.test.utilities.TestHelper.clearPreferences;
-import static com.braintreepayments.demo.test.utilities.TestHelper.ensureEnvironmentIsSandbox;
-import static com.braintreepayments.demo.test.utilities.TestHelper.launchDemoApp;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAction.setText;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
@@ -21,13 +20,11 @@ import static org.hamcrest.CoreMatchers.containsString;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class DropInTest {
+public class DropInTest extends TestHelper {
 
     @Before
     public void setup() {
-        clearPreferences();
-        launchDemoApp();
-        ensureEnvironmentIsSandbox();
+        super.setup();
         onDevice(withText("Drop-In")).waitForEnabled().perform(click());
     }
 
