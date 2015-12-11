@@ -7,8 +7,6 @@ import com.braintreepayments.demo.internal.ApiClient;
 import com.braintreepayments.demo.internal.ApiClientRequestInterceptor;
 import com.braintreepayments.demo.internal.LeakLoggerService;
 import com.lukekorth.mailable_log.MailableLog;
-import com.squareup.leakcanary.AndroidExcludedRefs;
-import com.squareup.leakcanary.LeakCanary;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +27,7 @@ public class DemoApplication extends Application implements UncaughtExceptionHan
 
         init();
         MailableLog.init(this, BuildConfig.DEBUG);
-        LeakCanary.install(this, LeakLoggerService.class, AndroidExcludedRefs.createAppDefaults().build());
+        LeakLoggerService.setupLeakCanary(this);
         mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(this);
     }

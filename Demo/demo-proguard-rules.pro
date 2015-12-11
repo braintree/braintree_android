@@ -1,4 +1,10 @@
 ## Only Required for Demo App
 
-# OkHttp
--dontwarn okio.**
+# Retrofit
+-dontwarn retrofit.**
+-keep class retrofit.** { *; }
+-keepattributes Signature
+-keepattributes Exceptions
+
+# Mailable_Log
+-dontwarn ch.qos.logback.core.net.**
