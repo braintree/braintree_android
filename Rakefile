@@ -15,10 +15,12 @@ task :tests => :lint do
   output = `adb devices`
   if output.match(/device$/)
     begin
+      log_listener_pid = fork { exec 'ruby', 'script/log_listener.rb' }
       sh "ruby script/httpsd.rb /tmp/httpsd.pid"
-      sh "./gradlew --continue runAllTests connectedAndroidTest"
+      sh "./gradlew --continue runAllTests test connectedAndroidTest"
     ensure
       `kill -9 \`cat /tmp/httpsd.pid\``
+      `kill -9 #{log_listener_pid}`
     end
   else
     puts "Please connect a device or start an emulator and try again"
