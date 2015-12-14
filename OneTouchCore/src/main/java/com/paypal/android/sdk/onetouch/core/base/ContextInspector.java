@@ -13,46 +13,19 @@ import java.util.UUID;
  * This class contains various convenience methods on an application's mContext.
  */
 public class ContextInspector {
-    private static final String TAG = ContextInspector.class.getSimpleName();
 
     private static final String INSTALL_GUID = "InstallationGUID";
 
     private final Context mContext;
     private final String mPrefsFileName;
-    private final Crypto mCrypto;
 
-    public ContextInspector(Context context, CryptoFactory cryptoFactory) {
+    public ContextInspector(Context context) {
         if (null == context) {
             throw new NullPointerException("context == null");
         }
 
         mContext = context;
         mPrefsFileName = OtcEnvironment.getPrefsFile();
-        mCrypto = cryptoFactory.createCrypto(this);
-    }
-
-    /**
-     * Creates a new ContextInspector who's Crypto is just a passthrough (does not encrypt)
-     *
-     * @param context
-     */
-    public ContextInspector(Context context) {
-        this(context, new CryptoFactory() {
-            @Override
-            public Crypto createCrypto(ContextInspector contextInspector) {
-                return new Crypto() {
-                    @Override
-                    public String encryptIt(String value) {
-                        return value;
-                    }
-
-                    @Override
-                    public String decryptIt(String value) {
-                        return value;
-                    }
-                };
-            }
-        });
     }
 
     /**
@@ -87,8 +60,8 @@ public class ContextInspector {
      * @return the persisted value or default value if it does not exist
      */
     public String getStringPreference(String key) {
-        return mCrypto.decryptIt(mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE)
-                        .getString(key, null));
+        return mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE)
+                .getString(key, null);
     }
 
     public long getLongPreference(String key, long defaultValue) {
@@ -110,7 +83,7 @@ public class ContextInspector {
     public void setPreference(String key, String value) {
         mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE)
                 .edit()
-                .putString(key, mCrypto.encryptIt(value))
+                .putString(key, value)
                 .apply();
     }
 
@@ -124,7 +97,7 @@ public class ContextInspector {
             String key = entry.getKey();
             Object value = entry.getValue();
             if (value instanceof String) {
-                editor.putString(key, mCrypto.encryptIt((String) value));
+                editor.putString(key, (String) value);
             } else if (value instanceof Long) {
                 editor.putLong(key, (Long) value);
             } else if (value instanceof Boolean) {
@@ -139,13 +112,5 @@ public class ContextInspector {
 
     public Context getContext() {
         return mContext;
-    }
-
-    public String encryptIt(String value) {
-        return mCrypto.encryptIt(value);
-    }
-
-    public String decryptIt(String value) {
-        return mCrypto.decryptIt(value);
     }
 }
