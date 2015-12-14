@@ -34,7 +34,7 @@ public class PaymentButtonTest extends TestHelper {
     public void tokenizesPayPal() {
         uninstallPayPalWallet();
 
-        onDevice(withContentDescription("Pay with PayPal")).waitForEnabled().perform(click());
+        onDevice(withContentDescription("Pay with PayPal")).waitForExists().perform(click());
         onDevice(withContentDescription("Email")).perform(click(), setText("test@paypal.com"));
         onDevice().pressDPadDown().typeText("password");
         onDevice(withContentDescription("Log In")).perform(click());
