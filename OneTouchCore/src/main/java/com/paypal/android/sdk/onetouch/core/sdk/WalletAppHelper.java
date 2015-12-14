@@ -3,6 +3,8 @@ package com.paypal.android.sdk.onetouch.core.sdk;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 
 import com.braintreepayments.api.internal.SignatureVerification;
@@ -36,8 +38,7 @@ public class WalletAppHelper {
      */
     public boolean isValidP2pMobileAuthenticatorInstalled(Context context,
             boolean isAuthenticatorSecurityEnabled) {
-        return isValidGenericAuthenticatorInstalled(context,
-                isAuthenticatorSecurityEnabled,
+        return isValidGenericAuthenticatorInstalled(context, isAuthenticatorSecurityEnabled,
                 WALLET_APP_PACKAGE);
     }
 
@@ -53,14 +54,23 @@ public class WalletAppHelper {
      */
     public boolean isValidGenericAuthenticatorInstalled(Context context,
             boolean isAuthenticatorSecurityEnabled, String appPackage) {
-        return (isAuthenticatorSecurityEnabled && SignatureVerification.isSignatureValid(context,
-                appPackage, WALLET_APP_CERT_SUBJECT, WALLET_APP_CERT_ISSUER,
-                WALLET_APP_PUBLIC_KEY_HASH_CODE));
+        return (isAppInstalled(context, appPackage) && (!isAuthenticatorSecurityEnabled ||
+                SignatureVerification.isSignatureValid(context, appPackage, WALLET_APP_CERT_SUBJECT,
+                        WALLET_APP_CERT_ISSUER, WALLET_APP_PUBLIC_KEY_HASH_CODE)));
     }
 
     public boolean isWalletIntentSafe(Context context, String intentAction, String intentClass) {
         Intent intent = createSdkIntent(intentAction, intentClass);
         List<ResolveInfo> activities = context.getPackageManager().queryIntentActivities(intent, 0);
         return (null != activities) && activities.size() > 0;
+    }
+
+    private boolean isAppInstalled(Context context, String packageName) {
+        try {
+            context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            return true;
+        } catch (NameNotFoundException e) {
+            return false;
+        }
     }
 }
