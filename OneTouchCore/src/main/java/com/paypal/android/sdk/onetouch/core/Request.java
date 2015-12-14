@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import com.paypal.android.networking.EnvironmentManager;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
@@ -131,21 +130,6 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
      * @return
      */
     public abstract boolean validateV1V2Response(ContextInspector contextInspector, Bundle extras);
-
-    public String getEnvironmentUrl() {
-        String envUrl;
-        if (EnvironmentManager.isLive(getEnvironment())) {
-            envUrl = EnvironmentManager.LIVE_API_M_ENDPOINT;
-        } else if (EnvironmentManager.isSandbox(getEnvironment())) {
-            envUrl = EnvironmentManager.SANDBOX_API_M_ENDPOINT;
-        } else if (EnvironmentManager.isMock(getEnvironment())) {
-            // mock endpoint, just leave null
-            envUrl = null;
-        } else {
-            envUrl = getEnvironment();
-        }
-        return envUrl;
-    }
 
     public abstract Recipe getRecipeToExecute(Context context, OtcConfiguration config,
             boolean isSecurityEnabled);

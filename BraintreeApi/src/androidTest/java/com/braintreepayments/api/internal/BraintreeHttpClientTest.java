@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.util.concurrent.CountDownLatch;
@@ -61,18 +60,6 @@ public class BraintreeHttpClientTest {
 
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME,
                 connection.getRequestProperty("User-Agent"));
-    }
-
-    @Test(timeout = 1000)
-    @SmallTest
-    public void usesBraintreeTLSSocketFactory() throws IOException, NoSuchFieldException,
-            IllegalAccessException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(
-                TokenizationKey.fromString(TOKENIZATION_KEY));
-
-        Field sslSocketFactory = httpClient.getClass().getSuperclass().getDeclaredField("mSSLSocketFactory");
-        sslSocketFactory.setAccessible(true);
-        assertTrue(sslSocketFactory.get(httpClient) instanceof BraintreeTLSSocketFactory);
     }
 
     @Test(timeout = 1000)

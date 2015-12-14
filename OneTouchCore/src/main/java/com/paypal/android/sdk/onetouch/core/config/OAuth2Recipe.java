@@ -1,6 +1,6 @@
 package com.paypal.android.sdk.onetouch.core.config;
 
-import com.paypal.android.networking.EnvironmentManager;
+import com.paypal.android.sdk.onetouch.core.network.EnvironmentManager;
 
 import java.util.Collection;
 import java.util.HashMap;

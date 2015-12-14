@@ -6,16 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
-import com.paypal.android.networking.EnvironmentManager;
-import com.paypal.android.networking.PayPalEnvironment;
-import com.paypal.android.networking.ServerInterface;
-import com.paypal.android.networking.bus.RequestRouter;
-import com.paypal.android.networking.processing.NetworkRequestProcessor;
-import com.paypal.android.networking.processing.RequestExecutorThread;
-import com.paypal.android.networking.processing.RequestProcessor;
-import com.paypal.android.networking.request.ServerRequest;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
-import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
 import com.paypal.android.sdk.onetouch.core.base.SdkRiskComponent;
 import com.paypal.android.sdk.onetouch.core.config.ConfigManager;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
@@ -25,13 +16,10 @@ import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
 import com.paypal.android.sdk.onetouch.core.exception.InvalidEncryptionDataException;
 import com.paypal.android.sdk.onetouch.core.fpti.FptiManager;
 import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
-import com.paypal.android.sdk.onetouch.core.network.ConfigFileRequest;
-import com.paypal.android.sdk.onetouch.core.network.OtcApiName;
-import com.paypal.android.sdk.onetouch.core.network.OtcEnvironment;
-import com.paypal.android.sdk.onetouch.core.network.OtcMockRequestProcessor;
+import com.paypal.android.sdk.onetouch.core.network.EnvironmentManager;
+import com.paypal.android.sdk.onetouch.core.network.PayPalHttpClient;
 import com.paypal.android.sdk.onetouch.core.sdk.V1WalletHelper;
 import com.paypal.android.sdk.onetouch.core.sdk.V2WalletHelper;
-import com.squareup.okhttp.Interceptor;
 
 import org.json.JSONException;
 
@@ -57,93 +45,36 @@ public class PayPalOneTouchCore {
 
     private static final String TAG = PayPalOneTouchCore.class.getSimpleName();
     private static final ExecutorService OTC_EXECUTOR_SERVICE = Executors.newCachedThreadPool();
-    private static final int NETWORK_TIMEOUT = 90000;
-    private static final int MOCK_NETWORK_DELAY_IN_MS = 1000;
 
-    private static ServerInterface sServerInterface;
-    private static ConfigManager sConfigManager;
     private static ContextInspector sContextInspector;
+    private static ConfigManager sConfigManager;
     private static FptiManager sFptiManager;
 
-    /**
-     * Must be called from Main thread!
-     */
     public static void useHardcodedConfig(Context context, boolean useHardcodedConfig) {
         initService(context);
         sConfigManager.useHardcodedConfig(useHardcodedConfig);
     }
 
-    /**
-     * Must be called from Main thread!
-     */
     public static FptiManager getFptiManager(Context context) {
         initService(context);
         return sFptiManager;
     }
 
-    private static class OtcRequestRouter implements RequestRouter {
-        private final ConfigManager mConfigManager;
-
-        public OtcRequestRouter(ConfigManager configManager) {
-            mConfigManager = configManager;
-        }
-
-        @Override
-        public void route(ServerRequest serverRequest) {
-            if (serverRequest instanceof ConfigFileRequest) {
-                if (serverRequest.isSuccess()) {
-                    ConfigFileRequest configFileRequest = (ConfigFileRequest) serverRequest;
-
-                    mConfigManager.updateConfig(configFileRequest.getMinifiedJson(), false);
-                    // everything checks out.  Store original json file in prefs (since you can't store complex objects)
-                }
-            }
-        }
-    }
-
-    /**
-     * Must be called from Main thread!
-     */
     private static void initService(Context context) {
-        if (null == sServerInterface) {
-            PayPalEnvironment env =
-                    getEnvironment(getEnvironmentName(), "https://api-m.paypal.com/v1/");
-
-            sServerInterface =
-                    new ServerInterface(getContextInspector(context), env, getCoreEnvironment());
-
-            sConfigManager = new ConfigManager(getContextInspector(context), sServerInterface,
-                    getCoreEnvironment());
-
-            // Create Request Processor based on Mock mode or not
-            RequestProcessor requestProcessor = EnvironmentManager.isMock(getEnvironmentName()) ?
-                    new OtcMockRequestProcessor(MOCK_NETWORK_DELAY_IN_MS, sServerInterface) :
-                    new NetworkRequestProcessor(getContextInspector(context), getEnvironmentName(),
-                            getCoreEnvironment(),
-                            sServerInterface, NETWORK_TIMEOUT, true,
-                            Collections.<Interceptor>emptyList());
-
-            RequestExecutorThread mExecutor = new RequestExecutorThread(sServerInterface,
-                    requestProcessor);
-
-            sServerInterface.setExecutor(mExecutor);
-
-            // register listener immediately before touching config for the first time
-            sServerInterface.register(new OtcRequestRouter(sConfigManager));
-
-            sFptiManager = new FptiManager(sServerInterface, getCoreEnvironment(),
-                    getContextInspector(context));
+        if (sConfigManager == null || sFptiManager == null) {
+            PayPalHttpClient httpClient = new PayPalHttpClient()
+                    .setBaseUrl(EnvironmentManager.LIVE_API_M_ENDPOINT);
+            sConfigManager = new ConfigManager(getContextInspector(context), httpClient);
+            sFptiManager = new FptiManager(getContextInspector(context), httpClient);
         }
 
-        // always touch config
-        sConfigManager.touchConfig();
+        // always refresh configuration
+        sConfigManager.refreshConfiguration();
     }
 
     /**
      * Return true if the modern wallet app is installed (one that has either v1 or v2 touch
      * intents). Returns false if the wallet app is older than the touch releases, or not present.
-     * <p>
-     * Must be called from Main thread!
      */
     public static boolean isWalletAppInstalled(Context context, boolean enableSecurityCheck) {
         initService(context);
@@ -170,18 +101,16 @@ public class PayPalOneTouchCore {
      * very small possibility that between the time you do this preflight and the time that the
      * request is actually performed, OTC might receive updated configuration information from
      * PayPal's servers which will change this outcome.
-     * <p>
-     * Must be called from Main thread!
      */
     public static RequestTarget preflightRequest(Context context, Request request,
             boolean enableSecurityCheck) {
         initService(context);
 
-        // calling this method functionally does nothing, but ensures that we send off FPTI data about wallet installs.
+        // calling this method functionally does nothing, but ensures that we send off FPTI data about wallet installs
         isWalletAppInstalled(context, enableSecurityCheck);
 
-        Recipe recipe =
-                request.getRecipeToExecute(context, getConfig(context), enableSecurityCheck);
+        Recipe recipe = request.getRecipeToExecute(context, getConfig(context),
+                enableSecurityCheck);
 
         if (null != recipe) {
             if (RequestTarget.browser == recipe.getTarget()) {
@@ -201,8 +130,6 @@ public class PayPalOneTouchCore {
     /**
      * Attempt to start a PayPal authentication request using the best possible authentication
      * mechanism, wallet or browser
-     * <p>
-     * Must be called from Main thread!
      *
      * @return true if the request was started successfully or false if PayPal authentication was
      * not possible
@@ -216,8 +143,8 @@ public class PayPalOneTouchCore {
         // calling this method functionally does nothing, but ensures that we send off FPTI data about wallet installs.
         isWalletAppInstalled(context, enableSecurityCheck);
 
-        Recipe recipe =
-                request.getRecipeToExecute(context, getConfig(context), enableSecurityCheck);
+        Recipe recipe = request.getRecipeToExecute(context, getConfig(context),
+                enableSecurityCheck);
 
         PerformRequestStatus status;
         if (null == recipe) {
@@ -264,8 +191,8 @@ public class PayPalOneTouchCore {
         // calling this method functionally does nothing, but ensures that we send off FPTI data about wallet installs.
         isWalletAppInstalled(context, enableSecurityCheck);
 
-        Recipe recipe =
-                request.getRecipeToExecute(context, getConfig(context), enableSecurityCheck);
+        Recipe recipe = request.getRecipeToExecute(context, getConfig(context),
+                enableSecurityCheck);
 
         if (null != recipe) {
             // Set CMID for Single Payment and Billing Agreements
@@ -290,8 +217,6 @@ public class PayPalOneTouchCore {
 
     /**
      * Return the browser launch intent
-     * <p>
-     * Must be called from Main thread!
      *
      * @return
      */
@@ -324,11 +249,6 @@ public class PayPalOneTouchCore {
         return null;
     }
 
-    /**
-     * Must be called from Main thread!
-     *
-     * @return
-     */
     public static Result handleBrowserResponse(Context context, Uri uri, Request request) {
         initService(context);
         Result result = request.parseBrowserResponse(getContextInspector(context), uri);
@@ -381,7 +301,6 @@ public class PayPalOneTouchCore {
      * 'PayPal-Client-Metadata-Id' header.
      */
     public static String getClientMetadataId(Context context, String pairingId) {
-        Log.d(TAG, "getClientMetadataId(pairingId)");
         return SdkRiskComponent.getClientMetadataId(OTC_EXECUTOR_SERVICE, context,
                 getContextInspector(context).getInstallationGUID(),
                 BuildConfig.PRODUCT_VERSION,
@@ -399,8 +318,6 @@ public class PayPalOneTouchCore {
 
     /**
      * Returns the currently active config.
-     * <p>
-     * Must be called from Main thread!
      */
     static OtcConfiguration getConfig(Context context) {
         initService(context);
@@ -412,46 +329,8 @@ public class PayPalOneTouchCore {
      */
     static ContextInspector getContextInspector(Context context) {
         if (null == sContextInspector) {
-            sContextInspector = new ContextInspector(context, getCoreEnvironment().getPrefsFile());
+            sContextInspector = new ContextInspector(context);
         }
         return sContextInspector;
     }
-
-    private static CoreEnvironment getCoreEnvironment() {
-        return new OtcEnvironment();
-    }
-
-    private static String getEnvironmentName() {
-        return EnvironmentManager.LIVE;
-    }
-
-    private static PayPalEnvironment getEnvironment(String environmentName, String baseUrl) {
-        PayPalEnvironment env = new PayPalEnvironment(environmentName, baseUrl);
-
-        // mock environments will not have endpoints
-        // There should always be a check isMockEnabled before using any mocked endpoint.
-        if (baseUrl != null) {
-            if (!baseUrl.startsWith("https://")) {
-                throw new RuntimeException(baseUrl + " does not start with 'https://', ignoring "
-                        + environmentName);
-            }
-
-            if (!baseUrl.endsWith("/")) {
-                baseUrl += "/";
-            }
-
-            for (OtcApiName apiInfo : OtcApiName.getAllValues()) {
-                String url;
-                if (apiInfo.isOverrideBaseUrl()) {
-                    url = apiInfo.getUrl();
-                } else {
-                    url = baseUrl + apiInfo.getUrl();
-                }
-                env.getEndpoints().put(apiInfo.getName(), url);
-            }
-        }
-
-        return env;
-    }
-
 }

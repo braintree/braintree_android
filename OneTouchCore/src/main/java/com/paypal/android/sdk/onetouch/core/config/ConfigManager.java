@@ -2,12 +2,10 @@ package com.paypal.android.sdk.onetouch.core.config;
 
 import android.util.Log;
 
-import com.paypal.android.networking.ServerInterface;
-import com.paypal.android.networking.request.ServerRequest;
+import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.paypal.android.sdk.onetouch.core.BuildConfig;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
-import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
-import com.paypal.android.sdk.onetouch.core.network.ConfigFileRequest;
+import com.paypal.android.sdk.onetouch.core.network.PayPalHttpClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,55 +16,55 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigManager {
-    private static final String TAG = ConfigManager.class.getSimpleName();
 
+    public static final String CONFIGURATION_URL = "https://www.paypalobjects.com/webstatic/otc/otc-config.android.json";
+
+    private static final String TAG = ConfigManager.class.getSimpleName();
     private static final String PREFERENCES_CONFIG_FILE = "com.paypal.otc.config.file";
     private static final String PREFERENCES_CONFIG_LAST_UPDATED_TIMESTAMP =
             "com.paypal.otc.config.lastUpdated.timestamp";
     private static final String PREFERENCES_CONFIG_IS_DEFAULT = "com.paypal.otc.config.isDefault";
-
     private static final int X_HOURS_AGO_MIN_TIME_BETWEEN_CONFIG_REFRESH = -4;
     private static final int Y_SECONDS_AGO_MIN_TIME_BETWEEN_CONSECUTIVE_REQUESTS = -5;
 
     private boolean mUseHardcodedConfig = false;
 
     private final ContextInspector mContextInspector;
-    private final ServerInterface mServerInterface;
-    private final CoreEnvironment mCoreEnvironment;
+    private final PayPalHttpClient mHttpClient;
     private Date mLastInitiatedUpdate;
 
-    public ConfigManager(ContextInspector contextInspector,
-            ServerInterface serverInterface,
-            CoreEnvironment coreEnvironment) {
-        this.mContextInspector = contextInspector;
-        this.mServerInterface = serverInterface;
-        this.mCoreEnvironment = coreEnvironment;
+    public ConfigManager(ContextInspector contextInspector, PayPalHttpClient httpClient) {
+        mContextInspector = contextInspector;
+        mHttpClient = httpClient;
     }
 
     public void useHardcodedConfig(boolean useHardcodedConfig) {
-        this.mUseHardcodedConfig = useHardcodedConfig;
-        touchConfig();
+        mUseHardcodedConfig = useHardcodedConfig;
+        refreshConfiguration();
     }
 
     /**
-     * Triggers a config refresh if needed
+     * Updates configuration if needed.
      */
-    public void touchConfig() {
+    public void refreshConfiguration() {
         if (!mUseHardcodedConfig) {
-            boolean isAtLeastXHoursOld = isAtLeastXHoursOld();
             boolean isCurrentConfigDefaultOrNotPresent =
                     mContextInspector.getBooleanPreference(PREFERENCES_CONFIG_IS_DEFAULT, true);
-            boolean hasInitiatedUpdateInLastYSeconds = hasInitiatedUpdateInLastYSeconds();
-
-            // only try to refresh the file if it's last updated X hours ago,
-            // or is the default, and hasn't requested update in last Y seconds
-            boolean shouldRefreshConfig =
-                    (isAtLeastXHoursOld || isCurrentConfigDefaultOrNotPresent) &&
-                            !hasInitiatedUpdateInLastYSeconds;
-
-            if (shouldRefreshConfig) {
+            if ((isAtLeastXHoursOld() || isCurrentConfigDefaultOrNotPresent) &&
+                            !hasInitiatedUpdateInLastYSeconds()) {
                 mLastInitiatedUpdate = new Date();
-                mServerInterface.submit(new ConfigFileRequest(mServerInterface, mCoreEnvironment));
+                mHttpClient.get(CONFIGURATION_URL, new HttpResponseCallback() {
+                    @Override
+                    public void success(String responseBody) {
+                        try {
+                            JSONObject json = new JSONObject(responseBody);
+                            setConfig(json.toString(), false);
+                        } catch (JSONException ignored) {}
+                    }
+
+                    @Override
+                    public void failure(Exception exception) {}
+                });
             }
         }
     }
@@ -97,7 +95,7 @@ public class ConfigManager {
     }
 
     public OtcConfiguration getConfig() {
-        touchConfig();
+        refreshConfiguration();
         boolean useDefault = false;
 
         // check preferences
@@ -120,28 +118,26 @@ public class ConfigManager {
                 useDefault = true;
                 config = getOtcConfiguration(jsonConfig);
 
-                touchConfig();
+                refreshConfiguration();
             } catch (JSONException e1) {
                 throw new RuntimeException("could not parse default file");
             }
         }
 
         if (useDefault) {
-            updateConfig(jsonConfig, true);
+            setConfig(jsonConfig, true);
             // may need to update again if there was an error with stored prefs
-            touchConfig();
+            refreshConfiguration();
         }
 
         return config;
     }
 
     private OtcConfiguration getOtcConfiguration(String jsonConfig) throws JSONException {
-        JSONObject jsonObject = ServerRequest.getJsonObjectFromString(jsonConfig);
-
-        return new ConfigFileParser().getParsedConfig(jsonObject);
+        return new ConfigFileParser().getParsedConfig(new JSONObject(jsonConfig));
     }
 
-    public void updateConfig(final String serverReply, boolean isDefault) {
+    private void setConfig(String serverReply, boolean isDefault) {
         Map<String, Object> updatedPrefs = new HashMap<>();
         updatedPrefs.put(PREFERENCES_CONFIG_FILE, serverReply);
         updatedPrefs.put(PREFERENCES_CONFIG_LAST_UPDATED_TIMESTAMP, new Date().getTime());

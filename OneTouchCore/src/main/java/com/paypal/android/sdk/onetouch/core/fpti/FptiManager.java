@@ -1,49 +1,52 @@
 package com.paypal.android.sdk.onetouch.core.fpti;
 
-import com.paypal.android.networking.ServerInterface;
-import com.paypal.android.networking.analytics.TrackingLogData;
-import com.paypal.android.sdk.onetouch.core.BuildConfig;
-import com.paypal.android.sdk.onetouch.core.enums.Protocol;
-import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
-import com.paypal.android.sdk.onetouch.core.base.CoreEnvironment;
-import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;
-import com.paypal.android.sdk.onetouch.core.network.FptiRequest;
+import android.os.Handler;
+import android.support.annotation.VisibleForTesting;
 
-import java.util.Calendar;
+import com.paypal.android.sdk.onetouch.core.BuildConfig;
+import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
+import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;
+import com.paypal.android.sdk.onetouch.core.base.URLEncoderHelper;
+import com.paypal.android.sdk.onetouch.core.enums.Protocol;
+import com.paypal.android.sdk.onetouch.core.network.EnvironmentManager;
+import com.paypal.android.sdk.onetouch.core.network.PayPalHttpClient;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
-import java.util.TimeZone;
 
 public class FptiManager {
-    private static final String TAG = FptiManager.class.getSimpleName();
 
-    private final CoreEnvironment mCoreEnvironment;
-    private final ServerInterface mServerInterface;
     private final ContextInspector mContextInspector;
-    private FptiToken token;
+    private final PayPalHttpClient mHttpClient;
+    private FptiToken mToken;
 
-    public FptiManager(ServerInterface serverInterface,
-            CoreEnvironment coreEnvironment,
-            ContextInspector contextInspector) {
-        this.mServerInterface = serverInterface;
-        this.mCoreEnvironment = coreEnvironment;
-        this.mContextInspector = contextInspector;
+    public FptiManager(ContextInspector contextInspector, PayPalHttpClient httpClient) {
+        mContextInspector = contextInspector;
+        mHttpClient = httpClient;
     }
 
     public void trackFpti(TrackingPoint point, String environmentName,
             Map<String, String> fptiDataBundle, Protocol protocol) {
-        if (null == token || !token.isValid()) {
-            token = new FptiToken();
+        if (EnvironmentManager.isMock(environmentName)) {
+            return;
         }
 
+        if (mToken == null || !mToken.isValid()) {
+            mToken = new FptiToken();
+        }
+
+        long currentTimeInMillis = System.currentTimeMillis();
+        String deviceId = URLEncoderHelper.encode(mContextInspector.getInstallationGUID());
         String abcde = "mobile:otc:" + point.getCd() + ":" +
                 (null != protocol ? protocol.name() : "");  // also known as 'pagename'
         String xyz = "Android:" + environmentName + ":";
-        String abcdexyz_error =
-                abcde + ":" + xyz + (point.hasError() ? "|error" : ""); //also known as 'pageName2'
+        String abcdexyz_error = abcde + ":" + xyz + (point.hasError() ? "|error" : ""); //also known as 'pageName2'
 
         // params in alphabetical order
         Map<String, String> params = new HashMap<>(fptiDataBundle);
@@ -52,8 +55,8 @@ public class FptiManager {
                 mContextInspector.getContext().getPackageName());
         params.put("bchn", "otc");
         params.put("bzsr", "mobile");
-        params.put("e",
-                "im"); // always say 'impression' for OTC, as opposed to 'cl' click to match iOS
+        params.put("dsid", deviceId);
+        params.put("e", "im"); // always say 'impression' for OTC, as opposed to 'cl' click to match iOS
         params.put("g", getGmtOffsetInMinutes());
         params.put("lgin", "out");
         params.put("mapv", BuildConfig.PRODUCT_VERSION);
@@ -65,70 +68,48 @@ public class FptiManager {
         params.put("rsta", Locale.getDefault().toString());
         params.put("srce", "otc");
         params.put("sv", "mobile");
+        params.put("t", Long.toString(currentTimeInMillis - getGMTOffset())); // client time in millis since epoch
         params.put("vers", "Android:" + environmentName + ":");
+        params.put("vid", mToken.mToken);
 
-        TrackingLogData tld = new TrackingLogData(token.mToken, params);
-        mServerInterface.submit(new FptiRequest(mServerInterface, mCoreEnvironment, tld));
+        try {
+            JSONObject actor = new JSONObject();
+            actor.accumulate("tracking_visitor_id", deviceId);
+            actor.accumulate("tracking_visit_id", mToken.mToken);
+
+            JSONObject events = new JSONObject();
+            events.accumulate("actor", actor);
+            events.accumulate("channel", "mobile");
+            events.accumulate("tracking_event", Long.toString(currentTimeInMillis));
+            events.accumulate("event_params", getEventParams(params));
+
+            sendRequest(new JSONObject().accumulate("events", events).toString());
+        } catch (JSONException ignored) {}
+    }
+
+    private JSONObject getEventParams(Map<String, String> params) throws JSONException {
+        JSONObject ret = new JSONObject();
+        for (String key : params.keySet()) {
+            ret.accumulate(key, params.get(key));
+        }
+        return ret;
+    }
+
+    @VisibleForTesting
+    protected void sendRequest(final String data) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mHttpClient.post("tracking/events", data, null);
+            }
+        }, (10 + new Random().nextInt(190)) * 1000);
+    }
+
+    private int getGMTOffset() {
+       return new GregorianCalendar().getTimeZone().getRawOffset();
     }
 
     private String getGmtOffsetInMinutes() {
-        Calendar mCalendar = new GregorianCalendar();
-        TimeZone mTimeZone = mCalendar.getTimeZone();
-        int mGMTOffset = mTimeZone.getRawOffset();
-        return Integer.toString(mGMTOffset / 1000 / 60);
-    }
-
-    private class FptiToken {
-        public static final int FPTI_TOKEN_VALIDITY_IN_HOURS = 30;
-        public String mToken;
-
-        /**
-         * Java Date as a long
-         */
-        private long mValidUntil;
-
-        /**
-         * Returns true if the token is valid (not expired)
-         *
-         * @return
-         */
-        public boolean isValid() {
-            return mValidUntil > System.currentTimeMillis();
-        }
-
-        /**
-         * Creates a token, good for 30 hours
-         */
-        public FptiToken() {
-            setTrackingToken();
-        }
-
-        private void setTrackingToken() {
-            final long now = System.currentTimeMillis();
-            if (mToken == null) {
-                mValidUntil = now; // force the below if to be true
-            }
-
-            if (((mValidUntil + (FPTI_TOKEN_VALIDITY_IN_HOURS * 60 * 1000)) > now)) {
-                mValidUntil = now + (FPTI_TOKEN_VALIDITY_IN_HOURS * 60 * 1000);
-
-                mToken = getNewTrackingToken();
-            }
-        }
-
-        private String getNewTrackingToken() {
-            final Random r = new Random(mValidUntil);
-            final StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < 8; ++i) {
-                sb.append((char) ('0' + (Math.abs(r.nextInt()) % 10)));
-            }
-            return sb.toString();
-        }
-
-        @Override
-        public String toString() {
-            return FptiToken.class.getSimpleName() + "[mToken=" + mToken + ", mValidUntil=" +
-                    mValidUntil + "]";
-        }
+        return Integer.toString(getGMTOffset() / 1000 / 60);
     }
 }

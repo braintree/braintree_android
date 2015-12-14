@@ -38,7 +38,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
 
-public class HttpClient {
+public class HttpClient<T extends HttpClient> {
 
     private static final String METHOD_GET = "GET";
     private static final String METHOD_POST = "POST";
@@ -68,29 +68,34 @@ public class HttpClient {
         }
     }
 
-    public HttpClient setUserAgent(String userAgent) {
+    @SuppressWarnings("unchecked")
+    public T setUserAgent(String userAgent) {
         mUserAgent = userAgent;
-        return this;
+        return (T) this;
     }
 
-    public HttpClient setSSLSocketFactory(SSLSocketFactory sslSocketFactory) {
+    @SuppressWarnings("unchecked")
+    public T setSSLSocketFactory(SSLSocketFactory sslSocketFactory) {
         mSSLSocketFactory = sslSocketFactory;
-        return this;
+        return (T) this;
     }
 
-    public HttpClient setBaseUrl(String baseUrl) {
+    @SuppressWarnings("unchecked")
+    public T setBaseUrl(String baseUrl) {
         mBaseUrl = (baseUrl == null) ? "" : baseUrl;
-        return this;
+        return (T) this;
     }
 
-    public HttpClient setConnectTimeout(int timeout) {
+    @SuppressWarnings("unchecked")
+    public T setConnectTimeout(int timeout) {
         mConnectTimeout = timeout;
-        return this;
+        return (T) this;
     }
 
-    public HttpClient setReadTimeout(int timeout) {
+    @SuppressWarnings("unchecked")
+    public T setReadTimeout(int timeout) {
         mReadTimeout = timeout;
-        return this;
+        return (T) this;
     }
 
     /**

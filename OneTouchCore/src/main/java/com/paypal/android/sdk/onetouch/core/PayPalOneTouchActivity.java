@@ -16,7 +16,7 @@ import com.paypal.android.sdk.onetouch.core.enums.ResponseType;
 import com.paypal.android.sdk.onetouch.core.exception.ResponseParsingException;
 import com.paypal.android.sdk.onetouch.core.exception.WalletSwitchException;
 import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
-import com.paypal.android.sdk.onetouch.core.network.OtcEnvironment;
+import com.paypal.android.sdk.onetouch.core.network.EnvironmentManager;
 import com.paypal.android.sdk.onetouch.core.sdk.ThemeManifestValidator;
 import com.paypal.android.sdk.onetouch.core.sdk.V1WalletHelper;
 import com.paypal.android.sdk.onetouch.core.sdk.V2WalletHelper;
@@ -72,8 +72,7 @@ public class PayPalOneTouchActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mContextInspector =
-                new ContextInspector(getApplicationContext(), new OtcEnvironment().getPrefsFile());
+        mContextInspector = new ContextInspector(getApplicationContext());
 
         if (savedInstanceState == null) {
             // only validate on first instantiation
@@ -126,7 +125,8 @@ public class PayPalOneTouchActivity extends Activity {
         intent.putExtra("app_name",
                 DeviceInspector.getApplicationInfoName(mContextInspector.getContext()));
         intent.putExtra("environment", request.getEnvironment());
-        intent.putExtra("environment_url", request.getEnvironmentUrl());
+        intent.putExtra("environment_url",
+                EnvironmentManager.getEnvironmentUrl(request.getEnvironment()));
 
         if (request instanceof AuthorizationRequest) {
             AuthorizationRequest authorizationRequest = (AuthorizationRequest) request;

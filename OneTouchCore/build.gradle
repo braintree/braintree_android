@@ -42,17 +42,13 @@ android {
         buildConfigField "String", "LATEST_SHA1", "\"${latest_sha1}\""
         buildConfigField "String", "CONFIGURATION", "\"${config}\""
     }
-
-    lintOptions {
-        warning 'InvalidPackage'
-    }
 }
 
 dependencies {
     compile files('libs/' + paypalVersion)
-    compile 'com.squareup.okhttp:okhttp:2.5.0'
 
     compile project(':Core')
 
+    testCompile 'org.mockito:mockito-all:1.10.19'
     testCompile 'org.robolectric:robolectric:3.0'
 }

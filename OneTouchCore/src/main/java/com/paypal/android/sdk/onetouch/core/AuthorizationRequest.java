@@ -10,7 +10,7 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
-import com.paypal.android.networking.EnvironmentManager;
+import com.paypal.android.sdk.onetouch.core.network.EnvironmentManager;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;
 import com.paypal.android.sdk.onetouch.core.config.ConfigEndpoint;
@@ -297,7 +297,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
             // Roman confirmed this is correct, but is not ever read from the app.
             payload.put("app_name", DeviceInspector.getApplicationInfoName(context));
             payload.put("environment", getEnvironment());
-            payload.put("environment_url", getEnvironmentUrl());
+            payload.put("environment_url", EnvironmentManager.getEnvironmentUrl(getEnvironment()));
             payload.put("scope", getScopeString());
             payload.put("response_type", "code");
             payload.put("privacy_url", getPrivacyUrl());

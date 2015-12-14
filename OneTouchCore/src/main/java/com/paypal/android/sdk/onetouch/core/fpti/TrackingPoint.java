@@ -1,6 +1,7 @@
 package com.paypal.android.sdk.onetouch.core.fpti;
 
 public enum TrackingPoint {
+
     WalletIsPresent("checkwallet", "present"),
     WalletIsAbsent("checkwallet", "absent"),
 
@@ -15,14 +16,14 @@ public enum TrackingPoint {
     Return("switchback", "return"),
     Error("switchback", "cancel", true);
 
-    private final String c;
-    private final String d;
-    private final boolean hasError;
+    private final String mC;
+    private final String mD;
+    private final boolean mHasError;
 
     TrackingPoint(String c, String d, boolean hasError) {
-        this.c = c;
-        this.d = d;
-        this.hasError = hasError;
+        mC = c;
+        mD = d;
+        mHasError = hasError;
     }
 
     TrackingPoint(String c, String d) {
@@ -30,10 +31,10 @@ public enum TrackingPoint {
     }
 
     public String getCd() {
-        return c + ":" + d;
+        return mC + ":" + mD;
     }
 
     public boolean hasError() {
-        return hasError;
+        return mHasError;
     }
 }

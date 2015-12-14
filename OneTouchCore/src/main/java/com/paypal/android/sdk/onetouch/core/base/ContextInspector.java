@@ -3,6 +3,8 @@ package com.paypal.android.sdk.onetouch.core.base;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.paypal.android.sdk.onetouch.core.network.OtcEnvironment;
+
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -19,27 +21,23 @@ public class ContextInspector {
     private final String mPrefsFileName;
     private final Crypto mCrypto;
 
-    public ContextInspector(Context context, String prefsFileName, CryptoFactory cryptoFactory) {
+    public ContextInspector(Context context, CryptoFactory cryptoFactory) {
         if (null == context) {
             throw new NullPointerException("context == null");
         }
-        if (null == prefsFileName) {
-            throw new NullPointerException("prefs == null");
-        }
 
-        this.mContext = context;
-        this.mPrefsFileName = prefsFileName;
-        this.mCrypto = cryptoFactory.createCrypto(this);
+        mContext = context;
+        mPrefsFileName = OtcEnvironment.getPrefsFile();
+        mCrypto = cryptoFactory.createCrypto(this);
     }
 
     /**
      * Creates a new ContextInspector who's Crypto is just a passthrough (does not encrypt)
      *
      * @param context
-     * @param prefsFileName
      */
-    public ContextInspector(Context context, String prefsFileName) {
-        this(context, prefsFileName, new CryptoFactory() {
+    public ContextInspector(Context context) {
+        this(context, new CryptoFactory() {
             @Override
             public Crypto createCrypto(ContextInspector contextInspector) {
                 return new Crypto() {
