@@ -24,7 +24,7 @@ public class ContextInspector {
             throw new NullPointerException("context == null");
         }
 
-        mContext = context;
+        mContext = context.getApplicationContext();
         mPrefsFileName = OtcEnvironment.getPrefsFile();
     }
 

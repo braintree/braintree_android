@@ -1,10 +1,7 @@
 package com.paypal.android.sdk.onetouch.core;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.util.Log;
 
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.base.SdkRiskComponent;
@@ -13,28 +10,19 @@ import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
 import com.paypal.android.sdk.onetouch.core.enums.Protocol;
 import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
-import com.paypal.android.sdk.onetouch.core.exception.InvalidEncryptionDataException;
 import com.paypal.android.sdk.onetouch.core.fpti.FptiManager;
 import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
 import com.paypal.android.sdk.onetouch.core.network.EnvironmentManager;
 import com.paypal.android.sdk.onetouch.core.network.PayPalHttpClient;
+import com.paypal.android.sdk.onetouch.core.sdk.AppSwitchHelper;
+import com.paypal.android.sdk.onetouch.core.sdk.BrowserSwitchHelper;
+import com.paypal.android.sdk.onetouch.core.sdk.PendingRequest;
 import com.paypal.android.sdk.onetouch.core.sdk.V1WalletHelper;
 import com.paypal.android.sdk.onetouch.core.sdk.V2WalletHelper;
 
-import org.json.JSONException;
-
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 /**
  * Central class for One Touch functionality.
@@ -43,7 +31,6 @@ import javax.crypto.NoSuchPaddingException;
  */
 public class PayPalOneTouchCore {
 
-    private static final String TAG = PayPalOneTouchCore.class.getSimpleName();
     private static final ExecutorService OTC_EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
     private static ContextInspector sContextInspector;
@@ -97,47 +84,19 @@ public class PayPalOneTouchCore {
     }
 
     /**
-     * Returns the expected target of the request, or null if none can handle. Note that there is a
-     * very small possibility that between the time you do this preflight and the time that the
-     * request is actually performed, OTC might receive updated configuration information from
-     * PayPal's servers which will change this outcome.
-     */
-    public static RequestTarget preflightRequest(Context context, Request request,
-            boolean enableSecurityCheck) {
-        initService(context);
-
-        // calling this method functionally does nothing, but ensures that we send off FPTI data about wallet installs
-        isWalletAppInstalled(context, enableSecurityCheck);
-
-        Recipe recipe = request.getRecipeToExecute(context, getConfig(context),
-                enableSecurityCheck);
-
-        if (null != recipe) {
-            if (RequestTarget.browser == recipe.getTarget()) {
-                request.trackFpti(context, TrackingPoint.PreflightBrowser, recipe.getProtocol());
-            } else if (RequestTarget.wallet == recipe.getTarget()) {
-                request.trackFpti(context, TrackingPoint.PreflightWallet, recipe.getProtocol());
-            } else {
-                // will never happen - only two enums possible
-            }
-            return recipe.getTarget();
-        } else {
-            request.trackFpti(context, TrackingPoint.PreflightNone, null);
-            return null;
-        }
-    }
-
-    /**
-     * Attempt to start a PayPal authentication request using the best possible authentication
-     * mechanism, wallet or browser
+     * Get an {@link PendingRequest} containing an {@link Intent} used to start a PayPal
+     * authentication request using the best possible authentication mechanism: wallet or browser.
      *
-     * @return true if the request was started successfully or false if PayPal authentication was
-     * not possible
+     * @param context
+     * @param request the {@link Request} used to build the {@link Intent}.
+     * @param enableSecurityCheck
+     * @return {@link PendingRequest}. {@link PendingRequest#isSuccess()} should be
+     * checked before attempting to use the {@link Intent} it contains. If {@code true} an
+     * {@link Intent} was created and can be used to start a PayPal authentication request. If
+     * {@code false} it is not possible to authenticate given the current environment and request.
      */
-    public static PerformRequestStatus performRequest(Activity activity, Request request,
-            int requestCode, boolean enableSecurityCheck,
-            BrowserSwitchAdapter browserSwitchAdapter) {
-        Context context = activity.getApplicationContext();
+    public static PendingRequest getStartIntent(Context context, Request request,
+            boolean enableSecurityCheck) {
         initService(context);
 
         // calling this method functionally does nothing, but ensures that we send off FPTI data about wallet installs.
@@ -146,124 +105,60 @@ public class PayPalOneTouchCore {
         Recipe recipe = request.getRecipeToExecute(context, getConfig(context),
                 enableSecurityCheck);
 
-        PerformRequestStatus status;
-        if (null == recipe) {
-            status = new PerformRequestStatus(false, null, null);
+        if (recipe == null) {
+            return new PendingRequest(false, null, null, null);
+        }
+
+        // Set CMID for Single Payment and Billing Agreements
+        if (request instanceof BillingAgreementRequest) {
+            request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(context,
+                    ((BillingAgreementRequest) request).getPairingId()));
+        } else if (request instanceof CheckoutRequest) {
+            request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(context,
+                    ((CheckoutRequest) request).getPairingId()));
+        }
+
+        if (RequestTarget.wallet == recipe.getTarget()) {
+            request.trackFpti(context, TrackingPoint.SwitchToWallet, recipe.getProtocol());
+            return new PendingRequest(true, RequestTarget.wallet,
+                    request.getClientMetadataId(),
+                    AppSwitchHelper.getAppSwitchIntent(sContextInspector, sConfigManager, request,
+                            recipe.getProtocol()));
         } else {
-
-            // Set CMID for Single Payment and Billing Agreements
-            if (request.getClass() == BillingAgreementRequest.class) {
-                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(context,
-                        ((BillingAgreementRequest) request).getPairingId()));
-            } else if (request.getClass() == CheckoutRequest.class) {
-                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(context,
-                        ((CheckoutRequest) request).getPairingId()));
-            }
-
-            if (RequestTarget.wallet == recipe.getTarget()) {
-                request.trackFpti(context, TrackingPoint.SwitchToWallet, recipe.getProtocol());
-                PayPalOneTouchActivity.Start(activity, requestCode, request, recipe.getProtocol());
-                status = new PerformRequestStatus(true, RequestTarget.wallet,
-                        request.getClientMetadataId());
+            Intent intent = BrowserSwitchHelper
+                    .getBrowserSwitchIntent(sContextInspector, sConfigManager,
+                    request);
+            if (intent != null) {
+                return new PendingRequest(true, RequestTarget.browser,
+                        request.getClientMetadataId(), intent);
             } else {
-                Intent browserIntent = getBrowserIntent(context, request);
-
-                if (browserIntent != null) {
-                    browserSwitchAdapter.handleBrowserSwitchIntent(browserIntent);
-
-                    status = new PerformRequestStatus(true, RequestTarget.browser,
-                            request.getClientMetadataId());
-                } else {
-                    status = new PerformRequestStatus(false, RequestTarget.browser,
-                            request.getClientMetadataId());
-                }
+                return new PendingRequest(false, RequestTarget.browser,
+                        request.getClientMetadataId(), null);
             }
         }
-
-        return status;
-    }
-
-    public static Intent getStartIntent(Activity activity, Request request,
-            boolean enableSecurityCheck) {
-        Context context = activity.getApplicationContext();
-        initService(context);
-
-        // calling this method functionally does nothing, but ensures that we send off FPTI data about wallet installs.
-        isWalletAppInstalled(context, enableSecurityCheck);
-
-        Recipe recipe = request.getRecipeToExecute(context, getConfig(context),
-                enableSecurityCheck);
-
-        if (null != recipe) {
-            // Set CMID for Single Payment and Billing Agreements
-            if (request.getClass() == BillingAgreementRequest.class) {
-                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(context,
-                        ((BillingAgreementRequest) request).getPairingId()));
-            } else if (request.getClass() == CheckoutRequest.class) {
-                request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(context,
-                        ((CheckoutRequest) request).getPairingId()));
-            }
-
-            if (RequestTarget.wallet == recipe.getTarget()) {
-                request.trackFpti(context, TrackingPoint.SwitchToWallet, recipe.getProtocol());
-                return PayPalOneTouchActivity.getStartIntent(activity, request,
-                        recipe.getProtocol());
-            } else {
-                return getBrowserIntent(context, request);
-            }
-        }
-        return null;
     }
 
     /**
-     * Return the browser launch intent
+     * Gets a {@link Result} from an {@link Intent} returned by either the PayPal Wallet app or
+     * the browser.
      *
+     * @param context
+     * @param request the original {@link Request} that was used to get this {@link Result}.
+     * @param data the {@link Intent} returned by either the PayPal Wallet app or the browser.
      * @return
      */
-    static Intent getBrowserIntent(Context context, Request request) {
-        OtcConfiguration configuration = getConfig(context);
-
-        try {
-            String url = request.getBrowserSwitchUrl(context, configuration);
-
-            request.persistRequiredFields(getContextInspector(context));
-
-            Recipe<?> recipe = request.getBrowserSwitchRecipe(configuration);
-
-            for (String allowedBrowserPackage : recipe.getTargetPackagesInReversePriorityOrder()) {
-                boolean canIntentBeResolved =
-                        recipe.isValidBrowserTarget(context, url, allowedBrowserPackage);
-
-                if (canIntentBeResolved) {
-                    request.trackFpti(context, TrackingPoint.SwitchToBrowser, recipe.getProtocol());
-                    return Recipe.getBrowserIntent(url, allowedBrowserPackage);
-                }
-            }
-
-        } catch (CertificateException | UnsupportedEncodingException | NoSuchPaddingException | NoSuchAlgorithmException
-                | IllegalBlockSizeException | JSONException | BadPaddingException | InvalidEncryptionDataException | InvalidKeyException
-                | InvalidKeySpecException e) {
-            Log.e(TAG, "cannot create browser switch URL", e);
-        }
-
-        return null;
-    }
-
-    public static Result handleBrowserResponse(Context context, Uri uri, Request request) {
+    public static Result parseResponse(Context context, Request request, Intent data) {
         initService(context);
-        Result result = request.parseBrowserResponse(getContextInspector(context), uri);
-        switch (result.getResultType()) {
-            case Error:
-                request.trackFpti(context, TrackingPoint.Error, null);
-                break;
-            case Cancel:
-                request.trackFpti(context, TrackingPoint.Cancel, null);
-                break;
-            case Success:
-                request.trackFpti(context, TrackingPoint.Return, null);
-                break;
+
+        if (data != null && data.getData() != null) {
+            return BrowserSwitchHelper.parseBrowserSwitchResponse(sContextInspector, request,
+                    data.getData());
+        } else if (data != null && data.getExtras() != null && !data.getExtras().isEmpty()) {
+            return AppSwitchHelper.parseAppSwitchResponse(sContextInspector, request, data);
+        } else {
+            request.trackFpti(context, TrackingPoint.Cancel, null);
+            return new Result();
         }
-        return result;
     }
 
     /**

@@ -8,8 +8,10 @@ import java.util.HashSet;
 
 public class V1WalletHelper extends WalletAppHelper {
 
-    private static final String V1_TOUCH_SDK_INTENT =
+    private static final String V1_TOUCH_SDK_ACTION =
             "com.paypal.android.lib.authenticator.activity.v1.TouchActivity";
+    private static final String V1_TOUCH_SDK_COMPONENT =
+            "com.paypal.android.p2pmobile/com.paypal.android.lib.authenticator.activity.v1.TouchActivity";
 
     private static final Collection<String> V1_AUTHENTICATOR_SCOPES = new HashSet<String>() {{
         add(PayPalScope.FUTURE_PAYMENTS.getScopeUri());
@@ -20,7 +22,7 @@ public class V1WalletHelper extends WalletAppHelper {
     }};
 
     public Intent getPayPalTouchIntent() {
-        return createSdkIntent(V1_TOUCH_SDK_INTENT, V1_TOUCH_SDK_INTENT);
+        return createSdkIntent(V1_TOUCH_SDK_ACTION, V1_TOUCH_SDK_COMPONENT);
     }
 
     public boolean isValidV1Scope(String scope) {
@@ -30,14 +32,11 @@ public class V1WalletHelper extends WalletAppHelper {
     public boolean isValidV1TouchAuthenticatorInstalled(Context context,
             boolean isAuthenticatorSecurityEnabled) {
 
-        boolean isConfiguredToAcceptIntent = isWalletIntentSafe(
-                context,
-                V1_TOUCH_SDK_INTENT,
-                V1_TOUCH_SDK_INTENT);
+        boolean isConfiguredToAcceptIntent = isWalletIntentSafe(context, V1_TOUCH_SDK_ACTION,
+                V1_TOUCH_SDK_COMPONENT);
 
         return isValidP2pMobileAuthenticatorInstalled(context,
                 isAuthenticatorSecurityEnabled)
                 && isConfiguredToAcceptIntent;
     }
-
 }

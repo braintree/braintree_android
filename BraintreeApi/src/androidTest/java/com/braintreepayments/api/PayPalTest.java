@@ -28,8 +28,6 @@ import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
-import com.paypal.android.sdk.onetouch.core.PayPalOneTouchActivity;
-import com.paypal.android.sdk.onetouch.core.Result;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,7 +37,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CountDownLatch;
 
@@ -707,11 +704,6 @@ public class PayPalTest {
         final BraintreeFragment fragment = getMockFragment(mActivity,
                 stringFromFixture("client_token.json"),
                 stringFromFixture("configuration_with_analytics.json"));
-        Constructor constructor = Result.class.getDeclaredConstructors()[0];
-        constructor.setAccessible(true);
-        Intent intent = new Intent()
-                .putExtra(PayPalOneTouchActivity.EXTRA_ONE_TOUCH_RESULT,
-                        (Result) constructor.newInstance());
         fragment.addListener(new BraintreeCancelListener() {
             @Override
             public void onCancel(int requestCode) {
@@ -720,7 +712,7 @@ public class PayPalTest {
             }
         });
 
-        PayPal.onActivityResult(fragment, intent);
+        PayPal.onActivityResult(fragment, null);
 
         mLatch.await();
     }

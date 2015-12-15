@@ -1,11 +1,6 @@
 package com.paypal.android.sdk.onetouch.core.fpti;
 
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.telephony.TelephonyManager;
 
 import com.paypal.android.sdk.onetouch.core.BuildConfig;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
@@ -27,16 +22,14 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
 
+import static com.paypal.android.sdk.onetouch.core.test.TestSetupHelper.getMockContextInspector;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(sdk = 16, constants = BuildConfig.class)
@@ -48,21 +41,7 @@ public class FptiManagerTest {
 
     @Before
     public void setup() throws NameNotFoundException {
-        ApplicationInfo applicationInfo = mock(ApplicationInfo.class);
-        when(applicationInfo.loadLabel(any(PackageManager.class))).thenReturn("application-name");
-        PackageInfo packageInfo = new PackageInfo();
-        packageInfo.applicationInfo = applicationInfo;
-        PackageManager packageManager = mock(PackageManager.class);
-        when(packageManager.getPackageInfo(anyString(), anyInt())).thenReturn(packageInfo);
-        TelephonyManager telephonyManager = mock(TelephonyManager.class);
-        when(telephonyManager.getSimOperator()).thenReturn("12345");
-        Context context = mock(Context.class);
-        when(context.getPackageManager()).thenReturn(packageManager);
-        when(context.getSystemService(Context.TELEPHONY_SERVICE)).thenReturn(telephonyManager);
-
-        mContextInspector = mock(ContextInspector.class);
-        when(mContextInspector.getContext()).thenReturn(context);
-        when(mContextInspector.getInstallationGUID()).thenReturn("installation-guid");
+        mContextInspector = getMockContextInspector();
         mHttpClient = mock(PayPalHttpClient.class);
         mFptiManager = spy(new FptiManager(mContextInspector, mHttpClient));
     }

@@ -1,21 +1,22 @@
-package com.paypal.android.sdk.onetouch.core;
+package com.paypal.android.sdk.onetouch.core.sdk;
+
+import android.content.Intent;
 
 import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
 
-/**
- * Wrapper for the status of a request.
- */
-public class PerformRequestStatus {
+public class PendingRequest {
 
     private final boolean mSuccess;
     private final RequestTarget mRequestTarget;
     private final String mClientMetadataId;
+    private final Intent mIntent;
 
-    protected PerformRequestStatus(boolean success, RequestTarget requestTarget,
-            String clientMetadataId) {
+    public PendingRequest(boolean success, RequestTarget requestTarget,
+            String clientMetadataId, Intent intent) {
         mSuccess = success;
         mRequestTarget = requestTarget;
         mClientMetadataId = clientMetadataId;
+        mIntent = intent;
     }
 
     public boolean isSuccess() {
@@ -30,10 +31,7 @@ public class PerformRequestStatus {
         return mClientMetadataId;
     }
 
-    @Override
-    public String toString() {
-        return PerformRequestStatus.class.getSimpleName()
-                + "[mSuccess=" + mSuccess + ", mRequestTarget=" + mRequestTarget +
-                ", mClientMetadataId=" + mClientMetadataId + "]";
+    public Intent getIntent() {
+        return mIntent;
     }
 }

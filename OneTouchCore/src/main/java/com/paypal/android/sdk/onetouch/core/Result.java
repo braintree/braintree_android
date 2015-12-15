@@ -27,7 +27,8 @@ public final class Result implements Parcelable {
     /**
      * Construct a PayPalOneTouchResult for a success
      */
-    Result(String environment, ResponseType responseType, JSONObject response, String userEmail) {
+    public Result(String environment, ResponseType responseType, JSONObject response,
+            String userEmail) {
         this(ResultType.Success, environment, responseType, response, userEmail, null);
     }
 
@@ -38,14 +39,14 @@ public final class Result implements Parcelable {
      * @note the error may come from the remote authenticator or directly from lib-otc (e.g. due to
      * response parsing errors)
      */
-    Result(Throwable error) {
+    public Result(Throwable error) {
         this(ResultType.Error, null, null, null, null, error);
     }
 
     /**
      * Construct a PayPalOneTouchResult for a cancellation
      */
-    Result() {
+    public Result() {
         this(ResultType.Cancel, null, null, null, null, null);
     }
 

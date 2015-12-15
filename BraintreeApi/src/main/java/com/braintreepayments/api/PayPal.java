@@ -23,11 +23,11 @@ import com.braintreepayments.api.models.PostalAddress;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.BillingAgreementRequest;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
-import com.paypal.android.sdk.onetouch.core.PayPalOneTouchActivity;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 import com.paypal.android.sdk.onetouch.core.Request;
 import com.paypal.android.sdk.onetouch.core.Result;
 import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
+import com.paypal.android.sdk.onetouch.core.sdk.PendingRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,7 +76,7 @@ public class PayPal {
     private static final String CURRENCY_ISO_CODE_KEY = "currency_iso_code";
     private static final String PAYLOAD_CLIENT_TOKEN_KEY = "client_token";
 
-    private static Request sPendingRequest;
+    private static Request sRequest;
 
     /**
      * Starts the Pay With PayPal flow. This will launch the PayPal app if installed or switch to
@@ -115,18 +115,19 @@ public class PayPal {
                     return;
                 }
 
-                sPendingRequest = getAuthorizationRequest(fragment.getApplicationContext(),
+                sRequest = getAuthorizationRequest(fragment.getApplicationContext(),
                         fragment.getConfiguration().getPayPal(),
                         fragment.getAuthorization().toString());
 
                 if (additionalScopes != null) {
                     for (String scope : additionalScopes) {
-                        ((AuthorizationRequest) sPendingRequest).withScopeValue(scope);
+                        ((AuthorizationRequest) sRequest).withScopeValue(scope);
                     }
                 }
 
-                startPayPal(fragment, PayPalOneTouchCore.getStartIntent(fragment.getActivity(),
-                        sPendingRequest, sEnableSignatureVerification));
+                startPayPal(fragment,
+                        PayPalOneTouchCore.getStartIntent(fragment.getApplicationContext(),
+                                sRequest, sEnableSignatureVerification));
             }
         });
     }
@@ -189,18 +190,19 @@ public class PayPal {
                 }
 
                 if (isBillingAgreement) {
-                    sPendingRequest = getBillingAgreementRequest(
+                    sRequest = getBillingAgreementRequest(
                             paypalPaymentResource.getRedirectUrl(),
                             fragment.getApplicationContext(),
                             fragment.getConfiguration().getPayPal());
                 } else {
-                    sPendingRequest = getCheckoutRequest(paypalPaymentResource.getRedirectUrl(),
+                    sRequest = getCheckoutRequest(paypalPaymentResource.getRedirectUrl(),
                             fragment.getApplicationContext(),
                             fragment.getConfiguration().getPayPal());
                 }
 
-                startPayPal(fragment, PayPalOneTouchCore.getStartIntent(fragment.getActivity(),
-                        sPendingRequest, sEnableSignatureVerification));
+                startPayPal(fragment,
+                        PayPalOneTouchCore.getStartIntent(fragment.getApplicationContext(),
+                                sRequest, sEnableSignatureVerification));
             }
 
             @Override
@@ -298,16 +300,19 @@ public class PayPal {
         );
     }
 
-    private static void startPayPal(BraintreeFragment fragment, Intent intent) {
-        if (intent != null && intent.getComponent() != null &&
-                intent.getComponent().getClassName().equals(PayPalOneTouchActivity.class.getName())) {
+    private static void startPayPal(BraintreeFragment fragment,
+            PendingRequest pendingRequest) {
+        if (pendingRequest.isSuccess() &&
+                pendingRequest.getRequestTarget() == RequestTarget.wallet) {
             sendAnalyticsForPayPal(fragment, true, RequestTarget.wallet);
 
-            fragment.startActivityForResult(intent, PAYPAL_REQUEST_CODE);
-        } else if (intent != null) {
+            fragment.startActivityForResult(pendingRequest.getIntent(), PAYPAL_REQUEST_CODE);
+        } else if (pendingRequest.isSuccess() &&
+                pendingRequest.getRequestTarget() == RequestTarget.browser) {
             sendAnalyticsForPayPal(fragment, true, RequestTarget.browser);
 
-            intent.putExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, true);
+            Intent intent = pendingRequest.getIntent()
+                    .putExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, true);
             fragment.startActivity(intent);
         } else {
             sendAnalyticsForPayPal(fragment, false, null);
@@ -347,7 +352,8 @@ public class PayPal {
     protected static void onActivityResult(final BraintreeFragment fragment, Intent data) {
         if (data != null) {
             boolean isAppSwitch = isAppSwitch(data);
-            Result result = getResultFromIntent(fragment.getActivity(), data);
+            Result result = PayPalOneTouchCore.parseResponse(fragment.getApplicationContext(),
+                    sRequest, data);
             switch (result.getResultType()) {
                 case Error:
                     fragment.postCallback(new BrowserSwitchException(result.getError().getMessage()));
@@ -391,9 +397,9 @@ public class PayPal {
      */
     private static PayPalAccountBuilder parseResponse(Result result, Intent intent) {
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
-                .clientMetadataId(sPendingRequest.getClientMetadataId());
+                .clientMetadataId(sRequest.getClientMetadataId());
 
-        if (intent.hasExtra(PayPalOneTouchActivity.EXTRA_ONE_TOUCH_RESULT)) {
+        if (isAppSwitch(intent)) {
             paypalAccountBuilder.source("paypal-app");
         } else {
             paypalAccountBuilder.source("paypal-browser");
@@ -409,32 +415,13 @@ public class PayPal {
                     && response.getString("code") != null
                     && !isCheckoutRequest()) {
                 payload.put("response", new JSONObject().put("code",
-                        "fake-code:" + ((AuthorizationRequest) sPendingRequest).getScopeString()));
+                        "fake-code:" + ((AuthorizationRequest) sRequest).getScopeString()));
             }
         } catch (JSONException ignored) {}
 
         paypalAccountBuilder.oneTouchCoreData(payload);
 
         return paypalAccountBuilder;
-    }
-
-    /**
-     * Retrieve the {@link Result} associated with the {@link Request}.
-     *
-     * @param context Context that received the result.
-     * @param intent The {@link Intent} returned in result.
-     * @return the {@link Result} of the OTC app/browser switch.
-     */
-    private static Result getResultFromIntent(Context context, Intent intent) {
-        Result result;
-        if (intent.hasExtra(PayPalOneTouchActivity.EXTRA_ONE_TOUCH_RESULT)) {
-            result = intent.getParcelableExtra(PayPalOneTouchActivity.EXTRA_ONE_TOUCH_RESULT);
-        } else {
-            result = PayPalOneTouchCore
-                    .handleBrowserResponse(context, intent.getData(), sPendingRequest);
-        }
-
-        return result;
     }
 
     /**
@@ -523,10 +510,10 @@ public class PayPal {
      * Check if the current/last request was a CheckoutRequest
      */
     private static boolean isCheckoutRequest() {
-        return sPendingRequest instanceof CheckoutRequest;
+        return sRequest instanceof CheckoutRequest;
     }
 
     private static boolean isAppSwitch(Intent data) {
-        return data.hasExtra(PayPalOneTouchActivity.EXTRA_ONE_TOUCH_RESULT);
+        return data.getData() == null;
     }
 }
