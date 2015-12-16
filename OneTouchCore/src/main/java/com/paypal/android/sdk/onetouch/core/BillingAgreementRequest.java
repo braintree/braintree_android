@@ -9,11 +9,6 @@ import com.paypal.android.sdk.onetouch.core.config.Recipe;
 import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
 
 public class BillingAgreementRequest extends CheckoutRequest {
-    private static final String TAG = BillingAgreementRequest.class.getSimpleName();
-
-    public BillingAgreementRequest() {
-        // default constructor needed in addition to parcelable constructor
-    }
 
     public BillingAgreementRequest pairingId(String pairingId) {
         super.pairingId(pairingId);
@@ -24,42 +19,6 @@ public class BillingAgreementRequest extends CheckoutRequest {
         super.approvalURL(approvalURL);
         return this;
     }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(getClientMetadataId());
-        dest.writeString(getClientId());
-        dest.writeString(getEnvironment());
-
-        dest.writeString(mApprovalUrl);
-        dest.writeString(mTokenQueryParamKey);
-    }
-
-    private BillingAgreementRequest(Parcel source) {
-        clientMetadataId(source.readString());
-        clientId(source.readString());
-        environment(source.readString());
-
-        mApprovalUrl = source.readString();
-        mTokenQueryParamKey = source.readString();
-    }
-
-    /**
-     * required by {@link android.os.Parcelable}
-     */
-    public static final Creator<BillingAgreementRequest> CREATOR =
-            new Creator<BillingAgreementRequest>() {
-
-                @Override
-                public BillingAgreementRequest[] newArray(int size) {
-                    return new BillingAgreementRequest[size];
-                }
-
-                @Override
-                public BillingAgreementRequest createFromParcel(Parcel source) {
-                    return new BillingAgreementRequest(source);
-                }
-            };
 
     @Override
     protected BillingAgreementRequest getThis() {
@@ -84,4 +43,39 @@ public class BillingAgreementRequest extends CheckoutRequest {
         }
         return null;
     }
+
+    public BillingAgreementRequest() {}
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(getClientMetadataId());
+        dest.writeString(getClientId());
+        dest.writeString(getEnvironment());
+
+        dest.writeString(mApprovalUrl);
+        dest.writeString(mTokenQueryParamKey);
+    }
+
+    private BillingAgreementRequest(Parcel source) {
+        clientMetadataId(source.readString());
+        clientId(source.readString());
+        environment(source.readString());
+
+        mApprovalUrl = source.readString();
+        mTokenQueryParamKey = source.readString();
+    }
+
+    public static final Creator<BillingAgreementRequest> CREATOR =
+            new Creator<BillingAgreementRequest>() {
+
+                @Override
+                public BillingAgreementRequest[] newArray(int size) {
+                    return new BillingAgreementRequest[size];
+                }
+
+                @Override
+                public BillingAgreementRequest createFromParcel(Parcel source) {
+                    return new BillingAgreementRequest(source);
+                }
+            };
 }
