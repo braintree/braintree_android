@@ -30,8 +30,6 @@ public class BraintreeHttpClient extends HttpClient {
     private final Authorization mAuthorization;
 
     public BraintreeHttpClient(Authorization authorization) {
-        super();
-
         setUserAgent(getUserAgent());
 
         try {

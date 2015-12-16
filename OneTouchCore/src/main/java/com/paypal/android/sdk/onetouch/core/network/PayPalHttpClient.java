@@ -13,8 +13,6 @@ import javax.net.ssl.SSLException;
 public class PayPalHttpClient extends HttpClient<PayPalHttpClient> {
 
     public PayPalHttpClient() {
-        super();
-
         setUserAgent(OtcEnvironment.getUserAgent());
         setConnectTimeout(90000);
 
