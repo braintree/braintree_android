@@ -97,7 +97,6 @@ public final class Result implements Parcelable {
                 response.put("user", user);
             }
 
-            Log.e(TAG, "Success encoding JSON" + response);
             return response;
         } catch (JSONException e) {
             Log.e(TAG, "Error encoding JSON", e);

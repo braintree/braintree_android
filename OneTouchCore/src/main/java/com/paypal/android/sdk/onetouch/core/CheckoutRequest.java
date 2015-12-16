@@ -181,7 +181,7 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
                 Log.e(TAG, "EC-tokens don't match");
             }
         } else {
-            Log.e(TAG, "no webURL in response!");
+            Log.e(TAG, "no webURL in response");
         }
 
         return false;

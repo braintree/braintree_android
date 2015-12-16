@@ -212,9 +212,6 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         OAuth2Recipe recipe = config.getBrowserOauth2Config(getScopes());
 
         ConfigEndpoint configEndpoint = recipe.getEndpoint(getEnvironment());
-        Log.d(TAG, "selected environment: " + getEnvironment());
-        Log.d(TAG, "selected configEndpoint:" + configEndpoint.getName() + " with url: " +
-                configEndpoint.getUrl());
 
         String certificateBase64 = configEndpoint.getCertificate();
         X509Certificate cert =
@@ -346,8 +343,6 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
 
         try {
             JSONObject payloadJson = new JSONObject(new String(base64Payload));
-            Log.i(TAG, "unencrypted data: " + payloadJson.toString(4));
-
             if (payloadJson.has("msg_GUID")) {
                 String msgGUID = payloadJson.optString("msg_GUID");
 
@@ -356,7 +351,6 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
                     // we can decrypt
                     JSONObject decryptedPayloadEnc = getDecryptedPayload(payloadEnc,
                             getStoredSymmetricKey(contextInspector));
-                    Log.i(TAG, "decrypted payload: " + decryptedPayloadEnc.toString(4));
 
                     String error = payloadJson.optString("error");
 
@@ -417,9 +411,6 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
                 } else if (RequestTarget.browser == recipe.getTarget()) {
                     try {
                         String browserSwitchUrl = getBrowserSwitchUrl(context, config);
-
-                        Log.d(TAG, "generated url:" + browserSwitchUrl);
-
                         if (recipe.isValidBrowserTarget(context, browserSwitchUrl)) {
                             return recipe;
                         }
