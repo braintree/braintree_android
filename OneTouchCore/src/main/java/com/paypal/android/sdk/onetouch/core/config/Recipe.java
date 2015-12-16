@@ -16,99 +16,92 @@ import java.util.Locale;
 
 public abstract class Recipe<T extends Recipe<T>> {
 
-    protected List<String> targetPackagesInReversePriorityOrder;
-    private RequestTarget target;
-    private Protocol protocol;
-    private String targetComponent;
-    private String targetIntentAction;
-    private Collection<String> supportedLocales;
+    protected List<String> mTargetPackagesInReversePriorityOrder;
+    private RequestTarget mTarget;
+    private Protocol mProtocol;
+    private String mTargetComponent;
+    private String mTargetIntentAction;
+    private Collection<String> mSupportedLocales;
 
     public Recipe() {
-        targetPackagesInReversePriorityOrder = new ArrayList<>();
-        supportedLocales = new HashSet<>();
+        mTargetPackagesInReversePriorityOrder = new ArrayList<>();
+        mSupportedLocales = new HashSet<>();
     }
 
     public T target(RequestTarget target) {
-        this.target = target;
+        mTarget = target;
         return getThis();
     }
 
     public T protocol(String protocol) {
         switch (protocol) {
             case "0":
-                this.protocol = Protocol.v0;
+                mProtocol = Protocol.v0;
                 break;
-
             case "1":
-                this.protocol = Protocol.v1;
+                mProtocol = Protocol.v1;
                 break;
-
             case "2":
-                this.protocol = Protocol.v2;
+                mProtocol = Protocol.v2;
                 break;
-
             case "3":
-                this.protocol = Protocol.v3;
+                mProtocol = Protocol.v3;
                 break;
-
             default:
                 throw new IllegalArgumentException("invalid protocol");
-
         }
 
         return getThis();
     }
 
     public T targetPackage(String singleTargetPackage) {
-        this.targetPackagesInReversePriorityOrder.add(singleTargetPackage);
+        mTargetPackagesInReversePriorityOrder.add(singleTargetPackage);
         return getThis();
     }
 
     public List<String> getTargetPackagesInReversePriorityOrder() {
-        return new ArrayList<>(targetPackagesInReversePriorityOrder);
+        return new ArrayList<>(mTargetPackagesInReversePriorityOrder);
     }
 
     public T supportedLocale(String supportedLocale) {
-        this.supportedLocales.add(supportedLocale);
+        mSupportedLocales.add(supportedLocale);
         return getThis();
     }
 
     public T targetComponent(String targetComponent) {
-        this.targetComponent = targetComponent;
+        mTargetComponent = targetComponent;
         return getThis();
     }
 
     public T targetIntentAction(String targetIntentAction) {
-        this.targetIntentAction = targetIntentAction;
+        mTargetIntentAction = targetIntentAction;
         return getThis();
     }
 
     public String getTargetComponent() {
-        return targetComponent;
+        return mTargetComponent;
     }
 
     public String getTargetIntentAction() {
-        return targetIntentAction;
+        return mTargetIntentAction;
     }
 
     public RequestTarget getTarget() {
-        return target;
+        return mTarget;
     }
 
     public abstract T getThis();
 
     public boolean isValidAppTarget(Context context, boolean isSecurityEnabled) {
         for (String allowedWalletTarget : getTargetPackagesInReversePriorityOrder()) {
-            boolean isConfiguredToAcceptIntent = new WalletAppHelper().isWalletIntentSafe(
-                    context,
-                    getTargetIntentAction(),
-                    getTargetComponent());
+            boolean isConfiguredToAcceptIntent = new WalletAppHelper().isWalletIntentSafe(context,
+                    getTargetIntentAction(), getTargetComponent());
 
             String locale = Locale.getDefault().toString();
 
             // if no locales are specified, then presumed to be allowed for all
             boolean isLocaleAllowed =
-                    supportedLocales.isEmpty() || supportedLocales.contains(locale);
+                    mSupportedLocales.isEmpty() || mSupportedLocales.contains(locale);
 
             boolean isValidTarget = new WalletAppHelper()
                     .isValidGenericAuthenticatorInstalled(context, isSecurityEnabled,
@@ -152,14 +145,14 @@ public abstract class Recipe<T extends Recipe<T>> {
     }
 
     public Protocol getProtocol() {
-        return protocol;
+        return mProtocol;
     }
 
     @Override
     public String toString() {
-        return "Recipe(target=" + target + ", protocol=" + protocol + ", packages=" +
-                targetPackagesInReversePriorityOrder +
-                ", targetComponent=" + targetComponent + ", targetIntentAction=" +
-                targetIntentAction + ", supportedLocales=" + supportedLocales + ")";
+        return "Recipe(target=" + mTarget + ", mProtocol=" + mProtocol + ", packages=" +
+                mTargetPackagesInReversePriorityOrder +
+                ", targetComponent=" + mTargetComponent + ", targetIntentAction=" +
+                mTargetIntentAction + ", supportedLocales=" + mSupportedLocales + ")";
     }
 }

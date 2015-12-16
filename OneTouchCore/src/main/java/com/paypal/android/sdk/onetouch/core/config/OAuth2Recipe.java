@@ -11,9 +11,9 @@ import java.util.Set;
 public class OAuth2Recipe extends Recipe<OAuth2Recipe> {
 
     static final String DEVELOP = "develop";
-    private final Collection<String> scope = new HashSet<>();
-    private final Map<String, ConfigEndpoint> endpoints = new HashMap<>();
-    private boolean isValidForAllScopes;
+    private final Collection<String> mScope = new HashSet<>();
+    private final Map<String, ConfigEndpoint> mEndpoints = new HashMap<>();
+    private boolean mIsValidForAllScopes;
 
     @Override
     public OAuth2Recipe getThis() {
@@ -21,15 +21,15 @@ public class OAuth2Recipe extends Recipe<OAuth2Recipe> {
     }
 
     public void validForScope(String singleScopeValue) {
-        this.scope.add(singleScopeValue);
+        mScope.add(singleScopeValue);
     }
 
     public void withEndpoint(String name, ConfigEndpoint endpoint) {
-        this.endpoints.put(name, endpoint);
+        mEndpoints.put(name, endpoint);
     }
 
     public boolean isValidForScopes(Set<String> scopes) {
-        if (isValidForAllScopes) {
+        if (mIsValidForAllScopes) {
             return true;
         } else {
             return scopes.containsAll(scopes);
@@ -37,7 +37,7 @@ public class OAuth2Recipe extends Recipe<OAuth2Recipe> {
     }
 
     public void validForAllScopes() {
-        this.isValidForAllScopes = true;
+        mIsValidForAllScopes = true;
     }
 
     /**
@@ -50,13 +50,13 @@ public class OAuth2Recipe extends Recipe<OAuth2Recipe> {
      */
     public ConfigEndpoint getEndpoint(String environment) {
         ConfigEndpoint configEndpoint;
-        if (endpoints.containsKey(environment)) {
-            configEndpoint = endpoints.get(environment);
-        } else if (endpoints.containsKey(DEVELOP)) {
-            configEndpoint = endpoints.get(DEVELOP);
+        if (mEndpoints.containsKey(environment)) {
+            configEndpoint = mEndpoints.get(environment);
+        } else if (mEndpoints.containsKey(DEVELOP)) {
+            configEndpoint = mEndpoints.get(DEVELOP);
         } else {
             // default to live as fallback
-            configEndpoint = endpoints.get(EnvironmentManager.LIVE);
+            configEndpoint = mEndpoints.get(EnvironmentManager.LIVE);
         }
 
         return configEndpoint;

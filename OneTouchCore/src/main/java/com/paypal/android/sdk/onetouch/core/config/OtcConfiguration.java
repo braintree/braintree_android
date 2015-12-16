@@ -17,20 +17,20 @@ public class OtcConfiguration {
             new ArrayList<>();
     private final ArrayList<BillingAgreementRecipe>
             mBillingAgreementRecipesInDecreasingPriorityOrder = new ArrayList<>();
-    private String fileTimestamp;
+    private String mFileTimestamp;
 
     public OtcConfiguration withOauth2Recipe(OAuth2Recipe recipe) {
-        this.mOauth2RecipesInDecreasingPriorityOrder.add(recipe);
+        mOauth2RecipesInDecreasingPriorityOrder.add(recipe);
         return this;
     }
 
     public OtcConfiguration fileTimestamp(String fileTimestamp) {
-        this.fileTimestamp = fileTimestamp;
+        mFileTimestamp = fileTimestamp;
         return this;
     }
 
     public String getFileTimestamp() {
-        return fileTimestamp;
+        return mFileTimestamp;
     }
 
     /**
@@ -83,7 +83,7 @@ public class OtcConfiguration {
     @Override
     public String toString() {
         return OtcConfiguration.class.getSimpleName() +
-                "[fileTimestamp=" + fileTimestamp +
+                "[fileTimestamp=" + mFileTimestamp +
                 ", mOauth2RecipesInDecreasingPriorityOrder" +
                 mOauth2RecipesInDecreasingPriorityOrder +
                 ", mCheckoutRecipesInDecreasingPriorityOrder" +
@@ -98,7 +98,7 @@ public class OtcConfiguration {
     }
 
     public void withCheckoutRecipe(CheckoutRecipe recipe) {
-        this.mCheckoutRecipesInDecreasingPriorityOrder.add(recipe);
+        mCheckoutRecipesInDecreasingPriorityOrder.add(recipe);
     }
 
     public List<CheckoutRecipe> getCheckoutRecipes() {
@@ -106,11 +106,10 @@ public class OtcConfiguration {
     }
 
     public void withBillingAgreementRecipe(BillingAgreementRecipe recipe) {
-        this.mBillingAgreementRecipesInDecreasingPriorityOrder.add(recipe);
+        mBillingAgreementRecipesInDecreasingPriorityOrder.add(recipe);
     }
 
     public List<BillingAgreementRecipe> getBillingAgreementRecipes() {
         return new ArrayList<>(mBillingAgreementRecipesInDecreasingPriorityOrder);
     }
-
 }

@@ -31,7 +31,7 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
     private String mSuccessUrl;
 
     public T environment(String environment) {
-        this.mEnvironment = environment;
+        mEnvironment = environment;
         return getThis();
     }
 
@@ -40,7 +40,7 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
     }
 
     public T clientMetadataId(String clientMetadataId) {
-        this.mClientMetadataId = clientMetadataId;
+        mClientMetadataId = clientMetadataId;
         return getThis();
     }
 
@@ -49,7 +49,7 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
     }
 
     public T clientId(String clientId) {
-        this.mClientId = clientId;
+        mClientId = clientId;
         return getThis();
     }
 
@@ -69,7 +69,7 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
      * be used as the scheme)
      */
     public T cancelUrl(String scheme, String host) {
-        this.mCancelUrl = scheme + "://" + redirectURLHostAndPath() + host;
+        mCancelUrl = scheme + "://" + redirectURLHostAndPath() + host;
         return getThis();
     }
 
@@ -82,7 +82,7 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
      * used as the scheme)
      */
     public T successUrl(String scheme, String host) {
-        this.mSuccessUrl = scheme + "://" + redirectURLHostAndPath() + host;
+        mSuccessUrl = scheme + "://" + redirectURLHostAndPath() + host;
         return getThis();
     }
 

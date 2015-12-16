@@ -66,7 +66,7 @@ public enum PayPalScope {
 
     public static final Collection<String> PROFILE_SHARING_SCOPE_URIS = new HashSet<String>() {{
         for (PayPalScope scope : PayPalScope.values()) {
-            if (scope.isProfileSharingScope) {
+            if (scope.mIsProfileSharingScope) {
                 add(scope.getScopeUri());
             }
         }
@@ -78,15 +78,15 @@ public enum PayPalScope {
         }
     }};
 
-    private String scopeUri;
-    private boolean isProfileSharingScope;
+    private String mScopeUri;
+    private boolean mIsProfileSharingScope;
 
     PayPalScope(String scopeUri, boolean isProfileSharingScope) {
-        this.scopeUri = scopeUri;
-        this.isProfileSharingScope = isProfileSharingScope;
+        mScopeUri = scopeUri;
+        mIsProfileSharingScope = isProfileSharingScope;
     }
 
     public String getScopeUri() {
-        return this.scopeUri;
+        return mScopeUri;
     }
 }
