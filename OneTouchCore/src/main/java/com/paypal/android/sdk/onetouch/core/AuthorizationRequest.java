@@ -238,7 +238,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         contextInspector.setPreferences(prefs);
     }
 
-    public boolean validResponse(ContextInspector contextInspector, String msgGUID) {
+    private boolean validResponse(ContextInspector contextInspector, String msgGUID) {
         String prefsMsgGUID =
                 contextInspector.getStringPreference(AuthorizationRequest.PREFS_MSG_GUID);
         String prefsSymmetricKey = getStoredSymmetricKey(contextInspector);

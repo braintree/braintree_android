@@ -23,7 +23,7 @@ public class WalletAppHelper {
      *
      * @return
      */
-    protected Intent createSdkIntent(String action, String className) {
+    Intent createSdkIntent(String action, String className) {
         Intent intent = new Intent(action);
         intent.setComponent(ComponentName.unflattenFromString(className));
         intent.setPackage(WALLET_APP_PACKAGE);
@@ -36,7 +36,7 @@ public class WalletAppHelper {
      *
      * @return
      */
-    public boolean isValidP2pMobileAuthenticatorInstalled(Context context,
+    boolean isValidP2pMobileAuthenticatorInstalled(Context context,
             boolean isAuthenticatorSecurityEnabled) {
         return isValidGenericAuthenticatorInstalled(context, isAuthenticatorSecurityEnabled,
                 WALLET_APP_PACKAGE);

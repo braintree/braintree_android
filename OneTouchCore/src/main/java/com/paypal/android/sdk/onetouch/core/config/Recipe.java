@@ -16,7 +16,7 @@ import java.util.Locale;
 
 public abstract class Recipe<T extends Recipe<T>> {
 
-    protected List<String> mTargetPackagesInReversePriorityOrder;
+    private List<String> mTargetPackagesInReversePriorityOrder;
     private RequestTarget mTarget;
     private Protocol mProtocol;
     private String mTargetComponent;
@@ -78,11 +78,11 @@ public abstract class Recipe<T extends Recipe<T>> {
         return getThis();
     }
 
-    public String getTargetComponent() {
+    private String getTargetComponent() {
         return mTargetComponent;
     }
 
-    public String getTargetIntentAction() {
+    private String getTargetIntentAction() {
         return mTargetIntentAction;
     }
 
@@ -90,7 +90,7 @@ public abstract class Recipe<T extends Recipe<T>> {
         return mTarget;
     }
 
-    public abstract T getThis();
+    protected abstract T getThis();
 
     public boolean isValidAppTarget(Context context, boolean isSecurityEnabled) {
         for (String allowedWalletTarget : getTargetPackagesInReversePriorityOrder()) {

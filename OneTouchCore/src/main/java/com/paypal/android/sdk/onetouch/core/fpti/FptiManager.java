@@ -96,7 +96,7 @@ public class FptiManager {
     }
 
     @VisibleForTesting
-    protected void sendRequest(final String data) {
+    void sendRequest(final String data) {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

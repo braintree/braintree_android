@@ -7,7 +7,6 @@ import android.support.annotation.MainThread;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.base.SdkRiskComponent;
 import com.paypal.android.sdk.onetouch.core.config.ConfigManager;
-import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
 import com.paypal.android.sdk.onetouch.core.enums.Protocol;
 import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
@@ -99,7 +98,7 @@ public class PayPalOneTouchCore {
         // calling this method functionally does nothing, but ensures that we send off FPTI data about wallet installs.
         isWalletAppInstalled(context, enableSecurityCheck);
 
-        Recipe recipe = request.getRecipeToExecute(context, getConfig(context),
+        Recipe recipe = request.getRecipeToExecute(context, sConfigManager.getConfig(),
                 enableSecurityCheck);
 
         if (recipe == null) {
@@ -197,18 +196,7 @@ public class PayPalOneTouchCore {
                 pairingId);
     }
 
-    /**
-     * Returns the currently active config.
-     */
-    static OtcConfiguration getConfig(Context context) {
-        initService(context);
-        return sConfigManager.getConfig();
-    }
-
-    /**
-     * Lazily creates and returns a sContextInspector object
-     */
-    static ContextInspector getContextInspector(Context context) {
+    private static ContextInspector getContextInspector(Context context) {
         if (null == sContextInspector) {
             sContextInspector = new ContextInspector(context);
         }

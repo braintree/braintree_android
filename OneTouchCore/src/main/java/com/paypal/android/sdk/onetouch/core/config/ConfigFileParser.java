@@ -7,9 +7,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ConfigFileParser {
+class ConfigFileParser {
 
-    public OtcConfiguration getParsedConfig(JSONObject rootObject) throws JSONException {
+    OtcConfiguration getParsedConfig(JSONObject rootObject) throws JSONException {
         OtcConfiguration otcConfiguration = new OtcConfiguration();
 
         String file_timestamp = rootObject.getString("file_timestamp");

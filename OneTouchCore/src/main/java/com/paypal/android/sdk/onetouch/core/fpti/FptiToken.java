@@ -2,11 +2,11 @@ package com.paypal.android.sdk.onetouch.core.fpti;
 
 import java.util.Random;
 
-public class FptiToken {
+class FptiToken {
 
-    public static final int FPTI_TOKEN_VALIDITY_IN_HOURS = 30;
+    private static final int FPTI_TOKEN_VALIDITY_IN_HOURS = 30;
 
-    public String mToken;
+    String mToken;
 
     /**
      * Java Date as a long
@@ -16,7 +16,7 @@ public class FptiToken {
     /**
      * Creates a token, good for 30 hours
      */
-    public FptiToken() {
+    FptiToken() {
         final long now = System.currentTimeMillis();
         if (mToken == null) {
             mValidUntil = now; // force the below if to be true
@@ -37,7 +37,7 @@ public class FptiToken {
     /**
      * @return {@code true} if the token is valid (not expired), otherwise {@code false}.
      */
-    public boolean isValid() {
+    boolean isValid() {
         return mValidUntil > System.currentTimeMillis();
     }
 

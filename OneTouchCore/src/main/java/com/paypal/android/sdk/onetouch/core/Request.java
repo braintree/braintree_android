@@ -57,11 +57,8 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
         return mClientId;
     }
 
-    protected String getBaseRequestToString() {
-        return String.format(
-                "mClientId:%s, mEnvironment:%s",
-                getClientId(),
-                getEnvironment());
+    String getBaseRequestToString() {
+        return String.format("mClientId:%s, mEnvironment:%s", getClientId(), getEnvironment());
     }
 
     /**

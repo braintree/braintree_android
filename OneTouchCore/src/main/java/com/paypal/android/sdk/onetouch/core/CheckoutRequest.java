@@ -35,7 +35,8 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
 
     protected String mApprovalUrl;
     protected String mTokenQueryParamKey;
-    protected String mPairingId;
+
+    private String mPairingId;
 
     public CheckoutRequest() {
         mTokenQueryParamKey = TOKEN_QUERY_PARAM_KEY_TOKEN;
@@ -60,7 +61,7 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
         return TOKEN_QUERY_PARAM_KEY_BA_TOKEN.equals(mTokenQueryParamKey);
     }
 
-    protected void selectTokenQueryParamKey(String url) {
+    private void selectTokenQueryParamKey(String url) {
         if (!TextUtils.isEmpty(url) && url.contains("ba_token")) {
             mTokenQueryParamKey = TOKEN_QUERY_PARAM_KEY_BA_TOKEN;
         } else {
