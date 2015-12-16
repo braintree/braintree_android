@@ -45,10 +45,56 @@ android {
 }
 
 dependencies {
-    compile files('libs/' + paypalVersion)
+    compile 'com.android.support:support-annotations:[23.0.0,24.0.0)'
 
+    compile files('libs/' + paypalVersion)
     compile project(':Core')
 
     testCompile 'org.mockito:mockito-all:1.10.19'
     testCompile 'org.robolectric:robolectric:3.0'
+}
+
+/* maven deploy + signing */
+task javadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocsJar(type: Jar, dependsOn: javadocs) {
+    classifier = 'javadoc'
+    from javadocs.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    archives javadocsJar
+    archives sourcesJar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.setArtifactId 'paypal-one-touch'
+
+            pom.project {
+                name 'paypal-one-touch'
+                groupId = 'com.paypal.android.sdk'
+                version = "${android.defaultConfig.versionName}"
+                packaging 'jar'
+                description 'PayPal SDK for handling app and browser switch based payments.'
+            }
+
+            pom.whenConfigured { MavenPom pom ->
+                pom.dependencies.each {
+                    if (it.artifactId == 'support-annotations') {
+                        it.optional = true
+                    }
+                }
+            }
+        }
+    }
 }

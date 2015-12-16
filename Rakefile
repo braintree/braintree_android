@@ -1,5 +1,6 @@
 require 'rake'
 
+PAYPAL_ONE_TOUCH_BUILD_GRADLE = "OneTouchCore/build.gradle"
 BRAINTREE_API_BUILD_GRADLE = "BraintreeApi/build.gradle"
 DROP_IN_BUILD_GRADLE = "Drop-In/build.gradle"
 
@@ -32,15 +33,25 @@ desc "Publish current version as a SNAPSHOT"
 task :publish_snapshot => :tests do
   abort("Version must contain '-SNAPSHOT'!") unless get_current_version.end_with?('-SNAPSHOT')
 
+  sh "./gradlew clean :Core:uploadArchives"
+
   sh "./gradlew clean :BraintreeDataCollector:uploadArchives"
 
+  replace_string(PAYPAL_ONE_TOUCH_BUILD_GRADLE, "compile project(':Core')", "compile 'com.braintreepayments.api:core:#{get_current_version}'")
+  sh "./gradlew clean :OneTouchCode:uploadArchives"
+
+  replace_string(BRAINTREE_API_BUILD_GRADLE, "compile project(':Core')", "compile 'com.braintreepayments.api:core:#{get_current_version}'")
   replace_string(BRAINTREE_API_BUILD_GRADLE, "compile project(':BraintreeDataCollector')", "compile 'com.braintreepayments.api:data-collector:#{get_current_version}'")
+  replace_string(BRAINTREE_API_BUILD_GRADLE, "compile project(':OneTouchCore')", "compile 'com.paypal.android.sdk:paypal-one-touch:#{get_current_version}'")
   sh "./gradlew clean :BraintreeApi:uploadArchives"
 
   replace_string(DROP_IN_BUILD_GRADLE, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree:#{get_current_version}'")
   sh "./gradlew clean :Drop-In:uploadArchives"
 
+  replace_string(PAYPAL_ONE_TOUCH_BUILD_GRADLE, "compile 'com.braintreepayments.api:core:#{get_current_version}'", "compile project(':Core')")
+  replace_string(BRAINTREE_API_BUILD_GRADLE, "compile 'com.braintreepayments.api:core:#{get_current_version}'", "compile project(':Core')")
   replace_string(BRAINTREE_API_BUILD_GRADLE, "compile 'com.braintreepayments.api:data-collector:#{get_current_version}'", "compile project(':BraintreeDataCollector')")
+  replace_string(BRAINTREE_API_BUILD_GRADLE, "compile 'com.paypal.android.sdk:paypal-one-touch:#{get_current_version}'", "compile project(:OneTouchCore')")
   replace_string(DROP_IN_BUILD_GRADLE, "compile 'com.braintreepayments.api:braintree:#{get_current_version}'", "compile project(':BraintreeApi')")
 end
 
@@ -58,9 +69,17 @@ task :release => :tests do
   increment_version_code
   update_version(version)
 
+  sh "./gradlew clean :Core:uploadArchives"
+  puts "Core was uploaded, releasing..."
+  sh "./gradlew :Core:closeRepository"
+  puts "Sleeping for one minute to allow closing to finish"
+  sleep 60
+  sh "./gradlew :Core:promoteRepository"
+  puts "Sleeping for ten minutes to allow promotion to finish"
+  sleep 600
+
   sh "./gradlew clean :BraintreeDataCollector:uploadArchives"
-  puts "BraintreeDataCollector was uploaded, press ENTER to release it"
-  $stdin.gets
+  puts "BraintreeDataCollector was uploaded, releasing..."
   sh "./gradlew :BraintreeDataCollector:closeRepository"
   puts "Sleeping for one minute to allow closing to finish"
   sleep 60
@@ -68,10 +87,21 @@ task :release => :tests do
   puts "Sleeping for ten minutes to allow promotion to finish"
   sleep 600
 
+  replace_string(PAYPAL_ONE_TOUCH_BUILD_GRADLE, "compile project(':Core')", "compile 'com.braintreepayments.api:core:#{version}'")
+  sh "./gradlew clean :OneTouchCore:uploadArchives"
+  puts "OneTouchCore was uploaded, releasing..."
+  sh "./gradlew :OneTouchCore:closeRepository"
+  puts "Sleeping for one minute to allow closing to finish"
+  sleep 60
+  sh "./gradlew :OneTouchCore:promoteRepository"
+  puts "Sleeping for ten minutes to allow promotion to finish"
+  sleep 600
+
+  replace_string(BRAINTREE_API_BUILD_GRADLE, "compile project(':Core')", "compile 'com.braintreepayments.api:core:#{version}'")
   replace_string(BRAINTREE_API_BUILD_GRADLE, "compile project(':BraintreeDataCollector')", "compile 'com.braintreepayments.api:data-collector:#{version}'")
+  replace_string(BRAINTREE_API_BUILD_GRADLE, "compile project(':OneTouchCore')", "compile 'com.paypal.android.sdk:paypal-one-touch:#{version}'")
   sh "./gradlew clean :BraintreeApi:uploadArchives"
-  puts "BraintreeApi was uploaded, press ENTER to release it"
-  $stdin.gets
+  puts "BraintreeApi was uploaded, releasing..."
   sh "./gradlew :BraintreeApi:closeRepository"
   puts "Sleeping for one minute to allow closing to finish"
   sleep 60
@@ -81,8 +111,7 @@ task :release => :tests do
 
   replace_string(DROP_IN_BUILD_GRADLE, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree:#{version}'")
   sh "./gradlew clean :Drop-In:uploadArchives"
-  puts "Drop-In was uploaded, press ENTER to release it"
-  $stdin.gets
+  puts "Drop-In was uploaded, releasing..."
   sh "./gradlew :Drop-In:closeRepository"
   puts "Sleeping for one minute to allow closing to finish"
   sleep 60
@@ -92,7 +121,10 @@ task :release => :tests do
   sh "git commit -am 'Release #{version}'"
   sh "git tag #{version} -am '#{version}'"
 
+  replace_string(PAYPAL_ONE_TOUCH_BUILD_GRADLE, "compile 'com.braintreepayments.api:core:#{version}'", "compile project(':Core')")
+  replace_string(BRAINTREE_API_BUILD_GRADLE, "compile 'com.braintreepayments.api:core:#{version}'", "compile project(':Core')")
   replace_string(BRAINTREE_API_BUILD_GRADLE, "compile 'com.braintreepayments.api:data-collector:#{version}'", "compile project(':BraintreeDataCollector')")
+  replace_string(BRAINTREE_API_BUILD_GRADLE, "compile 'com.paypal.android.sdk:paypal-one-touch:#{version}'", "compile project(':OneTouchCore')")
   replace_string(DROP_IN_BUILD_GRADLE, "compile 'com.braintreepayments.api:braintree:#{version}'", "compile project(':BraintreeApi')")
   update_version("#{version}-SNAPSHOT")
   sh "git commit -am 'Prepare for development'"

@@ -23,3 +23,48 @@ dependencies {
 
     androidTestCompile project(':TestUtils')
 }
+
+/* maven deploy + signing */
+task javadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocsJar(type: Jar, dependsOn: javadocs) {
+    classifier = 'javadoc'
+    from javadocs.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    archives javadocsJar
+    archives sourcesJar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.setArtifactId 'core'
+
+            pom.project {
+                name 'core'
+                groupId = 'com.braintreepayments.api'
+                version = "${android.defaultConfig.versionName}"
+                packaging 'jar'
+                description 'Library containing shared components used across Braintree\'s Android SDKs.'
+            }
+
+            pom.whenConfigured { MavenPom pom ->
+                pom.dependencies.each {
+                    if (it.artifactId == 'support-annotations') {
+                        it.optional = true
+                    }
+                }
+            }
+        }
+    }
+}
