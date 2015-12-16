@@ -59,13 +59,11 @@ public class Venmo {
     }
 
     static Intent getLaunchIntent(Configuration configuration) {
-        Intent intent = getVenmoIntent()
+        return getVenmoIntent()
                 .putExtra(EXTRA_MERCHANT_ID, configuration.getMerchantId())
                 .putExtra(EXTRA_SDK_VERSION, BuildConfig.VERSION_NAME)
                 .putExtra(EXTRA_ACCESS_TOKEN, configuration.getPayWithVenmo().getAccessToken())
                 .putExtra(EXTRA_ENVIRONMENT, configuration.getEnvironment());
-
-        return intent;
     }
 
     /**
@@ -101,7 +99,7 @@ public class Venmo {
             exceptionMessage = "Venmo is not whitelisted.";
         }
 
-        if(exceptionMessage == "") {
+        if(exceptionMessage.equals("")) {
             fragment.startActivityForResult(Venmo.getLaunchIntent(configuration),
                     VENMO_REQUEST_CODE);
             fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
@@ -111,8 +109,7 @@ public class Venmo {
         }
     }
 
-    static void onActivityResult(final BraintreeFragment fragment, int resultCode,
-                                 Intent data) {
+    static void onActivityResult(final BraintreeFragment fragment, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             String nonce = data.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
             String venmoUsername = data.getStringExtra(EXTRA_USERNAME);
