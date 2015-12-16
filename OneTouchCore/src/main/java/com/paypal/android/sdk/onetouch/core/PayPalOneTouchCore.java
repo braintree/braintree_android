@@ -17,8 +17,7 @@ import com.paypal.android.sdk.onetouch.core.network.PayPalHttpClient;
 import com.paypal.android.sdk.onetouch.core.sdk.AppSwitchHelper;
 import com.paypal.android.sdk.onetouch.core.sdk.BrowserSwitchHelper;
 import com.paypal.android.sdk.onetouch.core.sdk.PendingRequest;
-import com.paypal.android.sdk.onetouch.core.sdk.V1WalletHelper;
-import com.paypal.android.sdk.onetouch.core.sdk.V2WalletHelper;
+import com.paypal.android.sdk.onetouch.core.sdk.WalletHelper;
 
 import java.util.Collections;
 
@@ -62,16 +61,16 @@ public class PayPalOneTouchCore {
     public static boolean isWalletAppInstalled(Context context, boolean enableSecurityCheck) {
         initService(context);
 
-        boolean isV2WalletAppInstalled = new V2WalletHelper()
-                .isValidV2TouchAuthenticatorInstalled(context, enableSecurityCheck);
+        boolean isV2WalletAppInstalled =
+                WalletHelper.isValidV2TouchAuthenticatorInstalled(context, enableSecurityCheck);
         sFptiManager.trackFpti((isV2WalletAppInstalled) ? TrackingPoint.WalletIsPresent :
                         TrackingPoint.WalletIsAbsent, ""/*no environment set yet*/,
                 Collections.<String, String>emptyMap(), Protocol.v2);
 
         boolean isV1WalletAppInstalled = false;
         if (!isV2WalletAppInstalled) {
-            isV1WalletAppInstalled = new V1WalletHelper()
-                    .isValidV1TouchAuthenticatorInstalled(context, enableSecurityCheck);
+            isV1WalletAppInstalled =
+                    WalletHelper.isValidV1TouchAuthenticatorInstalled(context, enableSecurityCheck);
             sFptiManager.trackFpti((isV1WalletAppInstalled) ? TrackingPoint.WalletIsPresent :
                             TrackingPoint.WalletIsAbsent, ""/*no environment set yet*/,
                     Collections.<String, String>emptyMap(), Protocol.v1);

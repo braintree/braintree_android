@@ -30,10 +30,10 @@ public class AppSwitchHelper {
         Intent intent;
 
         if (Protocol.v1 == protocol) {
-            intent = new V1WalletHelper().getPayPalTouchIntent();
+            intent = WalletHelper.getV1PayPalTouchIntent();
             intent.putExtra("version", "1.0");
         } else {
-            intent = new V2WalletHelper().getPayPalTouchIntent();
+            intent = WalletHelper.getV2PayPalTouchIntent();
             intent.putExtra("version", "2.0");
         }
 

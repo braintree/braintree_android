@@ -4,16 +4,14 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ResolveInfo;
 
 import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.internal.AppHelper;
 import com.braintreepayments.api.internal.SignatureVerification;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.VenmoAccountNonce;
 import com.braintreepayments.api.models.VenmoConfiguration;
-
-import java.util.List;
 
 /**
  * Class containing Venmo specific logic.
@@ -44,11 +42,7 @@ public class Venmo {
      * @return boolean depending on if the Venmo app is installed, and has a valid signature.
      */
     public static boolean isVenmoInstalled(Context context) {
-        List<ResolveInfo> activities =
-                context.getPackageManager().queryIntentActivities(getVenmoIntent(), 0);
-
-        return activities.size() == 1 &&
-                PACKAGE_NAME.equals(activities.get(0).activityInfo.packageName) &&
+        return AppHelper.isIntentAvailable(context, getVenmoIntent()) &&
                 SignatureVerification.isSignatureValid(context, PACKAGE_NAME, CERTIFICATE_SUBJECT,
                         CERTIFICATE_ISSUER, PUBLIC_KEY_HASH_CODE);
     }

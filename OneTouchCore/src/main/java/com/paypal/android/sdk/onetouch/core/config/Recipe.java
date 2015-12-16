@@ -4,9 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.braintreepayments.api.internal.AppHelper;
 import com.paypal.android.sdk.onetouch.core.enums.Protocol;
 import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
-import com.paypal.android.sdk.onetouch.core.sdk.WalletAppHelper;
+import com.paypal.android.sdk.onetouch.core.sdk.WalletHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -94,20 +95,19 @@ public abstract class Recipe<T extends Recipe<T>> {
 
     public boolean isValidAppTarget(Context context, boolean isSecurityEnabled) {
         for (String allowedWalletTarget : getTargetPackagesInReversePriorityOrder()) {
-            boolean isConfiguredToAcceptIntent = WalletAppHelper.isWalletIntentSafe(context,
-                    getTargetIntentAction(), getTargetComponent());
+            boolean isIntentAvailable = AppHelper.isIntentAvailable(context,
+                    WalletHelper.createIntent(getTargetIntentAction(), getTargetComponent(),
+                            allowedWalletTarget));
 
             String locale = Locale.getDefault().toString();
-
             // if no locales are specified, then presumed to be allowed for all
             boolean isLocaleAllowed =
                     mSupportedLocales.isEmpty() || mSupportedLocales.contains(locale);
 
-            boolean isValidTarget = (WalletAppHelper.isValidGenericAuthenticatorInstalled(context,
-                    isSecurityEnabled, allowedWalletTarget) && isConfiguredToAcceptIntent &&
-                    isLocaleAllowed);
+            boolean isSignatureValid =
+                    WalletHelper.isSignatureValid(context, allowedWalletTarget, isSecurityEnabled);
 
-            if (isValidTarget) {
+            if (isIntentAvailable && isLocaleAllowed && isSignatureValid) {
                 return true;
             }
         }
