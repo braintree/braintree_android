@@ -17,8 +17,8 @@ import java.util.Map;
 
 public class ConfigManager {
 
-    public static final String CONFIGURATION_URL = "https://www.paypalobjects.com/webstatic/otc/otc-config.android.json";
-
+    private static final String CONFIGURATION_URL =
+            "https://www.paypalobjects.com/webstatic/otc/otc-config.android.json";
     private static final String TAG = ConfigManager.class.getSimpleName();
     private static final String PREFERENCES_CONFIG_FILE = "com.paypal.otc.config.file";
     private static final String PREFERENCES_CONFIG_LAST_UPDATED_TIMESTAMP =
