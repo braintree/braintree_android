@@ -7,6 +7,7 @@ import com.braintreepayments.api.internal.TLSSocketFactory;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLException;
 
@@ -14,7 +15,7 @@ public class PayPalHttpClient extends HttpClient<PayPalHttpClient> {
 
     public PayPalHttpClient() {
         setUserAgent(OtcEnvironment.getUserAgent());
-        setConnectTimeout(90000);
+        setConnectTimeout((int) TimeUnit.SECONDS.toMillis(90));
 
         try {
             setSSLSocketFactory(new TLSSocketFactory(PayPalCertificate.getCertInputStream()));

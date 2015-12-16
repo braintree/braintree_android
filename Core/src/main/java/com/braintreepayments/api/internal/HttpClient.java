@@ -68,30 +68,51 @@ public class HttpClient<T extends HttpClient> {
         }
     }
 
+    /**
+     * @param userAgent the user agent to be sent with all http requests.
+     * @return {@link HttpClient} for method chaining.
+     */
     @SuppressWarnings("unchecked")
     public T setUserAgent(String userAgent) {
         mUserAgent = userAgent;
         return (T) this;
     }
 
+    /**
+     * @param sslSocketFactory the {@link SSLSocketFactory} to use for all https requests.
+     * @return {@link HttpClient} for method chaining.
+     */
     @SuppressWarnings("unchecked")
     public T setSSLSocketFactory(SSLSocketFactory sslSocketFactory) {
         mSSLSocketFactory = sslSocketFactory;
         return (T) this;
     }
 
+    /**
+     * @param baseUrl the base url to use when only a path is supplied to
+     * {@link #get(String, HttpResponseCallback)} or {@link #post(String, String, HttpResponseCallback)}
+     * @return {@link HttpClient} for method chaining.
+     */
     @SuppressWarnings("unchecked")
     public T setBaseUrl(String baseUrl) {
         mBaseUrl = (baseUrl == null) ? "" : baseUrl;
         return (T) this;
     }
 
+    /**
+     * @param timeout the time in milliseconds to wait for a connection before timing out.
+     * @return {@link HttpClient} for method chaining.
+     */
     @SuppressWarnings("unchecked")
     public T setConnectTimeout(int timeout) {
         mConnectTimeout = timeout;
         return (T) this;
     }
 
+    /**
+     * @param timeout the time in milliseconds to read a response from the server before timing out.
+     * @return {@link HttpClient} for method chaining.
+     */
     @SuppressWarnings("unchecked")
     public T setReadTimeout(int timeout) {
         mReadTimeout = timeout;
