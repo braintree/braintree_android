@@ -94,7 +94,7 @@ public abstract class Recipe<T extends Recipe<T>> {
 
     public boolean isValidAppTarget(Context context, boolean isSecurityEnabled) {
         for (String allowedWalletTarget : getTargetPackagesInReversePriorityOrder()) {
-            boolean isConfiguredToAcceptIntent = new WalletAppHelper().isWalletIntentSafe(context,
+            boolean isConfiguredToAcceptIntent = WalletAppHelper.isWalletIntentSafe(context,
                     getTargetIntentAction(), getTargetComponent());
 
             String locale = Locale.getDefault().toString();
@@ -103,10 +103,9 @@ public abstract class Recipe<T extends Recipe<T>> {
             boolean isLocaleAllowed =
                     mSupportedLocales.isEmpty() || mSupportedLocales.contains(locale);
 
-            boolean isValidTarget = new WalletAppHelper()
-                    .isValidGenericAuthenticatorInstalled(context, isSecurityEnabled,
-                            allowedWalletTarget)
-                    && isConfiguredToAcceptIntent && isLocaleAllowed;
+            boolean isValidTarget = (WalletAppHelper.isValidGenericAuthenticatorInstalled(context,
+                    isSecurityEnabled, allowedWalletTarget) && isConfiguredToAcceptIntent &&
+                    isLocaleAllowed);
 
             if (isValidTarget) {
                 return true;

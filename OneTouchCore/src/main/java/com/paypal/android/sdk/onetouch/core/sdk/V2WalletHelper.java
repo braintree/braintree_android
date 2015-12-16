@@ -6,7 +6,7 @@ import android.content.Intent;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class V2WalletHelper extends WalletAppHelper {
+public class V2WalletHelper {
 
     private static final String V2_TOUCH_SDK_ACTION =
             "com.paypal.android.lib.authenticator.activity.v2.TouchActivity";
@@ -22,7 +22,7 @@ public class V2WalletHelper extends WalletAppHelper {
     }};
 
     public Intent getPayPalTouchIntent() {
-        return createSdkIntent(V2_TOUCH_SDK_ACTION, V2_TOUCH_SDK_COMPONENT);
+        return WalletAppHelper.createSdkIntent(V2_TOUCH_SDK_ACTION, V2_TOUCH_SDK_COMPONENT);
     }
 
     public boolean isValidV1Scope(String scope) {
@@ -32,11 +32,10 @@ public class V2WalletHelper extends WalletAppHelper {
     public boolean isValidV2TouchAuthenticatorInstalled(Context context,
             boolean isAuthenticatorSecurityEnabled) {
 
-        boolean isConfiguredToAcceptIntent = isWalletIntentSafe(context, V2_TOUCH_SDK_ACTION,
-                V2_TOUCH_SDK_COMPONENT);
+        boolean isConfiguredToAcceptIntent = WalletAppHelper.isWalletIntentSafe(context,
+                V2_TOUCH_SDK_ACTION, V2_TOUCH_SDK_COMPONENT);
 
-        return isValidP2pMobileAuthenticatorInstalled(context,
-                isAuthenticatorSecurityEnabled)
+        return WalletAppHelper.isValidP2pMobileAuthenticatorInstalled(context, isAuthenticatorSecurityEnabled)
                 && isConfiguredToAcceptIntent;
     }
 }

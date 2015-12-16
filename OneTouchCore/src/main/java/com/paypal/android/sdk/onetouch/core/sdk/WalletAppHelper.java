@@ -23,7 +23,7 @@ public class WalletAppHelper {
      *
      * @return
      */
-    Intent createSdkIntent(String action, String className) {
+    static Intent createSdkIntent(String action, String className) {
         Intent intent = new Intent(action);
         intent.setComponent(ComponentName.unflattenFromString(className));
         intent.setPackage(WALLET_APP_PACKAGE);
@@ -36,7 +36,7 @@ public class WalletAppHelper {
      *
      * @return
      */
-    boolean isValidP2pMobileAuthenticatorInstalled(Context context,
+    static boolean isValidP2pMobileAuthenticatorInstalled(Context context,
             boolean isAuthenticatorSecurityEnabled) {
         return isValidGenericAuthenticatorInstalled(context, isAuthenticatorSecurityEnabled,
                 WALLET_APP_PACKAGE);
@@ -52,20 +52,20 @@ public class WalletAppHelper {
      * supports authenticator, and all the right permissions are present in the wallet app.
      * Otherwise returns {@code false}.
      */
-    public boolean isValidGenericAuthenticatorInstalled(Context context,
+    public static boolean isValidGenericAuthenticatorInstalled(Context context,
             boolean isAuthenticatorSecurityEnabled, String appPackage) {
         return (isAppInstalled(context, appPackage) && (!isAuthenticatorSecurityEnabled ||
                 SignatureVerification.isSignatureValid(context, appPackage, WALLET_APP_CERT_SUBJECT,
                         WALLET_APP_CERT_ISSUER, WALLET_APP_PUBLIC_KEY_HASH_CODE)));
     }
 
-    public boolean isWalletIntentSafe(Context context, String intentAction, String intentClass) {
+    public static boolean isWalletIntentSafe(Context context, String intentAction, String intentClass) {
         Intent intent = createSdkIntent(intentAction, intentClass);
         List<ResolveInfo> activities = context.getPackageManager().queryIntentActivities(intent, 0);
         return (null != activities) && activities.size() > 0;
     }
 
-    private boolean isAppInstalled(Context context, String packageName) {
+    private static boolean isAppInstalled(Context context, String packageName) {
         try {
             context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
             return true;
