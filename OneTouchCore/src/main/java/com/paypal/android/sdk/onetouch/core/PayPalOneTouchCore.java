@@ -2,6 +2,7 @@ package com.paypal.android.sdk.onetouch.core;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.MainThread;
 
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.base.SdkRiskComponent;
@@ -21,8 +22,6 @@ import com.paypal.android.sdk.onetouch.core.sdk.V1WalletHelper;
 import com.paypal.android.sdk.onetouch.core.sdk.V2WalletHelper;
 
 import java.util.Collections;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Central class for One Touch functionality.
@@ -30,8 +29,6 @@ import java.util.concurrent.Executors;
  * Note that all public methods should call initService which starts the config file querying
  */
 public class PayPalOneTouchCore {
-
-    private static final ExecutorService OTC_EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
     private static ContextInspector sContextInspector;
     private static ConfigManager sConfigManager;
@@ -174,11 +171,9 @@ public class PayPalOneTouchCore {
      * @return The applicationCorrelationID - Your server will send this to PayPal in a
      * 'PayPal-Client-Metadata-Id' header.
      */
+    @MainThread
     public static String getClientMetadataId(Context context) {
-        return SdkRiskComponent.getClientMetadataId(OTC_EXECUTOR_SERVICE, context,
-                getContextInspector(context).getInstallationGUID(),
-                BuildConfig.PRODUCT_VERSION,
-                null);
+        return getClientMetadataId(context, null);
     }
 
     /**
@@ -195,10 +190,10 @@ public class PayPalOneTouchCore {
      * @return The applicationCorrelationID - Your server will send this to PayPal in a
      * 'PayPal-Client-Metadata-Id' header.
      */
+    @MainThread
     public static String getClientMetadataId(Context context, String pairingId) {
-        return SdkRiskComponent.getClientMetadataId(OTC_EXECUTOR_SERVICE, context,
-                getContextInspector(context).getInstallationGUID(),
-                BuildConfig.PRODUCT_VERSION,
+        return SdkRiskComponent.getClientMetadataId(context,
+                getContextInspector(context).getInstallationGUID(), BuildConfig.PRODUCT_VERSION,
                 pairingId);
     }
 

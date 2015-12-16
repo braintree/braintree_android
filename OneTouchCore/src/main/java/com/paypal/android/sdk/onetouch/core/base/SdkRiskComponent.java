@@ -1,6 +1,7 @@
 package com.paypal.android.sdk.onetouch.core.base;
 
 import android.content.Context;
+import android.support.annotation.MainThread;
 import android.util.Log;
 
 import com.paypal.android.sdk.onetouch.core.metadata.MetadataIdProvider;
@@ -9,7 +10,7 @@ import com.paypal.android.sdk.onetouch.core.metadata.MetadataIdProviderImpl;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class SdkRiskComponent {
 
@@ -18,31 +19,29 @@ public final class SdkRiskComponent {
     /**
      * Starts the risk component if it hasn't been initialized yet.  Otherwise, just generate a
      * clientMetadataId.
-     * <p>
-     * Warning!  The init() method MUST be run on the main thread!
      *
      * @param context
      * @return the clientMetadataId
      */
-    public static String getClientMetadataId(ExecutorService executorService, Context context,
-            String applicationGuid, String productVersion, String pairingId) {
-        if (null == sMetadataIdProvider) {
+    @MainThread
+    public static String getClientMetadataId(Context context, String applicationGuid,
+            String productVersion, String pairingId) {
+        if (sMetadataIdProvider == null) {
             try {
                 sMetadataIdProvider = new MetadataIdProviderImpl();
 
                 Map<String, Object> params;
-                if (null != pairingId) {
+                if (pairingId != null) {
                     params = new HashMap<>();
                     params.put(MetadataIdProvider.PAIRING_ID, pairingId);
                 } else {
                     params = Collections.emptyMap();
                 }
 
-                String clientMetadataId = sMetadataIdProvider.init(context, applicationGuid,
-                        productVersion, params);
+                String clientMetadataId = sMetadataIdProvider.init(context.getApplicationContext(),
+                        applicationGuid, productVersion, params);
 
-                executorService.submit(new Runnable() {
-                    // don't run this on main UI thread.
+                Executors.newSingleThreadExecutor().submit(new Runnable() {
                     @Override
                     public void run() {
                         sMetadataIdProvider.flush();
@@ -53,7 +52,7 @@ public final class SdkRiskComponent {
             } catch (Throwable t) {
                 Log.e(Constants.PUBLIC_TAG, "An internal component failed to initialize: " +
                         t.getMessage());
-                return null;
+                return "";
             }
         } else {
             String clientMetadataId;
