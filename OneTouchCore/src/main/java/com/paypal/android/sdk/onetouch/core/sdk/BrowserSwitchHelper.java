@@ -18,7 +18,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.security.spec.InvalidKeySpecException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -47,8 +46,8 @@ public class BrowserSwitchHelper {
             }
         } catch (CertificateException | UnsupportedEncodingException | NoSuchPaddingException
                 | NoSuchAlgorithmException | IllegalBlockSizeException | JSONException
-                | BadPaddingException | InvalidEncryptionDataException | InvalidKeyException
-                | InvalidKeySpecException ignored) {}
+                | BadPaddingException | InvalidEncryptionDataException
+                | InvalidKeyException ignored) {}
 
         return null;
     }
