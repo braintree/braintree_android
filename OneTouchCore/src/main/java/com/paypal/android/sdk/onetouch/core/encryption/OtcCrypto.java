@@ -7,8 +7,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.spec.InvalidKeySpecException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -42,9 +40,8 @@ public class OtcCrypto {
     }
 
     public byte[] encryptRSAData(byte[] plainData, Certificate certificate)
-            throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException,
-            InvalidKeyException, BadPaddingException, IllegalBlockSizeException,
-            CertificateException, InvalidEncryptionDataException {
+            throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
+            BadPaddingException, IllegalBlockSizeException, InvalidEncryptionDataException {
         // data cannot be bigger than 256 bytes
         if (plainData.length > PUBLIC_KEY_SIZE) {
             throw new InvalidEncryptionDataException("Data is too large for public key encryption");

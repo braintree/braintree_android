@@ -18,7 +18,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.security.spec.InvalidKeySpecException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -114,7 +113,7 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
     public abstract String getBrowserSwitchUrl(Context context, OtcConfiguration config)
             throws CertificateException, UnsupportedEncodingException, NoSuchPaddingException,
             NoSuchAlgorithmException, IllegalBlockSizeException, JSONException, BadPaddingException,
-            InvalidEncryptionDataException, InvalidKeyException, InvalidKeySpecException;
+            InvalidEncryptionDataException, InvalidKeyException;
 
     public abstract Recipe getBrowserSwitchRecipe(OtcConfiguration config);
 

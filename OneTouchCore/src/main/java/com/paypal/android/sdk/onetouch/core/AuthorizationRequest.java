@@ -10,7 +10,6 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
-import com.paypal.android.sdk.onetouch.core.network.EnvironmentManager;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;
 import com.paypal.android.sdk.onetouch.core.config.ConfigEndpoint;
@@ -26,6 +25,7 @@ import com.paypal.android.sdk.onetouch.core.exception.BrowserSwitchException;
 import com.paypal.android.sdk.onetouch.core.exception.InvalidEncryptionDataException;
 import com.paypal.android.sdk.onetouch.core.exception.ResponseParsingException;
 import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
+import com.paypal.android.sdk.onetouch.core.network.EnvironmentManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,7 +38,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.security.spec.InvalidKeySpecException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -206,7 +205,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     public String getBrowserSwitchUrl(Context context, OtcConfiguration config)
             throws CertificateException, UnsupportedEncodingException, NoSuchPaddingException,
             NoSuchAlgorithmException, IllegalBlockSizeException, JSONException, BadPaddingException,
-            InvalidEncryptionDataException, InvalidKeyException, InvalidKeySpecException {
+            InvalidEncryptionDataException, InvalidKeyException {
 
         String xSource = context.getPackageName();
 
@@ -267,9 +266,9 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
 
     private String buildPayloadEnc(Certificate cert)
             throws NoSuchPaddingException, NoSuchAlgorithmException,
-            IllegalBlockSizeException, BadPaddingException, CertificateException,
+            IllegalBlockSizeException, BadPaddingException,
             InvalidEncryptionDataException,
-            InvalidKeyException, InvalidKeySpecException, JSONException {
+            InvalidKeyException, JSONException {
 
         JSONObject payloadEnc = getJsonObjectToEncrypt();
         byte[] output = mOtcCrypto.encryptRSAData(payloadEnc.toString().getBytes(), cert);
@@ -424,9 +423,10 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
                         if (recipe.isValidBrowserTarget(context, browserSwitchUrl)) {
                             return recipe;
                         }
-                    } catch (CertificateException | UnsupportedEncodingException | NoSuchPaddingException | NoSuchAlgorithmException
-                            | IllegalBlockSizeException | JSONException | BadPaddingException | InvalidEncryptionDataException | InvalidKeyException
-                            | InvalidKeySpecException e) {
+                    } catch (CertificateException | UnsupportedEncodingException
+                            | NoSuchPaddingException | NoSuchAlgorithmException
+                            | IllegalBlockSizeException | JSONException | BadPaddingException
+                            | InvalidEncryptionDataException | InvalidKeyException e) {
                         Log.e(TAG, "cannot create browser switch URL", e);
                     }
                 }

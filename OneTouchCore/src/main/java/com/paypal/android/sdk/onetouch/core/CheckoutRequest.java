@@ -57,7 +57,7 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
     }
 
     public boolean isBillingAgreement() {
-        return mTokenQueryParamKey == TOKEN_QUERY_PARAM_KEY_BA_TOKEN;
+        return TOKEN_QUERY_PARAM_KEY_BA_TOKEN.equals(mTokenQueryParamKey);
     }
 
     protected void selectTokenQueryParamKey(String url) {

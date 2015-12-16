@@ -43,7 +43,7 @@ public class EncryptionUtils {
      */
     public static String byteArrayToHexString(byte[] array) {
         if (null == array) return null;
-        StringBuffer hexString = new StringBuffer();
+        StringBuilder hexString = new StringBuilder();
         for (byte b : array) {
             int intVal = b & 0xff;
             if (intVal < 0x10) {

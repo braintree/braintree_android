@@ -94,7 +94,7 @@ public class OtcConfiguration {
     }
 
     public List<OAuth2Recipe> getOauth2Recipes() {
-        return new ArrayList(mOauth2RecipesInDecreasingPriorityOrder);
+        return new ArrayList<>(mOauth2RecipesInDecreasingPriorityOrder);
     }
 
     public void withCheckoutRecipe(CheckoutRecipe recipe) {
@@ -102,7 +102,7 @@ public class OtcConfiguration {
     }
 
     public List<CheckoutRecipe> getCheckoutRecipes() {
-        return new ArrayList(mCheckoutRecipesInDecreasingPriorityOrder);
+        return new ArrayList<>(mCheckoutRecipesInDecreasingPriorityOrder);
     }
 
     public void withBillingAgreementRecipe(BillingAgreementRecipe recipe) {
@@ -110,7 +110,7 @@ public class OtcConfiguration {
     }
 
     public List<BillingAgreementRecipe> getBillingAgreementRecipes() {
-        return new ArrayList(mBillingAgreementRecipesInDecreasingPriorityOrder);
+        return new ArrayList<>(mBillingAgreementRecipesInDecreasingPriorityOrder);
     }
 
 }
