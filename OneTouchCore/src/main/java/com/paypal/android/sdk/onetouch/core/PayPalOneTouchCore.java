@@ -203,15 +203,6 @@ public class PayPalOneTouchCore {
     }
 
     /**
-     * @return The version of the SDK library in use. Version numbering follows http://semver.org/.
-     * <p>
-     * Please be sure to include this library version in tech support requests.
-     */
-    public static String getLibraryVersion() {
-        return BuildConfig.PRODUCT_VERSION;
-    }
-
-    /**
      * Returns the currently active config.
      */
     static OtcConfiguration getConfig(Context context) {

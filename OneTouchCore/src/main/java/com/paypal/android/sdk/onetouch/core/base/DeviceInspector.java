@@ -8,11 +8,6 @@ import android.telephony.TelephonyManager;
 
 public class DeviceInspector {
 
-    public static int getPhoneType(Context context) {
-        return ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE))
-                .getPhoneType();
-    }
-
     public static String getApplicationInfoName(Context context) {
         try {
             PackageManager packageManager = context.getPackageManager();

@@ -9,8 +9,6 @@ import org.json.JSONObject;
 
 public class ConfigFileParser {
 
-    private static final String TAG = ConfigFileParser.class.getSimpleName();
-
     public OtcConfiguration getParsedConfig(JSONObject rootObject) throws JSONException {
         OtcConfiguration otcConfiguration = new OtcConfiguration();
 

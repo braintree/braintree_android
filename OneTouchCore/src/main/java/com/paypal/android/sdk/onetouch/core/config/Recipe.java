@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Locale;
 
 public abstract class Recipe<T extends Recipe<T>> {
-    private static final String TAG = Recipe.class.getSimpleName();
 
     protected List<String> targetPackagesInReversePriorityOrder;
     private RequestTarget target;

@@ -20,7 +20,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class OtcCrypto {
 
-    private static final String TAG = OtcCrypto.class.getSimpleName();
     private static final int ENCRYPTION_KEY_SIZE = 32;
     private static final String HMAC_SHA256 = "HmacSHA256";
     private static final int NONCE_SIZE = 16;
@@ -40,44 +39,6 @@ public class OtcCrypto {
 
     public byte[] generateRandom256BitKey() {
         return EncryptionUtils.generateRandomData(ENCRYPTION_KEY_SIZE);
-    }
-
-    public byte[] encryptAESCTRData(byte[] plainData, byte[] key)
-            throws NoSuchPaddingException, NoSuchAlgorithmException,
-            InvalidAlgorithmParameterException, InvalidKeyException, BadPaddingException,
-            IllegalBlockSizeException {
-        // setup key, digest key and nonce
-        byte[] encryptionKey = new byte[AES_KEY_SIZE];
-        System.arraycopy(key, 0, encryptionKey, 0, AES_KEY_SIZE);
-        byte[] digestKey = new byte[AES_KEY_SIZE];
-        System.arraycopy(key, AES_KEY_SIZE, digestKey, 0, AES_KEY_SIZE);
-        byte[] nonceData = EncryptionUtils.generateRandomData(NONCE_SIZE);
-
-        // setup encryption
-        IvParameterSpec nonceSpec = new IvParameterSpec(nonceData);
-        SecretKeySpec keySpec = new SecretKeySpec(encryptionKey, "AES");
-        Cipher cipher = Cipher.getInstance(AES_CTR_ALGO);
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, nonceSpec);
-
-        // encrypt in one go
-        byte[] cipherData = cipher.doFinal(plainData);
-
-        // now we need to add nonce and data together and sign
-        byte[] dataToSign = new byte[NONCE_SIZE + cipherData.length];
-        System.arraycopy(nonceData, 0, dataToSign, 0, NONCE_SIZE);
-        System.arraycopy(cipherData, 0, dataToSign, NONCE_SIZE, cipherData.length);
-
-        // calculate signature
-        byte[] signature = dataDigest(dataToSign, digestKey);
-
-        // now combine all of this together and return
-        byte[] output = new byte[signature.length + dataToSign.length];
-        System.arraycopy(signature, 0, output, 0, signature.length);
-        System.arraycopy(dataToSign, 0, output, signature.length, dataToSign.length);
-
-        // output is signature + nonce + encrypted blob
-
-        return output;
     }
 
     public byte[] encryptRSAData(byte[] plainData, Certificate certificate)
