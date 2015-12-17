@@ -77,7 +77,6 @@ public class PaymentFormHelpers {
         submitAndWaitForCompletion();
 
         LoadingHeader loadingHeader = (LoadingHeader) activity.findViewById(R.id.bt_header_container);
-        SystemClock.sleep(1000);
         assertEquals(HeaderState.SUCCESS, loadingHeader.getCurrentState());
         onView(withId(R.id.bt_header_container)).check(matches(isDisplayed()));
 
