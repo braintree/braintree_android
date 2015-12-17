@@ -1,9 +1,10 @@
-package com.paypal.android.sdk.onetouch.core.base;
+package com.paypal.android.sdk.data.collector;
 
 import android.content.Context;
 import android.support.annotation.MainThread;
 import android.util.Log;
 
+import com.paypal.android.sdk.BuildConfig;
 import com.paypal.android.sdk.onetouch.core.metadata.MetadataIdProvider;
 import com.paypal.android.sdk.onetouch.core.metadata.MetadataIdProviderImpl;
 
@@ -13,6 +14,8 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 
 public final class SdkRiskComponent {
+
+    private static final String PUBLIC_TAG = "paypal.sdk";
 
     private static MetadataIdProvider sMetadataIdProvider;
 
@@ -25,7 +28,7 @@ public final class SdkRiskComponent {
      */
     @MainThread
     public static String getClientMetadataId(Context context, String applicationGuid,
-            String productVersion, String pairingId) {
+            String pairingId) {
         if (sMetadataIdProvider == null) {
             try {
                 sMetadataIdProvider = new MetadataIdProviderImpl();
@@ -39,7 +42,7 @@ public final class SdkRiskComponent {
                 }
 
                 String clientMetadataId = sMetadataIdProvider.init(context.getApplicationContext(),
-                        applicationGuid, productVersion, params);
+                        applicationGuid, BuildConfig.PRODUCT_VERSION, params);
 
                 Executors.newSingleThreadExecutor().submit(new Runnable() {
                     @Override
@@ -50,8 +53,7 @@ public final class SdkRiskComponent {
 
                 return clientMetadataId;
             } catch (Throwable t) {
-                Log.e(Constants.PUBLIC_TAG, "An internal component failed to initialize: " +
-                        t.getMessage());
+                Log.e(PUBLIC_TAG, "An internal component failed to initialize: " + t.getMessage());
                 return "";
             }
         } else {

@@ -1,27 +1,11 @@
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
-
 apply plugin: 'com.android.library'
-
-def getLatestSha1 = { ->
-    "git log -1 --pretty=format:%H".execute().text.trim()
-}
 
 def getBuildVersion = { ->
     "git describe --match=*[0-9]*.[0-9]*.*[0-9] --tags --dirty --always".execute().text.trim()
 }
 
 ext {
-    latest_sha1 = getLatestSha1()
-    product_name = "OneTouchCore-Android"
-
-    jar_name = product_name.replaceAll("-", "")
     product_version = getBuildVersion()
-
-    build_time = new Date().format("MM/dd/yyyy HH:mm:ss Z")
-
-    configFileText = new File("${projectDir}/otc-config.android.json").getText('UTF-8')
-    config = JsonOutput.toJson(new JsonSlurper().parseText(configFileText)).replaceAll("\"", "\\\\\"")
 }
 
 android {
@@ -33,13 +17,9 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
 
-        buildConfigField "String", "PRODUCT_NAME", "\"${product_name}\""
         buildConfigField "String", "PRODUCT_VERSION", "\"${product_version}\""
-        buildConfigField "String", "PRODUCT_FEATURES", "\"\""
-        buildConfigField "String", "BUILD_TIME", "\"${build_time}\""
-        buildConfigField "String", "LATEST_SHA1", "\"${latest_sha1}\""
-        buildConfigField "String", "CONFIGURATION", "\"${config}\""
     }
 
     compileOptions {
@@ -51,11 +31,9 @@ android {
 dependencies {
     compile 'com.android.support:support-annotations:[23.0.0,24.0.0)'
 
-    compile project(':Core')
-    compile project(':PayPalDataCollector')
+    compile files('libs/OneTouchCoreAndroid-2.4.1-5-gd039dcd-dirty.jar')
 
-    testCompile 'org.mockito:mockito-all:1.10.19'
-    testCompile 'org.robolectric:robolectric:3.0'
+    androidTestCompile project(':TestUtils')
 }
 
 /* maven deploy + signing */
@@ -74,22 +52,36 @@ task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
 }
 
+task releaseJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompile) {
+    from projectDir.path + '/build/intermediates/classes/release/'
+    exclude { details -> details.file.name.endsWith('.xml') }
+
+    from {
+        configurations.compile.findAll {
+            it.getName() != 'android.jar'
+        }.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
+
 artifacts {
     archives javadocsJar
     archives sourcesJar
+    archives releaseJar
 }
 
 uploadArchives {
     repositories {
         mavenDeployer {
-            pom.setArtifactId 'paypal-one-touch'
+            pom.setArtifactId 'data-collector'
 
             pom.project {
-                name 'paypal-one-touch'
+                name 'data-collector'
                 groupId = 'com.paypal.android.sdk'
                 version = "${android.defaultConfig.versionName}"
                 packaging 'jar'
-                description 'PayPal SDK for handling app and browser switch based payments.'
+                description 'Fraud tools for PayPal integrations on Android.'
             }
 
             pom.whenConfigured { MavenPom pom ->

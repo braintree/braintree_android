@@ -37,7 +37,10 @@ task :publish_snapshot => :tests do
 
   sh "./gradlew clean :BraintreeDataCollector:uploadArchives"
 
+  sh "./gradlew clean :PayPalDataCollector:uploadArchives"
+
   replace_string(PAYPAL_ONE_TOUCH_BUILD_GRADLE, "compile project(':Core')", "compile 'com.braintreepayments.api:core:#{get_current_version}'")
+  replace_string(PAYPAL_ONE_TOUCH_BUILD_GRADLE, "compile project(':PayPalDataCollector')", "compile 'com.paypal.android.sdk:data-collector:#{get_current_version}'")
   sh "./gradlew clean :OneTouchCode:uploadArchives"
 
   replace_string(BRAINTREE_API_BUILD_GRADLE, "compile project(':Core')", "compile 'com.braintreepayments.api:core:#{get_current_version}'")
@@ -49,6 +52,7 @@ task :publish_snapshot => :tests do
   sh "./gradlew clean :Drop-In:uploadArchives"
 
   replace_string(PAYPAL_ONE_TOUCH_BUILD_GRADLE, "compile 'com.braintreepayments.api:core:#{get_current_version}'", "compile project(':Core')")
+  replace_string(PAYPAL_ONE_TOUCH_BUILD_GRADLE, "compile 'com.paypal.android.sdk:data-collector:#{get_current_version}'", "compile project(':PayPalDataCollector')")
   replace_string(BRAINTREE_API_BUILD_GRADLE, "compile 'com.braintreepayments.api:core:#{get_current_version}'", "compile project(':Core')")
   replace_string(BRAINTREE_API_BUILD_GRADLE, "compile 'com.braintreepayments.api:data-collector:#{get_current_version}'", "compile project(':BraintreeDataCollector')")
   replace_string(BRAINTREE_API_BUILD_GRADLE, "compile 'com.paypal.android.sdk:paypal-one-touch:#{get_current_version}'", "compile project(:OneTouchCore')")
@@ -87,7 +91,17 @@ task :release => :tests do
   puts "Sleeping for ten minutes to allow promotion to finish"
   sleep 600
 
+  sh "./gradlew clean :PayPalDataCollector:uploadArchives"
+  puts "PayPalDataCollector was uploaded, releasing..."
+  sh "./gradlew :PayPalDataCollector:closeRepository"
+  puts "Sleeping for one minute to allow closing to finish"
+  sleep 60
+  sh "./gradlew :PayPalDataCollector:promoteRepository"
+  puts "Sleeping for ten minutes to allow promotion to finish"
+  sleep 600
+
   replace_string(PAYPAL_ONE_TOUCH_BUILD_GRADLE, "compile project(':Core')", "compile 'com.braintreepayments.api:core:#{version}'")
+  replace_string(PAYPAL_ONE_TOUCH_BUILD_GRADLE, "compile project(':PayPalDataCollector')", "compile 'com.paypal.android.sdk:data-collector:#{version}'")
   sh "./gradlew clean :OneTouchCore:uploadArchives"
   puts "OneTouchCore was uploaded, releasing..."
   sh "./gradlew :OneTouchCore:closeRepository"
@@ -122,6 +136,7 @@ task :release => :tests do
   sh "git tag #{version} -am '#{version}'"
 
   replace_string(PAYPAL_ONE_TOUCH_BUILD_GRADLE, "compile 'com.braintreepayments.api:core:#{version}'", "compile project(':Core')")
+  replace_string(PAYPAL_ONE_TOUCH_BUILD_GRADLE, "compile 'com.paypal.android.sdk:data-collector:#{version}'", "compile project(':PayPalDataCollector')")
   replace_string(BRAINTREE_API_BUILD_GRADLE, "compile 'com.braintreepayments.api:core:#{version}'", "compile project(':Core')")
   replace_string(BRAINTREE_API_BUILD_GRADLE, "compile 'com.braintreepayments.api:data-collector:#{version}'", "compile project(':BraintreeDataCollector')")
   replace_string(BRAINTREE_API_BUILD_GRADLE, "compile 'com.paypal.android.sdk:paypal-one-touch:#{version}'", "compile project(':OneTouchCore')")

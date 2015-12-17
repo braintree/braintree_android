@@ -1,12 +1,14 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.models.Configuration;
 import com.devicecollector.DeviceCollector;
 import com.devicecollector.DeviceCollector.ErrorCode;
 import com.devicecollector.DeviceCollector.StatusListener;
+import com.paypal.android.sdk.data.collector.SdkRiskComponent;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import org.json.JSONException;
@@ -52,13 +54,16 @@ public class DataCollector {
 
         try {
             String deviceSessionId = UUID.randomUUID().toString().replace("-", "");
+            startDeviceCollector(fragment, merchantId, deviceSessionId);
             deviceData.put(DEVICE_SESSION_ID_KEY, deviceSessionId);
             deviceData.put(FRAUD_MERCHANT_ID_KEY, merchantId);
-            startDeviceCollector(fragment, merchantId, deviceSessionId);
         } catch (NoClassDefFoundError | JSONException ignored) {}
 
         try {
-            deviceData.put(CORRELATION_ID_KEY, getPayPalClientMetadataId(fragment.getApplicationContext()));
+            String clientMetadataId = getPayPalClientMetadataId(fragment.getApplicationContext());
+            if (!TextUtils.isEmpty(clientMetadataId)) {
+                deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
+            }
         } catch (JSONException ignored) {}
 
         return deviceData.toString();
@@ -71,11 +76,20 @@ public class DataCollector {
      * @return The client metadata id associated with the collected data.
      */
     public static String getPayPalClientMetadataId(Context context) {
-        return  PayPalOneTouchCore.getClientMetadataId(context);
+        try {
+            return PayPalOneTouchCore.getClientMetadataId(context);
+        } catch (NoClassDefFoundError ignored) {}
+
+        try {
+            return SdkRiskComponent.getClientMetadataId(context,
+                    DeviceMetadata.getPersistentUUID(context), null);
+        } catch (NoClassDefFoundError ignored) {}
+
+        return "";
     }
 
     private static void startDeviceCollector(final BraintreeFragment fragment,
-            final String merchantId, final String deviceSessionId) {
+            final String merchantId, final String deviceSessionId) throws NoClassDefFoundError {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {

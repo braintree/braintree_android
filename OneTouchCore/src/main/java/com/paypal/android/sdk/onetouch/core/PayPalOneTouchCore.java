@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.support.annotation.MainThread;
 
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
-import com.paypal.android.sdk.onetouch.core.base.SdkRiskComponent;
+import com.paypal.android.sdk.data.collector.SdkRiskComponent;
 import com.paypal.android.sdk.onetouch.core.config.ConfigManager;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
 import com.paypal.android.sdk.onetouch.core.enums.Protocol;
@@ -191,8 +191,7 @@ public class PayPalOneTouchCore {
     @MainThread
     public static String getClientMetadataId(Context context, String pairingId) {
         return SdkRiskComponent.getClientMetadataId(context,
-                getContextInspector(context).getInstallationGUID(), BuildConfig.PRODUCT_VERSION,
-                pairingId);
+                getContextInspector(context).getInstallationGUID(), pairingId);
     }
 
     private static ContextInspector getContextInspector(Context context) {
