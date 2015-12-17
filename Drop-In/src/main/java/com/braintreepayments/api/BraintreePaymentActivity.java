@@ -35,6 +35,7 @@ import com.braintreepayments.api.models.VenmoAccountNonce;
 
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -90,6 +91,7 @@ public class BraintreePaymentActivity extends Activity implements
     private AtomicBoolean mHavePaymentMethodNoncesBeenReceived = new AtomicBoolean(false);
     private Bundle mSavedInstanceState;
     private PaymentRequest mPaymentRequest;
+    private ScheduledFuture mWaitingForPaymentMethods;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -237,13 +239,14 @@ public class BraintreePaymentActivity extends Activity implements
     }
 
     private void waitForData() {
-        Executors.newScheduledThreadPool(1).schedule(new Runnable() {
+        mWaitingForPaymentMethods = Executors.newScheduledThreadPool(1).schedule(new Runnable() {
             @Override
             public void run() {
                 if (!mHavePaymentMethodNoncesBeenReceived.get()) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            mWaitingForPaymentMethods = null;
                             mHavePaymentMethodNoncesBeenReceived.set(true);
                             showAddPaymentMethodView();
                         }
@@ -252,6 +255,14 @@ public class BraintreePaymentActivity extends Activity implements
             }
         }, 10, TimeUnit.SECONDS);
         showLoadingView();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mWaitingForPaymentMethods != null) {
+            mWaitingForPaymentMethods.cancel(true);
+        }
     }
 
     private void initSelectPaymentMethodNonceView() {
