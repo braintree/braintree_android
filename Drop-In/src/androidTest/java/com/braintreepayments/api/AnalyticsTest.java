@@ -216,7 +216,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
         setupActivity(new TestClientTokenBuilder().withAnalytics().build());
         waitForAddPaymentFormHeader();
 
-        mFragment.postCallback(new AuthenticationException());
+        mFragment.postCallback(new AuthenticationException(""));
         waitForActivityToFinish(mActivity);
 
         verifyAnalyticsEvent("sdk.exit.developer-error");
@@ -227,7 +227,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
         setupActivity(new TestClientTokenBuilder().withAnalytics().build());
         waitForAddPaymentFormHeader();
 
-        mFragment.postCallback(new ServerException());
+        mFragment.postCallback(new ServerException(""));
         waitForActivityToFinish(mActivity);
 
         verifyAnalyticsEvent("sdk.exit.server-error");
@@ -238,7 +238,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
         setupActivity(new TestClientTokenBuilder().withAnalytics().build());
         waitForAddPaymentFormHeader();
 
-        mFragment.postCallback(new DownForMaintenanceException());
+        mFragment.postCallback(new DownForMaintenanceException(""));
         waitForActivityToFinish(mActivity);
 
         verifyAnalyticsEvent("sdk.exit.server-unavailable");

@@ -24,7 +24,6 @@ public class BraintreeTestHttpClient extends BraintreeHttpClient {
 
     public BraintreeTestHttpClient(Authorization authorization, Intent intent) {
         super(authorization);
-        BraintreeHttpClient.DEBUG = true;
         mIntent = intent;
         mDelay = mIntent.getLongExtra(BraintreePaymentTestActivity.EXTRA_DELAY, 0);
     }

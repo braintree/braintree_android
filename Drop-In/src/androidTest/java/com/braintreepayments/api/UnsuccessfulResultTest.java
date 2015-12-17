@@ -96,7 +96,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestRunner {
         setupActivityWithBraintree();
 
         assertExceptionIsReturned(BraintreePaymentActivity.BRAINTREE_RESULT_DEVELOPER_ERROR,
-                new AuthenticationException());
+                new AuthenticationException(""));
     }
 
     @Test(timeout = 30000)
@@ -104,7 +104,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestRunner {
         setupActivityWithBraintree();
 
         assertExceptionIsReturned(BraintreePaymentActivity.BRAINTREE_RESULT_DEVELOPER_ERROR,
-                new AuthorizationException());
+                new AuthorizationException(""));
     }
 
     @Test(timeout = 30000)
@@ -112,7 +112,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestRunner {
         setupActivityWithBraintree();
 
         assertExceptionIsReturned(BraintreePaymentActivity.BRAINTREE_RESULT_DEVELOPER_ERROR,
-                new UpgradeRequiredException());
+                new UpgradeRequiredException(""));
     }
 
     @Test(timeout = 30000)
@@ -120,7 +120,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestRunner {
         setupActivityWithBraintree();
 
         assertExceptionIsReturned(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_ERROR,
-                new ServerException());
+                new ServerException(""));
     }
 
     @Test(timeout = 30000)
@@ -129,7 +129,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestRunner {
         setupActivityWithBraintree();
 
         assertExceptionIsReturned(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_UNAVAILABLE,
-                new DownForMaintenanceException());
+                new DownForMaintenanceException(""));
     }
 
     @Test(timeout = 30000)
@@ -137,7 +137,7 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestRunner {
         setupActivityWithBraintree();
 
         assertExceptionIsReturned(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_ERROR,
-                new UnexpectedException());
+                new UnexpectedException(""));
     }
 
     @Test(timeout = 30000)

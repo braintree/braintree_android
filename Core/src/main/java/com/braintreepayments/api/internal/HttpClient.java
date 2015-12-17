@@ -3,6 +3,7 @@ package com.braintreepayments.api.internal;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.core.BuildConfig;
 import com.braintreepayments.api.exceptions.AuthenticationException;
@@ -44,8 +45,10 @@ public class HttpClient<T extends HttpClient> {
     private static final String METHOD_POST = "POST";
     private static final String UTF_8 = "UTF-8";
 
-    private final ExecutorService mThreadPool;
     private final Handler mMainThreadHandler;
+
+    @VisibleForTesting
+    protected final ExecutorService mThreadPool;
 
     private String mUserAgent;
     private SSLSocketFactory mSSLSocketFactory;

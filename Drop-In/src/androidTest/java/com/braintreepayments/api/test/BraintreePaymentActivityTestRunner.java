@@ -7,7 +7,6 @@ import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.BraintreePaymentTestActivity;
 import com.braintreepayments.api.PayPalTestSignatureVerification;
 import com.braintreepayments.api.PaymentRequest;
-import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.testutils.BraintreeActivityTestRule;
 
 import org.junit.Before;
@@ -25,7 +24,6 @@ public class BraintreePaymentActivityTestRunner {
 
     @Before
     public void setUp() {
-        BraintreeHttpClient.DEBUG = true;
         PayPalTestSignatureVerification.disableAppSwitchSignatureVerification();
     }
 
