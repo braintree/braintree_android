@@ -277,7 +277,7 @@ public class PaymentButtonTest {
         BraintreeFragment fragment = getFragment(false, true, false);
         PaymentRequest paymentRequest = new PaymentRequest().tokenizationKey(TOKENIZATION_KEY);
         PaymentButton paymentButton =
-                PaymentButton.newInstance(mActivity, paymentRequest);
+                PaymentButton.newInstance(mActivity, android.R.id.content, paymentRequest);
         getInstrumentation().waitForIdleSync();
         paymentButton.mBraintreeFragment = fragment;
         paymentButton.setPaymentRequest(paymentRequest);
@@ -330,7 +330,8 @@ public class PaymentButtonTest {
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY)
                 .androidPayCart(Cart.newBuilder().build());
-        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, paymentRequest);
+        PaymentButton paymentButton =
+                PaymentButton.newInstance(mActivity, android.R.id.content, paymentRequest);
         getInstrumentation().waitForIdleSync();
 
         assertEquals(View.VISIBLE, paymentButton.getView().getVisibility());
@@ -354,7 +355,8 @@ public class PaymentButtonTest {
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY)
                 .androidPayCart(Cart.newBuilder().build());
-        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, paymentRequest);
+        PaymentButton paymentButton =
+                PaymentButton.newInstance(mActivity, android.R.id.content, paymentRequest);
         getInstrumentation().waitForIdleSync();
         paymentButton.mBraintreeFragment = fragment;
         paymentButton.setPaymentRequest(paymentRequest);
@@ -382,7 +384,8 @@ public class PaymentButtonTest {
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY)
                 .androidPayCart(Cart.newBuilder().build());
-        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, paymentRequest);
+        PaymentButton paymentButton =
+                PaymentButton.newInstance(mActivity, android.R.id.content, paymentRequest);
         getInstrumentation().waitForIdleSync();
         paymentButton.mBraintreeFragment = fragment;
         paymentButton.setPaymentRequest(paymentRequest);
@@ -501,7 +504,8 @@ public class PaymentButtonTest {
         SignatureVerificationTestUtils.disableSignatureVerification();
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY);
-        PaymentButton paymentButton = PaymentButton.newInstance(mActivity, paymentRequest);
+        PaymentButton paymentButton =
+                PaymentButton.newInstance(mActivity, android.R.id.content, paymentRequest);
         getInstrumentation().waitForIdleSync();
         paymentButton.mBraintreeFragment = fragment;
         paymentButton.setupButton(fragment.getConfiguration());
