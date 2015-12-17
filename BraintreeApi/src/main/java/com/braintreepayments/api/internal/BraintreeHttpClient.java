@@ -61,7 +61,7 @@ public class BraintreeHttpClient {
     private final Authorization mAuthorization;
     private String mBaseUrl;
     private int mConnectTimeout = 30000; // 30 seconds
-    private int mReadTimeout = 60000; // 60 seconds
+    private int mReadTimeout = 30000; // 30 seconds
 
     public BraintreeHttpClient(Authorization authorization) {
         mAuthorization = authorization;

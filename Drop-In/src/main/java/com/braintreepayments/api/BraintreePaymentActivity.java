@@ -35,9 +35,7 @@ import com.braintreepayments.api.models.VenmoAccountNonce;
 
 import java.util.List;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * {@link android.app.Activity} encompassing Braintree's Drop-In UI.
@@ -88,10 +86,9 @@ public class BraintreePaymentActivity extends Activity implements
     protected BraintreeFragment mBraintreeFragment;
     private AddPaymentMethodViewController mAddPaymentMethodViewController;
     private SelectPaymentMethodNonceNonceViewController mSelectPaymentMethodNonceViewController;
-    private AtomicBoolean mHavePaymentMethodNoncesBeenReceived = new AtomicBoolean(false);
+    private boolean mHavePaymentMethodNoncesBeenReceived = false;
     private Bundle mSavedInstanceState;
     private PaymentRequest mPaymentRequest;
-    private ScheduledFuture mWaitingForPaymentMethods;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +111,7 @@ public class BraintreePaymentActivity extends Activity implements
                 }
             } else {
                 TokenizationClient.getPaymentMethodNonces(mBraintreeFragment);
-                waitForData();
+                showLoadingView();
             }
         } catch (InvalidArgumentException e) {
             setResult(BRAINTREE_RESULT_DEVELOPER_ERROR,
@@ -125,9 +122,9 @@ public class BraintreePaymentActivity extends Activity implements
 
     @Override
     public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {
-        if (!mHavePaymentMethodNoncesBeenReceived.get()) {
+        if (!mHavePaymentMethodNoncesBeenReceived) {
             mBraintreeFragment.sendAnalyticsEvent("appeared");
-            mHavePaymentMethodNoncesBeenReceived.set(true);
+            mHavePaymentMethodNoncesBeenReceived = true;
         }
 
         if (paymentMethodNonces.size() == 0) {
@@ -200,10 +197,10 @@ public class BraintreePaymentActivity extends Activity implements
         } else {
             // Falling back to add payment method if getPaymentMethodNonces fails
             if (StubbedView.LOADING_VIEW.mCurrentView &&
-                    !mHavePaymentMethodNoncesBeenReceived.get() &&
+                    !mHavePaymentMethodNoncesBeenReceived &&
                     mBraintreeFragment.getConfiguration() != null) {
                 mBraintreeFragment.sendAnalyticsEvent("appeared");
-                mHavePaymentMethodNoncesBeenReceived.set(true);
+                mHavePaymentMethodNoncesBeenReceived = true;
                 showAddPaymentMethodView();
             } else {
                 if (error instanceof AuthenticationException ||
@@ -236,33 +233,6 @@ public class BraintreePaymentActivity extends Activity implements
         resultIntent.putExtra(EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce);
         setResult(RESULT_OK, resultIntent);
         finish();
-    }
-
-    private void waitForData() {
-        mWaitingForPaymentMethods = Executors.newScheduledThreadPool(1).schedule(new Runnable() {
-            @Override
-            public void run() {
-                if (!mHavePaymentMethodNoncesBeenReceived.get()) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mWaitingForPaymentMethods = null;
-                            mHavePaymentMethodNoncesBeenReceived.set(true);
-                            showAddPaymentMethodView();
-                        }
-                    });
-                }
-            }
-        }, 10, TimeUnit.SECONDS);
-        showLoadingView();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mWaitingForPaymentMethods != null) {
-            mWaitingForPaymentMethods.cancel(true);
-        }
     }
 
     private void initSelectPaymentMethodNonceView() {

@@ -167,7 +167,7 @@ public class BraintreeHttpClientTest {
 
         HttpURLConnection connection = httpClient.init("http://example.com/");
 
-        assertEquals(60000, connection.getReadTimeout());
+        assertEquals(30000, connection.getReadTimeout());
     }
 
     @Test(timeout = 1000)

@@ -55,19 +55,6 @@ public class ListPaymentMethodNonceTest extends BraintreePaymentActivityTestRunn
     }
 
     @Test(timeout = 30000)
-    public void loadingPaymentMethodsTimesOutAfterTenSecondsAndDropsToAddPaymentMethodForm() {
-        String clientToken = new TestClientTokenBuilder().build();
-        Intent intent = new PaymentRequest()
-                .clientToken(clientToken)
-                .getIntent(getTargetContext())
-                .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken)
-                .putExtra(BraintreePaymentTestActivity.EXTRA_DELAY, 11000);
-        getActivity(intent);
-
-        waitForAddPaymentFormHeader(10500).check(matches(isDisplayed()));
-    }
-
-    @Test(timeout = 30000)
     public void fallsBackToAddPaymentMethodFormIfLoadingPaymentMethodsBlowsUp() {
         long testStartTime = System.currentTimeMillis();
         Intent intent = new PaymentRequest()
