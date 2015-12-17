@@ -2,6 +2,7 @@ package com.braintreepayments.testutils;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
+import android.app.KeyguardManager.KeyguardLock;
 import android.content.Context;
 import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
@@ -11,23 +12,25 @@ import static com.braintreepayments.testutils.SharedPreferencesHelper.getSharedP
 
 public class BraintreeActivityTestRule<T extends Activity> extends ActivityTestRule<T> {
 
+    private KeyguardLock mKeyguardLock;
+
     public BraintreeActivityTestRule(Class<T> activityClass) {
         super(activityClass);
+        init();
     }
 
     public BraintreeActivityTestRule(Class<T> activityClass, boolean initialTouchMode,
             boolean launchActivity) {
         super(activityClass, initialTouchMode, launchActivity);
+        init();
     }
 
-    @Override
-    protected void beforeActivityLaunched() {
-        super.beforeActivityLaunched();
+    private void init() {
         getSharedPreferences().edit().clear().commit();
 
-        ((KeyguardManager) getTargetContext().getSystemService(Context.KEYGUARD_SERVICE))
-                .newKeyguardLock("BraintreeActivityTestRule")
-                .disableKeyguard();
+        mKeyguardLock = ((KeyguardManager) getTargetContext().getSystemService(Context.KEYGUARD_SERVICE))
+                .newKeyguardLock("BraintreeActivityTestRule");
+        mKeyguardLock.disableKeyguard();
     }
 
     @Override
@@ -40,8 +43,12 @@ public class BraintreeActivityTestRule<T extends Activity> extends ActivityTestR
     protected void afterActivityFinished() {
         super.afterActivityFinished();
 
-        Intents.release();
+        try {
+            Intents.release();
+        } catch (IllegalStateException ignored) {}
 
         getSharedPreferences().edit().clear().commit();
+
+        mKeyguardLock.reenableKeyguard();
     }
 }
