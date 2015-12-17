@@ -12,7 +12,6 @@ import com.braintreepayments.testutils.BraintreeActivityTestRule;
 
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
@@ -51,7 +50,4 @@ public class BraintreePaymentActivityTestRunner {
         intent.setClass(getTargetContext(), BraintreePaymentTestActivity.class);
         return mActivityTestRule.launchActivity(intent);
     }
-
-    @Test(timeout = 100)
-    public void test(){}
 }
