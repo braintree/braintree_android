@@ -24,6 +24,9 @@ import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
 import static junit.framework.Assert.assertEquals;
@@ -91,98 +94,50 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestRunner {
     @Test(timeout = 30000)
     public void returnsDeveloperErrorOnAuthenticationException() throws InterruptedException {
         setupActivityWithBraintree();
-        final CountDownLatch latch = new CountDownLatch(1);
-        mFragment.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                AuthenticationException exception = new AuthenticationException();
-                mFragment.postCallback(exception);
-                waitForActivityToFinish(mActivity);
-                Map<String, Object> result = getActivityResult(mActivity);
 
-                assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_DEVELOPER_ERROR,
-                        result.get("resultCode"));
-                assertEquals(exception, ((Intent) result.get("resultData"))
-                        .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE));
-                latch.countDown();
-            }
-        });
-        latch.await();
+        assertExceptionIsReturned(BraintreePaymentActivity.BRAINTREE_RESULT_DEVELOPER_ERROR,
+                new AuthenticationException());
     }
 
     @Test(timeout = 30000)
-    public void returnsDeveloperErrorOnAuthorizationException() {
+    public void returnsDeveloperErrorOnAuthorizationException() throws InterruptedException {
         setupActivityWithBraintree();
-        AuthorizationException exception = new AuthorizationException();
-        mFragment.postCallback(exception);
 
-        waitForActivityToFinish(mActivity);
-        Map<String, Object> result = getActivityResult(mActivity);
-
-        assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_DEVELOPER_ERROR,
-                result.get("resultCode"));
-        assertEquals(exception, ((Intent) result.get("resultData"))
-                .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE));
+        assertExceptionIsReturned(BraintreePaymentActivity.BRAINTREE_RESULT_DEVELOPER_ERROR,
+                new AuthorizationException());
     }
 
     @Test(timeout = 30000)
-    public void returnsDeveloperErrorOnUpgradeRequiredException() {
+    public void returnsDeveloperErrorOnUpgradeRequiredException() throws InterruptedException {
         setupActivityWithBraintree();
-        UpgradeRequiredException exception = new UpgradeRequiredException();
-        mFragment.postCallback(exception);
 
-        waitForActivityToFinish(mActivity);
-        Map<String, Object> result = getActivityResult(mActivity);
-
-        assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_DEVELOPER_ERROR,
-                result.get("resultCode"));
-        assertEquals(exception, ((Intent) result.get("resultData"))
-                .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE));
+        assertExceptionIsReturned(BraintreePaymentActivity.BRAINTREE_RESULT_DEVELOPER_ERROR,
+                new UpgradeRequiredException());
     }
 
     @Test(timeout = 30000)
-    public void returnsServerErrorOnServerException() {
+    public void returnsServerErrorOnServerException() throws InterruptedException {
         setupActivityWithBraintree();
-        ServerException exception = new ServerException();
-        mFragment.postCallback(exception);
 
-        waitForActivityToFinish(mActivity);
-        Map<String, Object> result = getActivityResult(mActivity);
-
-        assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_ERROR,
-                result.get("resultCode"));
-        assertEquals(exception, ((Intent) result.get("resultData"))
-                .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE));
+        assertExceptionIsReturned(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_ERROR,
+                new ServerException());
     }
 
     @Test(timeout = 30000)
-    public void returnsServerUnavailableOnDownForMaintenanceException() {
+    public void returnsServerUnavailableOnDownForMaintenanceException()
+            throws InterruptedException {
         setupActivityWithBraintree();
-        DownForMaintenanceException exception = new DownForMaintenanceException();
-        mFragment.postCallback(exception);
 
-        waitForActivityToFinish(mActivity);
-        Map<String, Object> result = getActivityResult(mActivity);
-
-        assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_UNAVAILABLE,
-                result.get("resultCode"));
-        assertEquals(exception, ((Intent) result.get("resultData"))
-                .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE));
+        assertExceptionIsReturned(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_UNAVAILABLE,
+                new DownForMaintenanceException());
     }
 
     @Test(timeout = 30000)
-    public void returnsServerErrorOnUnexpectedException() {
+    public void returnsServerErrorOnUnexpectedException() throws InterruptedException {
         setupActivityWithBraintree();
-        UnexpectedException exception = new UnexpectedException();
-        mFragment.postCallback(exception);
 
-        waitForActivityToFinish(mActivity);
-        Map<String, Object> result = getActivityResult(mActivity);
-
-        assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_ERROR,
-                result.get("resultCode"));
-        assertEquals(exception, ((Intent) result.get("resultData"))
-                .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE));
+        assertExceptionIsReturned(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_ERROR,
+                new UnexpectedException());
     }
 
     @Test(timeout = 30000)
@@ -210,5 +165,28 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestRunner {
         }
         mFragment = spy(mFragment);
         when(mFragment.getConfiguration()).thenReturn(configuration);
+    }
+
+    private void assertExceptionIsReturned(final int resultCode, final Exception exception)
+            throws InterruptedException {
+        waitForAddPaymentFormHeader().check(matches(isDisplayed()));
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mFragment.postCallback(exception);
+
+                waitForActivityToFinish(mActivity);
+                Map<String, Object> result = getActivityResult(mActivity);
+
+                assertEquals(resultCode, result.get("resultCode"));
+                assertEquals(exception, ((Intent) result.get("resultData"))
+                        .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE));
+                latch.countDown();
+            }
+        });
+
+        latch.await();
     }
 }
