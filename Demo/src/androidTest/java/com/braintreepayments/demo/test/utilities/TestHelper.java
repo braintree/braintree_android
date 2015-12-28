@@ -6,6 +6,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Spinner;
 
+import com.braintreepayments.demo.DemoApplication;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +30,7 @@ public class TestHelper {
                 .edit()
                 .clear()
                 .commit();
+        DemoApplication.sIsTest = true;
         onDevice().onHomeScreen().launchApp("com.braintreepayments.demo");
         ensureEnvironmentIs("Sandbox");
     }

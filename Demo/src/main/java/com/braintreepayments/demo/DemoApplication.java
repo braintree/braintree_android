@@ -17,6 +17,8 @@ import retrofit.RestAdapter;
 
 public class DemoApplication extends Application implements UncaughtExceptionHandler {
 
+    public static boolean sIsTest = false;
+
     private static ApiClient sApiClient;
 
     private Thread.UncaughtExceptionHandler mDefaultExceptionHandler;
@@ -25,18 +27,18 @@ public class DemoApplication extends Application implements UncaughtExceptionHan
     public void onCreate() {
         super.onCreate();
 
-        init();
-        MailableLog.init(this, BuildConfig.DEBUG);
-        LeakLoggerService.setupLeakCanary(this);
-        mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(this);
-    }
-
-    private void init() {
         if (Settings.getVersion(this) != BuildConfig.VERSION_CODE) {
             Settings.setVersion(this);
             MailableLog.clearLog(this);
         }
+        MailableLog.init(this, BuildConfig.DEBUG);
+
+        if (!sIsTest) {
+            LeakLoggerService.setupLeakCanary(this);
+        }
+
+        mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(this);
     }
 
     @Override
