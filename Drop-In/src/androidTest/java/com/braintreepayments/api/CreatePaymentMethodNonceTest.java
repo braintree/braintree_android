@@ -47,7 +47,6 @@ import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static com.braintreepayments.testutils.ui.Matchers.withHint;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
-import static com.braintreepayments.testutils.ui.ViewHelper.TEN_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.THREE_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.TWO_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
@@ -119,13 +118,12 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
 
     @Test(timeout = 30000)
     public void returnsToSelectPaymentMethodNonceViewAfterAddingAPayPalAccount() {
-        String clientToken = new TestClientTokenBuilder().build();
+        String clientToken = new TestClientTokenBuilder().withPayPal().build();
         BraintreePaymentActivity activity = getActivity(clientToken);
         performPayPalAdd(activity);
 
-        waitForPaymentMethodNonceList(TEN_SECONDS);
-        assertSelectedPaymentMethodIs(
-                com.braintreepayments.api.dropin.R.string.bt_descriptor_paypal);
+        waitForPaymentMethodNonceList();
+        assertSelectedPaymentMethodIs(com.braintreepayments.api.dropin.R.string.bt_descriptor_paypal);
     }
 
     @Test(timeout = 30000)
@@ -254,17 +252,16 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
     @Test(timeout = 30000)
     public void upButtonIsShownAfterYouAddAPaymentMethod()
             throws JSONException, InterruptedException {
-    String clientToken = new TestClientTokenBuilder().build();
+        String clientToken = new TestClientTokenBuilder().withPayPal().build();
         BraintreePaymentActivity activity = getActivity(clientToken);
         performPayPalAdd(activity);
 
         assertFalse("Expected up not to be present on action bar", checkHomeAsUpEnabled(activity));
-        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_change_payment_method_link)).perform(
-                click());
+        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_change_payment_method_link))
+                .perform(click());
 
         assertTrue("Expected up to be present on action bar", checkHomeAsUpEnabled(activity));
     }
-
 
     @Test(timeout = 30000)
     public void displaysAnErrorWhenCardNumberFailsOnServer() {

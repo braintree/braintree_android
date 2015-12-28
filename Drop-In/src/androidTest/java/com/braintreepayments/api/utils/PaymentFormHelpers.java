@@ -2,7 +2,6 @@ package com.braintreepayments.api.utils;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.SystemClock;
 import android.support.test.espresso.PerformException;
 import android.support.test.espresso.ViewInteraction;
 import android.util.Log;
@@ -108,9 +107,14 @@ public class PaymentFormHelpers {
                                 "postCallback", PaymentMethodNonce.class);
                         postCallbackMethod.setAccessible(true);
                         postCallbackMethod.invoke(fragment, payPalAccountNonce);
-                    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                    } catch (NoSuchMethodException e) {
+                        fail(e.getMessage());
+                    } catch (InvocationTargetException e) {
+                        fail(e.getMessage());
+                    } catch (IllegalAccessException e) {
                         fail(e.getMessage());
                     }
+
                     latch.countDown();
                 }
             });
