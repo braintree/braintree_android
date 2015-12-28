@@ -212,7 +212,7 @@ public class AndroidPay {
         if("production".equals(configuration.getEnvironment())) {
             return WalletConstants.ENVIRONMENT_PRODUCTION;
         } else {
-            return WalletConstants.ENVIRONMENT_SANDBOX;
+            return WalletConstants.ENVIRONMENT_TEST;
         }
     }
 
