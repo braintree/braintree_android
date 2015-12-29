@@ -13,7 +13,7 @@ import org.json.JSONObject;
  */
 public class ClientToken extends Authorization {
 
-    protected static String BASE_64_MATCHER =
+    protected static final String BASE_64_MATCHER =
             "([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)";
     private static final String CONFIG_URL_KEY = "configUrl";
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorizationFingerprint";

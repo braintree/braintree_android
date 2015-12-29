@@ -8,7 +8,7 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 
 public class TokenizationKey extends Authorization implements Parcelable {
 
-    protected static String MATCHER = "^[a-zA-Z0-9_]+_[a-zA-Z0-9]+_[a-zA-Z0-9_]+$";
+    protected static final String MATCHER = "^[a-zA-Z0-9_]+_[a-zA-Z0-9]+_[a-zA-Z0-9_]+$";
 
     private final String mEnvironment;
     private final String mMerchantId;
