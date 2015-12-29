@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Base64;
 
+import com.braintreepayments.api.Braintree.BraintreeResponseListener;
 import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.data.BraintreeData;
 import com.braintreepayments.api.data.BraintreeEnvironment;
@@ -253,6 +254,20 @@ public class BraintreeApi {
         }
 
         return mAndroidPay.getTokenizationParameters();
+    }
+
+    protected void checkAndroidPayIsReadyToPay(Activity activity,
+            BraintreeResponseListener<Boolean> listener)
+            throws UnexpectedException {
+        if (mAndroidPay == null) {
+            mAndroidPay = new AndroidPay(mConfiguration);
+        }
+
+        if (!isAndroidPayEnabled()) {
+            listener.onResponse(false);
+        } else {
+            mAndroidPay.isReadyToPay(activity, listener);
+        }
     }
 
     protected void performAndroidPayMaskedWalletRequest(Activity activity, int requestCode, Cart cart,

@@ -4,7 +4,7 @@
     android:layout_height="@dimen/bt_payment_method_button_height"
     android:orientation="horizontal"
     android:weightSum="3"
-    android:background="@color/bt_white" >
+    android:background="@color/bt_white">
 
     <ImageButton
         style="@style/bt_payment_method_app_switch_button"

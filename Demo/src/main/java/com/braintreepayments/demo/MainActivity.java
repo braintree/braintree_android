@@ -67,7 +67,6 @@ public class MainActivity extends Activity implements PaymentMethodCreatedListen
     private Button mCreateTransactionButton;
     private ProgressDialog mLoading;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

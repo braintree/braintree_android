@@ -9,15 +9,21 @@ import android.view.View;
 
 import com.braintreepayments.api.AppSwitch;
 import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.Braintree.BraintreeResponseListener;
 import com.braintreepayments.api.dropin.R;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.WalletConstants;
 import com.paypal.android.sdk.payments.PayPalOAuthScopes;
 import com.paypal.android.sdk.payments.PayPalTouchActivity;
 
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
 import java.util.Arrays;
 import java.util.List;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -40,7 +46,7 @@ public class PaymentButtonTest extends AndroidTestCase {
     public void testNotVisibleWhenNoMethodsAreEnabled() {
         when(mBraintree.isPayPalEnabled()).thenReturn(false);
         when(mBraintree.isVenmoEnabled()).thenReturn(false);
-        when(mBraintree.isAndroidPayEnabled()).thenReturn(false);
+        setAndroidPay(false);
         PaymentButton button = new PaymentButton(getContext());
 
         button.initialize(null, mBraintree);
@@ -78,7 +84,7 @@ public class PaymentButtonTest extends AndroidTestCase {
     public void testOnlyShowsAndroidPay() {
         when(mBraintree.isPayPalEnabled()).thenReturn(false);
         when(mBraintree.isVenmoEnabled()).thenReturn(false);
-        when(mBraintree.isAndroidPayEnabled()).thenReturn(true);
+        setAndroidPay(true);
         PaymentButton button = new PaymentButton(getContext());
 
         button.setAndroidPayOptions(Cart.newBuilder().build(), false, false, false);
@@ -94,7 +100,7 @@ public class PaymentButtonTest extends AndroidTestCase {
     public void testShowsAndroidPayIfBillingAgreementIsTrue() {
         when(mBraintree.isPayPalEnabled()).thenReturn(false);
         when(mBraintree.isVenmoEnabled()).thenReturn(false);
-        when(mBraintree.isAndroidPayEnabled()).thenReturn(true);
+        setAndroidPay(true);
         PaymentButton button = new PaymentButton(getContext());
 
         button.setAndroidPayOptions(null, true, false, false);
@@ -106,7 +112,7 @@ public class PaymentButtonTest extends AndroidTestCase {
     public void testDoesntShowAndroidPayIfSetAndroidPayOptionsWasNotCalled() {
         when(mBraintree.isPayPalEnabled()).thenReturn(false);
         when(mBraintree.isVenmoEnabled()).thenReturn(false);
-        when(mBraintree.isAndroidPayEnabled()).thenReturn(true);
+        setAndroidPay(true);
         PaymentButton button = new PaymentButton(getContext());
 
         button.initialize(null, mBraintree);
@@ -117,7 +123,7 @@ public class PaymentButtonTest extends AndroidTestCase {
     public void testShowsAllMethodsAndDividers() {
         when(mBraintree.isPayPalEnabled()).thenReturn(true);
         when(mBraintree.isVenmoEnabled()).thenReturn(true);
-        when(mBraintree.isAndroidPayEnabled()).thenReturn(true);
+        setAndroidPay(true);
         PaymentButton button = new PaymentButton(getContext());
 
         button.setAndroidPayOptions(Cart.newBuilder().build(), false, false, false);
@@ -133,7 +139,7 @@ public class PaymentButtonTest extends AndroidTestCase {
     public void testShowsSecondTwoMethodsWithCorrectDivider() {
         when(mBraintree.isPayPalEnabled()).thenReturn(false);
         when(mBraintree.isVenmoEnabled()).thenReturn(true);
-        when(mBraintree.isAndroidPayEnabled()).thenReturn(true);
+        setAndroidPay(true);
         PaymentButton button = new PaymentButton(getContext());
 
         button.setAndroidPayOptions(Cart.newBuilder().build(), false, false, false);
@@ -181,7 +187,7 @@ public class PaymentButtonTest extends AndroidTestCase {
     public void testStartsPayWithAndroidPay() {
         when(mBraintree.isPayPalEnabled()).thenReturn(true);
         when(mBraintree.isVenmoEnabled()).thenReturn(true);
-        when(mBraintree.isAndroidPayEnabled()).thenReturn(true);
+        setAndroidPay(true);
         PaymentButton button = new PaymentButton(getContext());
         Cart cart = Cart.newBuilder().build();
 
@@ -247,6 +253,19 @@ public class PaymentButtonTest extends AndroidTestCase {
         button.onActivityResult(PaymentButton.REQUEST_CODE, Activity.RESULT_OK, intent);
         verify(mBraintree).onActivityResult(null, PaymentButton.REQUEST_CODE, Activity.RESULT_OK,
                 intent);
+    }
+
+    /* helpers */
+    private void setAndroidPay(final boolean isAvailable) {
+        when(mBraintree.isAndroidPayEnabled()).thenReturn(isAvailable);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                ((BraintreeResponseListener<Boolean>) args[1]).onResponse(isAvailable);
+                return null;
+            }
+        }).when(mBraintree).checkAndroidPayIsReadyToPay(any(Activity.class), any(BraintreeResponseListener.class));
     }
 
     private Parcelable newParcelable() {

@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.braintreepayments.api.Braintree;
+import com.braintreepayments.api.Braintree.BraintreeResponseListener;
 import com.braintreepayments.api.dropin.R;
 import com.google.android.gms.wallet.Cart;
 
@@ -92,43 +93,19 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
         mBraintree = braintree;
         mRequestCode = requestCode;
 
+        setVisibility(GONE);
         inflate(getContext(), R.layout.bt_payment_button, this);
 
-        boolean isPayPalEnabled = mBraintree.isPayPalEnabled();
-        boolean isVenmoEnabled = mBraintree.isVenmoEnabled();
-        boolean isAndroidPayEnabled = (mBraintree.isAndroidPayEnabled() && (mCart != null || mIsBillingAgreement));
-        int buttonCount = 0;
-        if (!isPayPalEnabled && !isVenmoEnabled && !isAndroidPayEnabled) {
-            setVisibility(GONE);
+        if (!(mBraintree.isAndroidPayEnabled() && (mCart != null || mIsBillingAgreement))) {
+            setupButton(false);
         } else {
-            if (isPayPalEnabled) {
-                buttonCount++;
-            }
-            if (isVenmoEnabled) {
-                buttonCount++;
-            }
-            if (isAndroidPayEnabled) {
-                buttonCount++;
-            }
-
-            if (isPayPalEnabled) {
-                enableButton(findViewById(R.id.bt_paypal_button), buttonCount);
-            }
-            if (isVenmoEnabled) {
-                enableButton(findViewById(R.id.bt_venmo_button), buttonCount);
-            }
-            if (isAndroidPayEnabled) {
-                enableButton(findViewById(R.id.bt_android_pay_button), buttonCount);
-            }
-
-            if (isPayPalEnabled && buttonCount > 1) {
-                findViewById(R.id.bt_payment_button_divider).setVisibility(VISIBLE);
-            } else if (isVenmoEnabled && buttonCount > 1) {
-                findViewById(R.id.bt_payment_button_divider_2).setVisibility(VISIBLE);
-            }
-            if (buttonCount > 2) {
-                findViewById(R.id.bt_payment_button_divider_2).setVisibility(VISIBLE);
-            }
+            mBraintree.checkAndroidPayIsReadyToPay(mActivity,
+                    new BraintreeResponseListener<Boolean>() {
+                @Override
+                public void onResponse(Boolean androidPayEnabled) {
+                    setupButton(androidPayEnabled);
+                }
+            });
         }
     }
 
@@ -197,6 +174,46 @@ public class PaymentButton extends RelativeLayout implements OnClickListener {
     public void onActivityResult(int requestCode, int responseCode, Intent data) {
         if (requestCode == mRequestCode) {
             mBraintree.onActivityResult(mActivity, requestCode, responseCode, data);
+        }
+    }
+
+    private void setupButton(boolean isAndroidPayEnabled) {
+        boolean isPayPalEnabled = mBraintree.isPayPalEnabled();
+        boolean isVenmoEnabled = mBraintree.isVenmoEnabled();
+        int buttonCount = 0;
+        if (!isPayPalEnabled && !isVenmoEnabled && !isAndroidPayEnabled) {
+            setVisibility(GONE);
+        } else {
+            if (isPayPalEnabled) {
+                buttonCount++;
+            }
+            if (isVenmoEnabled) {
+                buttonCount++;
+            }
+            if (isAndroidPayEnabled) {
+                buttonCount++;
+            }
+
+            if (isPayPalEnabled) {
+                enableButton(findViewById(R.id.bt_paypal_button), buttonCount);
+            }
+            if (isVenmoEnabled) {
+                enableButton(findViewById(R.id.bt_venmo_button), buttonCount);
+            }
+            if (isAndroidPayEnabled) {
+                enableButton(findViewById(R.id.bt_android_pay_button), buttonCount);
+            }
+
+            if (isPayPalEnabled && buttonCount > 1) {
+                findViewById(R.id.bt_payment_button_divider).setVisibility(VISIBLE);
+            } else if (isVenmoEnabled && buttonCount > 1) {
+                findViewById(R.id.bt_payment_button_divider_2).setVisibility(VISIBLE);
+            }
+            if (buttonCount > 2) {
+                findViewById(R.id.bt_payment_button_divider_2).setVisibility(VISIBLE);
+            }
+
+            setVisibility(VISIBLE);
         }
     }
 

@@ -34,6 +34,7 @@ public class BetaDetector extends Detector implements JavaScanner {
             "isFullWalletResponse",
             "getAndroidPayTokenizationParameters",
             "getAndroidPayGoogleTransactionId",
+            "checkAndroidPayIsReadyToPay",
             "performAndroidPayMaskedWalletRequest",
             "performAndroidPayChangeMaskedWalletRequest",
             "performAndroidPayFullWalletRequest",

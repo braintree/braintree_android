@@ -60,13 +60,13 @@ public class Braintree {
      * (either directly or indirectly) can be registered with
      * {@link #addListener(com.braintreepayments.api.Braintree.Listener)}.
      */
-    private static interface Listener {}
+    private interface Listener {}
 
     /**
      * Interface that defines the response for
      * {@link com.braintreepayments.api.Braintree#setup(android.content.Context, String, com.braintreepayments.api.Braintree.BraintreeSetupFinishedListener)}
      */
-    public static interface BraintreeSetupFinishedListener {
+    public interface BraintreeSetupFinishedListener {
         /**
          * @param setupSuccessful {@code true} if setup was successful, {@code false} otherwise.
          * @param braintree the {@link com.braintreepayments.api.Braintree} instance or {@code null}
@@ -83,7 +83,7 @@ public class Braintree {
      * onPaymentMethodsUpdate will be called with a list of {@link com.braintreepayments.api.models.PaymentMethod}s
      * as a callback when {@link Braintree#getPaymentMethods()} is called
      */
-    public static interface PaymentMethodsUpdatedListener extends Listener {
+    public interface PaymentMethodsUpdatedListener extends Listener {
         void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods);
     }
 
@@ -93,7 +93,7 @@ public class Braintree {
      * {@link Braintree#create(com.braintreepayments.api.models.PaymentMethod.Builder)}
      * is called
      */
-    public static interface PaymentMethodCreatedListener extends Listener {
+    public interface PaymentMethodCreatedListener extends Listener {
         void onPaymentMethodCreated(PaymentMethod paymentMethod);
     }
 
@@ -103,7 +103,7 @@ public class Braintree {
      * or {@link Braintree#tokenize(com.braintreepayments.api.models.PaymentMethod.Builder)}
      * is called
      */
-    public static interface PaymentMethodNonceListener extends Listener {
+    public interface PaymentMethodNonceListener extends Listener {
         void onPaymentMethodNonce(String paymentMethodNonce);
     }
 
@@ -111,9 +111,13 @@ public class Braintree {
      * onUnrecoverableError will be called where there is an exception that cannot be handled.
      * onRecoverableError will be called on data validation errors
      */
-    public static interface ErrorListener extends Listener {
+    public interface ErrorListener extends Listener {
         void onUnrecoverableError(Throwable throwable);
         void onRecoverableError(ErrorWithResponse error);
+    }
+
+    public interface BraintreeResponseListener<T> {
+        void onResponse(T t);
     }
 
     private final ExecutorService mExecutorService;
@@ -765,6 +769,31 @@ public class Braintree {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Before starting the Android Pay flow, use
+     * {@link #checkAndroidPayIsReadyToPay(BraintreeResponseListener)} to check whether the
+     * user has the Android Pay app installed and is ready to pay. When the listener is called with
+     * {@code true}, show the Android Pay button. When it called with {@code false}, display other
+     * checkout options along with text notifying the user to set up the Android Pay app.
+     *
+     * @param listener Instance of {@link BraintreeResponseListener<Boolean>} to receive the
+     *                 isReadyToPay response.
+     */
+    @Beta
+    public synchronized void checkAndroidPayIsReadyToPay(final Activity activity,
+            final BraintreeResponseListener<Boolean> listener) {
+        mExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mBraintreeApi.checkAndroidPayIsReadyToPay(activity, listener);
+                } catch (UnexpectedException e) {
+                    postUnrecoverableErrorToListeners(e);
+                }
+            }
+        });
     }
 
     /**

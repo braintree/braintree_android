@@ -2,12 +2,16 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 
+import com.braintreepayments.api.Braintree.BraintreeResponseListener;
 import com.braintreepayments.api.annotations.Beta;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.models.Configuration;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.BooleanResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWalletRequest;
 import com.google.android.gms.wallet.MaskedWalletRequest;
@@ -56,6 +60,18 @@ public class AndroidPay {
     @Beta
     public static boolean isFullWalletResponse(Intent intent) {
         return intent.hasExtra(WalletConstants.EXTRA_FULL_WALLET);
+    }
+
+    protected void isReadyToPay(Context context, final BraintreeResponseListener<Boolean> listener)
+            throws UnexpectedException {
+        Wallet.Payments.isReadyToPay(getConnectedApiClient(context)).setResultCallback(
+                new ResultCallback<BooleanResult>() {
+                    @Override
+                    public void onResult(@NonNull BooleanResult booleanResult) {
+                        listener.onResponse(booleanResult.getStatus().isSuccess()
+                                && booleanResult.getValue());
+                    }
+                });
     }
 
     protected void performMaskedWalletRequest(Context context, int requestCode,
