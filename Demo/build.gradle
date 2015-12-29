@@ -60,7 +60,7 @@ configurations.all {
 
 dependencies {
     compile 'com.squareup.retrofit:retrofit:1.9.0'
-    compile 'com.google.android.gms:play-services-wallet:8.1.0'
+    compile 'com.google.android.gms:play-services-wallet:8.4.0'
 
     compile project(':Drop-In')
 
