@@ -11,6 +11,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static com.braintreepayments.testutils.AppInstallationHelper.installPayPalWallet;
+import static com.braintreepayments.testutils.AppInstallationHelper.isAppInstalled;
+import static com.braintreepayments.testutils.AppInstallationHelper.uninstallPayPalWallet;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAction.setText;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;

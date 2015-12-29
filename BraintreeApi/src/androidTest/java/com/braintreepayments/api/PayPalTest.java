@@ -57,6 +57,7 @@ import static android.support.test.espresso.intent.matcher.UriMatchers.hasPath;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.verifyAnalyticsEvent;
+import static com.braintreepayments.testutils.AppInstallationHelper.uninstallPayPalWallet;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -78,6 +79,7 @@ public class PayPalTest {
 
     @Before
     public void setUp() {
+        uninstallPayPalWallet();
         mActivity = mActivityTestRule.getActivity();
         mLatch = new CountDownLatch(1);
     }
