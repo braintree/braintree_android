@@ -1,12 +1,12 @@
 package com.braintreepayments.demo.test.utilities;
 
+import android.Manifest.permission;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Spinner;
-
-import com.braintreepayments.demo.DemoApplication;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -30,8 +30,8 @@ public class TestHelper {
                 .edit()
                 .clear()
                 .commit();
-        DemoApplication.sIsTest = true;
         onDevice().onHomeScreen().launchApp("com.braintreepayments.demo");
+        enableStoragePermission();
         ensureEnvironmentIs("Sandbox");
     }
 
@@ -100,6 +100,15 @@ public class TestHelper {
             return true;
         } catch (NameNotFoundException e) {
             return false;
+        }
+    }
+
+    private static void enableStoragePermission() {
+        if (ContextCompat.checkSelfPermission(getTargetContext(), permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            try {
+                onDevice(withText("Allow")).perform(click());
+            } catch (RuntimeException ignored) {}
         }
     }
 }

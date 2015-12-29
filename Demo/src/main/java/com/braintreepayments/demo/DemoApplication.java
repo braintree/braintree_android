@@ -17,8 +17,6 @@ import retrofit.RestAdapter;
 
 public class DemoApplication extends Application implements UncaughtExceptionHandler {
 
-    public static boolean sIsTest = false;
-
     private static ApiClient sApiClient;
 
     private Thread.UncaughtExceptionHandler mDefaultExceptionHandler;
@@ -33,9 +31,7 @@ public class DemoApplication extends Application implements UncaughtExceptionHan
         }
         MailableLog.init(this, BuildConfig.DEBUG);
 
-        if (!sIsTest) {
-            LeakLoggerService.setupLeakCanary(this);
-        }
+        LeakLoggerService.setupLeakCanary(this);
 
         mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(this);
