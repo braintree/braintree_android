@@ -105,7 +105,14 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
         }
 
         if (configuration.getAndroidPay().isEnabled(this)) {
-            mAndroidPayButton.setVisibility(VISIBLE);
+            AndroidPay.isReadyToPay(mBraintreeFragment, new BraintreeResponseListener<Boolean>() {
+                @Override
+                public void onResponse(Boolean isReadyToPay) {
+                    if (isReadyToPay) {
+                        mAndroidPayButton.setVisibility(VISIBLE);
+                    }
+                }
+            });
         }
 
         if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {

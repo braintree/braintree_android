@@ -179,7 +179,7 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
     @Override
     public void onConfigurationFetched(Configuration configuration) {
         mBraintreeFragment.setConfigurationErrorListener(null);
-        setupButton(configuration);
+        getButtonState(configuration);
     }
 
     @Override
@@ -208,7 +208,20 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
         }
     }
 
-    void setupButton(Configuration configuration) {
+    private void getButtonState(final Configuration configuration) {
+        if (!isAndroidPayEnabled(configuration)) {
+            setupButton(configuration, false);
+        } else {
+            AndroidPay.isReadyToPay(mBraintreeFragment, new BraintreeResponseListener<Boolean>() {
+                @Override
+                public void onResponse(Boolean isAndroidPayEnabled) {
+                    setupButton(configuration, isAndroidPayEnabled);
+                }
+            });
+        }
+    }
+
+    void setupButton(Configuration configuration, boolean isAndroidPayEnabled) {
         View view = getView();
         if (view == null) {
             setVisibility(GONE);
@@ -217,7 +230,6 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
 
         boolean isPayPalEnabled = configuration.isPayPalEnabled();
         boolean isVenmoEnabled = configuration.getPayWithVenmo().isEnabled(mBraintreeFragment.getApplicationContext());
-        boolean isAndroidPayEnabled = isAndroidPayEnabled(configuration);
         int buttonCount = 0;
         if (!isPayPalEnabled && !isVenmoEnabled && !isAndroidPayEnabled) {
             setVisibility(GONE);
@@ -294,11 +306,10 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
                 setVisibility(VISIBLE);
             }
         } else if (mBraintreeFragment != null && mBraintreeFragment.getConfiguration() != null) {
-            setupButton(mBraintreeFragment.getConfiguration());
+            getButtonState(mBraintreeFragment.getConfiguration());
         }
     }
 
-    @VisibleForTesting
     private boolean isAndroidPayEnabled(Configuration configuration) {
         try {
             return (configuration.getAndroidPay().isEnabled(

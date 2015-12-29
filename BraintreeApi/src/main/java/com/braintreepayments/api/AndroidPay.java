@@ -5,12 +5,16 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
+import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.TokenizationParametersListener;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.TokenizationKey;
+import com.google.android.gms.common.api.BooleanResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
 import com.google.android.gms.wallet.FullWalletRequest;
@@ -39,6 +43,44 @@ public class AndroidPay {
     private static final String MASTERCARD_NETWORK = "mastercard";
     private static final String AMEX_NETWORK = "amex";
     private static final String DISCOVER_NETWORK = "discover";
+
+    /**
+     * Before starting the Android Pay flow, use
+     * {@link #isReadyToPay(BraintreeFragment, BraintreeResponseListener)} to check whether the
+     * user has the Android Pay app installed and is ready to pay. When the listener is called with
+     * {@code true}, show the Android Pay button. When it called with {@code false}, display other
+     * checkout options along with text notifying the user to set up the Android Pay app.
+     *
+     * @param fragment {@link BraintreeFragment}
+     * @param listener Instance of {@link BraintreeResponseListener<Boolean>} to receive the
+     *                 isReadyToPay response.
+     */
+    public static void isReadyToPay(final BraintreeFragment fragment,
+            final BraintreeResponseListener<Boolean> listener) {
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                if (!configuration.getAndroidPay().isEnabled(fragment.getApplicationContext())) {
+                    listener.onResponse(false);
+                    return;
+                }
+
+                fragment.getGoogleApiClient(new BraintreeResponseListener<GoogleApiClient>() {
+                    @Override
+                    public void onResponse(GoogleApiClient googleApiClient) {
+                        Wallet.Payments.isReadyToPay(googleApiClient).setResultCallback(
+                                new ResultCallback<BooleanResult>() {
+                                    @Override
+                                    public void onResult(@NonNull BooleanResult booleanResult) {
+                                        listener.onResponse(booleanResult.getStatus().isSuccess()
+                                                && booleanResult.getValue());
+                                    }
+                                });
+                    }
+                });
+            }
+        });
+    }
 
     /**
      * Get Braintree specific tokenization parameters for Android Pay. Useful for existing Google

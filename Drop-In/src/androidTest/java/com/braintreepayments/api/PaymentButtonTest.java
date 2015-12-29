@@ -284,7 +284,7 @@ public class PaymentButtonTest {
         mPaymentButton = PaymentButton.newInstance(mActivity, android.R.id.content, paymentRequest);
         getInstrumentation().waitForIdleSync();
         mPaymentButton.mBraintreeFragment = fragment;
-        setupPaymentButton(fragment.getConfiguration());
+        setupPaymentButton(fragment.getConfiguration(), false);
 
         assertEquals(View.VISIBLE, mPaymentButton.getView().getVisibility());
         assertEquals(View.VISIBLE,
@@ -302,13 +302,15 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 1000)
-    public void onlyShowsAndroidPay() throws InvalidArgumentException, JSONException {
-        getFragment(false, false, true);
+    public void onlyShowsAndroidPay()
+            throws InvalidArgumentException, JSONException, InterruptedException {
+        BraintreeFragment fragment = getFragment(false, false, true);
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY)
                 .androidPayCart(Cart.newBuilder().build());
         mPaymentButton = PaymentButton.newInstance(mActivity, android.R.id.content, paymentRequest);
         getInstrumentation().waitForIdleSync();
+        setupPaymentButton(fragment.getConfiguration(), true);
 
         assertEquals(View.VISIBLE, mPaymentButton.getView().getVisibility());
         assertEquals(View.VISIBLE,
@@ -326,13 +328,15 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 1000)
-    public void showsPayPalAndAndroidPay() throws InvalidArgumentException, JSONException {
-        getFragment(true, false, true);
+    public void showsPayPalAndAndroidPay()
+            throws InvalidArgumentException, JSONException, InterruptedException {
+        BraintreeFragment fragment = getFragment(true, false, true);
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY)
                 .androidPayCart(Cart.newBuilder().build());
         mPaymentButton = PaymentButton.newInstance(mActivity, android.R.id.content, paymentRequest);
         getInstrumentation().waitForIdleSync();
+        setupPaymentButton(fragment.getConfiguration(), true);
 
         assertEquals(View.VISIBLE, mPaymentButton.getView().getVisibility());
         assertEquals(View.VISIBLE,
@@ -359,7 +363,7 @@ public class PaymentButtonTest {
         mPaymentButton = PaymentButton.newInstance(mActivity, android.R.id.content, paymentRequest);
         getInstrumentation().waitForIdleSync();
         mPaymentButton.mBraintreeFragment = fragment;
-        setupPaymentButton(fragment.getConfiguration());
+        setupPaymentButton(fragment.getConfiguration(), false);
 
         assertEquals(View.VISIBLE, mPaymentButton.getView().getVisibility());
         assertEquals(View.GONE,
@@ -386,7 +390,7 @@ public class PaymentButtonTest {
         mPaymentButton = PaymentButton.newInstance(mActivity, android.R.id.content, paymentRequest);
         getInstrumentation().waitForIdleSync();
         mPaymentButton.mBraintreeFragment = fragment;
-        setupPaymentButton(fragment.getConfiguration());
+        setupPaymentButton(fragment.getConfiguration(), true);
 
         assertEquals(View.VISIBLE, mPaymentButton.getView().getVisibility());
         assertEquals(View.VISIBLE,
@@ -414,7 +418,7 @@ public class PaymentButtonTest {
         getInstrumentation().waitForIdleSync();
         mPaymentButton.mBraintreeFragment = fragment;
         getInstrumentation().waitForIdleSync();
-        setupPaymentButton(fragment.getConfiguration());
+        setupPaymentButton(fragment.getConfiguration(), true);
 
         assertEquals(View.VISIBLE, mPaymentButton.getView().getVisibility());
         assertEquals(View.VISIBLE,
@@ -504,7 +508,7 @@ public class PaymentButtonTest {
         mPaymentButton = PaymentButton.newInstance(mActivity, android.R.id.content, paymentRequest);
         getInstrumentation().waitForIdleSync();
         mPaymentButton.mBraintreeFragment = fragment;
-        setupPaymentButton(fragment.getConfiguration());
+        setupPaymentButton(fragment.getConfiguration(), true);
 
         clickButton(R.id.bt_venmo_button);
 
@@ -523,7 +527,7 @@ public class PaymentButtonTest {
                 paymentRequest);
         getInstrumentation().waitForIdleSync();
         mPaymentButton.mBraintreeFragment = fragment;
-        setupPaymentButton(fragment.getConfiguration());
+        setupPaymentButton(fragment.getConfiguration(), true);
 
         clickButton(R.id.bt_android_pay_button);
 
@@ -587,12 +591,13 @@ public class PaymentButtonTest {
         return fragment;
     }
 
-    private void setupPaymentButton(final Configuration configuration) throws InterruptedException {
+    private void setupPaymentButton(final Configuration configuration, final boolean isAndroidPayEnabled)
+            throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mPaymentButton.setupButton(configuration);
+                mPaymentButton.setupButton(configuration, isAndroidPayEnabled);
 
                 latch.countDown();
             }

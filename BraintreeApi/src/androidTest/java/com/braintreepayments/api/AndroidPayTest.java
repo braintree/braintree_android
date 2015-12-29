@@ -1,12 +1,14 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.TokenizationParametersListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
@@ -14,8 +16,8 @@ import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
+import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.MaskedWallet;
@@ -39,8 +41,10 @@ import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragme
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -52,6 +56,30 @@ public class AndroidPayTest {
     @Rule
     public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void isReadyToPay_returnsFalseWhenAndroidPayIsNotEnabled()
+            throws InvalidArgumentException, InterruptedException {
+        AndroidPayConfiguration androidPayConfiguration = mock(AndroidPayConfiguration.class);
+        when(androidPayConfiguration.isEnabled(any(Context.class))).thenReturn(false);
+        final Configuration configuration = mock(Configuration.class);
+        when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
+        BraintreeFragment fragment =
+                getMockFragment(mActivityTestRule.getActivity(), configuration);
+        when(fragment.getAuthorization()).thenReturn(Authorization.fromString(TOKENIZATION_KEY));
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        AndroidPay.isReadyToPay(fragment, new BraintreeResponseListener<Boolean>() {
+            @Override
+            public void onResponse(Boolean isReadyToPay) {
+                assertFalse(isReadyToPay);
+                latch.countDown();
+            }
+        });
+
+        latch.await();
+    }
 
     @Test(timeout = 1000)
     @SmallTest
