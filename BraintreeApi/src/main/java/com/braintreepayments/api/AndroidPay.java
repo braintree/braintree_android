@@ -157,7 +157,7 @@ public class AndroidPay {
                 mConfiguration.getAndroidPay().getEnvironment().equals("production")) {
             return WalletConstants.ENVIRONMENT_PRODUCTION;
         } else {
-            return WalletConstants.ENVIRONMENT_SANDBOX;
+            return WalletConstants.ENVIRONMENT_TEST;
         }
     }
 
