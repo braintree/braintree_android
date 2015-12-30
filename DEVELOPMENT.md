@@ -42,10 +42,13 @@ Please note: It is not currently possible to run tests outside of Braintree.
 
 There are several components that comprise this SDK:
 
-* [BraintreeApi](BraintreeApi) provides the networking and communication layer. Includes the PayPal Android mobile SDK.
+* [BraintreeApi](BraintreeApi) provides the networking, communication and modeling layer for Braintree.
 * [BraintreeDataCollector](BraintreeDataCollector) collects and provides data for fraud detection.
+* [Core](Core) provides shared code across all the modules in the SDK.
 * [Drop-In](Drop-In) uses `BraintreeApi` to create a full checkout experience inside an `Activity`.
 * [Demo](Demo) is the reference integration of [Drop-In](Drop-In).
+* [OneTouchCore](OneTouchCore) provides support for PayPal app and browser switch.
+* [PayPalDataCollector](PayPalDataCollector) collects and provides data for PayPal fraud detection.
 * [TestUtils](TestUtils) contains common test code used between modules.
 
 The individual components may be of interest for advanced integrations and are each available as modules in maven.
@@ -56,7 +59,6 @@ The individual components may be of interest for advanced integrations and are e
 * Android Studio
 * Gradle
 * Android SDK >= 15
-* Host app does not integrate the [PayPal Android SDK](https://github.com/paypal/PayPal-Android-SDK)
 * Host app does not integrate with the Kount SDK
 * Host app has a secure, authenticated server with a [Braintree server-side integration](https://developers.braintreepayments.com/android/start/hello-server)
 
