@@ -47,7 +47,7 @@ There are several components that comprise this SDK:
 * [Core](Core) provides shared code across all the modules in the SDK.
 * [Drop-In](Drop-In) uses `BraintreeApi` to create a full checkout experience inside an `Activity`.
 * [Demo](Demo) is the reference integration of [Drop-In](Drop-In).
-* [OneTouchCore](OneTouchCore) provides support for PayPal app and browser switch.
+* [PayPalOneTouch](PayPalOneTouch) provides support for PayPal app and browser switch.
 * [PayPalDataCollector](PayPalDataCollector) collects and provides data for PayPal fraud detection.
 * [TestUtils](TestUtils) contains common test code used between modules.
 
