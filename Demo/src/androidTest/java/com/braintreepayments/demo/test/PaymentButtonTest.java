@@ -21,6 +21,7 @@ import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextContaining;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.core.StringEndsWith.endsWith;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -44,6 +45,9 @@ public class PaymentButtonTest extends TestHelper {
         onDevice(withContentDescription("Agree")).perform(click());
 
         onDevice(withTextContaining("Email:")).check(text(containsString("jane.doe@example.com")));
+
+        onDevice(withText("Create a Transaction")).perform(click());
+        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
     @RequiresDevice
@@ -51,7 +55,11 @@ public class PaymentButtonTest extends TestHelper {
     public void tokenizesAndroidPay() {
         onDevice(withContentDescription("Pay with Android Pay")).perform(click());
         onDevice(withText("CONTINUE")).perform(click());
+
         onDevice(withTextStartingWith("Underlying Card Last Two"))
                 .check(text(containsString("Underlying Card Last Two")));
+
+        onDevice(withText("Create a Transaction")).perform(click());
+        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 }

@@ -1,6 +1,5 @@
 package com.braintreepayments.demo.test;
 
-import android.os.SystemClock;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -21,7 +20,9 @@ import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextContaining;
+import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.core.StringEndsWith.endsWith;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -42,6 +43,9 @@ public class PayPalTest extends TestHelper {
         onDevice(withContentDescription("Proceed with Sandbox Purchase")).perform(click());
 
         onDevice(withTextContaining("Email:")).check(text(containsString("bt_buyer_us@paypal.com")));
+
+        onDevice(withText("Create a Transaction")).perform(click());
+        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
     @SdkSuppress(minSdkVersion = 21)
@@ -56,6 +60,9 @@ public class PayPalTest extends TestHelper {
         onDevice(withContentDescription("Agree")).perform(click());
 
         onDevice(withTextContaining("Email:")).check(text(containsString("jane.doe@example.com")));
+
+        onDevice(withText("Create a Transaction")).perform(click());
+        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
     @SdkSuppress(minSdkVersion = 21)
@@ -70,7 +77,9 @@ public class PayPalTest extends TestHelper {
         onDevice(withContentDescription("Agree")).perform(click());
 
         onDevice(withTextContaining("Email:")).check(text(containsString("jane.doe@example.com")));
-        SystemClock.sleep(10000);
+
+        onDevice(withText("Create a Transaction")).perform(click());
+        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
     @SdkSuppress(minSdkVersion = 21)
@@ -82,6 +91,9 @@ public class PayPalTest extends TestHelper {
         onDevice(withContentDescription("Proceed with Sandbox Purchase")).perform(click());
 
         onDevice(withTextContaining("Email:")).check(text(containsString("bt_buyer_us@paypal.com")));
+
+        onDevice(withText("Create a Transaction")).perform(click());
+        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
     @Test(timeout = 120000)

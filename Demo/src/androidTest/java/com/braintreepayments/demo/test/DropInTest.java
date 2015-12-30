@@ -19,6 +19,7 @@ import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextContaining;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.core.StringEndsWith.endsWith;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -35,7 +36,11 @@ public class DropInTest extends TestHelper {
         onDevice(withText("Card Number")).perform(setText("4111111111111111"));
         onDevice(withText("Expiration")).perform(setText("1220"));
         onDevice(withTextContaining("BUY")).perform(click());
+
         onDevice(withTextStartingWith("Card Last Two:")).check(text(containsString("11")));
+
+        onDevice(withText("Create a Transaction")).perform(click());
+        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
     @RequiresDevice
@@ -44,7 +49,11 @@ public class DropInTest extends TestHelper {
         onDevice(withContentDescription("Pay with Android Pay")).perform(click());
         onDevice(withText("CONTINUE")).perform(click());
         onDevice(withTextContaining("BUY")).perform(click());
+
         onDevice(withTextStartingWith("Underlying Card Last Two"))
                 .check(text(containsString("Underlying Card Last Two")));
+
+        onDevice(withText("Create a Transaction")).perform(click());
+        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 }
