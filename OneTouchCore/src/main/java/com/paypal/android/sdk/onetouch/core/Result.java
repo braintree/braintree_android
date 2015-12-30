@@ -55,7 +55,6 @@ public final class Result implements Parcelable {
      */
     private Result(ResultType resultType, String environment, ResponseType responseType,
             JSONObject response, String userEmail, Throwable error) {
-        assert resultType != null;
         mEnvironment = environment;
         mResultType = resultType;
         mResponseType = responseType;
