@@ -63,6 +63,7 @@ public class PaymentButtonActivity extends BaseActivity implements Configuration
 
         try {
             PaymentRequest paymentRequest = getIntent().getParcelableExtra(MainActivity.EXTRA_PAYMENT_REQUEST);
+            paymentRequest.androidPayRequestCode(ANDROID_PAY_REQUEST_CODE);
             PaymentButton paymentButton = PaymentButton.newInstance(this,
                     R.id.payment_button_container, paymentRequest);
 

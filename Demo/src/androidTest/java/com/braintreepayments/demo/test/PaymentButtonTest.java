@@ -1,5 +1,6 @@
 package com.braintreepayments.demo.test;
 
+import android.support.test.filters.RequiresDevice;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -18,6 +19,7 @@ import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextContaining;
+import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.CoreMatchers.containsString;
 
 @RunWith(AndroidJUnit4.class)
@@ -42,5 +44,14 @@ public class PaymentButtonTest extends TestHelper {
         onDevice(withContentDescription("Agree")).perform(click());
 
         onDevice(withTextContaining("Email:")).check(text(containsString("jane.doe@example.com")));
+    }
+
+    @RequiresDevice
+    @Test(timeout = 60000)
+    public void tokenizesAndroidPay() {
+        onDevice(withContentDescription("Pay with Android Pay")).perform(click());
+        onDevice(withText("CONTINUE")).perform(click());
+        onDevice(withTextStartingWith("Underlying Card Last Two"))
+                .check(text(containsString("Underlying Card Last Two")));
     }
 }
