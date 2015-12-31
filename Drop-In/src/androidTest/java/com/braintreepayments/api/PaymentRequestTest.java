@@ -8,29 +8,37 @@ import android.os.Build.VERSION_CODES;
 import android.os.Parcel;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.test.suitebuilder.annotation.SmallTest;
+import android.text.TextUtils;
 import android.widget.ImageView;
 
 import com.braintreepayments.api.test.BraintreePaymentActivityTestRunner;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.google.android.gms.wallet.Cart;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Map;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.submitAndWaitForCompletion;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodNonceList;
+import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static com.braintreepayments.testutils.ui.Assertions.assertBitmapsEqual;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
+import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.startsWith;
@@ -47,6 +55,7 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
                 .tokenizationKey(TOKENIZATION_KEY)
                 .amount("1.00")
                 .currencyCode("USD")
+                .collectDeviceData(true)
                 .androidPayCart(cart)
                 .androidPayShippingAddressRequired(true)
                 .androidPayPhoneNumberRequired(true)
@@ -66,6 +75,7 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
         assertEquals(TOKENIZATION_KEY, paymentRequest.getAuthorization());
         assertEquals("1.00", paymentRequest.getAmount());
         assertEquals("USD", paymentRequest.getCurrencyCode());
+        assertTrue(paymentRequest.shouldCollectDeviceData());
         assertEquals("5.00", paymentRequest.getAndroidPayCart().getTotalPrice());
         assertTrue(paymentRequest.isAndroidPayShippingAddressRequired());
         assertTrue(paymentRequest.isAndroidPayPhoneNumberRequired());
@@ -88,6 +98,7 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
                 .tokenizationKey(TOKENIZATION_KEY)
                 .amount("1.00")
                 .currencyCode("USD")
+                .collectDeviceData(true)
                 .androidPayCart(cart)
                 .androidPayShippingAddressRequired(true)
                 .androidPayPhoneNumberRequired(true)
@@ -107,6 +118,7 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
         assertEquals(TOKENIZATION_KEY, parceledPaymentRequest.getAuthorization());
         assertEquals("1.00", parceledPaymentRequest.getAmount());
         assertEquals("USD", parceledPaymentRequest.getCurrencyCode());
+        assertTrue(parceledPaymentRequest.shouldCollectDeviceData());
         assertEquals("5.00", parceledPaymentRequest.getAndroidPayCart().getTotalPrice());
         assertTrue(parceledPaymentRequest.isAndroidPayShippingAddressRequired());
         assertTrue(parceledPaymentRequest.isAndroidPayPhoneNumberRequired());
@@ -136,6 +148,30 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
                 .tokenizationKey(TOKENIZATION_KEY);
 
         assertEquals(TOKENIZATION_KEY, paymentRequest.getAuthorization());
+    }
+
+    @LargeTest
+    @Test(timeout = 30000)
+    public void returnsDeviceDataStringWhenRequested() throws JSONException {
+        Intent intent = new PaymentRequest()
+                .tokenizationKey(TOKENIZATION_KEY)
+                .collectDeviceData(true)
+                .getIntent(getTargetContext());
+        Activity activity = getActivity(intent);
+
+        submitAndWaitForCompletion();
+        waitForActivityToFinish(activity);
+
+        Map<String, Object> result = getActivityResult(activity);
+        String deviceData = ((Intent) result.get("resultData"))
+                .getStringExtra(BraintreePaymentActivity.EXTRA_DEVICE_DATA);
+
+        assertEquals(Activity.RESULT_OK, result.get("resultCode"));
+        assertFalse(TextUtils.isEmpty(deviceData));
+        JSONObject json = new JSONObject(deviceData);
+        assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));
+        assertEquals("600000", json.getString("fraud_merchant_id"));
+        assertFalse(TextUtils.isEmpty(json.getString("correlation_id")));
     }
 
     @LargeTest

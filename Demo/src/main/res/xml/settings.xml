@@ -24,6 +24,17 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/options">
+
+        <CheckBoxPreference
+            android:key="collect_device_data"
+            android:title="@string/collect_device_data"
+            android:summary="@string/collect_device_data_summary"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/android_pay">
 
         <CheckBoxPreference

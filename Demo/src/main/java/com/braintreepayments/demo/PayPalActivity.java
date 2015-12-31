@@ -9,18 +9,23 @@ import android.widget.TextView;
 
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.BraintreePaymentActivity;
+import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
+import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import java.util.Collections;
 
-public class PayPalActivity extends BaseActivity implements PaymentMethodNonceCreatedListener,
-        BraintreeErrorListener {
+public class PayPalActivity extends BaseActivity implements ConfigurationListener,
+        PaymentMethodNonceCreatedListener, BraintreeErrorListener {
+
+    private String mDeviceData;
 
     private TextView mPayPalAppIndicator;
     private Button mBillingAgreementButton;
@@ -105,11 +110,20 @@ public class PayPalActivity extends BaseActivity implements PaymentMethodNonceCr
     }
 
     @Override
+    public void onConfigurationFetched(Configuration configuration) {
+        if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {
+            mDeviceData = DataCollector.collectDeviceData(mBraintreeFragment);
+        }
+    }
+
+    @Override
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
-        setResult(RESULT_OK, new Intent()
-                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce));
+        Intent intent = new Intent()
+                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce)
+                .putExtra(BraintreePaymentActivity.EXTRA_DEVICE_DATA, mDeviceData);
+        setResult(RESULT_OK, intent);
         finish();
     }
 

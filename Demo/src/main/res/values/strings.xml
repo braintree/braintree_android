@@ -36,6 +36,8 @@
     <string name="tokenization_key_summary">Use tokenization key for authorizing requests</string>
     <string name="customer">Customer</string>
     <string name="customer_summary">The customer id to use</string>
+    <string name="collect_device_data">Collect Device Data</string>
+    <string name="collect_device_data_summary">Collects device data for fraud purposes</string>
     <string name="environment">Environment</string>
     <string name="android_pay">Android Pay</string>
     <string name="android_pay_is_billing_agreement">isBillingAgreement</string>

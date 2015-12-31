@@ -25,10 +25,12 @@ import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
+import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.CardNonce;
+import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VenmoAccountNonce;
@@ -41,7 +43,7 @@ import java.util.concurrent.TimeUnit;
  * {@link android.app.Activity} encompassing Braintree's Drop-In UI.
  */
 public class BraintreePaymentActivity extends Activity implements
-        PaymentMethodNoncesUpdatedListener,
+        ConfigurationListener, PaymentMethodNoncesUpdatedListener,
         PaymentMethodNonceCreatedListener, BraintreeCancelListener, BraintreeErrorListener {
 
     /**
@@ -49,6 +51,13 @@ public class BraintreePaymentActivity extends Activity implements
      */
     public static final String EXTRA_PAYMENT_METHOD_NONCE =
             "com.braintreepayments.api.dropin.EXTRA_PAYMENT_METHOD_NONCE";
+
+    /**
+     * {@link String} returned when specified in {@link PaymentRequest} that device data should be
+     * collected.
+     */
+    public static final String EXTRA_DEVICE_DATA =
+            "com.braintreepayments.api.dropin.EXTRA_DEVICE_DATA";
 
     /**
      * Error messages are returned as the value of this key in the data intent in {@link
@@ -89,6 +98,7 @@ public class BraintreePaymentActivity extends Activity implements
     private boolean mHavePaymentMethodNoncesBeenReceived = false;
     private Bundle mSavedInstanceState;
     private PaymentRequest mPaymentRequest;
+    private String mDeviceData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +127,13 @@ public class BraintreePaymentActivity extends Activity implements
             setResult(BRAINTREE_RESULT_DEVELOPER_ERROR,
                     new Intent().putExtra(EXTRA_ERROR_MESSAGE, e));
             finish();
+        }
+    }
+
+    @Override
+    public void onConfigurationFetched(Configuration configuration) {
+        if (mPaymentRequest.shouldCollectDeviceData()) {
+            mDeviceData = DataCollector.collectDeviceData(mBraintreeFragment);
         }
     }
 
@@ -229,8 +246,13 @@ public class BraintreePaymentActivity extends Activity implements
     protected void finalizeSelection(PaymentMethodNonce paymentMethodNonce) {
         mBraintreeFragment.sendAnalyticsEvent("sdk.exit.success");
 
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra(EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce);
+        Intent resultIntent = new Intent()
+                .putExtra(EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce);
+
+        if (!TextUtils.isEmpty(mDeviceData)) {
+            resultIntent.putExtra(EXTRA_DEVICE_DATA, mDeviceData);
+        }
+
         setResult(RESULT_OK, resultIntent);
         finish();
     }

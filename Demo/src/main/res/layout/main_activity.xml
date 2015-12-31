@@ -1,66 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:gravity="center"
     android:padding="10dp">
 
-    <ImageView
-        android:id="@+id/nonce_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left" />
-
-    <TextView
-        android:id="@+id/nonce"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/nonce_details"
+    <LinearLayout
+        android:id="@+id/action_buttons"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="30dp" />
+        android:layout_alignParentBottom="true">
 
-    <Button
-        android:id="@+id/drop_in"
+        <Button
+            android:id="@+id/drop_in"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/drop_in"
+            android:onClick="launchDropIn"
+            android:enabled="false" />
+
+        <Button
+            android:id="@+id/payment_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/payment_button"
+            android:onClick="launchPaymentButton"
+            android:enabled="false" />
+
+        <Button
+            android:id="@+id/custom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/custom"
+            android:onClick="launchCustom"
+            android:enabled="false" />
+
+        <Button
+            android:id="@+id/paypal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/paypal_button"
+            android:onClick="launchPayPal"
+            android:enabled="false" />
+
+        <Button
+            android:id="@+id/create_transaction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/create_transaction"
+            android:onClick="createTransaction"
+            android:enabled="false" />
+
+    </LinearLayout>
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/drop_in"
-        android:onClick="launchDropIn"
-        android:enabled="false" />
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/action_buttons"
+        android:layout_marginBottom="16dp">
 
-    <Button
-        android:id="@+id/payment_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/payment_button"
-        android:onClick="launchPaymentButton"
-        android:enabled="false" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp">
 
-    <Button
-        android:id="@+id/custom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/custom"
-        android:onClick="launchCustom"
-        android:enabled="false" />
+            <ImageView
+                android:id="@+id/nonce_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left" />
 
-    <Button
-        android:id="@+id/paypal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/paypal_button"
-        android:onClick="launchPayPal"
-        android:enabled="false" />
+            <TextView
+                android:id="@+id/nonce"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/create_transaction"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/create_transaction"
-        android:onClick="createTransaction"
-        android:enabled="false" />
+            <TextView
+                android:id="@+id/nonce_details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-</LinearLayout>
+            <TextView
+                android:id="@+id/device_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

@@ -11,6 +11,7 @@ import com.braintreepayments.api.AndroidPay;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.Card;
+import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
@@ -48,6 +49,7 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
 
     private GoogleApiClient mGoogleApiClient;
     private Cart mCart;
+    private String mDeviceData;
 
     private ImageButton mPayPalButton;
     private ImageButton mAndroidPayButton;
@@ -104,6 +106,10 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
 
         if (configuration.getAndroidPay().isEnabled(this)) {
             mAndroidPayButton.setVisibility(VISIBLE);
+        }
+
+        if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {
+            mDeviceData = DataCollector.collectDeviceData(mBraintreeFragment);
         }
     }
 
@@ -186,8 +192,10 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
-        setResult(RESULT_OK, new Intent()
-                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce));
+        Intent intent = new Intent()
+                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce)
+                .putExtra(BraintreePaymentActivity.EXTRA_DEVICE_DATA, mDeviceData);
+        setResult(RESULT_OK, intent);
         finish();
     }
 

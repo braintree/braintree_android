@@ -18,6 +18,7 @@ public class PaymentRequest implements Parcelable {
 
     private String mAmount;
     private String mCurrencyCode;
+    private boolean mCollectDeviceData;
 
     private Cart mAndroidPayCart;
     private boolean mAndroidPayShippingAddressRequired;
@@ -75,6 +76,18 @@ public class PaymentRequest implements Parcelable {
      */
     public PaymentRequest currencyCode(String currencyCode) {
         mCurrencyCode = currencyCode;
+        return this;
+    }
+
+    /**
+     * This method is optional.
+     *
+     * @param collectDeviceData {@code true} if Drop-in should collect and return device data for
+     *        fraud prevention.
+     * @see DataCollector
+     */
+    public PaymentRequest collectDeviceData(boolean collectDeviceData) {
+        mCollectDeviceData = collectDeviceData;
         return this;
     }
 
@@ -211,6 +224,10 @@ public class PaymentRequest implements Parcelable {
         return mCurrencyCode;
     }
 
+    boolean shouldCollectDeviceData() {
+        return mCollectDeviceData;
+    }
+
     Cart getAndroidPayCart() throws NoClassDefFoundError {
         return mAndroidPayCart;
     }
@@ -261,6 +278,7 @@ public class PaymentRequest implements Parcelable {
         dest.writeString(mAuthorization);
         dest.writeString(mAmount);
         dest.writeString(mCurrencyCode);
+        dest.writeByte(mCollectDeviceData ? (byte) 1 : (byte) 0);
 
         try {
             Cart.class.getClassLoader();
@@ -282,6 +300,7 @@ public class PaymentRequest implements Parcelable {
         mAuthorization = in.readString();
         mAmount = in.readString();
         mCurrencyCode = in.readString();
+        mCollectDeviceData = in.readByte() != 0;
 
         try {
             mAndroidPayCart = in.readParcelable(Cart.class.getClassLoader());
