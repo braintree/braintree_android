@@ -176,7 +176,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
             PaymentMethodNonce paymentMethodNonce =
                     data.getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE);
             displayNonce(paymentMethodNonce);
-            if (Settings.isThreeDSecureEnabled(this)) {
+            if (mNonce instanceof CardNonce && Settings.isThreeDSecureEnabled(this)) {
                 mLoading = ProgressDialog.show(this, getString(R.string.loading),
                         getString(R.string.loading), true, false);
                 ThreeDSecure.performVerification(mBraintreeFragment, mNonce.getNonce(), "1");
