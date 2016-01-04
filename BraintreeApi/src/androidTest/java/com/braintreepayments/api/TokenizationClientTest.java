@@ -182,7 +182,7 @@ public class TokenizationClientTest {
             @Override
             public void onError(Exception error) {
                 assertTrue(error instanceof AuthorizationException);
-                assertEquals("Client key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions",
+                assertEquals("Tokenization key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions",
                         error.getMessage());
                 latch.countDown();
             }

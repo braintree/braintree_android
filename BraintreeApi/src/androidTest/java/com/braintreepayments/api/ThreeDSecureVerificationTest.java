@@ -169,7 +169,7 @@ public class ThreeDSecureVerificationTest {
             public void onError(Exception error) {
                 assertTrue(error instanceof AuthorizationException);
                 assertEquals(
-                        "Client key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions",
+                        "Tokenization key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions",
                         error.getMessage());
                 mCountDownLatch.countDown();
             }
