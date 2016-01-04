@@ -213,7 +213,6 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
     }
 
     @Test(timeout = 30000)
-    @FlakyTest(tolerance = 3)
     public void backButtonExitsTheActivityIfThereAreNoPaymentMethodNoncesToSelectFrom() {
         Activity activity = getActivity(new TestClientTokenBuilder().build());
         waitForAddPaymentFormHeader();
@@ -221,6 +220,7 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
         assertFalse(activity.isFinishing());
 
         getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
+        getInstrumentation().waitForIdleSync();
 
         assertTrue(activity.isFinishing());
     }
