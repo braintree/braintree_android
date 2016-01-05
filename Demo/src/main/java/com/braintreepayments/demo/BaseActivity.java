@@ -23,6 +23,7 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.demo.internal.LogReporting;
 import com.braintreepayments.demo.models.ClientToken;
+import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +66,7 @@ public abstract class BaseActivity extends Activity implements PaymentMethodNonc
 
         PayPalSignatureVerification.disableAppSwitchSignatureVerification(
                 Settings.isPayPalSignatureVerificationDisabled(this));
+        PayPalOneTouchCore.useHardcodedConfig(this, Settings.useHardcodedPayPalConfiguration(this));
 
         if (mAuthorization == null || (Settings.useTokenizationKey(this) &&
                 !mAuthorization.equals(Settings.getEnvironmentTokenizationKey(this)))) {

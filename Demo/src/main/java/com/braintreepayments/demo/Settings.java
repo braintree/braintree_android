@@ -113,6 +113,10 @@ public class Settings {
         return getPreferences(context).getBoolean("paypal_disable_signature_verification", true);
     }
 
+    public static boolean useHardcodedPayPalConfiguration(Context context) {
+        return getPreferences(context).getBoolean("paypal_use_hardcoded_configuration", false);
+    }
+
     public static boolean isThreeDSecureEnabled(Context context) {
         return getPreferences(context).getBoolean("enable_three_d_secure", false);
     }

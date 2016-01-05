@@ -61,6 +61,12 @@
             android:defaultValue="true" />
 
         <CheckBoxPreference
+            android:key="paypal_use_hardcoded_configuration"
+            android:title="@string/paypal_use_hardcoded_configuration"
+            android:summary="@string/paypal_use_hardcoded_configuration_summary"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
             android:key="paypal_request_address_scope"
             android:title="@string/paypal_request_address_scope"
             android:summary="@string/paypal_request_address_scope_summary"

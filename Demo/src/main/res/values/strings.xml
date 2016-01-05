@@ -47,6 +47,8 @@
     <string name="android_pay_require_phone_number">Require Phone Number</string>
     <string name="android_pay_require_phone_number_summary">Require phone number from the user</string>
     <string name="paypal">PayPal</string>
+    <string name="paypal_use_hardcoded_configuration">Use Hardcoded Configuration</string>
+    <string name="paypal_use_hardcoded_configuration_summary">Use the configuration included in the PayPal SDK instead of downloading new configuration</string>
     <string name="paypal_request_address_scope">Request Address Scope</string>
     <string name="paypal_request_address_scope_summary">Request address scope from the user</string>
     <string name="three_d_secure">3D Secure</string>
