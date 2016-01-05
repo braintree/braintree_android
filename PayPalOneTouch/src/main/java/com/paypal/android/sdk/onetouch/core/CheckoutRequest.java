@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.config.CheckoutRecipe;
@@ -26,8 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CheckoutRequest extends Request<CheckoutRequest> implements Parcelable {
-
-    private static final String TAG = CheckoutRequest.class.getSimpleName();
 
     private static final String PREFS_HERMES_TOKEN = "com.paypal.otc.hermes.token";
     private static final String TOKEN_QUERY_PARAM_KEY_TOKEN = "token";
@@ -175,14 +172,8 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
         if (null != webUrl) {
             String responseXoToken = Uri.parse(webUrl).getQueryParameter(mTokenQueryParamKey);
             if (null != responseXoToken && TextUtils.equals(persistedXoToken, responseXoToken)) {
-                // they match yay!
                 return true;
-
-            } else {
-                Log.e(TAG, "EC-tokens don't match");
             }
-        } else {
-            Log.e(TAG, "no webURL in response");
         }
 
         return false;

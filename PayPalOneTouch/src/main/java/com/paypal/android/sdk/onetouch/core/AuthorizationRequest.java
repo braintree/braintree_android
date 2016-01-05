@@ -8,7 +8,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.Log;
 
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;
@@ -56,12 +55,9 @@ import javax.crypto.NoSuchPaddingException;
 
 public class AuthorizationRequest extends Request<AuthorizationRequest> implements Parcelable {
 
-    private static final String TAG = AuthorizationRequest.class.getSimpleName();
-
     private static final String PREFS_ENCRYPTION_KEY = "com.paypal.otc.key";
     private static final String PREFS_MSG_GUID = "com.paypal.otc.msg_guid";
 
-    // Environments
     public static final String ENVIRONMENT_LIVE = EnvironmentManager.LIVE;
     public static final String ENVIRONMENT_MOCK = EnvironmentManager.MOCK;
     public static final String ENVIRONMENT_SANDBOX = EnvironmentManager.SANDBOX;
@@ -243,16 +239,8 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
                 contextInspector.getStringPreference(AuthorizationRequest.PREFS_MSG_GUID);
         String prefsSymmetricKey = getStoredSymmetricKey(contextInspector);
 
-        if (TextUtils.isEmpty(prefsMsgGUID)) {
-            Log.e(TAG, "stored msg_GUID is empty");
-        } else if (!msgGUID.equals(prefsMsgGUID)) {
-            Log.e(TAG, "msgGUIDs do not match");
-        } else if (TextUtils.isEmpty(prefsSymmetricKey)) {
-            Log.e(TAG, "empty symmetric key");
-        } else {
-            return true;
-        }
-        return false;
+        return (!TextUtils.isEmpty(prefsMsgGUID) && msgGUID.equals(prefsMsgGUID) &&
+                !TextUtils.isEmpty(prefsSymmetricKey));
     }
 
     private class RFC3339DateFormat extends SimpleDateFormat {
@@ -338,10 +326,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
 
         String payloadEnc = uri.getQueryParameter("payloadEnc");
         String payload = uri.getQueryParameter("payload");
-
-        // decode
         byte[] base64Payload = Base64.decode(payload, Base64.DEFAULT);
-
         try {
             JSONObject payloadJson = new JSONObject(new String(base64Payload));
             if (payloadJson.has("msg_GUID")) {
@@ -349,13 +334,12 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
 
                 if (isSuccessResponse(payloadEnc, msgGUID) &&
                         validResponse(contextInspector, msgGUID)) {
-                    // we can decrypt
                     JSONObject decryptedPayloadEnc = getDecryptedPayload(payloadEnc,
                             getStoredSymmetricKey(contextInspector));
 
                     String error = payloadJson.optString("error");
 
-                    // the string 'null' is coming back in production for some reason
+                    // the string 'null' is coming back in production
                     if (!TextUtils.isEmpty(error) && !"null".equals(error)) {
                         return new Result(new BrowserSwitchException(error));
                     } else {
@@ -369,33 +353,21 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
                         );
                     }
                 } else {
-                    // invalid guid, no payloadEnc, status != success
-                    Log.e(TAG, "response not understood");
-
                     return new Result(new ResponseParsingException("Response was not understood"));
                 }
             } else {
-                // missing msg_GUID in response
                 return new Result(
                         new ResponseParsingException("Response was missing some information"));
             }
-        } catch (JSONException
-                | InvalidAlgorithmParameterException
-                | NoSuchAlgorithmException
-                | IllegalBlockSizeException
-                | BadPaddingException
-                | NoSuchPaddingException
-                | InvalidKeyException
-                | InvalidEncryptionDataException
-                e) {
-            Log.e(TAG, "failed", e);
+        } catch (JSONException | InvalidAlgorithmParameterException | NoSuchAlgorithmException
+                | IllegalBlockSizeException | BadPaddingException | NoSuchPaddingException
+                | InvalidKeyException | InvalidEncryptionDataException e) {
             return new Result(new ResponseParsingException(e));
         }
     }
 
     @Override
     public boolean validateV1V2Response(ContextInspector contextInspector, Bundle extras) {
-        // roman says we shouldn't need to validate anything here
         return true;
     }
 
@@ -403,7 +375,6 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     public Recipe getRecipeToExecute(Context context, OtcConfiguration config,
             boolean isSecurityEnabled) {
         for (OAuth2Recipe recipe : config.getOauth2Recipes()) {
-            // don't even look at them if they can't handle the scopes.  You CAN'T HANDLE THE SCOPE!
             if (recipe.isValidForScopes(getScopes())) {
                 if (RequestTarget.wallet == recipe.getTarget()) {
                     if (recipe.isValidAppTarget(context, isSecurityEnabled)) {
@@ -418,12 +389,11 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
                     } catch (CertificateException | UnsupportedEncodingException
                             | NoSuchPaddingException | NoSuchAlgorithmException
                             | IllegalBlockSizeException | JSONException | BadPaddingException
-                            | InvalidEncryptionDataException | InvalidKeyException e) {
-                        Log.e(TAG, "cannot create browser switch URL", e);
-                    }
+                            | InvalidEncryptionDataException | InvalidKeyException ignored) {}
                 }
             }
         }
+
         return null;
     }
 
@@ -438,14 +408,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     }
 
     private boolean isSuccessResponse(String payloadEnc, String msgGUID) {
-        if (TextUtils.isEmpty(msgGUID)) {
-            Log.e(TAG, "response msgGUID is empty");
-        } else if (TextUtils.isEmpty(payloadEnc)) {
-            Log.e(TAG, "empty payloadEnc");
-        } else {
-            return true;
-        }
-        return false;
+        return (!TextUtils.isEmpty(msgGUID) && !TextUtils.isEmpty(payloadEnc));
     }
 
     private JSONObject getDecryptedPayload(String payloadEnc, String symmetricKey)
@@ -453,7 +416,6 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
             InvalidAlgorithmParameterException, NoSuchPaddingException, BadPaddingException,
             InvalidEncryptionDataException, JSONException {
         byte[] base64PayloadEnc = Base64.decode(payloadEnc, Base64.DEFAULT);
-        // convert key to bytes
         byte[] key = EncryptionUtils.hexStringToByteArray(symmetricKey);
         byte[] output = new OtcCrypto().decryptAESCTRData(base64PayloadEnc, key);
 

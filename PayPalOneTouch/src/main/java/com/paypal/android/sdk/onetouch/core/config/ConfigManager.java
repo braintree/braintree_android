@@ -1,7 +1,5 @@
 package com.paypal.android.sdk.onetouch.core.config;
 
-import android.util.Log;
-
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.paypal.android.sdk.onetouch.core.BuildConfig;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
@@ -111,8 +109,6 @@ public class ConfigManager {
         try {
             config = getOtcConfiguration(jsonConfig);
         } catch (JSONException e) {
-            Log.e(TAG, "exception parsing config", e);
-
             try {
                 jsonConfig = BuildConfig.CONFIGURATION;
                 useDefault = true;
