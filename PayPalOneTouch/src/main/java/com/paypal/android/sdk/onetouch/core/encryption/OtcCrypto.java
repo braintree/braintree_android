@@ -26,6 +26,7 @@ public class OtcCrypto {
     private static final int AES_KEY_SIZE = 16;
     private static final int DIGEST_SIZE = 32;
     private static final int PUBLIC_KEY_SIZE = 256;
+    private static final int MAX_RSA_ENCRYPTABLE_BYTES = 214;
 
     private byte[] dataDigest(byte[] data, byte[] key)
             throws NoSuchAlgorithmException, InvalidKeyException {
@@ -42,9 +43,9 @@ public class OtcCrypto {
     public byte[] encryptRSAData(byte[] plainData, Certificate certificate)
             throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
             BadPaddingException, IllegalBlockSizeException, InvalidEncryptionDataException {
-        // data cannot be bigger than 256 bytes
-        if (plainData.length > PUBLIC_KEY_SIZE) {
-            throw new InvalidEncryptionDataException("Data is too large for public key encryption");
+        if (plainData.length > MAX_RSA_ENCRYPTABLE_BYTES) {
+            throw new InvalidEncryptionDataException("Data is too large for public key encryption: " +
+                    plainData.length + " > " + MAX_RSA_ENCRYPTABLE_BYTES);
         }
 
         PublicKey publicKey = certificate.getPublicKey();

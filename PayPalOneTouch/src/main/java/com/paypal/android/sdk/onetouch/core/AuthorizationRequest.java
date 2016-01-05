@@ -278,7 +278,8 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         payloadEnc.put("timestamp", new RFC3339DateFormat().format(new Date()));
         payloadEnc.put("msg_GUID", mMsgGuid);
         payloadEnc.put("sym_key", EncryptionUtils.byteArrayToHexString(mEncryptionKey));
-        payloadEnc.put("device_name", DeviceInspector.getDeviceName());
+        String deviceName = DeviceInspector.getDeviceName();
+        payloadEnc.put("device_name", deviceName.substring(0, Math.min(deviceName.length(), 30)));
         return payloadEnc;
     }
 
