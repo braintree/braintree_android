@@ -13,6 +13,7 @@ import com.paypal.android.sdk.onetouch.core.Result;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.config.ConfigManager;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
+import com.paypal.android.sdk.onetouch.core.config.Recipe;
 import com.paypal.android.sdk.onetouch.core.enums.Protocol;
 import com.paypal.android.sdk.onetouch.core.enums.ResponseType;
 import com.paypal.android.sdk.onetouch.core.enums.ResultType;
@@ -59,7 +60,7 @@ public class AppSwitchHelperTest {
         when(request.getEnvironment()).thenReturn("test");
 
         Intent intent = AppSwitchHelper.getAppSwitchIntent(mContextInspector, mConfigManager,
-                request, Protocol.v1);
+                request, getMockRecipe(1));
 
         assertEquals("com.paypal.android.lib.authenticator.activity.v1.TouchActivity", intent.getAction());
         assertEquals("com.paypal.android.p2pmobile/com.paypal.android.lib.authenticator.activity.v1.TouchActivity",
@@ -74,7 +75,7 @@ public class AppSwitchHelperTest {
         when(request.getEnvironment()).thenReturn("test");
 
         Intent intent = AppSwitchHelper.getAppSwitchIntent(mContextInspector, mConfigManager,
-                request, Protocol.v2);
+                request, getMockRecipe(2));
 
         assertEquals("com.paypal.android.lib.authenticator.activity.v2.TouchActivity", intent.getAction());
         assertEquals("com.paypal.android.p2pmobile/com.paypal.android.lib.authenticator.activity.v2.TouchActivity",
@@ -89,7 +90,7 @@ public class AppSwitchHelperTest {
         when(request.getEnvironment()).thenReturn("test");
 
         Intent intent = AppSwitchHelper.getAppSwitchIntent(mContextInspector, mConfigManager,
-                request, Protocol.v3);
+                request, getMockRecipe(3));
 
         assertEquals("com.paypal.android.lib.authenticator.activity.v3.TouchActivity", intent.getAction());
         assertEquals("com.paypal.android.p2pmobile/com.paypal.android.lib.authenticator.activity.v3.TouchActivity",
@@ -107,7 +108,7 @@ public class AppSwitchHelperTest {
         when(request.getUserAgreementUrl()).thenReturn("agreement-url");
 
         Intent intent = AppSwitchHelper.getAppSwitchIntent(mContextInspector, mConfigManager,
-                request, Protocol.v2);
+                request, getMockRecipe(2));
 
         assertEquals("scope-string", intent.getStringExtra("scope"));
         assertEquals("code", intent.getStringExtra("response_type"));
@@ -123,7 +124,7 @@ public class AppSwitchHelperTest {
                 .thenReturn("web-url");
 
         Intent intent = AppSwitchHelper.getAppSwitchIntent(mContextInspector, mConfigManager,
-                request, Protocol.v2);
+                request, getMockRecipe(2));
 
         assertEquals("web", intent.getStringExtra("response_type"));
         assertEquals("web-url", intent.getStringExtra("webURL"));
@@ -137,7 +138,7 @@ public class AppSwitchHelperTest {
         when(request.getClientId()).thenReturn("client-id");
 
         Intent intent = AppSwitchHelper.getAppSwitchIntent(mContextInspector, mConfigManager,
-                request, Protocol.v2);
+                request, getMockRecipe(2));
 
         assertEquals("installation-guid", intent.getStringExtra("app_guid"));
         assertEquals("client-metadata-id", intent.getStringExtra("client_metadata_id"));
@@ -247,5 +248,28 @@ public class AppSwitchHelperTest {
         verify(request).trackFpti(any(Context.class), eq(TrackingPoint.Return), isNull(Protocol.class));
         assertTrue(result.getError() instanceof WalletSwitchException);
         assertEquals("there was an error", result.getError().getMessage());
+    }
+
+    private Recipe getMockRecipe(int version) {
+        Recipe recipe = mock(Recipe.class);
+        when(recipe.getTargetIntentAction()).thenReturn("com.paypal.android.lib.authenticator.activity.v" + version + ".TouchActivity");
+        when(recipe.getTargetComponent()).thenReturn("com.paypal.android.lib.authenticator.activity.v" + version + ".TouchActivity");
+
+        switch (version) {
+            case 0:
+                when(recipe.getProtocol()).thenReturn(Protocol.v0);
+                break;
+            case 1:
+                when(recipe.getProtocol()).thenReturn(Protocol.v1);
+                break;
+            case 2:
+                when(recipe.getProtocol()).thenReturn(Protocol.v2);
+                break;
+            case 3:
+                when(recipe.getProtocol()).thenReturn(Protocol.v3);
+                break;
+        }
+
+        return recipe;
     }
 }

@@ -61,11 +61,20 @@ public class PayPalOneTouchCore {
     public static boolean isWalletAppInstalled(Context context, boolean enableSecurityCheck) {
         initService(context);
 
-        boolean isV2WalletAppInstalled =
-                WalletHelper.isValidV2TouchAuthenticatorInstalled(context, enableSecurityCheck);
-        sFptiManager.trackFpti((isV2WalletAppInstalled) ? TrackingPoint.WalletIsPresent :
+        boolean isV3WalletAppInstalled =
+                WalletHelper.isValidV3TouchAuthenticatorInstalled(context, enableSecurityCheck);
+        sFptiManager.trackFpti((isV3WalletAppInstalled) ? TrackingPoint.WalletIsPresent :
                         TrackingPoint.WalletIsAbsent, ""/*no environment set yet*/,
-                Collections.<String, String>emptyMap(), Protocol.v2);
+                Collections.<String, String>emptyMap(), Protocol.v3);
+
+        boolean isV2WalletAppInstalled = false;
+        if (!isV3WalletAppInstalled) {
+            isV2WalletAppInstalled =
+                    WalletHelper.isValidV2TouchAuthenticatorInstalled(context, enableSecurityCheck);
+            sFptiManager.trackFpti((isV2WalletAppInstalled) ? TrackingPoint.WalletIsPresent :
+                            TrackingPoint.WalletIsAbsent, ""/*no environment set yet*/,
+                    Collections.<String, String>emptyMap(), Protocol.v2);
+        }
 
         boolean isV1WalletAppInstalled = false;
         if (!isV2WalletAppInstalled) {
@@ -75,7 +84,8 @@ public class PayPalOneTouchCore {
                             TrackingPoint.WalletIsAbsent, ""/*no environment set yet*/,
                     Collections.<String, String>emptyMap(), Protocol.v1);
         }
-        return isV2WalletAppInstalled || isV1WalletAppInstalled;
+
+        return isV3WalletAppInstalled || isV2WalletAppInstalled || isV1WalletAppInstalled;
     }
 
     /**
@@ -118,7 +128,7 @@ public class PayPalOneTouchCore {
             return new PendingRequest(true, RequestTarget.wallet,
                     request.getClientMetadataId(),
                     AppSwitchHelper.getAppSwitchIntent(sContextInspector, sConfigManager, request,
-                            recipe.getProtocol()));
+                            recipe));
         } else {
             Intent intent = BrowserSwitchHelper
                     .getBrowserSwitchIntent(sContextInspector, sConfigManager,

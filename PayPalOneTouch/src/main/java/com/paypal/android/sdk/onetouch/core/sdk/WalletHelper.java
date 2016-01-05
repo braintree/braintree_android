@@ -9,10 +9,12 @@ import com.braintreepayments.api.internal.SignatureVerification;
 
 public class WalletHelper {
 
-    private static final String WALLET_APP_PACKAGE = "com.paypal.android.p2pmobile";
+    static final String WALLET_APP_PACKAGE = "com.paypal.android.p2pmobile";
+
     private static final String WALLET_APP_CERT_SUBJECT = "O=Paypal";
     private static final String WALLET_APP_CERT_ISSUER = "O=Paypal";
     private static final int WALLET_APP_PUBLIC_KEY_HASH_CODE = 34172764;
+
     private static final String V1_TOUCH_SDK_ACTION =
             "com.paypal.android.lib.authenticator.activity.v1.TouchActivity";
     private static final String V1_TOUCH_SDK_COMPONENT =
@@ -42,16 +44,12 @@ public class WalletHelper {
                 isSignatureValid(context, WALLET_APP_PACKAGE, isAuthenticatorSecurityEnabled);
     }
 
-    static Intent getV1PayPalTouchIntent() {
-        return createIntent(V1_TOUCH_SDK_ACTION, V1_TOUCH_SDK_COMPONENT, WALLET_APP_PACKAGE);
-    }
-
-    static Intent getV2PayPalTouchIntent() {
-        return createIntent(V2_TOUCH_SDK_ACTION, V2_TOUCH_SDK_COMPONENT, WALLET_APP_PACKAGE);
-    }
-
-    static Intent getV3PayPalTouchIntent() {
-        return createIntent(V3_TOUCH_SDK_ACTION, V3_TOUCH_SDK_COMPONENT, WALLET_APP_PACKAGE);
+    public static boolean isValidV3TouchAuthenticatorInstalled(Context context,
+            boolean isAuthenticatorSecurityEnabled) {
+        boolean isIntentAvailable = AppHelper.isIntentAvailable(context,
+                createIntent(V3_TOUCH_SDK_ACTION, V3_TOUCH_SDK_COMPONENT, WALLET_APP_PACKAGE));
+        return isIntentAvailable &&
+                isSignatureValid(context, WALLET_APP_PACKAGE, isAuthenticatorSecurityEnabled);
     }
 
     public static boolean isSignatureValid(Context context, String packageName,

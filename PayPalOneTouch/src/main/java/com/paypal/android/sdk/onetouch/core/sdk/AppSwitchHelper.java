@@ -1,5 +1,6 @@
 package com.paypal.android.sdk.onetouch.core.sdk;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -11,7 +12,7 @@ import com.paypal.android.sdk.onetouch.core.Result;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;
 import com.paypal.android.sdk.onetouch.core.config.ConfigManager;
-import com.paypal.android.sdk.onetouch.core.enums.Protocol;
+import com.paypal.android.sdk.onetouch.core.config.Recipe;
 import com.paypal.android.sdk.onetouch.core.enums.ResponseType;
 import com.paypal.android.sdk.onetouch.core.exception.ResponseParsingException;
 import com.paypal.android.sdk.onetouch.core.exception.WalletSwitchException;
@@ -26,21 +27,12 @@ import java.util.Locale;
 public class AppSwitchHelper {
 
     public static Intent getAppSwitchIntent(ContextInspector contextInspector,
-            ConfigManager configManager, Request request, Protocol protocol) {
-        Intent intent;
-
-        if (Protocol.v1 == protocol) {
-            intent = WalletHelper.getV1PayPalTouchIntent();
-            intent.putExtra("version", "1.0");
-        } else if (Protocol.v2 == protocol) {
-            intent = WalletHelper.getV2PayPalTouchIntent();
-            intent.putExtra("version", "2.0");
-        } else if (Protocol.v3 == protocol) {
-            intent = WalletHelper.getV3PayPalTouchIntent();
-            intent.putExtra("version", "3.0");
-        } else {
-            throw new RuntimeException("Invalid protocol");
-        }
+            ConfigManager configManager, Request request, Recipe recipe) {
+        Intent intent = new Intent(recipe.getTargetIntentAction());
+        intent.setComponent(ComponentName.unflattenFromString(WalletHelper.WALLET_APP_PACKAGE + "/"
+                + recipe.getTargetComponent()));
+        intent.setPackage(WalletHelper.WALLET_APP_PACKAGE);
+        intent.putExtra("version", recipe.getProtocol().getVersion());
 
         // app_guid now present on all v1/v2 requests.  Deemed not sensitive.
         intent.putExtra("app_guid", contextInspector.getInstallationGUID());

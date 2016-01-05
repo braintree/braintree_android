@@ -79,11 +79,11 @@ public abstract class Recipe<T extends Recipe<T>> {
         return getThis();
     }
 
-    private String getTargetComponent() {
+    public String getTargetComponent() {
         return mTargetComponent;
     }
 
-    private String getTargetIntentAction() {
+    public String getTargetIntentAction() {
         return mTargetIntentAction;
     }
 
