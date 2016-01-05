@@ -23,8 +23,6 @@ import java.util.Collections;
 
 /**
  * Central class for One Touch functionality.
- * <p>
- * Note that all public methods should call initService which starts the config file querying
  */
 public class PayPalOneTouchCore {
 
@@ -32,31 +30,12 @@ public class PayPalOneTouchCore {
     private static ConfigManager sConfigManager;
     private static FptiManager sFptiManager;
 
-    public static void useHardcodedConfig(Context context, boolean useHardcodedConfig) {
-        initService(context);
-        sConfigManager.useHardcodedConfig(useHardcodedConfig);
-    }
-
-    public static FptiManager getFptiManager(Context context) {
-        initService(context);
-        return sFptiManager;
-    }
-
-    private static void initService(Context context) {
-        if (sConfigManager == null || sFptiManager == null) {
-            PayPalHttpClient httpClient = new PayPalHttpClient()
-                    .setBaseUrl(EnvironmentManager.LIVE_API_M_ENDPOINT);
-            sConfigManager = new ConfigManager(getContextInspector(context), httpClient);
-            sFptiManager = new FptiManager(getContextInspector(context), httpClient);
-        }
-
-        // always refresh configuration
-        sConfigManager.refreshConfiguration();
-    }
-
     /**
-     * Return true if the modern wallet app is installed (one that has either v1 or v2 touch
-     * intents). Returns false if the wallet app is older than the touch releases, or not present.
+     * @param context
+     * @param enableSecurityCheck {@code true} to run app signature verification, {@code false} to
+     *        skip app signature verification.
+     * @return {@code true} if the modern wallet app is installed (one that has either v1 or v2 touch
+     * intents), {@code false} if the wallet app is older than the touch releases, or not present.
      */
     public static boolean isWalletAppInstalled(Context context, boolean enableSecurityCheck) {
         initService(context);
@@ -89,16 +68,18 @@ public class PayPalOneTouchCore {
     }
 
     /**
-     * Get an {@link PendingRequest} containing an {@link Intent} used to start a PayPal
+     * Get a {@link PendingRequest} containing an {@link Intent} used to start a PayPal
      * authentication request using the best possible authentication mechanism: wallet or browser.
      *
      * @param context
      * @param request the {@link Request} used to build the {@link Intent}.
-     * @param enableSecurityCheck
+     * @param enableSecurityCheck {@code true} to run app signature verification, {@code false} to
+     *        skip app signature verification.
      * @return {@link PendingRequest}. {@link PendingRequest#isSuccess()} should be
-     * checked before attempting to use the {@link Intent} it contains. If {@code true} an
-     * {@link Intent} was created and can be used to start a PayPal authentication request. If
-     * {@code false} it is not possible to authenticate given the current environment and request.
+     *         checked before attempting to use the {@link Intent} it contains. If {@code true} an
+     *         {@link Intent} was created and can be used to start a PayPal authentication request.
+     *         If {@code false} it is not possible to authenticate given the current environment
+     *         and request.
      */
     public static PendingRequest getStartIntent(Context context, Request request,
             boolean enableSecurityCheck) {
@@ -150,7 +131,7 @@ public class PayPalOneTouchCore {
      * @param context
      * @param request the original {@link Request} that was used to get this {@link Result}.
      * @param data the {@link Intent} returned by either the PayPal Wallet app or the browser.
-     * @return
+     * @return {@link Result}
      */
     public static Result parseResponse(Context context, Request request, Intent data) {
         initService(context);
@@ -202,6 +183,28 @@ public class PayPalOneTouchCore {
     public static String getClientMetadataId(Context context, String pairingId) {
         return SdkRiskComponent.getClientMetadataId(context,
                 getContextInspector(context).getInstallationGUID(), pairingId);
+    }
+
+    public static void useHardcodedConfig(Context context, boolean useHardcodedConfig) {
+        initService(context);
+        sConfigManager.useHardcodedConfig(useHardcodedConfig);
+    }
+
+    public static FptiManager getFptiManager(Context context) {
+        initService(context);
+        return sFptiManager;
+    }
+
+    private static void initService(Context context) {
+        if (sConfigManager == null || sFptiManager == null) {
+            PayPalHttpClient httpClient = new PayPalHttpClient()
+                    .setBaseUrl(EnvironmentManager.LIVE_API_M_ENDPOINT);
+            sConfigManager = new ConfigManager(getContextInspector(context), httpClient);
+            sFptiManager = new FptiManager(getContextInspector(context), httpClient);
+        }
+
+        // always refresh configuration
+        sConfigManager.refreshConfiguration();
     }
 
     private static ContextInspector getContextInspector(Context context) {
