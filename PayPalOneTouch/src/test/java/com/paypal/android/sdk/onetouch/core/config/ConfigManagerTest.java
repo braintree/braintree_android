@@ -73,13 +73,14 @@ public class ConfigManagerTest {
     public void getConfig_returnsConfig() {
         OtcConfiguration configuration = mConfigManager.getConfig();
 
-        assertEquals("2015-10-26T19:00:52Z", configuration.getFileTimestamp());
+        assertEquals("2015-12-08T00:03:56Z", configuration.getFileTimestamp());
         assertEquals(2, configuration.getBillingAgreementRecipes().size());
         assertEquals(RequestTarget.wallet, configuration.getBillingAgreementRecipes().get(0).getTarget());
         assertEquals(RequestTarget.browser, configuration.getBillingAgreementRecipes().get(1).getTarget());
-        assertEquals(2, configuration.getCheckoutRecipes().size());
+        assertEquals(3, configuration.getCheckoutRecipes().size());
         assertEquals(RequestTarget.wallet, configuration.getCheckoutRecipes().get(0).getTarget());
-        assertEquals(RequestTarget.browser, configuration.getCheckoutRecipes().get(1).getTarget());
+        assertEquals(RequestTarget.wallet, configuration.getCheckoutRecipes().get(1).getTarget());
+        assertEquals(RequestTarget.browser, configuration.getCheckoutRecipes().get(2).getTarget());
         assertNotNull(configuration.getBrowserBillingAgreementConfig());
         assertNotNull(configuration.getBrowserCheckoutConfig());
         assertNotNull(configuration.getOauth2Recipes());
