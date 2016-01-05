@@ -84,6 +84,21 @@ public class AppSwitchHelperTest {
     }
 
     @Test
+    public void buildAppSwitchIntent_buildsIntentForProtocolV3() {
+        Request request = mock(CheckoutRequest.class);
+        when(request.getEnvironment()).thenReturn("test");
+
+        Intent intent = AppSwitchHelper.getAppSwitchIntent(mContextInspector, mConfigManager,
+                request, Protocol.v3);
+
+        assertEquals("com.paypal.android.lib.authenticator.activity.v3.TouchActivity", intent.getAction());
+        assertEquals("com.paypal.android.p2pmobile/com.paypal.android.lib.authenticator.activity.v3.TouchActivity",
+                intent.getComponent().flattenToString());
+        assertEquals("com.paypal.android.p2pmobile", intent.getPackage());
+        assertEquals("3.0", intent.getStringExtra("version"));
+    }
+
+    @Test
     public void buildAppSwitchIntent_buildsIntentForAuthorizationRequest() {
         AuthorizationRequest request = mock(AuthorizationRequest.class);
         when(request.getEnvironment()).thenReturn("test");

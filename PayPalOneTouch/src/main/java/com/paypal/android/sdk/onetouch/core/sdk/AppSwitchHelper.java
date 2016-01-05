@@ -32,9 +32,14 @@ public class AppSwitchHelper {
         if (Protocol.v1 == protocol) {
             intent = WalletHelper.getV1PayPalTouchIntent();
             intent.putExtra("version", "1.0");
-        } else {
+        } else if (Protocol.v2 == protocol) {
             intent = WalletHelper.getV2PayPalTouchIntent();
             intent.putExtra("version", "2.0");
+        } else if (Protocol.v3 == protocol) {
+            intent = WalletHelper.getV3PayPalTouchIntent();
+            intent.putExtra("version", "3.0");
+        } else {
+            throw new RuntimeException("Invalid protocol");
         }
 
         // app_guid now present on all v1/v2 requests.  Deemed not sensitive.

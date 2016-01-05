@@ -21,6 +21,10 @@ public class WalletHelper {
             "com.paypal.android.lib.authenticator.activity.v2.TouchActivity";
     private static final String V2_TOUCH_SDK_COMPONENT =
             "com.paypal.android.p2pmobile/com.paypal.android.lib.authenticator.activity.v2.TouchActivity";
+    private static final String V3_TOUCH_SDK_ACTION =
+            "com.paypal.android.lib.authenticator.activity.v3.TouchActivity";
+    private static final String V3_TOUCH_SDK_COMPONENT =
+            "com.paypal.android.p2pmobile/com.paypal.android.lib.authenticator.activity.v3.TouchActivity";
 
     public static boolean isValidV1TouchAuthenticatorInstalled(Context context,
             boolean isAuthenticatorSecurityEnabled) {
@@ -44,6 +48,10 @@ public class WalletHelper {
 
     static Intent getV2PayPalTouchIntent() {
         return createIntent(V2_TOUCH_SDK_ACTION, V2_TOUCH_SDK_COMPONENT, WALLET_APP_PACKAGE);
+    }
+
+    static Intent getV3PayPalTouchIntent() {
+        return createIntent(V3_TOUCH_SDK_ACTION, V3_TOUCH_SDK_COMPONENT, WALLET_APP_PACKAGE);
     }
 
     public static boolean isSignatureValid(Context context, String packageName,
