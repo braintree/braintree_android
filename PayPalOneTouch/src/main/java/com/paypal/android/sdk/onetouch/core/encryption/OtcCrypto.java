@@ -25,7 +25,6 @@ public class OtcCrypto {
     private static final String RSA_ALGO = "RSA/ECB/OAEPWithSHA1AndMGF1Padding";
     private static final int AES_KEY_SIZE = 16;
     private static final int DIGEST_SIZE = 32;
-    private static final int PUBLIC_KEY_SIZE = 256;
     private static final int MAX_RSA_ENCRYPTABLE_BYTES = 214;
 
     private byte[] dataDigest(byte[] data, byte[] key)
