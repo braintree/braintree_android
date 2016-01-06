@@ -1,10 +1,12 @@
 package com.paypal.android.sdk.onetouch.core.sdk;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import com.braintreepayments.api.internal.SignatureVerification;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
 import com.paypal.android.sdk.onetouch.core.Request;
@@ -26,14 +28,29 @@ import java.util.Locale;
 
 public class AppSwitchHelper {
 
+    private static final String WALLET_APP_PACKAGE = "com.paypal.android.p2pmobile";
+    private static final String WALLET_APP_CERT_SUBJECT = "O=Paypal";
+    private static final String WALLET_APP_CERT_ISSUER = "O=Paypal";
+    private static final int WALLET_APP_PUBLIC_KEY_HASH_CODE = 34172764;
+
+    public static boolean isSignatureValid(Context context, String packageName,
+            boolean securityEnabled) {
+        return !securityEnabled || SignatureVerification.isSignatureValid(context,
+                packageName, WALLET_APP_CERT_SUBJECT, WALLET_APP_CERT_ISSUER,
+                WALLET_APP_PUBLIC_KEY_HASH_CODE);
+    }
+
+    public static Intent createBaseIntent(String action, String componentName, String packageName) {
+        return new Intent(action)
+                .setComponent(ComponentName.unflattenFromString(packageName + "/" + componentName))
+                .setPackage(packageName);
+    }
+
     public static Intent getAppSwitchIntent(ContextInspector contextInspector,
             ConfigManager configManager, Request request, Recipe recipe) {
-        Intent intent = new Intent(recipe.getTargetIntentAction());
-        intent.setComponent(ComponentName.unflattenFromString(WalletHelper.WALLET_APP_PACKAGE + "/"
-                + recipe.getTargetComponent()));
-        intent.setPackage(WalletHelper.WALLET_APP_PACKAGE);
+        Intent intent = createBaseIntent(recipe.getTargetIntentAction(),
+                recipe.getTargetComponent(), WALLET_APP_PACKAGE);
         intent.putExtra("version", recipe.getProtocol().getVersion());
-
         // app_guid now present on all v1/v2 requests.  Deemed not sensitive.
         intent.putExtra("app_guid", contextInspector.getInstallationGUID());
         intent.putExtra("client_metadata_id", request.getClientMetadataId());

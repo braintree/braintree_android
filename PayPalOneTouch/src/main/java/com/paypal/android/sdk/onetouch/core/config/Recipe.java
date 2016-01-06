@@ -7,7 +7,7 @@ import android.net.Uri;
 import com.braintreepayments.api.internal.AppHelper;
 import com.paypal.android.sdk.onetouch.core.enums.Protocol;
 import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
-import com.paypal.android.sdk.onetouch.core.sdk.WalletHelper;
+import com.paypal.android.sdk.onetouch.core.sdk.AppSwitchHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -96,7 +96,7 @@ public abstract class Recipe<T extends Recipe<T>> {
     public boolean isValidAppTarget(Context context, boolean isSecurityEnabled) {
         for (String allowedWalletTarget : getTargetPackagesInReversePriorityOrder()) {
             boolean isIntentAvailable = AppHelper.isIntentAvailable(context,
-                    WalletHelper.createIntent(getTargetIntentAction(), getTargetComponent(),
+                    AppSwitchHelper.createBaseIntent(getTargetIntentAction(), getTargetComponent(),
                             allowedWalletTarget));
 
             String locale = Locale.getDefault().toString();
@@ -105,7 +105,7 @@ public abstract class Recipe<T extends Recipe<T>> {
                     mSupportedLocales.isEmpty() || mSupportedLocales.contains(locale);
 
             boolean isSignatureValid =
-                    WalletHelper.isSignatureValid(context, allowedWalletTarget, isSecurityEnabled);
+                    AppSwitchHelper.isSignatureValid(context, allowedWalletTarget, isSecurityEnabled);
 
             if (isIntentAvailable && isLocaleAllowed && isSignatureValid) {
                 return true;

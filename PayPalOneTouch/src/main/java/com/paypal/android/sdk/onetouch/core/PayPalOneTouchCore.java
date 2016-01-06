@@ -4,11 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.MainThread;
 
-import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.data.collector.SdkRiskComponent;
+import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.config.ConfigManager;
+import com.paypal.android.sdk.onetouch.core.config.OAuth2Recipe;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
-import com.paypal.android.sdk.onetouch.core.enums.Protocol;
 import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
 import com.paypal.android.sdk.onetouch.core.fpti.FptiManager;
 import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
@@ -17,7 +17,6 @@ import com.paypal.android.sdk.onetouch.core.network.PayPalHttpClient;
 import com.paypal.android.sdk.onetouch.core.sdk.AppSwitchHelper;
 import com.paypal.android.sdk.onetouch.core.sdk.BrowserSwitchHelper;
 import com.paypal.android.sdk.onetouch.core.sdk.PendingRequest;
-import com.paypal.android.sdk.onetouch.core.sdk.WalletHelper;
 
 import java.util.Collections;
 
@@ -40,31 +39,18 @@ public class PayPalOneTouchCore {
     public static boolean isWalletAppInstalled(Context context, boolean enableSecurityCheck) {
         initService(context);
 
-        boolean isV3WalletAppInstalled =
-                WalletHelper.isValidV3TouchAuthenticatorInstalled(context, enableSecurityCheck);
-        sFptiManager.trackFpti((isV3WalletAppInstalled) ? TrackingPoint.WalletIsPresent :
-                        TrackingPoint.WalletIsAbsent, ""/*no environment set yet*/,
-                Collections.<String, String>emptyMap(), Protocol.v3);
-
-        boolean isV2WalletAppInstalled = false;
-        if (!isV3WalletAppInstalled) {
-            isV2WalletAppInstalled =
-                    WalletHelper.isValidV2TouchAuthenticatorInstalled(context, enableSecurityCheck);
-            sFptiManager.trackFpti((isV2WalletAppInstalled) ? TrackingPoint.WalletIsPresent :
-                            TrackingPoint.WalletIsAbsent, ""/*no environment set yet*/,
-                    Collections.<String, String>emptyMap(), Protocol.v2);
+        for (OAuth2Recipe recipe : sConfigManager.getConfig().getOauth2Recipes()) {
+            if (recipe.isValidAppTarget(context, enableSecurityCheck)) {
+                sFptiManager.trackFpti(TrackingPoint.WalletIsPresent, "",
+                        Collections.<String, String>emptyMap(), recipe.getProtocol());
+                return true;
+            } else {
+                sFptiManager.trackFpti(TrackingPoint.WalletIsAbsent, "",
+                        Collections.<String, String>emptyMap(), recipe.getProtocol());
+            }
         }
 
-        boolean isV1WalletAppInstalled = false;
-        if (!isV2WalletAppInstalled) {
-            isV1WalletAppInstalled =
-                    WalletHelper.isValidV1TouchAuthenticatorInstalled(context, enableSecurityCheck);
-            sFptiManager.trackFpti((isV1WalletAppInstalled) ? TrackingPoint.WalletIsPresent :
-                            TrackingPoint.WalletIsAbsent, ""/*no environment set yet*/,
-                    Collections.<String, String>emptyMap(), Protocol.v1);
-        }
-
-        return isV3WalletAppInstalled || isV2WalletAppInstalled || isV1WalletAppInstalled;
+        return false;
     }
 
     /**

@@ -55,6 +55,20 @@ public class AppSwitchHelperTest {
     }
 
     @Test
+    public void isSignatureValid_returnsTrueIfSecurityNotEnabled() {
+        assertTrue(AppSwitchHelper.isSignatureValid(null, "", false));
+    }
+
+    @Test
+    public void createBaseIntent_createsIntentCorrectly() {
+        Intent intent = AppSwitchHelper.createBaseIntent("action", "component", "package");
+
+        assertEquals("action", intent.getAction());
+        assertEquals("package/component", intent.getComponent().flattenToString());
+        assertEquals("package", intent.getPackage());
+    }
+
+    @Test
     public void buildAppSwitchIntent_buildsIntentForProtocolV1() {
         Request request = mock(CheckoutRequest.class);
         when(request.getEnvironment()).thenReturn("test");
