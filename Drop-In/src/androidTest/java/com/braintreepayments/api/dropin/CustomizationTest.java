@@ -110,7 +110,7 @@ public class CustomizationTest extends BraintreePaymentActivityTestCase {
     }
 
     public void testSecondaryDescriptionCanBeGreaterThanOneLine() throws InterruptedException {
-        String actual = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur at sollicitudin tellus, sed pellentesque ante. Phasellus aliquam nec mauris ac tincidunt. Curabitur at sollicitudin tellus, sed pellentesque ante.";
+        String actual = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur at sollicitudin tellus, sed pellentesque ante. Phasellus aliquam nec mauris ac tincidunt.";
 
         Intent intent = createIntent();
         String clientToken = new TestClientTokenBuilder().build();
