@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -47,7 +48,6 @@ public class HttpRequest {
 
     private String mBaseUrl;
     private String mAuthorizationFingerprint;
-    private int mConnectTimeout = 0;
     private final TLSSocketFactory mTLSSocketFactory = new TLSSocketFactory();
 
     public HttpRequest(String authorizationFingerprint) {
@@ -60,10 +60,6 @@ public class HttpRequest {
 
     public void setBaseUrl(String baseUrl) {
         mBaseUrl = (baseUrl == null) ? "" : baseUrl;
-    }
-
-    protected void setConnectTimeout(int timeout) {
-        mConnectTimeout = timeout;
     }
 
     /**
@@ -167,7 +163,8 @@ public class HttpRequest {
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("User-Agent", HttpRequest.getUserAgent());
         connection.setRequestProperty("Accept-Language", Locale.getDefault().getLanguage());
-        connection.setConnectTimeout(mConnectTimeout);
+        connection.setConnectTimeout((int) TimeUnit.SECONDS.toMillis(30));
+        connection.setReadTimeout((int) TimeUnit.SECONDS.toMillis(30));
 
         return connection;
     }

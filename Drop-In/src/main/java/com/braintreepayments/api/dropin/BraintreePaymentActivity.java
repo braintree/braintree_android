@@ -41,7 +41,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * {@link android.app.Activity} encompassing Braintree's Drop-In UI.
@@ -109,7 +108,7 @@ public class BraintreePaymentActivity extends Activity implements
     private Braintree mBraintree;
     private AddPaymentMethodViewController mAddPaymentMethodViewController;
     private SelectPaymentMethodViewController mSelectPaymentMethodViewController;
-    private AtomicBoolean mHavePaymentMethodsBeenReceived = new AtomicBoolean(false);
+    private boolean mHavePaymentMethodsBeenReceived = false;
     private Bundle mSavedInstanceState;
     private Customization mCustomization;
 
@@ -158,7 +157,7 @@ public class BraintreePaymentActivity extends Activity implements
             }
         } else {
             mBraintree.getPaymentMethods();
-            waitForData();
+            showLoadingView();
         }
     }
 
@@ -199,7 +198,7 @@ public class BraintreePaymentActivity extends Activity implements
 
     @Override
     public void onPaymentMethodsUpdated(List<PaymentMethod> paymentMethods) {
-        mHavePaymentMethodsBeenReceived.set(true);
+        mHavePaymentMethodsBeenReceived = true;
 
         if (paymentMethods.size() == 0) {
             showAddPaymentMethodView();
@@ -248,8 +247,8 @@ public class BraintreePaymentActivity extends Activity implements
     @Override
     public void onUnrecoverableError(Throwable throwable) {
         // Falling back to add payment method if getPaymentMethods fails
-        if (StubbedView.LOADING_VIEW.mCurrentView && !mHavePaymentMethodsBeenReceived.get()) {
-            mHavePaymentMethodsBeenReceived.set(true);
+        if (StubbedView.LOADING_VIEW.mCurrentView && !mHavePaymentMethodsBeenReceived) {
+            mHavePaymentMethodsBeenReceived = true;
             showAddPaymentMethodView();
         } else {
             if(throwable instanceof AuthenticationException ||
@@ -287,24 +286,6 @@ public class BraintreePaymentActivity extends Activity implements
         resultIntent.putExtra(EXTRA_PAYMENT_METHOD_NONCE, paymentMethod.getNonce());
         setResult(RESULT_OK, resultIntent);
         finish();
-    }
-
-    private void waitForData() {
-        Executors.newScheduledThreadPool(1).schedule(new Runnable() {
-            @Override
-            public void run() {
-                if (!mHavePaymentMethodsBeenReceived.get()) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mHavePaymentMethodsBeenReceived.set(true);
-                            showAddPaymentMethodView();
-                        }
-                    });
-                }
-            }
-        }, 10, TimeUnit.SECONDS);
-        showLoadingView();
     }
 
     private void initSelectPaymentMethodView() {

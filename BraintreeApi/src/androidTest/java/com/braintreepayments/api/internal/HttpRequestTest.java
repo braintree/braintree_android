@@ -59,6 +59,15 @@ public class HttpRequestTest extends AndroidTestCase {
         assertEquals("application/json", connection.getRequestProperty("Content-Type"));
     }
 
+    public void testSetsConnectAndReadTimeout() throws IOException {
+        HttpRequest httpRequest = new HttpRequest("");
+
+        HttpURLConnection connection = httpRequest.init("http://example.com/");
+
+        assertEquals(30000, connection.getConnectTimeout());
+        assertEquals(30000, connection.getReadTimeout());
+    }
+
     public void testThrowsErrorWhenBaseUrlIsNotSet() {
         HttpRequest httpRequest = new HttpRequest(null);
 
@@ -185,7 +194,6 @@ public class HttpRequestTest extends AndroidTestCase {
         try {
             HttpRequest httpRequest = new HttpRequest("");
             httpRequest.setBaseUrl("https://" + EnvironmentHelper.getLocalhostIp() + ":9443");
-            httpRequest.setConnectTimeout(1000);
             httpRequest.get("/");
             fail();
         } catch (Exception e) {

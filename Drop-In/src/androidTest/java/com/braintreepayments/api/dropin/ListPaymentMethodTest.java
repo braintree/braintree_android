@@ -89,15 +89,6 @@ public class ListPaymentMethodTest extends BraintreePaymentActivityTestCase {
                 activity.findViewById(R.id.bt_loading_progress_bar).getVisibility());
     }
 
-    public void testLoadingPaymentMethodsTimesOutAfterTenSecondsAndDropsToAddPaymentMethodForm() {
-        String clientToken = new TestClientTokenBuilder().build();
-        injectSlowBraintree(mContext, clientToken, 11000);
-        setUpActivityTest(this, clientToken);
-        getActivity();
-
-        waitForAddPaymentFormHeader(10500).check(matches(isDisplayed()));
-    }
-
     public void testFallsBackToAddPaymentMethodFormIfLoadingPaymentMethodsBlowsUp()
             throws BraintreeException, ErrorWithResponse {
         String clientToken = new TestClientTokenBuilder().build();
