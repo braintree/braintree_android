@@ -234,12 +234,12 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         contextInspector.setPreferences(prefs);
     }
 
-    private boolean validResponse(ContextInspector contextInspector, String msgGUID) {
+    private boolean isValidResponse(ContextInspector contextInspector, String msgGUID) {
         String prefsMsgGUID =
                 contextInspector.getStringPreference(AuthorizationRequest.PREFS_MSG_GUID);
         String prefsSymmetricKey = getStoredSymmetricKey(contextInspector);
 
-        return (!TextUtils.isEmpty(prefsMsgGUID) && msgGUID.equals(prefsMsgGUID) &&
+        return (!TextUtils.isEmpty(prefsMsgGUID) && prefsMsgGUID.equals(msgGUID) &&
                 !TextUtils.isEmpty(prefsSymmetricKey));
     }
 
@@ -319,50 +319,55 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     @Override
     public Result parseBrowserResponse(ContextInspector contextInspector, Uri uri) {
         String status = uri.getLastPathSegment();
-
-        if (!Uri.parse(getSuccessUrl()).getLastPathSegment().equals(status)) {
-            return new Result();
+        String payloadEnc = uri.getQueryParameter("payloadEnc");
+        JSONObject payload;
+        try {
+            payload = new JSONObject(new String(Base64.decode(uri.getQueryParameter("payload"), Base64.DEFAULT)));
+        } catch (NullPointerException | IllegalArgumentException | JSONException e) {
+            payload = new JSONObject();
         }
 
-        String payloadEnc = uri.getQueryParameter("payloadEnc");
-        String payload = uri.getQueryParameter("payload");
-        byte[] base64Payload = Base64.decode(payload, Base64.DEFAULT);
-        try {
-            JSONObject payloadJson = new JSONObject(new String(base64Payload));
-            if (payloadJson.has("msg_GUID")) {
-                String msgGUID = payloadJson.optString("msg_GUID");
-
-                if (isSuccessResponse(payloadEnc, msgGUID) &&
-                        validResponse(contextInspector, msgGUID)) {
-                    JSONObject decryptedPayloadEnc = getDecryptedPayload(payloadEnc,
-                            getStoredSymmetricKey(contextInspector));
-
-                    String error = payloadJson.optString("error");
-
-                    // the string 'null' is coming back in production
-                    if (!TextUtils.isEmpty(error) && !"null".equals(error)) {
-                        return new Result(new BrowserSwitchException(error));
-                    } else {
-                        // Based on this interpretation, construct the PayPalOneTouchResult to
-                        // reflect the response we've received.
-                        return new Result(payloadJson.optString("environment"),
-                                ResponseType.authorization_code,
-                                new JSONObject()
-                                        .put("code", decryptedPayloadEnc.getString("payment_code")),
-                                decryptedPayloadEnc.getString("email")
-                        );
-                    }
-                } else {
-                    return new Result(new ResponseParsingException("Response was not understood"));
-                }
-            } else {
+        if (Uri.parse(getSuccessUrl()).getLastPathSegment().equals(status)) {
+            if (!payload.has("msg_GUID")) {
                 return new Result(
-                        new ResponseParsingException("Response was missing some information"));
+                        new ResponseParsingException("Response incomplete"));
             }
-        } catch (JSONException | InvalidAlgorithmParameterException | NoSuchAlgorithmException
-                | IllegalBlockSizeException | BadPaddingException | NoSuchPaddingException
-                | InvalidKeyException | InvalidEncryptionDataException e) {
-            return new Result(new ResponseParsingException(e));
+
+            String msgGUID = payload.optString("msg_GUID");
+            if (TextUtils.isEmpty(payloadEnc) || !isValidResponse(contextInspector, msgGUID)) {
+                return new Result(new ResponseParsingException("Response invalid"));
+            }
+
+            try {
+                JSONObject decryptedPayloadEnc = getDecryptedPayload(payloadEnc,
+                        getStoredSymmetricKey(contextInspector));
+
+                String error = payload.optString("error");
+                // the string 'null' is coming back in production
+                if (!TextUtils.isEmpty(error) && !"null".equals(error)) {
+                    return new Result(new BrowserSwitchException(error));
+                }
+
+                return new Result(payload.optString("environment"), ResponseType.authorization_code,
+                        new JSONObject().put("code", decryptedPayloadEnc.getString("payment_code")),
+                        decryptedPayloadEnc.getString("email"));
+            } catch (JSONException | InvalidAlgorithmParameterException | NoSuchAlgorithmException
+                    | IllegalBlockSizeException | BadPaddingException | NoSuchPaddingException
+                    | InvalidKeyException | InvalidEncryptionDataException
+                    | IllegalArgumentException e) {
+                return new Result(new ResponseParsingException(e));
+            }
+        } else if (Uri.parse(getCancelUrl()).getLastPathSegment().equals(status)) {
+            String error = payload.optString("error");
+
+            // the string 'null' is coming back in production
+            if (!TextUtils.isEmpty(error) && !"null".equals(error)) {
+                return new Result(new BrowserSwitchException(error));
+            } else {
+                return new Result();
+            }
+        } else {
+            return new Result(new ResponseParsingException("Response uri invalid"));
         }
     }
 
@@ -407,14 +412,10 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
                 .trackFpti(trackingPoint, getEnvironment(), fptiDataBundle, protocol);
     }
 
-    private boolean isSuccessResponse(String payloadEnc, String msgGUID) {
-        return (!TextUtils.isEmpty(msgGUID) && !TextUtils.isEmpty(payloadEnc));
-    }
-
     private JSONObject getDecryptedPayload(String payloadEnc, String symmetricKey)
             throws IllegalBlockSizeException, InvalidKeyException, NoSuchAlgorithmException,
             InvalidAlgorithmParameterException, NoSuchPaddingException, BadPaddingException,
-            InvalidEncryptionDataException, JSONException {
+            InvalidEncryptionDataException, JSONException, IllegalArgumentException {
         byte[] base64PayloadEnc = Base64.decode(payloadEnc, Base64.DEFAULT);
         byte[] key = EncryptionUtils.hexStringToByteArray(symmetricKey);
         byte[] output = new OtcCrypto().decryptAESCTRData(base64PayloadEnc, key);
