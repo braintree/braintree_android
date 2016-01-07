@@ -49,7 +49,7 @@ task :release => :tests do
   braintree_api_build_file = "BraintreeApi/build.gradle"
   braintree_drop_in_build_file = "Drop-In/build.gradle"
 
-  last_version = `git tag | tail -1`.chomp
+  last_version = `git tag | grep "^1." | tail -1`.chomp
   puts "\nChanges since #{last_version}:"
   sh "git log --pretty=format:\"%h %ad%x20%s%x20%x28%an%x29\" --date=short #{last_version}.."
   puts "Please update your CHANGELOG.md. Press ENTER when you are done"
