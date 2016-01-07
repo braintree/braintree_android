@@ -1,5 +1,15 @@
 # Braintree Android SDK Release Notes
 
+## 1.7.6
+
+* Update PayPal SDK to 2.12.4
+  * The PayPal SDK is now a dependency instead of a jar included in the SDK
+* Enable TLS v1.2 on API 16 - 19
+* Update Android Pay assets
+* Fixes
+  * Post an exception to error listeners when PayPal results are invalid
+  * Fix Drop-in `Activity` leak (fixes [#74](https://github.com/braintree/braintree_android/issues/74))
+
 ## 1.7.5
 
 * Update PayPal SDK to 2.11.2
