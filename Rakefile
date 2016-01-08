@@ -45,8 +45,7 @@ task :publish_snapshot => :tests do
 end
 
 desc "Interactive release to publish new version"
-#task :release => :tests do
-task :release do
+task :release => :tests do
   last_version = `git tag | tail -1`.chomp
   puts "\nChanges since #{last_version}:"
   sh "git log --pretty=format:\"%h %ad%x20%s%x20%x28%an%x29\" --date=short #{last_version}.."
