@@ -78,7 +78,10 @@ class DeviceMetadata {
     static String getNetworkType(Context context) {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        return connectivityManager.getActiveNetworkInfo().getTypeName();
+        if (connectivityManager.getActiveNetworkInfo() != null) {
+            return connectivityManager.getActiveNetworkInfo().getTypeName();
+        }
+        return "none";
     }
 
     /**
