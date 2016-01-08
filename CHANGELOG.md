@@ -1,5 +1,19 @@
 # Braintree Android SDK Release Notes
 
+## 2.1.1
+
+* Demo app upgrades
+* Update PayPal SDK to 2.4.3 (fixes [#67](https://github.com/braintree/braintree_android/issues/67))
+* Update android-card-form to 2.1.1
+* Update gradle to 2.8
+* Update build tools to 23.0.2
+* Features
+  * Add support for fraud data collection in Drop-in
+* Fixes
+  * Add rule to suppress ProGuard warnings
+  * Fix Drop-in crash
+  * Fix NPE when there is no active network (fixes [#77](https://github.com/braintree/braintree_android/issues/77))
+
 ## 2.1.0
 
 * Pay with Venmo
