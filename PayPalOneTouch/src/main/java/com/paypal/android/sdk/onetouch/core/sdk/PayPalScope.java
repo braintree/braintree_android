@@ -11,58 +11,37 @@ public enum PayPalScope {
     /**
      * Allows payments to be made in the future using PayPal
      */
-    FUTURE_PAYMENTS(
-            "https://uri.paypal.com/services/payments/futurepayments",
-            false
-    ),
+    FUTURE_PAYMENTS("https://uri.paypal.com/services/payments/futurepayments", false),
 
     /**
      * Account profile
      */
-    PROFILE(
-            "profile",
-            true
-    ),
+    PROFILE("profile", true),
 
     /**
      * PayPal attributes - personal and account information
      */
-    PAYPAL_ATTRIBUTES(
-            "https://uri.paypal.com/services/paypalattributes",
-            true
-    ),
+    PAYPAL_ATTRIBUTES("https://uri.paypal.com/services/paypalattributes", true),
 
     /**
      * openid
      */
-    OPENID(
-            "openid",
-            true
-    ),
+    OPENID("openid", true),
 
     /**
      * email
      */
-    EMAIL(
-            "email",
-            true
-    ),
+    EMAIL("email", true),
 
     /**
      * address
      */
-    ADDRESS(
-            "address",
-            true
-    ),
+    ADDRESS("address", true),
 
     /**
      * phone
      */
-    PHONE(
-            "phone",
-            true
-    ),;
+    PHONE("phone", true);
 
     public static final Collection<String> PROFILE_SHARING_SCOPE_URIS = new HashSet<String>() {{
         for (PayPalScope scope : PayPalScope.values()) {

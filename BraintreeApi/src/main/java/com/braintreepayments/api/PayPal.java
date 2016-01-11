@@ -27,6 +27,7 @@ import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 import com.paypal.android.sdk.onetouch.core.Request;
 import com.paypal.android.sdk.onetouch.core.Result;
 import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
+import com.paypal.android.sdk.onetouch.core.sdk.PayPalScope;
 import com.paypal.android.sdk.onetouch.core.sdk.PendingRequest;
 
 import org.json.JSONException;
@@ -44,19 +45,18 @@ public class PayPal {
     /**
      * PayPal Scope for Future Payments. Always enabled for the future payments flow.
      */
-    public static final String SCOPE_FUTURE_PAYMENTS =
-            "https://uri.paypal.com/services/payments/futurepayments";
+    public static final String SCOPE_FUTURE_PAYMENTS = PayPalScope.FUTURE_PAYMENTS.getScopeUri();
 
     /**
      * PayPal Scope for email. Always enabled for the future payments flow.
      */
-    public static final String SCOPE_EMAIL = "email";
+    public static final String SCOPE_EMAIL = PayPalScope.EMAIL.getScopeUri();
 
     /**
      * PayPal Scope for obtaining the accounts address. Optional, can be specified in the optional
      * scopes when using {@link #authorizeAccount(BraintreeFragment, List)}.
      */
-    public static final String SCOPE_ADDRESS = "address";
+    public static final String SCOPE_ADDRESS = PayPalScope.ADDRESS.getScopeUri();
 
     protected static boolean sEnableSignatureVerification = true;
 
