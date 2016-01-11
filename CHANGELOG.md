@@ -1,5 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## 2.1.2
+
+* Update Google Play Services Wallet to 8.4.0
+* Use `ENVIRONMENT_TEST` for Android Pay requests in sandbox
+* Add `AndroidPay#isReadyToPay` method
+
 ## 2.1.1
 
 * Demo app upgrades
