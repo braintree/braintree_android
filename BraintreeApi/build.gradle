@@ -112,7 +112,6 @@ task fullJar(type: Jar, dependsOn: releaseJar) {
 artifacts {
     archives javadocsJar
     archives sourcesJar
-    archives releaseJar
     archives fullJar
 }
 
