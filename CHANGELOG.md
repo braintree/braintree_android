@@ -1,5 +1,15 @@
 # Braintree Android SDK Release Notes
 
+## 1.7.7
+
+* Update PayPal SDK to 2.12.5
+* Remove jar artifact from releases
+* Update Google Play Services Wallet to 8.4.0
+* Use `ENVIRONMENT_TEST` for Android Pay requests in sandbox
+* Add `Braintree#checkAndroidPayIsReadyToPay` method
+* Fixes
+  * Fix NPE when there is no active network ([#77](https://github.com/braintree/braintree_android/issues/77))
+
 ## 1.7.6
 
 * Update PayPal SDK to 2.12.4
