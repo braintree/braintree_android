@@ -1,13 +1,5 @@
 apply plugin: 'com.android.library'
 
-def getBuildVersion = { ->
-    "git describe --match=*[0-9]*.[0-9]*.*[0-9] --tags --dirty --always".execute().text.trim()
-}
-
-ext {
-    product_version = getBuildVersion()
-}
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -18,8 +10,6 @@ android {
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
-
-        buildConfigField "String", "PRODUCT_VERSION", "\"${product_version}\""
     }
 
     compileOptions {
