@@ -1,8 +1,5 @@
 package com.paypal.android.sdk.onetouch.core.sdk;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 /**
  * Scopes that a user may be asked to consented to.  This class is for internal use only.
  */
@@ -11,58 +8,42 @@ public enum PayPalScope {
     /**
      * Allows payments to be made in the future using PayPal
      */
-    FUTURE_PAYMENTS("https://uri.paypal.com/services/payments/futurepayments", false),
+    FUTURE_PAYMENTS("https://uri.paypal.com/services/payments/futurepayments"),
 
     /**
      * Account profile
      */
-    PROFILE("profile", true),
+    PROFILE("profile"),
 
     /**
      * PayPal attributes - personal and account information
      */
-    PAYPAL_ATTRIBUTES("https://uri.paypal.com/services/paypalattributes", true),
+    PAYPAL_ATTRIBUTES("https://uri.paypal.com/services/paypalattributes"),
 
     /**
      * openid
      */
-    OPENID("openid", true),
+    OPENID("openid"),
 
     /**
      * email
      */
-    EMAIL("email", true),
+    EMAIL("email"),
 
     /**
      * address
      */
-    ADDRESS("address", true),
+    ADDRESS("address"),
 
     /**
      * phone
      */
-    PHONE("phone", true);
-
-    public static final Collection<String> PROFILE_SHARING_SCOPE_URIS = new HashSet<String>() {{
-        for (PayPalScope scope : PayPalScope.values()) {
-            if (scope.mIsProfileSharingScope) {
-                add(scope.getScopeUri());
-            }
-        }
-    }};
-
-    public static final Collection<String> SCOPE_URIS = new HashSet<String>() {{
-        for (PayPalScope scope : PayPalScope.values()) {
-            add(scope.getScopeUri());
-        }
-    }};
+    PHONE("phone");
 
     private String mScopeUri;
-    private boolean mIsProfileSharingScope;
 
-    PayPalScope(String scopeUri, boolean isProfileSharingScope) {
+    PayPalScope(String scopeUri) {
         mScopeUri = scopeUri;
-        mIsProfileSharingScope = isProfileSharingScope;
     }
 
     public String getScopeUri() {
