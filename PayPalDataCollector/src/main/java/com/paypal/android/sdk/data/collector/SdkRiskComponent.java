@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.MainThread;
 import android.util.Log;
 
-import com.paypal.android.sdk.BuildConfig;
 import com.paypal.android.sdk.onetouch.core.metadata.MetadataIdProvider;
 import com.paypal.android.sdk.onetouch.core.metadata.MetadataIdProviderImpl;
 
@@ -42,7 +41,7 @@ public final class SdkRiskComponent {
                 }
 
                 String clientMetadataId = sMetadataIdProvider.init(context.getApplicationContext(),
-                        applicationGuid, BuildConfig.PRODUCT_VERSION, params);
+                        applicationGuid, params);
 
                 Executors.newSingleThreadExecutor().submit(new Runnable() {
                     @Override
