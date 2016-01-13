@@ -14,6 +14,7 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
     private static final String EXPIRATION_MONTH_KEY = "expirationMonth";
     private static final String EXPIRATION_YEAR_KEY = "expirationYear";
     private static final String EXPIRATION_DATE_KEY = "expirationDate";
+    private static final String CARDHOLDER_NAME_KEY = "cardholderName";
     private static final String BILLING_ADDRESS_KEY = "billingAddress";
     private static final String FIRST_NAME_KEY = "firstName";
     private static final String LAST_NAME_KEY = "lastName";
@@ -93,6 +94,17 @@ public class CardBuilder extends PaymentMethodBuilder<CardBuilder> {
             mPaymentMethodNonceJson.put(EXPIRATION_DATE_KEY, expirationDate);
         } catch (JSONException ignored) {}
 
+        return this;
+    }
+
+    /**
+     * @param cardholderName Name on the card.
+     * @return {@link com.braintreepayments.api.models.CardBuilder}
+     */
+    public CardBuilder cardholderName(String cardholderName) {
+        try {
+            mPaymentMethodNonceJson.put(CARDHOLDER_NAME_KEY, cardholderName);
+        } catch (JSONException ignored) {}
         return this;
     }
 
