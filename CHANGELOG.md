@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 1.7.8
+
+* Add `CardBuilder#cardholderName`
+
 ## 1.7.7
 
 * Update PayPal SDK to 2.12.5
