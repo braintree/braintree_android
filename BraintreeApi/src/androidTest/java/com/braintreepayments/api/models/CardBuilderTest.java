@@ -20,6 +20,7 @@ public class CardBuilderTest extends TestCase {
                 .cvv("123")
                 .expirationMonth("01")
                 .expirationYear("2015")
+                .cardholderName("Joe Smith")
                 .firstName("Joe")
                 .lastName("Smith")
                 .streetAddress("1 Main St")
@@ -37,6 +38,7 @@ public class CardBuilderTest extends TestCase {
         assertEquals("123", jsonCard.getString("cvv"));
         assertEquals("01", jsonCard.getString("expirationMonth"));
         assertEquals("2015", jsonCard.getString("expirationYear"));
+        assertEquals("Joe Smith", jsonCard.getString("cardholderName"));
 
         assertEquals("Joe", jsonBillingAddress.getString("firstName"));
         assertEquals("Smith", jsonBillingAddress.getString("lastName"));

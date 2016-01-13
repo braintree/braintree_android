@@ -70,6 +70,15 @@ public class CardBuilder implements PaymentMethod.Builder<Card> {
         return this;
     }
 
+    /**
+     * @param cardholderName Name on the card.
+     * @return {@link com.braintreepayments.api.models.CardBuilder}
+     */
+    public CardBuilder cardholderName(String cardholderName) {
+        mCard.setCardholderName(cardholderName);
+        return this;
+    }
+
     private BillingAddress getBillingAddress() {
         if (mBillingAddress == null) {
             mBillingAddress = new BillingAddress();

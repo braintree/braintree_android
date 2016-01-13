@@ -26,6 +26,7 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
     @SerializedName("expirationDate") private String mExpirationDate;
     @SerializedName("number") private String mNumber;
     @SerializedName("cvv") private String mCvv;
+    @SerializedName("cardholderName") private String mCardholderName;
 
     public Card() {}
 
@@ -82,6 +83,10 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
         mCvv = cvv;
     }
 
+    protected void setCardholderName(String cardholderName) {
+        mCardholderName = cardholderName;
+    }
+
     /**
      * Required for and handled by {@link com.braintreepayments.api.Braintree}. Not intended for general consumption.
      * @param creditCard Raw JSON representation of a {@link com.braintreepayments.api.models.Card}.
@@ -104,6 +109,7 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
         dest.writeString(mExpirationDate);
         dest.writeString(mNumber);
         dest.writeString(mCvv);
+        dest.writeString(mCardholderName);
         dest.writeString(mNonce);
         dest.writeString(mDescription);
         dest.writeSerializable(mPaymentMethodOptions);
@@ -119,6 +125,7 @@ public class Card extends PaymentMethod implements Parcelable, Serializable {
         mExpirationDate = in.readString();
         mNumber = in.readString();
         mCvv = in.readString();
+        mCardholderName = in.readString();
         mNonce = in.readString();
         mDescription = in.readString();
         mPaymentMethodOptions = (PaymentMethodOptions) in.readSerializable();
