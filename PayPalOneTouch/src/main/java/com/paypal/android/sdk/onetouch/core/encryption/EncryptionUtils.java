@@ -12,6 +12,7 @@ import java.security.cert.X509Certificate;
  * Very basic string manipulation methods useful for encryption.
  */
 public class EncryptionUtils {
+
     private static final SecureRandom RANDOM;
 
     static {
