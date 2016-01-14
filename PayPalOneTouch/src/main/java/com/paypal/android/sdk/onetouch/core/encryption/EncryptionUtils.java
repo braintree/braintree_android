@@ -36,7 +36,7 @@ public class EncryptionUtils {
     }
 
     /**
-     * Returns String of byte array.  Did not use library as none are built into Android.
+     * Returns String of byte array.
      *
      * @param array
      * @return
@@ -56,7 +56,7 @@ public class EncryptionUtils {
     }
 
     /**
-     * Returns byte array of hex string.  Did not use library as none are built into Android.
+     * Returns byte array of hex string.
      */
     public static byte[] hexStringToByteArray(String s) {
         int len = s.length();
@@ -69,20 +69,21 @@ public class EncryptionUtils {
     }
 
     /**
-     * Do not use Arrays.equals because of http://codahale.com/a-lesson-in-timing-attacks/
+     * Checks array equality in a way that avoids timing attacks.
      *
-     * @param a
-     * @param b
-     * @return
+     * @param arrayOne
+     * @param arrayTwo
+     * @return {@code true} if equal, {@code false} otherwise.
+     * @see <a href="http://codahale.com/a-lesson-in-timing-attacks">http://codahale.com/a-lesson-in-timing-attacks/</a>
      */
-    static boolean isEqual(byte[] a, byte[] b) {
-        if (a.length != b.length) {
+    static boolean isEqual(byte[] arrayOne, byte[] arrayTwo) {
+        if (arrayOne.length != arrayTwo.length) {
             return false;
         }
 
         int result = 0;
-        for (int i = 0; i < a.length; i++) {
-            result |= a[i] ^ b[i];
+        for (int i = 0; i < arrayOne.length; i++) {
+            result |= arrayOne[i] ^ arrayTwo[i];
         }
         return result == 0;
     }

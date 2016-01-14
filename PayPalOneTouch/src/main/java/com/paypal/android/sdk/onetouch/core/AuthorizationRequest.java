@@ -274,12 +274,8 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     private String buildPayload(Context context, X509Certificate cert) {
         JSONObject payload = new JSONObject();
         try {
-            // roman says this should be a number
             payload.put("version", 3);
-            // Roman says no app_guid in secure browser switch
-            //payload.put("app_guid", contextInspector.getInstallationGUID());
             payload.put("client_id", getClientId());
-            // Roman confirmed this is correct, but is not ever read from the app.
             payload.put("app_name", DeviceInspector.getApplicationInfoName(context));
             payload.put("environment", getEnvironment());
             payload.put("environment_url", EnvironmentManager.getEnvironmentUrl(getEnvironment()));
@@ -291,7 +287,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
             payload.put("client_metadata_id", getClientMetadataId());
             payload.put("key_id", cert.getSerialNumber());
 
-            // If this is false, Braintree will not offer KMLI (won't save cookies)
+            // If this is false, keep me logged in will not be offered (won't save cookies)
             payload.put("android_chrome_available", isChromeAvailable(context));
 
             for (Entry<String, String> entry : mAdditionalPayloadAttributes.entrySet()) {

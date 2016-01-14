@@ -17,7 +17,6 @@ class ConfigFileParser {
 
         JSONObject oneDotZeroConfig = rootObject.getJSONObject("1.0");
 
-        //parse oauth2 configs
         JSONArray oauth2_recipes_in_decreasing_priority_order =
                 oneDotZeroConfig.getJSONArray("oauth2_recipes_in_decreasing_priority_order");
 
@@ -29,7 +28,6 @@ class ConfigFileParser {
             }
         }
 
-        //parse checkout configs
         JSONArray checkout_recipes_in_decreasing_priority_order =
                 oneDotZeroConfig.getJSONArray("checkout_recipes_in_decreasing_priority_order");
 
@@ -42,7 +40,6 @@ class ConfigFileParser {
             }
         }
 
-        //parse billing agreement configs
         JSONArray billing_agreement_recipes_in_decreasing_priority_order =
                 oneDotZeroConfig
                         .getJSONArray("billing_agreement_recipes_in_decreasing_priority_order");

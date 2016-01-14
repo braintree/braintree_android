@@ -88,9 +88,6 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
     }
 
     private static String redirectURLHostAndPath() {
-        // Return either an empty string;
-        // or else a non-empty `host` or `host/path`, ending with `/`
-
         return "onetouch/v1/";
     }
 

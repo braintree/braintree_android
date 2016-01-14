@@ -5,7 +5,7 @@ package com.paypal.android.sdk.onetouch.core.enums;
  */
 public enum Protocol {
     /**
-     * Not really defined?  Used for Hermes Checkout
+     * Used for Hermes Checkout
      */
     v0("0.0"),
 

@@ -32,9 +32,6 @@ public class ContextInspector {
      * @return the installation GUID / the device's identifier. this has been a bunch of different
      * things over time but now is an installation GUID. it is not stable across uninstalls but it's
      * the best we can do.
-     * <p>
-     * Skips the usual encryption/decryption, because this ID is stored in plaintext and used to
-     * seed the encryptor/decryptor.
      */
     public String getInstallationGUID() {
         String existingGUID =
@@ -54,7 +51,7 @@ public class ContextInspector {
     }
 
     /**
-     * retrieve a persisted string, or null if it does not exist and/or decryption failed
+     * retrieve a persisted string, or null if it does not exist
      *
      * @param key of the persisted value
      * @return the persisted value or default value if it does not exist
@@ -75,7 +72,7 @@ public class ContextInspector {
     }
 
     /**
-     * Persist a value, encrypting it first.
+     * Persist a value
      *
      * @param key of the persisted value
      * @param value to persist
@@ -88,7 +85,7 @@ public class ContextInspector {
     }
 
     /**
-     * Persist many values.  All strings are encrypted first.
+     * Persist many values
      */
     public void setPreferences(Map<String, ?> mapToPersist) {
         SharedPreferences.Editor editor =
@@ -103,7 +100,6 @@ public class ContextInspector {
             } else if (value instanceof Boolean) {
                 editor.putBoolean(key, (Boolean) value);
             } else {
-                // TODO add the others
                 throw new RuntimeException(value.getClass() + " not supported");
             }
         }
