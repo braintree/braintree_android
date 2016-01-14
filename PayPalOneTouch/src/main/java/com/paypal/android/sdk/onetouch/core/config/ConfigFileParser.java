@@ -11,44 +11,39 @@ class ConfigFileParser {
 
     OtcConfiguration getParsedConfig(JSONObject rootObject) throws JSONException {
         OtcConfiguration otcConfiguration = new OtcConfiguration();
-
-        String file_timestamp = rootObject.getString("file_timestamp");
-        otcConfiguration.fileTimestamp(file_timestamp);
+        otcConfiguration.fileTimestamp(rootObject.getString("file_timestamp"));
 
         JSONObject oneDotZeroConfig = rootObject.getJSONObject("1.0");
 
-        JSONArray oauth2_recipes_in_decreasing_priority_order =
+        JSONArray oauth2RecipesInDecreasingPriorityOrder =
                 oneDotZeroConfig.getJSONArray("oauth2_recipes_in_decreasing_priority_order");
 
-        for (int i = 0; i < oauth2_recipes_in_decreasing_priority_order.length(); i++) {
-            JSONObject oauth2_recipe = oauth2_recipes_in_decreasing_priority_order.getJSONObject(i);
-            if (null != oauth2_recipe) {
-                OAuth2Recipe recipe = getOAuth2Recipe(oauth2_recipe);
+        for (int i = 0; i < oauth2RecipesInDecreasingPriorityOrder.length(); i++) {
+            JSONObject oauth2Recipe = oauth2RecipesInDecreasingPriorityOrder.getJSONObject(i);
+            if (null != oauth2Recipe) {
+                OAuth2Recipe recipe = getOAuth2Recipe(oauth2Recipe);
                 otcConfiguration.withOauth2Recipe(recipe);
             }
         }
 
-        JSONArray checkout_recipes_in_decreasing_priority_order =
+        JSONArray checkoutRecipesInDecreasingPriorityOrder =
                 oneDotZeroConfig.getJSONArray("checkout_recipes_in_decreasing_priority_order");
 
-        for (int i = 0; i < checkout_recipes_in_decreasing_priority_order.length(); i++) {
-            JSONObject checkout_recipe =
-                    checkout_recipes_in_decreasing_priority_order.getJSONObject(i);
-            if (null != checkout_recipe) {
-                CheckoutRecipe recipe = getCheckoutRecipe(checkout_recipe);
+        for (int i = 0; i < checkoutRecipesInDecreasingPriorityOrder.length(); i++) {
+            JSONObject checkoutRecipe = checkoutRecipesInDecreasingPriorityOrder.getJSONObject(i);
+            if (null != checkoutRecipe) {
+                CheckoutRecipe recipe = getCheckoutRecipe(checkoutRecipe);
                 otcConfiguration.withCheckoutRecipe(recipe);
             }
         }
 
-        JSONArray billing_agreement_recipes_in_decreasing_priority_order =
-                oneDotZeroConfig
-                        .getJSONArray("billing_agreement_recipes_in_decreasing_priority_order");
+        JSONArray billingAgreementRecipesInDecreasingPriorityOrder =
+                oneDotZeroConfig.getJSONArray("billing_agreement_recipes_in_decreasing_priority_order");
 
-        for (int i = 0; i < billing_agreement_recipes_in_decreasing_priority_order.length(); i++) {
-            JSONObject ba_recipe =
-                    billing_agreement_recipes_in_decreasing_priority_order.getJSONObject(i);
-            if (null != ba_recipe) {
-                BillingAgreementRecipe recipe = getBillingAgreementRecipe(ba_recipe);
+        for (int i = 0; i < billingAgreementRecipesInDecreasingPriorityOrder.length(); i++) {
+            JSONObject billingAgreementRecipe = billingAgreementRecipesInDecreasingPriorityOrder.getJSONObject(i);
+            if (null != billingAgreementRecipe) {
+                BillingAgreementRecipe recipe = getBillingAgreementRecipe(billingAgreementRecipe);
                 otcConfiguration.withBillingAgreementRecipe(recipe);
             }
         }
@@ -56,42 +51,40 @@ class ConfigFileParser {
         return otcConfiguration;
     }
 
-    private CheckoutRecipe getCheckoutRecipe(JSONObject checkout_recipe) throws JSONException {
+    private CheckoutRecipe getCheckoutRecipe(JSONObject checkoutRecipe) throws JSONException {
         CheckoutRecipe recipe = new CheckoutRecipe();
-        populateCommonData(recipe, checkout_recipe);
+        populateCommonData(recipe, checkoutRecipe);
 
         return recipe;
     }
 
-    private BillingAgreementRecipe getBillingAgreementRecipe(JSONObject ba_recipe)
-            throws JSONException {
+    private BillingAgreementRecipe getBillingAgreementRecipe(JSONObject billingAgreementRecipe) throws JSONException {
         BillingAgreementRecipe recipe = new BillingAgreementRecipe();
-        populateCommonData(recipe, ba_recipe);
+        populateCommonData(recipe, billingAgreementRecipe);
 
         return recipe;
     }
 
-    private void populateCommonData(Recipe<?> recipe, JSONObject json_recipe) throws JSONException {
-        recipe.target(RequestTarget.valueOf(json_recipe.getString("target")))
-                .protocol(json_recipe.getString("protocol"));
+    private void populateCommonData(Recipe<?> recipe, JSONObject jsonRecipe) throws JSONException {
+        recipe.target(RequestTarget.valueOf(jsonRecipe.getString("target")))
+                .protocol(jsonRecipe.getString("protocol"));
 
-        if (json_recipe.has("component")) {
-            recipe.targetComponent(json_recipe.getString("component"));
+        if (jsonRecipe.has("component")) {
+            recipe.targetComponent(jsonRecipe.getString("component"));
         }
 
-        // intent actions are not specified in browser target
-        if (json_recipe.has("intent_action")) {
-            recipe.targetIntentAction(json_recipe.getString("intent_action"));
+        if (jsonRecipe.has("intent_action")) {
+            recipe.targetIntentAction(jsonRecipe.getString("intent_action"));
         }
 
-        JSONArray packagesArray = json_recipe.getJSONArray("packages");
+        JSONArray packagesArray = jsonRecipe.getJSONArray("packages");
         for (int j = 0; j < packagesArray.length(); j++) {
             String packageValue = packagesArray.getString(j);
             recipe.targetPackage(packageValue);
         }
 
-        if (json_recipe.has("supported_locales")) {
-            JSONArray supportedLocalesArray = json_recipe.getJSONArray("supported_locales");
+        if (jsonRecipe.has("supported_locales")) {
+            JSONArray supportedLocalesArray = jsonRecipe.getJSONArray("supported_locales");
             for (int j = 0; j < supportedLocalesArray.length(); j++) {
                 String supportedLocale = supportedLocalesArray.getString(j);
                 recipe.supportedLocale(supportedLocale);
@@ -99,12 +92,12 @@ class ConfigFileParser {
         }
     }
 
-    private OAuth2Recipe getOAuth2Recipe(JSONObject json_oauth2_recipe) throws JSONException {
+    private OAuth2Recipe getOAuth2Recipe(JSONObject jsonOauth2Recipe) throws JSONException {
         OAuth2Recipe recipe = new OAuth2Recipe();
 
-        populateCommonData(recipe, json_oauth2_recipe);
+        populateCommonData(recipe, jsonOauth2Recipe);
 
-        JSONArray scopeArray = json_oauth2_recipe.getJSONArray("scope");
+        JSONArray scopeArray = jsonOauth2Recipe.getJSONArray("scope");
 
         for (int j = 0; j < scopeArray.length(); j++) {
             String scopeValue = scopeArray.getString(j);
@@ -115,8 +108,8 @@ class ConfigFileParser {
             }
         }
 
-        if (json_oauth2_recipe.has("endpoints")) {
-            JSONObject endpoints = json_oauth2_recipe.getJSONObject("endpoints");
+        if (jsonOauth2Recipe.has("endpoints")) {
+            JSONObject endpoints = jsonOauth2Recipe.getJSONObject("endpoints");
 
             String name;
             JSONObject jsonEnvironment;
@@ -141,8 +134,7 @@ class ConfigFileParser {
         return recipe;
     }
 
-    private void addEnvironment(OAuth2Recipe recipe, String name, JSONObject jsonEnvironment)
-            throws JSONException {
+    private void addEnvironment(OAuth2Recipe recipe, String name, JSONObject jsonEnvironment) throws JSONException {
         ConfigEndpoint endpoint = new ConfigEndpoint()
                 .name(name)
                 .url(jsonEnvironment.getString("url"))
