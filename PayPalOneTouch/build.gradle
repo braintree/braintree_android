@@ -3,22 +3,15 @@ import groovy.json.JsonSlurper
 
 apply plugin: 'com.android.library'
 
-def getLatestSha1 = { ->
-    "git log -1 --pretty=format:%H".execute().text.trim()
-}
-
 def getBuildVersion = { ->
     "git describe --match=*[0-9]*.[0-9]*.*[0-9] --tags --dirty --always".execute().text.trim()
 }
 
 ext {
-    latest_sha1 = getLatestSha1()
     product_name = "OneTouchCore-Android"
 
     jar_name = product_name.replaceAll("-", "")
     product_version = getBuildVersion()
-
-    build_time = new Date().format("MM/dd/yyyy HH:mm:ss Z")
 
     configFileText = new File("${projectDir}/otc-config.android.json").getText('UTF-8')
     config = JsonOutput.toJson(new JsonSlurper().parseText(configFileText)).replaceAll("\"", "\\\\\"")
@@ -37,8 +30,6 @@ android {
         buildConfigField "String", "PRODUCT_NAME", "\"${product_name}\""
         buildConfigField "String", "PRODUCT_VERSION", "\"${product_version}\""
         buildConfigField "String", "PRODUCT_FEATURES", "\"\""
-        buildConfigField "String", "BUILD_TIME", "\"${build_time}\""
-        buildConfigField "String", "LATEST_SHA1", "\"${latest_sha1}\""
         buildConfigField "String", "CONFIGURATION", "\"${config}\""
     }
 

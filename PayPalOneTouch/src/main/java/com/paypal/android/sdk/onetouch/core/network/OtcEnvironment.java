@@ -16,9 +16,8 @@ public class OtcEnvironment {
     }
 
     public static String getUserAgent() {
-        return String.format("PayPalSDK/%s %s (%s; %s; %s)", BuildConfig.PRODUCT_NAME,
-                BuildConfig.PRODUCT_VERSION, DeviceInspector.getOs(),
-                DeviceInspector.getDeviceName(), getFeatureString());
+        return String.format("PayPalSDK/%s %s (%s; %s; %s)", BuildConfig.PRODUCT_NAME, BuildConfig.PRODUCT_VERSION,
+                DeviceInspector.getOs(), DeviceInspector.getDeviceName(), getFeatureString());
     }
 
     private static String getFeatureString() {
@@ -31,9 +30,5 @@ public class OtcEnvironment {
         }
 
         return featureList.toString().trim();
-    }
-
-    public static String getSha1() {
-        return BuildConfig.LATEST_SHA1;
     }
 }
