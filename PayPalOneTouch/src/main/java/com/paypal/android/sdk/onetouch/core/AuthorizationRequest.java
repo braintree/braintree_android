@@ -58,10 +58,6 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     private static final String PREFS_ENCRYPTION_KEY = "com.paypal.otc.key";
     private static final String PREFS_MSG_GUID = "com.paypal.otc.msg_guid";
 
-    public static final String ENVIRONMENT_LIVE = EnvironmentManager.LIVE;
-    public static final String ENVIRONMENT_MOCK = EnvironmentManager.MOCK;
-    public static final String ENVIRONMENT_SANDBOX = EnvironmentManager.SANDBOX;
-
     private final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
     private final OtcCrypto mOtcCrypto = new OtcCrypto();
     private final HashSet<String> mScopes;
@@ -72,9 +68,6 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     private String mPrivacyUrl;
     private String mUserAgreementUrl;
 
-    /**
-     * Constructs a new `PayPalAuthorizationRequest` with ids initialized.
-     */
     public AuthorizationRequest(Context context) {
         clientMetadataId(PayPalOneTouchCore.getClientMetadataId(context));
 
@@ -93,8 +86,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         Matcher matcher = WHITESPACE_PATTERN.matcher(scopeValue);
         boolean found = matcher.find();
         if (found) {
-            throw new IllegalArgumentException(
-                    "scopes must be provided individually, with no whitespace");
+            throw new IllegalArgumentException("scopes must be provided individually, with no whitespace");
         }
 
         mScopes.add(scopeValue);
@@ -102,8 +94,11 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     }
 
     private Set<String> getScopes() {
-        // return copy so it doesn't modify original
         return new HashSet<>(mScopes);
+    }
+
+    public String getScopeString() {
+        return TextUtils.join(" ", getScopes());
     }
 
     public AuthorizationRequest privacyUrl(String privacyUrl) {
@@ -125,98 +120,22 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     }
 
     @Override
-    public String toString() {
-        return String.format(
-                AuthorizationRequest.class.getSimpleName() + ": {" + getBaseRequestToString() +
-                        ", " +
-                        "privacyUrl:%s, userAgreementUrl:%s, scopeValues:%s}",
-                getClientId(),
-                mPrivacyUrl,
-                mUserAgreementUrl,
-                mScopes);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(getClientMetadataId());
-        dest.writeString(getClientId());
-        dest.writeString(getEnvironment());
-        dest.writeString(mPrivacyUrl);
-        dest.writeString(mUserAgreementUrl);
-        dest.writeSerializable(mScopes);
-        dest.writeSerializable(mAdditionalPayloadAttributes);
-        dest.writeString(mMsgGuid);
-        dest.writeInt(mEncryptionKey.length);
-        dest.writeByteArray(mEncryptionKey);
-    }
-
-    /**
-     * Constructs a new `PayPalAuthorizationRequest` with data from source parcel
-     */
-    private AuthorizationRequest(Parcel source) {
-        clientMetadataId(source.readString());
-        clientId(source.readString());
-        environment(source.readString());
-        mPrivacyUrl = source.readString();
-        mUserAgreementUrl = source.readString();
-        mScopes = (HashSet) source.readSerializable();
-        mAdditionalPayloadAttributes = (HashMap) source.readSerializable();
-        mMsgGuid = source.readString();
-        mEncryptionKey = new byte[source.readInt()];
-        source.readByteArray(mEncryptionKey);
-    }
-
-    /**
-     * required by {@link Parcelable}
-     */
-    public static final Parcelable.Creator<AuthorizationRequest> CREATOR =
-            new Creator<AuthorizationRequest>() {
-
-                @Override
-                public AuthorizationRequest[] newArray(int size) {
-                    return new AuthorizationRequest[size];
-                }
-
-                @Override
-                public AuthorizationRequest createFromParcel(Parcel source) {
-                    return new AuthorizationRequest(source);
-                }
-            };
-
-    @Override
     protected AuthorizationRequest getThis() {
         return this;
     }
 
-    public String getScopeString() {
-        return TextUtils.join(" ", getScopes());
-    }
-
     @Override
-    public String getBrowserSwitchUrl(Context context, OtcConfiguration config)
-            throws CertificateException, UnsupportedEncodingException, NoSuchPaddingException,
-            NoSuchAlgorithmException, IllegalBlockSizeException, JSONException, BadPaddingException,
-            InvalidEncryptionDataException, InvalidKeyException {
-
-        String xSource = context.getPackageName();
-
+    public String getBrowserSwitchUrl(Context context, OtcConfiguration config) throws CertificateException,
+            UnsupportedEncodingException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException,
+            JSONException, BadPaddingException, InvalidEncryptionDataException, InvalidKeyException {
         OAuth2Recipe recipe = config.getBrowserOauth2Config(getScopes());
-
         ConfigEndpoint configEndpoint = recipe.getEndpoint(getEnvironment());
-
-        String certificateBase64 = configEndpoint.getCertificate();
-        X509Certificate cert =
-                EncryptionUtils.getX509CertificateFromBase64String(certificateBase64);
+        X509Certificate cert = EncryptionUtils.getX509CertificateFromBase64String(configEndpoint.getCertificate());
 
         return configEndpoint.getUrl()
                 + "?payload=" + URLEncoder.encode(buildPayload(context, cert), "utf-8")
                 + "&payloadEnc=" + URLEncoder.encode(buildPayloadEnc(cert), "utf-8")
-                + "&x-source=" + xSource
+                + "&x-source=" + context.getPackageName()
                 + "&x-success=" + getSuccessUrl()
                 + "&x-cancel=" + getCancelUrl();
     }
@@ -235,8 +154,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     }
 
     private boolean isValidResponse(ContextInspector contextInspector, String msgGUID) {
-        String prefsMsgGUID =
-                contextInspector.getStringPreference(AuthorizationRequest.PREFS_MSG_GUID);
+        String prefsMsgGUID = contextInspector.getStringPreference(AuthorizationRequest.PREFS_MSG_GUID);
         String prefsSymmetricKey = getStoredSymmetricKey(contextInspector);
 
         return (!TextUtils.isEmpty(prefsMsgGUID) && prefsMsgGUID.equals(msgGUID) &&
@@ -249,15 +167,11 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         }
     }
 
-    private String buildPayloadEnc(Certificate cert)
-            throws NoSuchPaddingException, NoSuchAlgorithmException,
-            IllegalBlockSizeException, BadPaddingException,
-            InvalidEncryptionDataException,
-            InvalidKeyException, JSONException {
-
+    private String buildPayloadEnc(Certificate cert) throws NoSuchPaddingException, NoSuchAlgorithmException,
+            IllegalBlockSizeException, BadPaddingException, InvalidEncryptionDataException, InvalidKeyException,
+            JSONException {
         JSONObject payloadEnc = getJsonObjectToEncrypt();
         byte[] output = mOtcCrypto.encryptRSAData(payloadEnc.toString().getBytes(), cert);
-
         return Base64.encodeToString(output, Base64.NO_WRAP);
     }
 
@@ -282,8 +196,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
             payload.put("scope", getScopeString());
             payload.put("response_type", "code");
             payload.put("privacy_url", getPrivacyUrl());
-            payload.put("agreement_url",
-                    getUserAgreementUrl());
+            payload.put("agreement_url", getUserAgreementUrl());
             payload.put("client_metadata_id", getClientMetadataId());
             payload.put("key_id", cert.getSerialNumber());
 
@@ -294,16 +207,14 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
                 payload.put(entry.getKey(), entry.getValue());
             }
 
-            return Base64
-                    .encodeToString(payload.toString().getBytes(), Base64.NO_WRAP);
+            return Base64.encodeToString(payload.toString().getBytes(), Base64.NO_WRAP);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
     }
 
     private boolean isChromeAvailable(Context context) {
-        Intent intent = new Intent(Intent.ACTION_VIEW,
-                Uri.parse("https://www.paypal.com"/*dummy url here*/));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.paypal.com"));
         intent.setPackage("com.android.chrome");
         return intent.resolveActivity(context.getPackageManager()) != null;
     }
@@ -325,8 +236,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
 
         if (Uri.parse(getSuccessUrl()).getLastPathSegment().equals(status)) {
             if (!payload.has("msg_GUID")) {
-                return new Result(
-                        new ResponseParsingException("Response incomplete"));
+                return new Result(new ResponseParsingException("Response incomplete"));
             }
 
             String msgGUID = payload.optString("msg_GUID");
@@ -348,9 +258,8 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
                         new JSONObject().put("code", decryptedPayloadEnc.getString("payment_code")),
                         decryptedPayloadEnc.getString("email"));
             } catch (JSONException | InvalidAlgorithmParameterException | NoSuchAlgorithmException
-                    | IllegalBlockSizeException | BadPaddingException | NoSuchPaddingException
-                    | InvalidKeyException | InvalidEncryptionDataException
-                    | IllegalArgumentException e) {
+                    | IllegalBlockSizeException | BadPaddingException | NoSuchPaddingException | InvalidKeyException
+                    | InvalidEncryptionDataException | IllegalArgumentException e) {
                 return new Result(new ResponseParsingException(e));
             }
         } else if (Uri.parse(getCancelUrl()).getLastPathSegment().equals(status)) {
@@ -373,8 +282,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     }
 
     @Override
-    public Recipe getRecipeToExecute(Context context, OtcConfiguration config,
-            boolean isSecurityEnabled) {
+    public Recipe getRecipeToExecute(Context context, OtcConfiguration config, boolean isSecurityEnabled) {
         for (OAuth2Recipe recipe : config.getOauth2Recipes()) {
             if (recipe.isValidForScopes(getScopes())) {
                 if (RequestTarget.wallet == recipe.getTarget()) {
@@ -387,9 +295,8 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
                         if (recipe.isValidBrowserTarget(context, browserSwitchUrl)) {
                             return recipe;
                         }
-                    } catch (CertificateException | UnsupportedEncodingException
-                            | NoSuchPaddingException | NoSuchAlgorithmException
-                            | IllegalBlockSizeException | JSONException | BadPaddingException
+                    } catch (CertificateException | UnsupportedEncodingException | NoSuchPaddingException
+                            | NoSuchAlgorithmException | IllegalBlockSizeException | JSONException | BadPaddingException
                             | InvalidEncryptionDataException | InvalidKeyException ignored) {}
                 }
             }
@@ -401,21 +308,61 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     @Override
     public void trackFpti(Context context, TrackingPoint trackingPoint, Protocol protocol) {
         Map<String, String> fptiDataBundle = new HashMap<>();
-
         fptiDataBundle.put("clid", getClientId());
-
-        PayPalOneTouchCore.getFptiManager(context)
-                .trackFpti(trackingPoint, getEnvironment(), fptiDataBundle, protocol);
+        PayPalOneTouchCore.getFptiManager(context).trackFpti(trackingPoint, getEnvironment(), fptiDataBundle, protocol);
     }
 
-    private JSONObject getDecryptedPayload(String payloadEnc, String symmetricKey)
-            throws IllegalBlockSizeException, InvalidKeyException, NoSuchAlgorithmException,
-            InvalidAlgorithmParameterException, NoSuchPaddingException, BadPaddingException,
-            InvalidEncryptionDataException, JSONException, IllegalArgumentException {
+    private JSONObject getDecryptedPayload(String payloadEnc, String symmetricKey) throws IllegalBlockSizeException,
+            InvalidKeyException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, NoSuchPaddingException,
+            BadPaddingException, InvalidEncryptionDataException, JSONException, IllegalArgumentException {
         byte[] base64PayloadEnc = Base64.decode(payloadEnc, Base64.DEFAULT);
         byte[] key = EncryptionUtils.hexStringToByteArray(symmetricKey);
         byte[] output = new OtcCrypto().decryptAESCTRData(base64PayloadEnc, key);
 
         return new JSONObject(new String(output));
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(getClientMetadataId());
+        dest.writeString(getClientId());
+        dest.writeString(getEnvironment());
+        dest.writeString(mPrivacyUrl);
+        dest.writeString(mUserAgreementUrl);
+        dest.writeSerializable(mScopes);
+        dest.writeSerializable(mAdditionalPayloadAttributes);
+        dest.writeString(mMsgGuid);
+        dest.writeInt(mEncryptionKey.length);
+        dest.writeByteArray(mEncryptionKey);
+    }
+
+    private AuthorizationRequest(Parcel source) {
+        clientMetadataId(source.readString());
+        clientId(source.readString());
+        environment(source.readString());
+        mPrivacyUrl = source.readString();
+        mUserAgreementUrl = source.readString();
+        mScopes = (HashSet) source.readSerializable();
+        mAdditionalPayloadAttributes = (HashMap) source.readSerializable();
+        mMsgGuid = source.readString();
+        mEncryptionKey = new byte[source.readInt()];
+        source.readByteArray(mEncryptionKey);
+    }
+
+    public static final Parcelable.Creator<AuthorizationRequest> CREATOR = new Creator<AuthorizationRequest>() {
+        @Override
+        public AuthorizationRequest[] newArray(int size) {
+            return new AuthorizationRequest[size];
+        }
+
+        @Override
+        public AuthorizationRequest createFromParcel(Parcel source) {
+            return new AuthorizationRequest(source);
+        }
+    };
 }
