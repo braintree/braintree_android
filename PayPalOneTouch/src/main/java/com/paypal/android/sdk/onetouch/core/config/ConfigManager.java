@@ -17,13 +17,11 @@ public class ConfigManager {
 
     private static final String CONFIGURATION_URL =
             "https://www.paypalobjects.com/webstatic/otc/otc-config.android.json";
-    private static final String TAG = ConfigManager.class.getSimpleName();
     private static final String PREFERENCES_CONFIG_FILE = "com.paypal.otc.config.file";
-    private static final String PREFERENCES_CONFIG_LAST_UPDATED_TIMESTAMP =
-            "com.paypal.otc.config.lastUpdated.timestamp";
+    private static final String PREFERENCES_LAST_UPDATED = "com.paypal.otc.config.lastUpdated.timestamp";
     private static final String PREFERENCES_CONFIG_IS_DEFAULT = "com.paypal.otc.config.isDefault";
-    private static final int X_HOURS_AGO_MIN_TIME_BETWEEN_CONFIG_REFRESH = -4;
-    private static final int Y_SECONDS_AGO_MIN_TIME_BETWEEN_CONSECUTIVE_REQUESTS = -5;
+    private static final int MINIMUM_TIME_BETWEEN_REFRESH = -4;
+    private static final int MINIMUM_TIME_BETWEEN_CONSECUTIVE_REQUESTS = -5;
 
     private boolean mUseHardcodedConfig = false;
 
@@ -41,71 +39,50 @@ public class ConfigManager {
         refreshConfiguration();
     }
 
-    /**
-     * Updates configuration if needed.
-     */
     public void refreshConfiguration() {
-        if (!mUseHardcodedConfig) {
-            boolean isCurrentConfigDefaultOrNotPresent =
-                    mContextInspector.getBooleanPreference(PREFERENCES_CONFIG_IS_DEFAULT, true);
-            if ((isAtLeastXHoursOld() || isCurrentConfigDefaultOrNotPresent) &&
-                            !hasInitiatedUpdateInLastYSeconds()) {
-                mLastInitiatedUpdate = new Date();
-                mHttpClient.get(CONFIGURATION_URL, new HttpResponseCallback() {
-                    @Override
-                    public void success(String responseBody) {
-                        try {
-                            JSONObject json = new JSONObject(responseBody);
-                            setConfig(json.toString(), false);
-                        } catch (JSONException ignored) {}
-                    }
+        if (!mUseHardcodedConfig && requiresUpdate()) {
+            mLastInitiatedUpdate = new Date();
+            mHttpClient.get(CONFIGURATION_URL, new HttpResponseCallback() {
+                @Override
+                public void success(String responseBody) {
+                    try {
+                        JSONObject json = new JSONObject(responseBody);
+                        setConfig(json.toString(), false);
+                    } catch (JSONException ignored) {}
+                }
 
-                    @Override
-                    public void failure(Exception exception) {}
-                });
-            }
+                @Override
+                public void failure(Exception exception) {}
+            });
         }
     }
 
-    /**
-     * This method is here because it's rather hard to detect if an update is in progress.  This
-     * allows a grace period before submitting another request as a way of throttling and/or
-     * gracefully handling slow network conditions.
-     *
-     * @return
-     */
-    private boolean hasInitiatedUpdateInLastYSeconds() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.SECOND, Y_SECONDS_AGO_MIN_TIME_BETWEEN_CONSECUTIVE_REQUESTS);
-        Date dateYSecondsAgo = calendar.getTime();
+    private boolean requiresUpdate() {
+        Calendar lastUpdatedCalendar = Calendar.getInstance();
+        lastUpdatedCalendar.add(Calendar.HOUR_OF_DAY, MINIMUM_TIME_BETWEEN_REFRESH);
+        long lastUpdated = mContextInspector.getLongPreference(PREFERENCES_LAST_UPDATED, 0);
+        boolean isOutdated = new Date(lastUpdated).before(lastUpdatedCalendar.getTime());
 
-        return !(null == mLastInitiatedUpdate || mLastInitiatedUpdate.before(dateYSecondsAgo));
-    }
+        Calendar recentlyUpdatedCalendar = Calendar.getInstance();
+        recentlyUpdatedCalendar.add(Calendar.SECOND, MINIMUM_TIME_BETWEEN_CONSECUTIVE_REQUESTS);
+        boolean recentlyUpdated = !(mLastInitiatedUpdate == null ||
+                mLastInitiatedUpdate.before(recentlyUpdatedCalendar.getTime()));
 
-    private boolean isAtLeastXHoursOld() {
-        long lastUpdatedTimestamp =
-                mContextInspector.getLongPreference(PREFERENCES_CONFIG_LAST_UPDATED_TIMESTAMP, 0);
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.HOUR_OF_DAY, X_HOURS_AGO_MIN_TIME_BETWEEN_CONFIG_REFRESH);
-        Date dateXHoursAgo = calendar.getTime();
-
-        return new Date(lastUpdatedTimestamp).before(dateXHoursAgo);
+        boolean isDefaultConfig = mContextInspector.getBooleanPreference(PREFERENCES_CONFIG_IS_DEFAULT, true);
+        return ((isOutdated || isDefaultConfig) && !recentlyUpdated);
     }
 
     public OtcConfiguration getConfig() {
         refreshConfiguration();
         boolean useDefault = false;
 
-        // check preferences
         String jsonConfig = mContextInspector.getStringPreference(PREFERENCES_CONFIG_FILE);
-
         if (null == jsonConfig || mUseHardcodedConfig) {
             jsonConfig = BuildConfig.CONFIGURATION;
             useDefault = true;
         }
 
         OtcConfiguration config;
-
         try {
             config = getOtcConfiguration(jsonConfig);
         } catch (JSONException e) {
@@ -136,7 +113,7 @@ public class ConfigManager {
     private void setConfig(String serverReply, boolean isDefault) {
         Map<String, Object> updatedPrefs = new HashMap<>();
         updatedPrefs.put(PREFERENCES_CONFIG_FILE, serverReply);
-        updatedPrefs.put(PREFERENCES_CONFIG_LAST_UPDATED_TIMESTAMP, new Date().getTime());
+        updatedPrefs.put(PREFERENCES_LAST_UPDATED, new Date().getTime());
         updatedPrefs.put(PREFERENCES_CONFIG_IS_DEFAULT, isDefault);
         mContextInspector.setPreferences(updatedPrefs);
     }
