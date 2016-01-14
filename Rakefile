@@ -156,9 +156,6 @@ task :release => :tests do
 
   puts "\nSend release notification email to braintree-sdk-announce@googlegroups.com. Press ENTER when done."
   $stdin.gets
-
-  puts "\nUpdate client_releases.yml in the docs. Press ENTER when done."
-  $stdin.gets
 end
 
 def get_current_version
