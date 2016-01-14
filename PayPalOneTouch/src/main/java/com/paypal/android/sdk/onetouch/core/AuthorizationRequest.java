@@ -130,9 +130,9 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
             JSONException, BadPaddingException, InvalidEncryptionDataException, InvalidKeyException {
         OAuth2Recipe recipe = config.getBrowserOauth2Config(getScopes());
         ConfigEndpoint configEndpoint = recipe.getEndpoint(getEnvironment());
-        X509Certificate cert = EncryptionUtils.getX509CertificateFromBase64String(configEndpoint.getCertificate());
+        X509Certificate cert = EncryptionUtils.getX509CertificateFromBase64String(configEndpoint.certificate);
 
-        return configEndpoint.getUrl()
+        return configEndpoint.url
                 + "?payload=" + URLEncoder.encode(buildPayload(context, cert), "utf-8")
                 + "&payloadEnc=" + URLEncoder.encode(buildPayloadEnc(cert), "utf-8")
                 + "&x-source=" + context.getPackageName()

@@ -135,10 +135,7 @@ class ConfigFileParser {
     }
 
     private void addEnvironment(OAuth2Recipe recipe, String name, JSONObject jsonEnvironment) throws JSONException {
-        ConfigEndpoint endpoint = new ConfigEndpoint()
-                .name(name)
-                .url(jsonEnvironment.getString("url"))
-                .certificate(jsonEnvironment.getString("certificate"));
-        recipe.withEndpoint(name, endpoint);
+        recipe.withEndpoint(name,
+                new ConfigEndpoint(name, jsonEnvironment.getString("url"), jsonEnvironment.getString("certificate")));
     }
 }

@@ -2,34 +2,13 @@ package com.paypal.android.sdk.onetouch.core.config;
 
 public class ConfigEndpoint {
 
-    private String mName;
-    private String mUrl;
-    private String mCertificate;
+    public final String name;
+    public final String url;
+    public final String certificate;
 
-    public ConfigEndpoint name(String name) {
-        mName = name;
-        return this;
-    }
-
-    public ConfigEndpoint url(String url) {
-        mUrl = url;
-        return this;
-    }
-
-    public ConfigEndpoint certificate(String certificate) {
-        mCertificate = certificate;
-        return this;
-    }
-
-    public String getName() {
-        return mName;
-    }
-
-    public String getUrl() {
-        return mUrl;
-    }
-
-    public String getCertificate() {
-        return mCertificate;
+    public ConfigEndpoint(String name, String url, String certificate) {
+        this.name = name;
+        this.url = url;
+        this.certificate = certificate;
     }
 }
