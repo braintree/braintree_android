@@ -25,4 +25,29 @@ public class ProtocolTest {
     public void v3_returnsCorrectVersion() {
         assertEquals("3.0", Protocol.v3.getVersion());
     }
+
+    @Test
+    public void getProtocol_returnsCorrectVersionFor0() {
+        assertEquals(Protocol.v0, Protocol.getProtocol("0"));
+    }
+
+    @Test
+    public void getProtocol_returnsCorrectVersionFor1() {
+        assertEquals(Protocol.v1, Protocol.getProtocol("1"));
+    }
+
+    @Test
+    public void getProtocol_returnsCorrectVersionFor2() {
+        assertEquals(Protocol.v2, Protocol.getProtocol("2"));
+    }
+
+    @Test
+    public void getProtocol_returnsCorrectVersionFor3() {
+        assertEquals(Protocol.v3, Protocol.getProtocol("3"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getProtocol_throwsExceptionForUnknownVersion() {
+        Protocol.getProtocol("4");
+    }
 }

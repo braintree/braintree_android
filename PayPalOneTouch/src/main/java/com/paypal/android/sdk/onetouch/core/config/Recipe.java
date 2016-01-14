@@ -35,23 +35,7 @@ public abstract class Recipe<T extends Recipe<T>> {
     }
 
     public T protocol(String protocol) {
-        switch (protocol) {
-            case "0":
-                mProtocol = Protocol.v0;
-                break;
-            case "1":
-                mProtocol = Protocol.v1;
-                break;
-            case "2":
-                mProtocol = Protocol.v2;
-                break;
-            case "3":
-                mProtocol = Protocol.v3;
-                break;
-            default:
-                throw new IllegalArgumentException("invalid protocol");
-        }
-
+        mProtocol = Protocol.getProtocol(protocol);
         return getThis();
     }
 

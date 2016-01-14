@@ -33,4 +33,19 @@ public enum Protocol {
     public String getVersion() {
         return mVersion;
     }
+
+    public static Protocol getProtocol(String protocol) {
+        switch (protocol) {
+            case "0":
+                return Protocol.v0;
+            case "1":
+                return Protocol.v1;
+            case "2":
+                return Protocol.v2;
+            case "3":
+                return Protocol.v3;
+            default:
+                throw new IllegalArgumentException("invalid protocol");
+        }
+    }
 }
