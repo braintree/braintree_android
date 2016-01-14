@@ -80,19 +80,6 @@ public class OtcConfiguration {
         return null;
     }
 
-    @Override
-    public String toString() {
-        return OtcConfiguration.class.getSimpleName() +
-                "[fileTimestamp=" + mFileTimestamp +
-                ", mOauth2RecipesInDecreasingPriorityOrder" +
-                mOauth2RecipesInDecreasingPriorityOrder +
-                ", mCheckoutRecipesInDecreasingPriorityOrder" +
-                mCheckoutRecipesInDecreasingPriorityOrder +
-                ", mBillingAgreementRecipesInDecreasingPriorityOrder" +
-                mBillingAgreementRecipesInDecreasingPriorityOrder +
-                "]";
-    }
-
     public List<OAuth2Recipe> getOauth2Recipes() {
         return new ArrayList<>(mOauth2RecipesInDecreasingPriorityOrder);
     }
