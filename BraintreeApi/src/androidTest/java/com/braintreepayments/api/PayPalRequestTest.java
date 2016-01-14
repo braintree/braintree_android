@@ -8,6 +8,7 @@ import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.BillingAgreementRequest;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
 import com.paypal.android.sdk.onetouch.core.Request;
+import com.paypal.android.sdk.onetouch.core.network.EnvironmentManager;
 
 import org.json.JSONException;
 import org.junit.Test;
@@ -32,7 +33,7 @@ public class PayPalRequestTest {
         CheckoutRequest request = PayPal.getCheckoutRequest("https://paypal.com/?token=pairingId",
                 getTargetContext(), configuration.getPayPal());
 
-        assertEquals(AuthorizationRequest.ENVIRONMENT_MOCK, request.getEnvironment());
+        assertEquals(EnvironmentManager.MOCK, request.getEnvironment());
         assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/cancel", request.getCancelUrl());
         assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success", request.getSuccessUrl());
         assertEquals("paypal_client_id", request.getClientId());
@@ -46,7 +47,7 @@ public class PayPalRequestTest {
 
         Request request = PayPal.getCheckoutRequest(null, getTargetContext(), configuration.getPayPal());
 
-        assertEquals(AuthorizationRequest.ENVIRONMENT_LIVE, request.getEnvironment());
+        assertEquals(EnvironmentManager.LIVE, request.getEnvironment());
     }
 
     @Test(timeout = 1000)
@@ -56,7 +57,7 @@ public class PayPalRequestTest {
 
         Request request = PayPal.getCheckoutRequest(null, getTargetContext(), configuration.getPayPal());
 
-        assertEquals(AuthorizationRequest.ENVIRONMENT_MOCK, request.getEnvironment());
+        assertEquals(EnvironmentManager.MOCK, request.getEnvironment());
     }
 
     @Test(timeout = 1000)
@@ -78,7 +79,7 @@ public class PayPalRequestTest {
                 "https://paypal.com/?ba_token=pairingId",
                 getTargetContext(), configuration.getPayPal());
 
-        assertEquals(AuthorizationRequest.ENVIRONMENT_MOCK, request.getEnvironment());
+        assertEquals(EnvironmentManager.MOCK, request.getEnvironment());
         assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/cancel", request.getCancelUrl());
         assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success", request.getSuccessUrl());
         assertEquals("paypal_client_id", request.getClientId());
@@ -93,7 +94,7 @@ public class PayPalRequestTest {
         Request request = PayPal.getBillingAgreementRequest(null, getTargetContext(),
                 configuration.getPayPal());
 
-        assertEquals(AuthorizationRequest.ENVIRONMENT_LIVE, request.getEnvironment());
+        assertEquals(EnvironmentManager.LIVE, request.getEnvironment());
     }
 
     @Test(timeout = 1000)
@@ -104,7 +105,7 @@ public class PayPalRequestTest {
         Request request = PayPal.getBillingAgreementRequest(null, getTargetContext(),
                 configuration.getPayPal());
 
-        assertEquals(AuthorizationRequest.ENVIRONMENT_MOCK, request.getEnvironment());
+        assertEquals(EnvironmentManager.MOCK, request.getEnvironment());
     }
 
     @Test(timeout = 1000)
@@ -126,7 +127,7 @@ public class PayPalRequestTest {
         AuthorizationRequest request = PayPal.getAuthorizationRequest(getTargetContext(),
                 configuration.getPayPal(), TOKENIZATION_KEY);
 
-        assertEquals(AuthorizationRequest.ENVIRONMENT_MOCK, request.getEnvironment());
+        assertEquals(EnvironmentManager.MOCK, request.getEnvironment());
         assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/cancel", request.getCancelUrl());
         assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success",
                 request.getSuccessUrl());
@@ -149,7 +150,7 @@ public class PayPalRequestTest {
         Request request = PayPal.getAuthorizationRequest(getTargetContext(),
                 configuration.getPayPal(), TOKENIZATION_KEY);
 
-        assertEquals(AuthorizationRequest.ENVIRONMENT_LIVE, request.getEnvironment());
+        assertEquals(EnvironmentManager.LIVE, request.getEnvironment());
     }
 
     @Test(timeout = 1000)
@@ -160,7 +161,7 @@ public class PayPalRequestTest {
         Request request = PayPal.getAuthorizationRequest(getTargetContext(),
                 configuration.getPayPal(), TOKENIZATION_KEY);
 
-        assertEquals(AuthorizationRequest.ENVIRONMENT_MOCK, request.getEnvironment());
+        assertEquals(EnvironmentManager.MOCK, request.getEnvironment());
     }
 
     @Test(timeout = 1000)

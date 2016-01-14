@@ -27,6 +27,7 @@ import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 import com.paypal.android.sdk.onetouch.core.Request;
 import com.paypal.android.sdk.onetouch.core.Result;
 import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
+import com.paypal.android.sdk.onetouch.core.network.EnvironmentManager;
 import com.paypal.android.sdk.onetouch.core.sdk.PayPalScope;
 import com.paypal.android.sdk.onetouch.core.sdk.PendingRequest;
 
@@ -386,7 +387,7 @@ public class PayPal {
         try {
             JSONObject clientJson = payload.getJSONObject("client");
             JSONObject response = payload.getJSONObject("response");
-            if (AuthorizationRequest.ENVIRONMENT_MOCK.equalsIgnoreCase(clientJson.getString("client"))
+            if (EnvironmentManager.MOCK.equalsIgnoreCase(clientJson.getString("client"))
                     && response.getString("code") != null && !isCheckoutRequest()) {
                 payload.put("response", new JSONObject().put("code",
                         "fake-code:" + ((AuthorizationRequest) sRequest).getScopeString()));
@@ -454,10 +455,10 @@ public class PayPal {
         String environment;
         switch (configuration.getEnvironment()) {
             case "live":
-                environment = AuthorizationRequest.ENVIRONMENT_LIVE;
+                environment = EnvironmentManager.LIVE;
                 break;
             case "offline":
-                environment = AuthorizationRequest.ENVIRONMENT_MOCK;
+                environment = EnvironmentManager.MOCK;
                 break;
             default:
                 environment = configuration.getEnvironment();
@@ -465,7 +466,7 @@ public class PayPal {
         }
 
         String clientId = configuration.getClientId();
-        if (clientId == null && AuthorizationRequest.ENVIRONMENT_MOCK.equals(environment)) {
+        if (clientId == null && EnvironmentManager.MOCK.equals(environment)) {
             clientId = "FAKE-PAYPAL-CLIENT-ID";
         }
 
