@@ -10,8 +10,6 @@ import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ConfigManager {
 
@@ -111,10 +109,8 @@ public class ConfigManager {
     }
 
     private void setConfig(String serverReply, boolean isDefault) {
-        Map<String, Object> updatedPrefs = new HashMap<>();
-        updatedPrefs.put(PREFERENCES_CONFIG_FILE, serverReply);
-        updatedPrefs.put(PREFERENCES_LAST_UPDATED, new Date().getTime());
-        updatedPrefs.put(PREFERENCES_CONFIG_IS_DEFAULT, isDefault);
-        mContextInspector.setPreferences(updatedPrefs);
+        mContextInspector.setPreference(PREFERENCES_CONFIG_FILE, serverReply);
+        mContextInspector.setPreference(PREFERENCES_LAST_UPDATED, new Date().getTime());
+        mContextInspector.setPreference(PREFERENCES_CONFIG_IS_DEFAULT, isDefault);
     }
 }

@@ -2,11 +2,10 @@ package com.paypal.android.sdk.onetouch.core.base;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 
 import com.paypal.android.sdk.onetouch.core.network.OtcEnvironment;
 
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 
 /**
@@ -17,93 +16,57 @@ public class ContextInspector {
     private static final String INSTALL_GUID = "InstallationGUID";
 
     private final Context mContext;
-    private final String mPrefsFileName;
+    private final SharedPreferences mPreferences;
 
-    public ContextInspector(Context context) {
-        if (null == context) {
-            throw new NullPointerException("context == null");
-        }
-
+    public ContextInspector(@NonNull Context context) {
         mContext = context.getApplicationContext();
-        mPrefsFileName = OtcEnvironment.getPrefsFile();
+        mPreferences = mContext.getSharedPreferences(OtcEnvironment.getPrefsFile(), Context.MODE_PRIVATE);
     }
 
     /**
-     * @return the installation GUID / the device's identifier. this has been a bunch of different
-     * things over time but now is an installation GUID. it is not stable across uninstalls but it's
-     * the best we can do.
+     * @return the installation GUID / the device's identifier. This has been a bunch of different things over time,
+     * but now is an installation GUID. It is not stable across uninstalls but it's the best we can do.
      */
     public String getInstallationGUID() {
-        String existingGUID =
-                mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE).getString(
-                        INSTALL_GUID, null);
+        String existingGUID = getStringPreference(INSTALL_GUID);
         if (existingGUID != null) {
             return existingGUID;
         } else {
             String newGuid = UUID.randomUUID().toString();
-            mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE)
-                    .edit()
-                    .putString(INSTALL_GUID, newGuid)
-                    .apply();
+            setPreference(INSTALL_GUID, newGuid);
 
             return newGuid;
         }
     }
 
-    /**
-     * retrieve a persisted string, or null if it does not exist
-     *
-     * @param key of the persisted value
-     * @return the persisted value or default value if it does not exist
-     */
     public String getStringPreference(String key) {
-        return mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE)
-                .getString(key, null);
+        return mPreferences.getString(key, null);
     }
 
     public long getLongPreference(String key, long defaultValue) {
-        return mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE)
-                .getLong(key, defaultValue);
+        return mPreferences.getLong(key, defaultValue);
     }
 
     public boolean getBooleanPreference(String key, boolean defaultValue) {
-        return mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE)
-                .getBoolean(key, defaultValue);
+        return mPreferences.getBoolean(key, defaultValue);
     }
 
-    /**
-     * Persist a value
-     *
-     * @param key of the persisted value
-     * @param value to persist
-     */
     public void setPreference(String key, String value) {
-        mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE)
-                .edit()
+        mPreferences.edit()
                 .putString(key, value)
                 .apply();
     }
 
-    /**
-     * Persist many values
-     */
-    public void setPreferences(Map<String, ?> mapToPersist) {
-        SharedPreferences.Editor editor =
-                mContext.getSharedPreferences(mPrefsFileName, Context.MODE_PRIVATE).edit();
-        for (Entry<String, ?> entry : mapToPersist.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-            if (value instanceof String) {
-                editor.putString(key, (String) value);
-            } else if (value instanceof Long) {
-                editor.putLong(key, (Long) value);
-            } else if (value instanceof Boolean) {
-                editor.putBoolean(key, (Boolean) value);
-            } else {
-                throw new RuntimeException(value.getClass() + " not supported");
-            }
-        }
-        editor.apply();
+    public void setPreference(String key, long value) {
+        mPreferences.edit()
+                .putLong(key, value)
+                .apply();
+    }
+
+    public void setPreference(String key, boolean value) {
+        mPreferences.edit()
+                .putBoolean(key, value)
+                .apply();
     }
 
     public Context getContext() {

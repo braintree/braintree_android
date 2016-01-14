@@ -147,10 +147,8 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
 
     @Override
     public void persistRequiredFields(ContextInspector contextInspector) {
-        Map<String, String> prefs = new HashMap<>();
-        prefs.put(PREFS_MSG_GUID, mMsgGuid);
-        prefs.put(PREFS_ENCRYPTION_KEY, EncryptionUtils.byteArrayToHexString(mEncryptionKey));
-        contextInspector.setPreferences(prefs);
+        contextInspector.setPreference(PREFS_MSG_GUID, mMsgGuid);
+        contextInspector.setPreference(PREFS_ENCRYPTION_KEY, EncryptionUtils.byteArrayToHexString(mEncryptionKey));
     }
 
     private boolean isValidResponse(ContextInspector contextInspector, String msgGUID) {
