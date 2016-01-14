@@ -40,10 +40,4 @@ class FptiToken {
     boolean isValid() {
         return mValidUntil > System.currentTimeMillis();
     }
-
-    @Override
-    public String toString() {
-        return FptiToken.class.getSimpleName() + "[mToken=" + mToken + ", mValidUntil=" +
-                mValidUntil + "]";
-    }
 }
