@@ -119,9 +119,7 @@ public abstract class Recipe<T extends Recipe<T>> {
 
     public static Intent getBrowserIntent(String browserSwitchUrl, String allowedBrowserPackage) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(browserSwitchUrl));
-        if ("*".equals(allowedBrowserPackage)) {
-            // don't set package - any is allowed at this point
-        } else {
+        if (!"*".equals(allowedBrowserPackage)) {
             intent.setPackage(allowedBrowserPackage);
         }
         return intent;
@@ -129,13 +127,5 @@ public abstract class Recipe<T extends Recipe<T>> {
 
     public Protocol getProtocol() {
         return mProtocol;
-    }
-
-    @Override
-    public String toString() {
-        return "Recipe(target=" + mTarget + ", mProtocol=" + mProtocol + ", packages=" +
-                mTargetPackagesInReversePriorityOrder +
-                ", targetComponent=" + mTargetComponent + ", targetIntentAction=" +
-                mTargetIntentAction + ", supportedLocales=" + mSupportedLocales + ")";
     }
 }
