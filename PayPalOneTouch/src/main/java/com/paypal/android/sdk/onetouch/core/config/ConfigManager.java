@@ -110,7 +110,7 @@ public class ConfigManager {
 
     private void setConfig(String serverReply, boolean isDefault) {
         mContextInspector.setPreference(PREFERENCES_CONFIG_FILE, serverReply);
-        mContextInspector.setPreference(PREFERENCES_LAST_UPDATED, new Date().getTime());
+        mContextInspector.setPreference(PREFERENCES_LAST_UPDATED, System.currentTimeMillis());
         mContextInspector.setPreference(PREFERENCES_CONFIG_IS_DEFAULT, isDefault);
     }
 }
