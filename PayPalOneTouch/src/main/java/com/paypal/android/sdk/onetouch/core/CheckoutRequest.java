@@ -54,10 +54,6 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
         return this;
     }
 
-    public boolean isBillingAgreement() {
-        return TOKEN_QUERY_PARAM_KEY_BA_TOKEN.equals(mTokenQueryParamKey);
-    }
-
     private void selectTokenQueryParamKey(String url) {
         if (!TextUtils.isEmpty(url) && url.contains("ba_token")) {
             mTokenQueryParamKey = TOKEN_QUERY_PARAM_KEY_BA_TOKEN;
@@ -65,55 +61,6 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
             mTokenQueryParamKey = TOKEN_QUERY_PARAM_KEY_TOKEN;
         }
     }
-
-    @Override
-    public String toString() {
-        return String.format(
-                CheckoutRequest.class.getSimpleName() + ": {" + getBaseRequestToString() +
-                        ", approvalURL: %s}",
-                mApprovalUrl);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(getClientMetadataId());
-        dest.writeString(getClientId());
-        dest.writeString(getEnvironment());
-
-        dest.writeString(mApprovalUrl);
-        dest.writeString(mTokenQueryParamKey);
-    }
-
-    private CheckoutRequest(Parcel source) {
-        clientMetadataId(source.readString());
-        clientId(source.readString());
-        environment(source.readString());
-
-        mApprovalUrl = source.readString();
-        mTokenQueryParamKey = source.readString();
-    }
-
-    /**
-     * required by {@link android.os.Parcelable}
-     */
-    public static final Creator<CheckoutRequest> CREATOR =
-            new Creator<CheckoutRequest>() {
-
-                @Override
-                public CheckoutRequest[] newArray(int size) {
-                    return new CheckoutRequest[size];
-                }
-
-                @Override
-                public CheckoutRequest createFromParcel(Parcel source) {
-                    return new CheckoutRequest(source);
-                }
-            };
 
     @Override
     protected CheckoutRequest getThis() {
@@ -209,4 +156,39 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
                 .trackFpti(trackingPoint, getEnvironment(), fptiDataBundle, protocol);
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(getClientMetadataId());
+        dest.writeString(getClientId());
+        dest.writeString(getEnvironment());
+
+        dest.writeString(mApprovalUrl);
+        dest.writeString(mTokenQueryParamKey);
+    }
+
+    private CheckoutRequest(Parcel source) {
+        clientMetadataId(source.readString());
+        clientId(source.readString());
+        environment(source.readString());
+
+        mApprovalUrl = source.readString();
+        mTokenQueryParamKey = source.readString();
+    }
+
+    public static final Creator<CheckoutRequest> CREATOR = new Creator<CheckoutRequest>() {
+        @Override
+        public CheckoutRequest[] newArray(int size) {
+            return new CheckoutRequest[size];
+        }
+
+        @Override
+        public CheckoutRequest createFromParcel(Parcel source) {
+            return new CheckoutRequest(source);
+        }
+    };
 }
