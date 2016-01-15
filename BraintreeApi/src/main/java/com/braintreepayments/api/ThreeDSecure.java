@@ -8,6 +8,7 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
+import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
@@ -47,7 +48,8 @@ public class ThreeDSecure {
      *                    the 3D Secure verification if performed.
      * @param amount The amount of the transaction in the current merchant account's currency
      */
-    public static void performVerification(final BraintreeFragment fragment, final CardBuilder cardBuilder, final String amount) {
+    public static void performVerification(final BraintreeFragment fragment, final CardBuilder cardBuilder,
+            final String amount) {
         TokenizationClient.tokenize(fragment, cardBuilder, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
@@ -85,46 +87,56 @@ public class ThreeDSecure {
      * @param nonce The nonce that represents a card to perform a 3D Secure verification against.
      * @param amount The amount of the transaction in the current merchant account's currency.
      */
-    public static void performVerification(final BraintreeFragment fragment, final String nonce,
-            final String amount) {
+    public static void performVerification(final BraintreeFragment fragment, final String nonce, final String amount) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
+                if (!configuration.isThreeDSecureEnabled()) {
+                    fragment.postCallback(new BraintreeException("Three D Secure is not enabled in the control panel"));
+                    return;
+                }
+
+                if (!ManifestValidator.isActivityDeclaredInAndroidManifest(fragment.getApplicationContext(),
+                        ThreeDSecureWebViewActivity.class)) {
+                    fragment.postCallback(new BraintreeException("ThreeDSecureWebViewActivity in declared in " +
+                            "AndroidManifest.xml"));
+                    return;
+                }
+
                 try {
                     JSONObject params = new JSONObject()
                             .put("merchantAccountId", configuration.getMerchantAccountId())
                             .put("amount", amount);
 
                     fragment.getHttpClient().post(TokenizationClient.versionedPath(
-                                    TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + nonce +
-                                            "/three_d_secure/lookup"),
-                            params.toString(), new HttpResponseCallback() {
-                                @Override
-                                public void success(String responseBody) {
-                                    try {
-                                        ThreeDSecureLookup threeDSecureLookup =
-                                                ThreeDSecureLookup.fromJson(responseBody);
-                                        if (threeDSecureLookup.getAcsUrl() != null) {
-                                            Intent intent = new Intent(fragment.getApplicationContext(),
-                                                            ThreeDSecureWebViewActivity.class)
-                                                            .putExtra(
-                                                                    ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_LOOKUP,
-                                                                    threeDSecureLookup);
-                                            fragment.startActivityForResult(intent,
-                                                    THREE_D_SECURE_REQUEST_CODE);
-                                        } else {
-                                            fragment.postCallback(threeDSecureLookup.getCardNonce());
-                                        }
-                                    } catch (JSONException e) {
-                                        fragment.postCallback(e);
-                                    }
+                            TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + nonce +
+                                    "/three_d_secure/lookup"), params.toString(), new HttpResponseCallback() {
+                        @Override
+                        public void success(String responseBody) {
+                            try {
+                                ThreeDSecureLookup threeDSecureLookup =
+                                        ThreeDSecureLookup.fromJson(responseBody);
+                                if (threeDSecureLookup.getAcsUrl() != null) {
+                                    Intent intent = new Intent(fragment.getApplicationContext(),
+                                            ThreeDSecureWebViewActivity.class)
+                                            .putExtra(
+                                                    ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_LOOKUP,
+                                                    threeDSecureLookup);
+                                    fragment.startActivityForResult(intent,
+                                            THREE_D_SECURE_REQUEST_CODE);
+                                } else {
+                                    fragment.postCallback(threeDSecureLookup.getCardNonce());
                                 }
+                            } catch (JSONException e) {
+                                fragment.postCallback(e);
+                            }
+                        }
 
-                                @Override
-                                public void failure(Exception exception) {
-                                    fragment.postCallback(exception);
-                                }
-                            });
+                        @Override
+                        public void failure(Exception exception) {
+                            fragment.postCallback(exception);
+                        }
+                    });
                 } catch (JSONException e) {
                     fragment.postCallback(e);
                 }
