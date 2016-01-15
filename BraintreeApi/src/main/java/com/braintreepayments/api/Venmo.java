@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 
 import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
@@ -22,17 +23,13 @@ public class Venmo {
     static final String EXTRA_SDK_VERSION = "com.braintreepayments.api.SDK_VERSION";
     static final String EXTRA_ACCESS_TOKEN = "com.braintreepayments.api.ACCESS_TOKEN";
     static final String EXTRA_ENVIRONMENT = "com.braintreepayments.api.ENVIRONMENT";
-    static final String EXTRA_PAYMENT_METHOD_NONCE =
-            "com.braintreepayments.api.EXTRA_PAYMENT_METHOD_NONCE";
-    static final String EXTRA_USERNAME =
-            "com.braintreepayments.api.EXTRA_USER_NAME";
+    static final String EXTRA_PAYMENT_METHOD_NONCE = "com.braintreepayments.api.EXTRA_PAYMENT_METHOD_NONCE";
+    static final String EXTRA_USERNAME = "com.braintreepayments.api.EXTRA_USER_NAME";
 
     static final String PACKAGE_NAME = "com.venmo";
     static final String APP_SWITCH_ACTIVITY = "controller.SetupMerchantActivity";
-    static final String CERTIFICATE_SUBJECT =
-            "CN=Andrew Kortina,OU=Engineering,O=Venmo,L=Philadelphia,ST=PA,C=US";
-    static final String CERTIFICATE_ISSUER =
-            "CN=Andrew Kortina,OU=Engineering,O=Venmo,L=Philadelphia,ST=PA,C=US";
+    static final String CERTIFICATE_SUBJECT = "CN=Andrew Kortina,OU=Engineering,O=Venmo,L=Philadelphia,ST=PA,C=US";
+    static final String CERTIFICATE_ISSUER = "CN=Andrew Kortina,OU=Engineering,O=Venmo,L=Philadelphia,ST=PA,C=US";
     static final int PUBLIC_KEY_HASH_CODE = -129711843;
 
     static final int VENMO_REQUEST_CODE = 13488;
@@ -43,13 +40,12 @@ public class Venmo {
      */
     public static boolean isVenmoInstalled(Context context) {
         return AppHelper.isIntentAvailable(context, getVenmoIntent()) &&
-                SignatureVerification.isSignatureValid(context, PACKAGE_NAME, CERTIFICATE_SUBJECT,
-                        CERTIFICATE_ISSUER, PUBLIC_KEY_HASH_CODE);
+                SignatureVerification.isSignatureValid(context, PACKAGE_NAME, CERTIFICATE_SUBJECT, CERTIFICATE_ISSUER,
+                        PUBLIC_KEY_HASH_CODE);
     }
 
     private static Intent getVenmoIntent() {
-        return new Intent().setComponent(new ComponentName(
-                PACKAGE_NAME, PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
+        return new Intent().setComponent(new ComponentName(PACKAGE_NAME, PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
     }
 
     static Intent getLaunchIntent(Configuration configuration) {
@@ -82,24 +78,20 @@ public class Venmo {
 
         String exceptionMessage = "";
         VenmoConfiguration venmoConfiguration = configuration.getPayWithVenmo();
-
         if(!venmoConfiguration.isAccessTokenValid()) {
             exceptionMessage = "Venmo is not enabled on the control panel.";
-        }
-        else if(!Venmo.isVenmoInstalled(fragment.getApplicationContext())) {
+        } else if (!Venmo.isVenmoInstalled(fragment.getApplicationContext())) {
             exceptionMessage = "Venmo is not installed.";
-        }
-        else if(!venmoConfiguration.isVenmoWhitelisted(fragment.getApplicationContext().getContentResolver())) {
+        } else if (!venmoConfiguration.isVenmoWhitelisted(fragment.getApplicationContext().getContentResolver())) {
             exceptionMessage = "Venmo is not whitelisted.";
         }
 
-        if(exceptionMessage.equals("")) {
-            fragment.startActivityForResult(Venmo.getLaunchIntent(configuration),
-                    VENMO_REQUEST_CODE);
-            fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
-        } else {
+        if(!TextUtils.isEmpty(exceptionMessage)) {
             fragment.postCallback(new AppSwitchNotAvailableException(exceptionMessage));
             fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
+        } else {
+            fragment.startActivityForResult(Venmo.getLaunchIntent(configuration), VENMO_REQUEST_CODE);
+            fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
         }
     }
 
