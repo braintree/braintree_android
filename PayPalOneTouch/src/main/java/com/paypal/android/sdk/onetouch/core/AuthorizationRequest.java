@@ -120,11 +120,6 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     }
 
     @Override
-    protected AuthorizationRequest getThis() {
-        return this;
-    }
-
-    @Override
     public String getBrowserSwitchUrl(Context context, OtcConfiguration config) throws CertificateException,
             UnsupportedEncodingException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException,
             JSONException, BadPaddingException, InvalidEncryptionDataException, InvalidKeyException {

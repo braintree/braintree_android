@@ -21,11 +21,6 @@ public class BillingAgreementRequest extends CheckoutRequest {
     }
 
     @Override
-    protected BillingAgreementRequest getThis() {
-        return this;
-    }
-
-    @Override
     public Recipe getRecipeToExecute(Context context, OtcConfiguration config,
             boolean isSecurityEnabled) {
         for (BillingAgreementRecipe recipe : config.getBillingAgreementRecipes()) {
@@ -65,17 +60,15 @@ public class BillingAgreementRequest extends CheckoutRequest {
         mTokenQueryParamKey = source.readString();
     }
 
-    public static final Creator<BillingAgreementRequest> CREATOR =
-            new Creator<BillingAgreementRequest>() {
+    public static final Creator<BillingAgreementRequest> CREATOR = new Creator<BillingAgreementRequest>() {
+        @Override
+        public BillingAgreementRequest[] newArray(int size) {
+            return new BillingAgreementRequest[size];
+        }
 
-                @Override
-                public BillingAgreementRequest[] newArray(int size) {
-                    return new BillingAgreementRequest[size];
-                }
-
-                @Override
-                public BillingAgreementRequest createFromParcel(Parcel source) {
-                    return new BillingAgreementRequest(source);
-                }
-            };
+        @Override
+        public BillingAgreementRequest createFromParcel(Parcel source) {
+            return new BillingAgreementRequest(source);
+        }
+    };
 }

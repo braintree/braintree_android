@@ -470,10 +470,10 @@ public class PayPal {
             clientId = "FAKE-PAYPAL-CLIENT-ID";
         }
 
-        request.environment(environment);
-        request.clientId(clientId);
-        request.cancelUrl(context.getPackageName() + ".braintree", "cancel");
-        request.successUrl(context.getPackageName() + ".braintree", "success");
+        request.environment(environment)
+                .clientId(clientId)
+                .cancelUrl(context.getPackageName() + ".braintree", "cancel")
+                .successUrl(context.getPackageName() + ".braintree", "success");
 
         return request;
     }

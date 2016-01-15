@@ -24,50 +24,51 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 public abstract class Request<T extends Request<T>> implements Parcelable {
+
     private String mEnvironment;
     private String mClientId;
     private String mClientMetadataId;
     private String mCancelUrl;
     private String mSuccessUrl;
 
+    @SuppressWarnings("unchecked")
     public T environment(String environment) {
         mEnvironment = environment;
-        return getThis();
+        return (T) this;
     }
 
     public String getEnvironment() {
         return mEnvironment;
     }
 
+    @SuppressWarnings("unchecked")
     public T clientMetadataId(String clientMetadataId) {
         mClientMetadataId = clientMetadataId;
-        return getThis();
+        return (T) this;
     }
 
     public String getClientMetadataId() {
         return mClientMetadataId;
     }
 
+    @SuppressWarnings("unchecked")
     public T clientId(String clientId) {
         mClientId = clientId;
-        return getThis();
+        return (T) this;
     }
 
     public String getClientId() {
         return mClientId;
     }
 
-    String getBaseRequestToString() {
-        return String.format("mClientId:%s, mEnvironment:%s", getClientId(), getEnvironment());
-    }
-
     /**
-     * Defines the host to be used in the cancelation url for browser switch (the package name will
+     * Defines the host to be used in the cancellation url for browser switch (the package name will
      * be used as the scheme)
      */
+    @SuppressWarnings("unchecked")
     public T cancelUrl(String scheme, String host) {
         mCancelUrl = scheme + "://" + redirectURLHostAndPath() + host;
-        return getThis();
+        return (T) this;
     }
 
     public String getCancelUrl() {
@@ -78,9 +79,10 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
      * Defines the host to be used in the success url for browser switch (the package name will be
      * used as the scheme)
      */
+    @SuppressWarnings("unchecked")
     public T successUrl(String scheme, String host) {
         mSuccessUrl = scheme + "://" + redirectURLHostAndPath() + host;
-        return getThis();
+        return (T) this;
     }
 
     public String getSuccessUrl() {
@@ -91,23 +93,9 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
         return "onetouch/v1/";
     }
 
-    /**
-     * Supplies the implementing class type. Useful only for using the Abstract Builder pattern.
-     *
-     * @return
-     */
-    protected abstract T getThis();
-
-    /**
-     * Returns the browser switch URL for this request.
-     *
-     * @param context
-     * @return
-     */
-    public abstract String getBrowserSwitchUrl(Context context, OtcConfiguration config)
-            throws CertificateException, UnsupportedEncodingException, NoSuchPaddingException,
-            NoSuchAlgorithmException, IllegalBlockSizeException, JSONException, BadPaddingException,
-            InvalidEncryptionDataException, InvalidKeyException;
+    public abstract String getBrowserSwitchUrl(Context context, OtcConfiguration config) throws CertificateException,
+            UnsupportedEncodingException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException,
+            JSONException, BadPaddingException, InvalidEncryptionDataException, InvalidKeyException;
 
     public abstract Recipe getBrowserSwitchRecipe(OtcConfiguration config);
 
@@ -115,17 +103,9 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
 
     public abstract Result parseBrowserResponse(ContextInspector contextInspector, Uri uri);
 
-    /**
-     * Validates that the response from wallet is something we recognize as good.
-     *
-     * @param contextInspector
-     * @param extras
-     * @return
-     */
     public abstract boolean validateV1V2Response(ContextInspector contextInspector, Bundle extras);
 
-    public abstract Recipe getRecipeToExecute(Context context, OtcConfiguration config,
-            boolean isSecurityEnabled);
+    public abstract Recipe getRecipeToExecute(Context context, OtcConfiguration config, boolean isSecurityEnabled);
 
     public abstract void trackFpti(Context context, TrackingPoint trackingPoint, Protocol protocol);
 }

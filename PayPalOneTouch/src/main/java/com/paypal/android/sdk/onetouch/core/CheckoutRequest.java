@@ -63,11 +63,6 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
     }
 
     @Override
-    protected CheckoutRequest getThis() {
-        return this;
-    }
-
-    @Override
     public String getBrowserSwitchUrl(Context context, OtcConfiguration config) {
         return mApprovalUrl;
     }
