@@ -27,17 +27,17 @@ public class Card {
      */
     public static void tokenize(final BraintreeFragment fragment, final CardBuilder cardBuilder) {
         TokenizationClient.tokenize(fragment, cardBuilder, new PaymentMethodNonceCallback() {
-                    @Override
-                    public void success(PaymentMethodNonce paymentMethodNonce) {
-                        fragment.postCallback(paymentMethodNonce);
-                        fragment.sendAnalyticsEvent("card.nonce-received");
-                    }
+            @Override
+            public void success(PaymentMethodNonce paymentMethodNonce) {
+                fragment.postCallback(paymentMethodNonce);
+                fragment.sendAnalyticsEvent("card.nonce-received");
+            }
 
-                    @Override
-                    public void failure(Exception exception) {
-                        fragment.postCallback(exception);
-                        fragment.sendAnalyticsEvent("card.nonce-failed");
-                    }
-                });
+            @Override
+            public void failure(Exception exception) {
+                fragment.postCallback(exception);
+                fragment.sendAnalyticsEvent("card.nonce-failed");
+            }
+        });
     }
 }

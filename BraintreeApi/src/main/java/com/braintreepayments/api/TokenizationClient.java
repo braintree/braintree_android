@@ -31,22 +31,21 @@ class TokenizationClient {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                fragment.getHttpClient().get(versionedPath(PAYMENT_METHOD_ENDPOINT),
-                        new HttpResponseCallback() {
-                            @Override
-                            public void success(String responseBody) {
-                                try {
-                                    fragment.postCallback(parsePaymentMethodNonces(responseBody));
-                                } catch (JSONException e) {
-                                    fragment.postCallback(e);
-                                }
-                            }
+                fragment.getHttpClient().get(versionedPath(PAYMENT_METHOD_ENDPOINT), new HttpResponseCallback() {
+                    @Override
+                    public void success(String responseBody) {
+                        try {
+                            fragment.postCallback(parsePaymentMethodNonces(responseBody));
+                        } catch (JSONException e) {
+                            fragment.postCallback(e);
+                        }
+                    }
 
-                            @Override
-                            public void failure(Exception exception) {
-                                fragment.postCallback(exception);
-                            }
-                        });
+                    @Override
+                    public void failure(Exception exception) {
+                        fragment.postCallback(exception);
+                    }
+                });
             }
         });
     }
@@ -66,22 +65,19 @@ class TokenizationClient {
      * @param paymentMethodBuilder {@link PaymentMethodBuilder} for the {@link PaymentMethodNonce}
      *        to be created.
      */
-    static void tokenize(final BraintreeFragment fragment,
-            final PaymentMethodBuilder paymentMethodBuilder,
+    static void tokenize(final BraintreeFragment fragment, final PaymentMethodBuilder paymentMethodBuilder,
             final PaymentMethodNonceCallback callback) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 fragment.getHttpClient().post(TokenizationClient.versionedPath(
-                                TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" +
-                                        paymentMethodBuilder.getApiPath()),
+                        TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + paymentMethodBuilder.getApiPath()),
                         paymentMethodBuilder.build(), new HttpResponseCallback() {
                             @Override
                             public void success(String responseBody) {
                                 try {
-                                    PaymentMethodNonce paymentMethodNonce =
-                                            parsePaymentMethodNonces(responseBody,
-                                                    paymentMethodBuilder.getResponsePaymentMethodType());
+                                    PaymentMethodNonce paymentMethodNonce = parsePaymentMethodNonces(responseBody,
+                                            paymentMethodBuilder.getResponsePaymentMethodType());
                                     callback.success(paymentMethodNonce);
                                 } catch (JSONException e) {
                                     callback.failure(e);
