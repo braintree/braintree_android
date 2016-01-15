@@ -1,7 +1,5 @@
 package com.paypal.android.sdk.onetouch.core.network;
 
-import android.text.TextUtils;
-
 import com.paypal.android.sdk.onetouch.core.BuildConfig;
 import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;
 
@@ -21,14 +19,10 @@ public class OtcEnvironment {
     }
 
     private static String getFeatureString() {
-        StringBuilder featureList = new StringBuilder();
         if (BuildConfig.DEBUG) {
-            featureList.append("debug; ");
-        }
-        if (!TextUtils.isEmpty(BuildConfig.PRODUCT_FEATURES)) {
-            featureList.append(BuildConfig.PRODUCT_FEATURES).append(" ");
+            return "debug;";
         }
 
-        return featureList.toString().trim();
+        return "";
     }
 }

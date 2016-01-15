@@ -8,9 +8,6 @@ def getBuildVersion = { ->
 }
 
 ext {
-    product_name = "OneTouchCore-Android"
-
-    jar_name = product_name.replaceAll("-", "")
     product_version = getBuildVersion()
 
     configFileText = new File("${projectDir}/otc-config.android.json").getText('UTF-8')
@@ -27,9 +24,8 @@ android {
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
 
-        buildConfigField "String", "PRODUCT_NAME", "\"${product_name}\""
+        buildConfigField "String", "PRODUCT_NAME", "\"PayPalOneTouch-Android\""
         buildConfigField "String", "PRODUCT_VERSION", "\"${product_version}\""
-        buildConfigField "String", "PRODUCT_FEATURES", "\"\""
         buildConfigField "String", "CONFIGURATION", "\"${config}\""
     }
 

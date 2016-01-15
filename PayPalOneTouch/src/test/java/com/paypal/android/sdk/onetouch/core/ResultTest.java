@@ -30,7 +30,7 @@ public class ResultTest {
         JSONObject responseJson = result.getResponse();
         assertEquals("access_token", responseJson.getJSONObject("response").getString("access_token"));
         assertEquals("test", responseJson.getJSONObject("client").getString("environment"));
-        assertEquals("OneTouchCore-Android", responseJson.getJSONObject("client").getString("product_name"));
+        assertEquals("PayPalOneTouch-Android", responseJson.getJSONObject("client").getString("product_name"));
         assertEquals("Android", responseJson.getJSONObject("client").getString("platform"));
         assertEquals("web", responseJson.getString("response_type"));
         assertEquals("test@paypal.com", responseJson.getJSONObject("user").getString("display_string"));
@@ -69,7 +69,7 @@ public class ResultTest {
         JSONObject responseJson = result.getResponse();
         assertEquals("access_token", responseJson.getJSONObject("response").getString("access_token"));
         assertEquals("test", responseJson.getJSONObject("client").getString("environment"));
-        assertEquals("OneTouchCore-Android", responseJson.getJSONObject("client").getString("product_name"));
+        assertEquals("PayPalOneTouch-Android", responseJson.getJSONObject("client").getString("product_name"));
         assertEquals("Android", responseJson.getJSONObject("client").getString("platform"));
         assertEquals("web", responseJson.getString("response_type"));
         assertEquals("test@paypal.com", responseJson.getJSONObject("user").getString("display_string"));

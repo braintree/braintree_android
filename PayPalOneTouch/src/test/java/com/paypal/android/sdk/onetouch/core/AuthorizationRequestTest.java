@@ -137,7 +137,7 @@ public class AuthorizationRequestTest {
         Result result = mRequest.parseBrowserResponse(mContextInspector, uri);
 
         assertEquals(ResultType.Success, result.getResultType());
-        assertEquals("{\"response\":{\"code\":\"fake_code\"},\"client\":{\"environment\":\"mock\",\"product_name\":\"OneTouchCore-Android\",\"platform\":\"Android\",\"paypal_sdk_version\":\"" + BuildConfig.PRODUCT_VERSION + "\"},\"response_type\":\"authorization_code\",\"user\":{\"display_string\":\"test@test.com\"}}", result.getResponse().toString());
+        assertEquals("{\"response\":{\"code\":\"fake_code\"},\"client\":{\"environment\":\"mock\",\"product_name\":\"PayPalOneTouch-Android\",\"platform\":\"Android\",\"paypal_sdk_version\":\"" + BuildConfig.PRODUCT_VERSION + "\"},\"response_type\":\"authorization_code\",\"user\":{\"display_string\":\"test@test.com\"}}", result.getResponse().toString());
     }
 
     @Test
