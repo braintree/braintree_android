@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 
 import static com.braintreepayments.testutils.AppInstallationHelper.uninstallPayPalWallet;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
-import static com.lukekorth.deviceautomator.AutomatorAction.setText;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
@@ -39,12 +38,9 @@ public class PaymentButtonTest extends TestHelper {
         uninstallPayPalWallet();
 
         onDevice(withContentDescription("Pay with PayPal")).waitForExists().perform(click());
-        onDevice(withContentDescription("Email")).perform(click(), setText("test@paypal.com"));
-        onDevice().pressDPadDown().typeText("password");
-        onDevice(withContentDescription("Log In")).perform(click());
-        onDevice(withContentDescription("Agree")).perform(click());
+        onDevice(withContentDescription("Proceed with Sandbox Purchase")).perform(click());
 
-        onDevice(withTextContaining("Email:")).check(text(containsString("jane.doe@example.com")));
+        onDevice(withTextContaining("Email:")).check(text(containsString("bt_buyer_us@paypal.com")));
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
