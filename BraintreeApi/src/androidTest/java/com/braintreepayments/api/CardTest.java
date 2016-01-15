@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.verifyAnalyticsEvent;
 import static com.braintreepayments.api.internal.BraintreeHttpClientTestUtils.clientWithExpectedResponse;
@@ -183,7 +184,7 @@ public class CardTest {
 
     /* helpers */
     private void setupFragment() throws InvalidArgumentException {
-        mBraintreeFragment = BraintreeFragment.newInstance(mActivity,
-                new TestClientTokenBuilder().build());
+        mBraintreeFragment = BraintreeFragment.newInstance(mActivity, new TestClientTokenBuilder().build());
+        getInstrumentation().waitForIdleSync();
     }
 }

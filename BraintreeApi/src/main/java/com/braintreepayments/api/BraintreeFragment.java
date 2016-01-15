@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.GoogleApiClientException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
@@ -43,10 +44,8 @@ public class BraintreeFragment extends Fragment {
 
     public static final String TAG = "com.braintreepayments.api.BraintreeFragment";
 
-    private static final String EXTRA_AUTHORIZATION_TOKEN =
-            "com.braintreepayments.api.EXTRA_AUTHORIZATION_TOKEN";
-    private static final String EXTRA_INTEGRATION_TYPE =
-            "com.braintreepayments.api.EXTRA_INTEGRATION_TYPE";
+    private static final String EXTRA_AUTHORIZATION_TOKEN = "com.braintreepayments.api.EXTRA_AUTHORIZATION_TOKEN";
+    private static final String EXTRA_INTEGRATION_TYPE = "com.braintreepayments.api.EXTRA_INTEGRATION_TYPE";
 
     @VisibleForTesting
     protected String mIntegrationType;
@@ -63,6 +62,7 @@ public class BraintreeFragment extends Fragment {
     private List<PaymentMethodNonce> mCachedPaymentMethodNonces = new ArrayList<>();
     private boolean mHasFetchedPaymentMethodNonces = false;
     private boolean mIsBrowserSwitching = false;
+    private int mConfigurationRequestAttempts = 0;
 
     private ConfigurationListener mConfigurationListener;
     private BraintreeResponseListener<Exception> mConfigurationErrorListener;
@@ -356,6 +356,14 @@ public class BraintreeFragment extends Fragment {
 
     @VisibleForTesting
     protected void fetchConfiguration() {
+        if (mConfigurationRequestAttempts >= 3) {
+            postCallback(new ConfigurationException("Configuration retry limit has been exceeded. Create a new " +
+                    "BraintreeFragment and try again."));
+            return;
+        }
+
+        mConfigurationRequestAttempts++;
+
         ConfigurationManager.getConfiguration(this, new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
@@ -376,7 +384,10 @@ public class BraintreeFragment extends Fragment {
         }, new BraintreeResponseListener<Exception>() {
             @Override
             public void onResponse(final Exception e) {
-                postCallback(e);
+                final ConfigurationException exception =
+                        new ConfigurationException("Request for configuration has failed: " + e.getMessage() + ". " +
+                                "Future requests will retry up to 3 times");
+                postCallback(exception);
                 postOrQueueCallback(new QueuedCallback() {
                     @Override
                     public boolean shouldRun() {
@@ -385,7 +396,7 @@ public class BraintreeFragment extends Fragment {
 
                     @Override
                     public void run() {
-                        mConfigurationErrorListener.onResponse(e);
+                        mConfigurationErrorListener.onResponse(exception);
                     }
                 });
                 flushCallbacks();
@@ -397,7 +408,11 @@ public class BraintreeFragment extends Fragment {
         mConfigurationErrorListener = listener;
     }
 
-    protected void waitForConfiguration(final ConfigurationListener listener) {
+    void waitForConfiguration(final ConfigurationListener listener) {
+        if (getConfiguration() == null && !ConfigurationManager.isFetchingConfiguration()) {
+            fetchConfiguration();
+        }
+
         postOrQueueCallback(new QueuedCallback() {
             @Override
             public boolean shouldRun() {

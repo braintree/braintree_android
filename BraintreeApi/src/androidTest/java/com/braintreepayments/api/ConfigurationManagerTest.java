@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import android.net.Uri;
+import android.os.SystemClock;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.util.Base64;
@@ -27,6 +28,7 @@ import static com.braintreepayments.api.DeviceMetadata.getBraintreeSharedPrefere
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -40,15 +42,94 @@ public class ConfigurationManagerTest {
 
     @Before
     public void setup() throws InvalidArgumentException {
-        getBraintreeSharedPreferences(getTargetContext()).edit().clear()
-                .commit();
+        getBraintreeSharedPreferences(getTargetContext()).edit().clear().commit();
+        ConfigurationManager.sFetchingConfiguration = false;
         mTokenizationKey = Authorization.fromString(TestTokenizationKey.TOKENIZATION_KEY);
     }
 
     @After
     public void teardown() {
-        getBraintreeSharedPreferences(getTargetContext()).edit().clear()
-                .commit();
+        getBraintreeSharedPreferences(getTargetContext()).edit().clear().commit();
+    }
+
+    @Test(timeout = 1000)
+    public void isFetchingConfiguration_isFalseWhenNotFetchingConfiguration() {
+        assertFalse(ConfigurationManager.isFetchingConfiguration());
+    }
+
+    @Test(timeout = 1000)
+    public void isFetchingConfiguration_isTrueWhenFetchingConfiguration() throws InterruptedException {
+        BraintreeFragment fragment = getMockFragment();
+        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient(mTokenizationKey) {
+            @Override
+            public void get(String path, HttpResponseCallback callback) {
+                mThreadPool.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        SystemClock.sleep(1000);
+                    }
+                });
+            }
+        });
+
+        ConfigurationManager.getConfiguration(fragment, new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {}
+        }, new BraintreeResponseListener<Exception>() {
+            @Override
+            public void onResponse(Exception e) {}
+        });
+
+        assertTrue(ConfigurationManager.isFetchingConfiguration());
+    }
+
+    @Test(timeout = 1000)
+    public void isFetchingConfiguration_isFalseInSuccessCallback() throws InterruptedException {
+        final BraintreeFragment fragment = getMockFragment();
+        stubConfigurationFromGateway(fragment, stringFromFixture("configuration_with_analytics.json"));
+        final CountDownLatch latch = new CountDownLatch(1);
+        ConfigurationManager.getConfiguration(fragment, new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                assertFalse(ConfigurationManager.isFetchingConfiguration());
+                latch.countDown();
+            }
+        }, new BraintreeResponseListener<Exception>() {
+            @Override
+            public void onResponse(Exception e) {
+                fail(e.getMessage());
+            }
+        });
+
+        latch.await();
+    }
+
+    @Test(timeout = 1000)
+    public void isFetchingConfiguration_isFalseInErrorCallback() throws InterruptedException {
+        BraintreeFragment fragment = getMockFragment();
+        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient(mTokenizationKey) {
+            @Override
+            public void get(String path, HttpResponseCallback callback) {
+                if (path.contains(mTokenizationKey.getConfigUrl())) {
+                    callback.failure(new UnexpectedException("Something bad happened"));
+                }
+            }
+        });
+        final CountDownLatch latch = new CountDownLatch(1);
+        ConfigurationManager.getConfiguration(fragment, new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                fail("Success listener should not have been called for bad request");
+            }
+        }, new BraintreeResponseListener<Exception>() {
+            @Override
+            public void onResponse(Exception e) {
+                assertFalse(ConfigurationManager.isFetchingConfiguration());
+                latch.countDown();
+            }
+        });
+
+        latch.await();
     }
 
     @Test(timeout = 1000)

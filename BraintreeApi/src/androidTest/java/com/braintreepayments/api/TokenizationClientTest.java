@@ -37,6 +37,7 @@ import org.junit.runner.RunWith;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.tokenize;
@@ -148,6 +149,7 @@ public class TokenizationClientTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final String clientToken = new TestClientTokenBuilder().build();
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, clientToken);
+        getInstrumentation().waitForIdleSync();
         fragment.addListener(new PaymentMethodNoncesUpdatedListener() {
             @Override
             public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {
@@ -172,6 +174,7 @@ public class TokenizationClientTest {
             InvalidArgumentException {
         final CountDownLatch latch = new CountDownLatch(1);
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        getInstrumentation().waitForIdleSync();
         fragment.addListener(new PaymentMethodNoncesUpdatedListener() {
             @Override
             public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {

@@ -5,8 +5,10 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
 
+import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
@@ -21,8 +23,8 @@ import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
+import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.google.android.gms.common.api.GoogleApiClient;
 
@@ -38,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
@@ -195,8 +198,7 @@ public class BraintreeFragmentTest {
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
-                assertEquals(
-                        "Protocol not found: nullnullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint",
+                assertEquals("Request for configuration has failed: Protocol not found: nullnullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint. Future requests will retry up to 3 times",
                         error.getMessage());
                 mCountDownLatch.countDown();
             }
@@ -214,8 +216,7 @@ public class BraintreeFragmentTest {
         fragment.setConfigurationErrorListener(new BraintreeResponseListener<Exception>() {
             @Override
             public void onResponse(Exception error) {
-                assertEquals(
-                        "Protocol not found: nullnullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint",
+                assertEquals("Request for configuration has failed: Protocol not found: nullnullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint. Future requests will retry up to 3 times",
                         error.getMessage());
                 mCountDownLatch.countDown();
             }
@@ -400,6 +401,53 @@ public class BraintreeFragmentTest {
         fragment.postCallback(new Exception());
         fragment.postCallback(new ErrorWithResponse(400, ""));
     }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void waitForConfiguration_retriesIfConfigurationIsNull() throws InvalidArgumentException,
+            InterruptedException {
+        final Authorization authorization = Authorization.fromString(TOKENIZATION_KEY);
+        final AtomicInteger requestCount = new AtomicInteger(0);
+        BraintreeHttpClient client = new BraintreeHttpClient(authorization) {
+            @Override
+            public void get(String path, HttpResponseCallback callback) {
+                if (path.contains(authorization.getConfigUrl())) {
+                    requestCount.incrementAndGet();
+
+                    if (requestCount.get() >= 3) {
+                        callback.success(stringFromFixture("configuration.json"));
+                    } else {
+                        callback.failure(new ServerException("Error"));
+                    }
+                }
+            }
+        };
+        final BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        fragment.mHttpClient = client;
+
+        // Request 1: BraintreeFragment sends a "set up" analytics event when it's instantiated
+        // Request 2: BraintreeFragment calls fetchConfiguration in OnCreate
+        final CountDownLatch waitLatch = new CountDownLatch(1);
+        final AtomicInteger failureCount = new AtomicInteger(0);
+        fragment.setConfigurationErrorListener(new BraintreeResponseListener<Exception>() {
+            @Override
+            public void onResponse(Exception e) {
+                assertTrue(e instanceof ConfigurationException);
+                if (failureCount.incrementAndGet() >= 2) {
+                    fragment.waitForConfiguration(new ConfigurationListener() {
+                        @Override
+                        public void onConfigurationFetched(Configuration configuration) {
+                            assertEquals(stringFromFixture("configuration.json"), configuration.toJson());
+                            waitLatch.countDown();
+                        }
+                    });
+                }
+            }
+        });
+
+        waitLatch.await();
+    }
+
 
     @Test(timeout = 10000)
     @MediumTest
