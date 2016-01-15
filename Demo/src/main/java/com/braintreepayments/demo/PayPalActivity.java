@@ -11,6 +11,7 @@ import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPal;
+import com.braintreepayments.api.PayPalOverrides;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
@@ -59,6 +60,12 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PayPalOverrides.setFuturePaymentsOverride(false);
+    }
+
+    @Override
     protected void reset() {
         setProgressBarIndeterminateVisibility(true);
         enableButtons(false);
@@ -84,11 +91,13 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
     }
 
     public void launchFuturePayment(View v) {
+        PayPalOverrides.setFuturePaymentsOverride(true);
         setProgressBarIndeterminateVisibility(true);
         PayPal.authorizeAccount(mBraintreeFragment);
     }
 
     public void launchFuturePaymentAddressScope(View v) {
+        PayPalOverrides.setFuturePaymentsOverride(true);
         setProgressBarIndeterminateVisibility(true);
         PayPal.authorizeAccount(mBraintreeFragment, Collections.singletonList(PayPal.SCOPE_ADDRESS));
     }

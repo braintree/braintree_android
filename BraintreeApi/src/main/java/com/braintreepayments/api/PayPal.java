@@ -60,6 +60,7 @@ public class PayPal {
     public static final String SCOPE_ADDRESS = PayPalScope.ADDRESS.getScopeUri();
 
     protected static boolean sEnableSignatureVerification = true;
+    protected static boolean sFuturePaymentsOverride = false;
 
     private static final String SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement";
     private static final String CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource";
@@ -108,7 +109,7 @@ public class PayPal {
                     return;
                 }
 
-                if (configuration.getPayPal().shouldUseBillingAgreement()) {
+                if (configuration.getPayPal().shouldUseBillingAgreement() && !sFuturePaymentsOverride) {
                     requestBillingAgreement(fragment, new PayPalRequest());
                     return;
                 }

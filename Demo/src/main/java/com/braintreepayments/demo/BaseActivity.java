@@ -15,7 +15,7 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 
 import com.braintreepayments.api.BraintreeFragment;
-import com.braintreepayments.api.PayPalSignatureVerification;
+import com.braintreepayments.api.PayPalOverrides;
 import com.braintreepayments.api.PaymentButton;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
@@ -64,7 +64,7 @@ public abstract class BaseActivity extends Activity implements PaymentMethodNonc
             mActionBarSetup = true;
         }
 
-        PayPalSignatureVerification.disableAppSwitchSignatureVerification(
+        PayPalOverrides.disableAppSwitchSignatureVerification(
                 Settings.isPayPalSignatureVerificationDisabled(this));
         PayPalOneTouchCore.useHardcodedConfig(this, Settings.useHardcodedPayPalConfiguration(this));
 

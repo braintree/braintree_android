@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-public class PayPalSignatureVerification {
+public class PayPalOverrides {
 
     /**
      * WARNING: signature verification is disable based on a setting for testing in this demo app
@@ -8,5 +8,9 @@ public class PayPalSignatureVerification {
      */
     public static void disableAppSwitchSignatureVerification(boolean disable) {
         PayPal.sEnableSignatureVerification = !disable;
+    }
+
+    public static void setFuturePaymentsOverride(boolean useFuturePayments) {
+        PayPal.sFuturePaymentsOverride = useFuturePayments;
     }
 }
