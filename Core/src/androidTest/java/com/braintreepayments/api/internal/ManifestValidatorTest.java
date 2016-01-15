@@ -1,5 +1,6 @@
 package com.braintreepayments.api.internal;
 
+import android.content.pm.ActivityInfo;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 
@@ -10,7 +11,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
@@ -27,5 +31,18 @@ public class ManifestValidatorTest {
     public void isActivityDeclaredInAndroidManifest_returnsTrueForDeclaredActivity() {
         assertTrue(ManifestValidator.isActivityDeclaredInAndroidManifest(getTargetContext(),
                 ManifestTestActivity.class));
+    }
+
+    @Test(timeout = 1000)
+    public void getActivityInfo_returnsNullForNonExistantActivity() {
+        assertNull(ManifestValidator.getActivityInfo(getTargetContext(), MissingManifestTestActivity.class));
+    }
+
+    @Test(timeout = 1000)
+    public void getActivityInfo_returnsActivityInfoForExistingActivity() {
+        ActivityInfo activityInfo = ManifestValidator.getActivityInfo(getTargetContext(), ManifestTestActivity.class);
+
+        assertNotNull(activityInfo);
+        assertEquals(ManifestTestActivity.class.getName(), activityInfo.name);
     }
 }

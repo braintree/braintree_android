@@ -2,17 +2,19 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.BrowserSwitchException;
-import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
+import com.braintreepayments.api.internal.AppHelper;
+import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
@@ -106,7 +108,15 @@ public class PayPal {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 if (!configuration.isPayPalEnabled()) {
-                    fragment.postCallback(new ConfigurationException("PayPal is not enabled"));
+                    fragment.postCallback(new BraintreeException("PayPal is not enabled"));
+                    return;
+                }
+
+                if (!isManifestValid(fragment.getApplicationContext())) {
+                    fragment.postCallback(new BraintreeException("BraintreeBrowserSwitchActivity missing or " +
+                            " incorrectly configured in AndroidManifest.xml. See " +
+                            "https://developers.braintreepayments.com/guides/client-sdk/android/v2#browser-switch " +
+                            "for the correct configuration"));
                     return;
                 }
 
@@ -206,7 +216,15 @@ public class PayPal {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 if (!configuration.isPayPalEnabled()) {
-                    fragment.postCallback(new ConfigurationException("PayPal is not enabled"));
+                    fragment.postCallback(new BraintreeException("PayPal is not enabled"));
+                    return;
+                }
+
+                if (!isManifestValid(fragment.getApplicationContext())) {
+                    fragment.postCallback(new BraintreeException("BraintreeBrowserSwitchActivity missing or " +
+                            " incorrectly configured in AndroidManifest.xml. See " +
+                            "https://developers.braintreepayments.com/guides/client-sdk/android/v2#browser-switch " +
+                            "for the correct configuration"));
                     return;
                 }
 
@@ -491,5 +509,15 @@ public class PayPal {
 
     private static boolean isAppSwitch(Intent data) {
         return data.getData() == null;
+    }
+
+    private static boolean isManifestValid(Context context) {
+        Intent intent = new Intent(Intent.ACTION_VIEW)
+                .setData(Uri.parse(context.getPackageName() + ".braintree://"))
+                .addCategory(Intent.CATEGORY_DEFAULT)
+                .addCategory(Intent.CATEGORY_BROWSABLE);
+        ActivityInfo activityInfo = ManifestValidator.getActivityInfo(context, BraintreeBrowserSwitchActivity.class);
+        return (activityInfo != null && activityInfo.launchMode == ActivityInfo.LAUNCH_SINGLE_TASK &&
+                AppHelper.isIntentAvailable(context, intent));
     }
 }

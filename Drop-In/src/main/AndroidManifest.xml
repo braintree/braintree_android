@@ -8,9 +8,6 @@
     <application
         android:supportsRtl="true"
         tools:ignore="UnusedAttribute">
-        <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity" />
-        <activity android:name="com.paypal.android.sdk.onetouch.core.PayPalOneTouchActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name="com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity" />
 
         <activity android:name="com.braintreepayments.api.BraintreePaymentActivity" />
