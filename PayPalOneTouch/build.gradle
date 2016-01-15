@@ -43,6 +43,7 @@ dependencies {
 
     testCompile 'org.mockito:mockito-all:1.10.19'
     testCompile 'org.robolectric:robolectric:3.0'
+    testCompile 'org.skyscreamer:jsonassert:1.3.0'
 }
 
 /* maven deploy + signing */
