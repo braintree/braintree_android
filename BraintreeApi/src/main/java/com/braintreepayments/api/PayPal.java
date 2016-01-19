@@ -59,7 +59,6 @@ public class PayPal {
      */
     public static final String SCOPE_ADDRESS = PayPalScope.ADDRESS.getScopeUri();
 
-    protected static boolean sEnableSignatureVerification = true;
     protected static boolean sFuturePaymentsOverride = false;
 
     private static final String SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement";
@@ -123,8 +122,7 @@ public class PayPal {
                     }
                 }
 
-                startPayPal(fragment, PayPalOneTouchCore.getStartIntent(fragment.getApplicationContext(), sRequest,
-                        sEnableSignatureVerification));
+                startPayPal(fragment, PayPalOneTouchCore.getStartIntent(fragment.getApplicationContext(), sRequest));
             }
         });
     }
@@ -193,8 +191,7 @@ public class PayPal {
                             fragment.getApplicationContext(), fragment.getConfiguration().getPayPal());
                 }
 
-                startPayPal(fragment, PayPalOneTouchCore.getStartIntent(fragment.getApplicationContext(), sRequest,
-                        sEnableSignatureVerification));
+                startPayPal(fragment, PayPalOneTouchCore.getStartIntent(fragment.getApplicationContext(), sRequest));
             }
 
             @Override

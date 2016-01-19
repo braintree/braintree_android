@@ -77,7 +77,7 @@ public abstract class Recipe<T extends Recipe<T>> {
 
     protected abstract T getThis();
 
-    public boolean isValidAppTarget(Context context, boolean isSecurityEnabled) {
+    public boolean isValidAppTarget(Context context) {
         for (String allowedWalletTarget : getTargetPackagesInReversePriorityOrder()) {
             boolean isIntentAvailable = AppHelper.isIntentAvailable(context,
                     AppSwitchHelper.createBaseIntent(getTargetIntentAction(), getTargetComponent(),
@@ -88,8 +88,7 @@ public abstract class Recipe<T extends Recipe<T>> {
             boolean isLocaleAllowed =
                     mSupportedLocales.isEmpty() || mSupportedLocales.contains(locale);
 
-            boolean isSignatureValid =
-                    AppSwitchHelper.isSignatureValid(context, allowedWalletTarget, isSecurityEnabled);
+            boolean isSignatureValid = AppSwitchHelper.isSignatureValid(context, allowedWalletTarget);
 
             if (isIntentAvailable && isLocaleAllowed && isSignatureValid) {
                 return true;

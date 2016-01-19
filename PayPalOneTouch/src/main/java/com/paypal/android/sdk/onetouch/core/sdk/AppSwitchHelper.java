@@ -33,11 +33,9 @@ public class AppSwitchHelper {
     private static final String WALLET_APP_CERT_ISSUER = "O=Paypal";
     private static final int WALLET_APP_PUBLIC_KEY_HASH_CODE = 34172764;
 
-    public static boolean isSignatureValid(Context context, String packageName,
-            boolean securityEnabled) {
-        return !securityEnabled || SignatureVerification.isSignatureValid(context,
-                packageName, WALLET_APP_CERT_SUBJECT, WALLET_APP_CERT_ISSUER,
-                WALLET_APP_PUBLIC_KEY_HASH_CODE);
+    public static boolean isSignatureValid(Context context, String packageName) {
+        return SignatureVerification.isSignatureValid(context, packageName, WALLET_APP_CERT_SUBJECT,
+                WALLET_APP_CERT_ISSUER, WALLET_APP_PUBLIC_KEY_HASH_CODE);
     }
 
     public static Intent createBaseIntent(String action, String componentName, String packageName) {

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -69,8 +70,10 @@ public class SignatureVerification {
                 return false;
             } finally {
                 try {
-                    certStream.close();
-                } catch(Exception ignored) {}
+                    if (certStream != null) {
+                        certStream.close();
+                    }
+                } catch(IOException ignored) {}
             }
         }
 

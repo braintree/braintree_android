@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 
+import com.braintreepayments.api.internal.SignatureVerificationOverrides;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.BuildConfig;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
@@ -49,6 +50,7 @@ public class AppSwitchHelperTest {
 
     @Before
     public void setup() throws NameNotFoundException {
+        SignatureVerificationOverrides.disableSignatureVerification(false);
         mContextInspector = getMockContextInspector();
         mConfigManager = new ConfigManager(mContextInspector, mock(PayPalHttpClient.class));
         mConfigManager.useHardcodedConfig(true);
@@ -56,7 +58,8 @@ public class AppSwitchHelperTest {
 
     @Test
     public void isSignatureValid_returnsTrueIfSecurityNotEnabled() {
-        assertTrue(AppSwitchHelper.isSignatureValid(null, "", false));
+        SignatureVerificationOverrides.disableSignatureVerification(true);
+        assertTrue(AppSwitchHelper.isSignatureValid(null, ""));
     }
 
     @Test

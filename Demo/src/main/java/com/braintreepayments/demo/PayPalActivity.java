@@ -56,7 +56,7 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
         super.onResume();
 
         mPayPalAppIndicator.setText(getString(R.string.paypal_wallet_available,
-                PayPalOneTouchCore.isWalletAppInstalled(this, Settings.isPayPalSignatureVerificationDisabled(this))));
+                PayPalOneTouchCore.isWalletAppInstalled(this)));
     }
 
     @Override

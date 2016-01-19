@@ -275,11 +275,11 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     }
 
     @Override
-    public Recipe getRecipeToExecute(Context context, OtcConfiguration config, boolean isSecurityEnabled) {
+    public Recipe getRecipeToExecute(Context context, OtcConfiguration config) {
         for (OAuth2Recipe recipe : config.getOauth2Recipes()) {
             if (recipe.isValidForScopes(getScopes())) {
                 if (RequestTarget.wallet == recipe.getTarget()) {
-                    if (recipe.isValidAppTarget(context, isSecurityEnabled)) {
+                    if (recipe.isValidAppTarget(context)) {
                         return recipe;
                     }
                 } else if (RequestTarget.browser == recipe.getTarget()) {

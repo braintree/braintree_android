@@ -31,16 +31,14 @@ public class PayPalOneTouchCore {
 
     /**
      * @param context
-     * @param enableSecurityCheck {@code true} to run app signature verification, {@code false} to
-     *        skip app signature verification.
      * @return {@code true} if the modern wallet app is installed (one that has either v1 or v2 touch
      * intents), {@code false} if the wallet app is older than the touch releases, or not present.
      */
-    public static boolean isWalletAppInstalled(Context context, boolean enableSecurityCheck) {
+    public static boolean isWalletAppInstalled(Context context) {
         initService(context);
 
         for (OAuth2Recipe recipe : sConfigManager.getConfig().getOauth2Recipes()) {
-            if (recipe.isValidAppTarget(context, enableSecurityCheck)) {
+            if (recipe.isValidAppTarget(context)) {
                 sFptiManager.trackFpti(TrackingPoint.WalletIsPresent, "",
                         Collections.<String, String>emptyMap(), recipe.getProtocol());
                 return true;
@@ -59,23 +57,19 @@ public class PayPalOneTouchCore {
      *
      * @param context
      * @param request the {@link Request} used to build the {@link Intent}.
-     * @param enableSecurityCheck {@code true} to run app signature verification, {@code false} to
-     *        skip app signature verification.
      * @return {@link PendingRequest}. {@link PendingRequest#isSuccess()} should be
      *         checked before attempting to use the {@link Intent} it contains. If {@code true} an
      *         {@link Intent} was created and can be used to start a PayPal authentication request.
      *         If {@code false} it is not possible to authenticate given the current environment
      *         and request.
      */
-    public static PendingRequest getStartIntent(Context context, Request request,
-            boolean enableSecurityCheck) {
+    public static PendingRequest getStartIntent(Context context, Request request) {
         initService(context);
 
         // calling this method functionally does nothing, but ensures that we send off FPTI data about wallet installs.
-        isWalletAppInstalled(context, enableSecurityCheck);
+        isWalletAppInstalled(context);
 
-        Recipe recipe = request.getRecipeToExecute(context, sConfigManager.getConfig(),
-                enableSecurityCheck);
+        Recipe recipe = request.getRecipeToExecute(context, sConfigManager.getConfig());
 
         if (recipe == null) {
             return new PendingRequest(false, null, null, null);

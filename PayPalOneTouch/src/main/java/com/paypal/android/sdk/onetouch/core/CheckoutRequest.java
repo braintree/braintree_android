@@ -122,11 +122,10 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
     }
 
     @Override
-    public Recipe getRecipeToExecute(Context context, OtcConfiguration config,
-            boolean isSecurityEnabled) {
+    public Recipe getRecipeToExecute(Context context, OtcConfiguration config) {
         for (CheckoutRecipe recipe : config.getCheckoutRecipes()) {
             if (RequestTarget.wallet == recipe.getTarget()) {
-                if (recipe.isValidAppTarget(context, isSecurityEnabled)) {
+                if (recipe.isValidAppTarget(context)) {
                     return recipe;
                 }
             } else if (RequestTarget.browser == recipe.getTarget()) {

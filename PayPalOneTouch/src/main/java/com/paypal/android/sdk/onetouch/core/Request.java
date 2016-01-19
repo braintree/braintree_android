@@ -105,7 +105,7 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
 
     public abstract boolean validateV1V2Response(ContextInspector contextInspector, Bundle extras);
 
-    public abstract Recipe getRecipeToExecute(Context context, OtcConfiguration config, boolean isSecurityEnabled);
+    public abstract Recipe getRecipeToExecute(Context context, OtcConfiguration config);
 
     public abstract void trackFpti(Context context, TrackingPoint trackingPoint, Protocol protocol);
 }
