@@ -66,21 +66,14 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
     public AndroidPayCardNonce() {}
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mNonce);
-        dest.writeString(mDescription);
+        super.writeToParcel(dest, flags);
         dest.writeString(mCardType);
         dest.writeString(mLastTwo);
     }
 
     private AndroidPayCardNonce(Parcel in) {
-        mNonce = in.readString();
-        mDescription = in.readString();
+        super(in);
         mCardType = in.readString();
         mLastTwo = in.readString();
     }

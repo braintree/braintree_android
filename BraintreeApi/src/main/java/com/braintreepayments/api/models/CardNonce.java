@@ -86,23 +86,16 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     public CardNonce() {}
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeParcelable(mThreeDSecureInfo, flags);
-        dest.writeString(mNonce);
-        dest.writeString(mDescription);
         dest.writeString(mCardType);
         dest.writeString(mLastTwo);
     }
 
     protected CardNonce(Parcel in) {
+        super(in);
         mThreeDSecureInfo = in.readParcelable(ThreeDSecureInfo.class.getClassLoader());
-        mNonce = in.readString();
-        mDescription = in.readString();
         mCardType = in.readString();
         mLastTwo = in.readString();
     }

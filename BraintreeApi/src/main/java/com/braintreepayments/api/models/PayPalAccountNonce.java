@@ -173,15 +173,9 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
     public PayPalAccountNonce() {}
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(mClientMetadataId);
-        dest.writeString(mNonce);
-        dest.writeString(mDescription);
         dest.writeParcelable(mBillingAddress, flags);
         dest.writeParcelable(mShippingAddress, flags);
         dest.writeString(mFirstName);
@@ -192,9 +186,8 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
     }
 
     private PayPalAccountNonce(Parcel in) {
+        super(in);
         mClientMetadataId = in.readString();
-        mNonce = in.readString();
-        mDescription = in.readString();
         mBillingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
         mShippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
         mFirstName = in.readString();

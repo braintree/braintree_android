@@ -1,5 +1,6 @@
 package com.braintreepayments.api.models;
 
+import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
@@ -143,5 +144,23 @@ public abstract class PaymentMethodNonce implements Parcelable {
             default:
                 return null;
         }
+    }
+
+    public PaymentMethodNonce() {}
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mNonce);
+        dest.writeString(mDescription);
+    }
+
+    protected PaymentMethodNonce(Parcel in) {
+        mNonce = in.readString();
+        mDescription = in.readString();
     }
 }

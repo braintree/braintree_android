@@ -32,13 +32,13 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
     }
 
     @Override
-    public int describeContents() {
-        return 0;
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeString(mUsername);
     }
 
     protected VenmoAccountNonce(Parcel in) {
-        mNonce = in.readString();
-        mDescription = in.readString();
+        super(in);
         mUsername = in.readString();
     }
 
@@ -53,11 +53,4 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
             return new VenmoAccountNonce[size];
         }
     };
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mNonce);
-        dest.writeString(mDescription);
-        dest.writeString(mUsername);
-    }
 }

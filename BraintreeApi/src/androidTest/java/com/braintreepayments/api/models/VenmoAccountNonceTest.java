@@ -16,8 +16,7 @@ public class VenmoAccountNonceTest {
     private static final String NONCE = "nonce";
     private static final String DESCRIPTION = "description";
     private static final String USERNAME = "username";
-    private static final VenmoAccountNonce
-            VENMO_NONCE = new VenmoAccountNonce(NONCE, DESCRIPTION, USERNAME);
+    private static final VenmoAccountNonce VENMO_NONCE = new VenmoAccountNonce(NONCE, DESCRIPTION, USERNAME);
 
     @Test(timeout = 1000)
     public void getTypeLabel_returnsPayWithVenmo() {
@@ -40,14 +39,15 @@ public class VenmoAccountNonceTest {
     }
 
     @Test(timeout = 1000)
-    public void writeToParcel_parcelsVenmoAccountNonce() {
+    public void parcelsCorrectly() {
         Parcel parcel = Parcel.obtain();
         VENMO_NONCE.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(parcel);
-        assertEquals(NONCE, venmoAccountNonce.getNonce());
-        assertEquals(DESCRIPTION, venmoAccountNonce.getDescription());
-        assertEquals(USERNAME, venmoAccountNonce.getUsername());
+        VenmoAccountNonce parceled = VenmoAccountNonce.CREATOR.createFromParcel(parcel);
+
+        assertEquals(NONCE, parceled.getNonce());
+        assertEquals(DESCRIPTION, parceled.getDescription());
+        assertEquals(USERNAME, parceled.getUsername());
     }
 }
