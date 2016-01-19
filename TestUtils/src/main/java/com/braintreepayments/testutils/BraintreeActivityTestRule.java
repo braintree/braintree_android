@@ -10,6 +10,7 @@ import android.support.test.rule.ActivityTestRule;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.SharedPreferencesHelper.getSharedPreferences;
 
+@SuppressWarnings("deprecation")
 public class BraintreeActivityTestRule<T extends Activity> extends ActivityTestRule<T> {
 
     private KeyguardLock mKeyguardLock;
