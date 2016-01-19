@@ -101,8 +101,8 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
     }
 
     private void getTokenizationKeyFromAttributes(Context context, AttributeSet attrs) {
-        TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.PaymentButtonAttributes);
-        String tokenizationKey = attributes.getString(R.styleable.PaymentButtonAttributes_tokenizationKey);
+        TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.bt_PaymentButtonAttributes);
+        String tokenizationKey = attributes.getString(R.styleable.bt_PaymentButtonAttributes_tokenizationKey);
         attributes.recycle();
 
         if (Authorization.isTokenizationKey(tokenizationKey)) {

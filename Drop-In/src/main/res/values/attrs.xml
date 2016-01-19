@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <declare-styleable name="PaymentButtonAttributes">
-        <attr name="tokenizationKey" format="string" />
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <declare-styleable name="bt_PaymentButtonAttributes">
+        <attr name="tokenizationKey" format="string" tools:ignore="ResourceName" />
     </declare-styleable>
 </resources>
