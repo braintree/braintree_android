@@ -45,14 +45,7 @@ public final class SdkRiskComponent {
 
             return clientMetadataId;
         } else {
-            String clientMetadataId;
-            if (null != pairingId) {
-                clientMetadataId = sMetadataIdProvider.generatePairingId(pairingId);
-            } else {
-                clientMetadataId = sMetadataIdProvider.generatePairingId();
-            }
-
-            return clientMetadataId;
+            return sMetadataIdProvider.generatePairingId(pairingId);
         }
     }
 }

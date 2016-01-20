@@ -21,7 +21,7 @@ android {
 dependencies {
     compile 'com.android.support:support-annotations:[23.0.0,24.0.0)'
 
-    compile files('libs/paypal-data-collector-3.0.1.jar')
+    compile files('libs/paypal-data-collector-3.1.0.jar')
 
     androidTestCompile project(path: ':TestUtils', configuration: 'instrumentationTestDebug')
 }
