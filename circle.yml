@@ -1,0 +1,20 @@
+dependencies:
+  pre:
+    # Build three times, the first two builds will resolve dependencies via sdk-manager-plugin and then fail
+    # https://github.com/JakeWharton/sdk-manager-plugin/issues/10
+    - ./gradlew clean assembleDebug
+    - ./gradlew clean assembleDebug
+    - ./gradlew clean assembleDebug
+  override:
+    # The default Circle CI dependency step wants to run the Rakefile, which fails because we don't
+    # install the gems. Overriding removes this automated step.
+    - ./gradlew dependencies
+
+test:
+  override:
+    # We eventually want to run `assemble` to check and build.
+    - ./gradlew clean lint test
+  post:
+    # Capture the junit tests.
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -regex ".*test-.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
