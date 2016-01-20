@@ -34,7 +34,7 @@ dependencies {
 
     lintChecks project(path: ":Lint", configuration: "lintChecks")
 
-    androidTestCompile project(':TestUtils')
+    androidTestCompile project(path: ':TestUtils', configuration: 'instrumentationTestDebug')
 }
 
 android.buildTypes.each { type ->

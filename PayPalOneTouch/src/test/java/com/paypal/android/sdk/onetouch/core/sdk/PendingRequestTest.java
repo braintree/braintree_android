@@ -2,19 +2,16 @@ package com.paypal.android.sdk.onetouch.core.sdk;
 
 import android.content.Intent;
 
-import com.paypal.android.sdk.onetouch.core.BuildConfig;
 import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(sdk = 16, constants = BuildConfig.class)
 public class PendingRequestTest {
 
     @Test

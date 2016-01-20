@@ -1,7 +1,6 @@
 package com.paypal.android.sdk.onetouch.core.config;
 
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.paypal.android.sdk.onetouch.core.BuildConfig;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
 import com.paypal.android.sdk.onetouch.core.network.PayPalHttpClient;
@@ -10,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -22,7 +20,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(sdk = 16, constants = BuildConfig.class)
 public class ConfigManagerTest {
 
     private static final String CONFIGURATION_URL = "https://www.paypalobjects.com/webstatic/otc/otc-config.android.json";

@@ -1,11 +1,8 @@
 package com.paypal.android.sdk.onetouch.core.network;
 
-import com.paypal.android.sdk.onetouch.core.BuildConfig;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -13,7 +10,6 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(sdk = 16, constants = BuildConfig.class)
 public class EnvironmentManagerTest {
 
     @Test

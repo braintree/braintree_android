@@ -23,7 +23,7 @@ dependencies {
 
     compile files('libs/paypal-data-collector-3.0.1.jar')
 
-    androidTestCompile project(':TestUtils')
+    androidTestCompile project(path: ':TestUtils', configuration: 'instrumentationTestDebug')
 }
 
 /* maven deploy + signing */

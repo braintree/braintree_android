@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -32,7 +31,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(sdk = 16, constants = BuildConfig.class)
 public class FptiManagerTest {
 
     private ContextInspector mContextInspector;

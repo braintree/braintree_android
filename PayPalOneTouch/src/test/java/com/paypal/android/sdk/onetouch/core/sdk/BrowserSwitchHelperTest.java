@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 
-import com.paypal.android.sdk.onetouch.core.BuildConfig;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
 import com.paypal.android.sdk.onetouch.core.Result;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
@@ -22,7 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
@@ -46,7 +44,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(sdk = 16, constants = BuildConfig.class)
 public class BrowserSwitchHelperTest {
 
     private ContextInspector mContextInspector;
