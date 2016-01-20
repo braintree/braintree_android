@@ -1,13 +1,12 @@
 package com.braintreepayments.api.models;
 
 import android.os.Parcel;
-import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
@@ -15,11 +14,10 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(RobolectricGradleTestRunner.class)
 public class ThreeDSecureAuthenticationResponseTest {
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void fromJson_parsesCorrectly() {
         ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
                 stringFromFixture("three_d_secure/authentication_response.json"));
@@ -30,8 +28,7 @@ public class ThreeDSecureAuthenticationResponseTest {
         assertTrue(authResponse.isSuccess());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void fromException_parsesCorrectly() {
         ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse
                 .fromException("Error!");
@@ -40,8 +37,7 @@ public class ThreeDSecureAuthenticationResponseTest {
         assertEquals("Error!", authResponse.getException());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void getErrors_returnsErrorString() {
         ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
                 stringFromFixture("three_d_secure/authentication_response_with_error.json"));
@@ -52,8 +48,7 @@ public class ThreeDSecureAuthenticationResponseTest {
         assertEquals("Failed to authenticate, please try a different form of payment", errors.getMessage());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void isParcelable() {
         ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
                 stringFromFixture("three_d_secure/authentication_response.json"));
@@ -61,19 +56,18 @@ public class ThreeDSecureAuthenticationResponseTest {
         authResponse.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        ThreeDSecureAuthenticationResponse parsedAuthResponse = ThreeDSecureAuthenticationResponse.CREATOR.createFromParcel(parcel);
+        ThreeDSecureAuthenticationResponse parceled = ThreeDSecureAuthenticationResponse.CREATOR.createFromParcel(parcel);
 
-        assertEquals(authResponse.getCardNonce().getLastTwo(), parsedAuthResponse.getCardNonce().getLastTwo());
+        assertEquals(authResponse.getCardNonce().getLastTwo(), parceled.getCardNonce().getLastTwo());
         assertEquals(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShifted(),
-                parsedAuthResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
+                parceled.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
         assertEquals(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible(),
-                parsedAuthResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
-        assertEquals(authResponse.isSuccess(), parsedAuthResponse.isSuccess());
-        assertEquals(authResponse.getException(), parsedAuthResponse.getException());
+                parceled.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertEquals(authResponse.isSuccess(), parceled.isSuccess());
+        assertEquals(authResponse.getException(), parceled.getException());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void exceptionsAreParcelable() {
         ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse
                 .fromException("Error!");
@@ -81,9 +75,9 @@ public class ThreeDSecureAuthenticationResponseTest {
         authResponse.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        ThreeDSecureAuthenticationResponse parsedAuthResponse = ThreeDSecureAuthenticationResponse.CREATOR.createFromParcel(parcel);
+        ThreeDSecureAuthenticationResponse parceled = ThreeDSecureAuthenticationResponse.CREATOR.createFromParcel(parcel);
 
-        assertEquals(authResponse.isSuccess(), parsedAuthResponse.isSuccess());
-        assertEquals(authResponse.getException(), parsedAuthResponse.getException());
+        assertEquals(authResponse.isSuccess(), parceled.isSuccess());
+        assertEquals(authResponse.getException(), parceled.getException());
     }
 }

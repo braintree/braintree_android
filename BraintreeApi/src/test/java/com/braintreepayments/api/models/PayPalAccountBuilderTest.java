@@ -1,24 +1,21 @@
 package com.braintreepayments.api.models;
 
-import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(RobolectricGradleTestRunner.class)
 public class PayPalAccountBuilderTest {
 
     private static final String PAYPAL_KEY = "paypalAccount";
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void build_correctlyBuildsAPayPalAccount() throws JSONException {
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
                 .clientMetadataId("correlation_id")
@@ -35,8 +32,7 @@ public class PayPalAccountBuilderTest {
         assertEquals("paypal-sdk", jsonMetadata.getString("source"));
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void usesCorrectInfoForMetadata() throws JSONException {
         PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder()
                 .source("paypal-app");
@@ -48,8 +44,7 @@ public class PayPalAccountBuilderTest {
         assertEquals("paypal-app", metadata.getString("source"));
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void setsIntegrationMethod() throws JSONException {
         PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder().integration(
                 "test-integration");
@@ -60,8 +55,7 @@ public class PayPalAccountBuilderTest {
         assertEquals("test-integration", metadata.getString("integration"));
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void includesValidateOptionWhenSet() throws JSONException {
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
                 .validate(true);
@@ -72,8 +66,7 @@ public class PayPalAccountBuilderTest {
         assertEquals(true, builtAccount.getJSONObject("options").getBoolean("validate"));
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void doesNotIncludeEmptyObjectsWhenSerializing() throws JSONException {
         PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder();
 

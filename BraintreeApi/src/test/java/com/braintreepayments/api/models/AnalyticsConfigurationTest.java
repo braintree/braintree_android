@@ -1,12 +1,10 @@
 package com.braintreepayments.api.models;
 
-import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
@@ -15,29 +13,25 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(RobolectricGradleTestRunner.class)
 public class AnalyticsConfigurationTest {
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void parsesAnalyticsConfigurationFromToken() throws JSONException {
-        Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_analytics.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_analytics.json"));
 
         assertTrue(configuration.getAnalytics().isEnabled());
         assertEquals("analytics_url", configuration.getAnalytics().getUrl());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void fromJson_parsesUrl() throws JSONException {
         JSONObject json = new JSONObject().put("url", "analytics_url");
 
         assertEquals("analytics_url", AnalyticsConfiguration.fromJson(json).getUrl());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void fromJson_returnsNewAnalyticsConfigurationWhenJSONObjectIsNull() {
         AnalyticsConfiguration analyticsConfiguration = AnalyticsConfiguration.fromJson(null);
 
@@ -45,8 +39,7 @@ public class AnalyticsConfigurationTest {
         assertNull(analyticsConfiguration.getUrl());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void fromJson_returnsNewAnalyticsConfigurationWithoutUrlWhenUrlNotPresent() {
         AnalyticsConfiguration analyticsConfiguration = AnalyticsConfiguration.fromJson(new JSONObject());
 
@@ -54,8 +47,7 @@ public class AnalyticsConfigurationTest {
         assertNull(analyticsConfiguration.getUrl());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void toJson_serializesUrl() throws JSONException {
         JSONObject json = new JSONObject().put("url", "analytics_url");
         AnalyticsConfiguration analyticsConfiguration = AnalyticsConfiguration.fromJson(json);
@@ -65,8 +57,7 @@ public class AnalyticsConfigurationTest {
         assertEquals("analytics_url", jsonAnalyticsConfiguration.getString("url"));
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void toJson_serializesWhenUrlNotPresent() {
         AnalyticsConfiguration analyticsConfiguration = AnalyticsConfiguration.fromJson(new JSONObject());
 
@@ -75,17 +66,14 @@ public class AnalyticsConfigurationTest {
         assertEquals("{}", jsonAnalyticsConfiguration.toString());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void reportsAnalyticsDisabledWhenNoAnalyticsPresent() throws JSONException {
-        Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_without_analytics.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_without_analytics.json"));
 
         assertFalse(configuration.getAnalytics().isEnabled());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void reportsAnalyticsDisabledWhenUrlIsEmpty() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_empty_analytics_url.json"));

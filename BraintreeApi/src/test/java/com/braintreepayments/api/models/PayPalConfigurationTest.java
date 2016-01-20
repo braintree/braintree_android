@@ -1,12 +1,10 @@
 package com.braintreepayments.api.models;
 
-import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
@@ -14,17 +12,13 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(RobolectricGradleTestRunner.class)
 public class PayPalConfigurationTest {
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void parsesPayPalConfigurationFromToken() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_offline_paypal.json"));
-
-        assertTrue(configuration.isPayPalEnabled());
-
         PayPalConfiguration payPalConfiguration = configuration.getPayPal();
 
         assertTrue(configuration.isPayPalEnabled());
@@ -38,14 +32,9 @@ public class PayPalConfigurationTest {
         assertTrue(payPalConfiguration.isTouchDisabled());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void parsesPayPalConfigurationFromTokenForLive() throws JSONException {
-        Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_live_paypal.json"));
-
-        assertTrue(configuration.isPayPalEnabled());
-
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_live_paypal.json"));
         PayPalConfiguration payPalConfiguration = configuration.getPayPal();
 
         assertTrue(configuration.isPayPalEnabled());
@@ -59,14 +48,10 @@ public class PayPalConfigurationTest {
         assertTrue(payPalConfiguration.isTouchDisabled());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void parsesPayPalConfigurationFromTokenForCustom() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_custom_paypal.json"));
-
-        assertTrue(configuration.isPayPalEnabled());
-
         PayPalConfiguration payPalConfiguration = configuration.getPayPal();
 
         assertTrue(configuration.isPayPalEnabled());
@@ -81,8 +66,7 @@ public class PayPalConfigurationTest {
     }
 
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void reportsPayPalNotEnabledWhenFlagged() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_disabled_paypal.json"));
@@ -91,8 +75,7 @@ public class PayPalConfigurationTest {
         assertFalse(configuration.getPayPal().isEnabled());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void reportsPayPalNotEnabledWhenConfigAbsent() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_disabled_paypal.json"));
@@ -101,8 +84,7 @@ public class PayPalConfigurationTest {
         assertFalse(configuration.getPayPal().isEnabled());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void exposesPayPalTouchKillSwitch() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_paypal_touch_disabled.json"));
@@ -110,8 +92,7 @@ public class PayPalConfigurationTest {
         assertTrue(configuration.getPayPal().isTouchDisabled());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void fromJson_parsesConfiguration() throws JSONException {
         JSONObject json = new JSONObject(stringFromFixture("configuration_with_offline_paypal.json"))
                 .getJSONObject("paypal");
@@ -128,8 +109,7 @@ public class PayPalConfigurationTest {
         assertTrue(payPalConfiguration.isTouchDisabled());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void fromJson_returnsNewPayPalConfigurationWithDefaultValuesWhenJSONObjectIsNull() {
         PayPalConfiguration payPalConfiguration = PayPalConfiguration.fromJson(null);
 
@@ -143,8 +123,7 @@ public class PayPalConfigurationTest {
         assertTrue(payPalConfiguration.isTouchDisabled());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void fromJson_returnsNewPayPalConfigurationWithDefaultValuesWhenNoDataIsPresent() {
         PayPalConfiguration payPalConfiguration = PayPalConfiguration.fromJson(new JSONObject());
 

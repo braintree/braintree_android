@@ -1,14 +1,12 @@
 package com.braintreepayments.api.models;
 
 import android.os.Parcel;
-import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.MediumTest;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
@@ -17,11 +15,10 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(RobolectricGradleTestRunner.class)
 public class PostalAddressTest {
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void constructsCorrectly() throws JSONException {
         PostalAddress postalAddress = new PostalAddress()
                 .streetAddress("123 Fake St.")
@@ -41,11 +38,9 @@ public class PostalAddressTest {
         assertEquals("John Fakerson", postalAddress.getRecipientName());
     }
 
-    @Test(timeout = 10000)
-    @MediumTest
+    @Test
     public void testCanCreatePostalAddress_fromStandardJson() throws JSONException {
-        String accountAddressJson = stringFromFixture(
-                "payment_methods/paypal_address.json");
+        String accountAddressJson = stringFromFixture("payment_methods/paypal_address.json");
 
         PostalAddress postalAddress = PostalAddress.fromJson(new JSONObject(accountAddressJson));
 
@@ -58,11 +53,9 @@ public class PostalAddressTest {
         assertEquals("John Fakerson", postalAddress.getRecipientName());
     }
 
-    @Test(timeout = 10000)
-    @MediumTest
+    @Test
     public void testCanCreatePostalAddress_fromAlternateJson() throws JSONException {
-        String accountAddressJson = stringFromFixture(
-                "payment_methods/paypal_address_alternate.json");
+        String accountAddressJson = stringFromFixture("payment_methods/paypal_address_alternate.json");
 
         PostalAddress postalAddress = PostalAddress.fromJson(new JSONObject(accountAddressJson));
 
@@ -75,11 +68,9 @@ public class PostalAddressTest {
         assertEquals("John Fakerson", postalAddress.getRecipientName());
     }
 
-    @Test(timeout = 10000)
-    @MediumTest
+    @Test
     public void testCanPostalAddressHandleMissingFieldsInJson() throws JSONException {
-        String accountAddressJson = stringFromFixture(
-                "random_json.json");
+        String accountAddressJson = stringFromFixture("random_json.json");
 
         PostalAddress postalAddress = PostalAddress.fromJson(new JSONObject(accountAddressJson));
 
@@ -91,19 +82,17 @@ public class PostalAddressTest {
         assertNull(postalAddress.getCountryCodeAlpha2());
     }
 
-    @Test(timeout = 10000)
-    @MediumTest
+    @Test
     public void testWriteToParcel_serializesCorrectly() throws JSONException{
-        String accountAddressJson = stringFromFixture(
-                "payment_methods/paypal_address.json");
+        String accountAddressJson = stringFromFixture("payment_methods/paypal_address.json");
 
         PostalAddress preSerialized = PostalAddress.fromJson(new JSONObject(accountAddressJson));
 
-        Parcel p = Parcel.obtain();
-        preSerialized.writeToParcel(p, 0);
-        p.setDataPosition(0);
+        Parcel parcel = Parcel.obtain();
+        preSerialized.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
 
-        PostalAddress postSerialized = PostalAddress.CREATOR.createFromParcel(p);
+        PostalAddress postSerialized = PostalAddress.CREATOR.createFromParcel(parcel);
 
         assertNotNull(postSerialized);
         assertEquals("123 Fake St.", postSerialized.getStreetAddress());
@@ -115,9 +104,8 @@ public class PostalAddressTest {
         assertEquals("John Fakerson", postSerialized.getRecipientName());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
-    public void isEmpty_returnsTrueIfCountryCodeIsntSet(){
+    @Test
+    public void isEmpty_returnsTrueIfCountryCodeIsNotSet(){
         PostalAddress postalAddress = new PostalAddress()
                 .streetAddress("123 Fake St.")
                 .extendedAddress("Apt. 3")
@@ -129,8 +117,7 @@ public class PostalAddressTest {
         assertTrue(postalAddress.isEmpty());
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void isEmpty_returnsFalseIfCountryCodeIsSet(){
         PostalAddress postalAddress = new PostalAddress()
                 .countryCodeAlpha2("US");
@@ -138,4 +125,3 @@ public class PostalAddressTest {
         assertFalse(postalAddress.isEmpty());
     }
 }
-

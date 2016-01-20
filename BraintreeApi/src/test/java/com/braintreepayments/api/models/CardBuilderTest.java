@@ -1,25 +1,22 @@
 package com.braintreepayments.api.models;
 
-import android.test.suitebuilder.annotation.SmallTest;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.robolectric.RobolectricGradleTestRunner;
 
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 
-@RunWith(JUnit4.class)
+@RunWith(RobolectricGradleTestRunner.class)
 public class CardBuilderTest {
 
     private static final String CREDIT_CARD_KEY = "creditCard";
     private static final String BILLING_ADDRESS_KEY = "billingAddress";
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void build_correctlyBuildsACard() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder().cardNumber(VISA)
                 .cvv("123")
@@ -57,8 +54,7 @@ public class CardBuilderTest {
         assertEquals("form", jsonMetadata.getString("source"));
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void handlesFullExpirationDate() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder().cardNumber(VISA)
                 .cvv("123")
@@ -73,8 +69,7 @@ public class CardBuilderTest {
         assertEquals("12345", jsonCard.getJSONObject("billingAddress").getString("postalCode"));
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void nestsAddressCorrectly() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder()
                 .postalCode("60606");
@@ -91,8 +86,7 @@ public class CardBuilderTest {
         assertFalse(billingAddress.has("countryName"));
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void usesDefaultInfoForMetadata() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder();
 
@@ -103,8 +97,7 @@ public class CardBuilderTest {
         assertEquals("form", metadata.getString("source"));
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void usesDefaultCardSource() throws JSONException {
         CardBuilder builder = new CardBuilder();
         JSONObject jsonObject = new JSONObject(builder.build());
@@ -112,8 +105,7 @@ public class CardBuilderTest {
         assertEquals("form", jsonObject.getJSONObject("_meta").getString("source"));
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void setsCardSource() throws JSONException {
         CardBuilder builder = new CardBuilder().source("form");
         JSONObject jsonObject = new JSONObject(builder.build());
@@ -121,8 +113,7 @@ public class CardBuilderTest {
         assertEquals("form", jsonObject.getJSONObject("_meta").getString("source"));
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void setsIntegrationMethod() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder().integration("test-integration");
 
@@ -132,8 +123,7 @@ public class CardBuilderTest {
         assertEquals("test-integration", metadata.getString("integration"));
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void includesValidateOptionWhenSet() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder().validate(true);
 
@@ -142,8 +132,7 @@ public class CardBuilderTest {
         assertEquals(true, builtCard.getJSONObject("options").getBoolean("validate"));
     }
 
-    @Test(timeout = 1000)
-    @SmallTest
+    @Test
     public void doesNotIncludeEmptyCreditCardWhenSerializing() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder();
 

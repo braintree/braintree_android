@@ -1,25 +1,21 @@
 package com.braintreepayments.api.models;
 
 import android.os.Parcel;
-import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 
-@RunWith(AndroidJUnit4.class)
-@SmallTest
+@RunWith(RobolectricGradleTestRunner.class)
 public class CardNonceTest {
 
-    @Test(timeout = 1000)
+    @Test
     public void canCreateCardFromJson() throws JSONException {
-        String cardString = stringFromFixture("payment_methods/visa_credit_card_response.json");
-
-        CardNonce cardNonce = CardNonce.fromJson(cardString);
+        CardNonce cardNonce = CardNonce.fromJson(stringFromFixture("payment_methods/visa_credit_card_response.json"));
 
         assertEquals("Visa", cardNonce.getTypeLabel());
         assertEquals("Visa", cardNonce.getCardType());
@@ -28,10 +24,9 @@ public class CardNonceTest {
         assertEquals("11", cardNonce.getLastTwo());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void parcelsCorrectly() throws JSONException {
-        String cardString = stringFromFixture("payment_methods/visa_credit_card_response.json");
-        CardNonce cardNonce = CardNonce.fromJson(cardString);
+        CardNonce cardNonce = CardNonce.fromJson(stringFromFixture("payment_methods/visa_credit_card_response.json"));
         Parcel parcel = Parcel.obtain();
         cardNonce.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);

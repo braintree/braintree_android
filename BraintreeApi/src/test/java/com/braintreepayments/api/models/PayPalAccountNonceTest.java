@@ -1,32 +1,29 @@
 package com.braintreepayments.api.models;
 
 import android.os.Parcel;
-import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-@RunWith(AndroidJUnit4.class)
-@SmallTest
+@RunWith(RobolectricGradleTestRunner.class)
 public class PayPalAccountNonceTest {
 
-    @Test(timeout = 1000)
+    @Test
     public void payPalAccountTypeIsPayPal() {
         assertEquals("PayPal", new PayPalAccountNonce().getTypeLabel());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void fromJson_parsesResponse() throws JSONException {
-        String paypalString = stringFromFixture("payment_methods/paypal_account_response.json");
-
-        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJson(paypalString);
+        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJson(
+                stringFromFixture("payment_methods/paypal_account_response.json"));
 
         assertEquals("with email paypalaccount@example.com", payPalAccountNonce.getDescription());
         assertEquals("aaaaaa-bbbbbbb-109934023-1", payPalAccountNonce.getNonce());
@@ -40,7 +37,7 @@ public class PayPalAccountNonceTest {
         assertEquals("US", payPalAccountNonce.getBillingAddress().getCountryCodeAlpha2());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void getDescription_usesGetEmailIfDescriptionIsPayPalAndEmailIsNotEmpty() {
         PayPalAccountNonce payPalAccountNonce = spy(new PayPalAccountNonce());
         payPalAccountNonce.mDescription = "PayPal";
@@ -49,10 +46,10 @@ public class PayPalAccountNonceTest {
         assertEquals("test_email_address", payPalAccountNonce.getDescription());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void parcelsCorrectly() throws JSONException {
-        String paypalString = stringFromFixture("payment_methods/paypal_account_response.json");
-        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJson(paypalString);
+        PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJson(
+                stringFromFixture("payment_methods/paypal_account_response.json"));
         Parcel parcel = Parcel.obtain();
         payPalAccountNonce.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);

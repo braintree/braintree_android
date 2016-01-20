@@ -1,21 +1,18 @@
 package com.braintreepayments.api.models;
 
-import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
-@RunWith(AndroidJUnit4.class)
-@SmallTest
+@RunWith(RobolectricGradleTestRunner.class)
 public class PayPalRequestTest {
 
-    @Test(timeout = 1000)
+    @Test
     public void newPayPalRequest_setsAmountAndDefaultValues() {
         PayPalRequest request = new PayPalRequest("1.00");
 
@@ -26,7 +23,7 @@ public class PayPalRequestTest {
         assertNull(request.getShippingAddressOverride());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void setsValuesCorrectly() {
         PostalAddress postalAddress = new PostalAddress();
         PayPalRequest request = new PayPalRequest("1.00")
