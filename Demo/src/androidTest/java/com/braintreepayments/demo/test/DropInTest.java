@@ -19,6 +19,7 @@ import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextContaining;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
 @RunWith(AndroidJUnit4.class)
@@ -55,5 +56,17 @@ public class DropInTest extends TestHelper {
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
+    }
+
+    @Test(timeout = 60000)
+    public void exitsAfterCancelingAddingAPaymentMethod() {
+        onDevice(withContentDescription("Pay with PayPal")).perform(click());
+        onDevice(withContentDescription("Proceed with Sandbox Purchase")).waitForExists();
+        onDevice().pressBack();
+        onDevice(withContentDescription("Pay with PayPal")).waitForExists();
+
+        onDevice().pressBack();
+
+        onDevice(withText("Drop-In")).check(text(equalTo("Drop-In")));
     }
 }

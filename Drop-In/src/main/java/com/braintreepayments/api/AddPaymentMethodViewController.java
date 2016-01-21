@@ -21,9 +21,8 @@ import com.braintreepayments.cardform.view.CardForm;
  * {@link BraintreeViewController} for coordinating the Add Payment Method form.
  * Responsible for managing views and form element bindings associated with adding a payment method.
  */
-public class AddPaymentMethodViewController extends BraintreeViewController
-        implements OnClickListener, OnCardFormSubmitListener, OnCardFormValidListener,
-        OnCardFormFieldFocusedListener {
+public class AddPaymentMethodViewController extends BraintreeViewController implements OnClickListener,
+        OnCardFormSubmitListener, OnCardFormValidListener, OnCardFormFieldFocusedListener {
 
     private static final String EXTRA_FORM_IS_SUBMITTING = "com.braintreepayments.dropin.EXTRA_FORM_IS_SUBMITTING";
     private static final String EXTRA_SUBMIT_BUTTON_ENABLED = "com.braintreepayments.dropin.EXTRA_SUBMIT_BUTTON_ENABLED";

@@ -191,6 +191,7 @@ public class BraintreePaymentActivity extends Activity implements
     @Override
     public void onCancel(int requestCode) {
         showAddPaymentMethodView();
+        mAddPaymentMethodViewController.endSubmit();
     }
 
     @Override
