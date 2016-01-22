@@ -56,7 +56,7 @@ public class PayPalRequest {
     }
 
     /**
-     * Defaults to false. When set to true, the shipping address selector will not be displayed.
+     * Defaults to false. When set to true, the shipping address selector will be displayed.
      *
      * @param shippingAddressRequired Whether to hide the shipping address in the flow.
      */
