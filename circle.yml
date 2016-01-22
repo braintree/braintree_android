@@ -13,9 +13,7 @@ dependencies:
 
 test:
   override:
-    # We eventually want to run `assemble` to check and build.
     - ./gradlew clean lint test
   post:
-    # Capture the junit tests.
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -regex ".*test-.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
