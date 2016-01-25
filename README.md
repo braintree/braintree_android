@@ -1,5 +1,7 @@
 # Braintree v.zero SDK for Android
 
+[![Build Status](https://travis-ci.org/braintree/braintree_android.svg?branch=master)](https://travis-ci.org/braintree/braintree_android)
+
 Welcome to Braintree's v.zero SDK for Android. This library will help you accept card and alternative payments in your Android app.
 
 ![Screenshot of v.zero](screenshot.png)
