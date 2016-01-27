@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.VisibleForTesting;
+import android.text.TextUtils;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.BrowserSwitchException;
@@ -66,6 +67,7 @@ public class PayPal {
     private static final String NO_SHIPPING_KEY = "no_shipping";
     private static final String ADDRESS_OVERRIDE_KEY = "address_override";
     private static final String LOCALE_CODE_KEY = "locale_code";
+    private static final String DESCRIPTION_KEY = "description";
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
     private static final String TOKENIZATION_KEY = "client_key";
     private static final String RETURN_URL_KEY = "return_url";
@@ -237,13 +239,6 @@ public class PayPal {
             currencyCode = fragment.getConfiguration().getPayPal().getCurrencyIsoCode();
         }
 
-        JSONObject experienceProfile = new JSONObject();
-        experienceProfile.put(NO_SHIPPING_KEY, !request.isShippingAddressRequired());
-
-        if (request.getLocaleCode() != null) {
-            experienceProfile.put(LOCALE_CODE_KEY, request.getLocaleCode());
-        }
-
         JSONObject parameters = new JSONObject()
                 .put(RETURN_URL_KEY, checkoutRequest.getSuccessUrl())
                 .put(CANCEL_URL_KEY, checkoutRequest.getCancelUrl());
@@ -258,6 +253,17 @@ public class PayPal {
         if (!isBillingAgreement) {
             parameters.put(AMOUNT_KEY, request.getAmount())
                     .put(CURRENCY_ISO_CODE_KEY, currencyCode);
+        } else {
+            if (!TextUtils.isEmpty(request.getBillingAgreementDescription())) {
+                parameters.put(DESCRIPTION_KEY, request.getBillingAgreementDescription());
+            }
+        }
+
+        JSONObject experienceProfile = new JSONObject();
+        experienceProfile.put(NO_SHIPPING_KEY, !request.isShippingAddressRequired());
+
+        if (request.getLocaleCode() != null) {
+            experienceProfile.put(LOCALE_CODE_KEY, request.getLocaleCode());
         }
 
         if (request.getShippingAddressOverride() != null && !request.getShippingAddressOverride().isEmpty()) {

@@ -14,6 +14,7 @@ public class PayPalRequest {
     private String mAmount;
     private String mCurrencyCode;
     private String mLocaleCode;
+    private String mBillingAgreementDescription;
     private boolean mShippingAddressRequired;
     private PostalAddress mShippingAddressOverride;
 
@@ -76,6 +77,16 @@ public class PayPalRequest {
     }
 
     /**
+     * Display a custom description to the user for a billing agreement.
+     *
+     * @param description The description to display.
+     */
+    public PayPalRequest billingAgreementDescription(String description) {
+        mBillingAgreementDescription = description;
+        return this;
+    }
+
+    /**
      * A custom shipping address to be used for the checkout flow.
      *
      * @param shippingAddressOverride a custom {@link PostalAddress}
@@ -93,15 +104,19 @@ public class PayPalRequest {
         return mCurrencyCode;
     }
 
+    public String getLocaleCode() {
+        return mLocaleCode;
+    }
+
+    public String getBillingAgreementDescription() {
+        return mBillingAgreementDescription;
+    }
+
     public boolean isShippingAddressRequired() {
         return mShippingAddressRequired;
     }
 
     public PostalAddress getShippingAddressOverride() {
         return mShippingAddressOverride;
-    }
-
-    public String getLocaleCode() {
-        return mLocaleCode;
     }
 }

@@ -29,12 +29,14 @@ public class PayPalRequestTest {
         PayPalRequest request = new PayPalRequest("1.00")
                 .currencyCode("USD")
                 .localeCode("US")
+                .billingAgreementDescription("Billing Agreement Description")
                 .shippingAddressRequired(true)
                 .shippingAddressOverride(postalAddress);
 
         assertEquals("1.00", request.getAmount());
         assertEquals("USD", request.getCurrencyCode());
         assertEquals("US", request.getLocaleCode());
+        assertEquals("Billing Agreement Description", request.getBillingAgreementDescription());
         assertTrue(request.isShippingAddressRequired());
         assertEquals(postalAddress, request.getShippingAddressOverride());
     }
