@@ -409,7 +409,7 @@ public class BraintreeFragment extends Fragment {
     }
 
     void waitForConfiguration(final ConfigurationListener listener) {
-        if (getConfiguration() == null && !ConfigurationManager.isFetchingConfiguration()) {
+        if (getConfiguration() == null && !ConfigurationManager.isFetchingConfiguration() && mAuthorization != null) {
             fetchConfiguration();
         }
 
