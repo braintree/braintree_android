@@ -677,17 +677,14 @@ public class PayPalTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void onActivityResult_postConfigurationExceptionWhenInvalid()
-            throws JSONException, InterruptedException {
-        final BraintreeFragment fragment = getMockFragment(mActivity,
-                stringFromFixture("client_token.json"),
+    public void onActivityResult_postConfigurationExceptionWhenInvalid() throws JSONException, InterruptedException {
+        final BraintreeFragment fragment = getMockFragment(mActivity, stringFromFixture("client_token.json"),
                 stringFromFixture("configuration_with_analytics.json"));
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
-                assertTrue(error instanceof ConfigurationException);
-                assertEquals("PayPal is not enabled",
-                        error.getMessage());
+                assertTrue(error instanceof BraintreeException);
+                assertEquals("PayPal is not enabled", error.getMessage());
                 mLatch.countDown();
             }
         });
