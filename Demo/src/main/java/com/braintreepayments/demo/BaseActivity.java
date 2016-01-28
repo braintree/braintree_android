@@ -71,6 +71,8 @@ public abstract class BaseActivity extends Activity implements PaymentMethodNonc
         if (mAuthorization == null || (Settings.useTokenizationKey(this) &&
                 !mAuthorization.equals(Settings.getEnvironmentTokenizationKey(this)))) {
             performReset();
+        } else {
+            onAuthorizationFetched();
         }
     }
 
