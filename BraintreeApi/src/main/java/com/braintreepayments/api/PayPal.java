@@ -102,8 +102,6 @@ public class PayPal {
      * #SCOPE_ADDRESS}. Acceptable scopes are defined in {@link com.braintreepayments.api.PayPal}.
      */
     public static void authorizeAccount(final BraintreeFragment fragment, final List<String> additionalScopes) {
-        fragment.sendAnalyticsEvent("paypal.selected");
-
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
@@ -124,6 +122,8 @@ public class PayPal {
                     requestBillingAgreement(fragment, new PayPalRequest());
                     return;
                 }
+
+                fragment.sendAnalyticsEvent("paypal.future-payments.selected");
 
                 sRequest = getAuthorizationRequest(fragment.getApplicationContext(),
                         fragment.getConfiguration().getPayPal(), fragment.getAuthorization().toString());
@@ -148,6 +148,7 @@ public class PayPal {
      */
     public static void requestBillingAgreement(BraintreeFragment fragment, PayPalRequest request) {
         if (request.getAmount() == null) {
+            fragment.sendAnalyticsEvent("paypal.billing-agreement.selected");
             requestOneTimePayment(fragment, request, true);
         } else {
             fragment.postCallback(new BraintreeException(
@@ -165,6 +166,7 @@ public class PayPal {
      */
     public static void requestOneTimePayment(BraintreeFragment fragment, PayPalRequest request) {
         if (request.getAmount() != null) {
+            fragment.sendAnalyticsEvent("paypal.one-time-payment.selected");
             requestOneTimePayment(fragment, request, false);
         } else {
             fragment.postCallback(new BraintreeException("An amount must be specified for the Single Payment flow."));
@@ -341,7 +343,7 @@ public class PayPal {
             }
         }
 
-        AnalyticsManager.sendRequest(fragment, "custom", eventFragment);
+        fragment.sendAnalyticsEvent(eventFragment);
     }
 
     /**
@@ -369,6 +371,14 @@ public class PayPal {
                     break;
             }
         } else {
+            String type;
+            if (sRequest != null) {
+                type = sRequest.getClass().getSimpleName().toLowerCase();
+            } else {
+                type = "unknown";
+            }
+            fragment.sendAnalyticsEvent("paypal." + type + ".canceled");
+
             fragment.postCancelCallback(PAYPAL_REQUEST_CODE);
         }
     }
@@ -433,7 +443,7 @@ public class PayPal {
         String authorizationType = isCheckoutRequest() ? "paypal-single-payment" : "paypal-future-payments";
         String switchType = isAppSwitch ? "appswitch" : "webswitch";
         String event = String.format("%s.%s.%s", authorizationType, switchType, eventFragment);
-        AnalyticsManager.sendRequest(fragment, "custom", event);
+        fragment.sendAnalyticsEvent(event);
     }
 
     @VisibleForTesting
