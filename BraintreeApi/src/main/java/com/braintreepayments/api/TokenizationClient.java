@@ -36,11 +36,7 @@ class TokenizationClient {
                             @Override
                             public void success(String responseBody) {
                                 try {
-                                    List<PaymentMethodNonce> paymentMethodNonces =
-                                            parsePaymentMethodNonces(
-                                                    responseBody);
-
-                                    fragment.postCallback(paymentMethodNonces);
+                                    fragment.postCallback(parsePaymentMethodNonces(responseBody));
                                 } catch (JSONException e) {
                                     fragment.postCallback(e);
                                 }
@@ -84,10 +80,8 @@ class TokenizationClient {
                             public void success(String responseBody) {
                                 try {
                                     PaymentMethodNonce paymentMethodNonce =
-                                            parsePaymentMethodNonces(
-                                                    responseBody,
-                                                    paymentMethodBuilder
-                                                            .getResponsePaymentMethodType());
+                                            parsePaymentMethodNonces(responseBody,
+                                                    paymentMethodBuilder.getResponsePaymentMethodType());
                                     callback.success(paymentMethodNonce);
                                 } catch (JSONException e) {
                                     callback.failure(e);

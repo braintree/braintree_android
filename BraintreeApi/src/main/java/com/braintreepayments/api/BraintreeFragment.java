@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.exceptions.ConfigurationException;
@@ -48,6 +49,15 @@ public class BraintreeFragment extends Fragment {
     private static final String EXTRA_INTEGRATION_TYPE = "com.braintreepayments.api.EXTRA_INTEGRATION_TYPE";
 
     @VisibleForTesting
+    static final String EXTRA_BROWSER_SWITCHING = "com.braintreepayments.api.EXTRA_BROWSER_SWITCHING";
+    @VisibleForTesting
+    static final String EXTRA_CACHED_PAYMENT_METHOD_NONCES =
+            "com.braintreepayments.api.EXTRA_CACHED_PAYMENT_METHOD_NONCES";
+    @VisibleForTesting
+    static final String EXTRA_FETCHED_PAYMENT_METHOD_NONCES =
+            "com.braintreepayments.api.EXTRA_FETCHED_PAYMENT_METHOD_NONCES";
+
+    @VisibleForTesting
     protected String mIntegrationType;
     @VisibleForTesting
     protected BraintreeHttpClient mHttpClient;
@@ -58,8 +68,8 @@ public class BraintreeFragment extends Fragment {
 
     private Context mContext;
     private Authorization mAuthorization;
-    private Queue<QueuedCallback> mCallbackQueue = new ArrayDeque<>();
-    private List<PaymentMethodNonce> mCachedPaymentMethodNonces = new ArrayList<>();
+    private final Queue<QueuedCallback> mCallbackQueue = new ArrayDeque<>();
+    private final List<PaymentMethodNonce> mCachedPaymentMethodNonces = new ArrayList<>();
     private boolean mHasFetchedPaymentMethodNonces = false;
     private boolean mIsBrowserSwitching = false;
     private int mConfigurationRequestAttempts = 0;
@@ -128,10 +138,21 @@ public class BraintreeFragment extends Fragment {
             mHttpClient = new BraintreeHttpClient(mAuthorization);
         }
 
-        if (mAuthorization instanceof TokenizationKey) {
-            sendAnalyticsEvent("started.client-key");
+        if (savedInstanceState != null) {
+            List<PaymentMethodNonce> paymentMethodNonces =
+                    savedInstanceState.getParcelableArrayList(EXTRA_CACHED_PAYMENT_METHOD_NONCES);
+            if (paymentMethodNonces != null) {
+                mCachedPaymentMethodNonces.addAll(paymentMethodNonces);
+            }
+
+            mHasFetchedPaymentMethodNonces = savedInstanceState.getBoolean(EXTRA_FETCHED_PAYMENT_METHOD_NONCES);
+            mIsBrowserSwitching = savedInstanceState.getBoolean(EXTRA_BROWSER_SWITCHING);
         } else {
-            sendAnalyticsEvent("started.client-token");
+            if (mAuthorization instanceof TokenizationKey) {
+                sendAnalyticsEvent("started.client-key");
+            } else {
+                sendAnalyticsEvent("started.client-token");
+            }
         }
 
         fetchConfiguration();
@@ -170,6 +191,15 @@ public class BraintreeFragment extends Fragment {
         if (getActivity() instanceof BraintreeListener) {
             removeListener((BraintreeListener) getActivity());
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(EXTRA_CACHED_PAYMENT_METHOD_NONCES,
+                (ArrayList<? extends Parcelable>) mCachedPaymentMethodNonces);
+        outState.putBoolean(EXTRA_FETCHED_PAYMENT_METHOD_NONCES, mHasFetchedPaymentMethodNonces);
+        outState.putBoolean(EXTRA_BROWSER_SWITCHING, mIsBrowserSwitching);
     }
 
     @Override
@@ -303,7 +333,8 @@ public class BraintreeFragment extends Fragment {
     }
 
     protected void postCallback(final List<PaymentMethodNonce> paymentMethodNonceList) {
-        mCachedPaymentMethodNonces = paymentMethodNonceList;
+        mCachedPaymentMethodNonces.clear();
+        mCachedPaymentMethodNonces.addAll(paymentMethodNonceList);
         mHasFetchedPaymentMethodNonces = true;
         postOrQueueCallback(new QueuedCallback() {
             @Override
@@ -313,8 +344,7 @@ public class BraintreeFragment extends Fragment {
 
             @Override
             public void run() {
-                mPaymentMethodNoncesUpdatedListener.onPaymentMethodNoncesUpdated(
-                        paymentMethodNonceList);
+                mPaymentMethodNoncesUpdatedListener.onPaymentMethodNoncesUpdated(paymentMethodNonceList);
             }
         });
     }

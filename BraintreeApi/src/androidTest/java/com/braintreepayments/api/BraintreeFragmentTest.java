@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
@@ -223,6 +224,19 @@ public class BraintreeFragmentTest {
         });
 
         mCountDownLatch.await();
+    }
+
+    @Test(timeout = 1000)
+    @SmallTest
+    public void onSaveInstanceState_savesState() {
+        BraintreeFragment fragment = getFragment(mActivity, mClientToken);
+        Bundle bundle = new Bundle();
+
+        fragment.onSaveInstanceState(bundle);
+
+        assertTrue(bundle.getParcelableArrayList(BraintreeFragment.EXTRA_CACHED_PAYMENT_METHOD_NONCES).isEmpty());
+        assertFalse(bundle.getBoolean(BraintreeFragment.EXTRA_FETCHED_PAYMENT_METHOD_NONCES));
+        assertFalse(bundle.getBoolean(BraintreeFragment.EXTRA_BROWSER_SWITCHING));
     }
 
     @Test(timeout = 1000)
