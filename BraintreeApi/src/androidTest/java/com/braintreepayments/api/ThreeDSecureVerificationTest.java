@@ -163,7 +163,7 @@ public class ThreeDSecureVerificationTest {
     @MediumTest
     public void performVerification_failsWithATokenizationKey() throws InterruptedException {
         BraintreeFragment fragment = BraintreeFragmentTestUtils.getFragment(mActivity,
-                TOKENIZATION_KEY);
+                TOKENIZATION_KEY, new TestClientTokenBuilder().withThreeDSecure().build());
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
