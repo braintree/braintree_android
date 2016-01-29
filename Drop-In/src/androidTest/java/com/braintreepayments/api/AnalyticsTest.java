@@ -136,7 +136,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
 
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_paypal_button)).perform(click());
 
-        verifyAnalyticsEvent("paypal.selected");
+        verifyAnalyticsEvent("paypal.future-payments.selected");
     }
 
     @Test(timeout = 30000)
