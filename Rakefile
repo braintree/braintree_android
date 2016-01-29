@@ -73,6 +73,16 @@ task :release => :tests do
   increment_version_code
   update_version(version)
 
+  release_core
+  release_braintree_data_collector
+  release_paypal_data_collector
+  release_paypal_one_touch[version]
+  release_braintree_api[version]
+  release_drop_in[version]
+  post_release[version]
+end
+
+task :release_core do
   sh "./gradlew clean :Core:uploadArchives"
   puts "Core was uploaded, releasing..."
   sh "./gradlew :Core:closeRepository"
@@ -81,7 +91,9 @@ task :release => :tests do
   sh "./gradlew :Core:promoteRepository"
   puts "Sleeping for ten minutes to allow promotion to finish"
   sleep 600
+end
 
+task :release_braintree_data_collector do
   sh "./gradlew clean :BraintreeDataCollector:uploadArchives"
   puts "BraintreeDataCollector was uploaded, releasing..."
   sh "./gradlew :BraintreeDataCollector:closeRepository"
@@ -90,7 +102,9 @@ task :release => :tests do
   sh "./gradlew :BraintreeDataCollector:promoteRepository"
   puts "Sleeping for ten minutes to allow promotion to finish"
   sleep 600
+end
 
+task :release_paypal_data_collector do
   sh "./gradlew clean :PayPalDataCollector:uploadArchives"
   puts "PayPalDataCollector was uploaded, releasing..."
   sh "./gradlew :PayPalDataCollector:closeRepository"
@@ -99,6 +113,11 @@ task :release => :tests do
   sh "./gradlew :PayPalDataCollector:promoteRepository"
   puts "Sleeping for ten minutes to allow promotion to finish"
   sleep 600
+end
+
+task :release_paypal_one_touch, :version do |t, args|
+  version = args[:version]
+  abort("A version must be provided") unless version != nil
 
   replace_string(PAYPAL_ONE_TOUCH_BUILD_GRADLE, "compile project(':Core')", "compile 'com.braintreepayments.api:core:#{version}'")
   replace_string(PAYPAL_ONE_TOUCH_BUILD_GRADLE, "compile project(':PayPalDataCollector')", "compile 'com.paypal.android.sdk:data-collector:#{version}'")
@@ -110,6 +129,11 @@ task :release => :tests do
   sh "./gradlew :PayPalOneTouch:promoteRepository"
   puts "Sleeping for ten minutes to allow promotion to finish"
   sleep 600
+end
+
+task :release_braintree_api, :version do |t, args|
+  version = args[:version]
+  abort("A version must be provided") unless version != nil
 
   replace_string(BRAINTREE_API_BUILD_GRADLE, "compile project(':Core')", "compile 'com.braintreepayments.api:core:#{version}'")
   replace_string(BRAINTREE_API_BUILD_GRADLE, "compile project(':BraintreeDataCollector')", "compile 'com.braintreepayments.api:data-collector:#{version}'")
@@ -122,6 +146,11 @@ task :release => :tests do
   sh "./gradlew :BraintreeApi:promoteRepository"
   puts "Sleeping for ten minutes to allow promotion to finish"
   sleep 600
+end
+
+task :release_drop_in, :version do |t, args|
+  version = args[:version]
+  abort("A version must be provided") unless version != nil
 
   replace_string(DROP_IN_BUILD_GRADLE, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree:#{version}'")
   sh "./gradlew clean :Drop-In:uploadArchives"
@@ -130,6 +159,11 @@ task :release => :tests do
   puts "Sleeping for one minute to allow closing to finish"
   sleep 60
   sh "./gradlew :Drop-In:promoteRepository"
+end
+
+task :post_release, :version do |t, args|
+  version = args[:version]
+  abort("A version must be provided") unless version != nil
 
   puts "\nArchives are uploaded! Committing and tagging #{version} and preparing for the next development iteration"
   sh "git commit -am 'Release #{version}'"
