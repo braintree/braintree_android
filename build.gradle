@@ -31,11 +31,6 @@ allprojects {
         emulatorVersion 'android-22'
     }
 
-    apply plugin: 'io.codearte.nexus-staging'
-    nexusStaging {
-        packageGroup = "com.braintreepayments"
-    }
-
     apply plugin: 'maven'
     def sonatypeUsername = System.properties.containsKey('sonatypeUsername') ? System.properties['sonatypeUsername'] : ''
     def sonatypePassword = System.properties.containsKey('sonatypePassword') ? System.properties['sonatypePassword'] : ''

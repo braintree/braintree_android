@@ -45,6 +45,11 @@ artifacts {
     archives sourcesJar
 }
 
+apply plugin: 'io.codearte.nexus-staging'
+nexusStaging {
+    packageGroup = "com.braintreepayments"
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {

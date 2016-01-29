@@ -61,6 +61,11 @@ artifacts {
     archives releaseJar
 }
 
+apply plugin: 'io.codearte.nexus-staging'
+nexusStaging {
+    packageGroup = "com.paypal"
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {
