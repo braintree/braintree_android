@@ -12,7 +12,6 @@ import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
-import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
@@ -677,7 +676,7 @@ public class PayPalTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void onActivityResult_postConfigurationExceptionWhenInvalid() throws JSONException, InterruptedException {
+    public void authorizeAccount_postsExceptionWhenNotEnabled() throws JSONException, InterruptedException {
         final BraintreeFragment fragment = getMockFragment(mActivity, stringFromFixture("client_token.json"),
                 stringFromFixture("configuration_with_analytics.json"));
         fragment.addListener(new BraintreeErrorListener() {
