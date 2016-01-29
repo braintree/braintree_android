@@ -1,5 +1,18 @@
 # Braintree Android SDK Release Notes
 
+## 2.2.0
+
+* Open source PayPal SDK
+* Deprecate `PayPalOneTouchActivity` and remove from Android manifest
+* Add Travis CI build
+* Improve errors and manifest validation
+* Features
+  * Add `CardBuilder#cardholderName`
+  * Add `PayPalRequest#billingAgreementDescription`
+* Fixes
+  * Fix back button not working in Drop-in after adding a payment method
+  * Fix failure to return a payment method nonce after browser switch when the fragment was recreated.
+
 ## 2.1.2
 
 * Update Google Play Services Wallet to 8.4.0
