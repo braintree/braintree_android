@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 2.2.1
+
+* Fixes
+  * Fix support annotations being bundled in PayPalDataCollector jar
+
 ## 2.2.0
 
 * Open source PayPal SDK
