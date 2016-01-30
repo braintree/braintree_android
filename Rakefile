@@ -73,13 +73,13 @@ task :release => :tests do
   increment_version_code
   update_version(version)
 
-  release_core
-  release_braintree_data_collector
-  release_paypal_data_collector
-  release_paypal_one_touch[version]
-  release_braintree_api[version]
-  release_drop_in[version]
-  post_release[version]
+  Rake::Task["release_core"].invoke
+  Rake::Task["release_braintree_data_collector"].invoke
+  Rake::Task["release_paypal_data_collector"].invoke
+  Rake::Task["release_paypal_one_touch"].invoke(version)
+  Rake::Task["release_braintree_api"].invoke(version)
+  Rake::Task["release_drop_in"].invoke(version)
+  Rake::Task["post_release"].invoke(version)
 end
 
 task :release_core do
