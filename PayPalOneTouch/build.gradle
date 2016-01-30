@@ -38,8 +38,8 @@ android {
 dependencies {
     compile 'com.android.support:support-annotations:[23.0.0,24.0.0)'
 
-    compile 'com.braintreepayments.api:core:2.2.1'
-    compile 'com.paypal.android.sdk:data-collector:2.2.1'
+    compile project(':Core')
+    compile project(':PayPalDataCollector')
 
     testCompile project(path: ':TestUtils', configuration: 'unitTestDebug')
 }
