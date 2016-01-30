@@ -1,5 +1,7 @@
 apply plugin: 'com.android.library'
 
+def deviceCollectorVersion = 'devicecollector-sdk-2.6.jar'
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -18,7 +20,7 @@ android {
 }
 
 dependencies {
-    compile files('libs/devicecollector-sdk-2.6.jar')
+    compile files('libs/' + deviceCollectorVersion)
 }
 
 /* maven deploy + signing */
@@ -43,7 +45,7 @@ task releaseJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompil
 
     from {
         configurations.compile.findAll {
-            it.getName() != 'android.jar'
+            it.getName() == deviceCollectorVersion
         }.collect {
             it.isDirectory() ? it : zipTree(it)
         }

@@ -1,5 +1,7 @@
 apply plugin: 'com.android.library'
 
+def dataCollectorVersion = 'paypal-data-collector-3.1.0.jar'
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -21,7 +23,7 @@ android {
 dependencies {
     compile 'com.android.support:support-annotations:[23.0.0,24.0.0)'
 
-    compile files('libs/paypal-data-collector-3.1.0.jar')
+    compile files('libs/' + dataCollectorVersion)
 
     androidTestCompile project(path: ':TestUtils', configuration: 'instrumentationTestDebug')
 }
@@ -48,7 +50,7 @@ task releaseJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompil
 
     from {
         configurations.compile.findAll {
-            it.getName() != 'android.jar'
+            it.getName() == dataCollectorVersion
         }.collect {
             it.isDirectory() ? it : zipTree(it)
         }
