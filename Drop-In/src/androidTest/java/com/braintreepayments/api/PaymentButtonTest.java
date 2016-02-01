@@ -25,7 +25,10 @@ import com.braintreepayments.api.models.VenmoConfiguration;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.testutils.MockContextForVenmo;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wallet.Cart;
+import com.google.android.gms.wallet.Wallet;
+import com.google.android.gms.wallet.WalletConstants;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -111,8 +114,7 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 1000, expected = InvalidArgumentException.class)
-    public void newInstance_throwsAnExceptionForABadTokenizationKey()
-            throws InvalidArgumentException {
+    public void newInstance_throwsAnExceptionForABadTokenizationKey() throws InvalidArgumentException {
         PaymentRequest paymentRequest = new PaymentRequest()
                 .clientToken("test_key_merchant");
         PaymentButton.newInstance(mActivity, 0, paymentRequest);
@@ -146,10 +148,8 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 1000)
-    public void showsLoadingIndicatorWhileWaitingForConfiguration()
-            throws InvalidArgumentException {
-        BraintreeFragment fragment =
-                spy(BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY));
+    public void showsLoadingIndicatorWhileWaitingForConfiguration() throws InvalidArgumentException {
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY));
         when(fragment.getConfiguration()).thenReturn(null);
         fragment.mHttpClient = new BraintreeHttpClient(Authorization.fromString(TOKENIZATION_KEY)) {
             @Override
@@ -168,8 +168,7 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 1000, expected = InvalidArgumentException.class)
-    public void setPaymentRequest_throwsExceptionForInvalidAuthorization()
-            throws InvalidArgumentException {
+    public void setPaymentRequest_throwsExceptionForInvalidAuthorization() throws InvalidArgumentException {
         mPaymentButton = new PaymentButton();
         mActivity.getFragmentManager().beginTransaction().add(mPaymentButton, "test").commit();
         getInstrumentation().waitForIdleSync();
@@ -178,8 +177,8 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 1000)
-    public void setPaymentRequest_initializesPaymentButton()
-            throws InvalidArgumentException, JSONException, InterruptedException {
+    public void setPaymentRequest_initializesPaymentButton() throws InvalidArgumentException, JSONException,
+            InterruptedException {
         mPaymentButton = new PaymentButton();
         mActivity.getFragmentManager().beginTransaction().add(mPaymentButton, "test").commit();
         getInstrumentation().waitForIdleSync();
@@ -193,8 +192,8 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 1000)
-    public void notVisibleWhenConfigurationFails()
-            throws JSONException, InvalidArgumentException, InterruptedException {
+    public void notVisibleWhenConfigurationFails() throws JSONException, InvalidArgumentException,
+            InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity,
                 stringFromFixture("client_token_with_bad_config_url.json"));
@@ -202,7 +201,7 @@ public class PaymentButtonTest {
             @Override
             public void onError(Exception error) {
                 assertEquals(
-                        "Protocol not found: nullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint",
+                        "Request for configuration has failed: Protocol not found: nullnullincorrect_url?configVersion=3&authorizationFingerprint=authorization_fingerprint. Future requests will retry up to 3 times",
                         error.getMessage());
                 latch.countDown();
             }
@@ -308,6 +307,7 @@ public class PaymentButtonTest {
                 .tokenizationKey(TOKENIZATION_KEY)
                 .androidPayCart(Cart.newBuilder().build());
         mPaymentButton = PaymentButton.newInstance(mActivity, android.R.id.content, paymentRequest);
+        mPaymentButton.mBraintreeFragment = fragment;
         getInstrumentation().waitForIdleSync();
         setupPaymentButton(fragment.getConfiguration(), true);
 
@@ -327,8 +327,7 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 1000)
-    public void showsPayPalAndAndroidPay()
-            throws InvalidArgumentException, JSONException, InterruptedException {
+    public void showsPayPalAndAndroidPay() throws InvalidArgumentException, JSONException, InterruptedException {
         BraintreeFragment fragment = getFragment(true, false, true);
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY)
@@ -353,8 +352,7 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 1000)
-    public void showsPayPalAndVenmo()
-            throws InvalidArgumentException, JSONException, InterruptedException {
+    public void showsPayPalAndVenmo() throws InvalidArgumentException, JSONException, InterruptedException {
         BraintreeFragment fragment = getFragment(true, true, false);
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY)
@@ -380,15 +378,14 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 1000)
-    public void showsVenmoAndAndroidPay()
-            throws InvalidArgumentException, JSONException, InterruptedException {
+    public void showsVenmoAndAndroidPay() throws InvalidArgumentException, JSONException, InterruptedException {
         BraintreeFragment fragment = getFragment(false, true, true);
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY)
                 .androidPayCart(Cart.newBuilder().build());
         mPaymentButton = PaymentButton.newInstance(mActivity, android.R.id.content, paymentRequest);
-        getInstrumentation().waitForIdleSync();
         mPaymentButton.mBraintreeFragment = fragment;
+        getInstrumentation().waitForIdleSync();
         setupPaymentButton(fragment.getConfiguration(), true);
 
         assertEquals(View.VISIBLE, mPaymentButton.getView().getVisibility());
@@ -407,14 +404,12 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 1000)
-    public void showsAllMethodsAndDividers()
-            throws InvalidArgumentException, JSONException, InterruptedException {
+    public void showsAllMethodsAndDividers() throws InvalidArgumentException, JSONException, InterruptedException {
         BraintreeFragment fragment = getFragment(true, true, true);
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY)
                 .androidPayCart(Cart.newBuilder().build());
         mPaymentButton = PaymentButton.newInstance(mActivity, android.R.id.content, paymentRequest);
-        getInstrumentation().waitForIdleSync();
         mPaymentButton.mBraintreeFragment = fragment;
         getInstrumentation().waitForIdleSync();
         setupPaymentButton(fragment.getConfiguration(), true);
@@ -435,8 +430,7 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 5000)
-    public void startsPayWithPayPal()
-            throws InvalidArgumentException, JSONException, InterruptedException {
+    public void startsPayWithPayPal() throws InvalidArgumentException, JSONException, InterruptedException {
         Looper.prepare();
         getFragment(true, true, true);
         mPaymentButton = PaymentButton.newInstance(mActivity, android.R.id.content,
@@ -463,8 +457,8 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 5000)
-    public void startsPayWithPayPalWithAddressScope() throws InvalidArgumentException,
-            JSONException, InterruptedException {
+    public void startsPayWithPayPalWithAddressScope() throws InvalidArgumentException, JSONException,
+            InterruptedException {
         Looper.prepare();
         getFragment(true, true, true);
         PaymentRequest paymentRequest = new PaymentRequest()
@@ -494,8 +488,7 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 1000)
-    public void startsPayWithVenmo()
-            throws InvalidArgumentException, JSONException, InterruptedException {
+    public void startsPayWithVenmo() throws InvalidArgumentException, JSONException, InterruptedException {
         BraintreeFragment fragment = getFragment(true, true, false);
         Context mockContextForVenmo = new MockContextForVenmo()
                 .venmoInstalled()
@@ -515,17 +508,14 @@ public class PaymentButtonTest {
     }
 
     @Test(timeout = 5000)
-    public void startsPayWithAndroidPay()
-            throws JSONException, InvalidArgumentException, InterruptedException {
-        Looper.prepare();
+    public void startsPayWithAndroidPay() throws JSONException, InvalidArgumentException, InterruptedException {
         BraintreeFragment fragment = getFragment(true, true, true);
         PaymentRequest paymentRequest = new PaymentRequest()
                 .tokenizationKey(TOKENIZATION_KEY)
                 .androidPayCart(Cart.newBuilder().build());
-        mPaymentButton = PaymentButton.newInstance(mActivity, android.R.id.content,
-                paymentRequest);
-        getInstrumentation().waitForIdleSync();
+        mPaymentButton = PaymentButton.newInstance(mActivity, android.R.id.content, paymentRequest);
         mPaymentButton.mBraintreeFragment = fragment;
+        getInstrumentation().waitForIdleSync();
         setupPaymentButton(fragment.getConfiguration(), true);
 
         clickButton(com.braintreepayments.api.dropin.R.id.bt_android_pay_button);
@@ -534,8 +524,7 @@ public class PaymentButtonTest {
     }
 
     /** helpers */
-    private BraintreeFragment getFragment(boolean paypalEnabled, boolean payWithVenmoEnabled,
-            boolean androidPayEnabled)
+    private BraintreeFragment getFragment(boolean paypalEnabled, boolean payWithVenmoEnabled, boolean androidPayEnabled)
             throws InvalidArgumentException, JSONException {
         String configuration;
         if (paypalEnabled && payWithVenmoEnabled && androidPayEnabled) {
@@ -573,14 +562,18 @@ public class PaymentButtonTest {
                 when(configurationObj.getPayWithVenmo()).thenReturn(venmoConfiguration);
             }
             if (androidPayEnabled) {
-                AndroidPayConfiguration androidPayConfiguration = mock(
-                        AndroidPayConfiguration.class);
+                AndroidPayConfiguration androidPayConfiguration = mock(AndroidPayConfiguration.class);
                 when(androidPayConfiguration.isEnabled(any(Context.class))).thenReturn(true);
                 when(androidPayConfiguration.getGoogleAuthorizationFingerprint())
                         .thenReturn("google-authorization-fingerprint");
                 when(androidPayConfiguration.getSupportedNetworks())
                         .thenReturn(new String[] { "visa" });
                 when(configurationObj.getAndroidPay()).thenReturn(androidPayConfiguration);
+                fragment.mGoogleApiClient = new GoogleApiClient.Builder(mActivityTestRule.getActivity())
+                        .addApi(Wallet.API, new Wallet.WalletOptions.Builder()
+                                .setEnvironment(WalletConstants.ENVIRONMENT_TEST)
+                                .build())
+                        .build();
             }
             when(fragment.getConfiguration()).thenReturn(configurationObj);
         }
