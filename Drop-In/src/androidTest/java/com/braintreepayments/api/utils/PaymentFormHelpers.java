@@ -69,7 +69,7 @@ public class PaymentFormHelpers {
         fillInCardForm();
         onView(withId(R.id.bt_card_form_submit_button)).perform(click());
 
-        waitForView(withId(R.id.bt_header_container));
+        waitForView(withId(R.id.bt_header_status_icon));
     }
 
     public static void addCardAndAssertSuccess(Activity activity) {
