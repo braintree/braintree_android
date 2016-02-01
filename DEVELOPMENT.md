@@ -42,10 +42,10 @@ Please note: It is not currently possible to run tests outside of Braintree.
 
 There are several components that comprise this SDK:
 
-* [BraintreeApi](BraintreeApi) provides the networking, communication and modeling layer for Braintree.
+* [Braintree](Braintree) provides the networking, communication and modeling layer for Braintree.
 * [BraintreeDataCollector](BraintreeDataCollector) collects and provides data for fraud detection.
 * [Core](Core) provides shared code across all the modules in the SDK.
-* [Drop-In](Drop-In) uses `BraintreeApi` to create a full checkout experience inside an `Activity`.
+* [Drop-In](Drop-In) uses `Braintree` to create a full checkout experience inside an `Activity`.
 * [Demo](Demo) is the reference integration of [Drop-In](Drop-In).
 * [PayPalOneTouch](PayPalOneTouch) provides support for PayPal app and browser switch.
 * [PayPalDataCollector](PayPalDataCollector) collects and provides data for PayPal fraud detection.

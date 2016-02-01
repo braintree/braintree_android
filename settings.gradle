@@ -1,4 +1,4 @@
-include ':BraintreeApi'
+include ':Braintree'
 include ':PayPalDataCollector'
 include ':BraintreeDataCollector'
 include ':Drop-In'

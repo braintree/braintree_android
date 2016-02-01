@@ -66,7 +66,7 @@ task runAllTests {
 }
 
 gradle.taskGraph.whenReady { taskGraph ->
-    def RUN_ALL_TESTS = taskGraph.hasTask(':BraintreeApi:runAllTests')
+    def RUN_ALL_TESTS = taskGraph.hasTask(':Braintree:runAllTests')
     android.buildTypes.debug.buildConfigField('boolean', 'RUN_ALL_TESTS', '' + RUN_ALL_TESTS)
 }
 

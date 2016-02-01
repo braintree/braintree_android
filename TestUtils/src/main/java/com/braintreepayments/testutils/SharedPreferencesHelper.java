@@ -8,12 +8,12 @@ import android.util.Base64;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 
 /**
- * Provides managed access to shared preferences used by BraintreeApi, et al.
+ * Provides managed access to shared preferences used by Braintree, et al.
  */
 public class SharedPreferencesHelper {
 
     /**
-     * @return Shared Preferences used in BraintreeApi
+     * @return Shared Preferences used in Braintree
      */
     public static SharedPreferences getSharedPreferences() {
         return getTargetContext().getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE);
