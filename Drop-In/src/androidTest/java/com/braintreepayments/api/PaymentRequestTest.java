@@ -60,7 +60,10 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
                 .androidPayShippingAddressRequired(true)
                 .androidPayPhoneNumberRequired(true)
                 .androidPayRequestCode(1)
+                .disableAndroidPay()
                 .paypalAdditionalScopes(Collections.singletonList(PayPal.SCOPE_ADDRESS))
+                .disablePayPal()
+                .disableVenmo()
                 .actionBarTitle("title")
                 .actionBarLogo(com.braintreepayments.cardform.R.drawable.bt_amex)
                 .primaryDescription("primary description")
@@ -80,7 +83,10 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
         assertTrue(paymentRequest.isAndroidPayShippingAddressRequired());
         assertTrue(paymentRequest.isAndroidPayPhoneNumberRequired());
         assertEquals(1, paymentRequest.getAndroidPayRequestCode());
+        assertFalse(paymentRequest.isAndroidPayEnabled());
         assertEquals(Collections.singletonList(PayPal.SCOPE_ADDRESS), paymentRequest.getPayPalAdditionalScopes());
+        assertFalse(paymentRequest.isPayPalEnabled());
+        assertFalse(paymentRequest.isVenmoEnabled());
         assertEquals("title", paymentRequest.getActionBarTitle());
         assertEquals(com.braintreepayments.cardform.R.drawable.bt_amex, paymentRequest.getActionBarLogo());
         assertEquals("primary description", paymentRequest.getPrimaryDescription());
@@ -103,7 +109,10 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
                 .androidPayShippingAddressRequired(true)
                 .androidPayPhoneNumberRequired(true)
                 .androidPayRequestCode(1)
+                .disableAndroidPay()
                 .paypalAdditionalScopes(Collections.singletonList(PayPal.SCOPE_ADDRESS))
+                .disablePayPal()
+                .disableVenmo()
                 .actionBarTitle("title")
                 .actionBarLogo(com.braintreepayments.cardform.R.drawable.bt_amex)
                 .primaryDescription("primary description")
@@ -123,7 +132,10 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
         assertTrue(parceledPaymentRequest.isAndroidPayShippingAddressRequired());
         assertTrue(parceledPaymentRequest.isAndroidPayPhoneNumberRequired());
         assertEquals(1, parceledPaymentRequest.getAndroidPayRequestCode());
+        assertFalse(parceledPaymentRequest.isAndroidPayEnabled());
         assertEquals(Collections.singletonList(PayPal.SCOPE_ADDRESS), parceledPaymentRequest.getPayPalAdditionalScopes());
+        assertFalse(parceledPaymentRequest.isPayPalEnabled());
+        assertFalse(parceledPaymentRequest.isVenmoEnabled());
         assertEquals("title", parceledPaymentRequest.getActionBarTitle());
         assertEquals(com.braintreepayments.cardform.R.drawable.bt_amex,
                 parceledPaymentRequest.getActionBarLogo());

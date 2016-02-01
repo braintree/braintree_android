@@ -24,8 +24,12 @@ public class PaymentRequest implements Parcelable {
     private boolean mAndroidPayShippingAddressRequired;
     private boolean mAndroidPayPhoneNumberRequired;
     private int mAndroidPayRequestCode;
+    private boolean mAndroidPayEnabled = true;
 
     private List<String> mPayPalAdditionalScopes;
+    private boolean mPayPalEnabled = true;
+
+    private boolean mVenmoEnabled = true;
 
     private String mActionBarTitle;
     private int mActionBarLogo;
@@ -136,6 +140,14 @@ public class PaymentRequest implements Parcelable {
     }
 
     /**
+     * Disables Android Pay in the {@link PaymentButton} or Drop-in.
+     */
+    public PaymentRequest disableAndroidPay() {
+        mAndroidPayEnabled = false;
+        return this;
+    }
+
+    /**
      * Set additional scopes to request when a user is authorizing PayPal.
      *
      * This method is optional.
@@ -146,6 +158,22 @@ public class PaymentRequest implements Parcelable {
      */
     public PaymentRequest paypalAdditionalScopes(List<String> additionalScopes) {
         mPayPalAdditionalScopes = additionalScopes;
+        return this;
+    }
+
+    /**
+     * Disables PayPal in the {@link PaymentButton} or Drop-in.
+     */
+    public PaymentRequest disablePayPal() {
+        mPayPalEnabled = false;
+        return this;
+    }
+
+    /**
+     * Disables Venmo in the {@link PaymentButton} or Drop-in.
+     */
+    public PaymentRequest disableVenmo() {
+        mVenmoEnabled = false;
         return this;
     }
 
@@ -244,8 +272,20 @@ public class PaymentRequest implements Parcelable {
         return mAndroidPayRequestCode;
     }
 
+    boolean isAndroidPayEnabled() {
+        return mAndroidPayEnabled;
+    }
+
     List<String> getPayPalAdditionalScopes() {
         return mPayPalAdditionalScopes;
+    }
+
+    boolean isPayPalEnabled() {
+        return mPayPalEnabled;
+    }
+
+    boolean isVenmoEnabled() {
+        return mVenmoEnabled;
     }
 
     String getActionBarTitle() {
@@ -288,7 +328,10 @@ public class PaymentRequest implements Parcelable {
             dest.writeInt(mAndroidPayRequestCode);
         } catch (NoClassDefFoundError ignored) {}
 
+        dest.writeByte(mAndroidPayEnabled ? (byte) 1 : (byte) 0);
         dest.writeStringList(mPayPalAdditionalScopes);
+        dest.writeByte(mPayPalEnabled ? (byte) 1 : (byte) 0);
+        dest.writeByte(mVenmoEnabled ? (byte) 1 : (byte) 0);
         dest.writeString(mActionBarTitle);
         dest.writeInt(mActionBarLogo);
         dest.writeString(mPrimaryDescription);
@@ -309,7 +352,10 @@ public class PaymentRequest implements Parcelable {
             mAndroidPayRequestCode = in.readInt();
         } catch (NoClassDefFoundError ignored) {}
 
+        mAndroidPayEnabled = in.readByte() != 0;
         mPayPalAdditionalScopes = in.createStringArrayList();
+        mPayPalEnabled = in.readByte() != 0;
+        mVenmoEnabled = in.readByte() != 0;
         mActionBarTitle = in.readString();
         mActionBarLogo = in.readInt();
         mPrimaryDescription = in.readString();

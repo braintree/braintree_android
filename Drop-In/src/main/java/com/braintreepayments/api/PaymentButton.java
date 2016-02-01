@@ -228,8 +228,9 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
             return;
         }
 
-        boolean isPayPalEnabled = configuration.isPayPalEnabled();
-        boolean isVenmoEnabled = configuration.getPayWithVenmo().isEnabled(mBraintreeFragment.getApplicationContext());
+        boolean isPayPalEnabled = configuration.isPayPalEnabled() && mPaymentRequest.isPayPalEnabled();
+        boolean isVenmoEnabled = configuration.getPayWithVenmo().isEnabled(mBraintreeFragment.getApplicationContext()) &&
+                mPaymentRequest.isVenmoEnabled();
         int buttonCount = 0;
         if (!isPayPalEnabled && !isVenmoEnabled && !isAndroidPayEnabled) {
             setVisibility(GONE);
@@ -312,9 +313,8 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
 
     private boolean isAndroidPayEnabled(Configuration configuration) {
         try {
-            return (configuration.getAndroidPay().isEnabled(
-                    mBraintreeFragment.getApplicationContext())
-                    && mPaymentRequest.getAndroidPayCart() != null);
+            return (configuration.getAndroidPay().isEnabled(mBraintreeFragment.getApplicationContext())
+                    && mPaymentRequest.isAndroidPayEnabled() && mPaymentRequest.getAndroidPayCart() != null);
         } catch (NoClassDefFoundError e) {
             return false;
         }
