@@ -3,7 +3,9 @@ package com.braintreepayments.api;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.AlphaAnimation;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.braintreepayments.api.dropin.view.LoadingHeader;
 import com.braintreepayments.api.exceptions.BraintreeError;
@@ -128,10 +130,25 @@ public class AddPaymentMethodViewController extends BraintreeViewController impl
 
     @Override
     public void onCardFormValid(boolean valid) {
+        ImageButton paypalButton = ((ImageButton) mActivity.findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_monogram_button));
         if(valid) {
             setEnabledSubmitButtonStyle();
+
+            if (paypalButton != null && paypalButton.getVisibility() == View.VISIBLE) {
+                AlphaAnimation alphaUp = new AlphaAnimation(1.0f, 0.4f);
+                alphaUp.setFillAfter(true);
+                alphaUp.setDuration(mActivity.getResources().getInteger(android.R.integer.config_shortAnimTime));
+                paypalButton.startAnimation(alphaUp);
+            }
         } else {
             setDisabledSubmitButtonStyle();
+
+            if (paypalButton != null && paypalButton.getVisibility() == View.VISIBLE) {
+                AlphaAnimation alphaUp = new AlphaAnimation(0.4f, 1.0f);
+                alphaUp.setFillAfter(true);
+                alphaUp.setDuration(mActivity.getResources().getInteger(android.R.integer.config_shortAnimTime));
+                paypalButton.startAnimation(alphaUp);
+            }
         }
     }
 

@@ -90,11 +90,23 @@ public class PaymentFormHelpers {
         assertEquals("11", ((CardNonce) response).getLastTwo());
     }
 
+    public static void clickPayPalButton() {
+        try {
+            onView(withId(R.id.bt_paypal_monogram_button)).perform(click());
+        } catch (PerformException e) {
+            onView(withId(R.id.bt_paypal_button)).perform(click());
+        }
+    }
+
     public static void performPayPalAdd(final BraintreePaymentActivity activity) {
         try {
             final PayPalAccountNonce payPalAccountNonce = PayPalAccountNonce.fromJson(
                     stringFromFixture("responses/paypal_account_response.json"));
-            waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_paypal_button));
+            try {
+                waitForView(withId(R.id.bt_paypal_monogram_button));
+            } catch (Error e) {
+                waitForView(withId(R.id.bt_paypal_button));
+            }
 
             final CountDownLatch latch = new CountDownLatch(1);
             activity.runOnUiThread(new Runnable() {

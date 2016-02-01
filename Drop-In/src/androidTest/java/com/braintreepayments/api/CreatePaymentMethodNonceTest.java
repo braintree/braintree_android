@@ -208,8 +208,9 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
 
         waitForAddPaymentFormHeader();
 
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_paypal_button)).check(
-                matches(not(isDisplayed())));
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_paypal_button)).check(matches(not(isDisplayed())));
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_paypal_monogram_button))
+                .check(matches(not(isDisplayed())));
     }
 
     @Test(timeout = 30000)

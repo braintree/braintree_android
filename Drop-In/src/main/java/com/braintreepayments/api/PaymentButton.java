@@ -190,17 +190,14 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.bt_paypal_button) {
-            PayPal.authorizeAccount(mBraintreeFragment,
-                    mPaymentRequest.getPayPalAdditionalScopes());
+        if (v.getId() == R.id.bt_paypal_button || v.getId() == R.id.bt_paypal_monogram_button) {
+            PayPal.authorizeAccount(mBraintreeFragment, mPaymentRequest.getPayPalAdditionalScopes());
         } else if (v.getId() == R.id.bt_venmo_button) {
             Venmo.authorizeAccount(mBraintreeFragment);
         } else if (v.getId() == R.id.bt_android_pay_button) {
-            AndroidPay.performMaskedWalletRequest(mBraintreeFragment,
-                    mPaymentRequest.getAndroidPayCart(),
+            AndroidPay.performMaskedWalletRequest(mBraintreeFragment, mPaymentRequest.getAndroidPayCart(),
                     mPaymentRequest.isAndroidPayShippingAddressRequired(),
-                    mPaymentRequest.isAndroidPayPhoneNumberRequired(),
-                    mPaymentRequest.getAndroidPayRequestCode());
+                    mPaymentRequest.isAndroidPayPhoneNumberRequired(), mPaymentRequest.getAndroidPayRequestCode());
         }
 
         if (mOnClickListener != null) {
@@ -245,7 +242,11 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
                 buttonCount++;
             }
 
-            if (isPayPalEnabled) {
+            if (isPayPalEnabled && buttonCount == 1) {
+                View paypalButton = view.findViewById(R.id.bt_paypal_monogram_button);
+                paypalButton.setVisibility(VISIBLE);
+                paypalButton.setOnClickListener(this);
+            } else if (isPayPalEnabled) {
                 enableButton(view.findViewById(R.id.bt_paypal_button), buttonCount);
             }
             if (isVenmoEnabled) {
@@ -273,9 +274,8 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
         view.setVisibility(VISIBLE);
         view.setOnClickListener(this);
 
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT, 3f / buttonCount);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT, 3f / buttonCount);
         view.setLayoutParams(params);
     }
 

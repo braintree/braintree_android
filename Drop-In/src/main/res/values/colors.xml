@@ -6,7 +6,7 @@
     <color name="bt_blue_pressed">#008BC7</color>
     <color name="bt_very_light_gray">#E2E2E3</color>
     <color name="bt_button_disabled_color">#99999A</color>
-    <color name="bt_paypal_button_background">#009BDE</color>
-    <color name="bt_paypal_button_background_pressed">#0C8DC4</color>
+    <color name="bt_paypal_monogram_button_background">#009CDE</color>
+    <color name="bt_paypal_monogram_button_background_pressed">#008AC5</color>
     <color name="bt_border_color">#99999A</color>
 </resources>

@@ -29,6 +29,7 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.clickPayPalButton;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInCardForm;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.api.test.ActivityResultHelper.getActivityResult;
@@ -134,7 +135,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
         mFragment = mActivity.mBraintreeFragment;
         waitForAddPaymentFormHeader();
 
-        onView(withId(com.braintreepayments.api.dropin.R.id.bt_paypal_button)).perform(click());
+        clickPayPalButton();
 
         verifyAnalyticsEvent("paypal.future-payments.selected");
     }

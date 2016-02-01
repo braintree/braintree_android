@@ -261,6 +261,8 @@ public class PaymentButtonTest {
 
         assertEquals(View.VISIBLE, mPaymentButton.getView().getVisibility());
         assertEquals(View.VISIBLE,
+                mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_monogram_button).getVisibility());
+        assertEquals(View.GONE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_button).getVisibility());
         assertEquals(View.GONE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_venmo_button).getVisibility());
@@ -287,6 +289,8 @@ public class PaymentButtonTest {
         assertEquals(View.VISIBLE, mPaymentButton.getView().getVisibility());
         assertEquals(View.VISIBLE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_venmo_button).getVisibility());
+        assertEquals(View.GONE,
+                mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_monogram_button).getVisibility());
         assertEquals(View.GONE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_button).getVisibility());
         assertEquals(View.GONE,
@@ -315,6 +319,8 @@ public class PaymentButtonTest {
         assertEquals(View.VISIBLE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_android_pay_button).getVisibility());
         assertEquals(View.GONE,
+                mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_monogram_button).getVisibility());
+        assertEquals(View.GONE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_button).getVisibility());
         assertEquals(View.GONE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_venmo_button).getVisibility());
@@ -341,6 +347,8 @@ public class PaymentButtonTest {
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_android_pay_button).getVisibility());
         assertEquals(View.VISIBLE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_button).getVisibility());
+        assertEquals(View.GONE,
+                mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_monogram_button).getVisibility());
         assertEquals(View.GONE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_venmo_button).getVisibility());
         assertEquals(View.VISIBLE,
@@ -373,6 +381,8 @@ public class PaymentButtonTest {
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_payment_button_divider)
                         .getVisibility());
         assertEquals(View.GONE,
+                mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_monogram_button).getVisibility());
+        assertEquals(View.GONE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_payment_button_divider_2)
                         .getVisibility());
     }
@@ -393,6 +403,8 @@ public class PaymentButtonTest {
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_android_pay_button).getVisibility());
         assertEquals(View.GONE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_button).getVisibility());
+        assertEquals(View.GONE,
+                mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_monogram_button).getVisibility());
         assertEquals(View.VISIBLE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_venmo_button).getVisibility());
         assertEquals(View.GONE,
@@ -421,6 +433,8 @@ public class PaymentButtonTest {
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_venmo_button).getVisibility());
         assertEquals(View.VISIBLE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_button).getVisibility());
+        assertEquals(View.GONE,
+                mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_monogram_button).getVisibility());
         assertEquals(View.VISIBLE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_payment_button_divider)
                         .getVisibility());
@@ -449,6 +463,8 @@ public class PaymentButtonTest {
         assertEquals(View.GONE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_button).getVisibility());
         assertEquals(View.GONE,
+                mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_monogram_button).getVisibility());
+        assertEquals(View.GONE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_payment_button_divider)
                         .getVisibility());
         assertEquals(View.VISIBLE,
@@ -475,6 +491,8 @@ public class PaymentButtonTest {
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_venmo_button).getVisibility());
         assertEquals(View.VISIBLE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_button).getVisibility());
+        assertEquals(View.GONE,
+                mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_paypal_monogram_button).getVisibility());
         assertEquals(View.VISIBLE,
                 mPaymentButton.getView().findViewById(com.braintreepayments.api.dropin.R.id.bt_payment_button_divider)
                         .getVisibility());
