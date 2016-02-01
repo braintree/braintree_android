@@ -119,7 +119,7 @@ public class VenmoTest {
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
-                assertEquals("Venmo is not enabled on the control panel.", error.getMessage());
+                assertEquals("Venmo is not enabled in the control panel.", error.getMessage());
                 latch.countDown();
             }
         });
