@@ -8,7 +8,10 @@ import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +34,8 @@ import org.slf4j.LoggerFactory;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 @SuppressWarnings("deprecation")
 public abstract class BaseActivity extends Activity implements PaymentMethodNonceCreatedListener,
@@ -68,6 +73,21 @@ public abstract class BaseActivity extends Activity implements PaymentMethodNonc
                 Settings.isPayPalSignatureVerificationDisabled(this));
         PayPalOneTouchCore.useHardcodedConfig(this, Settings.useHardcodedPayPalConfiguration(this));
 
+        if (BuildConfig.DEBUG && ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{ WRITE_EXTERNAL_STORAGE }, 1);
+        } else {
+            handleAuthorizationState();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        handleAuthorizationState();
+    }
+
+    private void handleAuthorizationState() {
         if (mAuthorization == null || (Settings.useTokenizationKey(this) &&
                 !mAuthorization.equals(Settings.getEnvironmentTokenizationKey(this)))) {
             performReset();
