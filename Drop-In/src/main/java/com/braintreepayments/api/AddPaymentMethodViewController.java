@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ScrollView;
 
 import com.braintreepayments.api.dropin.view.LoadingHeader;
 import com.braintreepayments.api.exceptions.BraintreeError;
@@ -40,7 +39,6 @@ public class AddPaymentMethodViewController extends BraintreeViewController impl
     private Button mSubmitButton;
 
     private LoadingHeader mLoadingHeader;
-    private ScrollView mScrollView;
 
     private boolean mIsSubmitting;
     private boolean mFocusEventSent;
@@ -57,7 +55,6 @@ public class AddPaymentMethodViewController extends BraintreeViewController impl
 
     private void initViews() {
         mLoadingHeader = findView(com.braintreepayments.api.dropin.R.id.bt_header_container);
-        mScrollView = findView(com.braintreepayments.api.dropin.R.id.bt_form_scroll_container);
         mDescription = findView(com.braintreepayments.api.dropin.R.id.bt_description_container);
         mPaymentButton = (PaymentButton) mActivity.getFragmentManager()
                 .findFragmentById(com.braintreepayments.api.dropin.R.id.bt_payment_button);
