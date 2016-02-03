@@ -165,6 +165,10 @@ task :post_release, :version do |t, args|
   version = args[:version]
   abort("A version must be provided") unless version != nil
 
+  if !`git remote`.include?("github")
+    sh "git remote add github https://github.com/braintree/braintree_android.git"
+  end
+
   puts "\nArchives are uploaded! Committing and tagging #{version} and preparing for the next development iteration"
   sh "git commit -am 'Release #{version}'"
   sh "git tag #{version} -am '#{version}'"
