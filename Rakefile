@@ -1,5 +1,6 @@
 require 'rake'
 
+TMP_CHANGELOG_FILE = "/tmp/braintree-android-release.md"
 PAYPAL_ONE_TOUCH_BUILD_GRADLE = "PayPalOneTouch/build.gradle"
 BRAINTREE_API_BUILD_GRADLE = "Braintree/build.gradle"
 DROP_IN_BUILD_GRADLE = "Drop-In/build.gradle"
@@ -61,14 +62,10 @@ end
 
 desc "Interactive release to publish new version"
 task :release => :tests do
-  last_version = `git tag | tail -1`.chomp
-  puts "\nChanges since #{last_version}:"
-  sh "git log --pretty=format:\"%h %ad%x20%s%x20%x28%an%x29\" --date=short #{last_version}.."
-  puts "Please update your CHANGELOG.md. Press ENTER when you are done"
-  $stdin.gets
-
   puts "What version are you releasing? (x.x.x format)"
   version = $stdin.gets.chomp
+
+  Rake::Task["prompt_for_change_log"].invoke(version)
 
   increment_version_code
   update_version(version)
@@ -80,6 +77,43 @@ task :release => :tests do
   Rake::Task["release_braintree_api"].invoke(version)
   Rake::Task["release_drop_in"].invoke(version)
   Rake::Task["post_release"].invoke(version)
+end
+
+task :prompt_for_change_log, :version do |t, args|
+  version = args[:version]
+  abort("A version must be provided") unless version != nil
+
+  last_version = `git tag | tail -1`.chomp
+  tmp_change_log = "## #{version}"
+  tmp_change_log += "\n\n# Please enter a summary of the changes below."
+  tmp_change_log += "\n# Lines starting with '# ' will be ignored."
+  tmp_change_log += "\n#"
+  tmp_change_log += "\n# Changes since #{last_version}:"
+  tmp_change_log += "\n#"
+  tmp_change_log += "\n# "
+  tmp_change_log += `git log --pretty=format:"%h %ad%x20%s%x20%x28%an%x29" --date=short #{last_version}..`.gsub("\n", "\n# ")
+  tmp_change_log += "\n#"
+  tmp_change_log += "\n"
+  File.foreach("CHANGELOG.md") do |line|
+    tmp_change_log += "# #{line}"
+  end
+  IO.write(TMP_CHANGELOG_FILE, tmp_change_log)
+
+  puts "\n"
+  sh "$EDITOR #{TMP_CHANGELOG_FILE}"
+
+  new_changes = ""
+  File.foreach(TMP_CHANGELOG_FILE) do |line|
+    if !line.start_with?("# ") && !line.start_with?("#\n")
+      new_changes += line
+    end
+  end
+
+  IO.write("CHANGELOG.md",
+    File.open("CHANGELOG.md") do |file|
+      file.read.gsub("# Braintree Android SDK Release Notes\n", "# Braintree Android SDK Release Notes\n\n#{new_changes.chomp}")
+    end
+  )
 end
 
 task :release_core do
@@ -171,7 +205,7 @@ task :post_release, :version do |t, args|
 
   puts "\nArchives are uploaded! Committing and tagging #{version} and preparing for the next development iteration"
   sh "git commit -am 'Release #{version}'"
-  sh "git tag #{version} -am '#{version}'"
+  sh "git tag -aF #{TMP_CHANGELOG_FILE} #{version}"
 
   replace_string(PAYPAL_ONE_TOUCH_BUILD_GRADLE, "compile 'com.braintreepayments.api:core:#{version}'", "compile project(':Core')")
   replace_string(PAYPAL_ONE_TOUCH_BUILD_GRADLE, "compile 'com.paypal.android.sdk:data-collector:#{version}'", "compile project(':PayPalDataCollector')")
