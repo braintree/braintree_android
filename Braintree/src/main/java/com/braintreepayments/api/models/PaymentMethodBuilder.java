@@ -17,6 +17,7 @@ public abstract class PaymentMethodBuilder<T> {
     private static final String INTEGRATION_KEY = "integration";
     private static final String OPTIONS_KEY = "options";
     private static final String VALIDATE_KEY = "validate";
+    private static final String SESSION_ID_KEY = "sessionId";
 
     protected final JSONObject mJson;
     protected final JSONObject mPaymentMethodNonceJson;
@@ -79,6 +80,20 @@ public abstract class PaymentMethodBuilder<T> {
         try {
             mOptionsJson.put(VALIDATE_KEY, validate);
             mPaymentMethodNonceJson.put(OPTIONS_KEY, mOptionsJson);
+        } catch (JSONException ignored) {}
+
+        return (T) this;
+    }
+
+    /**
+     * @param sessionId sets the session id associated with this request. The session is a uuid tied to the lifetime of
+     * a {@link BraintreeFragment}. This field is automatically set at the point of tokenization, and any previous
+     * values ignored.
+     */
+    @SuppressWarnings("unchecked")
+    public T setSessionId(String sessionId) {
+        try {
+            mMetaJson.put(SESSION_ID_KEY, sessionId);
         } catch (JSONException ignored) {}
 
         return (T) this;

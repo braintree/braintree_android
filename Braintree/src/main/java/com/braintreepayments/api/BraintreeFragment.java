@@ -47,6 +47,7 @@ public class BraintreeFragment extends Fragment {
 
     private static final String EXTRA_AUTHORIZATION_TOKEN = "com.braintreepayments.api.EXTRA_AUTHORIZATION_TOKEN";
     private static final String EXTRA_INTEGRATION_TYPE = "com.braintreepayments.api.EXTRA_INTEGRATION_TYPE";
+    private static final String EXTRA_SESSION_ID = "com.braintreepayments.api.EXTRA_SESSION_ID";
 
     @VisibleForTesting
     static final String EXTRA_BROWSER_SWITCHING = "com.braintreepayments.api.EXTRA_BROWSER_SWITCHING";
@@ -73,6 +74,7 @@ public class BraintreeFragment extends Fragment {
     private boolean mHasFetchedPaymentMethodNonces = false;
     private boolean mIsBrowserSwitching = false;
     private int mConfigurationRequestAttempts = 0;
+    private String mSessionId;
 
     private ConfigurationListener mConfigurationListener;
     private BraintreeResponseListener<Exception> mConfigurationErrorListener;
@@ -147,7 +149,9 @@ public class BraintreeFragment extends Fragment {
 
             mHasFetchedPaymentMethodNonces = savedInstanceState.getBoolean(EXTRA_FETCHED_PAYMENT_METHOD_NONCES);
             mIsBrowserSwitching = savedInstanceState.getBoolean(EXTRA_BROWSER_SWITCHING);
+            mSessionId = savedInstanceState.getString(EXTRA_SESSION_ID);
         } else {
+            mSessionId = DeviceMetadata.getFormattedUUID();
             if (mAuthorization instanceof TokenizationKey) {
                 sendAnalyticsEvent("started.client-key");
             } else {
@@ -200,6 +204,7 @@ public class BraintreeFragment extends Fragment {
                 (ArrayList<? extends Parcelable>) mCachedPaymentMethodNonces);
         outState.putBoolean(EXTRA_FETCHED_PAYMENT_METHOD_NONCES, mHasFetchedPaymentMethodNonces);
         outState.putBoolean(EXTRA_BROWSER_SWITCHING, mIsBrowserSwitching);
+        outState.putString(EXTRA_SESSION_ID, mSessionId);
     }
 
     @Override
@@ -475,6 +480,10 @@ public class BraintreeFragment extends Fragment {
 
     protected BraintreeHttpClient getHttpClient() {
         return mHttpClient;
+    }
+
+    protected String getSessionId() {
+        return mSessionId;
     }
 
     protected boolean hasFetchedPaymentMethodNonces() {

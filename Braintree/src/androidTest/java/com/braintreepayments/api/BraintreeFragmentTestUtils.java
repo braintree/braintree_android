@@ -52,6 +52,7 @@ public class BraintreeFragmentTestUtils {
             doNothing().when(fragment).fetchConfiguration();
             when(fragment.getApplicationContext()).thenReturn(getTargetContext());
             when(fragment.getAuthorization()).thenReturn(Authorization.fromString(authorization));
+            when(fragment.getSessionId()).thenReturn(DeviceMetadata.getFormattedUUID());
             fragment.mConfiguration = configuration;
 
             getInstrumentation().waitForIdleSync();

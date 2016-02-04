@@ -234,8 +234,9 @@ public class TokenizationClientTest {
     @MediumTest
     public void tokenize_tokenizesAPayPalAccountWithATokenizationKey() throws InterruptedException, JSONException {
         final CountDownLatch latch = new CountDownLatch(1);
-        JSONObject otcJson = new JSONObject(FixturesHelper.stringFromFixture("paypal_otc_response.json"));
         BraintreeFragment fragment = getFragment(mActivity, TOKENIZATION_KEY);
+
+        JSONObject otcJson = new JSONObject(FixturesHelper.stringFromFixture("paypal_otc_response.json"));
         PayPalAccountBuilder paypalAccountBuilder =
                 new PayPalAccountBuilder().oneTouchCoreData(otcJson);
 
@@ -255,5 +256,37 @@ public class TokenizationClientTest {
                 });
 
         latch.await();
+    }
+
+    @Test(timeout = 10000)
+    @MediumTest
+    public void tokenize_includesSessionIdInRequest() throws InvalidArgumentException, JSONException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
+        when(fragment.getSessionId()).thenReturn("session-id");
+
+        when(fragment.getHttpClient()).thenReturn(new BraintreeHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY)) {
+            @Override
+            public void post(String path, String data, HttpResponseCallback callback) {
+                try {
+                    JSONObject body = new JSONObject(data);
+                    JSONObject _meta = body.getJSONObject("_meta");
+                    assertNotNull(_meta);
+
+                    String sessionId = _meta.getString("sessionId");
+                    assertEquals("session-id", sessionId);
+                } catch (JSONException e) {
+                    fail(e.getMessage());
+                }
+
+                latch.countDown();
+            }
+        });
+
+        JSONObject otcJson = new JSONObject(FixturesHelper.stringFromFixture("paypal_otc_response.json"));
+        PayPalAccountBuilder paypalAccountBuilder =
+                new PayPalAccountBuilder().oneTouchCoreData(otcJson);
+
+        TokenizationClient.tokenize(fragment, paypalAccountBuilder, null);
     }
 }

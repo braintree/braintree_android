@@ -67,6 +67,8 @@ class TokenizationClient {
      */
     static void tokenize(final BraintreeFragment fragment, final PaymentMethodBuilder paymentMethodBuilder,
             final PaymentMethodNonceCallback callback) {
+        paymentMethodBuilder.setSessionId(fragment.getSessionId());
+
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {

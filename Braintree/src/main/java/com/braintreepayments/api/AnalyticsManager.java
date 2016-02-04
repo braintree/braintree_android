@@ -200,8 +200,6 @@ class AnalyticsManager {
 
     static class AnalyticsRequest {
 
-        private static Map<Integer, String> sSessionIdMap = new HashMap<>();
-
         private final String mIntegrationType;
         private final String mEvent;
         private final long mTimestamp;
@@ -211,12 +209,7 @@ class AnalyticsManager {
             mIntegrationType = integration;
             mEvent = event;
             mTimestamp = System.currentTimeMillis() / 1000;
-            mSessionId = sSessionIdMap.get(fragment.hashCode());
-
-            if (mSessionId == null) {
-                mSessionId = DeviceMetadata.getFormattedUUID();
-                sSessionIdMap.put(fragment.hashCode(), mSessionId);
-            }
+            mSessionId = fragment.getSessionId();
         }
 
         String getEvent() {
