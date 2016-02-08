@@ -32,6 +32,7 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +42,7 @@ import java.util.Queue;
 /**
  * Core Braintree class that handles network requests and managing callbacks.
  */
-public class BraintreeFragment extends Fragment {
+public class BraintreeFragment extends Fragment implements UncaughtExceptionHandler {
 
     public static final String TAG = "com.braintreepayments.api.BraintreeFragment";
 
@@ -67,6 +68,7 @@ public class BraintreeFragment extends Fragment {
     @VisibleForTesting
     protected Configuration mConfiguration;
 
+    private Thread.UncaughtExceptionHandler mDefaultExceptionHandler;
     private Context mContext;
     private Authorization mAuthorization;
     private final Queue<QueuedCallback> mCallbackQueue = new ArrayDeque<>();
@@ -132,6 +134,9 @@ public class BraintreeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
+        mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(this);
+
         mContext = getActivity().getApplicationContext();
         mIntegrationType = getArguments().getString(EXTRA_INTEGRATION_TYPE);
         mAuthorization = getArguments().getParcelable(EXTRA_AUTHORIZATION_TOKEN);
@@ -160,6 +165,7 @@ public class BraintreeFragment extends Fragment {
         }
 
         fetchConfiguration();
+        CrashReporting.sendPreviousCrashes(this);
     }
 
     @Override
@@ -217,6 +223,13 @@ public class BraintreeFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        Thread.setDefaultUncaughtExceptionHandler(mDefaultExceptionHandler);
+    }
+
+    @Override
     public void startActivity(Intent intent) {
         if (intent.hasExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH)) {
             BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = null;
@@ -246,6 +259,12 @@ public class BraintreeFragment extends Fragment {
         if (resultCode == Activity.RESULT_CANCELED) {
             postCancelCallback(requestCode);
         }
+    }
+
+    @Override
+    public void uncaughtException(Thread thread, Throwable ex) {
+        CrashReporting.persistBraintreeCrash(getApplicationContext(), thread, ex);
+        mDefaultExceptionHandler.uncaughtException(thread, ex);
     }
 
     /**
