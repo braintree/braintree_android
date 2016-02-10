@@ -38,8 +38,8 @@ import retrofit.client.Response;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 @SuppressWarnings("deprecation")
-public abstract class BaseActivity extends Activity implements PaymentMethodNonceCreatedListener,
-        BraintreeCancelListener, BraintreeErrorListener, OnNavigationListener {
+public abstract class BaseActivity extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback,
+        PaymentMethodNonceCreatedListener, BraintreeCancelListener, BraintreeErrorListener, OnNavigationListener {
 
     private static final String KEY_AUTHORIZATION = "com.braintreepayments.demo.KEY_AUTHORIZATION";
 
