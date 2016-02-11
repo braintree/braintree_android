@@ -40,7 +40,10 @@ dependencies {
     compile 'com.android.support.test:runner:0.4.1'
     instrumentationTestCompile 'com.android.support.test:rules:0.4.1'
 
-    unitTestCompile 'org.mockito:mockito-all:1.10.19'
+    unitTestCompile 'org.powermock:powermock-module-junit4:1.6.4'
+    unitTestCompile 'org.powermock:powermock-module-junit4-rule:1.6.4'
+    unitTestCompile 'org.powermock:powermock-api-mockito:1.6.4'
+    unitTestCompile 'org.powermock:powermock-classloading-xstream:1.6.4'
     unitTestCompile 'org.robolectric:robolectric:3.0'
     unitTestCompile 'org.skyscreamer:jsonassert:1.3.0'
 }
