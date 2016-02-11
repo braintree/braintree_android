@@ -1,8 +1,5 @@
 package com.braintreepayments.api;
 
-import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
-
 import com.braintreepayments.api.models.Configuration;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.BillingAgreementRequest;
@@ -13,123 +10,123 @@ import com.paypal.android.sdk.onetouch.core.network.EnvironmentManager;
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.Arrays;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 
-@RunWith(AndroidJUnit4.class)
-@SmallTest
+@RunWith(RobolectricGradleTestRunner.class)
 public class PayPalRequestTest {
 
-    @Test(timeout = 1000)
+    @Test
     public void getCheckoutRequest_containsCorrectValues() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_offline_paypal.json"));
 
         CheckoutRequest request = PayPal.getCheckoutRequest("https://paypal.com/?token=pairingId",
-                getTargetContext(), configuration.getPayPal());
+                RuntimeEnvironment.application, configuration.getPayPal());
 
         assertEquals(EnvironmentManager.MOCK, request.getEnvironment());
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/cancel", request.getCancelUrl());
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success", request.getSuccessUrl());
+        assertEquals("com.braintreepayments.api.braintree://onetouch/v1/cancel", request.getCancelUrl());
+        assertEquals("com.braintreepayments.api.braintree://onetouch/v1/success", request.getSuccessUrl());
         assertEquals("paypal_client_id", request.getClientId());
         assertEquals("pairingId", request.getPairingId());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void getCheckoutRequest_buildsWithLiveStageUrl() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_live_paypal.json"));
 
-        Request request = PayPal.getCheckoutRequest(null, getTargetContext(), configuration.getPayPal());
+        Request request = PayPal.getCheckoutRequest(null, RuntimeEnvironment.application, configuration.getPayPal());
 
         assertEquals(EnvironmentManager.LIVE, request.getEnvironment());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void getCheckoutRequest_buildsWithOfflineStageUrl() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_offline_paypal.json"));
 
-        Request request = PayPal.getCheckoutRequest(null, getTargetContext(), configuration.getPayPal());
+        Request request = PayPal.getCheckoutRequest(null, RuntimeEnvironment.application, configuration.getPayPal());
 
         assertEquals(EnvironmentManager.MOCK, request.getEnvironment());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void getCheckoutRequest_buildsWithCustomStageUrl() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_custom_paypal.json"));
 
-        Request request = PayPal.getCheckoutRequest(null, getTargetContext(), configuration.getPayPal());
+        Request request = PayPal.getCheckoutRequest(null, RuntimeEnvironment.application, configuration.getPayPal());
 
         assertEquals("custom", request.getEnvironment());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void getBillingAgreement_containsCorrectValues() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_offline_paypal.json"));
 
         BillingAgreementRequest request = PayPal.getBillingAgreementRequest(
                 "https://paypal.com/?ba_token=pairingId",
-                getTargetContext(), configuration.getPayPal());
+                RuntimeEnvironment.application, configuration.getPayPal());
 
         assertEquals(EnvironmentManager.MOCK, request.getEnvironment());
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/cancel", request.getCancelUrl());
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success", request.getSuccessUrl());
+        assertEquals("com.braintreepayments.api.braintree://onetouch/v1/cancel", request.getCancelUrl());
+        assertEquals("com.braintreepayments.api.braintree://onetouch/v1/success", request.getSuccessUrl());
         assertEquals("paypal_client_id", request.getClientId());
         assertEquals("pairingId", request.getPairingId());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void getBillingAgreementRequest_buildsWithLiveStageUrl() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_live_paypal.json"));
 
-        Request request = PayPal.getBillingAgreementRequest(null, getTargetContext(),
+        Request request = PayPal.getBillingAgreementRequest(null, RuntimeEnvironment.application,
                 configuration.getPayPal());
 
         assertEquals(EnvironmentManager.LIVE, request.getEnvironment());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void getBillingAgreementRequest_buildsWithOfflineStageUrl() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_offline_paypal.json"));
 
-        Request request = PayPal.getBillingAgreementRequest(null, getTargetContext(),
+        Request request = PayPal.getBillingAgreementRequest(null, RuntimeEnvironment.application,
                 configuration.getPayPal());
 
         assertEquals(EnvironmentManager.MOCK, request.getEnvironment());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void getBillingAgreementRequest_buildsWithCustomStageUrl() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_custom_paypal.json"));
 
-        Request request = PayPal.getBillingAgreementRequest(null, getTargetContext(),
+        Request request = PayPal.getBillingAgreementRequest(null, RuntimeEnvironment.application,
                 configuration.getPayPal());
 
         assertEquals("custom", request.getEnvironment());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void getAuthorizationRequest_containsCorrectValues() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_offline_paypal.json"));
 
-        AuthorizationRequest request = PayPal.getAuthorizationRequest(getTargetContext(),
+        AuthorizationRequest request = PayPal.getAuthorizationRequest(RuntimeEnvironment.application,
                 configuration.getPayPal(), TOKENIZATION_KEY);
 
         assertEquals(EnvironmentManager.MOCK, request.getEnvironment());
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/cancel", request.getCancelUrl());
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success",
+        assertEquals("com.braintreepayments.api.braintree://onetouch/v1/cancel", request.getCancelUrl());
+        assertEquals("com.braintreepayments.api.braintree://onetouch/v1/success",
                 request.getSuccessUrl());
         assertEquals("paypal_client_id", request.getClientId());
         assertEquals(configuration.getPayPal().getPrivacyUrl(), request.getPrivacyUrl());
@@ -142,34 +139,34 @@ public class PayPalRequestTest {
         assertEquals("https://uri.paypal.com/services/payments/futurepayments", scopes[1]);
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void getAuthorizationRequest_buildsWithLiveStageUrl() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_live_paypal.json"));
 
-        Request request = PayPal.getAuthorizationRequest(getTargetContext(),
+        Request request = PayPal.getAuthorizationRequest(RuntimeEnvironment.application,
                 configuration.getPayPal(), TOKENIZATION_KEY);
 
         assertEquals(EnvironmentManager.LIVE, request.getEnvironment());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void getAuthorizationRequest_buildsWithOfflineStageUrl() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_offline_paypal.json"));
 
-        Request request = PayPal.getAuthorizationRequest(getTargetContext(),
+        Request request = PayPal.getAuthorizationRequest(RuntimeEnvironment.application,
                 configuration.getPayPal(), TOKENIZATION_KEY);
 
         assertEquals(EnvironmentManager.MOCK, request.getEnvironment());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void getAuthorizationRequest_buildsWithCustomStageUrl() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_custom_paypal.json"));
 
-        Request request = PayPal.getAuthorizationRequest(getTargetContext(),
+        Request request = PayPal.getAuthorizationRequest(RuntimeEnvironment.application,
                 configuration.getPayPal(), TOKENIZATION_KEY);
 
         assertEquals("custom", request.getEnvironment());
