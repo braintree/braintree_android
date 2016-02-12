@@ -11,8 +11,8 @@ import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
+import com.braintreepayments.testutils.BraintreeActivityTestRule;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,7 +28,6 @@ import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
-import static com.braintreepayments.api.DeviceMetadata.getBraintreeSharedPreferences;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
@@ -260,7 +259,7 @@ public class AnalyticsManagerTest {
     }
 
     public void setup() throws JSONException {
-        getBraintreeSharedPreferences(getTargetContext())
+        BraintreeSharedPreferences.getSharedPreferences(getTargetContext())
                 .edit()
                 .putString("braintreeUUID", TEST_UUID)
                 .commit();

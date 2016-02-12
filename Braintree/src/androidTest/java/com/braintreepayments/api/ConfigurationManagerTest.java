@@ -16,7 +16,6 @@ import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.TestTokenizationKey;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +23,6 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static com.braintreepayments.api.DeviceMetadata.getBraintreeSharedPreferences;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
 import static junit.framework.Assert.assertEquals;
@@ -42,14 +40,9 @@ public class ConfigurationManagerTest {
 
     @Before
     public void setup() throws InvalidArgumentException {
-        getBraintreeSharedPreferences(getTargetContext()).edit().clear().commit();
+        BraintreeSharedPreferences.getSharedPreferences(getTargetContext()).edit().clear().commit();
         ConfigurationManager.sFetchingConfiguration = false;
         mTokenizationKey = Authorization.fromString(TestTokenizationKey.TOKENIZATION_KEY);
-    }
-
-    @After
-    public void teardown() {
-        getBraintreeSharedPreferences(getTargetContext()).edit().clear().commit();
     }
 
     @Test(timeout = 1000)
@@ -252,9 +245,10 @@ public class ConfigurationManagerTest {
                         .appendQueryParameter("configVersion", "3").build().toString();
                 key = Base64.encodeToString(key.getBytes(), 0);
 
-                assertEquals(stringFromFixture("configuration.json"), getBraintreeSharedPreferences(getTargetContext()).getString(key, ""));
+                assertEquals(stringFromFixture("configuration.json"),
+                        BraintreeSharedPreferences.getSharedPreferences(getTargetContext()).getString(key, ""));
                 assertTrue(System.currentTimeMillis() -
-                        getBraintreeSharedPreferences(getTargetContext())
+                        BraintreeSharedPreferences.getSharedPreferences(getTargetContext())
                                 .getLong(key + "_timestamp", 0) < 1000);
                 latch.countDown();
             }

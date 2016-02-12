@@ -17,8 +17,6 @@ import org.json.JSONException;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.braintreepayments.api.DeviceMetadata.getBraintreeSharedPreferences;
-
 /**
  * Manages on-disk {@link Configuration} cache and fetching configuration from the Gateway
  */
@@ -74,7 +72,7 @@ class ConfigurationManager {
 
     @Nullable
     private static Configuration getCachedConfiguration(Context context, String configUrl) {
-        SharedPreferences prefs = getBraintreeSharedPreferences(context);
+        SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(context);
         configUrl = Base64.encodeToString(configUrl.getBytes(), 0);
 
         String timestampKey = configUrl + "_timestamp";
@@ -93,7 +91,7 @@ class ConfigurationManager {
         configUrl = Base64.encodeToString(configUrl.getBytes(), 0);
 
         String timestampKey = configUrl + "_timestamp";
-        getBraintreeSharedPreferences(context).edit()
+        BraintreeSharedPreferences.getSharedPreferences(context).edit()
                 .putString(configUrl, configuration.toJson())
                 .putLong(timestampKey, System.currentTimeMillis())
                 .apply();

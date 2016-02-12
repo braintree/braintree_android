@@ -14,21 +14,17 @@ class CrashReporting {
         StringWriter stringWriter = new StringWriter();
         exception.printStackTrace(new PrintWriter(stringWriter));
         if (stringWriter.toString().contains("com.braintreepayments")) {
-            getSharedPreferences(context).edit()
+            BraintreeSharedPreferences.getSharedPreferences(context).edit()
                     .putBoolean(CRASH_KEY, true)
                     .apply();
         }
     }
 
     static void sendPreviousCrashes(BraintreeFragment fragment) {
-        SharedPreferences prefs = getSharedPreferences(fragment.getApplicationContext());
+        SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(fragment.getApplicationContext());
         if (prefs.getBoolean(CRASH_KEY, false)) {
             fragment.sendAnalyticsEvent("crash");
             prefs.edit().putBoolean(CRASH_KEY, false).apply();
         }
-    }
-
-    private static SharedPreferences getSharedPreferences(Context context) {
-        return context.getSharedPreferences("Braintree", Context.MODE_PRIVATE);
     }
 }

@@ -89,7 +89,7 @@ class DeviceMetadata {
      * @return A persistent UUID for this application install.
      */
     static String getPersistentUUID(Context context) {
-        SharedPreferences prefs = getBraintreeSharedPreferences(context);
+        SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(context);
 
         String uuid = prefs.getString(BRAINTREE_UUID_KEY, null);
         if (uuid == null) {
@@ -98,10 +98,6 @@ class DeviceMetadata {
         }
 
         return uuid;
-    }
-
-    static SharedPreferences getBraintreeSharedPreferences(Context context) {
-        return context.getApplicationContext().getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE);
     }
 
     static String getFormattedUUID() {

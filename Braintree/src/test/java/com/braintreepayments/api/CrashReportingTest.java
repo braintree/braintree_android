@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 
 import org.junit.Before;
@@ -24,7 +23,7 @@ public class CrashReportingTest {
 
     @Before
     public void setup() {
-        mPreferences = RuntimeEnvironment.application.getSharedPreferences("Braintree", Context.MODE_PRIVATE);
+        mPreferences = BraintreeSharedPreferences.getSharedPreferences(RuntimeEnvironment.application);
         mPreferences.edit()
                 .clear()
                 .commit();
