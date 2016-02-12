@@ -32,7 +32,8 @@ class CrashReporter implements UncaughtExceptionHandler {
     public void uncaughtException(Thread thread, Throwable ex) {
         StringWriter stringWriter = new StringWriter();
         ex.printStackTrace(new PrintWriter(stringWriter));
-        if (stringWriter.toString().contains("com.braintreepayments")) {
+        if (stringWriter.toString().contains("com.braintreepayments") ||
+                stringWriter.toString().contains("com.paypal")) {
             BraintreeSharedPreferences.getSharedPreferences(mContext).edit()
                     .putBoolean(CRASH_KEY, true)
                     .apply();

@@ -74,6 +74,14 @@ public class CrashReporterTest {
         mCrashReporter.uncaughtException(null, exception);
 
         assertTrue(mPreferences.getBoolean("com.braintreepayments.api.CrashReporting.CRASH", false));
+
+        mPreferences.edit().clear().commit();
+        exception = new Exception();
+        exception.setStackTrace(new StackTraceElement[] { new StackTraceElement("com.paypal.CrashReporting", "test", "test", 1) });
+
+        mCrashReporter.uncaughtException(null, exception);
+
+        assertTrue(mPreferences.getBoolean("com.braintreepayments.api.CrashReporting.CRASH", false));
     }
 
     @Test
