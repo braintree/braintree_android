@@ -1,4 +1,4 @@
-package com.braintreepayments.testutils.ui;
+package com.braintreepayments.api.test;
 
 import android.app.Activity;
 

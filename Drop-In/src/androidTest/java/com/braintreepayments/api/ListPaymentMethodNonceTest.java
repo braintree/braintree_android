@@ -33,11 +33,11 @@ import static com.braintreepayments.api.utils.PaymentFormHelpers.onAddPaymentFor
 import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodNonceList;
-import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
+import static com.braintreepayments.api.test.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.ViewHelper.FOUR_SECONDS;
-import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
+import static com.braintreepayments.api.test.WaitForActivityHelper.waitForActivityToFinish;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;

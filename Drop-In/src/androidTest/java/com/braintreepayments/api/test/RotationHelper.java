@@ -1,4 +1,4 @@
-package com.braintreepayments.testutils.ui;
+package com.braintreepayments.api.test;
 
 import android.annotation.TargetApi;
 import android.app.UiAutomation;

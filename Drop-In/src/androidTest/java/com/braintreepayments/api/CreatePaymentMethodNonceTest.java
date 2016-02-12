@@ -41,7 +41,7 @@ import static com.braintreepayments.api.utils.PaymentFormHelpers.onAddPaymentFor
 import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodNonceList;
-import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
+import static com.braintreepayments.api.test.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
@@ -51,7 +51,7 @@ import static com.braintreepayments.testutils.ui.ViewHelper.THREE_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.TWO_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
-import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
+import static com.braintreepayments.api.test.WaitForActivityHelper.waitForActivityToFinish;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;

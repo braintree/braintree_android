@@ -2,7 +2,9 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Parcel;
@@ -30,13 +32,12 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.submitAndWaitForCompletion;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodNonceList;
-import static com.braintreepayments.testutils.ActivityResultHelper.getActivityResult;
+import static com.braintreepayments.api.test.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
-import static com.braintreepayments.testutils.ui.Assertions.assertBitmapsEqual;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
-import static com.braintreepayments.testutils.ui.WaitForActivityHelper.waitForActivityToFinish;
+import static com.braintreepayments.api.test.WaitForActivityHelper.waitForActivityToFinish;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -312,6 +313,15 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
             ColorDrawable expected = new ColorDrawable(getTargetContext().getResources().getColor(
                     android.R.color.transparent));
             assertEquals(actual.getDrawable().getOpacity(), expected.getOpacity());
+        }
+    }
+
+    /* helpers */
+    private static void assertBitmapsEqual(Drawable d1, Drawable d2) {
+        if (d1 == null || d2 == null) {
+            assertEquals(d1, d2);
+        } else {
+            assertTrue(((BitmapDrawable) d1).getBitmap().sameAs(((BitmapDrawable) d2).getBitmap()));
         }
     }
 }
