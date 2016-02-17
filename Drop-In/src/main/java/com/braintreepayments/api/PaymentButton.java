@@ -67,8 +67,8 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
      * @throws InvalidArgumentException If the client key or tokenization key is not valid or
      * cannot be parsed.
      */
-    public static PaymentButton newInstance(Activity activity, int containerViewId,
-            PaymentRequest paymentRequest) throws InvalidArgumentException {
+    public static PaymentButton newInstance(Activity activity, int containerViewId, PaymentRequest paymentRequest)
+            throws InvalidArgumentException {
         FragmentManager fm = activity.getFragmentManager();
 
         PaymentButton paymentButton = (PaymentButton) fm.findFragmentByTag(TAG);
@@ -116,21 +116,16 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        try {
-            if (getArguments() != null) {
-                setPaymentRequest(
-                        (PaymentRequest) getArguments().getParcelable(EXTRA_PAYMENT_REQUEST));
-            }
-        } catch (InvalidArgumentException ignored) {}
+        if (getArguments() != null) {
+            mPaymentRequest = getArguments().getParcelable(EXTRA_PAYMENT_REQUEST);
+        }
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bt_payment_button, container, false);
-        mProgressViewSwitcher =
-                (ViewSwitcher) view.findViewById(R.id.bt_payment_method_view_switcher);
+        mProgressViewSwitcher = (ViewSwitcher) view.findViewById(R.id.bt_payment_method_view_switcher);
         showProgress(true);
 
         if (mPaymentRequest == null) {
@@ -157,8 +152,7 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
      *
      * @param paymentRequest {@link PaymentRequest} containing payment method options.
      */
-    public void setPaymentRequest(PaymentRequest paymentRequest)
-            throws InvalidArgumentException {
+    public void setPaymentRequest(PaymentRequest paymentRequest) throws InvalidArgumentException {
         mPaymentRequest = paymentRequest;
         if (mPaymentRequest == null) {
             setVisibility(GONE);
@@ -286,26 +280,20 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
     }
 
     private void showProgress(boolean showing) {
-        if (mProgressViewSwitcher != null &&
-                mProgressViewSwitcher.getDisplayedChild() != (showing ? 1 : 0)) {
+        if (mProgressViewSwitcher != null && mProgressViewSwitcher.getDisplayedChild() != (showing ? 1 : 0)) {
             mProgressViewSwitcher.setDisplayedChild(showing ? 1 : 0);
         }
     }
 
     private void setupBraintreeFragment() throws InvalidArgumentException {
         if (getActivity() != null && mPaymentRequest != null && mBraintreeFragment == null) {
-            mBraintreeFragment = BraintreeFragment.newInstance(getActivity(),
-                    mPaymentRequest.getAuthorization());
+            mBraintreeFragment = BraintreeFragment.newInstance(getActivity(), mPaymentRequest.getAuthorization());
+
+            showProgress(true);
+            setVisibility(VISIBLE);
+
             mBraintreeFragment.setConfigurationErrorListener(this);
-
-            if (mBraintreeFragment.getConfiguration() != null) {
-                onConfigurationFetched(mBraintreeFragment.getConfiguration());
-            } else {
-                mBraintreeFragment.waitForConfiguration(this);
-
-                showProgress(true);
-                setVisibility(VISIBLE);
-            }
+            mBraintreeFragment.waitForConfiguration(this);
         } else if (mBraintreeFragment != null && mBraintreeFragment.getConfiguration() != null) {
             getButtonState(mBraintreeFragment.getConfiguration());
         }

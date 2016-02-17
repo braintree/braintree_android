@@ -449,11 +449,11 @@ public class BraintreeFragment extends Fragment {
         });
     }
 
-    void setConfigurationErrorListener(BraintreeResponseListener<Exception> listener) {
+    protected void setConfigurationErrorListener(BraintreeResponseListener<Exception> listener) {
         mConfigurationErrorListener = listener;
     }
 
-    void waitForConfiguration(final ConfigurationListener listener) {
+    protected void waitForConfiguration(final ConfigurationListener listener) {
         if (getConfiguration() == null && !ConfigurationManager.isFetchingConfiguration() && mAuthorization != null) {
             fetchConfiguration();
         }
