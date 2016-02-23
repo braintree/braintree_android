@@ -13,7 +13,7 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.VenmoConfiguration;
-import com.braintreepayments.api.test.FragmentTestActivity;
+import com.braintreepayments.testutils.FragmentTestActivity;
 import com.google.android.gms.wallet.Cart;
 
 import org.json.JSONException;
