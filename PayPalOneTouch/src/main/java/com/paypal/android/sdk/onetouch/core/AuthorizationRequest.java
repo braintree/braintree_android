@@ -146,7 +146,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         contextInspector.setPreference(PREFS_ENCRYPTION_KEY, EncryptionUtils.byteArrayToHexString(mEncryptionKey));
     }
 
-    private boolean isValidResponse(ContextInspector contextInspector, String msgGUID) {
+    private static boolean isValidResponse(ContextInspector contextInspector, String msgGUID) {
         String prefsMsgGUID = contextInspector.getStringPreference(AuthorizationRequest.PREFS_MSG_GUID);
         String prefsSymmetricKey = getStoredSymmetricKey(contextInspector);
 
@@ -212,7 +212,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         return intent.resolveActivity(context.getPackageManager()) != null;
     }
 
-    private String getStoredSymmetricKey(ContextInspector contextInspector) {
+    private static String getStoredSymmetricKey(ContextInspector contextInspector) {
         return contextInspector.getStringPreference(AuthorizationRequest.PREFS_ENCRYPTION_KEY);
     }
 
@@ -305,9 +305,10 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         PayPalOneTouchCore.getFptiManager(context).trackFpti(trackingPoint, getEnvironment(), fptiDataBundle, protocol);
     }
 
-    private JSONObject getDecryptedPayload(String payloadEnc, String symmetricKey) throws IllegalBlockSizeException,
-            InvalidKeyException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, NoSuchPaddingException,
-            BadPaddingException, InvalidEncryptionDataException, JSONException, IllegalArgumentException {
+    private static JSONObject getDecryptedPayload(String payloadEnc, String symmetricKey)
+            throws IllegalBlockSizeException, InvalidKeyException, NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException, NoSuchPaddingException, BadPaddingException,
+            InvalidEncryptionDataException, JSONException, IllegalArgumentException {
         byte[] base64PayloadEnc = Base64.decode(payloadEnc, Base64.DEFAULT);
         byte[] key = EncryptionUtils.hexStringToByteArray(symmetricKey);
         byte[] output = new OtcCrypto().decryptAESCTRData(base64PayloadEnc, key);

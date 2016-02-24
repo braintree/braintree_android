@@ -110,8 +110,7 @@ public abstract class Recipe<T extends Recipe<T>> {
         return false;
     }
 
-    public boolean isValidBrowserTarget(Context context, String browserSwitchUrl,
-            String allowedBrowserPackage) {
+    public static boolean isValidBrowserTarget(Context context, String browserSwitchUrl, String allowedBrowserPackage) {
         Intent intent = getBrowserIntent(browserSwitchUrl, allowedBrowserPackage);
         return (intent.resolveActivity(context.getPackageManager()) != null);
     }

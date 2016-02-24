@@ -36,8 +36,8 @@ public class BrowserSwitchHelper {
             Recipe<?> recipe = request.getBrowserSwitchRecipe(configuration);
 
             for (String allowedBrowserPackage : recipe.getTargetPackagesInReversePriorityOrder()) {
-                boolean canIntentBeResolved = recipe.isValidBrowserTarget(
-                        contextInspector.getContext(), url, allowedBrowserPackage);
+                boolean canIntentBeResolved = Recipe.isValidBrowserTarget(contextInspector.getContext(), url,
+                        allowedBrowserPackage);
                 if (canIntentBeResolved) {
                     request.trackFpti(contextInspector.getContext(), TrackingPoint.SwitchToBrowser,
                             recipe.getProtocol());

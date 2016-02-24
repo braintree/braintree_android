@@ -3,10 +3,12 @@ package com.braintreepayments.api;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
+import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.robolectric.RuntimeEnvironment;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -16,9 +18,15 @@ import static org.mockito.Mockito.when;
 
 public class MockFragmentBuilder {
 
+    private Authorization mAuthorization;
     private Configuration mConfiguration;
     private String mSuccessResponse;
     private Exception mErrorResponse;
+
+    public MockFragmentBuilder authorization(Authorization authorization) {
+        mAuthorization = authorization;
+        return this;
+    }
 
     public MockFragmentBuilder configuration(Configuration configuration) {
         mConfiguration = configuration;
@@ -37,6 +45,8 @@ public class MockFragmentBuilder {
 
     public BraintreeFragment build() {
         BraintreeFragment fragment = mock(BraintreeFragment.class);
+        when(fragment.getApplicationContext()).thenReturn(RuntimeEnvironment.application);
+        when(fragment.getAuthorization()).thenReturn(mAuthorization);
 
         doAnswer(new Answer() {
             @Override
@@ -45,6 +55,7 @@ public class MockFragmentBuilder {
                 return null;
             }
         }).when(fragment).waitForConfiguration(any(ConfigurationListener.class));
+        when(fragment.getConfiguration()).thenReturn(mConfiguration);
 
         BraintreeHttpClient httpClient = mock(BraintreeHttpClient.class);
         if (mSuccessResponse != null) {
