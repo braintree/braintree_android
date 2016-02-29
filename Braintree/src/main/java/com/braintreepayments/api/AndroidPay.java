@@ -15,6 +15,7 @@ import com.braintreepayments.api.models.TokenizationKey;
 import com.google.android.gms.common.api.BooleanResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.identity.intents.model.CountrySpecification;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
 import com.google.android.gms.wallet.FullWalletRequest;
@@ -174,13 +175,15 @@ public class AndroidPay {
      * chooser to the user.
      *
      * @param fragment The current {@link BraintreeFragment}.
-     * @param cart The cart representation with price and optionally items.
+     * @param cart The cart representation with price, currency code, and optionally items.
      * @param shippingAddressRequired {@code true} if this request requires a shipping address, {@code false} otherwise.
      * @param phoneNumberRequired {@code true} if this request requires a phone number, {@code false} otherwise.
+     * @param allowedCountries ISO 3166-2 country codes that shipping is allowed to.
      * @param requestCode The requestCode to use with {@link Activity#startActivityForResult(Intent, int)}
      */
     static void performMaskedWalletRequest(final BraintreeFragment fragment, final @NonNull Cart cart,
-            final boolean shippingAddressRequired, final boolean phoneNumberRequired, 
+            final boolean shippingAddressRequired, final boolean phoneNumberRequired,
+            final Collection<CountrySpecification> allowedCountries,
             final int requestCode) {
         fragment.sendAnalyticsEvent("android-pay.selected");
 
@@ -196,14 +199,15 @@ public class AndroidPay {
                 MaskedWalletRequest.Builder maskedWalletRequestBuilder =
                         MaskedWalletRequest.newBuilder()
                                 .setMerchantName(getMerchantName(configuration.getAndroidPay()))
-                                .setCurrencyCode("USD")
+                                .setCurrencyCode(cart.getCurrencyCode())
                                 .setCart(cart)
                                 .setEstimatedTotalPrice(cart.getTotalPrice())
                                 .setShippingAddressRequired(shippingAddressRequired)
                                 .setPhoneNumberRequired(phoneNumberRequired)
                                 .setPaymentMethodTokenizationParameters(
                                         getTokenizationParameters(fragment))
-                                .addAllowedCardNetworks(getAllowedCardNetworks(fragment));
+                                .addAllowedCardNetworks(getAllowedCardNetworks(fragment))
+                                .addAllowedCountrySpecificationsForShipping(allowedCountries);
 
                 Wallet.Payments.loadMaskedWallet(fragment.getGoogleApiClient(),
                         maskedWalletRequestBuilder.build(), requestCode);

@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.identity.intents.model.CountrySpecification;
 import com.google.android.gms.wallet.Cart;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,7 +19,6 @@ public class PaymentRequest implements Parcelable {
     private String mAuthorization;
 
     private String mAmount;
-    private String mCurrencyCode;
     private boolean mCollectDeviceData;
 
     private Cart mAndroidPayCart;
@@ -25,6 +26,7 @@ public class PaymentRequest implements Parcelable {
     private boolean mAndroidPayPhoneNumberRequired;
     private int mAndroidPayRequestCode;
     private boolean mAndroidPayEnabled = true;
+    private List<CountrySpecification> mAndroidAllowedCountriesForShipping = new ArrayList<>();
 
     private List<String> mPayPalAdditionalScopes;
     private boolean mPayPalEnabled = true;
@@ -74,12 +76,9 @@ public class PaymentRequest implements Parcelable {
     }
 
     /**
-     * This method is optional.
-     *
-     * @param currencyCode Currency code of the transaction.
+     * This method is currently unused.
      */
     public PaymentRequest currencyCode(String currencyCode) {
-        mCurrencyCode = currencyCode;
         return this;
     }
 
@@ -136,6 +135,22 @@ public class PaymentRequest implements Parcelable {
      */
     public PaymentRequest androidPayRequestCode(int requestCode) {
         mAndroidPayRequestCode = requestCode;
+        return this;
+    }
+
+    /**
+     * This method is optional.
+     *
+     * @param countryCodes countries to which shipping is supported.
+     * Follows the ISO 3166-2 format (ex: "US", "CA", "JP")
+     *
+     * @see <a href="https://en.wikipedia.org/wiki/ISO_3166-2#Current_codes">ISO 3166 country codes</a>
+     */
+    public PaymentRequest androidPayAllowedCountriesForShipping(String... countryCodes) {
+        mAndroidAllowedCountriesForShipping.clear();
+        for(String countryCode : countryCodes) {
+            mAndroidAllowedCountriesForShipping.add(new CountrySpecification(countryCode));
+        }
         return this;
     }
 
@@ -248,10 +263,6 @@ public class PaymentRequest implements Parcelable {
         return mAmount;
     }
 
-    String getCurrencyCode() {
-        return mCurrencyCode;
-    }
-
     boolean shouldCollectDeviceData() {
         return mCollectDeviceData;
     }
@@ -274,6 +285,10 @@ public class PaymentRequest implements Parcelable {
 
     boolean isAndroidPayEnabled() {
         return mAndroidPayEnabled;
+    }
+
+    List<CountrySpecification> getAndroidPayAllowedCountriesForShipping() {
+        return mAndroidAllowedCountriesForShipping;
     }
 
     List<String> getPayPalAdditionalScopes() {
@@ -317,7 +332,6 @@ public class PaymentRequest implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mAuthorization);
         dest.writeString(mAmount);
-        dest.writeString(mCurrencyCode);
         dest.writeByte(mCollectDeviceData ? (byte) 1 : (byte) 0);
 
         try {
@@ -326,6 +340,7 @@ public class PaymentRequest implements Parcelable {
             dest.writeByte(mAndroidPayShippingAddressRequired ? (byte) 1 : (byte) 0);
             dest.writeByte(mAndroidPayPhoneNumberRequired ? (byte) 1 : (byte) 0);
             dest.writeInt(mAndroidPayRequestCode);
+            dest.writeTypedList(mAndroidAllowedCountriesForShipping);
         } catch (NoClassDefFoundError ignored) {}
 
         dest.writeByte(mAndroidPayEnabled ? (byte) 1 : (byte) 0);
@@ -342,7 +357,6 @@ public class PaymentRequest implements Parcelable {
     protected PaymentRequest(Parcel in) {
         mAuthorization = in.readString();
         mAmount = in.readString();
-        mCurrencyCode = in.readString();
         mCollectDeviceData = in.readByte() != 0;
 
         try {
@@ -350,6 +364,7 @@ public class PaymentRequest implements Parcelable {
             mAndroidPayShippingAddressRequired = in.readByte() != 0;
             mAndroidPayPhoneNumberRequired = in.readByte() != 0;
             mAndroidPayRequestCode = in.readInt();
+            in.readTypedList(mAndroidAllowedCountriesForShipping, CountrySpecification.CREATOR);
         } catch (NoClassDefFoundError ignored) {}
 
         mAndroidPayEnabled = in.readByte() != 0;

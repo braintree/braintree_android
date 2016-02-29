@@ -14,6 +14,7 @@ import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.VenmoConfiguration;
 import com.braintreepayments.testutils.FragmentTestActivity;
+import com.google.android.gms.identity.intents.model.CountrySpecification;
 import com.google.android.gms.wallet.Cart;
 
 import org.json.JSONException;
@@ -29,6 +30,8 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -39,6 +42,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyCollectionOf;
 import static org.mockito.Matchers.anyInt;
 import static org.powermock.api.mockito.PowerMockito.doAnswer;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
@@ -451,7 +455,7 @@ public class PaymentButtonTest {
         paymentButton.getView().findViewById(R.id.bt_android_pay_button).performClick();
 
         verifyStatic();
-        AndroidPay.performMaskedWalletRequest(mBraintreeFragment, cart, false, false, 0);
+        AndroidPay.performMaskedWalletRequest(mBraintreeFragment, cart, false, false, Collections.<CountrySpecification>emptyList(), 0);
     }
 
     @Test
@@ -463,13 +467,15 @@ public class PaymentButtonTest {
                 .androidPayPhoneNumberRequired(true)
                 .androidPayShippingAddressRequired(true)
                 .androidPayRequestCode(42)
+                .androidPayAllowedCountriesForShipping("US", "GB")
                 .androidPayCart(cart);
         PaymentButton paymentButton = getPaymentButton(paymentRequest);
 
         paymentButton.getView().findViewById(R.id.bt_android_pay_button).performClick();
 
         verifyStatic();
-        AndroidPay.performMaskedWalletRequest(mBraintreeFragment, cart, true, true, 42);
+        AndroidPay.performMaskedWalletRequest(mBraintreeFragment, cart, true, true,
+                paymentRequest.getAndroidPayAllowedCountriesForShipping(), 42);
     }
 
     /* helpers */
@@ -505,7 +511,7 @@ public class PaymentButtonTest {
         AndroidPay.isReadyToPay(any(BraintreeFragment.class), any(BraintreeResponseListener.class));
         doNothing().when(AndroidPay.class);
         AndroidPay.performMaskedWalletRequest(any(BraintreeFragment.class), any(Cart.class), anyBoolean(), anyBoolean(),
-                anyInt());
+                anyCollectionOf(CountrySpecification.class), anyInt());
 
         mockStatic(PayPal.class);
         doNothing().when(PayPal.class);

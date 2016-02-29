@@ -19,6 +19,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.identity.intents.model.CountrySpecification;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.MaskedWallet;
 import com.google.android.gms.wallet.MaskedWallet.Builder;
@@ -35,6 +36,7 @@ import org.mockito.InOrder;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
@@ -230,7 +232,8 @@ public class AndroidPayTest {
         when(fragment.getAuthorization()).thenReturn(
                 Authorization.fromString("sandbox_abcdef_merchantId"));
 
-        AndroidPay.performMaskedWalletRequest(fragment, Cart.newBuilder().build(), false, false, 0);
+        AndroidPay.performMaskedWalletRequest(fragment, Cart.newBuilder().build(), false, false,
+                Collections.<CountrySpecification>emptyList(), 0);
 
         InOrder order = inOrder(fragment);
         order.verify(fragment).sendAnalyticsEvent("android-pay.selected");
@@ -246,7 +249,7 @@ public class AndroidPayTest {
         when(fragment.getAuthorization()).thenReturn(
                 Authorization.fromString("sandbox_abcdef_merchantId"));
 
-        AndroidPay.performMaskedWalletRequest(fragment, null, false, false, 0);
+        AndroidPay.performMaskedWalletRequest(fragment, null, false, false, Collections.<CountrySpecification>emptyList(), 0);
 
         InOrder order = inOrder(fragment);
         order.verify(fragment).sendAnalyticsEvent("android-pay.selected");

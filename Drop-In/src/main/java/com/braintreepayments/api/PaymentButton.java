@@ -191,7 +191,9 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
         } else if (v.getId() == R.id.bt_android_pay_button) {
             AndroidPay.performMaskedWalletRequest(mBraintreeFragment, mPaymentRequest.getAndroidPayCart(),
                     mPaymentRequest.isAndroidPayShippingAddressRequired(),
-                    mPaymentRequest.isAndroidPayPhoneNumberRequired(), mPaymentRequest.getAndroidPayRequestCode());
+                    mPaymentRequest.isAndroidPayPhoneNumberRequired(),
+                    mPaymentRequest.getAndroidPayAllowedCountriesForShipping(),
+                    mPaymentRequest.getAndroidPayRequestCode());
         }
 
         if (mOnClickListener != null) {
