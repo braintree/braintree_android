@@ -57,6 +57,13 @@ public abstract class PaymentMethodNonce implements Parcelable {
     }
 
     /**
+     * @return {@code true} if this payment method is the default for the current customer, {@code false} otherwise
+     */
+    public boolean isDefault() {
+        return mDefault;
+    }
+
+    /**
      * @return The type of this PaymentMethod for displaying to a customer, e.g. 'Visa'. Can be used
      *          for displaying appropriate logos, etc.
      */
@@ -157,10 +164,12 @@ public abstract class PaymentMethodNonce implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mNonce);
         dest.writeString(mDescription);
+        dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
     }
 
     protected PaymentMethodNonce(Parcel in) {
         mNonce = in.readString();
         mDescription = in.readString();
+        mDefault = in.readByte() > 0;
     }
 }

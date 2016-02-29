@@ -78,6 +78,7 @@ public class TokenizationClientTest {
         latch.await();
     }
 
+
     @Test(timeout = 10000)
     public void getPaymentMethodNonces_failsWithATokenizationKey() throws InterruptedException,
             InvalidArgumentException {

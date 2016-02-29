@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
@@ -22,6 +23,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -88,5 +90,16 @@ public class TokenizationClientUnitTest {
         verify(fragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));
         JSONObject data = new JSONObject(captor.getValue()).getJSONObject("_meta");
         assertEquals("session-id", data.getString("sessionId"));
+    }
+
+    @Test
+    public void getPaymentMethodNonces_includesDefaultFirstParamInRequestPath()
+            throws InvalidArgumentException, InterruptedException {
+        BraintreeFragment fragment = new MockFragmentBuilder().configuration(mock(Configuration.class))
+                .build();
+        when(fragment.getSessionId()).thenReturn("session-id");
+        TokenizationClient.getPaymentMethodNonces(fragment, true);
+
+        verify(fragment.getHttpClient()).get(contains("default_first=true"), any(HttpResponseCallback.class));
     }
 }

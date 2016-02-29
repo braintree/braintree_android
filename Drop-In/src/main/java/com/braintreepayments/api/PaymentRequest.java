@@ -20,6 +20,7 @@ public class PaymentRequest implements Parcelable {
 
     private String mAmount;
     private boolean mCollectDeviceData;
+    private boolean mDefaultFirst = false;
 
     private Cart mAndroidPayCart;
     private boolean mAndroidPayShippingAddressRequired;
@@ -244,6 +245,17 @@ public class PaymentRequest implements Parcelable {
     }
 
     /**
+     * This method is optional
+     *
+     * @param defaultFirst When {@code true}, payment methods will be displayed with the current customer's default
+     *          payment method first, followed the remaining payment methods, sorted by most recent usage.
+     */
+    public PaymentRequest defaultFirst(boolean defaultFirst) {
+        mDefaultFirst = defaultFirst;
+        return this;
+    }
+
+    /**
      * Get an {@link Intent} that can be used in {@link android.app.Activity#startActivityForResult(Intent, int)}
      * to launch {@link BraintreePaymentActivity} and the Drop-in UI.
      *
@@ -323,6 +335,10 @@ public class PaymentRequest implements Parcelable {
         return mSubmitButtonText;
     }
 
+    boolean isDefaultFirst() {
+        return mDefaultFirst;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -352,6 +368,7 @@ public class PaymentRequest implements Parcelable {
         dest.writeString(mPrimaryDescription);
         dest.writeString(mSecondaryDescription);
         dest.writeString(mSubmitButtonText);
+        dest.writeByte(mDefaultFirst ? (byte) 1 : (byte) 0);
     }
 
     protected PaymentRequest(Parcel in) {
@@ -376,6 +393,7 @@ public class PaymentRequest implements Parcelable {
         mPrimaryDescription = in.readString();
         mSecondaryDescription = in.readString();
         mSubmitButtonText = in.readString();
+        mDefaultFirst = in.readByte() > 0;
     }
 
     public static final Creator<PaymentRequest> CREATOR = new Creator<PaymentRequest>() {
