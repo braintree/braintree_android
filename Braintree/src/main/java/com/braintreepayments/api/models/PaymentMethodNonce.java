@@ -22,10 +22,12 @@ public abstract class PaymentMethodNonce implements Parcelable {
     private static final String PAYMENT_METHOD_NONCE_COLLECTION_KEY = "paymentMethods";
     private static final String PAYMENT_METHOD_TYPE_KEY = "type";
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
+    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
     private static final String DESCRIPTION_KEY = "description";
 
     protected String mNonce;
     protected String mDescription;
+    protected boolean mDefault;
 
     protected static JSONObject getJsonObjectForType(String apiResourceKey, String response)
             throws JSONException {
@@ -38,6 +40,7 @@ public abstract class PaymentMethodNonce implements Parcelable {
     protected void fromJson(JSONObject json) throws JSONException {
         mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
         mDescription = json.getString(DESCRIPTION_KEY);
+        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
     }
 
     /**
