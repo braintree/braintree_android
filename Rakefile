@@ -29,26 +29,11 @@ desc "Publish current version as a SNAPSHOT"
 task :publish_snapshot => :tests do
   abort("Version must contain '-SNAPSHOT'!") unless get_current_version.end_with?('-SNAPSHOT')
 
-  braintree_api_build_file = "BraintreeApi/build.gradle"
-  braintree_drop_in_build_file = "Drop-In/build.gradle"
-
-  sh "./gradlew clean :BraintreeData:uploadArchives"
-
-  replace_string(braintree_api_build_file, "compile project(':BraintreeData')", "compile 'com.braintreepayments.api:data:#{get_current_version}'")
-  sh "./gradlew clean :BraintreeApi:uploadArchives"
-
-  replace_string(braintree_drop_in_build_file, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree-api:#{get_current_version}'")
-  sh "./gradlew clean :Drop-In:uploadArchives"
-
-  replace_string(braintree_api_build_file, "compile 'com.braintreepayments.api:data:#{get_current_version}'", "compile project(':BraintreeData')")
-  replace_string(braintree_drop_in_build_file, "compile 'com.braintreepayments.api:braintree-api:#{get_current_version}'", "compile project(':BraintreeApi')")
+  sh "./gradlew clean :BraintreeData:uploadArchives :BraintreeApi:uploadArchives :Drop-In:uploadArchives"
 end
 
 desc "Interactive release to publish new version"
 task :release => :tests do
-  braintree_api_build_file = "BraintreeApi/build.gradle"
-  braintree_drop_in_build_file = "Drop-In/build.gradle"
-
   last_version = `git tag | grep "^1." | tail -1`.chomp
   puts "\nChanges since #{last_version}:"
   sh "git log --pretty=format:\"%h %ad%x20%s%x20%x28%an%x29\" --date=short #{last_version}.."
@@ -61,42 +46,16 @@ task :release => :tests do
   increment_version_code
   update_version(version)
 
-  sh "./gradlew clean :BraintreeData:uploadArchives"
-  puts "BraintreeData was uploaded, press ENTER to release it"
-  $stdin.gets
-  sh "./gradlew :BraintreeData:closeRepository"
-  puts "Sleeping for one minute to allow closing to finish"
-  sleep 60
-  sh "./gradlew :BraintreeData:promoteRepository"
-  puts "Sleeping for ten minutes to allow promotion to finish"
-  sleep 600
-
-  replace_string(braintree_api_build_file, "compile project(':BraintreeData')", "compile 'com.braintreepayments.api:data:#{version}'")
-  sh "./gradlew clean :BraintreeApi:uploadArchives"
-  puts "BraintreeApi was uploaded, press ENTER to release it"
-  $stdin.gets
+  sh "./gradlew clean :BraintreeData:uploadArchives :BraintreeApi:uploadArchives :Drop-In:uploadArchives"
   sh "./gradlew :BraintreeApi:closeRepository"
   puts "Sleeping for one minute to allow closing to finish"
   sleep 60
   sh "./gradlew :BraintreeApi:promoteRepository"
-  puts "Sleeping for ten minutes to allow promotion to finish"
-  sleep 600
-
-  replace_string(braintree_drop_in_build_file, "compile project(':BraintreeApi')", "compile 'com.braintreepayments.api:braintree-api:#{version}'")
-  sh "./gradlew clean :Drop-In:uploadArchives"
-  puts "Drop-In was uploaded, press ENTER to release it"
-  $stdin.gets
-  sh "./gradlew :Drop-In:closeRepository"
-  puts "Sleeping for one minute to allow closing to finish"
-  sleep 60
-  sh "./gradlew :Drop-In:promoteRepository"
 
   puts "\nArchives are uploaded! Committing and tagging #{version} and preparing for the next development iteration"
   sh "git commit -am 'Release #{version}'"
   sh "git tag #{version} -am '#{version}'"
 
-  replace_string(braintree_api_build_file, "compile 'com.braintreepayments.api:data:#{version}'", "compile project(':BraintreeData')")
-  replace_string(braintree_drop_in_build_file, "compile 'com.braintreepayments.api:braintree-api:#{version}'", "compile project(':BraintreeApi')")
   update_version("#{version}-SNAPSHOT")
   sh "git commit -am 'Prepare for development'"
 
@@ -117,7 +76,7 @@ end
 def get_current_version
   current_version = nil
   File.foreach("build.gradle") do |line|
-    if match = line.match(/versionName = '(\d+\.\d+\.\d+(-SNAPSHOT)?)'/)
+    if match = line.match(/version = '(\d+\.\d+\.\d+(-SNAPSHOT)?)'/)
       current_version = match.captures
     end
   end
@@ -138,13 +97,9 @@ def increment_version_code
 end
 
 def update_version(version)
-  replace_string("build.gradle", /versionName = '\d+\.\d+\.\d+(-SNAPSHOT)?'/, "versionName = '#{version}'")
-end
-
-def replace_string(filepath, string_to_replace, new_string)
-  IO.write(filepath,
-    File.open(filepath) do |file|
-      file.read.gsub(string_to_replace, new_string)
+  IO.write("build.gradle",
+    File.open("build.gradle") do |file|
+      file.read.gsub(/version = '\d+\.\d+\.\d+(-SNAPSHOT)?'/, "version = '#{version}'")
     end
   )
 end
