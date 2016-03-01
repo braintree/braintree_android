@@ -66,8 +66,6 @@ task :release_paypal do
   puts "Sleeping for one minute to allow PayPal modules to close"
   sleep 60
   sh "./gradlew :PayPalOneTouch:promoteRepository"
-  puts "Sleeping for ten minutes to allow PayPal modules to be promoted"
-  sleep 600
   puts "PayPal modules have been released"
 end
 
