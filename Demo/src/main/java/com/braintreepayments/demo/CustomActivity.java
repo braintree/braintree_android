@@ -26,6 +26,7 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.cardform.OnCardFormSubmitListener;
 import com.braintreepayments.cardform.view.CardForm;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.identity.intents.model.CountrySpecification;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
 import com.google.android.gms.wallet.FullWalletRequest;
@@ -158,7 +159,7 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
                         MaskedWalletRequest.Builder maskedWalletRequestBuilder =
                                 MaskedWalletRequest.newBuilder()
                                         .setMerchantName("Braintree")
-                                        .setCurrencyCode("USD")
+                                        .setCurrencyCode(mCart.getCurrencyCode())
                                         .setCart(mCart)
                                         .setEstimatedTotalPrice(mCart.getTotalPrice())
                                         .setShippingAddressRequired(Settings.isAndroidPayShippingAddressRequired(CustomActivity.this))
@@ -166,9 +167,13 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
                                         .setPaymentMethodTokenizationParameters(parameters)
                                         .addAllowedCardNetworks(allowedCardNetworks);
 
+                        for (String country : Settings.getAndroidPayAllowedCountriesForShipping(CustomActivity.this)) {
+                            maskedWalletRequestBuilder.addAllowedCountrySpecificationForShipping(
+                                    new CountrySpecification(country));
+                        }
+
                         Wallet.Payments.loadMaskedWallet(mGoogleApiClient,
                                 maskedWalletRequestBuilder.build(), ANDROID_PAY_MASKED_WALLET_REQUEST_CODE);
-
                     }
                 });
     }

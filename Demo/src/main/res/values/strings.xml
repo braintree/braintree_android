@@ -46,6 +46,10 @@
     <string name="android_pay_require_shipping_address_summary">Require shipping address from the user</string>
     <string name="android_pay_require_phone_number">Require Phone Number</string>
     <string name="android_pay_require_phone_number_summary">Require phone number from the user</string>
+    <string name="android_pay_currency_title">Currency</string>
+    <string name="android_pay_currency_summary">Must be ISO-4217 format. \n\nCurrency: %s</string>
+    <string name="android_pay_allowed_countries_for_shipping_title">Allowed countries for shipping</string>
+    <string name="android_pay_allowed_countries_for_shipping_summary">Must be ISO-3166-2, separate by comma for multiple countries. \n\nCountries: %s</string>
     <string name="paypal">PayPal</string>
     <string name="paypal_use_hardcoded_configuration">Use Hardcoded Configuration</string>
     <string name="paypal_use_hardcoded_configuration_summary">Use the configuration included in the PayPal SDK instead of downloading new configuration</string>

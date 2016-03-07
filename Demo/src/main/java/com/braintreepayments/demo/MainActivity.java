@@ -122,6 +122,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
                 .androidPayCart(getAndroidPayCart())
                 .androidPayShippingAddressRequired(Settings.isAndroidPayShippingAddressRequired(this))
                 .androidPayPhoneNumberRequired(Settings.isAndroidPayPhoneNumberRequired(this))
+                .androidPayAllowedCountriesForShipping(Settings.getAndroidPayAllowedCountriesForShipping(this))
                 .primaryDescription(getString(R.string.cart))
                 .secondaryDescription("1 Item")
                 .amount("$1.00")
@@ -259,7 +260,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
 
     private Cart getAndroidPayCart() {
         return Cart.newBuilder()
-                .setCurrencyCode("USD")
+                .setCurrencyCode(Settings.getAndroidPayCurrency(this))
                 .setTotalPrice("1.00")
                 .addLineItem(LineItem.newBuilder()
                         .setCurrencyCode("USD")

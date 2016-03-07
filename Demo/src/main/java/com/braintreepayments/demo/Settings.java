@@ -101,6 +101,19 @@ public class Settings {
         return getPreferences(context).getBoolean("android_pay_require_phone_number", false);
     }
 
+    public static String getAndroidPayCurrency(Context context) {
+        return getPreferences(context).getString("android_pay_currency", "USD");
+    }
+
+    public static String[] getAndroidPayAllowedCountriesForShipping(Context context) {
+        String[] countries = getPreferences(context).getString("android_pay_allowed_countries_for_shipping", "US").split(",");
+        for(int i = 0; i < countries.length; i++) {
+            countries[i] = countries[i].trim();
+        }
+
+        return countries;
+    }
+
     public static String getPayPalPaymentType(Context context) {
         return getPreferences(context).getString("paypal_payment_type", context.getString(R.string.paypal_billing_agreement));
     }

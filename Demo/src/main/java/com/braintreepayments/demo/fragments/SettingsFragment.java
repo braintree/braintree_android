@@ -8,6 +8,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
 import com.braintreepayments.demo.R;
+import com.braintreepayments.demo.views.SummaryEditTestPreference;
 
 public class SettingsFragment extends PreferenceFragment
         implements OnSharedPreferenceChangeListener {
@@ -19,14 +20,15 @@ public class SettingsFragment extends PreferenceFragment
 
         SharedPreferences preferences = getPreferenceManager().getSharedPreferences();
         onSharedPreferenceChanged(preferences, "paypal_payment_type");
+        onSharedPreferenceChanged(preferences, "android_pay_currency");
+        onSharedPreferenceChanged(preferences, "android_pay_allowed_countries_for_shipping");
         preferences.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getPreferenceManager().getSharedPreferences()
-                .unregisterOnSharedPreferenceChangeListener(this);
+        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -34,6 +36,8 @@ public class SettingsFragment extends PreferenceFragment
         Preference preference = findPreference(key);
         if (preference instanceof ListPreference) {
             preference.setSummary(((ListPreference) preference).getEntry());
+        } else if (preference instanceof SummaryEditTestPreference) {
+            preference.setSummary(preference.getSummary());
         }
     }
 }
