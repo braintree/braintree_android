@@ -205,6 +205,7 @@ public class BraintreePaymentActivity extends Activity implements
                     resultCode, data);
         } else if (resultCode != RESULT_OK) {
             showAddPaymentMethodView();
+            mAddPaymentMethodViewController.endSubmit();
         }
     }
 
