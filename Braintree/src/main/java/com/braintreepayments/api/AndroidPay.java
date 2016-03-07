@@ -161,8 +161,7 @@ public class AndroidPay {
      */
     public static void tokenize(BraintreeFragment fragment, FullWallet wallet) {
         try {
-            fragment.postCallback(
-                    AndroidPayCardNonce.fromJson(wallet.getPaymentMethodToken().getToken()));
+            fragment.postCallback(AndroidPayCardNonce.fromFullWallet(wallet));
             fragment.sendAnalyticsEvent("android-pay.nonce-received");
         } catch (JSONException e) {
             fragment.postCallback(e);

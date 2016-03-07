@@ -3,6 +3,9 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.identity.intents.model.UserAddress;
+import com.google.android.gms.wallet.FullWallet;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,6 +24,26 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
 
     private String mCardType;
     private String mLastTwo;
+    private String mEmail;
+    private UserAddress mBillingAddress;
+    private UserAddress mShippingAddress;
+
+    /**
+     * Convert a {@link FullWallet} to an {@link AndroidPayCardNonce}.
+     *
+     * @param wallet
+     * @return {@link AndroidPayCardNonce}.
+     * @throws JSONException when parsing the response fails.
+     */
+    public static AndroidPayCardNonce fromFullWallet(FullWallet wallet) throws JSONException {
+        AndroidPayCardNonce androidPayCardNonce =
+                AndroidPayCardNonce.fromJson(wallet.getPaymentMethodToken().getToken());
+        androidPayCardNonce.mEmail = wallet.getEmail();
+        androidPayCardNonce.mBillingAddress = wallet.getBuyerBillingAddress();
+        androidPayCardNonce.mShippingAddress = wallet.getBuyerShippingAddress();
+
+        return androidPayCardNonce;
+    }
 
     /**
      * Convert an API response to an {@link AndroidPayCardNonce}.
@@ -63,6 +86,27 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
         return mLastTwo;
     }
 
+    /**
+     * @return The user's email address associated the Android Pay account.
+     */
+    public String getEmail() {
+        return mEmail;
+    }
+
+    /**
+     * @return The user's billing address.
+     */
+    public UserAddress getBillingAddress() {
+        return mBillingAddress;
+    }
+
+    /**
+     * @return The user's shipping address.
+     */
+    public UserAddress getShippingAddress() {
+        return mShippingAddress;
+    }
+
     public AndroidPayCardNonce() {}
 
     @Override
@@ -70,12 +114,18 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
         super.writeToParcel(dest, flags);
         dest.writeString(mCardType);
         dest.writeString(mLastTwo);
+        dest.writeString(mEmail);
+        dest.writeParcelable(mBillingAddress, flags);
+        dest.writeParcelable(mShippingAddress, flags);
     }
 
     private AndroidPayCardNonce(Parcel in) {
         super(in);
         mCardType = in.readString();
         mLastTwo = in.readString();
+        mEmail = in.readString();
+        mBillingAddress = in.readParcelable(UserAddress.class.getClassLoader());
+        mShippingAddress = in.readParcelable(UserAddress.class.getClassLoader());
     }
 
     public static final Creator<AndroidPayCardNonce> CREATOR = new Creator<AndroidPayCardNonce>() {

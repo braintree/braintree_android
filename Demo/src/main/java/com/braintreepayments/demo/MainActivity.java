@@ -22,6 +22,7 @@ import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
+import com.google.android.gms.identity.intents.model.UserAddress;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.LineItem;
 
@@ -232,7 +233,12 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
         } else if (mNonce instanceof AndroidPayCardNonce) {
             AndroidPayCardNonce androidPayCardNonce = (AndroidPayCardNonce) mNonce;
 
-            mNonceDetails.setText("Underlying Card Last Two: " + androidPayCardNonce.getLastTwo());
+            String details = "Underlying Card Last Two: " + androidPayCardNonce.getLastTwo() + "\n";
+            details += "Email: " + androidPayCardNonce.getEmail() + "\n";
+            details += "Billing address: " + formatAddress(androidPayCardNonce.getBillingAddress()) + "\n";
+            details += "Shipping address: " + formatAddress(androidPayCardNonce.getShippingAddress());
+
+            mNonceDetails.setText(details);
         }
 
         mNonceDetails.setVisibility(VISIBLE);
@@ -256,6 +262,13 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
         return address.getRecipientName() + " " + address.getStreetAddress() + " " +
             address.getExtendedAddress() + " " + address.getLocality() + " " + address.getRegion() +
                 " " + address.getPostalCode() + " " + address.getCountryCodeAlpha2();
+    }
+
+    private String formatAddress(UserAddress address) {
+        return address.getName() + " " + address.getAddress1() + " " + address.getAddress2() + " " +
+                address.getAddress3() + " " + address.getAddress4() + " " + address.getAddress5() + " " +
+                address.getLocality() + " " + address.getAdministrativeArea() + " " + address.getPostalCode() + " " +
+                address.getSortingCode() + " " + address.getCountryCode();
     }
 
     private Cart getAndroidPayCart() {

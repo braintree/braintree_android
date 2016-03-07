@@ -293,6 +293,7 @@ public class AndroidPayTest {
         verify(fragment).sendAnalyticsEvent("android-pay.authorized");
     }
 
+    /* helpers */
     private void injectFakeGoogleApiClient(final BraintreeFragment fragment) throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         fragment.waitForConfiguration(new ConfigurationListener() {
@@ -313,7 +314,6 @@ public class AndroidPayTest {
         latch.await();
     }
 
-    /* helpers */
     private BraintreeFragment getSetupFragment() {
         AndroidPayConfiguration androidPayConfiguration = mock(AndroidPayConfiguration.class);
         when(androidPayConfiguration.getGoogleAuthorizationFingerprint()).thenReturn(
