@@ -42,15 +42,18 @@ import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_K
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.powermock.api.mockito.PowerMockito.doAnswer;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 
 @RunWith(RobolectricGradleTestRunner.class)
@@ -66,7 +69,8 @@ public class BraintreeFragmentUnitTest {
 
     @Before
     public void setup() {
-        mActivity = Robolectric.setupActivity(FragmentTestActivity.class);
+        mActivity = spy(Robolectric.setupActivity(FragmentTestActivity.class));
+        doNothing().when(mActivity).startActivity(any(Intent.class));
         mCountDownLatch = new CountDownLatch(1);
     }
 
@@ -545,6 +549,44 @@ public class BraintreeFragmentUnitTest {
         fragment.onActivityResult(42, Activity.RESULT_CANCELED, null);
 
         mCountDownLatch.await();
+    }
+
+    @Test
+    public void startActivity_clearsLastBrowserSwitchResponseWhenBrowserSwitching() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = new Intent();
+
+        fragment.startActivity(new Intent().putExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, true));
+
+        assertNull(BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse);
+    }
+
+    @Test
+    public void onResume_doesNothingIfNotBrowserSwitching() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        mockStatic(PayPal.class);
+
+        fragment.onResume();
+
+        verifyStatic(never());
+        PayPal.onActivityResult(any(BraintreeFragment.class), any(Intent.class));
+    }
+
+    @Test
+    public void onResume_handlesBrowserSwitch() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        mockStatic(PayPal.class);
+        fragment.startActivity(new Intent().putExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, true));
+        Intent intent = new Intent();
+        BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = intent;
+
+        fragment.onResume();
+
+        assertNull(BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse);
+        fragment.onResume();
+
+        verifyStatic(times(1));
+        PayPal.onActivityResult(fragment, intent);
     }
 
     /* helpers */
