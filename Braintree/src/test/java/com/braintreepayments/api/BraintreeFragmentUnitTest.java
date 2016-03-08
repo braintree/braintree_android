@@ -1,10 +1,12 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
@@ -53,7 +55,7 @@ import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*" })
-@PrepareForTest({ ConfigurationManager.class, AnalyticsManager.class })
+@PrepareForTest({ ConfigurationManager.class, AnalyticsManager.class, PayPal.class, ThreeDSecure.class, Venmo.class })
 public class BraintreeFragmentUnitTest {
 
     @Rule
@@ -490,6 +492,59 @@ public class BraintreeFragmentUnitTest {
 
         verifyStatic();
         AnalyticsManager.flushEvents(fragment);
+    }
+
+    @Test
+    public void onActivityResult_handlesPayPalResult() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        mockStatic(PayPal.class);
+        Intent intent = new Intent();
+
+        fragment.onActivityResult(PayPal.PAYPAL_REQUEST_CODE, Activity.RESULT_FIRST_USER, intent);
+
+        verifyStatic();
+        PayPal.onActivityResult(fragment, intent);
+    }
+
+    @Test
+    public void onActivityResult_handlesThreeDSecureResult() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        mockStatic(ThreeDSecure.class);
+        Intent intent = new Intent();
+
+        fragment.onActivityResult(ThreeDSecure.THREE_D_SECURE_REQUEST_CODE, Activity.RESULT_OK, intent);
+
+        verifyStatic();
+        ThreeDSecure.onActivityResult(fragment, Activity.RESULT_OK, intent);
+    }
+
+    @Test
+    public void onActivityResult_handlesVenmoResult() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        mockStatic(Venmo.class);
+        Intent intent = new Intent();
+
+        fragment.onActivityResult(Venmo.VENMO_REQUEST_CODE, Activity.RESULT_OK, intent);
+
+        verifyStatic();
+        Venmo.onActivityResult(fragment, Activity.RESULT_OK, intent);
+    }
+
+    @Test
+    public void onActivityResult_postsCancelCallbackWhenResultCodeIsCanceled()
+            throws InvalidArgumentException, InterruptedException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        fragment.addListener(new BraintreeCancelListener() {
+            @Override
+            public void onCancel(int requestCode) {
+                assertEquals(42, requestCode);
+                mCountDownLatch.countDown();
+            }
+        });
+
+        fragment.onActivityResult(42, Activity.RESULT_CANCELED, null);
+
+        mCountDownLatch.await();
     }
 
     /* helpers */
