@@ -15,6 +15,7 @@ import java.util.Collections;
 
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertFalse;
 
@@ -67,6 +68,33 @@ public class PaymentRequestUnitTest {
         assertEquals("primary description", paymentRequest.getPrimaryDescription());
         assertEquals("secondary description", paymentRequest.getSecondaryDescription());
         assertEquals("submit", paymentRequest.getSubmitButtonText());
+    }
+
+    @Test
+    public void hasCorrectDefaults() {
+        Intent intent = new PaymentRequest()
+                .getIntent(RuntimeEnvironment.application);
+
+        PaymentRequest paymentRequest = intent.getParcelableExtra(BraintreePaymentActivity.EXTRA_CHECKOUT_REQUEST);
+
+        assertEquals(BraintreePaymentActivity.class.getName(), intent.getComponent().getClassName());
+        assertNull(paymentRequest.getAuthorization());
+        assertNull(paymentRequest.getAmount());
+        assertFalse(paymentRequest.shouldCollectDeviceData());
+        assertNull(paymentRequest.getAndroidPayCart());
+        assertFalse(paymentRequest.isAndroidPayShippingAddressRequired());
+        assertFalse(paymentRequest.isAndroidPayPhoneNumberRequired());
+        assertEquals(0, paymentRequest.getAndroidPayRequestCode());
+        assertTrue(paymentRequest.isAndroidPayEnabled());
+        assertTrue(paymentRequest.getAndroidPayAllowedCountriesForShipping().isEmpty());
+        assertNull(paymentRequest.getPayPalAdditionalScopes());
+        assertTrue(paymentRequest.isPayPalEnabled());
+        assertTrue(paymentRequest.isVenmoEnabled());
+        assertNull(paymentRequest.getActionBarTitle());
+        assertEquals(0, paymentRequest.getActionBarLogo());
+        assertNull(paymentRequest.getPrimaryDescription());
+        assertNull(paymentRequest.getSecondaryDescription());
+        assertNull(paymentRequest.getSubmitButtonText());
     }
 
     @Test
