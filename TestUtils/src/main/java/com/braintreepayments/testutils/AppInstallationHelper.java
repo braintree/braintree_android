@@ -32,7 +32,7 @@ public class AppInstallationHelper {
                 }
             });
             try {
-                lock.await(45, TimeUnit.SECONDS);
+                lock.await(90, TimeUnit.SECONDS);
             } catch (InterruptedException ignored) {}
 
             assertTrue(isAppInstalled(PAYPAL_WALLET_PACKAGE_NAME));
@@ -56,7 +56,7 @@ public class AppInstallationHelper {
                 }
             });
             try {
-                lock.await(5, TimeUnit.SECONDS);
+                lock.await(30, TimeUnit.SECONDS);
             } catch (InterruptedException ignored) {}
 
             assertFalse(isAppInstalled(PAYPAL_WALLET_PACKAGE_NAME));
