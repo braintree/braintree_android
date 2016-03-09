@@ -10,8 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static com.braintreepayments.testutils.AppInstallationHelper.installPayPalWallet;
-import static com.braintreepayments.testutils.AppInstallationHelper.isAppInstalled;
 import static com.braintreepayments.testutils.AppInstallationHelper.uninstallPayPalWallet;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAction.setText;
@@ -26,19 +24,18 @@ import static org.hamcrest.core.StringEndsWith.endsWith;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class PayPalTest extends TestHelper {
+@SdkSuppress(minSdkVersion = 21)
+public class PayPalBrowserSwitchTest extends TestHelper {
 
     @Before
     public void setup() {
         super.setup();
+        uninstallPayPalWallet();
         onDevice(withText("PayPal")).waitForEnabled().perform(click());
     }
 
-    @SdkSuppress(minSdkVersion = 21)
     @Test(timeout = 60000)
     public void browserSwitch_makesASinglePayment() {
-        uninstallPayPalWallet();
-
         onDevice(withText("Single Payment")).waitForEnabled().perform(click());
         onDevice(withContentDescription("Proceed with Sandbox Purchase")).perform(click());
 
@@ -48,11 +45,8 @@ public class PayPalTest extends TestHelper {
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
-    @SdkSuppress(minSdkVersion = 21)
     @Test(timeout = 60000)
     public void browserSwitch_makesAFuturePayment() {
-        uninstallPayPalWallet();
-
         onDevice(withText("Future Payment")).waitForEnabled().perform(click());
         onDevice(withContentDescription("Email")).perform(click(), setText("test@paypal.com"));
         onDevice().pressDPadDown().typeText("password");
@@ -65,11 +59,8 @@ public class PayPalTest extends TestHelper {
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
-    @SdkSuppress(minSdkVersion = 21)
     @Test(timeout = 60000)
     public void browserSwitch_makesAFuturePaymentWithAddressScope() {
-        uninstallPayPalWallet();
-
         onDevice(withText("Future Payment (Address Scope)")).waitForEnabled().perform(click());
         onDevice(withContentDescription("Email")).perform(click(), setText("test@paypal.com"));
         onDevice().pressDPadDown().typeText("password");
@@ -82,11 +73,8 @@ public class PayPalTest extends TestHelper {
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
-    @SdkSuppress(minSdkVersion = 21)
     @Test(timeout = 60000)
     public void browserSwitch_makesABillingAgreement() {
-        uninstallPayPalWallet();
-
         onDevice(withText("Billing Agreement")).waitForEnabled().perform(click());
         onDevice(withContentDescription("Proceed with Sandbox Purchase")).perform(click());
 
@@ -94,45 +82,5 @@ public class PayPalTest extends TestHelper {
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
-    }
-
-    @Test(timeout = 120000)
-    public void appSwitch_forSinglePayment() {
-        installPayPalWallet();
-
-        onDevice(withText("Single Payment")).waitForEnabled().perform(click());
-
-        onDevice().checkForegroundAppIs("com.paypal.android.p2pmobile");
-    }
-
-    @Test(timeout = 120000)
-    public void appSwitch_forFuturePayment() {
-        installPayPalWallet();
-
-        onDevice(withText("Future Payment")).waitForEnabled().perform(click());
-
-        onDevice().checkForegroundAppIs("com.paypal.android.p2pmobile");
-    }
-
-    @Test(timeout = 120000)
-    public void appSwitch_forFuturePaymentWithAddressScope() {
-        installPayPalWallet();
-
-        onDevice(withText("Future Payment (Address Scope)")).waitForEnabled().perform(click());
-
-        onDevice().checkForegroundAppIs("com.paypal.android.p2pmobile");
-    }
-
-    @Test(timeout = 120000)
-    public void appSwitch_usesBrowserForBillingAgreement() {
-        installPayPalWallet();
-
-        onDevice(withText("Billing Agreement")).waitForEnabled().perform(click());
-
-        if (isAppInstalled("com.android.chrome")) {
-            onDevice().checkForegroundAppIs("com.android.chrome");
-        } else {
-            onDevice().checkForegroundAppIs("com.android.browser");
-        }
     }
 }
