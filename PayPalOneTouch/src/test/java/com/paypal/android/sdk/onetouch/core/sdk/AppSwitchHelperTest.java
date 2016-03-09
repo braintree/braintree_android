@@ -62,10 +62,9 @@ public class AppSwitchHelperTest {
 
     @Test
     public void createBaseIntent_createsIntentCorrectly() {
-        Intent intent = AppSwitchHelper.createBaseIntent("action", "component", "package");
+        Intent intent = AppSwitchHelper.createBaseIntent("action", "package");
 
         assertEquals("action", intent.getAction());
-        assertEquals("package/component", intent.getComponent().flattenToString());
         assertEquals("package", intent.getPackage());
     }
 
@@ -78,8 +77,6 @@ public class AppSwitchHelperTest {
                 request, getMockRecipe(1));
 
         assertEquals("com.paypal.android.lib.authenticator.activity.v1.TouchActivity", intent.getAction());
-        assertEquals("com.paypal.android.p2pmobile/com.paypal.android.lib.authenticator.activity.v1.TouchActivity",
-                intent.getComponent().flattenToString());
         assertEquals("com.paypal.android.p2pmobile", intent.getPackage());
         assertEquals("1.0", intent.getStringExtra("version"));
     }
@@ -93,8 +90,6 @@ public class AppSwitchHelperTest {
                 request, getMockRecipe(2));
 
         assertEquals("com.paypal.android.lib.authenticator.activity.v2.TouchActivity", intent.getAction());
-        assertEquals("com.paypal.android.p2pmobile/com.paypal.android.lib.authenticator.activity.v2.TouchActivity",
-                intent.getComponent().flattenToString());
         assertEquals("com.paypal.android.p2pmobile", intent.getPackage());
         assertEquals("2.0", intent.getStringExtra("version"));
     }
@@ -108,8 +103,6 @@ public class AppSwitchHelperTest {
                 request, getMockRecipe(3));
 
         assertEquals("com.paypal.android.lib.authenticator.activity.v3.TouchActivity", intent.getAction());
-        assertEquals("com.paypal.android.p2pmobile/com.paypal.android.lib.authenticator.activity.v3.TouchActivity",
-                intent.getComponent().flattenToString());
         assertEquals("com.paypal.android.p2pmobile", intent.getPackage());
         assertEquals("3.0", intent.getStringExtra("version"));
     }

@@ -1,6 +1,5 @@
 package com.paypal.android.sdk.onetouch.core.sdk;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -38,16 +37,14 @@ public class AppSwitchHelper {
                 WALLET_APP_CERT_ISSUER, WALLET_APP_PUBLIC_KEY_HASH_CODE);
     }
 
-    public static Intent createBaseIntent(String action, String componentName, String packageName) {
+    public static Intent createBaseIntent(String action, String packageName) {
         return new Intent(action)
-                .setComponent(ComponentName.unflattenFromString(packageName + "/" + componentName))
                 .setPackage(packageName);
     }
 
     public static Intent getAppSwitchIntent(ContextInspector contextInspector,
             ConfigManager configManager, Request request, Recipe recipe) {
-        Intent intent = createBaseIntent(recipe.getTargetIntentAction(),
-                recipe.getTargetComponent(), WALLET_APP_PACKAGE);
+        Intent intent = createBaseIntent(recipe.getTargetIntentAction(), WALLET_APP_PACKAGE);
         intent.putExtra("version", recipe.getProtocol().getVersion());
         // app_guid now present on all v1/v2 requests.  Deemed not sensitive.
         intent.putExtra("app_guid", contextInspector.getInstallationGUID());

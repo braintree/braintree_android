@@ -80,8 +80,7 @@ public abstract class Recipe<T extends Recipe<T>> {
     public boolean isValidAppTarget(Context context) {
         for (String allowedWalletTarget : getTargetPackagesInReversePriorityOrder()) {
             boolean isIntentAvailable = AppHelper.isIntentAvailable(context,
-                    AppSwitchHelper.createBaseIntent(getTargetIntentAction(), getTargetComponent(),
-                            allowedWalletTarget));
+                    AppSwitchHelper.createBaseIntent(getTargetIntentAction(), allowedWalletTarget));
 
             String locale = Locale.getDefault().toString();
             // if no locales are specified, then presumed to be allowed for all
