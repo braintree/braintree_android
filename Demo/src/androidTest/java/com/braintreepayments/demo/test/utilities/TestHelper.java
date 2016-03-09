@@ -2,14 +2,9 @@ package com.braintreepayments.demo.test.utilities;
 
 import android.Manifest.permission;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.widget.Spinner;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
@@ -17,8 +12,6 @@ import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withClass;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.equalTo;
 
 public class TestHelper {
