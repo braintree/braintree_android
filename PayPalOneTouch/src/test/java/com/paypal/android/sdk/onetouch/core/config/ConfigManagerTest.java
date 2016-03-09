@@ -74,10 +74,11 @@ public class ConfigManagerTest {
         assertEquals(2, configuration.getBillingAgreementRecipes().size());
         assertEquals(RequestTarget.wallet, configuration.getBillingAgreementRecipes().get(0).getTarget());
         assertEquals(RequestTarget.browser, configuration.getBillingAgreementRecipes().get(1).getTarget());
-        assertEquals(3, configuration.getCheckoutRecipes().size());
+        assertEquals(4, configuration.getCheckoutRecipes().size());
         assertEquals(RequestTarget.wallet, configuration.getCheckoutRecipes().get(0).getTarget());
         assertEquals(RequestTarget.wallet, configuration.getCheckoutRecipes().get(1).getTarget());
-        assertEquals(RequestTarget.browser, configuration.getCheckoutRecipes().get(2).getTarget());
+        assertEquals(RequestTarget.wallet, configuration.getCheckoutRecipes().get(2).getTarget());
+        assertEquals(RequestTarget.browser, configuration.getCheckoutRecipes().get(3).getTarget());
         assertNotNull(configuration.getBrowserBillingAgreementConfig());
         assertNotNull(configuration.getBrowserCheckoutConfig());
         assertNotNull(configuration.getOauth2Recipes());
