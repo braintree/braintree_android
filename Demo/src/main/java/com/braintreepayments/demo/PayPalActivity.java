@@ -121,7 +121,7 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
     @Override
     public void onConfigurationFetched(Configuration configuration) {
         if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {
-            mDeviceData = DataCollector.collectDeviceData(mBraintreeFragment);
+            mDeviceData = DataCollector.collectDeviceData(this, mBraintreeFragment);
         }
     }
 

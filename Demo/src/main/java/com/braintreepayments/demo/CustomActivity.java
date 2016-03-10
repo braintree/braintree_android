@@ -117,7 +117,7 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
         }
 
         if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {
-            mDeviceData = DataCollector.collectDeviceData(mBraintreeFragment);
+            mDeviceData = DataCollector.collectDeviceData(this, mBraintreeFragment);
         }
     }
 

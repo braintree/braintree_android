@@ -133,7 +133,7 @@ public class BraintreePaymentActivity extends Activity implements
     @Override
     public void onConfigurationFetched(Configuration configuration) {
         if (mPaymentRequest.shouldCollectDeviceData()) {
-            mDeviceData = DataCollector.collectDeviceData(mBraintreeFragment);
+            mDeviceData = DataCollector.collectDeviceData(this, mBraintreeFragment);
         }
     }
 
