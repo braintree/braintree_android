@@ -70,7 +70,7 @@ public class ConfigManagerTest {
     public void getConfig_returnsConfig() {
         OtcConfiguration configuration = mConfigManager.getConfig();
 
-        assertEquals("2015-12-08T00:03:56Z", configuration.getFileTimestamp());
+        assertEquals("2016-03-10T21:15:00Z", configuration.getFileTimestamp());
         assertEquals(2, configuration.getBillingAgreementRecipes().size());
         assertEquals(RequestTarget.wallet, configuration.getBillingAgreementRecipes().get(0).getTarget());
         assertEquals(RequestTarget.browser, configuration.getBillingAgreementRecipes().get(1).getTarget());
