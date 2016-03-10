@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static com.braintreepayments.testutils.AppInstallationHelper.installPayPalWallet;
-import static com.braintreepayments.testutils.AppInstallationHelper.isAppInstalled;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
@@ -48,13 +47,9 @@ public class PayPalAppSwitchTest extends TestHelper {
     }
 
     @Test(timeout = 120000)
-    public void appSwitch_usesBrowserForBillingAgreement() {
+    public void appSwitch_forBillingAgreement() {
         onDevice(withText("Billing Agreement")).waitForEnabled().perform(click());
 
-        if (isAppInstalled("com.android.chrome")) {
-            onDevice().checkForegroundAppIs("com.android.chrome");
-        } else {
-            onDevice().checkForegroundAppIs("com.android.browser");
-        }
+        onDevice().checkForegroundAppIs("com.paypal.android.p2pmobile");
     }
 }
