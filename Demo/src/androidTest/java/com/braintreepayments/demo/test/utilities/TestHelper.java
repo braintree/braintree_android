@@ -24,6 +24,7 @@ public class TestHelper {
         PreferenceManager.getDefaultSharedPreferences(getTargetContext())
                 .edit()
                 .clear()
+                .putBoolean("paypal_use_hardcoded_configuration", true)
                 .commit();
 
         onDevice().onHomeScreen().launchApp("com.braintreepayments.demo");
