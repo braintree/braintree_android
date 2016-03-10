@@ -1,6 +1,7 @@
 package com.paypal.android.sdk.onetouch.core.fpti;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.VisibleForTesting;
 
 import com.paypal.android.sdk.onetouch.core.BuildConfig;
@@ -97,7 +98,7 @@ public class FptiManager {
 
     @VisibleForTesting
     void sendRequest(final String data) {
-        new Handler().postDelayed(new Runnable() {
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
                 mHttpClient.post("tracking/events", data, null);

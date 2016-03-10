@@ -13,6 +13,7 @@ import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.BraintreeActivityTestRule;
+import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -256,6 +257,8 @@ public class AnalyticsManagerTest {
         assertEquals("custom", json.getString("integrationType"));
         assertNotNull(json.getString("sessionId"));
         assertFalse(json.getString("sessionId").contains("-"));
+        assertEquals(PayPalOneTouchCore.isWalletAppInstalled(getTargetContext()), json.getBoolean("paypalInstalled"));
+        assertEquals(Venmo.isVenmoInstalled(getTargetContext()), json.getBoolean("venmoInstalled"));
     }
 
     public void setup() throws JSONException {

@@ -11,6 +11,7 @@ import android.provider.Settings.Secure;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
+import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,6 +50,8 @@ class AnalyticsManager {
     private static final String IS_SIMULATOR_KEY = "isSimulator";
     private static final String INTEGRATION_TYPE_KEY = "integrationType";
     private static final String USER_INTERFACE_ORIENTATION_KEY = "userInterfaceOrientation";
+    private static final String PAYPAL_INSTALLED_KEY = "paypalInstalled";
+    private static final String VENMO_INSTALLED_KEY = "venmoInstalled";
 
     private static final int REQUEST_THRESHOLD = 5;
 
@@ -169,17 +172,16 @@ class AnalyticsManager {
                     .put(SDK_VERSION_KEY, BuildConfig.VERSION_NAME)
                     .put(MERCHANT_APP_ID_KEY, context.getPackageName())
                     .put(MERCHANT_APP_NAME_KEY,
-                            DeviceMetadata.getAppName(getApplicationInfo(context),
-                                    context.getPackageManager()))
+                            DeviceMetadata.getAppName(getApplicationInfo(context), context.getPackageManager()))
                     .put(MERCHANT_APP_VERSION_KEY, DeviceMetadata.getAppVersion(context))
                     .put(DEVICE_ROOTED_KEY, DeviceMetadata.isDeviceRooted())
                     .put(DEVICE_MANUFACTURER_KEY, Build.MANUFACTURER)
                     .put(DEVICE_MODEL_KEY, Build.MODEL)
-                    .put(ANDROID_ID_KEY, Secure.getString(context.getContentResolver(),
-                            Secure.ANDROID_ID))
-                    .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY, DeviceMetadata.getPersistentUUID(
-                            context))
-                    .put(IS_SIMULATOR_KEY, DeviceMetadata.detectEmulator());
+                    .put(ANDROID_ID_KEY, Secure.getString(context.getContentResolver(), Secure.ANDROID_ID))
+                    .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY, DeviceMetadata.getPersistentUUID(context))
+                    .put(IS_SIMULATOR_KEY, DeviceMetadata.detectEmulator())
+                    .put(PAYPAL_INSTALLED_KEY, PayPalOneTouchCore.isWalletAppInstalled(context))
+                    .put(VENMO_INSTALLED_KEY, Venmo.isVenmoInstalled(context));
         } catch (JSONException ignored) {}
 
         return meta;
