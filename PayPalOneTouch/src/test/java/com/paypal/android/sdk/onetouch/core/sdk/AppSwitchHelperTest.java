@@ -261,7 +261,6 @@ public class AppSwitchHelperTest {
     private Recipe getMockRecipe(int version) {
         Recipe recipe = mock(Recipe.class);
         when(recipe.getTargetIntentAction()).thenReturn("com.paypal.android.lib.authenticator.activity.v" + version + ".TouchActivity");
-        when(recipe.getTargetComponent()).thenReturn("com.paypal.android.lib.authenticator.activity.v" + version + ".TouchActivity");
 
         switch (version) {
             case 0:

@@ -69,10 +69,6 @@ class ConfigFileParser {
         recipe.target(RequestTarget.valueOf(jsonRecipe.getString("target")))
                 .protocol(jsonRecipe.getString("protocol"));
 
-        if (jsonRecipe.has("component")) {
-            recipe.targetComponent(jsonRecipe.getString("component"));
-        }
-
         if (jsonRecipe.has("intent_action")) {
             recipe.targetIntentAction(jsonRecipe.getString("intent_action"));
         }

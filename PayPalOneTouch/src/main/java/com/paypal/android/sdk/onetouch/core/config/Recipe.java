@@ -20,7 +20,6 @@ public abstract class Recipe<T extends Recipe<T>> {
     private List<String> mTargetPackagesInReversePriorityOrder;
     private RequestTarget mTarget;
     private Protocol mProtocol;
-    private String mTargetComponent;
     private String mTargetIntentAction;
     private Collection<String> mSupportedLocales;
 
@@ -53,18 +52,9 @@ public abstract class Recipe<T extends Recipe<T>> {
         return getThis();
     }
 
-    public T targetComponent(String targetComponent) {
-        mTargetComponent = targetComponent;
-        return getThis();
-    }
-
     public T targetIntentAction(String targetIntentAction) {
         mTargetIntentAction = targetIntentAction;
         return getThis();
-    }
-
-    public String getTargetComponent() {
-        return mTargetComponent;
     }
 
     public String getTargetIntentAction() {
