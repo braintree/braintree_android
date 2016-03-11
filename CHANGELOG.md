@@ -1,5 +1,16 @@
 # Braintree Android SDK Release Notes
 
+## 2.2.2
+
+* Update `PaymentButton` styling when PayPal is the only visible option
+* Features
+  * Add client side overrides for payment methods in Drop-in and `PaymentButton` to `PaymentRequest`
+  * Add support for non-USD currencies and non-US shipping addresses in Android Pay
+  * Return email, billing address and shipping address as part of an `AndroidPayCardNonce` from Drop-in
+* Fixes
+  * Fix back button not doing anything in Drop-in after an Android Pay error is returned
+  * Deprecate `DataCollector#collectDeviceData` and add new signature to prevent a NullPointerException when using a fragment that is not attached to an `Activity`
+
 ## 2.2.1
 
 * Fixes
