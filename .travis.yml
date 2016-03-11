@@ -14,5 +14,5 @@ before_script:
   - ./gradlew clean assembleDebug || true
   - ./gradlew clean assembleDebug || true
   - ./gradlew clean assembleDebug || true
-script: ./gradlew clean lint test
+script: ./gradlew --info clean lint test
 
