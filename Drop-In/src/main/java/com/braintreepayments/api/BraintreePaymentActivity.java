@@ -70,13 +70,13 @@ public class BraintreePaymentActivity extends Activity implements
 
     /**
      * The payment method flow halted due to a resolvable error (authentication, authorization, SDK
-     * upgrade required). The reason for the error will be returned in a future release.
+     * upgrade required).
      */
     public static final int BRAINTREE_RESULT_DEVELOPER_ERROR = 2;
 
     /**
      * The payment method flow halted due to an error from the Braintree gateway. The best recovery
-     * path is to try again with a new client token.
+     * path is to try again with a new authorization.
      */
     public static final int BRAINTREE_RESULT_SERVER_ERROR = 3;
 
@@ -215,29 +215,24 @@ public class BraintreePaymentActivity extends Activity implements
             mAddPaymentMethodViewController.setErrors((ErrorWithResponse) error);
         } else {
             // Falling back to add payment method if getPaymentMethodNonces fails
-            if (StubbedView.LOADING_VIEW.mCurrentView &&
-                    !mHavePaymentMethodNoncesBeenReceived &&
+            if (StubbedView.LOADING_VIEW.mCurrentView && !mHavePaymentMethodNoncesBeenReceived &&
                     mBraintreeFragment.getConfiguration() != null) {
                 mBraintreeFragment.sendAnalyticsEvent("appeared");
                 mHavePaymentMethodNoncesBeenReceived = true;
                 showAddPaymentMethodView();
             } else {
-                if (error instanceof AuthenticationException ||
-                        error instanceof AuthorizationException ||
-                        error instanceof UpgradeRequiredException ||
-                        error instanceof ConfigurationException) {
+                if (error instanceof AuthenticationException || error instanceof AuthorizationException ||
+                        error instanceof UpgradeRequiredException) {
                     mBraintreeFragment.sendAnalyticsEvent("sdk.exit.developer-error");
-                    setResult(BRAINTREE_RESULT_DEVELOPER_ERROR,
-                            new Intent().putExtra(EXTRA_ERROR_MESSAGE, error));
-                } else if (error instanceof ServerException ||
-                        error instanceof UnexpectedException) {
+                    setResult(BRAINTREE_RESULT_DEVELOPER_ERROR, new Intent().putExtra(EXTRA_ERROR_MESSAGE, error));
+                } else if (error instanceof ConfigurationException) {
+                    setResult(BRAINTREE_RESULT_SERVER_ERROR, new Intent().putExtra(EXTRA_ERROR_MESSAGE, error));
+                } else if (error instanceof ServerException || error instanceof UnexpectedException) {
                     mBraintreeFragment.sendAnalyticsEvent("sdk.exit.server-error");
-                    setResult(BRAINTREE_RESULT_SERVER_ERROR,
-                            new Intent().putExtra(EXTRA_ERROR_MESSAGE, error));
+                    setResult(BRAINTREE_RESULT_SERVER_ERROR, new Intent().putExtra(EXTRA_ERROR_MESSAGE, error));
                 } else if (error instanceof DownForMaintenanceException) {
                     mBraintreeFragment.sendAnalyticsEvent("sdk.exit.server-unavailable");
-                    setResult(BRAINTREE_RESULT_SERVER_UNAVAILABLE,
-                            new Intent().putExtra(EXTRA_ERROR_MESSAGE, error));
+                    setResult(BRAINTREE_RESULT_SERVER_UNAVAILABLE, new Intent().putExtra(EXTRA_ERROR_MESSAGE, error));
                 }
 
                 finish();

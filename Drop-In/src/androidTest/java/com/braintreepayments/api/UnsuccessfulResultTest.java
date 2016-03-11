@@ -7,6 +7,7 @@ import android.view.KeyEvent;
 
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.AuthorizationException;
+import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.exceptions.ServerException;
@@ -26,9 +27,9 @@ import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.api.test.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.api.test.WaitForActivityHelper.waitForActivityToFinish;
+import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
@@ -85,10 +86,10 @@ public class UnsuccessfulResultTest extends BraintreePaymentActivityTestRunner {
         Map<String, Object> result = getActivityResult(mActivity);
         Object exception = ((Intent) result.get("resultData"))
                 .getSerializableExtra(BraintreePaymentActivity.EXTRA_ERROR_MESSAGE);
-        assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_ERROR,
-                result.get("resultCode"));
-        assertTrue(exception instanceof UnexpectedException);
-        assertEquals("Configuration Error", ((UnexpectedException) exception).getMessage());
+        assertEquals(BraintreePaymentActivity.BRAINTREE_RESULT_SERVER_ERROR, result.get("resultCode"));
+        assertTrue(exception instanceof ConfigurationException);
+        assertEquals("Request for configuration has failed: Configuration Error. Future requests will retry up to 3 times",
+                ((ConfigurationException) exception).getMessage());
     }
 
     @Test(timeout = 30000)
