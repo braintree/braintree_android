@@ -1,6 +1,13 @@
 # Braintree Android SDK Release Notes
 
+## 2.2.3
+
+* Fixes
+  * Fix incorrect `groupId` of dependencies in pom file for 2.2.2
+
 ## 2.2.2
+
+:rotating_light: The `groupId`s in this version's pom files are incorrect and dependencies will not resolve. Do not use. :rotating_light:
 
 * Update `PaymentButton` styling when PayPal is the only visible option
 * Features
