@@ -27,6 +27,7 @@ public class PaymentMethodTypeTest {
         assertEquals(PaymentMethodType.PAYPAL, PaymentMethodType.forType("PayPal"));
         assertEquals(PaymentMethodType.ANDROID_PAY, PaymentMethodType.forType("Android Pay"));
         assertEquals(PaymentMethodType.UNKNOWN, PaymentMethodType.forType("unknown"));
+        assertEquals(PaymentMethodType.PAY_WITH_VENMO, PaymentMethodType.forType("Venmo"));
     }
 
     @Test(timeout = 1000)
@@ -46,6 +47,7 @@ public class PaymentMethodTypeTest {
         assertEquals(R.drawable.bt_paypal, PaymentMethodType.PAYPAL.getDrawable());
         assertEquals(R.drawable.bt_android_pay, PaymentMethodType.ANDROID_PAY.getDrawable());
         assertEquals(0, PaymentMethodType.UNKNOWN.getDrawable());
+        assertEquals(R.drawable.bt_venmo, PaymentMethodType.PAY_WITH_VENMO.getDrawable());
     }
 
     @Test(timeout = 1000)
@@ -60,6 +62,7 @@ public class PaymentMethodTypeTest {
         assertEquals(R.string.bt_descriptor_paypal, PaymentMethodType.PAYPAL.getLocalizedName());
         assertEquals(R.string.bt_descriptor_android_pay, PaymentMethodType.ANDROID_PAY.getLocalizedName());
         assertEquals(R.string.bt_descriptor_unknown, PaymentMethodType.UNKNOWN.getLocalizedName());
+        assertEquals(R.string.bt_descriptor_pay_with_venmo, PaymentMethodType.PAY_WITH_VENMO.getLocalizedName());
     }
 
     @Test(timeout = 1000)
@@ -74,10 +77,11 @@ public class PaymentMethodTypeTest {
         assertEquals("PayPal", PaymentMethodType.PAYPAL.getCanonicalName());
         assertEquals("Android Pay", PaymentMethodType.ANDROID_PAY.getCanonicalName());
         assertEquals("unknown", PaymentMethodType.UNKNOWN.getCanonicalName());
+        assertEquals("Venmo", PaymentMethodType.PAY_WITH_VENMO.getCanonicalName());
     }
 
     @Test(timeout = 1000)
     public void containsOnlyKnownPaymentMethodTypes() {
-        assertEquals(10, PaymentMethodType.values().length);
+        assertEquals(11, PaymentMethodType.values().length);
     }
 }
