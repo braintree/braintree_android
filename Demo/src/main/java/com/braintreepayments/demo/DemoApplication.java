@@ -5,7 +5,6 @@ import android.content.Context;
 
 import com.braintreepayments.demo.internal.ApiClient;
 import com.braintreepayments.demo.internal.ApiClientRequestInterceptor;
-import com.braintreepayments.demo.internal.LeakLoggerService;
 import com.lukekorth.mailable_log.MailableLog;
 
 import org.slf4j.Logger;
@@ -31,7 +30,7 @@ public class DemoApplication extends Application implements UncaughtExceptionHan
         }
         MailableLog.init(this, BuildConfig.DEBUG);
 
-        LeakLoggerService.setupLeakCanary(this);
+        DeveloperTools.setup(this);
 
         mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(this);
