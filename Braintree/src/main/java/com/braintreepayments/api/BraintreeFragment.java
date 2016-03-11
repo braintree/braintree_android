@@ -20,11 +20,13 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
+import com.braintreepayments.api.interfaces.UnionPayListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.TokenizationKey;
+import com.braintreepayments.api.models.UnionPayCapabilities;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -83,6 +85,7 @@ public class BraintreeFragment extends Fragment {
     private PaymentMethodNoncesUpdatedListener mPaymentMethodNoncesUpdatedListener;
     private PaymentMethodNonceCreatedListener mPaymentMethodNonceCreatedListener;
     private BraintreeErrorListener mErrorListener;
+    private UnionPayListener mUnionPayListener;
 
     public BraintreeFragment() {}
 
@@ -294,6 +297,10 @@ public class BraintreeFragment extends Fragment {
             mErrorListener = (BraintreeErrorListener) listener;
         }
 
+        if (listener instanceof UnionPayListener) {
+            mUnionPayListener = (UnionPayListener) listener;
+        }
+
         flushCallbacks();
     }
 
@@ -353,6 +360,34 @@ public class BraintreeFragment extends Fragment {
             @Override
             public void run() {
                 mPaymentMethodNonceCreatedListener.onPaymentMethodNonceCreated(paymentMethodNonce);
+            }
+        });
+    }
+
+    protected void postCallback(final UnionPayCapabilities capabilities) {
+        postOrQueueCallback(new QueuedCallback() {
+            @Override
+            public boolean shouldRun() {
+                return mUnionPayListener != null;
+            }
+
+            @Override
+            public void run() {
+                mUnionPayListener.onCapabilitiesFetched(capabilities);
+            }
+        });
+    }
+
+    protected void postUnionPayCallback(final String enrollmentId) {
+        postOrQueueCallback(new QueuedCallback() {
+            @Override
+            public boolean shouldRun() {
+                return mUnionPayListener != null;
+            }
+
+            @Override
+            public void run() {
+                mUnionPayListener.onSmsCodeSent(enrollmentId);
             }
         });
     }

@@ -17,4 +17,7 @@ public class CardNumber {
     public static final String THREE_D_SECURE_ISSUER_DOWN = "4000000000000036";
     public static final String THREE_D_SECURE_MPI_SERVICE_ERROR = "4000000000000093";
 
+    public static final String UNIONPAY_ENROLLMENT_REQUIRED = "6222821234560017";
+    public static final String UNIONPAY_ENROLLMENT_NOT_REQUIRED = "6212345678900085";
+
 }

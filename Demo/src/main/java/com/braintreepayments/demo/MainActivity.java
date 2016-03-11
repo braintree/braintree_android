@@ -42,6 +42,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
     private static final int PAYMENT_BUTTON_REQUEST = 200;
     private static final int CUSTOM_REQUEST = 300;
     private static final int PAYPAL_REQUEST = 400;
+    private static final int UNIONPAY_REQUEST = 500;
 
     private static final String KEY_NONCE = "nonce";
 
@@ -57,6 +58,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
     private Button mPayPalButton;
     private Button mPaymentButtonButton;
     private Button mCustomButton;
+    private Button mUnionPayButton;
     private Button mCreateTransactionButton;
     private ProgressDialog mLoading;
 
@@ -74,6 +76,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
         mPayPalButton = (Button) findViewById(R.id.paypal);
         mPaymentButtonButton = (Button) findViewById(R.id.payment_button);
         mCustomButton = (Button) findViewById(R.id.custom);
+        mUnionPayButton = (Button) findViewById(R.id.unionpay);
         mCreateTransactionButton = (Button) findViewById(R.id.create_transaction);
 
         if (savedInstanceState != null) {
@@ -101,6 +104,10 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
         startActivityForResult(intent, PAYPAL_REQUEST);
     }
 
+    public void launchUnionPay(View v) {
+        Intent intent = new Intent(this, UnionPayActivity.class);
+        startActivityForResult(intent, UNIONPAY_REQUEST);
+    }
     public void launchPaymentButton(View v) {
         Intent intent = new Intent(this, PaymentButtonActivity.class)
                 .putExtra(EXTRA_COLLECT_DEVICE_DATA, Settings.shouldCollectDeviceData(this))
@@ -294,6 +301,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
         mPayPalButton.setEnabled(enable);
         mPaymentButtonButton.setEnabled(enable);
         mCustomButton.setEnabled(enable);
+        mUnionPayButton.setEnabled(enable);
     }
 
     private void safelyCloseLoadingView() {

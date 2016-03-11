@@ -145,4 +145,12 @@ public class ConfigurationTest {
         assertNull(configuration.getAndroidPay().getDisplayName());
         assertNull(configuration.getAndroidPay().getEnvironment());
     }
+
+    @Test
+    public void returnsNewUnionPayConfigurationWhenUnionPayIsAbsent() throws JSONException {
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration.json"));
+
+        assertFalse(configuration.getUnionPay().isEnabled());
+    }
 }

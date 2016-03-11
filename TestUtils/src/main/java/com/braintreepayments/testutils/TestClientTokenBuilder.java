@@ -23,6 +23,7 @@ public class TestClientTokenBuilder {
     private static final int MERCHANT_WITH_POSTAL_CODE_VERIFICATION = 3;
     private static final int MERCHANT_WITH_CVV_AND_POSTAL_CODE_VERIFICATION = 4;
     private static final int MERCHANT_WITH_THREE_D_SECURE_ENABLED = 5;
+    private static final int MERCHANT_WITH_UNIONPAY = 6;
 
     private boolean mWithCustomer = true;
     private int mMerchantType = MERCHANT_WITHOUT_PAYPAL;
@@ -64,6 +65,12 @@ public class TestClientTokenBuilder {
         return this;
     }
 
+    public TestClientTokenBuilder withUnionPay() {
+        mMerchantType = MERCHANT_WITH_UNIONPAY;
+        mMerchantAccount = "fake_switch_usd";
+        return this;
+    }
+
     public TestClientTokenBuilder withAnalytics() {
         mAnalytics = true;
         return this;
@@ -100,6 +107,7 @@ public class TestClientTokenBuilder {
                 return getClientTokenFromGateway("integration2_merchant_id", "integration2_public_key");
             case MERCHANT_WITH_PAYPAL:
             case MERCHANT_WITH_THREE_D_SECURE_ENABLED:
+            case MERCHANT_WITH_UNIONPAY:
                 return getClientTokenFromGateway("integration_merchant_id", "integration_public_key");
             case MERCHANT_WITH_CVV_VERIFICATION:
                 return getClientTokenFromGateway("client_api_cvv_verification_merchant_id", "client_api_cvv_verification_public_key");
