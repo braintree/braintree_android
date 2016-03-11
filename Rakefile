@@ -71,7 +71,7 @@ end
 
 def prompt_for_change_log(version)
   last_version = `git tag | tail -1`.chomp
-  tmp_change_log = "## #{version}"
+  tmp_change_log = "#{version}"
   tmp_change_log += "\n\n# Please enter a summary of the changes below."
   tmp_change_log += "\n# Lines starting with '# ' will be ignored."
   tmp_change_log += "\n#"
@@ -98,7 +98,7 @@ def prompt_for_change_log(version)
 
   IO.write("CHANGELOG.md",
     File.open("CHANGELOG.md") do |file|
-      file.read.gsub("# Braintree Android SDK Release Notes\n", "# Braintree Android SDK Release Notes\n\n#{new_changes.chomp}")
+      file.read.gsub("# Braintree Android SDK Release Notes\n", "# Braintree Android SDK Release Notes\n\n## #{new_changes.chomp}")
     end
   )
 end
