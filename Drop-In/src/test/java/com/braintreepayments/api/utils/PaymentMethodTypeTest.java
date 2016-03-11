@@ -1,21 +1,18 @@
 package com.braintreepayments.api.utils;
 
-import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
-
 import com.braintreepayments.api.dropin.R;
 import com.braintreepayments.api.dropin.utils.PaymentMethodType;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
 
 import static junit.framework.Assert.assertEquals;
 
-@RunWith(AndroidJUnit4.class)
-@SmallTest
+@RunWith(RobolectricGradleTestRunner.class)
 public class PaymentMethodTypeTest {
 
-    @Test(timeout = 1000)
+    @Test
     public void forType_returnsCorrectPaymentMethodType() {
         assertEquals(PaymentMethodType.VISA, PaymentMethodType.forType("Visa"));
         assertEquals(PaymentMethodType.MASTERCARD, PaymentMethodType.forType("MasterCard"));
@@ -30,12 +27,12 @@ public class PaymentMethodTypeTest {
         assertEquals(PaymentMethodType.PAY_WITH_VENMO, PaymentMethodType.forType("Venmo"));
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void forType_returnsUnknownForRandomString() {
         assertEquals(PaymentMethodType.UNKNOWN, PaymentMethodType.forType("payment method"));
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void getDrawable_returnsCorrectDrawables() {
         assertEquals(R.drawable.bt_visa, PaymentMethodType.VISA.getDrawable());
         assertEquals(R.drawable.bt_mastercard, PaymentMethodType.MASTERCARD.getDrawable());
@@ -50,7 +47,7 @@ public class PaymentMethodTypeTest {
         assertEquals(R.drawable.bt_venmo, PaymentMethodType.PAY_WITH_VENMO.getDrawable());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void getLocalizedName_returnsCorrectString() {
         assertEquals(R.string.bt_descriptor_visa, PaymentMethodType.VISA.getLocalizedName());
         assertEquals(R.string.bt_descriptor_mastercard, PaymentMethodType.MASTERCARD.getLocalizedName());
@@ -65,7 +62,7 @@ public class PaymentMethodTypeTest {
         assertEquals(R.string.bt_descriptor_pay_with_venmo, PaymentMethodType.PAY_WITH_VENMO.getLocalizedName());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void getCanonicalName_returnsCorrectString() {
         assertEquals("Visa", PaymentMethodType.VISA.getCanonicalName());
         assertEquals("MasterCard", PaymentMethodType.MASTERCARD.getCanonicalName());
@@ -80,7 +77,7 @@ public class PaymentMethodTypeTest {
         assertEquals("Venmo", PaymentMethodType.PAY_WITH_VENMO.getCanonicalName());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void containsOnlyKnownPaymentMethodTypes() {
         assertEquals(11, PaymentMethodType.values().length);
     }
