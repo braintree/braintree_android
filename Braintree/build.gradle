@@ -107,6 +107,7 @@ nexusStaging {
     packageGroup = "com.braintreepayments"
 }
 
+group = 'com.braintreepayments.api'
 uploadArchives {
     repositories {
         mavenDeployer {

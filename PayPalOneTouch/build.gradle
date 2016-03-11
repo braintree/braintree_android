@@ -70,6 +70,7 @@ nexusStaging {
     packageGroup = "com.paypal"
 }
 
+group = 'com.paypal.android.sdk'
 uploadArchives {
     repositories {
         mavenDeployer {
