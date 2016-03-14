@@ -13,6 +13,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
@@ -113,10 +114,9 @@ public class TLSSocketFactory extends SSLSocketFactory {
         if (socket instanceof SSLSocket) {
             ArrayList<String> supportedProtocols =
                     new ArrayList<>(Arrays.asList(((SSLSocket) socket).getSupportedProtocols()));
-            supportedProtocols.retainAll(Arrays.asList("TLSv1.2", "TLSv1.1", "TLSv1"));
+            supportedProtocols.retainAll(Collections.singletonList("TLSv1.2"));
 
-            ((SSLSocket)socket).setEnabledProtocols(supportedProtocols.toArray(
-                    new String[supportedProtocols.size()]));
+            ((SSLSocket) socket).setEnabledProtocols(supportedProtocols.toArray(new String[supportedProtocols.size()]));
         }
 
         return socket;
