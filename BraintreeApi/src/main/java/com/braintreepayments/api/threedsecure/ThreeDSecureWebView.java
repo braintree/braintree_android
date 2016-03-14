@@ -3,7 +3,6 @@ package com.braintreepayments.api.threedsecure;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.util.AttributeSet;
 import android.webkit.WebSettings;
@@ -28,9 +27,7 @@ public class ThreeDSecureWebView extends WebView {
         super(context, attrs, defStyle);
     }
 
-    @TargetApi(VERSION_CODES.HONEYCOMB)
-    public ThreeDSecureWebView(Context context, AttributeSet attrs, int defStyleAttr,
-            boolean privateBrowsing) {
+    public ThreeDSecureWebView(Context context, AttributeSet attrs, int defStyleAttr, boolean privateBrowsing) {
         super(context, attrs, defStyleAttr, privateBrowsing);
     }
 
@@ -49,16 +46,9 @@ public class ThreeDSecureWebView extends WebView {
         settings.setSupportMultipleWindows(true);
         settings.setJavaScriptEnabled(true);
         settings.setBuiltInZoomControls(true);
-        disableOnScreenZoomControls(settings);
+        settings.setDisplayZoomControls(false);
 
         setWebChromeClient(new ThreeDSecureWebChromeClient(activity));
         setWebViewClient(new ThreeDSecureWebViewClient(activity));
-    }
-
-    @TargetApi(VERSION_CODES.HONEYCOMB)
-    private void disableOnScreenZoomControls(WebSettings settings) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            settings.setDisplayZoomControls(false);
-        }
     }
 }

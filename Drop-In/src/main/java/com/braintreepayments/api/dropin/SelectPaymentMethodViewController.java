@@ -2,7 +2,6 @@ package com.braintreepayments.api.dropin;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.View;
@@ -93,13 +92,8 @@ public class SelectPaymentMethodViewController extends BraintreeViewController
         PaymentMethodListAdapter paymentMethodListAdapter =
                 new PaymentMethodListAdapter(mActivity, this, mBraintree.getCachedPaymentMethods());
 
-        ContextThemeWrapper contextThemeWrapper;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            contextThemeWrapper = new ContextThemeWrapper(mActivity, android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
-        }
-        else {
-            contextThemeWrapper = new ContextThemeWrapper(mActivity, android.R.style.Theme_Light_NoTitleBar);
-        }
+        ContextThemeWrapper contextThemeWrapper = new ContextThemeWrapper(mActivity,
+                android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
 
         new AlertDialog.Builder(contextThemeWrapper)
             .setTitle(R.string.bt_choose_payment_method)

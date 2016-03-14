@@ -544,7 +544,6 @@ public class CreatePaymentMethodTest extends BraintreePaymentActivityTestCase {
         assertNotNull(paymentMethod.getNonce());
     }
 
-    @TargetApi(VERSION_CODES.HONEYCOMB)
     private boolean checkHomeAsUpEnabled(Activity activity) {
         return (activity.getActionBar().getDisplayOptions() & ActionBar.DISPLAY_HOME_AS_UP) ==
             ActionBar.DISPLAY_HOME_AS_UP;
