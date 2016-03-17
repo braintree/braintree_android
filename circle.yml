@@ -1,3 +1,7 @@
+general:
+  artifacts:
+    - "Demo/build/outputs/apk/Demo-debug.apk"
+
 dependencies:
   pre:
     - echo y | android update sdk --no-ui --all --filter tools
