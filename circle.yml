@@ -19,5 +19,5 @@ test:
   override:
     - ./gradlew --info clean lint test
   post:
-    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
-    - find . -regex ".*test-.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+    - mkdir $CIRCLE_ARTIFACTS/junit/
+    - find . -regex ".*test-.*xml" -exec cp {} $CIRCLE_ARTIFACTS/junit/ \;
