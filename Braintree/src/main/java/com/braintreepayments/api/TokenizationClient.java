@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.net.Uri;
+
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
@@ -27,11 +29,16 @@ class TokenizationClient {
      *
      * @param fragment {@link BraintreeFragment}
      */
-    static void getPaymentMethodNonces(final BraintreeFragment fragment) {
+    static void getPaymentMethodNonces(final BraintreeFragment fragment, boolean defaultFirst) {
+        final Uri uri = Uri.parse(versionedPath(PAYMENT_METHOD_ENDPOINT))
+                .buildUpon()
+                .appendQueryParameter("default_first", String.valueOf(defaultFirst))
+                .build();
+
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                fragment.getHttpClient().get(versionedPath(PAYMENT_METHOD_ENDPOINT), new HttpResponseCallback() {
+                fragment.getHttpClient().get(uri.toString(), new HttpResponseCallback() {
                     @Override
                     public void success(String responseBody) {
                         try {
@@ -48,6 +55,10 @@ class TokenizationClient {
                 });
             }
         });
+    }
+
+    static void getPaymentMethodNonces(BraintreeFragment fragment) {
+        getPaymentMethodNonces(fragment, false);
     }
 
     /**

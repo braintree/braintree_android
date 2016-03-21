@@ -22,10 +22,12 @@ public abstract class PaymentMethodNonce implements Parcelable {
     private static final String PAYMENT_METHOD_NONCE_COLLECTION_KEY = "paymentMethods";
     private static final String PAYMENT_METHOD_TYPE_KEY = "type";
     private static final String PAYMENT_METHOD_NONCE_KEY = "nonce";
+    private static final String PAYMENT_METHOD_DEFAULT_KEY = "default";
     private static final String DESCRIPTION_KEY = "description";
 
     protected String mNonce;
     protected String mDescription;
+    protected boolean mDefault;
 
     protected static JSONObject getJsonObjectForType(String apiResourceKey, String response)
             throws JSONException {
@@ -38,6 +40,7 @@ public abstract class PaymentMethodNonce implements Parcelable {
     protected void fromJson(JSONObject json) throws JSONException {
         mNonce = json.getString(PAYMENT_METHOD_NONCE_KEY);
         mDescription = json.getString(DESCRIPTION_KEY);
+        mDefault = json.optBoolean(PAYMENT_METHOD_DEFAULT_KEY, false);
     }
 
     /**
@@ -54,6 +57,13 @@ public abstract class PaymentMethodNonce implements Parcelable {
      */
     public String getDescription() {
         return mDescription;
+    }
+
+    /**
+     * @return {@code true} if this payment method is the default for the current customer, {@code false} otherwise
+     */
+    public boolean isDefault() {
+        return mDefault;
     }
 
     /**
@@ -157,10 +167,12 @@ public abstract class PaymentMethodNonce implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mNonce);
         dest.writeString(mDescription);
+        dest.writeByte(mDefault ? (byte) 1 : (byte) 0);
     }
 
     protected PaymentMethodNonce(Parcel in) {
         mNonce = in.readString();
         mDescription = in.readString();
+        mDefault = in.readByte() > 0;
     }
 }

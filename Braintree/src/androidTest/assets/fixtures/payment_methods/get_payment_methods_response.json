@@ -4,7 +4,7 @@
       "type": "CreditCard",
       "nonce": "123456-12345-12345-a-adfa",
       "description": "ending in ••11",
-      "isDefault": false,
+      "default": true,
       "isLocked": false,
       "securityQuestions": [],
       "details":
@@ -17,7 +17,7 @@
       "type": "PayPalAccount",
       "nonce": "aaaaaa-bbbbbbb-109934023-1",
       "description": "with email paypalaccount@example.com",
-      "isDefault": false,
+      "default": false,
       "isLocked": false,
       "securityQuestions": [],
       "details": {

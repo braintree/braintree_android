@@ -120,7 +120,7 @@ public class BraintreePaymentActivity extends Activity implements
                     onPaymentMethodNoncesUpdated(mBraintreeFragment.getCachedPaymentMethodNonces());
                 }
             } else {
-                TokenizationClient.getPaymentMethodNonces(mBraintreeFragment);
+                TokenizationClient.getPaymentMethodNonces(mBraintreeFragment, mPaymentRequest.isDefaultFirst());
                 showLoadingView();
             }
         } catch (InvalidArgumentException e) {

@@ -4,7 +4,7 @@
       "type": "PayPalAccount",
       "nonce": "aaaaaa-bbbbbbb-109934023-1",
       "description": "with email paypalaccount@example.com",
-      "isDefault": false,
+      "default": false,
       "isLocked": false,
       "securityQuestions": [],
       "details": {

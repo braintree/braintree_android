@@ -127,7 +127,8 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
                 .primaryDescription(getString(R.string.cart))
                 .secondaryDescription("1 Item")
                 .amount("$1.00")
-                .submitButtonText(getString(R.string.buy));
+                .submitButtonText(getString(R.string.buy))
+                .defaultFirst(true);
 
         if (Settings.isPayPalAddressScopeRequested(this)) {
             paymentRequest.paypalAdditionalScopes(Collections.singletonList(PayPal.SCOPE_ADDRESS));

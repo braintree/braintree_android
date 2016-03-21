@@ -11,6 +11,7 @@ import java.util.List;
 import static com.braintreepayments.api.models.PaymentMethodNonce.parsePaymentMethodNonces;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricGradleTestRunner.class)
@@ -26,6 +27,7 @@ public class PaymentMethodNonceTest {
         assertEquals("123456-12345-12345-a-adfa", paymentMethodNonces.get(0).getNonce());
         assertEquals("ending in ••11", paymentMethodNonces.get(0).getDescription());
         assertEquals("11", ((CardNonce) paymentMethodNonces.get(0)).getLastTwo());
+        assertTrue(paymentMethodNonces.get(0).isDefault());
     }
 
     @Test
@@ -37,6 +39,7 @@ public class PaymentMethodNonceTest {
         assertEquals("PayPal", paymentMethodNonces.get(1).getTypeLabel());
         assertEquals("aaaaaa-bbbbbbb-109934023-1", paymentMethodNonces.get(1).getNonce());
         assertEquals("with email paypalaccount@example.com", paymentMethodNonces.get(1).getDescription());
+        assertFalse(paymentMethodNonces.get(1).isDefault());
     }
 
     @Test
@@ -49,6 +52,7 @@ public class PaymentMethodNonceTest {
         assertEquals("fake-android-pay-nonce", paymentMethodNonces.get(2).getNonce());
         assertEquals("Android Pay", paymentMethodNonces.get(2).getDescription());
         assertEquals("11", ((AndroidPayCardNonce) paymentMethodNonces.get(2)).getLastTwo());
+        assertFalse(paymentMethodNonces.get(2).isDefault());
     }
 
     @Test

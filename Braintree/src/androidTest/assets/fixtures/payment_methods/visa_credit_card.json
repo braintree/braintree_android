@@ -2,7 +2,7 @@
   "type": "CreditCard",
   "nonce": "123456-12345-12345-a-adfa",
   "description": "ending in ••11",
-  "isDefault": false,
+  "default": false,
   "isLocked": false,
   "securityQuestions": [],
   "details":
