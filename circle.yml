@@ -13,8 +13,8 @@ dependencies:
 
 test:
   override:
-    - ./gradlew --info clean lint test
-    - ./gradlew --info :Demo:assembleDebug
+    - ./gradlew --stacktrace --info clean lint test
+    - ./gradlew --stacktrace --info :Demo:assembleDebug
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - mkdir $CIRCLE_ARTIFACTS/apk/
