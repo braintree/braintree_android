@@ -32,7 +32,7 @@ public class DataCollectorTest {
                 .configuration(mock(Configuration.class))
                 .build();
 
-        String deviceData = DataCollector.collectDeviceData(RuntimeEnvironment.application, fragment);
+        String deviceData = DataCollector.collectDeviceData(fragment);
 
         JSONObject json = new JSONObject(deviceData);
         assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));
@@ -46,7 +46,7 @@ public class DataCollectorTest {
                 .configuration(mock(Configuration.class))
                 .build();
 
-        String deviceData = DataCollector.collectDeviceData(RuntimeEnvironment.application, fragment, "100");
+        String deviceData = DataCollector.collectDeviceData(fragment, "100");
 
         JSONObject json = new JSONObject(deviceData);
         assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));

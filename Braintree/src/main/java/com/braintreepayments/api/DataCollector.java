@@ -33,25 +33,16 @@ public class DataCollector {
     private static Object sDeviceCollector;
 
     /**
-     * @deprecated If {@link BraintreeFragment} has not been attached to an {@link android.app.Activity} this method
-     * will crash with a {@link NullPointerException}. Use
-     * {@link #collectDeviceData(Context, BraintreeFragment)} instead.
-     *
      * Collect device information for fraud identification purposes.
      *
      * @param fragment {@link BraintreeFragment}
      * @return Device data String to send to Braintree.
      */
-    @Deprecated
     public static String collectDeviceData(BraintreeFragment fragment) {
-        return collectDeviceData(fragment.getApplicationContext(), fragment);
+        return collectDeviceData(fragment, BRAINTREE_MERCHANT_ID);
     }
 
     /**
-     * @deprecated If {@link BraintreeFragment} has not been attached to an {@link android.app.Activity} this method
-     * will crash with a {@link NullPointerException}. Use
-     * {@link #collectDeviceData(Context, BraintreeFragment, String)} instead.
-     *
      * Collect device information for fraud identification purposes. This should be used in conjunction
      * with a non-aggregate fraud id.
      *
@@ -59,32 +50,7 @@ public class DataCollector {
      * @param merchantId The fraud merchant id from Braintree.
      * @return Device data String to send to Braintree.
      */
-    @Deprecated
     public static String collectDeviceData(BraintreeFragment fragment, String merchantId) {
-        return collectDeviceData(fragment.getApplicationContext(), fragment, merchantId);
-    }
-
-    /**
-     * Collect device information for fraud identification purposes.
-     *
-     * @param context
-     * @param fragment {@link BraintreeFragment}
-     * @return Device data String to send to Braintree.
-     */
-    public static String collectDeviceData(Context context, BraintreeFragment fragment) {
-        return collectDeviceData(context, fragment, BRAINTREE_MERCHANT_ID);
-    }
-
-    /**
-     * Collect device information for fraud identification purposes. This should be used in conjunction
-     * with a non-aggregate fraud id.
-     *
-     * @param context
-     * @param fragment {@link BraintreeFragment}
-     * @param merchantId The fraud merchant id from Braintree.
-     * @return Device data String to send to Braintree.
-     */
-    public static String collectDeviceData(Context context, BraintreeFragment fragment, String merchantId) {
         JSONObject deviceData = new JSONObject();
 
         try {
@@ -95,13 +61,29 @@ public class DataCollector {
         } catch (NoClassDefFoundError | JSONException ignored) {}
 
         try {
-            String clientMetadataId = getPayPalClientMetadataId(context);
+            String clientMetadataId = getPayPalClientMetadataId(fragment.getApplicationContext());
             if (!TextUtils.isEmpty(clientMetadataId)) {
                 deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
             }
         } catch (JSONException ignored) {}
 
         return deviceData.toString();
+    }
+
+    /**
+     * @deprecated Use {@link #collectDeviceData(BraintreeFragment)} instead.
+     */
+    @Deprecated
+    public static String collectDeviceData(Context context, BraintreeFragment fragment) {
+        return collectDeviceData(fragment);
+    }
+
+    /**
+     * @deprecated Use {@link #collectDeviceData(BraintreeFragment, String)} instead.
+     */
+    @Deprecated
+    public static String collectDeviceData(Context context, BraintreeFragment fragment, String merchantId) {
+        return collectDeviceData(fragment, merchantId);
     }
 
     /**
