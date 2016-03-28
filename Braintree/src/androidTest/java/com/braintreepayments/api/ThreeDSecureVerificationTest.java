@@ -243,7 +243,7 @@ public class ThreeDSecureVerificationTest {
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
-                assertEquals("Failed to authenticate, please try a different form of payment",
+                assertEquals("Failed to authenticate, please try a different form of payment.",
                         error.getMessage());
                 mCountDownLatch.countDown();
             }
@@ -297,7 +297,7 @@ public class ThreeDSecureVerificationTest {
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
-                assertEquals("Failed to authenticate, please try a different form of payment",
+                assertEquals("Failed to authenticate, please try a different form of payment.",
                         error.getMessage());
                 mCountDownLatch.countDown();
             }
