@@ -19,16 +19,14 @@ public class SdkRiskComponentTest {
 
     @Test(timeout = 1000)
     public void getClientMetadataId_returnsClientMetadataId() {
-        String clientMetadataId =
-                SdkRiskComponent.getClientMetadataId(getTargetContext(), GUID, null);
+        String clientMetadataId = SdkRiskComponent.getClientMetadataId(getTargetContext(), GUID, null);
 
         assertFalse(TextUtils.isEmpty(clientMetadataId));
     }
 
     @Test(timeout = 1000)
     public void getClientMetadataId_returnsPairingId() {
-        String clientMetadataId =
-                SdkRiskComponent.getClientMetadataId(getTargetContext(), GUID, "pairing-id");
+        String clientMetadataId = SdkRiskComponent.getClientMetadataId(getTargetContext(), GUID, "pairing-id");
 
         assertEquals("pairing-id", clientMetadataId);
     }
