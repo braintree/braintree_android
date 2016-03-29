@@ -1,5 +1,6 @@
 package com.braintreepayments.testutils.ui;
 
+import android.support.test.espresso.PerformException;
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.ViewInteraction;
@@ -94,7 +95,9 @@ public class ViewHelper {
 
             @Override
             public void perform(final UiController uiController, final View view) {
-                mCloseSoftKeyboard.perform(uiController, view);
+                try {
+                    mCloseSoftKeyboard.perform(uiController, view);
+                } catch (PerformException ignored) {}
                 uiController.loopMainThreadForAtLeast(KEYBOARD_DISMISSAL_DELAY_MILLIS);
             }
         };
