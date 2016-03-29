@@ -33,9 +33,9 @@ def run
         stdin.each do |line|
           puts line
           if line.include?("request_screenshot")
-            handle_screenshot_request(line.split(':')[1].strip)
+            handle_screenshot_request(line.split(':').last.strip)
           elsif line.include?("request_command")
-            handle_command_request(line.split(':')[1].strip)
+            handle_command_request(line.split(':').last.strip)
           end
         end
       rescue Errno::EIO
