@@ -37,8 +37,11 @@ allprojects {
     }
 
     apply plugin: 'maven'
+
     def sonatypeUsername = System.properties.containsKey('sonatypeUsername') ? System.properties['sonatypeUsername'] : ''
     def sonatypePassword = System.properties.containsKey('sonatypePassword') ? System.properties['sonatypePassword'] : ''
+
+    group = 'com.braintreepayments.api'
     uploadArchives {
         repositories {
             mavenDeployer {
