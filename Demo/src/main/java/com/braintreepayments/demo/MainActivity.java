@@ -266,6 +266,9 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
     }
 
     private String formatAddress(UserAddress address) {
+        if(address == null) {
+            return "null";
+        }
         return address.getName() + " " + address.getAddress1() + " " + address.getAddress2() + " " +
                 address.getAddress3() + " " + address.getAddress4() + " " + address.getAddress5() + " " +
                 address.getLocality() + " " + address.getAdministrativeArea() + " " + address.getPostalCode() + " " +
