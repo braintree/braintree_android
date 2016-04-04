@@ -9,6 +9,7 @@ import org.robolectric.RobolectricGradleTestRunner;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 
 @RunWith(RobolectricGradleTestRunner.class)
 public class CardNonceTest {
@@ -38,5 +39,6 @@ public class CardNonceTest {
         assertEquals("123456-12345-12345-a-adfa", parceled.getNonce());
         assertEquals("ending in ••11", parceled.getDescription());
         assertEquals("11", parceled.getLastTwo());
+        assertFalse(parceled.isDefault());
     }
 }

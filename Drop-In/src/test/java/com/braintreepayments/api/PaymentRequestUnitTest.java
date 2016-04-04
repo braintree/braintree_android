@@ -45,6 +45,7 @@ public class PaymentRequestUnitTest {
                 .primaryDescription("primary description")
                 .secondaryDescription("secondary description")
                 .submitButtonText("submit")
+                .defaultFirst(true)
                 .getIntent(RuntimeEnvironment.application);
 
         PaymentRequest paymentRequest = intent.getParcelableExtra(BraintreePaymentActivity.EXTRA_CHECKOUT_REQUEST);
@@ -68,6 +69,7 @@ public class PaymentRequestUnitTest {
         assertEquals("primary description", paymentRequest.getPrimaryDescription());
         assertEquals("secondary description", paymentRequest.getSecondaryDescription());
         assertEquals("submit", paymentRequest.getSubmitButtonText());
+        assertTrue(paymentRequest.isDefaultFirst());
     }
 
     @Test
@@ -95,6 +97,7 @@ public class PaymentRequestUnitTest {
         assertNull(paymentRequest.getPrimaryDescription());
         assertNull(paymentRequest.getSecondaryDescription());
         assertNull(paymentRequest.getSubmitButtonText());
+        assertFalse(paymentRequest.isDefaultFirst());
     }
 
     @Test
@@ -119,6 +122,7 @@ public class PaymentRequestUnitTest {
                 .actionBarLogo(R.drawable.bt_amex)
                 .primaryDescription("primary description")
                 .secondaryDescription("secondary description")
+                .defaultFirst(true)
                 .submitButtonText("submit");
 
         Parcel parcel = Parcel.obtain();
@@ -143,6 +147,7 @@ public class PaymentRequestUnitTest {
         assertEquals(R.drawable.bt_amex, parceledPaymentRequest.getActionBarLogo());
         assertEquals("primary description", parceledPaymentRequest.getPrimaryDescription());
         assertEquals("secondary description", parceledPaymentRequest.getSecondaryDescription());
+        assertTrue(parceledPaymentRequest.isDefaultFirst());
         assertEquals("submit", parceledPaymentRequest.getSubmitButtonText());
     }
 
