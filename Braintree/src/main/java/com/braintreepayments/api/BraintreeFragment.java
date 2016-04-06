@@ -461,7 +461,7 @@ public class BraintreeFragment extends Fragment {
         postOrQueueCallback(new QueuedCallback() {
             @Override
             public boolean shouldRun() {
-                return getConfiguration() != null;
+                return getConfiguration() != null && isAdded();
             }
 
             @Override

@@ -219,6 +219,42 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
+    public void waitForConfiguration_doesNotPostCallbackWhenNotAttached() throws JSONException,
+            InvalidArgumentException, InterruptedException {
+        final Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
+        mockConfigurationManager(configuration);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+
+        mActivity.getFragmentManager().beginTransaction().detach(fragment).commit();
+        mActivity.getFragmentManager().executePendingTransactions();
+
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration returnedConfiguration) {
+                fail("onConfigurationFetched was called");
+            }
+        });
+    }
+
+    @Test
+    public void waitForConfiguration_postsCallbackWhenFragmentIsAttached() throws JSONException,
+            InvalidArgumentException, InterruptedException {
+        final Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
+        mockConfigurationManager(configuration);
+        final BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration returnedConfiguration) {
+                assertTrue(fragment.isAdded());
+                mCountDownLatch.countDown();
+            }
+        });
+
+        mCountDownLatch.await();
+    }
+
+    @Test
     public void getHttpClient_returnsHttpClient() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
 
