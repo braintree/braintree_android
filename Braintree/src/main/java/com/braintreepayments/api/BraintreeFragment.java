@@ -111,7 +111,6 @@ public class BraintreeFragment extends Fragment {
         BraintreeFragment braintreeFragment = (BraintreeFragment) fm.findFragmentByTag(TAG);
         if (braintreeFragment == null) {
             braintreeFragment = new BraintreeFragment();
-            braintreeFragment.mContext = activity.getApplicationContext();
             Bundle bundle = new Bundle();
 
             try {
@@ -126,6 +125,8 @@ public class BraintreeFragment extends Fragment {
             fm.beginTransaction().add(braintreeFragment, TAG).commit();
         }
 
+        braintreeFragment.mContext = activity.getApplicationContext();
+
         return braintreeFragment;
     }
 
@@ -134,6 +135,7 @@ public class BraintreeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
+        mContext = getActivity().getApplicationContext();
         mCrashReporter = CrashReporter.setup(mContext);
         mIntegrationType = getArguments().getString(EXTRA_INTEGRATION_TYPE);
         mAuthorization = getArguments().getParcelable(EXTRA_AUTHORIZATION_TOKEN);
