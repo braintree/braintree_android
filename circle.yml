@@ -3,9 +3,9 @@ dependencies:
     - echo y | android update sdk --no-ui --all --filter tools
     # Build three times, the first two builds will resolve dependencies via sdk-manager-plugin and then fail
     # https://github.com/JakeWharton/sdk-manager-plugin/issues/10
-    - ./gradlew clean assembleDebug || true
-    - ./gradlew clean assembleDebug || true
-    - ./gradlew clean assembleDebug || true
+    - ./gradlew assembleDebug || true
+    - ./gradlew assembleDebug || true
+    - ./gradlew assembleDebug || true
   override:
     # The default Circle CI dependency step wants to run the Rakefile, which fails because we don't
     # install the gems. Overriding removes this automated step.
@@ -13,7 +13,7 @@ dependencies:
 
 test:
   override:
-    - ./gradlew --stacktrace --info clean lint test
+    - ./gradlew --stacktrace --info lint test
     - ./gradlew --stacktrace --info :Demo:assembleDebug
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
