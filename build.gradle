@@ -27,9 +27,6 @@ allprojects {
     }
 
     apply plugin: 'android-sdk-manager'
-    sdkManager {
-        emulatorVersion 'android-22'
-    }
 
     apply plugin: 'maven'
     def sonatypeUsername = System.properties.containsKey('sonatypeUsername') ? System.properties['sonatypeUsername'] : ''
