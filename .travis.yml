@@ -3,7 +3,7 @@ jdk: oraclejdk7
 notifications:
   email:
     - external-ci-notifications+braintree-android@getbraintree.com
-sudo: false
+sudo: true
 env:
   global:
     - TERM=dumb
