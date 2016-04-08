@@ -20,6 +20,7 @@ import java.util.Locale;
 
 public abstract class Recipe<T extends Recipe<T>> {
 
+    // http://developer.android.com/reference/android/support/customtabs/CustomTabsIntent.html#EXTRA_SESSION
     private static final String EXTRA_CUSTOM_TABS_SESSION = "android.support.customtabs.extra.SESSION";
 
     private List<String> mTargetPackagesInReversePriorityOrder;
