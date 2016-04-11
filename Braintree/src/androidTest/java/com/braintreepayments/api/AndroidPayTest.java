@@ -66,9 +66,9 @@ public class AndroidPayTest {
         AndroidPayConfiguration androidPayConfiguration = mock(AndroidPayConfiguration.class);
         when(androidPayConfiguration.isEnabled(any(Context.class))).thenReturn(false);
         final Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(mock(AnalyticsConfiguration.class));
         when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
-        BraintreeFragment fragment =
-                getMockFragment(mActivityTestRule.getActivity(), configuration);
+        BraintreeFragment fragment = getMockFragment(mActivityTestRule.getActivity(), configuration);
         when(fragment.getAuthorization()).thenReturn(Authorization.fromString(TOKENIZATION_KEY));
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -88,15 +88,14 @@ public class AndroidPayTest {
     public void getTokenizationParameters_returnsCorrectParametersInCallback()
             throws InvalidArgumentException, InterruptedException {
         final AndroidPayConfiguration androidPayConfiguration = mock(AndroidPayConfiguration.class);
-        when(androidPayConfiguration.getGoogleAuthorizationFingerprint())
-                .thenReturn("google-auth-fingerprint");
+        when(androidPayConfiguration.getGoogleAuthorizationFingerprint()).thenReturn("google-auth-fingerprint");
         when(androidPayConfiguration.getSupportedNetworks())
                 .thenReturn(new String[]{"visa", "mastercard", "amex", "discover"});
         final Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(mock(AnalyticsConfiguration.class));
         when(configuration.getMerchantId()).thenReturn("android-pay-merchant-id");
         when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
-        BraintreeFragment fragment =
-                getMockFragment(mActivityTestRule.getActivity(), configuration);
+        BraintreeFragment fragment = getMockFragment(mActivityTestRule.getActivity(), configuration);
         when(fragment.getAuthorization()).thenReturn(Authorization.fromString(TOKENIZATION_KEY));
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -135,15 +134,13 @@ public class AndroidPayTest {
         when(androidPayConfiguration.getGoogleAuthorizationFingerprint())
                 .thenReturn("google-auth-fingerprint");
         Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(mock(AnalyticsConfiguration.class));
         when(configuration.getMerchantId()).thenReturn("android-pay-merchant-id");
         when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
-        BraintreeFragment fragment =
-                getMockFragment(mActivityTestRule.getActivity(), configuration);
-        when(fragment.getAuthorization()).thenReturn(
-                Authorization.fromString("sandbox_abcdef_merchantIDHere"));
+        BraintreeFragment fragment = getMockFragment(mActivityTestRule.getActivity(), configuration);
+        when(fragment.getAuthorization()).thenReturn(Authorization.fromString("sandbox_abcdef_merchantIDHere"));
 
-        Bundle tokenizationParameters =
-                AndroidPay.getTokenizationParameters(fragment).getParameters();
+        Bundle tokenizationParameters = AndroidPay.getTokenizationParameters(fragment).getParameters();
 
         assertEquals("braintree", tokenizationParameters.getString("gateway"));
         assertEquals(configuration.getMerchantId(),
@@ -160,18 +157,15 @@ public class AndroidPayTest {
     public void getTokenizationParameters_doesNotIncludeATokenizationKeyWhenNotPresent()
             throws InvalidArgumentException {
         AndroidPayConfiguration androidPayConfiguration = mock(AndroidPayConfiguration.class);
-        when(androidPayConfiguration.getGoogleAuthorizationFingerprint())
-                .thenReturn("google-auth-fingerprint");
+        when(androidPayConfiguration.getGoogleAuthorizationFingerprint()).thenReturn("google-auth-fingerprint");
         Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(mock(AnalyticsConfiguration.class));
         when(configuration.getMerchantId()).thenReturn("android-pay-merchant-id");
         when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
-        BraintreeFragment fragment =
-                getMockFragment(mActivityTestRule.getActivity(), configuration);
-        when(fragment.getAuthorization()).thenReturn(
-                Authorization.fromString(stringFromFixture("client_token.json")));
+        BraintreeFragment fragment = getMockFragment(mActivityTestRule.getActivity(), configuration);
+        when(fragment.getAuthorization()).thenReturn(Authorization.fromString(stringFromFixture("client_token.json")));
 
-        Bundle tokenizationParameters =
-                AndroidPay.getTokenizationParameters(fragment).getParameters();
+        Bundle tokenizationParameters = AndroidPay.getTokenizationParameters(fragment).getParameters();
 
         assertNull(tokenizationParameters.getString("braintree:clientKey"));
     }
@@ -181,13 +175,12 @@ public class AndroidPayTest {
     public void getTokenizationParameters_includesATokenizationKeyWhenPresent()
             throws InvalidArgumentException, InterruptedException {
         AndroidPayConfiguration androidPayConfiguration = mock(AndroidPayConfiguration.class);
-        when(androidPayConfiguration.getGoogleAuthorizationFingerprint()).thenReturn(
-                "google-auth-fingerprint");
+        when(androidPayConfiguration.getGoogleAuthorizationFingerprint()).thenReturn("google-auth-fingerprint");
         Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(mock(AnalyticsConfiguration.class));
         when(configuration.getMerchantId()).thenReturn("android-pay-merchant-id");
         when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
-        final BraintreeFragment fragment = getMockFragment(mActivityTestRule.getActivity(),
-                TOKENIZATION_KEY,
+        final BraintreeFragment fragment = getMockFragment(mActivityTestRule.getActivity(), TOKENIZATION_KEY,
                 configuration);
 
         Bundle tokenizationParameters =
@@ -204,11 +197,11 @@ public class AndroidPayTest {
     @SmallTest
     public void getAllowedCardNetworks_returnsSupportedNetworks() {
         AndroidPayConfiguration androidPayConfiguration = mock(AndroidPayConfiguration.class);
-        when(androidPayConfiguration.getGoogleAuthorizationFingerprint()).thenReturn(
-                "google-auth-fingerprint");
+        when(androidPayConfiguration.getGoogleAuthorizationFingerprint()).thenReturn("google-auth-fingerprint");
         when(androidPayConfiguration.getSupportedNetworks())
                 .thenReturn(new String[]{"visa", "mastercard", "amex", "discover"});
         Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(mock(AnalyticsConfiguration.class));
         when(configuration.getMerchantId()).thenReturn("android-pay-merchant-id");
         when(configuration.getAndroidPay()).thenReturn(androidPayConfiguration);
         BraintreeFragment fragment =

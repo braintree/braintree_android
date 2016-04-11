@@ -13,6 +13,7 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
+import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
@@ -50,8 +51,10 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.doAnswer;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
+import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
@@ -104,6 +107,34 @@ public class BraintreeFragmentUnitTest {
         BraintreeFragment fragment2 = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
 
         assertEquals(fragment1, fragment2);
+    }
+
+    @Test
+    public void onCreate_callsFetchConfiguration() throws InvalidArgumentException {
+        mockStatic(ConfigurationManager.class);
+
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+
+        verifyStatic(times(2));
+        ConfigurationManager.getConfiguration(eq(fragment), any(ConfigurationListener.class),
+                any(BraintreeResponseListener.class));
+    }
+
+    @Test
+    public void onCreate_doesNotCallFetchConfigurationWhenConfigurationIsNotNull() throws InvalidArgumentException {
+        mockStatic(ConfigurationManager.class);
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(mock(AnalyticsConfiguration.class));
+
+        Robolectric.getForegroundThreadScheduler().pause();
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        fragment.mConfiguration = configuration;
+        Robolectric.getForegroundThreadScheduler().unPause();
+        Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
+
+        verifyStatic(never());
+        ConfigurationManager.getConfiguration(eq(fragment), any(ConfigurationListener.class),
+                any(BraintreeResponseListener.class));
     }
 
     @Test

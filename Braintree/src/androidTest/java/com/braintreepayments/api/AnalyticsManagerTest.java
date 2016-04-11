@@ -7,6 +7,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
@@ -22,6 +23,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -35,9 +38,11 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.fail;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -110,15 +115,14 @@ public class AnalyticsManagerTest {
         AnalyticsManager.sendRequest(mFragment, "custom", "some-interesting-event");
         AnalyticsManager.sendRequest(mFragment, "custom", "some-interesting-event");
         AnalyticsManager.sendRequest(mFragment, "custom", "some-interesting-event");
-        AnalyticsManager.sendRequest(mFragment, "custom", "some-interesting-event");
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(mHttpClient).post(anyString(), captor.capture(),
                 isNull(HttpResponseCallback.class));
         JSONObject json = new JSONObject(captor.getValue());
         assertEquals(5, json.getJSONArray("analytics").length());
-        assertEquals("android.custom.some-interesting-event",
-                json.getJSONArray("analytics").getJSONObject(0).get("kind"));
+        assertEquals("android.custom.started.client-token", json.getJSONArray("analytics").getJSONObject(0).get("kind"));
+        assertEquals("android.custom.some-interesting-event", json.getJSONArray("analytics").getJSONObject(1).get("kind"));
     }
 
     @Test(timeout = 1000)
@@ -144,10 +148,11 @@ public class AnalyticsManagerTest {
     public void flushEvents_doesNothingIfThereAreNoEvents() throws JSONException {
         setup();
 
+        // There is one event created in BraintreeFragment#onCreate by default
+        AnalyticsManager.sRequestQueue.clear();
         AnalyticsManager.flushEvents(mFragment);
 
-        verify(mHttpClient, never()).post(anyString(), anyString(),
-                isNull(HttpResponseCallback.class));
+        verify(mHttpClient, never()).post(anyString(), anyString(), isNull(HttpResponseCallback.class));
     }
 
     @Test(timeout = 1000)
@@ -165,9 +170,29 @@ public class AnalyticsManagerTest {
             InterruptedException {
         setup();
 
-        BraintreeFragment fragment2 = generateFragment();
+        AnalyticsConfiguration analyticsConfiguration = mock(AnalyticsConfiguration.class);
+        when(analyticsConfiguration.isEnabled()).thenReturn(true);
+        final Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(analyticsConfiguration);
+        final BraintreeFragment fragment2 = mock(BraintreeFragment.class);
+        when(fragment2.getSessionId()).thenReturn("fragment-2-session-id");
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                ((ConfigurationListener) invocation.getArguments()[0]).onConfigurationFetched(configuration);
+                return null;
+            }
+        }).when(fragment2).waitForConfiguration(any(ConfigurationListener.class));
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                AnalyticsManager.sendRequest(fragment2, "custom", (String) invocation.getArguments()[0]);
+                return null;
+            }
+        }).when(fragment2).sendAnalyticsEvent(anyString());
 
         mFragment.sendAnalyticsEvent("event1");
+        fragment2.sendAnalyticsEvent("started.client-token");
         fragment2.sendAnalyticsEvent("event2");
 
         final CountDownLatch latch = new CountDownLatch(2);
@@ -180,7 +205,7 @@ public class AnalyticsManagerTest {
                     JSONObject object = new JSONObject(data);
                     JSONObject meta = object.getJSONObject("_meta");
                     JSONArray events = object.getJSONArray("analytics");
-                    assertEquals(1, events.length());
+                    assertEquals(2, events.length());
 
                     sessionIdsSent.add(meta.getString("sessionId"));
                     latch.countDown();
@@ -215,7 +240,10 @@ public class AnalyticsManagerTest {
                     JSONObject object = new JSONObject(data);
                     JSONObject meta = object.getJSONObject("_meta");
                     JSONArray events = object.getJSONArray("analytics");
-                    assertEquals(2, events.length());
+                    assertEquals(3, events.length());
+                    assertEquals("android.custom.started.client-token", events.getJSONObject(0).get("kind"));
+                    assertEquals("android.custom.event1", events.getJSONObject(1).get("kind"));
+                    assertEquals("android.custom.event2", events.getJSONObject(2).get("kind"));
 
                     sessionIdsSent.add(meta.getString("sessionId"));
                     latch.countDown();

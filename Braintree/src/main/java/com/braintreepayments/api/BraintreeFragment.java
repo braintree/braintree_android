@@ -144,6 +144,10 @@ public class BraintreeFragment extends Fragment {
             mHttpClient = new BraintreeHttpClient(mAuthorization);
         }
 
+        if (getConfiguration() == null) {
+            fetchConfiguration();
+        }
+
         if (savedInstanceState != null) {
             List<PaymentMethodNonce> paymentMethodNonces =
                     savedInstanceState.getParcelableArrayList(EXTRA_CACHED_PAYMENT_METHOD_NONCES);
@@ -163,7 +167,6 @@ public class BraintreeFragment extends Fragment {
             }
         }
 
-        fetchConfiguration();
         mCrashReporter.sendPreviousCrashes(this);
     }
 
