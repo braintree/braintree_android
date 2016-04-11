@@ -1,5 +1,15 @@
 # Braintree Android SDK Release Notes
 
+## 2.2.4
+
+* Update PayPalDataCollector to 3.1.1
+* Fixes
+  * Update device collector to 2.6.1 (fixes [#87](https://github.com/braintree/braintree_android/issues/87))
+  * Fix crash when `BraintreeFragment` has not been attached to an `Activity`
+* Feature
+  * Add `PaymentRequest#defaultFirst` option
+  * Add support for Chrome Custom tabs when browser switching
+
 ## 2.2.3
 
 * Fixes
