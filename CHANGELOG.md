@@ -6,7 +6,7 @@
 * Fixes
   * Update device collector to 2.6.1 (fixes [#87](https://github.com/braintree/braintree_android/issues/87))
   * Fix crash when `BraintreeFragment` has not been attached to an `Activity`
-* Feature
+* Features
   * Add `PaymentRequest#defaultFirst` option
   * Add support for Chrome Custom tabs when browser switching
 
