@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -354,6 +355,30 @@ public class HttpClientTest {
         HttpClient httpClient = clientWithExpectedResponse(418, "");
 
         assertExceptionIsPosted(httpClient, UnexpectedException.class, null);
+    }
+
+    @Test(timeout = 1000)
+    public void writeStream_encodesAsciiCharactersCorrectly() throws IOException {
+        HttpClient httpClient = new HttpClient();
+
+        String data = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        httpClient.writeOutputStream(output, data);
+
+        assertEquals(data, output.toString());
+    }
+
+    @Test(timeout = 1000)
+    public void writeStream_encodesUTF8CharactersCorrectly() throws IOException {
+        HttpClient httpClient = new HttpClient();
+
+        String data = "Bjärne Stroustrüp";
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        httpClient.writeOutputStream(output, data);
+
+        assertEquals(data, output.toString());
     }
 
     /* helpers */

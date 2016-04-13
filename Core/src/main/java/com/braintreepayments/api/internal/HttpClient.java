@@ -16,9 +16,11 @@ import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Locale;
@@ -189,10 +191,7 @@ public class HttpClient<T extends HttpClient> {
                     connection.setRequestMethod(METHOD_POST);
                     connection.setDoOutput(true);
 
-                    DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-                    out.writeBytes(data);
-                    out.flush();
-                    out.close();
+                    writeOutputStream(connection.getOutputStream(), data);
 
                     postCallbackOnMainThread(callback, parseResponse(connection));
                 } catch (Exception e) {
@@ -225,6 +224,13 @@ public class HttpClient<T extends HttpClient> {
         connection.setReadTimeout(mReadTimeout);
 
         return connection;
+    }
+
+    protected void writeOutputStream(OutputStream outputStream, String data) throws IOException {
+        Writer out = new OutputStreamWriter(outputStream, UTF_8);
+        out.write(data, 0, data.length());
+        out.flush();
+        out.close();
     }
 
     protected String parseResponse(HttpURLConnection connection) throws Exception {
