@@ -1,3 +1,9 @@
+experimental:
+  notify:
+    branches:
+      only:
+        - master
+
 dependencies:
   pre:
     - echo y | android update sdk --no-ui --all --filter tools
