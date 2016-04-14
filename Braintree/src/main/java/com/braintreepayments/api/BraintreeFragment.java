@@ -186,7 +186,12 @@ public class BraintreeFragment extends Fragment {
         }
 
         if (mIsBrowserSwitching) {
-            onActivityResult(PayPal.PAYPAL_REQUEST_CODE, Activity.RESULT_FIRST_USER,
+            int resultCode = Activity.RESULT_CANCELED;
+            if (BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse != null) {
+                resultCode = Activity.RESULT_OK;
+            }
+
+            onActivityResult(PayPal.PAYPAL_REQUEST_CODE, resultCode,
                     BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse);
 
             BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = null;
@@ -248,7 +253,7 @@ public class BraintreeFragment extends Fragment {
 
         switch (requestCode) {
             case PayPal.PAYPAL_REQUEST_CODE:
-                PayPal.onActivityResult(this, data);
+                PayPal.onActivityResult(this, resultCode, data);
                 break;
             case ThreeDSecure.THREE_D_SECURE_REQUEST_CODE:
                 ThreeDSecure.onActivityResult(this, resultCode, data);

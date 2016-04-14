@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -149,7 +150,7 @@ public class PayPalTest {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Intent intent = new Intent()
                         .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?payloadEnc=3vsdKACxHUPPfEFpfI9DeJcPw4f%2Bj9Rp5fJjf%2B9h%2FN6GjoBaRQkIa9oUV2Vtm1I%2FiZqjZqd%2FXWQ56sts0iyl7eAVCfEvXHlpfrBg5e89JDINUUSAGAhTYmJWvoNm5YGxkSXmefLHhdvao8bIHZ26ExNL25oKS9E7RWgBtwOx%2BzChE3u0klAlgSN027ex7GSezjk5CsXMrns7%2BmcebLObQoZb3C1XjKik2m4HhSwXSdR5ygRkaRSVO5e1PVz0oiUBxpzGiubNb9aPrRtWvx%2FRwq3RSHNUIa4LuslgrxVx2WIa0isNKR3bBwzFcYClLbS6065Cs60Desg0BZSrudkwgSNJDwKnIzJM8FC1m4Xd2ASd63XnMzBh1RzbouAXqsrdIJFFVcVTrU4yO6mWTFqklw%3D%3D&payload=eyJ2ZXJzaW9uIjozLCJtc2dfR1VJRCI6IjRhMDcwYjhmLTgyMDQtNDczMC05Y2M0LWZiNWQ3ZjE3YWY3OCIsInJlc3BvbnNlX3R5cGUiOiJjb2RlIiwiZW52aXJvbm1lbnQiOiJtb2NrIiwiZXJyb3IiOm51bGx9&x-source=com.braintree.browserswitch"));
-                PayPal.onActivityResult(fragment, intent);
+                PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
         }).when(fragment).startActivity(any(Intent.class));
@@ -186,7 +187,7 @@ public class PayPalTest {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Intent intent = new Intent()
                         .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?payloadEnc=3vsdKACxHUPPfEFpfI9DeJcPw4f%2Bj9Rp5fJjf%2B9h%2FN6GjoBaRQkIa9oUV2Vtm1I%2FiZqjZqd%2FXWQ56sts0iyl7eAVCfEvXHlpfrBg5e89JDINUUSAGAhTYmJWvoNm5YGxkSXmefLHhdvao8bIHZ26ExNL25oKS9E7RWgBtwOx%2BzChE3u0klAlgSN027ex7GSezjk5CsXMrns7%2BmcebLObQoZb3C1XjKik2m4HhSwXSdR5ygRkaRSVO5e1PVz0oiUBxpzGiubNb9aPrRtWvx%2FRwq3RSHNUIa4LuslgrxVx2WIa0isNKR3bBwzFcYClLbS6065Cs60Desg0BZSrudkwgSNJDwKnIzJM8FC1m4Xd2ASd63XnMzBh1RzbouAXqsrdIJFFVcVTrU4yO6mWTFqklw%3D%3D&payload=eyJ2ZXJzaW9uIjozLCJtc2dfR1VJRCI6IjRhMDcwYjhmLTgyMDQtNDczMC05Y2M0LWZiNWQ3ZjE3YWY3OCIsInJlc3BvbnNlX3R5cGUiOiJjb2RlIiwiZW52aXJvbm1lbnQiOiJtb2NrIiwiZXJyb3IiOm51bGx9&x-source=com.braintree.browserswitch"));
-                PayPal.onActivityResult(fragment, intent);
+                PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
         }).when(fragment).startActivity(any(Intent.class));
@@ -215,7 +216,7 @@ public class PayPalTest {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Intent intent = new Intent()
                         .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/cancel"));
-                PayPal.onActivityResult(fragment, intent);
+                PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
         }).when(fragment).startActivity(any(Intent.class));
@@ -275,7 +276,7 @@ public class PayPalTest {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Intent intent = new Intent()
                         .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN"));
-                PayPal.onActivityResult(fragment, intent);
+                PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
         }).when(fragment).startActivity(any(Intent.class));
@@ -306,7 +307,7 @@ public class PayPalTest {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Intent intent = new Intent()
                         .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN"));
-                PayPal.onActivityResult(fragment, intent);
+                PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
         }).when(fragment).startActivity(any(Intent.class));
@@ -337,7 +338,7 @@ public class PayPalTest {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Intent intent = new Intent()
                         .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/cancel"));
-                PayPal.onActivityResult(fragment, intent);
+                PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
         }).when(fragment).startActivity(any(Intent.class));
@@ -502,7 +503,7 @@ public class PayPalTest {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Intent intent = new Intent()
                         .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN"));
-                PayPal.onActivityResult(fragment, intent);
+                PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
         }).when(fragment).startActivity(any(Intent.class));
@@ -533,7 +534,7 @@ public class PayPalTest {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Intent intent = new Intent()
                         .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN"));
-                PayPal.onActivityResult(fragment, intent);
+                PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
         }).when(fragment).startActivity(any(Intent.class));
@@ -564,7 +565,7 @@ public class PayPalTest {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Intent intent = new Intent()
                         .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/cancel"));
-                PayPal.onActivityResult(fragment, intent);
+                PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
         }).when(fragment).startActivity(any(Intent.class));
@@ -580,7 +581,7 @@ public class PayPalTest {
         Intent intent = new Intent()
                 .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/cancel"));
 
-        PayPal.onActivityResult(fragment, intent);
+        PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
 
         verify(fragment).postCancelCallback(PayPal.PAYPAL_REQUEST_CODE);
     }
@@ -589,7 +590,7 @@ public class PayPalTest {
     public void onActivityResult_postsCancelWhenIntentIsNull() {
         BraintreeFragment fragment = mMockFragmentBuilder.build();
 
-        PayPal.onActivityResult(fragment, null);
+        PayPal.onActivityResult(fragment, Activity.RESULT_OK, null);
 
         verify(fragment).postCancelCallback(PayPal.PAYPAL_REQUEST_CODE);
     }

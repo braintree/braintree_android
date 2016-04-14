@@ -47,6 +47,7 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
@@ -574,7 +575,7 @@ public class BraintreeFragmentUnitTest {
         fragment.onActivityResult(PayPal.PAYPAL_REQUEST_CODE, Activity.RESULT_FIRST_USER, intent);
 
         verifyStatic();
-        PayPal.onActivityResult(fragment, intent);
+        PayPal.onActivityResult(fragment, Activity.RESULT_FIRST_USER, intent);
     }
 
     @Test
@@ -636,7 +637,7 @@ public class BraintreeFragmentUnitTest {
         fragment.onResume();
 
         verifyStatic(never());
-        PayPal.onActivityResult(any(BraintreeFragment.class), any(Intent.class));
+        PayPal.onActivityResult(any(BraintreeFragment.class), anyInt(), any(Intent.class));
     }
 
     @Test
@@ -653,7 +654,7 @@ public class BraintreeFragmentUnitTest {
         fragment.onResume();
 
         verifyStatic(times(1));
-        PayPal.onActivityResult(fragment, intent);
+        PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
     }
 
     /* helpers */
