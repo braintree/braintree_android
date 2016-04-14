@@ -23,6 +23,8 @@ test:
     - ./gradlew --stacktrace --info :Demo:assembleDebug
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - mkdir $CIRCLE_ARTIFACTS/lint/
     - mkdir $CIRCLE_ARTIFACTS/apk/
     - find . -regex ".*test-.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+    - find . -regex ".*lint-results-.*html" -exec cp {} $CIRCLE_ARTIFACTS/lint/ \;
     - cp Demo/build/outputs/apk/Demo-debug.apk $CIRCLE_ARTIFACTS/apk/Demo.apk
