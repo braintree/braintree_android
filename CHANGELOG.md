@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 2.2.5
+
+* Fixes
+  * Update BraintreeHttpClient to support UTF-8 encoding (fixes [#85](https://github.com/braintree/braintree_android/issues/85))
+
 ## 2.2.4
 
 * Update PayPalDataCollector to 3.1.1
