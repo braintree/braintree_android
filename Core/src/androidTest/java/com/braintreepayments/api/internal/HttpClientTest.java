@@ -8,6 +8,7 @@ import com.braintreepayments.api.core.BuildConfig;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
+import com.braintreepayments.api.exceptions.RateLimitException;
 import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UnprocessableEntityException;
@@ -347,6 +348,13 @@ public class HttpClientTest {
         HttpClient httpClient = clientWithExpectedResponse(422, "There was an error");
 
         assertExceptionIsPosted(httpClient, UnprocessableEntityException.class, "There was an error");
+    }
+
+    @Test(timeout = 1000)
+    public void postsRateLimitExceptionOn429() throws IOException, InterruptedException {
+        HttpClient httpClient = clientWithExpectedResponse(429, "Too many requests");
+
+        assertExceptionIsPosted(httpClient, RateLimitException.class, "Too many requests");
     }
 
     @Test(timeout = 1000)

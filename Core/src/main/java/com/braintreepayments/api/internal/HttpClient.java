@@ -9,6 +9,7 @@ import com.braintreepayments.api.core.BuildConfig;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
+import com.braintreepayments.api.exceptions.RateLimitException;
 import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UnprocessableEntityException;
@@ -247,6 +248,8 @@ public class HttpClient<T extends HttpClient> {
                 throw new UnprocessableEntityException(readStream(connection.getErrorStream(), gzip));
             case 426: // HTTP_UPGRADE_REQUIRED
                 throw new UpgradeRequiredException(readStream(connection.getErrorStream(), gzip));
+            case 429: // HTTP_TOO_MANY_REQUESTS
+                throw new RateLimitException(readStream(connection.getErrorStream(), gzip));
             case HTTP_INTERNAL_ERROR:
                 throw new ServerException(readStream(connection.getErrorStream(), gzip));
             case HTTP_UNAVAILABLE:
