@@ -1,65 +1,20 @@
 package com.braintreepayments.api;
 
-import android.net.Uri;
-
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 
 import org.json.JSONException;
 
-import java.util.List;
-
 import static com.braintreepayments.api.models.PaymentMethodNonce.parsePaymentMethodNonces;
 
 class TokenizationClient {
 
     static final String PAYMENT_METHOD_ENDPOINT = "payment_methods";
-
-    /**
-     * Retrieves the current list of {@link PaymentMethodNonce} for the current customer.
-     * <p/>
-     * When finished, the {@link java.util.List} of {@link PaymentMethodNonce}s will be sent to {@link
-     * PaymentMethodNoncesUpdatedListener#onPaymentMethodNoncesUpdated(List)}.
-     *
-     * @param fragment {@link BraintreeFragment}
-     */
-    static void getPaymentMethodNonces(final BraintreeFragment fragment, boolean defaultFirst) {
-        final Uri uri = Uri.parse(versionedPath(PAYMENT_METHOD_ENDPOINT))
-                .buildUpon()
-                .appendQueryParameter("default_first", String.valueOf(defaultFirst))
-                .build();
-
-        fragment.waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                fragment.getHttpClient().get(uri.toString(), new HttpResponseCallback() {
-                    @Override
-                    public void success(String responseBody) {
-                        try {
-                            fragment.postCallback(parsePaymentMethodNonces(responseBody));
-                        } catch (JSONException e) {
-                            fragment.postCallback(e);
-                        }
-                    }
-
-                    @Override
-                    public void failure(Exception exception) {
-                        fragment.postCallback(exception);
-                    }
-                });
-            }
-        });
-    }
-
-    static void getPaymentMethodNonces(BraintreeFragment fragment) {
-        getPaymentMethodNonces(fragment, false);
-    }
 
     /**
      * Create a {@link PaymentMethodNonce} in the Braintree Gateway.

@@ -54,62 +54,6 @@ public class TokenizationClientTest {
     }
 
     @Test(timeout = 10000)
-    public void getPaymentMethodNonces_getsPaymentMethodsFromServer() throws InterruptedException,
-            InvalidArgumentException {
-        final CountDownLatch latch = new CountDownLatch(1);
-        final String clientToken = new TestClientTokenBuilder().build();
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, clientToken);
-        getInstrumentation().waitForIdleSync();
-        fragment.addListener(new PaymentMethodNoncesUpdatedListener() {
-            @Override
-            public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {
-                assertEquals(1, paymentMethodNonces.size());
-                assertEquals("11", ((CardNonce) paymentMethodNonces.get(0)).getLastTwo());
-                latch.countDown();
-            }
-        });
-        tokenize(fragment, new CardBuilder()
-                .cardNumber(VISA)
-                .expirationMonth("04")
-                .expirationYear("17"));
-
-        TokenizationClient.getPaymentMethodNonces(fragment);
-
-        latch.await();
-    }
-
-    @Test(timeout = 10000)
-    public void getPaymentMethodNonces_failsWithATokenizationKey() throws InterruptedException,
-            InvalidArgumentException {
-        final CountDownLatch latch = new CountDownLatch(1);
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        getInstrumentation().waitForIdleSync();
-        fragment.addListener(new PaymentMethodNoncesUpdatedListener() {
-            @Override
-            public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {
-                fail("getPaymentMethodNonces succeeded");
-            }
-        });
-        fragment.addListener(new BraintreeErrorListener() {
-            @Override
-            public void onError(Exception error) {
-                assertTrue(error instanceof AuthorizationException);
-                assertEquals("Tokenization key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions",
-                        error.getMessage());
-                latch.countDown();
-            }
-        });
-        tokenize(fragment, new CardBuilder()
-                .cardNumber(VISA)
-                .expirationMonth("04")
-                .expirationYear("17"));
-
-        TokenizationClient.getPaymentMethodNonces(fragment);
-
-        latch.await();
-    }
-
-    @Test(timeout = 10000)
     public void tokenize_tokenizesAPayPalAccountWithATokenizationKey() throws InterruptedException, JSONException {
         final CountDownLatch latch = new CountDownLatch(1);
         BraintreeFragment fragment = getFragment(mActivity, TOKENIZATION_KEY);
