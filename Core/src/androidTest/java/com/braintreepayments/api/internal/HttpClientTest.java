@@ -352,9 +352,9 @@ public class HttpClientTest {
 
     @Test(timeout = 1000)
     public void postsRateLimitExceptionOn429() throws IOException, InterruptedException {
-        HttpClient httpClient = clientWithExpectedResponse(429, "Too many requests");
+        HttpClient httpClient = clientWithExpectedResponse(429, "");
 
-        assertExceptionIsPosted(httpClient, RateLimitException.class, "Too many requests");
+        assertExceptionIsPosted(httpClient, RateLimitException.class, "You are being rate-limited. Please try again in a few minutes.");
     }
 
     @Test(timeout = 1000)

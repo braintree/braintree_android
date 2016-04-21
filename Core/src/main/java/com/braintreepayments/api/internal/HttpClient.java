@@ -249,7 +249,7 @@ public class HttpClient<T extends HttpClient> {
             case 426: // HTTP_UPGRADE_REQUIRED
                 throw new UpgradeRequiredException(readStream(connection.getErrorStream(), gzip));
             case 429: // HTTP_TOO_MANY_REQUESTS
-                throw new RateLimitException(readStream(connection.getErrorStream(), gzip));
+                throw new RateLimitException("You are being rate-limited. Please try again in a few minutes.");
             case HTTP_INTERNAL_ERROR:
                 throw new ServerException(readStream(connection.getErrorStream(), gzip));
             case HTTP_UNAVAILABLE:
