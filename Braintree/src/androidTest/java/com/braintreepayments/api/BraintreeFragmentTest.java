@@ -5,19 +5,14 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
 
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.internal.BraintreeHttpClient;
-import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.BraintreeActivityTestRule;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,10 +23,6 @@ import java.util.concurrent.CountDownLatch;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class BraintreeFragmentTest {
@@ -93,45 +84,6 @@ public class BraintreeFragmentTest {
                 mCountDownLatch.countDown();
             }
         });
-
-        mCountDownLatch.await();
-    }
-
-    @Test(timeout = 10000)
-    @MediumTest
-    public void sendAnalyticsEvent_sendsEventsToServer() throws InterruptedException,
-            JSONException, InvalidArgumentException {
-        String clientToken = new TestClientTokenBuilder().withAnalytics().build();
-        Configuration configuration = Configuration.fromJson(clientToken);
-        BraintreeFragment fragment = spy(getFragment(mActivity, clientToken));
-        when(fragment.getConfiguration()).thenReturn(configuration);
-        Authorization authorization = Authorization.fromString(clientToken);
-
-        BraintreeHttpClient httpClient =
-                new BraintreeHttpClient(authorization) {
-                    @Override
-                    public void post(String url, final String params,
-                            final HttpResponseCallback callback) {
-                        super.post(url, params, new HttpResponseCallback() {
-                            @Override
-                            public void success(String responseBody) {
-                                if (!params.contains("started")) {
-                                    assertTrue(params.contains("analytics.event"));
-                                    mCountDownLatch.countDown();
-                                }
-                            }
-
-                            @Override
-                            public void failure(Exception exception) {
-                                fail("Request failure: " + exception.getMessage());
-                            }
-                        });
-                    }
-                };
-        when(fragment.getHttpClient()).thenReturn(httpClient);
-
-        fragment.sendAnalyticsEvent("analytics.event");
-        AnalyticsManager.flushEvents(fragment);
 
         mCountDownLatch.await();
     }

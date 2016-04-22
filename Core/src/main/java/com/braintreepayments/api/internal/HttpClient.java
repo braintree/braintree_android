@@ -181,29 +181,45 @@ public class HttpClient<T extends HttpClient> {
         mThreadPool.submit(new Runnable() {
             @Override
             public void run() {
-                HttpURLConnection connection = null;
                 try {
-                    if (path.startsWith("http")) {
-                        connection = init(path);
-                    } else {
-                        connection = init(mBaseUrl + path);
-                    }
-
-                    connection.setRequestMethod(METHOD_POST);
-                    connection.setDoOutput(true);
-
-                    writeOutputStream(connection.getOutputStream(), data);
-
-                    postCallbackOnMainThread(callback, parseResponse(connection));
+                    postCallbackOnMainThread(callback, post(path, data));
                 } catch (Exception e) {
                     postCallbackOnMainThread(callback, e);
-                } finally {
-                    if (connection != null) {
-                        connection.disconnect();
-                    }
                 }
             }
         });
+    }
+
+    /**
+     * Performs a synchronous post request.
+     *
+     * @param path the path or url to request from the server via HTTP POST
+     * @param data the body of the post request
+     * @return The HTTP body the of the response
+     *
+     * @see HttpClient#post(String, String, HttpResponseCallback)
+     * @throws Exception
+     */
+    public String post(String path, String data) throws Exception {
+        HttpURLConnection connection = null;
+        try {
+            if (path.startsWith("http")) {
+                connection = init(path);
+            } else {
+                connection = init(mBaseUrl + path);
+            }
+
+            connection.setRequestMethod(METHOD_POST);
+            connection.setDoOutput(true);
+
+            writeOutputStream(connection.getOutputStream(), data);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+
+        return parseResponse(connection);
     }
 
     protected HttpURLConnection init(String url) throws IOException {

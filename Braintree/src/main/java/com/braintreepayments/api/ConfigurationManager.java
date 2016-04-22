@@ -11,6 +11,7 @@ import android.util.Base64;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.internal.BraintreeSharedPreferences;
 import com.braintreepayments.api.models.Configuration;
 
 import org.json.JSONException;

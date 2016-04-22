@@ -5,6 +5,7 @@ import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
 import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.internal.UUIDHelper;
 import com.braintreepayments.api.models.Configuration;
 import com.devicecollector.DeviceCollector;
 import com.devicecollector.DeviceCollector.ErrorCode;
@@ -14,8 +15,6 @@ import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.UUID;
 
 /**
  * DataCollector is used to collect device information to aid in fraud detection and prevention.
@@ -54,7 +53,7 @@ public class DataCollector {
         JSONObject deviceData = new JSONObject();
 
         try {
-            String deviceSessionId = UUID.randomUUID().toString().replace("-", "");
+            String deviceSessionId = UUIDHelper.getFormattedUUID();
             startDeviceCollector(fragment, merchantId, deviceSessionId);
             deviceData.put(DEVICE_SESSION_ID_KEY, deviceSessionId);
             deviceData.put(FRAUD_MERCHANT_ID_KEY, merchantId);
@@ -98,8 +97,7 @@ public class DataCollector {
         } catch (NoClassDefFoundError ignored) {}
 
         try {
-            return SdkRiskComponent.getClientMetadataId(context,
-                    DeviceMetadata.getPersistentUUID(context), null);
+            return SdkRiskComponent.getClientMetadataId(context, UUIDHelper.getPersistentUUID(context), null);
         } catch (NoClassDefFoundError ignored) {}
 
         return "";

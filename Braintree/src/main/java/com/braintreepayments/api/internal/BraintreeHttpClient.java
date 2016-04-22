@@ -104,6 +104,23 @@ public class BraintreeHttpClient extends HttpClient {
         }
     }
 
+    /**
+     * Makes a synchronous HTTP POST request to Braintree using the base url, path, and authorization provided.
+     * @see BraintreeHttpClient#post(String, String, HttpResponseCallback)
+     *
+     * @param path the path or url to request from the server via HTTP POST
+     * @param data the body of the post request
+     * @return the HTTP response body
+     */
+    public String post(String path, String data) throws Exception {
+        if (mAuthorization instanceof ClientToken) {
+            data = new JSONObject(data)
+                    .put(AUTHORIZATION_FINGERPRINT_KEY, ((ClientToken) mAuthorization).getAuthorizationFingerprint())
+                    .toString();
+        }
+        return super.post(path, data);
+    }
+
     @Override
     protected HttpURLConnection init(String url) throws IOException {
         HttpURLConnection connection = super.init(url);

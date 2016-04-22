@@ -1,0 +1,120 @@
+package com.braintreepayments.api.internal;
+
+import android.database.Cursor;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RuntimeEnvironment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+
+@RunWith(RobolectricGradleTestRunner.class)
+public class AnalyticsDatabaseUnitTest {
+
+    private AnalyticsDatabase mAnalyticsDatabase;
+
+    @Before
+    public void setup() {
+        mAnalyticsDatabase = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
+        clearAllEvents(RuntimeEnvironment.application);
+    }
+
+    @After
+    public void teardown() {
+        clearAllEvents(RuntimeEnvironment.application);
+    }
+
+    @Test
+    public void addEvent_persistsEvent() {
+        AnalyticsEvent request = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
+                "custom", "started.client-token");
+
+        mAnalyticsDatabase.addEvent(request);
+
+        Cursor cursor = mAnalyticsDatabase.getReadableDatabase().query(false, "analytics", null, null, null,
+                null, null, "_id desc", "1");
+
+        assertTrue(cursor.moveToFirst());
+        assertEquals(request.event, cursor.getString(1));
+        assertEquals(request.sessionId, cursor.getString(2));
+        assertEquals(request.timestamp, cursor.getLong(3));
+        assertEquals(request.networkType, cursor.getString(4));
+        assertEquals(request.interfaceOrientation, cursor.getString(5));
+        assertEquals(request.merchantAppVersion, cursor.getString(6));
+        assertEquals(request.paypalInstalled ? 1 : 0, cursor.getInt(7));
+        assertEquals(request.venmoInstalled ? 1 : 0, cursor.getInt(8));
+    }
+
+    @Test
+    public void removeEvents_removesEventsFromDb() {
+        AnalyticsEvent event1 = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
+                "custom", "started.client-token");
+        AnalyticsEvent event2 = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
+                "custom", "finished.client-token");
+
+        mAnalyticsDatabase.addEvent(event1);
+        mAnalyticsDatabase.addEvent(event2);
+
+        Cursor idCursor = mAnalyticsDatabase.getReadableDatabase().query(false, "analytics", new String[]{"_id"},
+                null, null, null, null, "_id asc", null);
+
+        List<AnalyticsEvent> fetchedEvents = new ArrayList<>();
+        while (idCursor.moveToNext()) {
+            AnalyticsEvent event = new AnalyticsEvent();
+            event.id = idCursor.getInt(0);
+            fetchedEvents.add(event);
+        }
+
+        assertEquals(2, fetchedEvents.size());
+
+        mAnalyticsDatabase.removeEvents(fetchedEvents);
+        idCursor = mAnalyticsDatabase.getReadableDatabase().query(false, "analytics", new String[]{"_id"},
+                null, null, null, null, "_id asc", null);
+
+        assertEquals(idCursor.getCount(), 0);
+    }
+
+    @Test
+    public void getPendingRequests_returnsCorrectGroupingsOfMetadata() {
+        AnalyticsEvent request1 = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
+                "custom", "started.client-token");
+        AnalyticsEvent request2 = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
+                "custom", "finished.client-token");
+
+        AnalyticsEvent request3 = new AnalyticsEvent(RuntimeEnvironment.application, "anotherSessionId",
+                "custom", "started.client-token");
+        AnalyticsEvent request4 = new AnalyticsEvent(RuntimeEnvironment.application, "anotherSessionId",
+                "custom", "finished.client-token");
+
+        mAnalyticsDatabase.addEvent(request1);
+        mAnalyticsDatabase.addEvent(request2);
+        mAnalyticsDatabase.addEvent(request3);
+        mAnalyticsDatabase.addEvent(request4);
+
+        List<List<AnalyticsEvent>> analyticsRequests = mAnalyticsDatabase.getPendingRequests();
+
+        assertEquals(2, analyticsRequests.size());
+
+        assertEquals(1, analyticsRequests.get(0).get(0).id);
+        assertEquals(request1.event, analyticsRequests.get(0).get(0).event);
+        assertEquals(request1.sessionId, analyticsRequests.get(0).get(0).sessionId);
+        assertEquals(2, analyticsRequests.get(0).get(1).id);
+        assertEquals(request2.event, analyticsRequests.get(0).get(1).event);
+        assertEquals(request2.sessionId, analyticsRequests.get(0).get(1).sessionId);
+
+        assertEquals(3, analyticsRequests.get(1).get(0).id);
+        assertEquals(request3.event, analyticsRequests.get(1).get(0).event);
+        assertEquals(request3.sessionId, analyticsRequests.get(1).get(0).sessionId);
+        assertEquals(4, analyticsRequests.get(1).get(1).id);
+        assertEquals(request4.event, analyticsRequests.get(1).get(1).event);
+        assertEquals(request4.sessionId, analyticsRequests.get(1).get(1).sessionId);
+    }
+}

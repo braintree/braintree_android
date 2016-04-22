@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.braintreepayments.api.internal.BraintreeSharedPreferences;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;

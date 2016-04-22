@@ -2,6 +2,8 @@ package com.braintreepayments.api;
 
 import android.content.SharedPreferences;
 
+import com.braintreepayments.api.internal.BraintreeSharedPreferences;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

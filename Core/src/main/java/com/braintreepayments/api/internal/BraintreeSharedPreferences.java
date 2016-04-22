@@ -1,11 +1,11 @@
-package com.braintreepayments.api;
+package com.braintreepayments.api.internal;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-class BraintreeSharedPreferences {
+public class BraintreeSharedPreferences {
 
-    static SharedPreferences getSharedPreferences(Context context) {
+    public static SharedPreferences getSharedPreferences(Context context) {
         return context.getApplicationContext().getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE);
     }
 }

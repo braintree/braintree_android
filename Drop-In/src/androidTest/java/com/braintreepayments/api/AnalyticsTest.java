@@ -10,12 +10,13 @@ import android.view.KeyEvent;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
 import com.braintreepayments.api.exceptions.ServerException;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.test.BraintreePaymentActivityTestRunner;
 import com.braintreepayments.cardform.R;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
+import org.junit.After;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -29,25 +30,21 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
+import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.verifyAnalyticsEvent;
+import static com.braintreepayments.api.test.ActivityResultHelper.getActivityResult;
+import static com.braintreepayments.api.test.WaitForActivityHelper.waitForActivityToFinish;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.clickPayPalButton;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInCardForm;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
-import static com.braintreepayments.api.test.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.ui.Matchers.withHint;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
-import static com.braintreepayments.api.test.WaitForActivityHelper.waitForActivityToFinish;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.contains;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @LargeTest
 public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
@@ -55,12 +52,18 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
     private BraintreeFragment mFragment;
     private BraintreePaymentActivity mActivity;
 
+
+    @After
+    public void cleanup() {
+        AnalyticsDatabaseTestUtils.clearAllEvents(getTargetContext());
+    }
+
     @Test(timeout = 30000)
     public void addsEventOnSDKInitialized() {
         setupActivity(new TestClientTokenBuilder().withAnalytics().build());
         waitForAddPaymentFormHeader();
 
-        verifyAnalyticsEvent("dropin.appeared");
+        verifyAnalyticsEvent(mActivity, "dropin.appeared");
     }
 
     @Test(timeout = 30000)
@@ -69,7 +72,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
 
         waitForView(withId(R.id.bt_card_form_card_number)).perform(click());
 
-        verifyAnalyticsEvent("dropin.card.form.focused");
+        verifyAnalyticsEvent(mActivity, "dropin.card.form.focused");
     }
 
     @Test(timeout = 30000)
@@ -80,7 +83,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
         fillInCardForm();
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
 
-        verifyAnalyticsEvent("dropin.card.form.submitted.succeeded");
+        verifyAnalyticsEvent(mActivity, "dropin.card.form.submitted.succeeded");
     }
 
     @Test(timeout = 30000)
@@ -89,7 +92,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
 
         waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
 
-        verifyAnalyticsEvent("dropin.card.form.submitted.failed");
+        verifyAnalyticsEvent(mActivity, "dropin.card.form.submitted.failed");
     }
 
     @Test(timeout = 30000)
@@ -100,7 +103,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
         waitForActivityToFinish(mActivity);
 
-        verifyAnalyticsEvent("card.nonce-received");
+        verifyAnalyticsEvent(mActivity, "card.nonce-received");
     }
 
     @Test(timeout = 30000)
@@ -118,7 +121,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
         waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button),
                 isEnabled());
 
-        verifyAnalyticsEvent("add-card.failed");
+        verifyAnalyticsEvent(mActivity, "add-card.failed");
     }
 
     @Test(timeout = 30000)
@@ -137,7 +140,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
 
         clickPayPalButton();
 
-        verifyAnalyticsEvent("paypal.future-payments.selected");
+        verifyAnalyticsEvent(mActivity, "paypal.future-payments.selected");
     }
 
     @Test(timeout = 30000)
@@ -174,7 +177,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
         PayPal.authorizeAccount(mFragment);
 
         countDownLatch.await();
-        verifyAnalyticsEvent("add-paypal.success");
+        verifyAnalyticsEvent(mActivity, "add-paypal.success");
     }
 
     @Test(timeout = 30000)
@@ -186,7 +189,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
                 click());
         waitForActivityToFinish(mActivity);
 
-        verifyAnalyticsEvent("sdk.exit.success");
+        verifyAnalyticsEvent(mActivity, "sdk.exit.success");
     }
 
     @Test(timeout = 30000)
@@ -197,7 +200,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
         getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
         waitForActivityToFinish(mActivity);
 
-        verifyAnalyticsEvent("sdk.exit.user-canceled");
+        verifyAnalyticsEvent(mActivity, "sdk.exit.user-canceled");
     }
 
     @Test(timeout = 30000)
@@ -220,7 +223,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
         mFragment.postCallback(new AuthenticationException(""));
         waitForActivityToFinish(mActivity);
 
-        verifyAnalyticsEvent("sdk.exit.developer-error");
+        verifyAnalyticsEvent(mActivity, "sdk.exit.developer-error");
     }
 
     @Test(timeout = 30000)
@@ -231,7 +234,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
         mFragment.postCallback(new ServerException(""));
         waitForActivityToFinish(mActivity);
 
-        verifyAnalyticsEvent("sdk.exit.server-error");
+        verifyAnalyticsEvent(mActivity, "sdk.exit.server-error");
     }
 
     @Test(timeout = 30000)
@@ -242,20 +245,12 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
         mFragment.postCallback(new DownForMaintenanceException(""));
         waitForActivityToFinish(mActivity);
 
-        verifyAnalyticsEvent("sdk.exit.server-unavailable");
+        verifyAnalyticsEvent(mActivity, "sdk.exit.server-unavailable");
     }
 
     /* helpers */
     private void setupActivity(String clientToken) {
         mActivity = getActivity(clientToken);
         mFragment = mActivity.mBraintreeFragment;
-    }
-
-    private void verifyAnalyticsEvent(String event) {
-        AnalyticsManager.flushEvents(mFragment);
-        verify(mFragment.getHttpClient(), times(1)).post(
-                eq(mFragment.getConfiguration().getAnalytics().getUrl()),
-                contains(event),
-                isNull(HttpResponseCallback.class));
     }
 }

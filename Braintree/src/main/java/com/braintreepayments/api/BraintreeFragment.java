@@ -20,8 +20,12 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
+import com.braintreepayments.api.internal.AnalyticsDatabase;
+import com.braintreepayments.api.internal.AnalyticsEvent;
+import com.braintreepayments.api.internal.AnalyticsIntentService;
 import com.braintreepayments.api.interfaces.UnionPayListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
+import com.braintreepayments.api.internal.UUIDHelper;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
@@ -70,7 +74,6 @@ public class BraintreeFragment extends Fragment {
     protected Configuration mConfiguration;
 
     private CrashReporter mCrashReporter;
-    private Context mContext;
     private Authorization mAuthorization;
     private final Queue<QueuedCallback> mCallbackQueue = new ArrayDeque<>();
     private final List<PaymentMethodNonce> mCachedPaymentMethodNonces = new ArrayList<>();
@@ -78,6 +81,8 @@ public class BraintreeFragment extends Fragment {
     private boolean mIsBrowserSwitching = false;
     private int mConfigurationRequestAttempts = 0;
     private String mSessionId;
+    private AnalyticsDatabase mAnalyticsDatabase;
+    private Context mContext;
 
     private ConfigurationListener mConfigurationListener;
     private BraintreeResponseListener<Exception> mConfigurationErrorListener;
@@ -138,10 +143,14 @@ public class BraintreeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-        mContext = getActivity().getApplicationContext();
+        if (mContext == null) {
+            mContext = getActivity().getApplicationContext();
+        }
+
         mCrashReporter = CrashReporter.setup(mContext);
         mIntegrationType = getArguments().getString(EXTRA_INTEGRATION_TYPE);
         mAuthorization = getArguments().getParcelable(EXTRA_AUTHORIZATION_TOKEN);
+        mAnalyticsDatabase = AnalyticsDatabase.getInstance(getApplicationContext());
 
         if (mHttpClient == null) {
             mHttpClient = new BraintreeHttpClient(mAuthorization);
@@ -162,7 +171,7 @@ public class BraintreeFragment extends Fragment {
             mIsBrowserSwitching = savedInstanceState.getBoolean(EXTRA_BROWSER_SWITCHING);
             mSessionId = savedInstanceState.getString(EXTRA_SESSION_ID);
         } else {
-            mSessionId = DeviceMetadata.getFormattedUUID();
+            mSessionId = UUIDHelper.getFormattedUUID();
             if (mAuthorization instanceof TokenizationKey) {
                 sendAnalyticsEvent("started.client-key");
             } else {
@@ -206,8 +215,6 @@ public class BraintreeFragment extends Fragment {
     public void onPause() {
         super.onPause();
 
-        AnalyticsManager.flushEvents(this);
-
         if (getActivity() instanceof BraintreeListener) {
             removeListener((BraintreeListener) getActivity());
         }
@@ -230,6 +237,7 @@ public class BraintreeFragment extends Fragment {
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
         }
+        flushAnalyticsEvents();
     }
 
     @Override
@@ -237,6 +245,7 @@ public class BraintreeFragment extends Fragment {
         super.onDestroy();
 
         mCrashReporter.tearDown();
+        flushAnalyticsEvents();
     }
 
     @Override
@@ -332,7 +341,25 @@ public class BraintreeFragment extends Fragment {
     }
 
     protected void sendAnalyticsEvent(final String eventFragment) {
-        AnalyticsManager.sendRequest(this, mIntegrationType, eventFragment);
+        final AnalyticsEvent request = new AnalyticsEvent(mContext, getSessionId(), mIntegrationType, eventFragment);
+        waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                if (configuration.getAnalytics().isEnabled()) {
+                    mAnalyticsDatabase.addEvent(request);
+                }
+            }
+        });
+    }
+
+    protected void flushAnalyticsEvents() {
+        if (getConfiguration() != null) {
+            Intent intent = new Intent(mContext, AnalyticsIntentService.class)
+                    .putExtra(AnalyticsIntentService.EXTRA_AUTHORIZATION, getAuthorization().toString())
+                    .putExtra(AnalyticsIntentService.EXTRA_CONFIGURATION, getConfiguration().toJson());
+
+            getApplicationContext().startService(intent);
+        }
     }
 
     protected void postCancelCallback(final int requestCode) {

@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -13,18 +14,23 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
+import com.braintreepayments.api.internal.AnalyticsDatabase;
+import com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils;
+import com.braintreepayments.api.internal.AnalyticsIntentService;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.testutils.FragmentTestActivity;
+import com.braintreepayments.testutils.TestConfigurationBuilder;
 
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -32,6 +38,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +46,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.verifyAnalyticsEvent;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
@@ -49,10 +57,10 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.doAnswer;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
@@ -63,7 +71,7 @@ import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*" })
-@PrepareForTest({ ConfigurationManager.class, AnalyticsManager.class, PayPal.class, ThreeDSecure.class, Venmo.class })
+@PrepareForTest({ ConfigurationManager.class, PayPal.class, ThreeDSecure.class, Venmo.class })
 public class BraintreeFragmentUnitTest {
 
     @Rule
@@ -76,6 +84,7 @@ public class BraintreeFragmentUnitTest {
     public void setup() {
         mActivity = spy(Robolectric.setupActivity(FragmentTestActivity.class));
         doNothing().when(mActivity).startActivity(any(Intent.class));
+        AnalyticsDatabaseTestUtils.clearAllEvents(mActivity);
         mCalled = new AtomicBoolean(false);
     }
 
@@ -147,29 +156,32 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void sendsAnalyticsEventForTokenizationKey() throws InvalidArgumentException, JSONException {
-        mockConfigurationManager(Configuration.fromJson(stringFromFixture("configuration_with_analytics.json")));
-        mockStatic(AnalyticsManager.class);
-        doNothing().when(AnalyticsManager.class);
-        AnalyticsManager.sendRequest(any(BraintreeFragment.class), anyString(), anyString());
+    public void sendEvent_addsEventToDatabase() throws InvalidArgumentException {
+        AnalyticsConfiguration analyticsConfiguration = mock(AnalyticsConfiguration.class);
+        when(analyticsConfiguration.isEnabled()).thenReturn(true);
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(analyticsConfiguration);
 
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY));
+        when(fragment.getConfiguration()).thenReturn(configuration);
+        fragment.sendAnalyticsEvent("test.event");
 
-        verifyStatic();
-        AnalyticsManager.sendRequest(fragment, "custom", "started.client-key");
+        verifyAnalyticsEvent(mActivity, "test.event");
     }
 
     @Test
-    public void sendsAnalyticsEventForClientToken() throws InvalidArgumentException, JSONException {
-        mockConfigurationManager(Configuration.fromJson(stringFromFixture("configuration_with_analytics.json")));
-        mockStatic(AnalyticsManager.class);
-        doNothing().when(AnalyticsManager.class);
-        AnalyticsManager.sendRequest(any(BraintreeFragment.class), anyString(), anyString());
+    public void sendEvent_doesNothingIfAnalyticsNotEnabled() throws InvalidArgumentException {
+        AnalyticsConfiguration analyticsConfiguration = mock(AnalyticsConfiguration.class);
+        when(analyticsConfiguration.isEnabled()).thenReturn(false);
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(analyticsConfiguration);
 
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, stringFromFixture("client_token.json"));
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY));
+        when(fragment.getConfiguration()).thenReturn(configuration);
+        fragment.sendAnalyticsEvent("test.event");
 
-        verifyStatic();
-        AnalyticsManager.sendRequest(fragment, "custom", "started.client-token");
+        AnalyticsDatabase db = AnalyticsDatabase.getInstance(mActivity);
+        assertEquals(0, db.getPendingRequests().size());
     }
 
     @Test
@@ -615,18 +627,25 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void onPause_flushesAnalyticsEvents() throws JSONException, InvalidArgumentException {
-        mockConfigurationManager(Configuration.fromJson(stringFromFixture("configuration_with_analytics.json")));
-        mockStatic(AnalyticsManager.class);
-        doNothing().when(AnalyticsManager.class);
-        AnalyticsManager.sendRequest(any(BraintreeFragment.class), anyString(), anyString());
+    public void onStop_flushesAnalyticsEvents() throws JSONException, InvalidArgumentException {
+        String configuration = new TestConfigurationBuilder().analytics("analytics_url").build();
+        mockConfigurationManager(Configuration.fromJson(configuration));
+
+        Robolectric.getForegroundThreadScheduler().pause();
+        Context context = spy(RuntimeEnvironment.application);
+        when(mActivity.getApplicationContext()).thenReturn(context);
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        fragment.sendAnalyticsEvent("event");
+        Robolectric.getForegroundThreadScheduler().unPause();
+        Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
 
-        fragment.onPause();
+        fragment.onStop();
 
-        verifyStatic();
-        AnalyticsManager.flushEvents(fragment);
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(context).startService(intentCaptor.capture());
+
+        Intent serviceIntent = intentCaptor.getValue();
+        assertEquals(TOKENIZATION_KEY, serviceIntent.getStringExtra(AnalyticsIntentService.EXTRA_AUTHORIZATION));
+        assertEquals(configuration, serviceIntent.getStringExtra(AnalyticsIntentService.EXTRA_CONFIGURATION));
     }
 
     @Test
