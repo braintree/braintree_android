@@ -41,14 +41,17 @@ public class PaymentMethod {
                     public void success(String responseBody) {
                         try {
                             fragment.postCallback(PaymentMethodNonce.parsePaymentMethodNonces(responseBody));
+                            fragment.sendAnalyticsEvent("get-payment-methods.succeeded");
                         } catch (JSONException e) {
                             fragment.postCallback(e);
+                            fragment.sendAnalyticsEvent("get-payment-methods.failed");
                         }
                     }
 
                     @Override
                     public void failure(Exception exception) {
                         fragment.postCallback(exception);
+                        fragment.sendAnalyticsEvent("get-payment-methods.failed");
                     }
                 });
             }
