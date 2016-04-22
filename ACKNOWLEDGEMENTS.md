@@ -4,6 +4,7 @@ Summary
 The Braintree SDK uses code from the following libraries:
 
  * [Android Testing Support Library](https://google.github.io/android-testing-support-library/), [Android Software Development Kit License Agreement](http://developer.android.com/sdk/terms.html)
+ * [Android Support Library](http://developer.android.com/tools/support-library/index.html), [Android Software Development Kit License Agreement](http://developer.android.com/sdk/terms.html)
  * [device-automator](https://github.com/lkorth/device-automator), MIT License
  * [Dexmaker](https://github.com/crittercism/dexmaker), Apache License Version 2.0
  * [Google Play Services Wallet](https://developers.google.com/android/guides/overview), [Android Software Development Kit License Agreement](http://developer.android.com/sdk/terms.html)
