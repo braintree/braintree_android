@@ -151,31 +151,30 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     }
 
     private void requestAndroidPayMaskedWallet() {
-        AndroidPay.getTokenizationParameters(mBraintreeFragment,
-                new TokenizationParametersListener() {
-                    @Override
-                    public void onResult(PaymentMethodTokenizationParameters parameters,
-                            Collection<Integer> allowedCardNetworks) {
-                        MaskedWalletRequest.Builder maskedWalletRequestBuilder =
-                                MaskedWalletRequest.newBuilder()
-                                        .setMerchantName("Braintree")
-                                        .setCurrencyCode(mCart.getCurrencyCode())
-                                        .setCart(mCart)
-                                        .setEstimatedTotalPrice(mCart.getTotalPrice())
-                                        .setShippingAddressRequired(Settings.isAndroidPayShippingAddressRequired(CustomActivity.this))
-                                        .setPhoneNumberRequired(Settings.isAndroidPayPhoneNumberRequired(CustomActivity.this))
-                                        .setPaymentMethodTokenizationParameters(parameters)
-                                        .addAllowedCardNetworks(allowedCardNetworks);
+        AndroidPay.getTokenizationParameters(mBraintreeFragment, new TokenizationParametersListener() {
+            @Override
+            public void onResult(PaymentMethodTokenizationParameters parameters,
+                    Collection<Integer> allowedCardNetworks) {
+                MaskedWalletRequest.Builder maskedWalletRequestBuilder =
+                        MaskedWalletRequest.newBuilder()
+                                .setMerchantName("Braintree")
+                                .setCurrencyCode(mCart.getCurrencyCode())
+                                .setCart(mCart)
+                                .setEstimatedTotalPrice(mCart.getTotalPrice())
+                                .setShippingAddressRequired(Settings.isAndroidPayShippingAddressRequired(CustomActivity.this))
+                                .setPhoneNumberRequired(Settings.isAndroidPayPhoneNumberRequired(CustomActivity.this))
+                                .setPaymentMethodTokenizationParameters(parameters)
+                                .addAllowedCardNetworks(allowedCardNetworks);
 
-                        for (String country : Settings.getAndroidPayAllowedCountriesForShipping(CustomActivity.this)) {
-                            maskedWalletRequestBuilder.addAllowedCountrySpecificationForShipping(
-                                    new CountrySpecification(country));
-                        }
+                for (String country : Settings.getAndroidPayAllowedCountriesForShipping(CustomActivity.this)) {
+                    maskedWalletRequestBuilder.addAllowedCountrySpecificationForShipping(
+                            new CountrySpecification(country));
+                }
 
-                        Wallet.Payments.loadMaskedWallet(mGoogleApiClient,
-                                maskedWalletRequestBuilder.build(), ANDROID_PAY_MASKED_WALLET_REQUEST_CODE);
-                    }
-                });
+                Wallet.Payments.loadMaskedWallet(mGoogleApiClient, maskedWalletRequestBuilder.build(),
+                        ANDROID_PAY_MASKED_WALLET_REQUEST_CODE);
+            }
+        });
     }
 
     @Override
