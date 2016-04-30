@@ -79,11 +79,11 @@ public class Venmo {
         String exceptionMessage = "";
         VenmoConfiguration venmoConfiguration = configuration.getPayWithVenmo();
         if(!venmoConfiguration.isAccessTokenValid()) {
-            exceptionMessage = "Venmo is not enabled in the control panel.";
+            exceptionMessage = "Venmo is not enabled";
         } else if (!Venmo.isVenmoInstalled(fragment.getApplicationContext())) {
-            exceptionMessage = "Venmo is not installed.";
+            exceptionMessage = "Venmo is not installed";
         } else if (!venmoConfiguration.isVenmoWhitelisted(fragment.getApplicationContext().getContentResolver())) {
-            exceptionMessage = "Venmo is not whitelisted.";
+            exceptionMessage = "Venmo is not whitelisted";
         }
 
         if(!TextUtils.isEmpty(exceptionMessage)) {

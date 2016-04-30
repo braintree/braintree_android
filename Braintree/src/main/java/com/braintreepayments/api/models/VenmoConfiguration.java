@@ -10,7 +10,6 @@ import android.text.TextUtils;
 import com.braintreepayments.api.Venmo;
 
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 /**
  * Contains the remote Pay with Venmo configuration for the Braintree SDK.
@@ -66,11 +65,9 @@ public class VenmoConfiguration {
     }
 
     public boolean isVenmoWhitelisted(ContentResolver contentResolver) {
-        Cursor cursor = contentResolver
-                .query(VENMO_AUTHORITY_URI, null, null, null, null);
+        Cursor cursor = contentResolver.query(VENMO_AUTHORITY_URI, null, null, null, null);
 
-        boolean isVenmoWhiteListed =
-                cursor != null && cursor.moveToFirst() && "true".equals(cursor.getString(0));
+        boolean isVenmoWhiteListed = cursor != null && cursor.moveToFirst() && "true".equals(cursor.getString(0));
 
         if (cursor != null) {
             cursor.close();
@@ -78,5 +75,4 @@ public class VenmoConfiguration {
 
         return isVenmoWhiteListed;
     }
-
 }

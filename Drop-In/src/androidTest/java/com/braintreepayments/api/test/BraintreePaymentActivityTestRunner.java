@@ -6,7 +6,6 @@ import android.support.test.runner.AndroidJUnit4;
 import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.BraintreePaymentTestActivity;
 import com.braintreepayments.api.PaymentRequest;
-import com.braintreepayments.api.internal.SignatureVerificationTestUtils;
 import com.braintreepayments.testutils.BraintreeActivityTestRule;
 
 import org.junit.Before;
