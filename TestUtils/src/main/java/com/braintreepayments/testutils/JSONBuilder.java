@@ -1,5 +1,7 @@
 package com.braintreepayments.testutils;
 
+import com.braintreepayments.api.testutils.BuildConfig;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,7 +18,12 @@ public abstract class JSONBuilder {
     }
 
     public void put(Object value) {
-        StackTraceElement current = Thread.currentThread().getStackTrace()[2];
+        int stackIndex = 3;
+        if (BuildConfig.FLAVOR.equals("unitTest")) {
+            stackIndex--;
+        }
+
+        StackTraceElement current = Thread.currentThread().getStackTrace()[stackIndex];
         try {
             mJsonBody.put(current.getMethodName(), value);
         } catch (JSONException ignored) {}

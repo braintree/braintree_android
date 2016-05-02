@@ -40,8 +40,15 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return this;
     }
 
-    public TestConfigurationBuilder payPalEnabled(boolean paypalEnabled) {
+    public TestConfigurationBuilder paypalEnabled(boolean paypalEnabled) {
         put(Boolean.toString(paypalEnabled));
+        paypal(new TestPayPalConfigurationBuilder()
+                .environment("test")
+                .displayName("displayName")
+                .clientId("clientId")
+                .privacyUrl("http://privacy.com")
+                .userAgreementUrl("http://user.agreement.com"));
+
         return this;
     }
 
@@ -59,13 +66,17 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return this;
     }
 
-    public TestConfigurationBuilder paypal(String paypalJson) {
-        put(paypalJson);
+    public TestConfigurationBuilder paypal(TestPayPalConfigurationBuilder builder) {
+        try {
+            put(new JSONObject(builder.build()));
+        } catch (JSONException ignored) {}
         return this;
     }
 
-    public TestConfigurationBuilder androidPay(String androidPayJson) {
-        put(androidPayJson);
+    public TestConfigurationBuilder androidPay(TestAndroidPayConfigurationBuilder builder) {
+        try {
+            put(new JSONObject(builder.build()));
+        } catch (JSONException ignored) {}
         return this;
     }
 

@@ -13,11 +13,11 @@ import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
 import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.internal.AnalyticsDatabase;
-import com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.test.BraintreePaymentActivityTestRunner;
 import com.braintreepayments.cardform.R;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
+import com.braintreepayments.testutils.TestConfigurationBuilder;
 
 import org.junit.After;
 import org.junit.Test;
@@ -32,7 +32,6 @@ import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static com.braintreepayments.api.test.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.api.test.WaitForActivityHelper.waitForActivityToFinish;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.clickPayPalButton;
@@ -54,10 +53,9 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
     private BraintreeFragment mFragment;
     private BraintreePaymentActivity mActivity;
 
-
     @After
     public void cleanup() {
-        AnalyticsDatabaseTestUtils.clearAllEvents(getTargetContext());
+        clearAllEvents(getTargetContext());
     }
 
     @Test(timeout = 30000)
@@ -118,10 +116,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
 
         onView(withHint(R.string.bt_form_hint_card_number)).perform(typeText(VISA));
         onView(withHint(R.string.bt_form_hint_expiration)).perform(typeText("0619"), closeSoftKeyboard());
-        onView(withHint(R.string.bt_form_hint_cvv)).perform(typeText("200"), closeSoftKeyboard());
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).perform(click());
-        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button),
-                isEnabled());
 
         verifyAnalyticsEvent(mActivity, "add-card.failed");
     }
@@ -132,10 +127,17 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
                 .withPayPal()
                 .withAnalytics()
                 .build();
+
+        String config = new TestConfigurationBuilder()
+                .paypalEnabled(true)
+                .analytics("http://analytics.com")
+                .build();
+
         Intent intent = new PaymentRequest()
                 .clientToken(clientToken)
                 .getIntent(getTargetContext())
-                .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken);
+                .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, config);
+
         mActivity = getActivity(intent);
         mFragment = mActivity.mBraintreeFragment;
         waitForAddPaymentFormHeader();
@@ -153,10 +155,17 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
                 .withPayPal()
                 .withAnalytics()
                 .build();
+
+        String config = new TestConfigurationBuilder()
+                .paypalEnabled(true)
+                .analytics("http://analytics.com")
+                .build();
+
         Intent intent = new PaymentRequest()
                 .clientToken(clientToken)
                 .getIntent(getTargetContext())
-                .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, clientToken);
+                .putExtra(BraintreePaymentTestActivity.MOCK_CONFIGURATION, config);
+
         mActivity = getActivity(intent);
         mActivity.mBraintreeFragment = spy(mActivity.mBraintreeFragment);
         mFragment = mActivity.mBraintreeFragment;
