@@ -1,27 +1,20 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-
-import com.braintreepayments.api.internal.BraintreeSharedPreferences;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 class CrashReporter implements UncaughtExceptionHandler {
 
-    private static final String CRASH_KEY = "com.braintreepayments.api.CrashReporting.CRASH";
-
-    private Context mContext;
+    private BraintreeFragment mBraintreeFragment;
     private Thread.UncaughtExceptionHandler mDefaultExceptionHandler;
 
-    static CrashReporter setup(Context context) {
-        return new CrashReporter(context);
+    static CrashReporter setup(BraintreeFragment fragment) {
+        return new CrashReporter(fragment);
     }
 
-    private CrashReporter(Context context) {
-        mContext = context.getApplicationContext();
+    private CrashReporter(BraintreeFragment fragment) {
+        mBraintreeFragment = fragment;
         mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(this);
     }
@@ -36,21 +29,11 @@ class CrashReporter implements UncaughtExceptionHandler {
         ex.printStackTrace(new PrintWriter(stringWriter));
         if (stringWriter.toString().contains("com.braintreepayments") ||
                 stringWriter.toString().contains("com.paypal")) {
-            BraintreeSharedPreferences.getSharedPreferences(mContext).edit()
-                    .putBoolean(CRASH_KEY, true)
-                    .apply();
+            mBraintreeFragment.sendAnalyticsEvent("crash");
         }
 
         if (mDefaultExceptionHandler != null) {
             mDefaultExceptionHandler.uncaughtException(thread, ex);
-        }
-    }
-
-    void sendPreviousCrashes(BraintreeFragment fragment) {
-        SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(mContext);
-        if (prefs.getBoolean(CRASH_KEY, false)) {
-            fragment.sendAnalyticsEvent("crash");
-            prefs.edit().putBoolean(CRASH_KEY, false).apply();
         }
     }
 }

@@ -147,7 +147,7 @@ public class BraintreeFragment extends Fragment {
             mContext = getActivity().getApplicationContext();
         }
 
-        mCrashReporter = CrashReporter.setup(mContext);
+        mCrashReporter = CrashReporter.setup(this);
         mIntegrationType = getArguments().getString(EXTRA_INTEGRATION_TYPE);
         mAuthorization = getArguments().getParcelable(EXTRA_AUTHORIZATION_TOKEN);
         mAnalyticsDatabase = AnalyticsDatabase.getInstance(getApplicationContext());
@@ -178,8 +178,6 @@ public class BraintreeFragment extends Fragment {
                 sendAnalyticsEvent("started.client-token");
             }
         }
-
-        mCrashReporter.sendPreviousCrashes(this);
     }
 
     @Override
