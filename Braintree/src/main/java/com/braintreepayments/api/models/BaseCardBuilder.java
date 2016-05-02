@@ -2,6 +2,7 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,7 +51,11 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
      */
     @SuppressWarnings("unchecked")
     public T cardNumber(String number) {
-        mCardnumber = number;
+        if (TextUtils.isEmpty(number)) {
+            mCardnumber = null;
+        } else {
+            mCardnumber = number;
+        }
         return (T) this;
     }
 
@@ -60,7 +65,11 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
      */
     @SuppressWarnings("unchecked")
     public T cvv(String cvv) {
-        mCvv = cvv;
+        if (TextUtils.isEmpty(cvv)) {
+            mCvv = null;
+        } else {
+            mCvv = cvv;
+        }
         return (T) this;
     }
 
@@ -70,7 +79,11 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
      */
     @SuppressWarnings("unchecked")
     public T expirationMonth(String expirationMonth) {
-        mExpirationMonth = expirationMonth;
+        if (TextUtils.isEmpty(expirationMonth)) {
+            mExpirationMonth = null;
+        } else {
+            mExpirationMonth = expirationMonth;
+        }
         return (T) this;
     }
 
@@ -80,7 +93,11 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
      */
     @SuppressWarnings("unchecked")
     public T expirationYear(String expirationYear) {
-        mExpirationYear = expirationYear;
+        if (TextUtils.isEmpty(expirationYear)) {
+            mExpirationYear = null;
+        } else {
+            mExpirationYear = expirationYear;
+        }
         return (T) this;
     }
 
@@ -90,7 +107,11 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
      */
     @SuppressWarnings("unchecked")
     public T expirationDate(String expirationDate) {
-        mExpirationDate = expirationDate;
+        if (TextUtils.isEmpty(expirationDate)) {
+            mExpirationDate = null;
+        } else {
+            mExpirationDate = expirationDate;
+        }
         return (T) this;
     }
 
@@ -100,7 +121,11 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
      */
     @SuppressWarnings("unchecked")
     public T cardholderName(String cardholderName) {
-        mCardholderName = cardholderName;
+        if (TextUtils.isEmpty(cardholderName)) {
+            mCardholderName = null;
+        } else {
+            mCardholderName = cardholderName;
+        }
         return (T) this;
     }
 
@@ -110,7 +135,11 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
      */
     @SuppressWarnings("unchecked")
     public T firstName(String firstName) {
-        mFirstName = firstName;
+        if (TextUtils.isEmpty(firstName)) {
+            mFirstName = null;
+        } else {
+            mFirstName = firstName;
+        }
         return (T) this;
     }
 
@@ -120,7 +149,11 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
      */
     @SuppressWarnings("unchecked")
     public T lastName(String lastName) {
-        mLastName = lastName;
+        if (TextUtils.isEmpty(lastName)) {
+            mLastName = null;
+        } else {
+            mLastName = lastName;
+        }
         return (T) this;
     }
 
@@ -130,7 +163,11 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
      */
     @SuppressWarnings("unchecked")
     public T countryName(String countryName) {
-        mCountryName = countryName;
+        if (TextUtils.isEmpty(countryName)) {
+            mCountryName = null;
+        } else {
+            mCountryName = countryName;
+        }
         return (T) this;
     }
 
@@ -140,7 +177,11 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
      */
     @SuppressWarnings("unchecked")
     public T locality(String locality) {
-        mLocality = locality;
+        if (TextUtils.isEmpty(locality)) {
+            mLocality = null;
+        } else {
+            mLocality = locality;
+        }
         return (T) this;
     }
 
@@ -150,7 +191,11 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
      */
     @SuppressWarnings("unchecked")
     public T postalCode(String postalCode) {
-        mPostalCode = postalCode;
+        if (TextUtils.isEmpty(postalCode)) {
+            mPostalCode = null;
+        } else {
+            mPostalCode = postalCode;
+        }
         return (T) this;
     }
 
@@ -160,7 +205,11 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
      */
     @SuppressWarnings("unchecked")
     public T region(String region) {
-        mRegion = region;
+        if (TextUtils.isEmpty(region)) {
+            mRegion = null;
+        } else {
+            mRegion = region;
+        }
         return (T) this;
     }
 
@@ -170,7 +219,11 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
      */
     @SuppressWarnings("unchecked")
     public T streetAddress(String streetAddress) {
-        mStreetAddress = streetAddress;
+        if (TextUtils.isEmpty(streetAddress)) {
+            mStreetAddress = null;
+        } else {
+            mStreetAddress = streetAddress;
+        }
         return (T) this;
     }
 
