@@ -39,6 +39,44 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp" />
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.braintreepayments.cardform.view.FloatingLabelEditText
+            style="@style/bt_card_form_field"
+            android:id="@+id/country_code"
+            android:hint="@string/country_code"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.braintreepayments.cardform.view.FloatingLabelEditText
+            style="@style/bt_card_form_field"
+            android:id="@+id/mobile_phone"
+            android:hint="@string/mobile_phone"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/union_pay_enroll_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/send_sms"
+        android:visibility="gone"
+        android:onClick="sendSms" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.braintreepayments.cardform.view.FloatingLabelEditText
+            style="@style/bt_card_form_field"
+            android:id="@+id/sms_code"
+            android:hint="@string/sms_auth_code"
+            android:visibility="gone" />
+    </FrameLayout>
+
     <Button
         android:id="@+id/purchase_button"
         android:layout_width="match_parent"

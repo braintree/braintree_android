@@ -5,6 +5,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
+import com.braintreepayments.testutils.CardNumber;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +38,22 @@ public class CustomTest extends TestHelper {
         onDevice(withText("Purchase")).perform(click());
 
         onDevice(withTextStartingWith("Card Last Two:")).check(text(containsString("11")));
+
+        onDevice(withText("Create a Transaction")).perform(click());
+        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
+    }
+
+    @Test(timeout = 60000)
+    public void tokenizesUnionPay() {
+        onDevice(withText("Card Number")).perform(setText(CardNumber.UNIONPAY_ENROLLMENT_REQUIRED));
+        onDevice(withText("Expiration")).perform(click(), setText("1220"));
+        onDevice(withText("Country Code")).perform(setText("1"));
+        onDevice(withText("Mobile Phone")).perform(setText("555-555-5555"));
+        onDevice(withText("Send SMS")).perform(click());
+        onDevice(withText("SMS Auth Code")).perform(setText("12345"));
+        onDevice(withText("Purchase")).perform(click());
+
+        onDevice(withTextStartingWith("Card Last Two:")).check(text(containsString("17")));
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));

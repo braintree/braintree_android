@@ -117,6 +117,8 @@ public abstract class BaseActivity extends Activity implements ActivityCompat.On
     @Override
     public void onError(Exception error) {
         mLogger.debug("Error received (" + error.getClass() + "): "  + error.getMessage());
+        mLogger.debug(error.toString());
+
         showDialog("An error occurred (" + error.getClass() + "): " + error.getMessage());
     }
 
