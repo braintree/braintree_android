@@ -218,6 +218,7 @@ public class BraintreeFragment extends Fragment {
         if (getActivity() instanceof BraintreeListener) {
             removeListener((BraintreeListener) getActivity());
         }
+        flushAnalyticsEvents();
     }
 
     @Override
@@ -245,7 +246,6 @@ public class BraintreeFragment extends Fragment {
         super.onDestroy();
 
         mCrashReporter.tearDown();
-        flushAnalyticsEvents();
     }
 
     @Override

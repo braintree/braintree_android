@@ -1,7 +1,9 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Handler;
 import android.os.Looper;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -10,6 +12,7 @@ import android.view.KeyEvent;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
 import com.braintreepayments.api.exceptions.ServerException;
+import com.braintreepayments.api.internal.AnalyticsDatabase;
 import com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.test.BraintreePaymentActivityTestRunner;
@@ -30,7 +33,6 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
-import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.verifyAnalyticsEvent;
 import static com.braintreepayments.api.test.ActivityResultHelper.getActivityResult;
 import static com.braintreepayments.api.test.WaitForActivityHelper.waitForActivityToFinish;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.clickPayPalButton;
@@ -252,5 +254,18 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
     private void setupActivity(String clientToken) {
         mActivity = getActivity(clientToken);
         mFragment = mActivity.mBraintreeFragment;
+    }
+
+    private static void clearAllEvents(Context context) {
+        AnalyticsDatabase database = AnalyticsDatabase.getInstance(context.getApplicationContext());
+        database.getWritableDatabase().delete("analytics", null, null);
+        database.close();
+    }
+
+    private static boolean verifyAnalyticsEvent(Context context, String eventFragment) {
+        AnalyticsDatabase database = AnalyticsDatabase.getInstance(context.getApplicationContext());
+        Cursor c = database.getReadableDatabase().query("analytics", new String[]{"event"}, "event like ?",
+                new String[]{eventFragment}, null, null, null);
+        return c.getCount() == 1;
     }
 }

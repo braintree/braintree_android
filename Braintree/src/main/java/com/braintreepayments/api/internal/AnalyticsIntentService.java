@@ -31,6 +31,13 @@ public class AnalyticsIntentService extends IntentService {
     public static final String EXTRA_CONFIGURATION =
             "com.braintreepayments.api.internal.AnalyticsIntentService.EXTRA_CONFIGURATION";
 
+    public static final String SESSION_ID_KEY = "sessionId";
+    public static final String DEVICE_NETWORK_TYPE_KEY = "deviceNetworkType";
+    public static final String USER_INTERFACE_ORIENTATION_KEY = "userInterfaceOrientation";
+    public static final String MERCHANT_APP_VERSION_KEY = "merchantAppVersion";
+    public static final String PAYPAL_INSTALLED_KEY = "paypalInstalled";
+    public static final String VENMO_INSTALLED_KEY = "venmoInstalled";
+
     private static final String ANALYTICS_KEY = "analytics";
     private static final String KIND_KEY = "kind";
     private static final String TIMESTAMP_KEY = "timestamp";
@@ -42,19 +49,13 @@ public class AnalyticsIntentService extends IntentService {
     private static final String SDK_VERSION_KEY = "sdkVersion";
     private static final String MERCHANT_APP_ID_KEY = "merchantAppId";
     private static final String MERCHANT_APP_NAME_KEY = "merchantAppName";
-    private static final String MERCHANT_APP_VERSION_KEY = "merchantAppVersion";
     private static final String DEVICE_ROOTED_KEY = "deviceRooted";
     private static final String DEVICE_MANUFACTURER_KEY = "deviceManufacturer";
     private static final String DEVICE_MODEL_KEY = "deviceModel";
-    private static final String DEVICE_NETWORK_TYPE_KEY = "deviceNetworkType";
     private static final String ANDROID_ID_KEY = "androidId";
-    private static final String SESSION_ID_KEY = "sessionId";
     private static final String DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY = "deviceAppGeneratedPersistentUuid";
     private static final String IS_SIMULATOR_KEY = "isSimulator";
     private static final String INTEGRATION_TYPE_KEY = "integrationType";
-    private static final String USER_INTERFACE_ORIENTATION_KEY = "userInterfaceOrientation";
-    private static final String PAYPAL_INSTALLED_KEY = "paypalInstalled";
-    private static final String VENMO_INSTALLED_KEY = "venmoInstalled";
 
     protected HttpClient mHttpClient;
 
@@ -96,15 +97,9 @@ public class AnalyticsIntentService extends IntentService {
             requestObject.put(TOKENIZATION_KEY, authorization.toString());
         }
 
-        JSONObject meta = new JSONObject()
+        JSONObject meta = primeEvent.metadata
                 .put(PLATFORM_KEY, "Android")
                 .put(INTEGRATION_TYPE_KEY, primeEvent.getIntegrationType())
-                .put(SESSION_ID_KEY, primeEvent.sessionId)
-                .put(DEVICE_NETWORK_TYPE_KEY, primeEvent.networkType)
-                .put(USER_INTERFACE_ORIENTATION_KEY, primeEvent.interfaceOrientation)
-                .put(MERCHANT_APP_VERSION_KEY, primeEvent.merchantAppVersion)
-                .put(PAYPAL_INSTALLED_KEY, primeEvent.paypalInstalled)
-                .put(VENMO_INSTALLED_KEY, primeEvent.venmoInstalled)
                 .put(PLATFORM_VERSION_KEY, Integer.toString(VERSION.SDK_INT))
                 .put(SDK_VERSION_KEY, BuildConfig.VERSION_NAME)
                 .put(MERCHANT_APP_ID_KEY, mContext.getPackageName())

@@ -8,30 +8,33 @@ import android.net.ConnectivityManager;
 import com.braintreepayments.api.Venmo;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class AnalyticsEvent {
 
     int id;
     String event;
     long timestamp;
-    String sessionId;
-    String networkType;
-    String interfaceOrientation;
-    String merchantAppVersion;
-    boolean paypalInstalled;
-    boolean venmoInstalled;
+    JSONObject metadata;
 
     public AnalyticsEvent(Context context, String sessionId, String integration, String event) {
         this.event = "android." + integration + "." + event;
-        this.sessionId = sessionId;
         this.timestamp = System.currentTimeMillis() / 1000;
-        this.networkType = getNetworkType(context);
-        this.interfaceOrientation = getUserOrientation(context);
-        this.merchantAppVersion = getAppVersion(context);
-        this.paypalInstalled = PayPalOneTouchCore.isWalletAppInstalled(context);
-        this.venmoInstalled = Venmo.isVenmoInstalled(context);
+        metadata = new JSONObject();
+        try {
+            metadata.put(AnalyticsIntentService.SESSION_ID_KEY, sessionId)
+                    .put(AnalyticsIntentService.DEVICE_NETWORK_TYPE_KEY, getNetworkType(context))
+                    .put(AnalyticsIntentService.USER_INTERFACE_ORIENTATION_KEY, getUserOrientation(context))
+                    .put(AnalyticsIntentService.MERCHANT_APP_VERSION_KEY, getAppVersion(context))
+                    .put(AnalyticsIntentService.PAYPAL_INSTALLED_KEY, PayPalOneTouchCore.isWalletAppInstalled(context))
+                    .put(AnalyticsIntentService.VENMO_INSTALLED_KEY, Venmo.isVenmoInstalled(context));
+        } catch (JSONException ignored) {}
     }
 
-    AnalyticsEvent() {}
+    public AnalyticsEvent() {
+        metadata = new JSONObject();
+    }
 
     public String getIntegrationType() {
         String[] eventSegments = this.event.split("\\.");

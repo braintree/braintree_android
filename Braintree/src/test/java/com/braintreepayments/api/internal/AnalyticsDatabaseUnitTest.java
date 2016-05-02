@@ -2,6 +2,7 @@ package com.braintreepayments.api.internal;
 
 import android.database.Cursor;
 
+import org.json.JSONException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +34,7 @@ public class AnalyticsDatabaseUnitTest {
     }
 
     @Test
-    public void addEvent_persistsEvent() {
+    public void addEvent_persistsEvent() throws JSONException {
         AnalyticsEvent request = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
                 "custom", "started.client-token");
 
@@ -43,14 +44,9 @@ public class AnalyticsDatabaseUnitTest {
                 null, null, "_id desc", "1");
 
         assertTrue(cursor.moveToFirst());
-        assertEquals(request.event, cursor.getString(1));
-        assertEquals(request.sessionId, cursor.getString(2));
-        assertEquals(request.timestamp, cursor.getLong(3));
-        assertEquals(request.networkType, cursor.getString(4));
-        assertEquals(request.interfaceOrientation, cursor.getString(5));
-        assertEquals(request.merchantAppVersion, cursor.getString(6));
-        assertEquals(request.paypalInstalled ? 1 : 0, cursor.getInt(7));
-        assertEquals(request.venmoInstalled ? 1 : 0, cursor.getInt(8));
+        assertEquals(request.event, cursor.getString(cursor.getColumnIndex(AnalyticsDatabase.EVENT)));
+        assertEquals(request.timestamp, cursor.getLong(cursor.getColumnIndex(AnalyticsDatabase.TIMESTAMP)));
+        assertEquals(request.metadata.toString(), cursor.getString(cursor.getColumnIndex(AnalyticsDatabase.META_JSON)));
     }
 
     @Test
@@ -83,7 +79,7 @@ public class AnalyticsDatabaseUnitTest {
     }
 
     @Test
-    public void getPendingRequests_returnsCorrectGroupingsOfMetadata() {
+    public void getPendingRequests_returnsCorrectGroupingsOfMetadata() throws JSONException {
         AnalyticsEvent request1 = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
                 "custom", "started.client-token");
         AnalyticsEvent request2 = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
@@ -105,16 +101,22 @@ public class AnalyticsDatabaseUnitTest {
 
         assertEquals(1, analyticsRequests.get(0).get(0).id);
         assertEquals(request1.event, analyticsRequests.get(0).get(0).event);
-        assertEquals(request1.sessionId, analyticsRequests.get(0).get(0).sessionId);
+        assertEquals(request1.metadata.getString("sessionId"),
+                analyticsRequests.get(0).get(0).metadata.getString("sessionId"));
+
         assertEquals(2, analyticsRequests.get(0).get(1).id);
         assertEquals(request2.event, analyticsRequests.get(0).get(1).event);
-        assertEquals(request2.sessionId, analyticsRequests.get(0).get(1).sessionId);
+        assertEquals(request2.metadata.getString("sessionId"),
+                analyticsRequests.get(0).get(1).metadata.getString("sessionId"));
 
         assertEquals(3, analyticsRequests.get(1).get(0).id);
         assertEquals(request3.event, analyticsRequests.get(1).get(0).event);
-        assertEquals(request3.sessionId, analyticsRequests.get(1).get(0).sessionId);
+        assertEquals(request3.metadata.getString("sessionId"),
+                analyticsRequests.get(1).get(0).metadata.getString("sessionId"));
+
         assertEquals(4, analyticsRequests.get(1).get(1).id);
         assertEquals(request4.event, analyticsRequests.get(1).get(1).event);
-        assertEquals(request4.sessionId, analyticsRequests.get(1).get(1).sessionId);
+        assertEquals(request4.metadata.getString("sessionId"),
+                analyticsRequests.get(1).get(1).metadata.getString("sessionId"));
     }
 }
