@@ -1,5 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## 2.3.0
+
+* UnionPay Beta *Please note*: this API is in beta and subject to change
+* Add support for fetching a customer's payment methods
+* Return a `RateLimitException` when a merchant account is being rate limited
+
 ## 2.2.5
 
 * Fixes
