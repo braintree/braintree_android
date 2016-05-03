@@ -64,7 +64,7 @@
         </FrameLayout>
 
         <Button
-            android:id="@+id/union_pay_enroll_button"
+            android:id="@+id/unionpay_enroll_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/send_sms"

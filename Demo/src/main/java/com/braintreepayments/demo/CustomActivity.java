@@ -54,8 +54,8 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
         PaymentMethodNonceCreatedListener, BraintreeErrorListener, OnCardFormSubmitListener,
         OnCardFormFieldFocusedListener {
 
-    private static final String EXTRA_UNION_PAY = "com.braintreepayments.demo.EXTRA_UNION_PAY";
-    private static final String EXTRA_UNION_PAY_ENROLLMENT_ID = "com.braintreepayments.demo.EXTRA_UNION_PAY_ENROLLMENT_ID";
+    private static final String EXTRA_UNIONPAY = "com.braintreepayments.demo.EXTRA_UNIONPAY";
+    private static final String EXTRA_UNIONPAY_ENROLLMENT_ID = "com.braintreepayments.demo.EXTRA_UNIONPAY_ENROLLMENT_ID";
 
     private static final int ANDROID_PAY_MASKED_WALLET_REQUEST_CODE = 1;
     private static final int ANDROID_PAY_FULL_WALLET_REQUEST_CODE = 2;
@@ -99,12 +99,12 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
         mCountryCode = (EditText) findViewById(R.id.country_code);
         mMobilePhone = (EditText) findViewById(R.id.mobile_phone);
         mSmsCode = (EditText) findViewById(R.id.sms_code);
-        mSendSmsButton = (Button) findViewById(R.id.union_pay_enroll_button);
+        mSendSmsButton = (Button) findViewById(R.id.unionpay_enroll_button);
         mPurchaseButton = (Button) findViewById(R.id.purchase_button);
 
         if (onSaveInstanceState != null) {
-            mIsUnionPay = onSaveInstanceState.getBoolean(EXTRA_UNION_PAY);
-            mEnrollmentId = onSaveInstanceState.getString(EXTRA_UNION_PAY_ENROLLMENT_ID);
+            mIsUnionPay = onSaveInstanceState.getBoolean(EXTRA_UNIONPAY);
+            mEnrollmentId = onSaveInstanceState.getString(EXTRA_UNIONPAY_ENROLLMENT_ID);
 
             if (mIsUnionPay) {
                 mCountryCode.setVisibility(VISIBLE);
@@ -119,8 +119,8 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(EXTRA_UNION_PAY, mIsUnionPay);
-        outState.putString(EXTRA_UNION_PAY_ENROLLMENT_ID, mEnrollmentId);
+        outState.putBoolean(EXTRA_UNIONPAY, mIsUnionPay);
+        outState.putString(EXTRA_UNIONPAY_ENROLLMENT_ID, mEnrollmentId);
     }
 
     @Override
