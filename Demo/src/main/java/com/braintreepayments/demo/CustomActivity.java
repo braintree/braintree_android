@@ -216,6 +216,7 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     @Override
     public void onSmsCodeSent(String enrollmentId) {
         mEnrollmentId = enrollmentId;
+        mSmsCode.setVisibility(VISIBLE);
     }
 
     @Override
