@@ -1,89 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
-    android:paddingTop="40dp">
+    android:layout_height="match_parent">
 
-    <ImageButton
-        android:id="@+id/paypal_button"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_gravity="center"
-        android:src="@drawable/bt_logo_paypal"
-        android:background="@color/bt_white"
-        android:contentDescription="@string/bt_pay_with_paypal"
-        android:visibility="gone"
-        android:onClick="launchPayPal" />
+        android:layout_height="match_parent"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="40dp">
 
-    <ImageButton
-        android:id="@+id/android_pay_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:layout_gravity="center"
-        android:src="@drawable/bt_logo_android_pay"
-        android:background="@color/bt_white"
-        android:contentDescription="@string/bt_pay_with_android_pay"
-        android:visibility="gone"
-        android:onClick="launchAndroidPay" />
+        <ImageButton
+            android:id="@+id/paypal_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_gravity="center"
+            android:src="@drawable/bt_logo_paypal"
+            android:background="@color/bt_white"
+            android:contentDescription="@string/bt_pay_with_paypal"
+            android:visibility="gone"
+            android:onClick="launchPayPal" />
 
-    <com.braintreepayments.cardform.view.CardForm
-        android:id="@+id/card_form"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp" />
+        <ImageButton
+            android:id="@+id/android_pay_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_gravity="center"
+            android:src="@drawable/bt_logo_android_pay"
+            android:background="@color/bt_white"
+            android:contentDescription="@string/bt_pay_with_android_pay"
+            android:visibility="gone"
+            android:onClick="launchAndroidPay" />
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <com.braintreepayments.cardform.view.FloatingLabelEditText
-            style="@style/bt_card_form_field"
-            android:id="@+id/country_code"
-            android:hint="@string/country_code"
-            android:visibility="gone" />
-    </FrameLayout>
+        <com.braintreepayments.cardform.view.CardForm
+            android:id="@+id/card_form"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp" />
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <com.braintreepayments.cardform.view.FloatingLabelEditText
-            style="@style/bt_card_form_field"
-            android:id="@+id/mobile_phone"
-            android:hint="@string/mobile_phone"
-            android:visibility="gone" />
-    </FrameLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.braintreepayments.cardform.view.FloatingLabelEditText
+                style="@style/bt_card_form_field"
+                android:id="@+id/country_code"
+                android:hint="@string/country_code"
+                android:visibility="gone" />
+        </FrameLayout>
 
-    <Button
-        android:id="@+id/union_pay_enroll_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/send_sms"
-        android:visibility="gone"
-        android:onClick="sendSms" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.braintreepayments.cardform.view.FloatingLabelEditText
+                style="@style/bt_card_form_field"
+                android:id="@+id/mobile_phone"
+                android:hint="@string/mobile_phone"
+                android:visibility="gone" />
+        </FrameLayout>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <com.braintreepayments.cardform.view.FloatingLabelEditText
-            style="@style/bt_card_form_field"
-            android:id="@+id/sms_code"
-            android:hint="@string/sms_auth_code"
-            android:visibility="gone" />
-    </FrameLayout>
+        <Button
+            android:id="@+id/union_pay_enroll_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/send_sms"
+            android:visibility="gone"
+            android:onClick="sendSms" />
 
-    <Button
-        android:id="@+id/purchase_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:enabled="false"
-        android:text="@string/purchase"
-        android:onClick="onPurchase" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.braintreepayments.cardform.view.FloatingLabelEditText
+                style="@style/bt_card_form_field"
+                android:id="@+id/sms_code"
+                android:hint="@string/sms_auth_code"
+                android:visibility="gone" />
+        </FrameLayout>
 
-</LinearLayout>
+        <Button
+            android:id="@+id/purchase_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:enabled="false"
+            android:text="@string/purchase"
+            android:onClick="onPurchase" />
+
+    </LinearLayout>
+</ScrollView>
