@@ -48,7 +48,7 @@ public class CustomTest extends TestHelper {
         onDevice(withText("Card Number")).perform(setText(CardNumber.UNIONPAY_ENROLLMENT_REQUIRED));
         onDevice(withText("Expiration")).perform(click(), setText("1220"));
         onDevice(withText("Country Code")).perform(setText("1"));
-        onDevice(withText("Mobile Phone")).perform(setText("555-555-5555"));
+        onDevice(withText("Mobile Phone")).perform(setText("5555555555"));
         onDevice(withText("Send SMS")).perform(click());
         onDevice(withText("SMS Auth Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
