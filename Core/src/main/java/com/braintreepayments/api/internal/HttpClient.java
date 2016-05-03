@@ -213,13 +213,13 @@ public class HttpClient<T extends HttpClient> {
             connection.setDoOutput(true);
 
             writeOutputStream(connection.getOutputStream(), data);
+
+            return parseResponse(connection);
         } finally {
             if (connection != null) {
                 connection.disconnect();
             }
         }
-
-        return parseResponse(connection);
     }
 
     protected HttpURLConnection init(String url) throws IOException {

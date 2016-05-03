@@ -1,6 +1,7 @@
 package com.braintreepayments.api.internal;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -58,6 +59,15 @@ public class AnalyticsIntentService extends IntentService {
     private static final String INTEGRATION_TYPE_KEY = "integrationType";
 
     protected HttpClient mHttpClient;
+    protected Context mContext;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        if (mContext == null) {
+            mContext = getApplicationContext();
+        }
+    }
 
     public AnalyticsIntentService() {
         super(AnalyticsIntentService.class.getSimpleName());
@@ -66,7 +76,7 @@ public class AnalyticsIntentService extends IntentService {
     @Override
     protected void onHandleIntent(final Intent intent) {
         try {
-            final AnalyticsDatabase db = AnalyticsDatabase.getInstance(getApplicationContext());
+            final AnalyticsDatabase db = AnalyticsDatabase.getInstance(mContext);
             Authorization authorization = Authorization.fromString(intent.getStringExtra(EXTRA_AUTHORIZATION));
             Configuration configuration = Configuration.fromJson(intent.getStringExtra(EXTRA_CONFIGURATION));
 
@@ -109,7 +119,7 @@ public class AnalyticsIntentService extends IntentService {
                 .put(DEVICE_MODEL_KEY, Build.MODEL)
                 .put(ANDROID_ID_KEY, getAndroidId())
                 .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY,
-                        UUIDHelper.getPersistentUUID(getApplicationContext()))
+                        UUIDHelper.getPersistentUUID(mContext))
                 .put(IS_SIMULATOR_KEY, detectEmulator());
         requestObject.put(META_KEY, meta);
 
@@ -141,8 +151,8 @@ public class AnalyticsIntentService extends IntentService {
 
     private String getAppName() {
         ApplicationInfo applicationInfo;
-        String packageName = getApplicationContext().getPackageName();
-        PackageManager packageManager = getApplicationContext().getPackageManager();
+        String packageName = mContext.getPackageName();
+        PackageManager packageManager = mContext.getPackageManager();
         try {
             applicationInfo = packageManager.getApplicationInfo(packageName, 0);
         } catch (NameNotFoundException e) {
@@ -184,7 +194,7 @@ public class AnalyticsIntentService extends IntentService {
     }
 
     private String getAndroidId() {
-        String id = Secure.getString(getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
+        String id = Secure.getString(mContext.getContentResolver(), Secure.ANDROID_ID);
         if (id == null) {
             return "AndroidIdUnknown";
         }

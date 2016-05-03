@@ -216,7 +216,6 @@ public class BraintreeFragment extends Fragment {
         if (getActivity() instanceof BraintreeListener) {
             removeListener((BraintreeListener) getActivity());
         }
-        flushAnalyticsEvents();
     }
 
     @Override
