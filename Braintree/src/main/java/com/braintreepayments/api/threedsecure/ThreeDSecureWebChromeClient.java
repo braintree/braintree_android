@@ -13,13 +13,11 @@ public class ThreeDSecureWebChromeClient extends WebChromeClient {
     }
 
     @Override
-    public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture,
-            Message resultMsg) {
-        ThreeDSecureWebView newWebView = new ThreeDSecureWebView(mActivity);
+    public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+        ThreeDSecureWebView newWebView = new ThreeDSecureWebView(mActivity.getApplicationContext());
         newWebView.init(mActivity);
         mActivity.pushNewWebView(newWebView);
-        ((WebView.WebViewTransport) resultMsg.obj)
-                .setWebView(newWebView);
+        ((WebView.WebViewTransport) resultMsg.obj).setWebView(newWebView);
         resultMsg.sendToTarget();
 
         return true;

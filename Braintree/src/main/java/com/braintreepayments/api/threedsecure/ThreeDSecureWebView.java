@@ -25,14 +25,12 @@ public class ThreeDSecureWebView extends WebView {
         super(context, attrs, defStyle);
     }
 
-    public ThreeDSecureWebView(Context context, AttributeSet attrs, int defStyleAttr,
-            boolean privateBrowsing) {
+    public ThreeDSecureWebView(Context context, AttributeSet attrs, int defStyleAttr, boolean privateBrowsing) {
         super(context, attrs, defStyleAttr, privateBrowsing);
     }
 
     @TargetApi(VERSION_CODES.LOLLIPOP)
-    public ThreeDSecureWebView(Context context, AttributeSet attrs, int defStyleAttr,
-            int defStyleRes) {
+    public ThreeDSecureWebView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
