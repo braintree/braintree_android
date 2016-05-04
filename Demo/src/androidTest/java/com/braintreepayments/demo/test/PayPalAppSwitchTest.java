@@ -12,10 +12,8 @@ import org.junit.runner.RunWith;
 import static com.braintreepayments.testutils.AppInstallationHelper.PAYPAL_WALLET_PACKAGE_NAME;
 import static com.braintreepayments.testutils.AppInstallationHelper.installPayPalWallet;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
-import static com.lukekorth.deviceautomator.AutomatorAssertion.contentDescription;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static org.hamcrest.Matchers.containsString;
 
@@ -63,10 +61,9 @@ public class PayPalAppSwitchTest extends TestHelper {
         onDevice(withText("Single Payment")).waitForEnabled().perform(click());
         onDevice().checkForegroundAppIs(PAYPAL_WALLET_PACKAGE_NAME);
 
-        onDevice(withContentDescription("Proceed with Sandbox Purchase"))
-                .check(contentDescription(containsString("Proceed with Sandbox Purchase")));
-        onDevice().pressBack();
-        onDevice(withText("Yes")).perform(click());
+        onDevice(withText("Email")).waitForExists();
+        onDevice().pressBack().pressBack();
+        onDevice(withText("OK")).perform(click());
 
         onDevice().checkForegroundAppIs("com.braintreepayments.demo");
         onDevice(withText("Single Payment")).check(text(containsString("Single Payment")));
