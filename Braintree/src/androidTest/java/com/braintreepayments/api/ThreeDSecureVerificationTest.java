@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
-import android.os.SystemClock;
 import android.support.test.espresso.web.webdriver.Locator;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -39,8 +38,8 @@ import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_ISSUER_D
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_LOOKUP_ERROR;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_MPI_SERVICE_ERROR;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_SIGNATURE_VERIFICATION_FAILURE;
-import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON_NOT_REQUIRED;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON;
+import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON_NOT_REQUIRED;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
@@ -67,8 +66,7 @@ public class ThreeDSecureVerificationTest {
 
     @Test(timeout = 30000)
     @LargeTest
-    public void performVerification_callsCancelListenerWhenUpIsPressed()
-            throws InterruptedException {
+    public void performVerification_callsCancelListenerWhenUpIsPressed() throws InterruptedException {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(THREE_D_SECURE_VERIFICATON)
                 .expirationDate("12/30");
@@ -90,8 +88,7 @@ public class ThreeDSecureVerificationTest {
 
     @Test(timeout = 30000)
     @LargeTest
-    public void performVerification_callsCancelListenerWhenBackIsPressedOnFirstPage()
-            throws InterruptedException {
+    public void performVerification_callsCancelListenerWhenBackIsPressed() throws InterruptedException {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(THREE_D_SECURE_VERIFICATON)
                 .expirationDate("12/30");
@@ -106,36 +103,6 @@ public class ThreeDSecureVerificationTest {
         ThreeDSecure.performVerification(fragment, cardBuilder, TEST_AMOUNT);
 
         waitForView(withId(android.R.id.widget_frame));
-        pressBack();
-
-        mCountDownLatch.await();
-    }
-
-    @Test(timeout = 30000)
-    @LargeTest
-    public void performVerification_callsCancelListenerWhenUserGoesOnePageDeepAndPressesBack()
-            throws InterruptedException {
-        CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(THREE_D_SECURE_VERIFICATON)
-                .expirationDate("12/30");
-        BraintreeFragment fragment = getFragment();
-        fragment.addListener(new BraintreeCancelListener() {
-            @Override
-            public void onCancel(int requestCode) {
-                assertEquals(ThreeDSecure.THREE_D_SECURE_REQUEST_CODE, requestCode);
-                mCountDownLatch.countDown();
-            }
-        });
-        ThreeDSecure.performVerification(fragment, cardBuilder, TEST_AMOUNT);
-
-        waitForView(withId(android.R.id.widget_frame));
-        onWebView().withElement(findElement(Locator.LINK_TEXT, "New User / Forgot your password?"))
-                .perform(webClick());
-
-        SystemClock.sleep(2000);
-        pressBack();
-        SystemClock.sleep(2000);
-        pressBack();
         pressBack();
 
         mCountDownLatch.await();
@@ -245,8 +212,7 @@ public class ThreeDSecureVerificationTest {
 
     @Test(timeout = 30000)
     @LargeTest
-    public void performVerification_returnsAnErrorWhenAuthenticationFails()
-            throws InterruptedException {
+    public void performVerification_returnsAnErrorWhenAuthenticationFails() throws InterruptedException {
         BraintreeFragment fragment = getFragment();
         fragment.addListener(new BraintreeErrorListener() {
             @Override
@@ -265,8 +231,6 @@ public class ThreeDSecureVerificationTest {
         onWebView().withElement(findElement(Locator.NAME, "external.field.password"))
                 .perform(webKeys("1234"));
         onWebView().withElement(findElement(Locator.NAME, "UsernamePasswordEntry"))
-                .perform(webClick());
-        onWebView().withElement(findElement(Locator.NAME, "Submit"))
                 .perform(webClick());
 
         mCountDownLatch.await();
@@ -341,7 +305,9 @@ public class ThreeDSecureVerificationTest {
         ThreeDSecure.performVerification(fragment, cardBuilder, TEST_AMOUNT);
 
         waitForView(withId(android.R.id.widget_frame));
-        onWebView().withElement(findElement(Locator.NAME, "Submit"))
+        onWebView().withElement(findElement(Locator.NAME, "external.field.password"))
+                .perform(webKeys("1234"));
+        onWebView().withElement(findElement(Locator.NAME, "UsernamePasswordEntry"))
                 .perform(webClick());
 
         mCountDownLatch.await();
