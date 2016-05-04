@@ -7,11 +7,14 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.widget.Spinner;
 
+import com.lukekorth.deviceautomator.DeviceAutomator;
+
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withClass;
+import static com.lukekorth.deviceautomator.UiObjectMatcher.withResourceId;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static org.hamcrest.CoreMatchers.equalTo;
 
@@ -30,6 +33,10 @@ public class TestHelper {
         onDevice().onHomeScreen().launchApp("com.braintreepayments.demo");
         enableStoragePermission();
         ensureEnvironmentIs("Sandbox");
+    }
+
+    public DeviceAutomator getNonceDetails() {
+        return onDevice(withResourceId("com.braintreepayments.demo:id/nonce_details"));
     }
 
     private void clearPreference(String preference) {

@@ -38,7 +38,7 @@ public class DropInTest extends TestHelper {
         onDevice(withText("Expiration")).perform(setText("1220"));
         onDevice(withTextContaining("BUY")).perform(click());
 
-        onDevice(withTextStartingWith("Card Last Two:")).check(text(containsString("11")));
+        getNonceDetails().check(text(containsString("Card Last Two: 11")));
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
@@ -51,8 +51,7 @@ public class DropInTest extends TestHelper {
         onDevice(withText("CONTINUE")).perform(click());
         onDevice(withTextContaining("BUY")).perform(click());
 
-        onDevice(withTextStartingWith("Underlying Card Last Two"))
-                .check(text(containsString("Underlying Card Last Two")));
+        getNonceDetails().check(text(containsString("Underlying Card Last Two")));
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
