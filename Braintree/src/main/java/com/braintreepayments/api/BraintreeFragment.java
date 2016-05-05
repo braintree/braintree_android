@@ -244,7 +244,7 @@ public class BraintreeFragment extends Fragment {
         if (intent.hasExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH)) {
             BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = null;
             mIsBrowserSwitching = true;
-            getActivity().startActivity(intent);
+            getApplicationContext().startActivity(intent);
         } else {
             super.startActivity(intent);
         }
