@@ -350,7 +350,7 @@ public class BraintreeFragment extends Fragment {
     }
 
     protected void flushAnalyticsEvents() {
-        if (getConfiguration() != null) {
+        if (getConfiguration() != null && getConfiguration().toJson() != null) {
             Intent intent = new Intent(mContext, AnalyticsIntentService.class)
                     .putExtra(AnalyticsIntentService.EXTRA_AUTHORIZATION, getAuthorization().toString())
                     .putExtra(AnalyticsIntentService.EXTRA_CONFIGURATION, getConfiguration().toJson());

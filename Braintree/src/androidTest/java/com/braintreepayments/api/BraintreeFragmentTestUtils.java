@@ -29,6 +29,22 @@ public class BraintreeFragmentTestUtils {
      * @param configuration
      * @return
      */
+    public static BraintreeFragment getMockFragment(Activity activity, String configuration) {
+        try {
+            return getMockFragment(activity, Configuration.fromJson(configuration));
+        } catch (JSONException e) {
+            fail(e.getMessage());
+            return new BraintreeFragment();
+        }
+    }
+
+    /**
+     * Get a {@link org.mockito.Spy} {@link BraintreeFragment} with the given {@link Configuration}.
+     *
+     * @param activity
+     * @param configuration
+     * @return
+     */
     public static BraintreeFragment getMockFragment(Activity activity, Configuration configuration) {
         return getMockFragment(activity, stringFromFixture("client_token.json"), configuration);
     }
