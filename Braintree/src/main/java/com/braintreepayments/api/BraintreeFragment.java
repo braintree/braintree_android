@@ -52,8 +52,6 @@ public class BraintreeFragment extends Fragment {
     private static final String EXTRA_SESSION_ID = "com.braintreepayments.api.EXTRA_SESSION_ID";
 
     @VisibleForTesting
-    static final String EXTRA_BROWSER_SWITCHING = "com.braintreepayments.api.EXTRA_BROWSER_SWITCHING";
-    @VisibleForTesting
     static final String EXTRA_CACHED_PAYMENT_METHOD_NONCES =
             "com.braintreepayments.api.EXTRA_CACHED_PAYMENT_METHOD_NONCES";
     @VisibleForTesting
@@ -75,7 +73,6 @@ public class BraintreeFragment extends Fragment {
     private final Queue<QueuedCallback> mCallbackQueue = new ArrayDeque<>();
     private final List<PaymentMethodNonce> mCachedPaymentMethodNonces = new ArrayList<>();
     private boolean mHasFetchedPaymentMethodNonces = false;
-    private boolean mIsBrowserSwitching = false;
     private int mConfigurationRequestAttempts = 0;
     private String mSessionId;
 
@@ -159,7 +156,6 @@ public class BraintreeFragment extends Fragment {
             }
 
             mHasFetchedPaymentMethodNonces = savedInstanceState.getBoolean(EXTRA_FETCHED_PAYMENT_METHOD_NONCES);
-            mIsBrowserSwitching = savedInstanceState.getBoolean(EXTRA_BROWSER_SWITCHING);
             mSessionId = savedInstanceState.getString(EXTRA_SESSION_ID);
         } else {
             mSessionId = DeviceMetadata.getFormattedUUID();
@@ -187,19 +183,6 @@ public class BraintreeFragment extends Fragment {
                 !mGoogleApiClient.isConnecting()) {
             mGoogleApiClient.connect();
         }
-
-        if (mIsBrowserSwitching) {
-            int resultCode = Activity.RESULT_CANCELED;
-            if (BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse != null) {
-                resultCode = Activity.RESULT_OK;
-            }
-
-            onActivityResult(PayPal.PAYPAL_REQUEST_CODE, resultCode,
-                    BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse);
-
-            BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = null;
-            mIsBrowserSwitching = false;
-        }
     }
 
     @Override
@@ -219,7 +202,6 @@ public class BraintreeFragment extends Fragment {
         outState.putParcelableArrayList(EXTRA_CACHED_PAYMENT_METHOD_NONCES,
                 (ArrayList<? extends Parcelable>) mCachedPaymentMethodNonces);
         outState.putBoolean(EXTRA_FETCHED_PAYMENT_METHOD_NONCES, mHasFetchedPaymentMethodNonces);
-        outState.putBoolean(EXTRA_BROWSER_SWITCHING, mIsBrowserSwitching);
         outState.putString(EXTRA_SESSION_ID, mSessionId);
     }
 
@@ -237,17 +219,6 @@ public class BraintreeFragment extends Fragment {
         super.onDestroy();
 
         mCrashReporter.tearDown();
-    }
-
-    @Override
-    public void startActivity(Intent intent) {
-        if (intent.hasExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH)) {
-            BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = null;
-            mIsBrowserSwitching = true;
-            getActivity().startActivity(intent);
-        } else {
-            super.startActivity(intent);
-        }
     }
 
     @Override

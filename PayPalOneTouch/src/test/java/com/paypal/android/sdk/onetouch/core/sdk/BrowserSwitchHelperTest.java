@@ -8,6 +8,7 @@ import android.net.Uri;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
 import com.paypal.android.sdk.onetouch.core.Result;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
+import com.paypal.android.sdk.onetouch.core.browser.PayPalAuthorizeActivity;
 import com.paypal.android.sdk.onetouch.core.config.ConfigManager;
 import com.paypal.android.sdk.onetouch.core.enums.Protocol;
 import com.paypal.android.sdk.onetouch.core.enums.ResponseType;
@@ -74,9 +75,8 @@ public class BrowserSwitchHelperTest {
         verify(request).trackFpti(any(Context.class), eq(TrackingPoint.SwitchToBrowser),
                 any(Protocol.class));
 
-        assertEquals(Intent.ACTION_VIEW, intent.getAction());
+        assertEquals(PayPalAuthorizeActivity.class.getName(), intent.getComponent().getClassName());
         assertEquals("https://paypal.com/?token=test-token-key", intent.getData().toString());
-        assertEquals("com.android.chrome", intent.getPackage());
     }
 
     @Test

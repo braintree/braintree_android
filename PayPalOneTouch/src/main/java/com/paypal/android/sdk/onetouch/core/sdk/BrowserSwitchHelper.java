@@ -6,6 +6,7 @@ import android.net.Uri;
 import com.paypal.android.sdk.onetouch.core.Request;
 import com.paypal.android.sdk.onetouch.core.Result;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
+import com.paypal.android.sdk.onetouch.core.browser.PayPalAuthorizeActivity;
 import com.paypal.android.sdk.onetouch.core.config.ConfigManager;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
@@ -28,22 +29,18 @@ public class BrowserSwitchHelper {
     public static Intent getBrowserSwitchIntent(ContextInspector contextInspector,
             ConfigManager configManager, Request request) {
         OtcConfiguration configuration = configManager.getConfig();
+
         try {
             String url = request.getBrowserSwitchUrl(contextInspector.getContext(), configuration);
-
             request.persistRequiredFields(contextInspector);
 
             Recipe<?> recipe = request.getBrowserSwitchRecipe(configuration);
 
-            for (String allowedBrowserPackage : recipe.getTargetPackagesInReversePriorityOrder()) {
-                boolean canIntentBeResolved = Recipe.isValidBrowserTarget(contextInspector.getContext(), url,
-                        allowedBrowserPackage);
-                if (canIntentBeResolved) {
-                    request.trackFpti(contextInspector.getContext(), TrackingPoint.SwitchToBrowser,
-                            recipe.getProtocol());
-                    return Recipe.getBrowserIntent(url, allowedBrowserPackage);
-                }
-            }
+            Intent intent = new Intent(contextInspector.getContext(), PayPalAuthorizeActivity.class);
+            intent.putExtra(PayPalAuthorizeActivity.REDIRECT_URI_SCHEME_ARG, contextInspector.getContext().getPackageName() + ".braintree");
+            intent.setData(Uri.parse(url));
+            request.trackFpti(contextInspector.getContext(), TrackingPoint.SwitchToBrowser, recipe.getProtocol());
+            return intent;
         } catch (CertificateException | UnsupportedEncodingException | NoSuchPaddingException
                 | NoSuchAlgorithmException | IllegalBlockSizeException | JSONException
                 | BadPaddingException | InvalidEncryptionDataException

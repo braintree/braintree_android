@@ -1,25 +1,11 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
 
 /**
- * Helper Activity that captures the response when browser switch completes.
+ * @deprecated Replaced by {@link com.paypal.android.sdk.onetouch.core.browser.PayPalAuthorizeActivity}. This {@link Activity}
+ * remains defined for backwards compatibility for integrations that have defined it in their manifest. This
+ * {@link Activity} will never be started.
  */
-public class BraintreeBrowserSwitchActivity extends Activity {
-
-    static final String EXTRA_BROWSER_SWITCH = "com.braintreepayments.api.BROWSER_SWITCH";
-
-    static Intent sLastBrowserSwitchResponse;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
-        sLastBrowserSwitchResponse = getIntent();
-
-        finish();
-    }
-}
+@Deprecated
+public class BraintreeBrowserSwitchActivity extends Activity {}

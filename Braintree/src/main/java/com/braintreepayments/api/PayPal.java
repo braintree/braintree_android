@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
@@ -14,8 +13,6 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.internal.AppHelper;
-import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
@@ -108,14 +105,6 @@ public class PayPal {
             public void onConfigurationFetched(Configuration configuration) {
                 if (!configuration.isPayPalEnabled()) {
                     fragment.postCallback(new BraintreeException("PayPal is not enabled"));
-                    return;
-                }
-
-                if (!isManifestValid(fragment.getApplicationContext())) {
-                    fragment.postCallback(new BraintreeException("BraintreeBrowserSwitchActivity missing or " +
-                            " incorrectly configured in AndroidManifest.xml. See " +
-                            "https://developers.braintreepayments.com/guides/client-sdk/android/v2#browser-switch " +
-                            "for the correct configuration"));
                     return;
                 }
 
@@ -223,14 +212,6 @@ public class PayPal {
                     return;
                 }
 
-                if (!isManifestValid(fragment.getApplicationContext())) {
-                    fragment.postCallback(new BraintreeException("BraintreeBrowserSwitchActivity missing or " +
-                            " incorrectly configured in AndroidManifest.xml. See " +
-                            "https://developers.braintreepayments.com/guides/client-sdk/android/v2#browser-switch " +
-                            "for the correct configuration"));
-                    return;
-                }
-
                 try {
                     createPaymentResource(fragment, request, isBillingAgreement, callback);
                 } catch (JSONException | ErrorWithResponse | BraintreeException ex) {
@@ -309,16 +290,9 @@ public class PayPal {
     }
 
     private static void startPayPal(BraintreeFragment fragment, PendingRequest pendingRequest) {
-        if (pendingRequest.isSuccess() && pendingRequest.getRequestTarget() == RequestTarget.wallet) {
-            sendAnalyticsForPayPal(fragment, true, RequestTarget.wallet);
-
+        if (pendingRequest.isSuccess() && null != pendingRequest.getRequestTarget()) {
+            sendAnalyticsForPayPal(fragment, true, pendingRequest.getRequestTarget());
             fragment.startActivityForResult(pendingRequest.getIntent(), PAYPAL_REQUEST_CODE);
-        } else if (pendingRequest.isSuccess() && pendingRequest.getRequestTarget() == RequestTarget.browser) {
-            sendAnalyticsForPayPal(fragment, true, RequestTarget.browser);
-
-            Intent intent = pendingRequest.getIntent()
-                    .putExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, true);
-            fragment.startActivity(intent);
         } else {
             sendAnalyticsForPayPal(fragment, false, null);
         }
@@ -522,13 +496,4 @@ public class PayPal {
         return data.getData() == null;
     }
 
-    private static boolean isManifestValid(Context context) {
-        Intent intent = new Intent(Intent.ACTION_VIEW)
-                .setData(Uri.parse(context.getPackageName() + ".braintree://"))
-                .addCategory(Intent.CATEGORY_DEFAULT)
-                .addCategory(Intent.CATEGORY_BROWSABLE);
-        ActivityInfo activityInfo = ManifestValidator.getActivityInfo(context, BraintreeBrowserSwitchActivity.class);
-        return (activityInfo != null && activityInfo.launchMode == ActivityInfo.LAUNCH_SINGLE_TASK &&
-                AppHelper.isIntentAvailable(context, intent));
-    }
 }

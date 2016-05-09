@@ -207,7 +207,6 @@ public class BraintreeFragmentUnitTest {
 
         assertTrue(bundle.getParcelableArrayList(BraintreeFragment.EXTRA_CACHED_PAYMENT_METHOD_NONCES).isEmpty());
         assertFalse(bundle.getBoolean(BraintreeFragment.EXTRA_FETCHED_PAYMENT_METHOD_NONCES));
-        assertFalse(bundle.getBoolean(BraintreeFragment.EXTRA_BROWSER_SWITCHING));
     }
 
     @Test
@@ -682,16 +681,6 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void startActivity_clearsLastBrowserSwitchResponseWhenBrowserSwitching() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = new Intent();
-
-        fragment.startActivity(new Intent().putExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, true));
-
-        assertNull(BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse);
-    }
-
-    @Test
     public void onResume_doesNothingIfNotBrowserSwitching() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         mockStatic(PayPal.class);
@@ -700,23 +689,6 @@ public class BraintreeFragmentUnitTest {
 
         verifyStatic(never());
         PayPal.onActivityResult(any(BraintreeFragment.class), anyInt(), any(Intent.class));
-    }
-
-    @Test
-    public void onResume_handlesBrowserSwitch() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        mockStatic(PayPal.class);
-        fragment.startActivity(new Intent().putExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, true));
-        Intent intent = new Intent();
-        BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = intent;
-
-        fragment.onResume();
-
-        assertNull(BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse);
-        fragment.onResume();
-
-        verifyStatic(times(1));
-        PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
     }
 
     /* helpers */
