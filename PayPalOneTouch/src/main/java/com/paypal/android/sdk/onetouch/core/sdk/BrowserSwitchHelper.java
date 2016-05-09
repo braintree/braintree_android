@@ -41,7 +41,7 @@ public class BrowserSwitchHelper {
                 if (canIntentBeResolved) {
                     request.trackFpti(contextInspector.getContext(), TrackingPoint.SwitchToBrowser,
                             recipe.getProtocol());
-                    return Recipe.getBrowserIntent(url, allowedBrowserPackage);
+                    return Recipe.getBrowserIntent(contextInspector.getContext(), url, allowedBrowserPackage);
                 }
             }
         } catch (CertificateException | UnsupportedEncodingException | NoSuchPaddingException

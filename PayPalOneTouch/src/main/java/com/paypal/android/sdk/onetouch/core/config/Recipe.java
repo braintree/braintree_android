@@ -1,11 +1,14 @@
 package com.paypal.android.sdk.onetouch.core.config;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.os.IBinder;
 
 import com.braintreepayments.api.internal.AppHelper;
 import com.paypal.android.sdk.onetouch.core.enums.Protocol;
@@ -19,9 +22,6 @@ import java.util.List;
 import java.util.Locale;
 
 public abstract class Recipe<T extends Recipe<T>> {
-
-    // http://developer.android.com/reference/android/support/customtabs/CustomTabsIntent.html#EXTRA_SESSION
-    private static final String EXTRA_CUSTOM_TABS_SESSION = "android.support.customtabs.extra.SESSION";
 
     private List<String> mTargetPackagesInReversePriorityOrder;
     private RequestTarget mTarget;
@@ -106,23 +106,24 @@ public abstract class Recipe<T extends Recipe<T>> {
     }
 
     public static boolean isValidBrowserTarget(Context context, String browserSwitchUrl, String allowedBrowserPackage) {
-        Intent intent = getBrowserIntent(browserSwitchUrl, allowedBrowserPackage);
+        Intent intent = getBrowserIntent(context, browserSwitchUrl, allowedBrowserPackage);
         return (intent.resolveActivity(context.getPackageManager()) != null);
     }
 
-    public static Intent getBrowserIntent(String browserSwitchUrl, String allowedBrowserPackage) {
+    public static Intent getBrowserIntent(Context context, String browserSwitchUrl, String allowedBrowserPackage) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(browserSwitchUrl));
 
         if (!"*".equals(allowedBrowserPackage)) {
             intent.setPackage(allowedBrowserPackage);
         }
 
-        if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN_MR2) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN_MR2 && isChromeCustomTabsAvailable(context)) {
             Bundle extras = new Bundle();
-            extras.putBinder(EXTRA_CUSTOM_TABS_SESSION, null);
+            extras.putBinder("android.support.customtabs.extra.SESSION", null);
             intent.putExtras(extras);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK |
-                    Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
         }
 
         return intent;
@@ -130,5 +131,23 @@ public abstract class Recipe<T extends Recipe<T>> {
 
     public Protocol getProtocol() {
         return mProtocol;
+    }
+
+    private static boolean isChromeCustomTabsAvailable(Context context) {
+        Intent serviceIntent = new Intent("android.support.customtabs.action.CustomTabsService")
+                .setPackage("com.android.chrome");
+        ServiceConnection connection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {}
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {}
+        };
+
+        boolean chromeCustomTabsAvailable = context.bindService(serviceIntent, connection,
+                Context.BIND_AUTO_CREATE | Context.BIND_WAIVE_PRIORITY);
+        context.unbindService(connection);
+
+        return chromeCustomTabsAvailable;
     }
 }
