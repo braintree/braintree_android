@@ -1,20 +1,18 @@
 package com.braintreepayments.api.test;
 
 import android.content.Intent;
-import android.support.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.BraintreePaymentTestActivity;
 import com.braintreepayments.api.PaymentRequest;
+import com.braintreepayments.api.internal.SignatureVerificationTestUtils;
 import com.braintreepayments.testutils.BraintreeActivityTestRule;
 
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.runner.RunWith;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 
-@RunWith(AndroidJUnit4.class)
 public class BraintreePaymentActivityTestRunner {
 
     @Rule

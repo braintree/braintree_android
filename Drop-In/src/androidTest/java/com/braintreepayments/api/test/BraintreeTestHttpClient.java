@@ -56,9 +56,10 @@ public class BraintreeTestHttpClient extends BraintreeHttpClient {
                 callback.failure(
                         (Exception) mIntent.getSerializableExtra(CONFIGURATION_ERROR));
             }
-        } else if (path.equals(GET_PAYMENT_METHODS) && mIntent.hasExtra(GET_PAYMENT_METHODS_ERROR)) {
-            callback.failure(
-                    (Exception) mIntent.getSerializableExtra(GET_PAYMENT_METHODS_ERROR));
+        } else if (path.startsWith(GET_PAYMENT_METHODS) && mIntent.hasExtra(GET_PAYMENT_METHODS_ERROR)) {
+            callback.failure((Exception) mIntent.getSerializableExtra(GET_PAYMENT_METHODS_ERROR));
+        } else if (path.startsWith(GET_PAYMENT_METHODS) && mIntent.hasExtra(GET_PAYMENT_METHODS)) {
+            callback.success(mIntent.getStringExtra(GET_PAYMENT_METHODS));
         } else if (mIntent.hasExtra(path)) {
             callback.success(mIntent.getStringExtra(path));
         } else {

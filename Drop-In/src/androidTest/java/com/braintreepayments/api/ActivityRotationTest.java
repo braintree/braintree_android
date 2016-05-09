@@ -22,6 +22,8 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.braintreepayments.api.test.RotationHelper.rotateToLandscape;
+import static com.braintreepayments.api.test.RotationHelper.rotateToPortrait;
 import static com.braintreepayments.api.utils.Assertions.assertSelectedPaymentMethodIs;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.addCardAndAssertSuccess;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInCardForm;
@@ -36,8 +38,6 @@ import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.ui.Matchers.hasBackgroundResource;
 import static com.braintreepayments.testutils.ui.Matchers.withId;
-import static com.braintreepayments.api.test.RotationHelper.rotateToLandscape;
-import static com.braintreepayments.api.test.RotationHelper.rotateToPortrait;
 import static com.braintreepayments.testutils.ui.ViewHelper.FOUR_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.TWO_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
@@ -45,7 +45,7 @@ import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.startsWith;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -136,8 +136,7 @@ public class ActivityRotationTest extends BraintreePaymentActivityTestRunner {
 
         waitForPaymentMethodNonceList();
         verify(activity.mBraintreeFragment.getHttpClient() , times(1))
-                .get(eq(BraintreePaymentTestActivity.GET_PAYMENT_METHODS),
-                        any(HttpResponseCallback.class));
+                .get(startsWith(BraintreePaymentTestActivity.GET_PAYMENT_METHODS), any(HttpResponseCallback.class));
         rotateToLandscape();
 
         waitForPaymentMethodNonceList();
