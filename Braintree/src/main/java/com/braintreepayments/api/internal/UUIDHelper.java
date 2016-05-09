@@ -5,9 +5,6 @@ import android.content.SharedPreferences;
 
 import java.util.UUID;
 
-/**
- * Contains methods to collect information about the app and device.
- */
 public class UUIDHelper {
 
     private static final String BRAINTREE_UUID_KEY = "braintreeUUID";

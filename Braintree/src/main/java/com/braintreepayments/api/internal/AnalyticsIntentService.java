@@ -137,7 +137,6 @@ public class AnalyticsIntentService extends IntentService {
         return requestObject;
     }
 
-    /* Helpers */
     private String detectEmulator() {
         if ("google_sdk".equalsIgnoreCase(Build.PRODUCT) ||
                 "sdk".equalsIgnoreCase(Build.PRODUCT) ||
