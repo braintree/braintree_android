@@ -123,7 +123,8 @@ public abstract class Recipe<T extends Recipe<T>> {
             Bundle extras = new Bundle();
             extras.putBinder("android.support.customtabs.extra.SESSION", null);
             intent.putExtras(extras);
-            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS |
+                    Intent.FLAG_ACTIVITY_NO_HISTORY);
         }
 
         return intent;
