@@ -2,7 +2,10 @@ package com.braintreepayments.api;
 
 import android.text.TextUtils;
 
+import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.testutils.TestConfigurationBuilder;
+import com.braintreepayments.testutils.TestConfigurationBuilder.TestKountConfigurationBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +17,7 @@ import org.robolectric.RuntimeEnvironment;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricGradleTestRunner.class)
@@ -58,5 +62,57 @@ public class DataCollectorTest {
         String clientMetadataId = DataCollector.getPayPalClientMetadataId(RuntimeEnvironment.application);
 
         assertFalse(TextUtils.isEmpty(clientMetadataId));
+    }
+
+    @Test
+    public void collectDeviceData_withListener() throws InterruptedException {
+        String configuration = new TestConfigurationBuilder()
+                .kount(new TestKountConfigurationBuilder()
+                        .enabled(true)
+                        .kountMerchantId("500000"))
+                .build();
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .configuration(configuration)
+                .build();
+
+        DataCollector.collectDeviceData(fragment, new BraintreeResponseListener<String>() {
+            @Override
+            public void onResponse(String deviceData) {
+                try {
+                    JSONObject json = new JSONObject(deviceData);
+                    assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));
+                    assertEquals("500000", json.getString("fraud_merchant_id"));
+                    assertNotNull(json.getString("correlation_id"));
+                } catch (JSONException jse) {
+                    fail(jse.getMessage());
+                }
+            }
+        });
+    }
+
+    @Test
+    public void collectDeviceData_withListener_usesDirectMerchantId() {
+        String configuration = new TestConfigurationBuilder()
+                .kount(new TestKountConfigurationBuilder()
+                        .enabled(true)
+                        .kountMerchantId("600000"))
+                .build();
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .configuration(configuration)
+                .build();
+
+        DataCollector.collectDeviceData(fragment, "600001", new BraintreeResponseListener<String>() {
+            @Override
+            public void onResponse(String deviceData) {
+                try {
+                    JSONObject json = new JSONObject(deviceData);
+                    assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));
+                    assertEquals("600001", json.getString("fraud_merchant_id"));
+                    assertNotNull(json.getString("correlation_id"));
+                } catch (JSONException jse) {
+                    fail(jse.getMessage());
+                }
+            }
+        });
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
+import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.internal.UUIDHelper;
 import com.braintreepayments.api.models.Configuration;
@@ -32,23 +33,17 @@ public class DataCollector {
     private static Object sDeviceCollector;
 
     /**
-     * Collect device information for fraud identification purposes.
-     *
-     * @param fragment {@link BraintreeFragment}
-     * @return Device data String to send to Braintree.
+     * @deprecated Use {@link #collectDeviceData(BraintreeFragment, BraintreeResponseListener)} instead.
      */
+    @Deprecated
     public static String collectDeviceData(BraintreeFragment fragment) {
         return collectDeviceData(fragment, BRAINTREE_MERCHANT_ID);
     }
 
     /**
-     * Collect device information for fraud identification purposes. This should be used in conjunction
-     * with a non-aggregate fraud id.
-     *
-     * @param fragment {@link BraintreeFragment}
-     * @param merchantId The fraud merchant id from Braintree.
-     * @return Device data String to send to Braintree.
+     * @deprecated Use {@link #collectDeviceData(BraintreeFragment, String, BraintreeResponseListener)} instead.
      */
+    @Deprecated
     public static String collectDeviceData(BraintreeFragment fragment, String merchantId) {
         JSONObject deviceData = new JSONObject();
 
@@ -67,6 +62,56 @@ public class DataCollector {
         } catch (JSONException ignored) {}
 
         return deviceData.toString();
+    }
+
+    /**
+     * Collect device information for fraud identification purposes.
+     *
+     * @param fragment {@link BraintreeFragment}
+     * @param listener to be called with the device data String to send to Braintree.
+     */
+    public static void collectDeviceData(BraintreeFragment fragment, BraintreeResponseListener<String> listener) {
+        collectDeviceData(fragment, null, listener);
+    }
+
+    /**
+     * Collect device information for fraud identification purposes. This should be used in conjunction
+     * with a non-aggregate fraud id.
+     *
+     * @param fragment {@link BraintreeFragment}
+     * @param merchantId The fraud merchant id from Braintree.
+     * @param listener listener to be called with the device data String to send to Braintree.
+     */
+    public static void collectDeviceData(final BraintreeFragment fragment, final String merchantId,
+            final BraintreeResponseListener<String> listener) {
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                JSONObject deviceData = new JSONObject();
+                if (configuration.getKount().isEnabled()) {
+                    String id = configuration.getKount().getKountMerchantId();
+                    if (merchantId != null) {
+                        id = merchantId;
+                    }
+
+                    try {
+                        String deviceSessionId = UUIDHelper.getFormattedUUID();
+                        startDeviceCollector(fragment, id, deviceSessionId);
+                        deviceData.put(DEVICE_SESSION_ID_KEY, deviceSessionId);
+                        deviceData.put(FRAUD_MERCHANT_ID_KEY, id);
+                    } catch (NoClassDefFoundError | JSONException ignored) {}
+                }
+
+                try {
+                    String clientMetadataId = getPayPalClientMetadataId(fragment.getApplicationContext());
+                    if (!TextUtils.isEmpty(clientMetadataId)) {
+                        deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
+                    }
+                } catch (JSONException ignored) {}
+
+                listener.onResponse(deviceData.toString());
+            }
+        });
     }
 
     /**

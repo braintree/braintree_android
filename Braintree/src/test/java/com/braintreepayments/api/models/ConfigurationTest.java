@@ -153,4 +153,12 @@ public class ConfigurationTest {
 
         assertFalse(configuration.getUnionPay().isEnabled());
     }
+
+    @Test
+    public void returnsNewKountConfigurationWhenKountIsAbsent() throws JSONException {
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
+
+        assertNotNull(configuration.getKount());
+        assertFalse(configuration.getKount().isEnabled());
+    }
 }

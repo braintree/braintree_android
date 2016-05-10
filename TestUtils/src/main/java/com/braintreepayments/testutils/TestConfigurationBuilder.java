@@ -89,6 +89,13 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return this;
     }
 
+    public TestConfigurationBuilder kount(TestKountConfigurationBuilder kountConfigurationBuilder) {
+        try {
+            put(new JSONObject(kountConfigurationBuilder.build()));
+        } catch (JSONException ignored) {}
+        return this;
+    }
+
     public static class TestPayPalConfigurationBuilder extends JSONBuilder {
 
         public TestPayPalConfigurationBuilder displayName(String displayName) {
@@ -161,6 +168,19 @@ public class TestConfigurationBuilder extends JSONBuilder {
 
         public TestAndroidPayConfigurationBuilder supportedNetworks(String[] supportedNetworks) {
             put(new JSONArray(Arrays.asList(supportedNetworks)));
+            return this;
+        }
+    }
+
+    public static class TestKountConfigurationBuilder extends JSONBuilder {
+
+        public TestKountConfigurationBuilder enabled(boolean enabled) {
+            put(enabled);
+            return this;
+        }
+
+        public TestKountConfigurationBuilder kountMerchantId(String kountMerchantid) {
+            put(kountMerchantid);
             return this;
         }
     }

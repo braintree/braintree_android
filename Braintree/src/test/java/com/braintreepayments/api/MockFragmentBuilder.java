@@ -8,6 +8,7 @@ import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 
+import org.json.JSONException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
@@ -37,6 +38,13 @@ public class MockFragmentBuilder {
 
     public MockFragmentBuilder authorization(Authorization authorization) {
         mAuthorization = authorization;
+        return this;
+    }
+
+    public MockFragmentBuilder configuration(String configuration) {
+        try {
+            mConfiguration = Configuration.fromJson(configuration);
+        } catch (JSONException ignored) {}
         return this;
     }
 

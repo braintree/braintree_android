@@ -17,6 +17,7 @@ public class Configuration {
     private static final String ANALYTICS_KEY = "analytics";
     private static final String PAYPAL_ENABLED_KEY = "paypalEnabled";
     private static final String PAYPAL_KEY = "paypal";
+    private static final String KOUNT_KEY = "kount";
     private static final String ANDROID_PAY_KEY = "androidPay";
     private static final String THREE_D_SECURE_ENABLED_KEY = "threeDSecureEnabled";
     private static final String PAY_WITH_VENMO_KEY = "payWithVenmo";
@@ -30,6 +31,7 @@ public class Configuration {
     private String mMerchantAccountId;
     private AnalyticsConfiguration mAnalyticsConfiguration;
     private boolean mPaypalEnabled;
+    private KountConfiguration mKountConfiguration;
     private PayPalConfiguration mPayPalConfiguration;
     private AndroidPayConfiguration mAndroidPayConfiguration;
     private boolean mThreeDSecureEnabled;
@@ -61,6 +63,7 @@ public class Configuration {
         configuration.mVenmoConfiguration = VenmoConfiguration
                 .fromJson(json.optJSONObject(PAY_WITH_VENMO_KEY));
         configuration.mUnionPayConfiguration = UnionPayConfiguration.fromJson(json.optJSONObject(UNIONPAY_KEY));
+        configuration.mKountConfiguration = KountConfiguration.fromJson(json.optJSONObject(KOUNT_KEY));
 
         return configuration;
     }
@@ -160,6 +163,13 @@ public class Configuration {
      */
     public UnionPayConfiguration getUnionPay() {
         return mUnionPayConfiguration;
+    }
+
+    /**
+     * @return instance of {@link KountConfiguration}.
+     */
+    public KountConfiguration getKount() {
+        return mKountConfiguration;
     }
 
     private boolean isChallengePresent(String requestedChallenge) {
