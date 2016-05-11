@@ -17,6 +17,7 @@ import org.robolectric.RuntimeEnvironment;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.mock;
 
@@ -108,6 +109,27 @@ public class DataCollectorTest {
                     JSONObject json = new JSONObject(deviceData);
                     assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));
                     assertEquals("600001", json.getString("fraud_merchant_id"));
+                    assertNotNull(json.getString("correlation_id"));
+                } catch (JSONException jse) {
+                    fail(jse.getMessage());
+                }
+            }
+        });
+    }
+
+    @Test
+    public void collectDeviceData_doesNotCollectKountDataIfKountDisabledInConfiguration() {
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .configuration(new TestConfigurationBuilder().build())
+                .build();
+
+        DataCollector.collectDeviceData(fragment, new BraintreeResponseListener<String>() {
+            @Override
+            public void onResponse(String deviceData) {
+                try {
+                    JSONObject json = new JSONObject(deviceData);
+                    assertNull(json.optString("device_session_id", null));
+                    assertNull(json.optString("fraud_merchant_id", null));
                     assertNotNull(json.getString("correlation_id"));
                 } catch (JSONException jse) {
                     fail(jse.getMessage());
