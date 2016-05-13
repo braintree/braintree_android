@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
+import android.app.Fragment;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
@@ -14,16 +15,10 @@ import org.json.JSONException;
 
 import java.util.concurrent.CountDownLatch;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
-import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
 import static junit.framework.Assert.fail;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class BraintreeFragmentTestUtils {
 
@@ -46,20 +41,15 @@ public class BraintreeFragmentTestUtils {
      * @param configuration
      * @return
      */
-    public static BraintreeFragment getMockFragment(final Activity activity, String authorization, Configuration configuration) {
+    public static BraintreeFragment getMockFragment(Activity activity, String authorization, Configuration configuration) {
         try {
-            BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity, authorization));
-            doNothing().when(fragment).fetchConfiguration();
-            when(fragment.getApplicationContext()).thenReturn(getTargetContext());
-            when(fragment.getAuthorization()).thenReturn(Authorization.fromString(authorization));
-            when(fragment.getSessionId()).thenReturn(DeviceMetadata.getFormattedUUID());
+            BraintreeFragment fragment = BraintreeFragment.newInstance(activity, authorization);
             fragment.mConfiguration = configuration;
 
-            getInstrumentation().waitForIdleSync();
-            waitForFragmentTransaction(activity);
+            waitForFragment(fragment);
 
-            return fragment;
-        } catch (InterruptedException | InvalidArgumentException e) {
+            return spy(fragment);
+        } catch (InvalidArgumentException e) {
             fail(e.getMessage());
             return new BraintreeFragment();
         }
@@ -73,20 +63,18 @@ public class BraintreeFragmentTestUtils {
      * @param configuration
      * @return
      */
-    public static BraintreeFragment getMockFragment(final Activity activity, String authorizationString, String configuration) {
+    public static BraintreeFragment getMockFragment(Activity activity, String authorizationString, String configuration) {
         try {
             Authorization authorization = Authorization.fromString(authorizationString);
             writeMockConfiguration(authorization.getConfigUrl(), configuration);
 
-            BraintreeFragment fragment = spy(BraintreeFragment.newInstance(activity, authorizationString));
-            when(fragment.getApplicationContext()).thenReturn(getTargetContext());
-            when(fragment.getConfiguration()).thenReturn(Configuration.fromJson(configuration));
+            BraintreeFragment fragment = BraintreeFragment.newInstance(activity, authorizationString);
+            fragment.mConfiguration = Configuration.fromJson(configuration);
 
-            getInstrumentation().waitForIdleSync();
-            waitForFragmentTransaction(activity);
+            waitForFragment(fragment);
 
-            return fragment;
-        } catch (InterruptedException | InvalidArgumentException | JSONException e) {
+            return spy(fragment);
+        } catch (InvalidArgumentException | JSONException e) {
             fail(e.getMessage());
             return new BraintreeFragment();
         }
@@ -112,11 +100,10 @@ public class BraintreeFragmentTestUtils {
             }
             fragment = BraintreeFragment.newInstance(activity, authorizationString);
 
-            getInstrumentation().waitForIdleSync();
-            waitForFragmentTransaction(activity);
+            waitForFragment(fragment);
 
             return fragment;
-        } catch (InterruptedException | InvalidArgumentException e) {
+        } catch (InvalidArgumentException e) {
             fail(e.getMessage());
             return new BraintreeFragment();
         }
@@ -151,19 +138,11 @@ public class BraintreeFragmentTestUtils {
         return cardNonce[0];
     }
 
-    public static void verifyAnalyticsEvent(BraintreeFragment fragment, String event) {
-        verify(fragment).sendAnalyticsEvent(eq(event));
-    }
-
-    private static void waitForFragmentTransaction(final Activity activity) throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                activity.getFragmentManager().executePendingTransactions();
-                latch.countDown();
-            }
-        });
-        latch.await();
+    private static void waitForFragment(Fragment fragment) {
+        while (!fragment.isAdded()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ignored) {}
+        }
     }
 }

@@ -20,6 +20,10 @@
     <string name="purchase">Purchase</string>
     <string name="card_number">Card Number</string>
     <string name="expiration_date">Expiration Date</string>
+    <string name="country_code">Country Code</string>
+    <string name="mobile_phone">Mobile Phone</string>
+    <string name="send_sms">Send SMS</string>
+    <string name="sms_auth_code">SMS Auth Code</string>
 
     <!-- CreateTransactionActivity -->
     <string name="processing_transaction">Processing Transaction</string>

@@ -20,11 +20,13 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
+import com.braintreepayments.api.interfaces.UnionPayListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.TokenizationKey;
+import com.braintreepayments.api.models.UnionPayCapabilities;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -83,6 +85,7 @@ public class BraintreeFragment extends Fragment {
     private PaymentMethodNoncesUpdatedListener mPaymentMethodNoncesUpdatedListener;
     private PaymentMethodNonceCreatedListener mPaymentMethodNonceCreatedListener;
     private BraintreeErrorListener mErrorListener;
+    private UnionPayListener mUnionPayListener;
 
     public BraintreeFragment() {}
 
@@ -111,7 +114,6 @@ public class BraintreeFragment extends Fragment {
         BraintreeFragment braintreeFragment = (BraintreeFragment) fm.findFragmentByTag(TAG);
         if (braintreeFragment == null) {
             braintreeFragment = new BraintreeFragment();
-            braintreeFragment.mContext = activity.getApplicationContext();
             Bundle bundle = new Bundle();
 
             try {
@@ -126,6 +128,8 @@ public class BraintreeFragment extends Fragment {
             fm.beginTransaction().add(braintreeFragment, TAG).commit();
         }
 
+        braintreeFragment.mContext = activity.getApplicationContext();
+
         return braintreeFragment;
     }
 
@@ -134,12 +138,17 @@ public class BraintreeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
+        mContext = getActivity().getApplicationContext();
         mCrashReporter = CrashReporter.setup(mContext);
         mIntegrationType = getArguments().getString(EXTRA_INTEGRATION_TYPE);
         mAuthorization = getArguments().getParcelable(EXTRA_AUTHORIZATION_TOKEN);
 
         if (mHttpClient == null) {
             mHttpClient = new BraintreeHttpClient(mAuthorization);
+        }
+
+        if (getConfiguration() == null) {
+            fetchConfiguration();
         }
 
         if (savedInstanceState != null) {
@@ -161,7 +170,6 @@ public class BraintreeFragment extends Fragment {
             }
         }
 
-        fetchConfiguration();
         mCrashReporter.sendPreviousCrashes(this);
     }
 
@@ -181,7 +189,12 @@ public class BraintreeFragment extends Fragment {
         }
 
         if (mIsBrowserSwitching) {
-            onActivityResult(PayPal.PAYPAL_REQUEST_CODE, Activity.RESULT_FIRST_USER,
+            int resultCode = Activity.RESULT_CANCELED;
+            if (BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse != null) {
+                resultCode = Activity.RESULT_OK;
+            }
+
+            onActivityResult(PayPal.PAYPAL_REQUEST_CODE, resultCode,
                     BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse);
 
             BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = null;
@@ -231,7 +244,7 @@ public class BraintreeFragment extends Fragment {
         if (intent.hasExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH)) {
             BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = null;
             mIsBrowserSwitching = true;
-            getActivity().startActivity(intent);
+            getApplicationContext().startActivity(intent);
         } else {
             super.startActivity(intent);
         }
@@ -243,7 +256,7 @@ public class BraintreeFragment extends Fragment {
 
         switch (requestCode) {
             case PayPal.PAYPAL_REQUEST_CODE:
-                PayPal.onActivityResult(this, data);
+                PayPal.onActivityResult(this, resultCode, data);
                 break;
             case ThreeDSecure.THREE_D_SECURE_REQUEST_CODE:
                 ThreeDSecure.onActivityResult(this, resultCode, data);
@@ -282,6 +295,10 @@ public class BraintreeFragment extends Fragment {
 
         if (listener instanceof BraintreeErrorListener) {
             mErrorListener = (BraintreeErrorListener) listener;
+        }
+
+        if (listener instanceof UnionPayListener) {
+            mUnionPayListener = (UnionPayListener) listener;
         }
 
         flushCallbacks();
@@ -343,6 +360,34 @@ public class BraintreeFragment extends Fragment {
             @Override
             public void run() {
                 mPaymentMethodNonceCreatedListener.onPaymentMethodNonceCreated(paymentMethodNonce);
+            }
+        });
+    }
+
+    protected void postCallback(final UnionPayCapabilities capabilities) {
+        postOrQueueCallback(new QueuedCallback() {
+            @Override
+            public boolean shouldRun() {
+                return mUnionPayListener != null;
+            }
+
+            @Override
+            public void run() {
+                mUnionPayListener.onCapabilitiesFetched(capabilities);
+            }
+        });
+    }
+
+    protected void postUnionPayCallback(final String enrollmentId) {
+        postOrQueueCallback(new QueuedCallback() {
+            @Override
+            public boolean shouldRun() {
+                return mUnionPayListener != null;
+            }
+
+            @Override
+            public void run() {
+                mUnionPayListener.onSmsCodeSent(enrollmentId);
             }
         });
     }
@@ -461,7 +506,7 @@ public class BraintreeFragment extends Fragment {
         postOrQueueCallback(new QueuedCallback() {
             @Override
             public boolean shouldRun() {
-                return getConfiguration() != null;
+                return getConfiguration() != null && isAdded();
             }
 
             @Override

@@ -35,7 +35,7 @@ task :publish_snapshot => :tests do
 end
 
 desc "Interactive release to publish new version"
-task :release => :tests do
+task :release do
   puts "What version are you releasing? (x.x.x format)"
   version = $stdin.gets.chomp
 

@@ -13,7 +13,7 @@ import static junit.framework.Assert.assertTrue;
 
 public class AppInstallationHelper {
 
-    private static final String PAYPAL_WALLET_PACKAGE_NAME = "com.paypal.android.p2pmobile";
+    public static final String PAYPAL_WALLET_PACKAGE_NAME = "com.paypal.android.p2pmobile";
 
     public static void installPayPalWallet() {
         if (!isAppInstalled(PAYPAL_WALLET_PACKAGE_NAME)) {

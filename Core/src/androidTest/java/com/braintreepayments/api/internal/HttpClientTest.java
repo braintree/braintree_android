@@ -8,6 +8,7 @@ import com.braintreepayments.api.core.BuildConfig;
 import com.braintreepayments.api.exceptions.AuthenticationException;
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.DownForMaintenanceException;
+import com.braintreepayments.api.exceptions.RateLimitException;
 import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UnprocessableEntityException;
@@ -18,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -349,11 +351,42 @@ public class HttpClientTest {
     }
 
     @Test(timeout = 1000)
+    public void postsRateLimitExceptionOn429() throws IOException, InterruptedException {
+        HttpClient httpClient = clientWithExpectedResponse(429, "");
+
+        assertExceptionIsPosted(httpClient, RateLimitException.class, "You are being rate-limited. Please try again in a few minutes.");
+    }
+
+    @Test(timeout = 1000)
     public void postsUnknownExceptionOnUnrecognizedStatusCode()
             throws IOException, InterruptedException {
         HttpClient httpClient = clientWithExpectedResponse(418, "");
 
         assertExceptionIsPosted(httpClient, UnexpectedException.class, null);
+    }
+
+    @Test(timeout = 1000)
+    public void writeStream_encodesAsciiCharactersCorrectly() throws IOException {
+        HttpClient httpClient = new HttpClient();
+
+        String data = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        httpClient.writeOutputStream(output, data);
+
+        assertEquals(data, output.toString());
+    }
+
+    @Test(timeout = 1000)
+    public void writeStream_encodesUTF8CharactersCorrectly() throws IOException {
+        HttpClient httpClient = new HttpClient();
+
+        String data = "Bjärne Stroustrüp";
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        httpClient.writeOutputStream(output, data);
+
+        assertEquals(data, output.toString());
     }
 
     /* helpers */

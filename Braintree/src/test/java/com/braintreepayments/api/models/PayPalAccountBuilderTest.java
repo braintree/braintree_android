@@ -5,6 +5,8 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -74,5 +76,25 @@ public class PayPalAccountBuilderTest {
         JSONObject builtAccount = new JSONObject(json).getJSONObject(PAYPAL_KEY);
 
         assertFalse(builtAccount.keys().hasNext());
+    }
+
+    @Test
+    public void build_addsAllOneTouchCoreData() throws JSONException {
+        JSONObject oneTouchCoreData = new JSONObject()
+                .put("data1", "data1")
+                .put("data2", "data2")
+                .put("data3", "data3");
+
+        JSONObject base = new JSONObject();
+        JSONObject paymentMethodNonceJson = new JSONObject();
+
+        PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder()
+                .oneTouchCoreData(oneTouchCoreData);
+
+        payPalAccountBuilder.build(base, paymentMethodNonceJson);
+
+        JSONAssert.assertEquals(oneTouchCoreData, paymentMethodNonceJson, JSONCompareMode.NON_EXTENSIBLE);
+        JSONAssert.assertEquals(paymentMethodNonceJson, base.getJSONObject("paypalAccount"),
+                JSONCompareMode.NON_EXTENSIBLE);
     }
 }

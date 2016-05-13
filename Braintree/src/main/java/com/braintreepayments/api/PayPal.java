@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -352,8 +353,8 @@ public class PayPal {
      * @param fragment A {@link BraintreeFragment} used to process the request.
      * @param data Data associated with the result.
      */
-    protected static void onActivityResult(final BraintreeFragment fragment, Intent data) {
-        if (data != null) {
+    protected static void onActivityResult(final BraintreeFragment fragment, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK && data != null) {
             boolean isAppSwitch = isAppSwitch(data);
             Result result = PayPalOneTouchCore.parseResponse(fragment.getApplicationContext(), sRequest, data);
             switch (result.getResultType()) {

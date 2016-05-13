@@ -17,7 +17,6 @@ import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextContaining;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
@@ -40,7 +39,7 @@ public class PaymentButtonTest extends TestHelper {
         onDevice(withContentDescription("Pay with PayPal")).waitForExists().perform(click());
         onDevice(withContentDescription("Proceed with Sandbox Purchase")).perform(click());
 
-        onDevice(withTextContaining("Email:")).check(text(containsString("bt_buyer_us@paypal.com")));
+        getNonceDetails().check(text(containsString("Email: bt_buyer_us@paypal.com")));
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
@@ -52,8 +51,7 @@ public class PaymentButtonTest extends TestHelper {
         onDevice(withContentDescription("Pay with Android Pay")).perform(click());
         onDevice(withText("CONTINUE")).perform(click());
 
-        onDevice(withTextStartingWith("Underlying Card Last Two"))
-                .check(text(containsString("Underlying Card Last Two")));
+        getNonceDetails().check(text(containsString("Underlying Card Last Two")));
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));

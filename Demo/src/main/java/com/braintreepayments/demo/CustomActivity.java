@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.braintreepayments.api.AndroidPay;
@@ -13,17 +14,24 @@ import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPal;
+import com.braintreepayments.api.UnionPay;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.TokenizationParametersListener;
+import com.braintreepayments.api.interfaces.UnionPayListener;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.UnionPayCapabilities;
+import com.braintreepayments.api.models.UnionPayCardBuilder;
+import com.braintreepayments.cardform.OnCardFormFieldFocusedListener;
 import com.braintreepayments.cardform.OnCardFormSubmitListener;
+import com.braintreepayments.cardform.utils.CardType;
+import com.braintreepayments.cardform.view.CardEditText;
 import com.braintreepayments.cardform.view.CardForm;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.identity.intents.model.CountrySpecification;
@@ -42,8 +50,12 @@ import java.util.Collections;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class CustomActivity extends BaseActivity implements ConfigurationListener,
-        PaymentMethodNonceCreatedListener, BraintreeErrorListener, OnCardFormSubmitListener {
+public class CustomActivity extends BaseActivity implements ConfigurationListener, UnionPayListener,
+        PaymentMethodNonceCreatedListener, BraintreeErrorListener, OnCardFormSubmitListener,
+        OnCardFormFieldFocusedListener {
+
+    private static final String EXTRA_UNIONPAY = "com.braintreepayments.demo.EXTRA_UNIONPAY";
+    private static final String EXTRA_UNIONPAY_ENROLLMENT_ID = "com.braintreepayments.demo.EXTRA_UNIONPAY_ENROLLMENT_ID";
 
     private static final int ANDROID_PAY_MASKED_WALLET_REQUEST_CODE = 1;
     private static final int ANDROID_PAY_FULL_WALLET_REQUEST_CODE = 2;
@@ -51,11 +63,20 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     private GoogleApiClient mGoogleApiClient;
     private Cart mCart;
     private String mDeviceData;
+    private boolean mUnionPayEnabled;
+    private boolean mIsUnionPay;
+    private String mEnrollmentId;
 
     private ImageButton mPayPalButton;
     private ImageButton mAndroidPayButton;
     private CardForm mCardForm;
+    private EditText mCountryCode;
+    private EditText mMobilePhone;
+    private EditText mSmsCode;
+    private Button mSendSmsButton;
     private Button mPurchaseButton;
+
+    private CardType mCardType;
 
     @Override
     protected void onCreate(Bundle onSaveInstanceState) {
@@ -72,11 +93,34 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
 
         mCardForm = (CardForm) findViewById(R.id.card_form);
         mCardForm.setRequiredFields(this, true, true, false, false, getString(R.string.purchase));
+        mCardForm.setOnFormFieldFocusedListener(this);
         mCardForm.setOnCardFormSubmitListener(this);
 
+        mCountryCode = (EditText) findViewById(R.id.country_code);
+        mMobilePhone = (EditText) findViewById(R.id.mobile_phone);
+        mSmsCode = (EditText) findViewById(R.id.sms_code);
+        mSendSmsButton = (Button) findViewById(R.id.unionpay_enroll_button);
         mPurchaseButton = (Button) findViewById(R.id.purchase_button);
 
+        if (onSaveInstanceState != null) {
+            mIsUnionPay = onSaveInstanceState.getBoolean(EXTRA_UNIONPAY);
+            mEnrollmentId = onSaveInstanceState.getString(EXTRA_UNIONPAY_ENROLLMENT_ID);
+
+            if (mIsUnionPay) {
+                mCountryCode.setVisibility(VISIBLE);
+                mMobilePhone.setVisibility(VISIBLE);
+                mSendSmsButton.setVisibility(VISIBLE);
+            }
+        }
+
         setProgressBarIndeterminateVisibility(true);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(EXTRA_UNIONPAY, mIsUnionPay);
+        outState.putString(EXTRA_UNIONPAY_ENROLLMENT_ID, mEnrollmentId);
     }
 
     @Override
@@ -116,9 +160,68 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
             });
         }
 
+        if (configuration.getUnionPay().isEnabled()) {
+            mUnionPayEnabled = true;
+        }
+
         if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {
             mDeviceData = DataCollector.collectDeviceData(mBraintreeFragment);
         }
+    }
+
+    @Override
+    public void onCardFormFieldFocused(View field) {
+        if (!(field instanceof CardEditText)) {
+            CardType cardType = CardType.forCardNumber(mCardForm.getCardNumber());
+            if (mCardType != cardType) {
+                mCardType  = cardType;
+
+                if (mUnionPayEnabled) {
+                    UnionPay.fetchCapabilities(mBraintreeFragment, mCardForm.getCardNumber());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onCapabilitiesFetched(UnionPayCapabilities capabilities) {
+        if (capabilities.isUnionPay()) {
+            mIsUnionPay = true;
+            mCountryCode.setVisibility(VISIBLE);
+            mMobilePhone.setVisibility(VISIBLE);
+            mSendSmsButton.setVisibility(VISIBLE);
+        } else {
+            mIsUnionPay = false;
+            mCountryCode.setVisibility(GONE);
+            mCountryCode.setText("");
+            mMobilePhone.setVisibility(GONE);
+            mMobilePhone.setText("");
+            mSendSmsButton.setVisibility(GONE);
+        }
+    }
+
+    public void sendSms(View v) {
+        UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
+                .cardNumber(mCardForm.getCardNumber())
+                .expirationMonth(mCardForm.getExpirationMonth())
+                .expirationYear(mCardForm.getExpirationYear())
+                .cvv(mCardForm.getCvv())
+                .postalCode(mCardForm.getPostalCode())
+                .mobileCountryCode(mCountryCode.getText().toString())
+                .mobilePhoneNumber(mMobilePhone.getText().toString());
+
+        UnionPay.enroll(mBraintreeFragment, unionPayCardBuilder);
+    }
+
+    @Override
+    public void onSmsCodeSent(String enrollmentId) {
+        mEnrollmentId = enrollmentId;
+        mSmsCode.setVisibility(VISIBLE);
+    }
+
+    @Override
+    public void onCardFormSubmit() {
+        onPurchase(null);
     }
 
     public void launchPayPal(View v) {
@@ -151,47 +254,58 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     }
 
     private void requestAndroidPayMaskedWallet() {
-        AndroidPay.getTokenizationParameters(mBraintreeFragment,
-                new TokenizationParametersListener() {
-                    @Override
-                    public void onResult(PaymentMethodTokenizationParameters parameters,
-                            Collection<Integer> allowedCardNetworks) {
-                        MaskedWalletRequest.Builder maskedWalletRequestBuilder =
-                                MaskedWalletRequest.newBuilder()
-                                        .setMerchantName("Braintree")
-                                        .setCurrencyCode(mCart.getCurrencyCode())
-                                        .setCart(mCart)
-                                        .setEstimatedTotalPrice(mCart.getTotalPrice())
-                                        .setShippingAddressRequired(Settings.isAndroidPayShippingAddressRequired(CustomActivity.this))
-                                        .setPhoneNumberRequired(Settings.isAndroidPayPhoneNumberRequired(CustomActivity.this))
-                                        .setPaymentMethodTokenizationParameters(parameters)
-                                        .addAllowedCardNetworks(allowedCardNetworks);
+        AndroidPay.getTokenizationParameters(mBraintreeFragment, new TokenizationParametersListener() {
+            @Override
+            public void onResult(PaymentMethodTokenizationParameters parameters,
+                    Collection<Integer> allowedCardNetworks) {
+                MaskedWalletRequest.Builder maskedWalletRequestBuilder =
+                        MaskedWalletRequest.newBuilder()
+                                .setMerchantName("Braintree")
+                                .setCurrencyCode(mCart.getCurrencyCode())
+                                .setCart(mCart)
+                                .setEstimatedTotalPrice(mCart.getTotalPrice())
+                                .setShippingAddressRequired(Settings.isAndroidPayShippingAddressRequired(CustomActivity.this))
+                                .setPhoneNumberRequired(Settings.isAndroidPayPhoneNumberRequired(CustomActivity.this))
+                                .setPaymentMethodTokenizationParameters(parameters)
+                                .addAllowedCardNetworks(allowedCardNetworks);
 
-                        for (String country : Settings.getAndroidPayAllowedCountriesForShipping(CustomActivity.this)) {
-                            maskedWalletRequestBuilder.addAllowedCountrySpecificationForShipping(
-                                    new CountrySpecification(country));
-                        }
+                for (String country : Settings.getAndroidPayAllowedCountriesForShipping(CustomActivity.this)) {
+                    maskedWalletRequestBuilder.addAllowedCountrySpecificationForShipping(
+                            new CountrySpecification(country));
+                }
 
-                        Wallet.Payments.loadMaskedWallet(mGoogleApiClient,
-                                maskedWalletRequestBuilder.build(), ANDROID_PAY_MASKED_WALLET_REQUEST_CODE);
-                    }
-                });
-    }
-
-    @Override
-    public void onCardFormSubmit() {
-        onPurchase(null);
+                Wallet.Payments.loadMaskedWallet(mGoogleApiClient, maskedWalletRequestBuilder.build(),
+                        ANDROID_PAY_MASKED_WALLET_REQUEST_CODE);
+            }
+        });
     }
 
     public void onPurchase(View v) {
         setProgressBarIndeterminateVisibility(true);
 
-        CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(mCardForm.getCardNumber())
-                .expirationMonth(mCardForm.getExpirationMonth())
-                .expirationYear(mCardForm.getExpirationYear());
+        if (mIsUnionPay) {
+            UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
+                    .cardNumber(mCardForm.getCardNumber())
+                    .expirationMonth(mCardForm.getExpirationMonth())
+                    .expirationYear(mCardForm.getExpirationYear())
+                    .cvv(mCardForm.getCvv())
+                    .postalCode(mCardForm.getPostalCode())
+                    .mobileCountryCode(mCountryCode.getText().toString())
+                    .mobilePhoneNumber(mMobilePhone.getText().toString())
+                    .smsCode(mSmsCode.getText().toString())
+                    .enrollmentId(mEnrollmentId);
 
-        Card.tokenize(mBraintreeFragment, cardBuilder);
+            UnionPay.tokenize(mBraintreeFragment, unionPayCardBuilder);
+        } else {
+            CardBuilder cardBuilder = new CardBuilder()
+                    .cardNumber(mCardForm.getCardNumber())
+                    .expirationMonth(mCardForm.getExpirationMonth())
+                    .expirationYear(mCardForm.getExpirationYear())
+                    .cvv(mCardForm.getCvv())
+                    .postalCode(mCardForm.getPostalCode());
+
+            Card.tokenize(mBraintreeFragment, cardBuilder);
+        }
     }
 
     @Override

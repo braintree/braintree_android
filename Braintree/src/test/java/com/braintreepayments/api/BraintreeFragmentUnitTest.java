@@ -13,6 +13,7 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
+import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
@@ -46,12 +48,15 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.doAnswer;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
+import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
@@ -65,13 +70,13 @@ public class BraintreeFragmentUnitTest {
     public PowerMockRule mPowerMockRule = new PowerMockRule();
 
     private Activity mActivity;
-    private CountDownLatch mCountDownLatch;
+    private AtomicBoolean mCalled;
 
     @Before
     public void setup() {
         mActivity = spy(Robolectric.setupActivity(FragmentTestActivity.class));
         doNothing().when(mActivity).startActivity(any(Intent.class));
-        mCountDownLatch = new CountDownLatch(1);
+        mCalled = new AtomicBoolean(false);
     }
 
     @Test
@@ -104,6 +109,34 @@ public class BraintreeFragmentUnitTest {
         BraintreeFragment fragment2 = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
 
         assertEquals(fragment1, fragment2);
+    }
+
+    @Test
+    public void onCreate_callsFetchConfiguration() throws InvalidArgumentException {
+        mockStatic(ConfigurationManager.class);
+
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+
+        verifyStatic(times(2));
+        ConfigurationManager.getConfiguration(eq(fragment), any(ConfigurationListener.class),
+                any(BraintreeResponseListener.class));
+    }
+
+    @Test
+    public void onCreate_doesNotCallFetchConfigurationWhenConfigurationIsNotNull() throws InvalidArgumentException {
+        mockStatic(ConfigurationManager.class);
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(mock(AnalyticsConfiguration.class));
+
+        Robolectric.getForegroundThreadScheduler().pause();
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        fragment.mConfiguration = configuration;
+        Robolectric.getForegroundThreadScheduler().unPause();
+        Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
+
+        verifyStatic(never());
+        ConfigurationManager.getConfiguration(eq(fragment), any(ConfigurationListener.class),
+                any(BraintreeResponseListener.class));
     }
 
     @Test
@@ -140,16 +173,17 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void postsAnErrorWhenFetchingConfigurationFails() throws InvalidArgumentException, InterruptedException {
+    public void postsAnErrorWhenFetchingConfigurationFails() throws InvalidArgumentException {
         mockConfigurationManager(new Exception("Configuration error"));
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         final CountDownLatch latch = new CountDownLatch(2);
+        final AtomicInteger calls = new AtomicInteger(0);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
                 assertEquals("Request for configuration has failed: Configuration error. Future requests will retry up to 3 times",
                         error.getMessage());
-                latch.countDown();
+                calls.getAndIncrement();
             }
         });
         fragment.setConfigurationErrorListener(new BraintreeResponseListener<Exception>() {
@@ -157,11 +191,11 @@ public class BraintreeFragmentUnitTest {
             public void onResponse(Exception error) {
                 assertEquals("Request for configuration has failed: Configuration error. Future requests will retry up to 3 times",
                         error.getMessage());
-                latch.countDown();
+                calls.getAndIncrement();
             }
         });
 
-        latch.await();
+        assertEquals(2, calls.get());
     }
 
     @Test
@@ -191,8 +225,7 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void getConfiguration_returnsConfiguration() throws InterruptedException, InvalidArgumentException,
-            JSONException {
+    public void getConfiguration_returnsConfiguration() throws InvalidArgumentException, JSONException {
         Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
         mockConfigurationManager(configuration);
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
@@ -202,7 +235,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void waitForConfiguration_postsCallbackAfterConfigurationIsReceived() throws JSONException,
-            InvalidArgumentException, InterruptedException {
+            InvalidArgumentException {
         final Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
         mockConfigurationManager(configuration);
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
@@ -211,11 +244,47 @@ public class BraintreeFragmentUnitTest {
             @Override
             public void onConfigurationFetched(Configuration returnedConfiguration) {
                 assertEquals(configuration, returnedConfiguration);
-                mCountDownLatch.countDown();
+                mCalled.set(true);
             }
         });
 
-        mCountDownLatch.await();
+        assertTrue(mCalled.get());
+    }
+
+    @Test
+    public void waitForConfiguration_doesNotPostCallbackWhenNotAttached() throws JSONException,
+            InvalidArgumentException {
+        final Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
+        mockConfigurationManager(configuration);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+
+        mActivity.getFragmentManager().beginTransaction().detach(fragment).commit();
+        mActivity.getFragmentManager().executePendingTransactions();
+
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration returnedConfiguration) {
+                fail("onConfigurationFetched was called");
+            }
+        });
+    }
+
+    @Test
+    public void waitForConfiguration_postsCallbackWhenFragmentIsAttached() throws JSONException,
+            InvalidArgumentException {
+        final Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
+        mockConfigurationManager(configuration);
+        final BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration returnedConfiguration) {
+                assertTrue(fragment.isAdded());
+                mCalled.set(true);
+            }
+        });
+
+        assertTrue(mCalled.get());
     }
 
     @Test
@@ -226,7 +295,7 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void addListener_flushesExceptionCallbacks() throws InterruptedException, InvalidArgumentException {
+    public void addListener_flushesExceptionCallbacks() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         fragment.postCallback(new Exception("Error!"));
 
@@ -234,15 +303,15 @@ public class BraintreeFragmentUnitTest {
             @Override
             public void onError(Exception error) {
                 assertEquals("Error!", error.getMessage());
-                mCountDownLatch.countDown();
+                mCalled.set(true);
             }
         });
 
-        mCountDownLatch.await();
+        assertTrue(mCalled.get());
     }
 
     @Test
-    public void addListener_flushesErrorWithResponseCallback() throws InterruptedException, InvalidArgumentException {
+    public void addListener_flushesErrorWithResponseCallback() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         fragment.postCallback(new ErrorWithResponse(422, ""));
 
@@ -251,43 +320,57 @@ public class BraintreeFragmentUnitTest {
             public void onError(Exception error) {
                 assertTrue(error instanceof ErrorWithResponse);
                 assertEquals(422, ((ErrorWithResponse) error).getStatusCode());
-                mCountDownLatch.countDown();
+                mCalled.set(true);
             }
         });
 
-        mCountDownLatch.await();
+        assertTrue(mCalled.get());
     }
 
     @Test
-    public void addListener_flushesPaymentMethodNonceCreatedCallback() throws InterruptedException,
-            InvalidArgumentException {
+    public void addListener_flushesPaymentMethodNonceCreatedCallback() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         fragment.postCallback(new CardNonce());
 
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
-                mCountDownLatch.countDown();
+                mCalled.set(true);
             }
         });
 
-        mCountDownLatch.await();
+        assertTrue(mCalled.get());
     }
 
     @Test
-    public void addListener_flushesPaymentMethodNoncesUpdatedCallback() throws InterruptedException,
-            InvalidArgumentException {
+    public void addListener_flushesPaymentMethodNoncesUpdatedCallback() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         fragment.postCallback(new ArrayList<PaymentMethodNonce>());
 
         fragment.addListener(new PaymentMethodNoncesUpdatedListener() {
             @Override
             public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {
-                mCountDownLatch.countDown();
+                mCalled.set(true);
             }
         });
 
-        mCountDownLatch.await();
+        assertTrue(mCalled.get());
+    }
+
+    @Test
+    public void addListener_flushesCancelCallback() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        fragment.postCancelCallback(42);
+
+        fragment.addListener(new BraintreeCancelListener() {
+            @Override
+            public void onCancel(int requestCode) {
+                assertEquals(42, requestCode);
+                mCalled.set(true);
+            }
+        });
+
+        assertTrue(mCalled.get());
     }
 
     @Test
@@ -304,6 +387,22 @@ public class BraintreeFragmentUnitTest {
         fragment.removeListener(listener);
 
         fragment.postCallback(new CardNonce());
+    }
+
+    @Test
+    public void removeListener_noCancelReceived() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        BraintreeCancelListener listener = new BraintreeCancelListener() {
+            @Override
+            public void onCancel(int requestCode) {
+                fail("Listener was called");
+            }
+        };
+
+        fragment.addListener(listener);
+        fragment.removeListener(listener);
+
+        fragment.postCancelCallback(42);
     }
 
     @Test
@@ -340,8 +439,7 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void waitForConfiguration_retriesIfConfigurationIsNull() throws InvalidArgumentException,
-            InterruptedException {
+    public void waitForConfiguration_retriesIfConfigurationIsNull() throws InvalidArgumentException {
         mockConfigurationManager(new Exception());
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
 
@@ -356,6 +454,40 @@ public class BraintreeFragmentUnitTest {
         verifyStatic(times(3));
         ConfigurationManager.getConfiguration(eq(fragment), any(ConfigurationListener.class),
                 any(BraintreeResponseListener.class));
+    }
+
+    @Test
+    public void postCallback_postsPaymentMethodNonceToListener() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
+            @Override
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertTrue(paymentMethodNonce instanceof CardNonce);
+                wasCalled.set(true);
+            }
+        });
+
+        fragment.postCallback(new CardNonce());
+
+        assertTrue(wasCalled.get());
+    }
+
+    @Test
+    public void postCancelCallback_postsRequestCodeToListener() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        final AtomicBoolean wasCalled = new AtomicBoolean(false);
+        fragment.addListener(new BraintreeCancelListener() {
+            @Override
+            public void onCancel(int requestCode) {
+                assertEquals(42, requestCode);
+                wasCalled.set(true);
+            }
+        });
+
+        fragment.postCancelCallback(42);
+
+        assertTrue(wasCalled.get());
     }
 
     @Test
@@ -407,37 +539,36 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void postCallback_exceptionIsPostedToListeners() throws InterruptedException, InvalidArgumentException {
+    public void postCallback_exceptionIsPostedToListeners() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
                 assertEquals("Error!", error.getMessage());
-                mCountDownLatch.countDown();
+                mCalled.set(true);
             }
         });
 
         fragment.postCallback(new Exception("Error!"));
 
-        mCountDownLatch.await();
+        assertTrue(mCalled.get());
     }
 
     @Test
-    public void postCallback_ErrorWithResponseIsPostedToListeners() throws InterruptedException,
-            InvalidArgumentException {
+    public void postCallback_ErrorWithResponseIsPostedToListeners() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
                 assertTrue(error instanceof ErrorWithResponse);
                 assertEquals(422, ((ErrorWithResponse) error).getStatusCode());
-                mCountDownLatch.countDown();
+                mCalled.set(true);
             }
         });
 
         fragment.postCallback(new ErrorWithResponse(422, ""));
 
-        mCountDownLatch.await();
+        assertTrue(mCalled.get());
     }
 
     @Test
@@ -466,7 +597,7 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void doesNotExecuteCallbackWhenShouldRunIsFalse() throws InterruptedException, InvalidArgumentException {
+    public void doesNotExecuteCallbackWhenShouldRunIsFalse() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         QueuedCallback callback = new QueuedCallback() {
             @Override
@@ -507,7 +638,7 @@ public class BraintreeFragmentUnitTest {
         fragment.onActivityResult(PayPal.PAYPAL_REQUEST_CODE, Activity.RESULT_FIRST_USER, intent);
 
         verifyStatic();
-        PayPal.onActivityResult(fragment, intent);
+        PayPal.onActivityResult(fragment, Activity.RESULT_FIRST_USER, intent);
     }
 
     @Test
@@ -535,20 +666,19 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void onActivityResult_postsCancelCallbackWhenResultCodeIsCanceled()
-            throws InvalidArgumentException, InterruptedException {
+    public void onActivityResult_postsCancelCallbackWhenResultCodeIsCanceled() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         fragment.addListener(new BraintreeCancelListener() {
             @Override
             public void onCancel(int requestCode) {
                 assertEquals(42, requestCode);
-                mCountDownLatch.countDown();
+                mCalled.set(true);
             }
         });
 
         fragment.onActivityResult(42, Activity.RESULT_CANCELED, null);
 
-        mCountDownLatch.await();
+        assertTrue(mCalled.get());
     }
 
     @Test
@@ -569,7 +699,7 @@ public class BraintreeFragmentUnitTest {
         fragment.onResume();
 
         verifyStatic(never());
-        PayPal.onActivityResult(any(BraintreeFragment.class), any(Intent.class));
+        PayPal.onActivityResult(any(BraintreeFragment.class), anyInt(), any(Intent.class));
     }
 
     @Test
@@ -586,7 +716,7 @@ public class BraintreeFragmentUnitTest {
         fragment.onResume();
 
         verifyStatic(times(1));
-        PayPal.onActivityResult(fragment, intent);
+        PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
     }
 
     /* helpers */

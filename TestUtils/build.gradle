@@ -34,11 +34,11 @@ android {
 
 dependencies {
     instrumentationTestCompile 'com.google.dexmaker:dexmaker-mockito:1.1'
-    compile 'com.android.support.test.espresso:espresso-core:2.2.1'
-    compile 'com.android.support.test.espresso:espresso-intents:2.2.1'
-    instrumentationTestCompile 'com.android.support.test.espresso:espresso-web:2.2.1'
-    compile 'com.android.support.test:runner:0.4.1'
-    instrumentationTestCompile 'com.android.support.test:rules:0.4.1'
+    compile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    compile 'com.android.support.test.espresso:espresso-intents:2.2.2'
+    instrumentationTestCompile 'com.android.support.test.espresso:espresso-web:2.2.2'
+    compile 'com.android.support.test:runner:0.5'
+    instrumentationTestCompile 'com.android.support.test:rules:0.5'
 
     unitTestCompile 'org.powermock:powermock-module-junit4:1.6.4'
     unitTestCompile 'org.powermock:powermock-module-junit4-rule:1.6.4'

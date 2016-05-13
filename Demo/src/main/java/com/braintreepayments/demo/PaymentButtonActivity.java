@@ -126,15 +126,13 @@ public class PaymentButtonActivity extends BaseActivity implements Configuration
                             .setCart(mCart)
                             .build();
 
-                    mBraintreeFragment.getGoogleApiClient(
-                            new BraintreeResponseListener<GoogleApiClient>() {
-                                @Override
-                                public void onResponse(GoogleApiClient googleApiClient) {
-                                    Wallet.Payments.loadFullWallet(googleApiClient,
-                                            fullWalletRequest,
-                                            ANDROID_PAY_REQUEST_CODE);
-                                }
-                            });
+                    mBraintreeFragment.getGoogleApiClient(new BraintreeResponseListener<GoogleApiClient>() {
+                        @Override
+                        public void onResponse(GoogleApiClient googleApiClient) {
+                            Wallet.Payments.loadFullWallet(googleApiClient, fullWalletRequest,
+                                    ANDROID_PAY_REQUEST_CODE);
+                        }
+                    });
                 } else {
                     AndroidPay.tokenize(mBraintreeFragment,
                             (FullWallet) data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET));

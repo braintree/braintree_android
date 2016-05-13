@@ -18,10 +18,12 @@ public class CardBuilderTest {
 
     @Test
     public void build_correctlyBuildsACard() throws JSONException {
-        CardBuilder cardBuilder = new CardBuilder().cardNumber(VISA)
-                .cvv("123")
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber(VISA)
+                .expirationDate("01/2015")
                 .expirationMonth("01")
                 .expirationYear("2015")
+                .cvv("123")
                 .cardholderName("Joe Smith")
                 .firstName("Joe")
                 .lastName("Smith")
@@ -37,9 +39,10 @@ public class CardBuilderTest {
         JSONObject jsonMetadata = json.getJSONObject(PaymentMethodBuilder.METADATA_KEY);
 
         assertEquals(VISA, jsonCard.getString("number"));
-        assertEquals("123", jsonCard.getString("cvv"));
+        assertEquals("01/2015", jsonCard.getString("expirationDate"));
         assertEquals("01", jsonCard.getString("expirationMonth"));
         assertEquals("2015", jsonCard.getString("expirationYear"));
+        assertEquals("123", jsonCard.getString("cvv"));
         assertEquals("Joe Smith", jsonCard.getString("cardholderName"));
 
         assertEquals("Joe", jsonBillingAddress.getString("firstName"));
@@ -136,8 +139,29 @@ public class CardBuilderTest {
     public void doesNotIncludeEmptyCreditCardWhenSerializing() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder();
 
-        JSONObject builtCard = new JSONObject(cardBuilder.build()).getJSONObject(CREDIT_CARD_KEY);
+        assertFalse(new JSONObject(cardBuilder.build()).getJSONObject(CREDIT_CARD_KEY).keys().hasNext());
+        assertFalse(new JSONObject(cardBuilder.build()).has(BILLING_ADDRESS_KEY));
+    }
 
-        assertFalse(builtCard.keys().hasNext());
+    @Test
+    public void doesNotIncludeEmptyStrings() throws JSONException {
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber("")
+                .expirationDate("")
+                .expirationMonth("")
+                .expirationYear("")
+                .cvv("")
+                .postalCode("")
+                .cardholderName("")
+                .firstName("")
+                .lastName("")
+                .streetAddress("")
+                .locality("")
+                .postalCode("")
+                .region("")
+                .countryName("");
+
+        assertFalse(new JSONObject(cardBuilder.build()).getJSONObject(CREDIT_CARD_KEY).keys().hasNext());
+        assertFalse(new JSONObject(cardBuilder.build()).has(BILLING_ADDRESS_KEY));
     }
 }

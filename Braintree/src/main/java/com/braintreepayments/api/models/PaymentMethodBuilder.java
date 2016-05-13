@@ -1,5 +1,7 @@
 package com.braintreepayments.api.models;
 
+import android.os.Parcel;
+
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 
@@ -19,23 +21,12 @@ public abstract class PaymentMethodBuilder<T> {
     private static final String VALIDATE_KEY = "validate";
     private static final String SESSION_ID_KEY = "sessionId";
 
-    protected final JSONObject mJson;
-    protected final JSONObject mPaymentMethodNonceJson;
-    private final JSONObject mOptionsJson;
-    private final JSONObject mMetaJson;
+    private String mIntegration = getDefaultIntegration();
+    private String mSource = getDefaultSource();
+    private boolean mValidate;
+    private String mSessionId;
 
-    public PaymentMethodBuilder() {
-        mJson = new JSONObject();
-        mPaymentMethodNonceJson = new JSONObject();
-        mOptionsJson = new JSONObject();
-        mMetaJson = new JSONObject();
-
-        try {
-            mMetaJson.put(SOURCE_KEY, getDefaultSource());
-            mMetaJson.put(INTEGRATION_KEY, getDefaultIntegration());
-            mJson.put(METADATA_KEY, mMetaJson);
-        } catch (JSONException ignored) {}
-    }
+    public PaymentMethodBuilder() {}
 
     /**
      * Sets the integration method associated with the
@@ -46,10 +37,7 @@ public abstract class PaymentMethodBuilder<T> {
      */
     @SuppressWarnings("unchecked")
     public T integration(String integration) {
-        try {
-            mMetaJson.put(INTEGRATION_KEY, integration);
-        } catch (JSONException ignored) {}
-
+        mIntegration = integration;
         return (T) this;
     }
 
@@ -62,10 +50,7 @@ public abstract class PaymentMethodBuilder<T> {
      */
     @SuppressWarnings("unchecked")
     public T source(String source) {
-        try {
-            mMetaJson.put(SOURCE_KEY, source);
-        } catch (JSONException ignored) { }
-
+        mSource = source;
         return (T) this;
     }
 
@@ -77,11 +62,7 @@ public abstract class PaymentMethodBuilder<T> {
      */
     @SuppressWarnings("unchecked")
     public T validate(boolean validate) {
-        try {
-            mOptionsJson.put(VALIDATE_KEY, validate);
-            mPaymentMethodNonceJson.put(OPTIONS_KEY, mOptionsJson);
-        } catch (JSONException ignored) {}
-
+        mValidate = validate;
         return (T) this;
     }
 
@@ -92,10 +73,7 @@ public abstract class PaymentMethodBuilder<T> {
      */
     @SuppressWarnings("unchecked")
     public T setSessionId(String sessionId) {
-        try {
-            mMetaJson.put(SESSION_ID_KEY, sessionId);
-        } catch (JSONException ignored) {}
-
+        mSessionId = sessionId;
         return (T) this;
     }
 
@@ -103,7 +81,40 @@ public abstract class PaymentMethodBuilder<T> {
      * @return String representation of {@link PaymentMethodNonce} for API use.
      */
     public String build() {
-        return mJson.toString();
+        JSONObject json = new JSONObject();
+        JSONObject metaJson = new JSONObject();
+        JSONObject optionsJson = new JSONObject();
+        JSONObject paymentMethodNonceJson = new JSONObject();
+
+        try {
+            metaJson.put(INTEGRATION_KEY, mIntegration);
+            metaJson.put(SOURCE_KEY, mSource);
+            metaJson.put(SESSION_ID_KEY, mSessionId);
+            json.put(METADATA_KEY, metaJson);
+
+            if (mValidate) {
+                optionsJson.put(VALIDATE_KEY, mValidate);
+                paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
+            }
+
+            build(json, paymentMethodNonceJson);
+        } catch (JSONException ignored) {}
+
+        return json.toString();
+    }
+
+    protected PaymentMethodBuilder(Parcel in) {
+        mIntegration = in.readString();
+        mSource = in.readString();
+        mValidate = in.readByte() > 0;
+        mSessionId = in.readString();
+    }
+
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mIntegration);
+        dest.writeString(mSource);
+        dest.writeByte(mValidate ? (byte) 1 : 0);
+        dest.writeString(mSessionId);
     }
 
     protected String getDefaultSource() {
@@ -113,6 +124,8 @@ public abstract class PaymentMethodBuilder<T> {
     protected String getDefaultIntegration() {
         return "custom";
     }
+
+    protected abstract void build(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException;
 
     public abstract String getApiPath();
 

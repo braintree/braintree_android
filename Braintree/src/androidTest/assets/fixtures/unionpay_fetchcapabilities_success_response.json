@@ -1,0 +1,8 @@
+{
+  "isUnionPay": true,
+  "isDebit": false,
+  "unionPay": {
+    "supportsTwoStepAuthAndCapture": true,
+    "isUnionPayEnrollmentRequired": false
+  }
+}

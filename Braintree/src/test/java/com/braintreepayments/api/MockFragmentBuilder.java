@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
+
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
@@ -18,10 +20,20 @@ import static org.mockito.Mockito.when;
 
 public class MockFragmentBuilder {
 
+    private Context mContext;
     private Authorization mAuthorization;
     private Configuration mConfiguration;
     private String mSuccessResponse;
     private Exception mErrorResponse;
+
+    public MockFragmentBuilder() {
+        mContext = RuntimeEnvironment.application;
+    }
+
+    public MockFragmentBuilder context(Context context) {
+        mContext = context;
+        return this;
+    }
 
     public MockFragmentBuilder authorization(Authorization authorization) {
         mAuthorization = authorization;
@@ -45,7 +57,7 @@ public class MockFragmentBuilder {
 
     public BraintreeFragment build() {
         BraintreeFragment fragment = mock(BraintreeFragment.class);
-        when(fragment.getApplicationContext()).thenReturn(RuntimeEnvironment.application);
+        when(fragment.getApplicationContext()).thenReturn(mContext);
         when(fragment.getAuthorization()).thenReturn(mAuthorization);
 
         doAnswer(new Answer() {

@@ -17,7 +17,6 @@ import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextContaining;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
@@ -39,7 +38,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
         onDevice(withText("Single Payment")).waitForEnabled().perform(click());
         onDevice(withContentDescription("Proceed with Sandbox Purchase")).perform(click());
 
-        onDevice(withTextContaining("Email:")).check(text(containsString("bt_buyer_us@paypal.com")));
+        getNonceDetails().check(text(containsString("Email: bt_buyer_us@paypal.com")));
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
@@ -53,7 +52,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
         onDevice(withContentDescription("Log In")).perform(click());
         onDevice(withContentDescription("Agree")).perform(click());
 
-        onDevice(withTextContaining("Email:")).check(text(containsString("jane.doe@example.com")));
+        getNonceDetails().check(text(containsString("Email: jane.doe@example.com")));
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
@@ -67,7 +66,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
         onDevice(withContentDescription("Log In")).perform(click());
         onDevice(withContentDescription("Agree")).perform(click());
 
-        onDevice(withTextContaining("Email:")).check(text(containsString("jane.doe@example.com")));
+        getNonceDetails().check(text(containsString("Email: jane.doe@example.com")));
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
@@ -78,7 +77,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
         onDevice(withText("Billing Agreement")).waitForEnabled().perform(click());
         onDevice(withContentDescription("Proceed with Sandbox Purchase")).perform(click());
 
-        onDevice(withTextContaining("Email:")).check(text(containsString("bt_buyer_us@paypal.com")));
+        getNonceDetails().check(text(containsString("Email: bt_buyer_us@paypal.com")));
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));

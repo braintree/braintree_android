@@ -20,7 +20,7 @@ public class Configuration {
     private static final String ANDROID_PAY_KEY = "androidPay";
     private static final String THREE_D_SECURE_ENABLED_KEY = "threeDSecureEnabled";
     private static final String PAY_WITH_VENMO_KEY = "payWithVenmo";
-
+    private static final String UNIONPAY_KEY = "unionPay";
 
     private String mConfigurationString;
     private String mClientApiUrl;
@@ -34,6 +34,7 @@ public class Configuration {
     private AndroidPayConfiguration mAndroidPayConfiguration;
     private boolean mThreeDSecureEnabled;
     private VenmoConfiguration mVenmoConfiguration;
+    private UnionPayConfiguration mUnionPayConfiguration;
 
     /**
      * Creates a new {@link com.braintreepayments.api.models.Configuration} instance from a json string.
@@ -59,6 +60,7 @@ public class Configuration {
         configuration.mAnalyticsConfiguration = AnalyticsConfiguration.fromJson(json.optJSONObject(ANALYTICS_KEY));
         configuration.mVenmoConfiguration = VenmoConfiguration
                 .fromJson(json.optJSONObject(PAY_WITH_VENMO_KEY));
+        configuration.mUnionPayConfiguration = UnionPayConfiguration.fromJson(json.optJSONObject(UNIONPAY_KEY));
 
         return configuration;
     }
@@ -151,6 +153,13 @@ public class Configuration {
      */
     public VenmoConfiguration getPayWithVenmo() {
         return mVenmoConfiguration;
+    }
+
+    /**
+     * @return instance of {@link UnionPayConfiguration}
+     */
+    public UnionPayConfiguration getUnionPay() {
+        return mUnionPayConfiguration;
     }
 
     private boolean isChallengePresent(String requestedChallenge) {

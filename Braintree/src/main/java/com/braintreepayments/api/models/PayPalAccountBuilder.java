@@ -15,12 +15,11 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
     private static final String PAYPAL_ACCOUNT_KEY = "paypalAccount";
     private static final String CORRELATION_ID_KEY = "correlationId";
 
+    private String mClientMetadataId;
+    private JSONObject mOneTouchCoreData = new JSONObject();
+
     public PayPalAccountBuilder() {
         super();
-
-        try {
-            mJson.put(PAYPAL_ACCOUNT_KEY, mPaymentMethodNonceJson);
-        } catch (JSONException ignored) {}
     }
 
     /**
@@ -31,10 +30,7 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
      * @return {@link PayPalAccountBuilder}
      */
     public PayPalAccountBuilder clientMetadataId(String clientMetadataId) {
-        try {
-            mPaymentMethodNonceJson.put(CORRELATION_ID_KEY, clientMetadataId);
-        } catch (JSONException ignored) {}
-
+        mClientMetadataId = clientMetadataId;
         return this;
     }
 
@@ -46,14 +42,23 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
      * @return {@link PayPalAccountBuilder}
      */
     public PayPalAccountBuilder oneTouchCoreData(JSONObject otcData) {
-        try {
-            Iterator<String> otcKeyIterator = otcData.keys();
-            while(otcKeyIterator.hasNext()){
-                String otcKey = otcKeyIterator.next();
-                mPaymentMethodNonceJson.put(otcKey, otcData.get(otcKey));
-            }
-        } catch (JSONException ignored) {}
+        if (otcData != null) {
+            mOneTouchCoreData = otcData;
+        }
         return this;
+    }
+
+    @Override
+    protected void build(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
+        paymentMethodNonceJson.put(CORRELATION_ID_KEY, mClientMetadataId);
+
+        Iterator<String> otcKeyIterator = mOneTouchCoreData.keys();
+        while (otcKeyIterator.hasNext()) {
+            String otcKey = otcKeyIterator.next();
+            paymentMethodNonceJson.put(otcKey, mOneTouchCoreData.get(otcKey));
+        }
+
+        base.put(PAYPAL_ACCOUNT_KEY, paymentMethodNonceJson);
     }
 
     @Override

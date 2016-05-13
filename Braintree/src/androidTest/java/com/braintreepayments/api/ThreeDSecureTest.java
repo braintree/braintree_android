@@ -9,6 +9,7 @@ import android.test.suitebuilder.annotation.SmallTest;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
@@ -35,6 +36,7 @@ import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class ThreeDSecureTest {
@@ -98,9 +100,10 @@ public class ThreeDSecureTest {
 
     @Test(timeout = 1000)
     @SmallTest
-    public void onActivityResult_postsPaymentMethodNonceToListener()
-            throws JSONException, InterruptedException{
-        BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
+    public void onActivityResult_postsPaymentMethodNonceToListener() throws JSONException, InterruptedException {
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(mock(AnalyticsConfiguration.class));
+        BraintreeFragment fragment = getMockFragment(mActivity, configuration);
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
@@ -122,7 +125,9 @@ public class ThreeDSecureTest {
     @Test(timeout = 1000)
     @SmallTest
     public void onActivityResult_postsUnrecoverableErrorsToListeners() throws InterruptedException {
-        BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(mock(AnalyticsConfiguration.class));
+        BraintreeFragment fragment = getMockFragment(mActivity, configuration);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
@@ -143,7 +148,9 @@ public class ThreeDSecureTest {
     @Test(timeout = 1000)
     @SmallTest
     public void onActivityResult_postsRecoverableErrorsToListener() throws InterruptedException {
-        BraintreeFragment fragment = getMockFragment(mActivity, mock(Configuration.class));
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.getAnalytics()).thenReturn(mock(AnalyticsConfiguration.class));
+        BraintreeFragment fragment = getMockFragment(mActivity, configuration);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
