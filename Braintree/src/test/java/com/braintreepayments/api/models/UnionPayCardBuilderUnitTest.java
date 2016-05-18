@@ -8,7 +8,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricGradleTestRunner.class)
@@ -33,7 +32,7 @@ public class UnionPayCardBuilderUnitTest {
                 .integration("integration")
                 .setSessionId("session-id")
                 .source("source")
-                .validate(false);
+                .validate(true);
     }
 
     @Test
@@ -102,20 +101,22 @@ public class UnionPayCardBuilderUnitTest {
 
     @Test
     public void smsCode_addsToOptionsJson() throws JSONException {
-        JSONObject beforeJson = new JSONObject(mUnionPayCardBuilder.build());
-        JSONObject afterJson = new JSONObject(mUnionPayCardBuilder.smsCode("mySmsCode").build());
+        JSONObject jsonObject = new JSONObject(mUnionPayCardBuilder.smsCode("mySmsCode").build());
 
-        assertFalse(beforeJson.getJSONObject("options").has("smsCode"));
-        assertEquals("mySmsCode", afterJson.getJSONObject("options").getString("smsCode"));
+        assertEquals("mySmsCode", jsonObject.getJSONObject("creditCard")
+                .getJSONObject("options")
+                .getJSONObject("unionPayEnrollment")
+                .getString("smsCode"));
     }
 
     @Test
     public void enrollmentId_addsToOptionsJson() throws JSONException {
-        JSONObject beforeJson = new JSONObject(mUnionPayCardBuilder.build());
-        JSONObject afterJson = new JSONObject(mUnionPayCardBuilder.enrollmentId("myEnrollmentId").build());
+        JSONObject jsonObject = new JSONObject(mUnionPayCardBuilder.enrollmentId("myEnrollmentId").build());
 
-        assertFalse(beforeJson.getJSONObject("options").has("id"));
-        assertEquals("myEnrollmentId", afterJson.getJSONObject("options").getString("id"));
+        assertEquals("myEnrollmentId", jsonObject.getJSONObject("creditCard")
+                .getJSONObject("options")
+                .getJSONObject("unionPayEnrollment")
+                .getString("id"));
     }
 
     @Test
@@ -142,8 +143,22 @@ public class UnionPayCardBuilderUnitTest {
         assertEquals("expiration-date", creditCard.getString("expirationDate"));
         assertEquals("123", creditCard.getString("cvv"));
 
-        JSONObject options = tokenizePayload.getJSONObject("options");
-        assertEquals("enrollment-id", options.getString("id"));
-        assertEquals("sms-code", options.getString("smsCode"));
+        JSONObject options = creditCard.getJSONObject("options");
+        assertTrue(options.getBoolean("validate"));
+        JSONObject unionPayEnrollment = options.getJSONObject("unionPayEnrollment");
+        assertEquals("enrollment-id", unionPayEnrollment.getString("id"));
+        assertEquals("sms-code", unionPayEnrollment.getString("smsCode"));
+    }
+
+    @Test
+    public void build_WithoutValidate_includesUnionPayEnrollment() throws JSONException {
+       JSONObject json = new JSONObject(mUnionPayCardBuilder.enrollmentId("enrollment-id")
+               .smsCode("sms-code").build());
+
+        JSONObject creditCard = json.getJSONObject("creditCard");
+        JSONObject options = creditCard.getJSONObject("options");
+        JSONObject unionPayEnrollment = options.getJSONObject("unionPayEnrollment");
+        assertEquals("enrollment-id", unionPayEnrollment.getString("id"));
+        assertEquals("sms-code", unionPayEnrollment.getString("smsCode"));
     }
 }

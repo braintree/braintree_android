@@ -110,7 +110,8 @@ public class UnionPayUnitTest {
                 .expirationYear("expirationYear")
                 .cvv("cvv")
                 .enrollmentId("enrollmentId")
-                .smsCode("smsCode");
+                .smsCode("smsCode")
+                .validate(true);
 
         BraintreeHttpClient httpClient = mock(BraintreeHttpClient.class);
         doNothing().when(httpClient).get(anyString(), any(HttpResponseCallback.class));
@@ -124,15 +125,17 @@ public class UnionPayUnitTest {
 
         JSONObject tokenizePayload = new JSONObject(argumentCaptor.getValue());
         JSONObject creditCardPayload = tokenizePayload.getJSONObject("creditCard");
-        JSONObject optionsPayload = tokenizePayload.getJSONObject("options");
+        JSONObject optionsPayload = creditCardPayload.getJSONObject("options");
+        JSONObject unionPayEnrollmentPayload = optionsPayload.getJSONObject("unionPayEnrollment");
 
         assertEquals("someCardNumber", creditCardPayload.getString("number"));
         assertEquals("expirationMonth", creditCardPayload.getString("expirationMonth"));
         assertEquals("expirationYear", creditCardPayload.getString("expirationYear"));
         assertEquals("cvv", creditCardPayload.getString("cvv"));
 
-        assertEquals("enrollmentId", optionsPayload.getString("id"));
-        assertEquals("smsCode", optionsPayload.getString("smsCode"));
+        assertTrue(optionsPayload.getBoolean("validate"));
+        assertEquals("enrollmentId", unionPayEnrollmentPayload.getString("id"));
+        assertEquals("smsCode", unionPayEnrollmentPayload.getString("smsCode"));
     }
 
     @Test

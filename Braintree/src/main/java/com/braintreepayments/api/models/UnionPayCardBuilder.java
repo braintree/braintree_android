@@ -13,7 +13,7 @@ public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> im
 
     private static final String UNIONPAY_ENROLLMENT_KEY = "unionPayEnrollment";
     private static final String UNIONPAY_KEY = "creditCard";
-    private static final String BASE_OPTIONS_KEY = "options";
+    private static final String OPTIONS_KEY = "options";
     private static final String MOBILE_COUNTRY_CODE_KEY = "mobileCountryCode";
     private static final String MOBILE_PHONE_NUMBER_KEY = "mobileNumber";
     private static final String SMS_CODE_KEY = "smsCode";
@@ -81,12 +81,17 @@ public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> im
     protected void build(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
         super.build(json, paymentMethodNonceJson);
 
-        JSONObject baseOptionsJson = new JSONObject();
-        baseOptionsJson.put(SMS_CODE_KEY, mSmsCode);
-        baseOptionsJson.put(ENROLLMENT_ID_KEY, mEnrollmentId);
+        JSONObject options = paymentMethodNonceJson.optJSONObject(OPTIONS_KEY);
+        if (options == null) {
+            options = new JSONObject();
+            paymentMethodNonceJson.put(OPTIONS_KEY, options);
+        }
+        JSONObject unionPayEnrollment = new JSONObject();
+        unionPayEnrollment.put(SMS_CODE_KEY, mSmsCode);
+        unionPayEnrollment.put(ENROLLMENT_ID_KEY, mEnrollmentId);
+        options.put(UNIONPAY_ENROLLMENT_KEY, unionPayEnrollment);
 
         json.put(UNIONPAY_KEY, paymentMethodNonceJson);
-        json.put(BASE_OPTIONS_KEY, baseOptionsJson);
     }
 
     @Override
