@@ -4,23 +4,29 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
-public class TestConfigurationStringBuilder extends JSONBuilder {
+public class TestConfigurationBuilder extends JSONBuilder {
 
-    public TestConfigurationStringBuilder() {
+    public static <T> T basicConfig() {
+        return new TestConfigurationBuilder().buildConfiguration();
+    }
+
+    public TestConfigurationBuilder() {
         super();
         clientApiUrl("client_api_url");
         environment("test");
         merchantId("integration_merchant_id");
     }
 
-    public TestConfigurationStringBuilder clientApiUrl(String clientApiUrl) {
+    public TestConfigurationBuilder clientApiUrl(String clientApiUrl) {
         put(clientApiUrl);
         return this;
     }
 
-    public TestConfigurationStringBuilder challenges(String... challenges) {
+    public TestConfigurationBuilder challenges(String... challenges) {
         JSONArray challengesJson = new JSONArray();
         for (String challenge : challenges) {
             challengesJson.put(challenge);
@@ -29,39 +35,32 @@ public class TestConfigurationStringBuilder extends JSONBuilder {
         return this;
     }
 
-    public TestConfigurationStringBuilder environment(String environment) {
+    public TestConfigurationBuilder environment(String environment) {
         put(environment);
         return this;
     }
 
-    public TestConfigurationStringBuilder merchantId(String merchantId) {
+    public TestConfigurationBuilder merchantId(String merchantId) {
         put(merchantId);
         return this;
     }
 
-    public TestConfigurationStringBuilder merchantAccountId(String merchantAccountId) {
+    public TestConfigurationBuilder merchantAccountId(String merchantAccountId) {
         put(merchantAccountId);
         return this;
     }
 
-    public TestConfigurationStringBuilder paypalEnabled(boolean paypalEnabled) {
-        put(Boolean.toString(paypalEnabled));
-        paypal(new TestPayPalConfigurationBuilder()
-                .environment("test")
-                .displayName("displayName")
-                .clientId("clientId")
-                .privacyUrl("http://privacy.com")
-                .userAgreementUrl("http://user.agreement.com"));
-
-        return this;
-    }
-
-    public TestConfigurationStringBuilder threeDSecureEnabled(boolean threeDSecureEnabled) {
+    public TestConfigurationBuilder threeDSecureEnabled(boolean threeDSecureEnabled) {
         put(Boolean.toString(threeDSecureEnabled));
         return this;
     }
 
-    public TestConfigurationStringBuilder analytics(String analyticsUrl) {
+    public TestConfigurationBuilder withAnalytics() {
+        analytics("http://example.com");
+        return this;
+    }
+
+    public TestConfigurationBuilder analytics(String analyticsUrl) {
         try {
             JSONObject analyticsJson = new JSONObject();
             analyticsJson.put("url", analyticsUrl);
@@ -70,35 +69,91 @@ public class TestConfigurationStringBuilder extends JSONBuilder {
         return this;
     }
 
-    public TestConfigurationStringBuilder paypal(TestPayPalConfigurationBuilder builder) {
+    public TestConfigurationBuilder paypal(TestPayPalConfigurationBuilder builder) {
+        try {
+            paypalEnabled(true);
+            put(new JSONObject(builder.build()));
+        } catch (JSONException ignored) {}
+        return this;
+    }
+
+    public TestConfigurationBuilder paypalEnabled(boolean enabled) {
+        put(enabled);
+        return this;
+    }
+
+    public TestConfigurationBuilder androidPay(TestAndroidPayConfigurationBuilder builder) {
         try {
             put(new JSONObject(builder.build()));
         } catch (JSONException ignored) {}
         return this;
     }
 
-    public TestConfigurationStringBuilder androidPay(TestAndroidPayConfigurationBuilder builder) {
-        try {
-            put(new JSONObject(builder.build()));
-        } catch (JSONException ignored) {}
-        return this;
-    }
-
-    public TestConfigurationStringBuilder payWithVenmo(TestVenmoConfigurationBuilder venmoConfigurationBuilder) {
+    public TestConfigurationBuilder payWithVenmo(TestVenmoConfigurationBuilder venmoConfigurationBuilder) {
         try {
             put(new JSONObject(venmoConfigurationBuilder.build()));
         } catch(JSONException ignored) {}
         return this;
     }
 
-    public TestConfigurationStringBuilder kount(TestKountConfigurationBuilder kountConfigurationBuilder) {
+    public TestConfigurationBuilder kount(TestKountConfigurationBuilder kountConfigurationBuilder) {
         try {
             put(new JSONObject(kountConfigurationBuilder.build()));
         } catch (JSONException ignored) {}
         return this;
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> T buildConfiguration() {
+        try {
+            Class configuration = Class.forName("com.braintreepayments.api.models.Configuration");
+            Method fromJson = configuration.getDeclaredMethod("fromJson", String.class);
+            return (T) fromJson.invoke(null, build());
+        } catch (NoSuchMethodException ignored) {}
+        catch (InvocationTargetException ignored) {}
+        catch (IllegalAccessException ignored) {}
+        catch (ClassNotFoundException ignored) {}
+
+        return (T) build();
+    }
+
+    public TestVenmoConfigurationBuilder payWithVenmo() {
+        try {
+            return new TestVenmoConfigurationBuilder(mJsonBody.getJSONObject("payWithVenmo"));
+        } catch (JSONException ignored) {}
+        return new TestVenmoConfigurationBuilder();
+    }
+
+    public TestAndroidPayConfigurationBuilder androidPay() {
+        try {
+            return new TestAndroidPayConfigurationBuilder(mJsonBody.getJSONObject("androidPay"));
+        } catch (JSONException ignored) {}
+        return new TestAndroidPayConfigurationBuilder();
+    }
+
+    public TestPayPalConfigurationBuilder paypal() {
+        try {
+            return new TestPayPalConfigurationBuilder(mJsonBody.getJSONObject("paypal"));
+        } catch (JSONException ignored) {}
+        return new TestPayPalConfigurationBuilder(true);
+    }
+
+    public TestKountConfigurationBuilder kount() {
+        try {
+            return new TestKountConfigurationBuilder(mJsonBody.getJSONObject("kount"));
+        } catch (JSONException ignored) {}
+        return new TestKountConfigurationBuilder();
+    }
+
     public static class TestVenmoConfigurationBuilder extends JSONBuilder {
+
+        public TestVenmoConfigurationBuilder() {
+            super();
+        }
+
+        protected TestVenmoConfigurationBuilder(JSONObject json) {
+            super(json);
+        }
 
         public TestVenmoConfigurationBuilder accessToken(String accessToken) {
             put(accessToken);
@@ -117,6 +172,22 @@ public class TestConfigurationStringBuilder extends JSONBuilder {
     }
 
     public static class TestPayPalConfigurationBuilder extends JSONBuilder {
+
+        public TestPayPalConfigurationBuilder(boolean enabled) {
+            super();
+
+            if (enabled) {
+                environment("test");
+                displayName("displayName");
+                clientId("clientId");
+                privacyUrl("http://privacy.gov");
+                userAgreementUrl("http://i.agree.biz");
+            }
+        }
+
+        protected TestPayPalConfigurationBuilder(JSONObject json) {
+            super(json);
+        }
 
         public TestPayPalConfigurationBuilder displayName(String displayName) {
             put(displayName);
@@ -166,6 +237,14 @@ public class TestConfigurationStringBuilder extends JSONBuilder {
 
     public static class TestAndroidPayConfigurationBuilder extends JSONBuilder {
 
+        public TestAndroidPayConfigurationBuilder() {
+            super();
+        }
+
+        protected TestAndroidPayConfigurationBuilder(JSONObject json) {
+            super(json);
+        }
+
         public TestAndroidPayConfigurationBuilder enabled(boolean enabled) {
             put(Boolean.toString(enabled));
             return this;
@@ -193,6 +272,14 @@ public class TestConfigurationStringBuilder extends JSONBuilder {
     }
 
     public static class TestKountConfigurationBuilder extends JSONBuilder {
+
+        public TestKountConfigurationBuilder() {
+            super();
+        }
+
+        protected TestKountConfigurationBuilder(JSONObject json) {
+            super(json);
+        }
 
         public TestKountConfigurationBuilder enabled(boolean enabled) {
             put(enabled);

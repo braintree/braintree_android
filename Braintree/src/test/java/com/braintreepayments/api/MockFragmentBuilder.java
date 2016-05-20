@@ -7,6 +7,7 @@ import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.testutils.TestConfigurationBuilder;
 
 import org.json.JSONException;
 import org.mockito.invocation.InvocationOnMock;
@@ -29,6 +30,7 @@ public class MockFragmentBuilder {
 
     public MockFragmentBuilder() {
         mContext = RuntimeEnvironment.application;
+        mConfiguration = TestConfigurationBuilder.basicConfig();
     }
 
     public MockFragmentBuilder context(Context context) {

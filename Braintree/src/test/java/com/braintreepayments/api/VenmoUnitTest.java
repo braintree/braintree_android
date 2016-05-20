@@ -7,11 +7,11 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
-import com.braintreepayments.api.internal.TestConfigurationBuilder;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.VenmoAccountNonce;
 import com.braintreepayments.api.test.VenmoMockContext;
-import com.braintreepayments.testutils.TestConfigurationStringBuilder.TestVenmoConfigurationBuilder;
+import com.braintreepayments.testutils.TestConfigurationBuilder;
+import com.braintreepayments.testutils.TestConfigurationBuilder.TestVenmoConfigurationBuilder;
 
 import org.json.JSONException;
 import org.junit.Test;
@@ -73,7 +73,7 @@ public class VenmoUnitTest {
                         .accessToken("access-token")
                         .merchantId("merchant_id")
                         .environment("environment"))
-                .build(Configuration.class);
+                .buildConfiguration();
 
         Intent intent = Venmo.getLaunchIntent(configuration.getPayWithVenmo());
 
@@ -87,8 +87,7 @@ public class VenmoUnitTest {
 
     @Test
     public void authorizeAccount_postsExceptionWhenNotEnabled() throws JSONException {
-        Configuration configuration = new TestConfigurationBuilder()
-                .build(Configuration.class);
+        Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
 
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(configuration)
@@ -109,7 +108,7 @@ public class VenmoUnitTest {
                         .accessToken("access-token")
                         .merchantId("merchant_id")
                         .environment("environment"))
-                 .build(Configuration.class);
+                 .buildConfiguration();
 
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(configuration)
@@ -130,7 +129,8 @@ public class VenmoUnitTest {
                         .accessToken("access-token")
                         .merchantId("merchant_id")
                         .environment("environment"))
-                .build(Configuration.class);
+                .buildConfiguration();
+
         Context context = new VenmoMockContext()
                 .venmoInstalled()
                 .whitelistValue("false")
@@ -156,7 +156,8 @@ public class VenmoUnitTest {
                         .accessToken("access-token")
                         .merchantId("merchant_id")
                         .environment("environment"))
-                .build(Configuration.class);
+                .buildConfiguration();
+
         Context context = new VenmoMockContext()
                 .venmoInstalled()
                 .whitelistValue("true")
@@ -187,7 +188,8 @@ public class VenmoUnitTest {
                         .accessToken("access-token")
                         .merchantId("merchant_id")
                         .environment("environment"))
-                .build(Configuration.class);
+                .buildConfiguration();
+
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(configuration)
                 .build();
@@ -204,7 +206,8 @@ public class VenmoUnitTest {
                         .accessToken("access-token")
                         .merchantId("merchant_id")
                         .environment("environment"))
-                .build(Configuration.class);
+                .buildConfiguration();
+
         Context context = new VenmoMockContext()
                 .whitelistValue("true")
                 .venmoInstalled()
@@ -227,7 +230,8 @@ public class VenmoUnitTest {
                         .accessToken("access-token")
                         .merchantId("merchant_id")
                         .environment("environment"))
-                .build(Configuration.class);
+                .buildConfiguration();
+
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(configuration)
                 .build();

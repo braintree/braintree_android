@@ -17,13 +17,12 @@ import com.braintreepayments.api.interfaces.QueuedCallback;
 import com.braintreepayments.api.internal.AnalyticsDatabase;
 import com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils;
 import com.braintreepayments.api.internal.AnalyticsIntentService;
-import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.testutils.FragmentTestActivity;
-import com.braintreepayments.testutils.TestConfigurationStringBuilder;
+import com.braintreepayments.testutils.TestConfigurationBuilder;
 
 import org.json.JSONException;
 import org.junit.Before;
@@ -43,12 +42,12 @@ import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.verifyAnalyticsEvent;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static com.braintreepayments.testutils.TestConfigurationBuilder.basicConfig;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -65,7 +64,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.doAnswer;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
-import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
@@ -154,8 +152,7 @@ public class BraintreeFragmentUnitTest {
     @Test
     public void onCreate_doesNotCallFetchConfigurationWhenConfigurationIsNotNull() throws InvalidArgumentException {
         mockStatic(ConfigurationManager.class);
-        Configuration configuration = mock(Configuration.class);
-        when(configuration.getAnalytics()).thenReturn(mock(AnalyticsConfiguration.class));
+        Configuration configuration = new TestConfigurationBuilder().withAnalytics().buildConfiguration();
 
         Robolectric.getForegroundThreadScheduler().pause();
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
@@ -177,10 +174,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void sendEvent_addsEventToDatabase() throws InvalidArgumentException {
-        AnalyticsConfiguration analyticsConfiguration = mock(AnalyticsConfiguration.class);
-        when(analyticsConfiguration.isEnabled()).thenReturn(true);
-        Configuration configuration = mock(Configuration.class);
-        when(configuration.getAnalytics()).thenReturn(analyticsConfiguration);
+        Configuration configuration = new TestConfigurationBuilder().withAnalytics().buildConfiguration();
 
         BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY));
         when(fragment.getConfiguration()).thenReturn(configuration);
@@ -191,13 +185,8 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void sendEvent_doesNothingIfAnalyticsNotEnabled() throws InvalidArgumentException {
-        AnalyticsConfiguration analyticsConfiguration = mock(AnalyticsConfiguration.class);
-        when(analyticsConfiguration.isEnabled()).thenReturn(false);
-        Configuration configuration = mock(Configuration.class);
-        when(configuration.getAnalytics()).thenReturn(analyticsConfiguration);
-
         BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY));
-        when(fragment.getConfiguration()).thenReturn(configuration);
+        when(fragment.getConfiguration()).thenReturn((Configuration) basicConfig());
         fragment.sendAnalyticsEvent("test.event");
 
         AnalyticsDatabase db = AnalyticsDatabase.getInstance(mActivity);
@@ -208,7 +197,6 @@ public class BraintreeFragmentUnitTest {
     public void postsAnErrorWhenFetchingConfigurationFails() throws InvalidArgumentException {
         mockConfigurationManager(new Exception("Configuration error"));
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        final CountDownLatch latch = new CountDownLatch(2);
         final AtomicInteger calls = new AtomicInteger(0);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
@@ -233,7 +221,7 @@ public class BraintreeFragmentUnitTest {
     @Test
     public void onSaveInstanceState_savesState() throws InvalidArgumentException, JSONException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        Configuration configuration = Configuration.fromJson(new TestConfigurationStringBuilder().build());
+        Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
         fragment.mConfiguration = configuration;
         Bundle bundle = new Bundle();
 
@@ -651,7 +639,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void onStop_flushesAnalyticsEvents() throws JSONException, InvalidArgumentException {
-        String configuration = new TestConfigurationStringBuilder().analytics("analytics_url").build();
+        String configuration = new TestConfigurationBuilder().withAnalytics().build();
         mockConfigurationManager(Configuration.fromJson(configuration));
 
         Robolectric.getForegroundThreadScheduler().pause();

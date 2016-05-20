@@ -5,19 +5,14 @@ import org.json.JSONObject;
 
 public abstract class JSONBuilder {
 
-    private JSONObject mJsonBody;
+    protected JSONObject mJsonBody;
+
+    protected JSONBuilder(JSONObject json) {
+        mJsonBody = json;
+    }
 
     public JSONBuilder() {
         mJsonBody = new JSONObject();
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T build(Class<T> clazz) {
-        if (clazz.equals(String.class)) {
-            return (T) build();
-        } else {
-            throw new RuntimeException("Expecting String");
-        }
     }
 
     public String build() {
