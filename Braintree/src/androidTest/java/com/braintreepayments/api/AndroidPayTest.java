@@ -18,8 +18,8 @@ import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.BraintreeActivityTestRule;
-import com.braintreepayments.testutils.TestConfigurationBuilder;
-import com.braintreepayments.testutils.TestConfigurationBuilder.TestAndroidPayConfigurationBuilder;
+import com.braintreepayments.testutils.TestConfigurationStringBuilder;
+import com.braintreepayments.testutils.TestConfigurationStringBuilder.TestAndroidPayConfigurationBuilder;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.identity.intents.model.CountrySpecification;
 import com.google.android.gms.wallet.Cart;
@@ -310,7 +310,7 @@ public class AndroidPayTest {
     }
 
     private BraintreeFragment getSetupFragment() {
-        String configuration = new TestConfigurationBuilder()
+        String configuration = new TestConfigurationStringBuilder()
                 .merchantId("android-pay-merchant-id")
                 .analytics("url")
                 .androidPay(new TestAndroidPayConfigurationBuilder()

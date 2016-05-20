@@ -17,7 +17,7 @@ import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.test.BraintreePaymentActivityTestRunner;
 import com.braintreepayments.cardform.R;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
-import com.braintreepayments.testutils.TestConfigurationBuilder;
+import com.braintreepayments.testutils.TestConfigurationStringBuilder;
 
 import org.junit.After;
 import org.junit.Test;
@@ -128,7 +128,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
                 .withAnalytics()
                 .build();
 
-        String config = new TestConfigurationBuilder()
+        String config = new TestConfigurationStringBuilder()
                 .paypalEnabled(true)
                 .analytics("http://analytics.com")
                 .build();
@@ -156,7 +156,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
                 .withAnalytics()
                 .build();
 
-        String config = new TestConfigurationBuilder()
+        String config = new TestConfigurationStringBuilder()
                 .paypalEnabled(true)
                 .analytics("http://analytics.com")
                 .build();

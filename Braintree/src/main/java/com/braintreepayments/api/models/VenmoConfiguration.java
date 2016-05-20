@@ -17,10 +17,14 @@ import org.json.JSONObject;
 public class VenmoConfiguration {
 
     private static final String ACCESS_TOKEN_KEY = "accessToken";
+    private static final String ENVIRONMENT_KEY = "environment";
+    private static final String MERCHANT_ID_KEY = "merchantId";
     private static final Uri VENMO_AUTHORITY_URI =
             Uri.parse("content://com.venmo.whitelistprovider");
 
     private String mAccessToken;
+    private String mEnvironment;
+    private String mMerchantId;
 
     /**
      * Parses the Pay with Venmo configuration from json.
@@ -36,15 +40,31 @@ public class VenmoConfiguration {
 
         VenmoConfiguration venmoConfiguration = new VenmoConfiguration();
         venmoConfiguration.mAccessToken = json.optString(ACCESS_TOKEN_KEY, "");
+        venmoConfiguration.mEnvironment = json.optString(ENVIRONMENT_KEY, "");
+        venmoConfiguration.mMerchantId = json.optString(MERCHANT_ID_KEY, "");
 
         return venmoConfiguration;
     }
 
     /**
-     * @return The access token to use Pay with Venmo
+     * @return The access token to use Pay with Venmo.
      */
     public String getAccessToken() {
         return mAccessToken;
+    }
+
+    /**
+     * @return The merchant Id associated with this merchant's Pay with Venmo integration.
+     */
+    public String getMerchantId() {
+        return mMerchantId;
+    }
+
+    /**
+     * @return The Pay with Venmo environment the merchant is running in.
+     */
+    public String getEnvironment() {
+        return mEnvironment;
     }
 
     /**

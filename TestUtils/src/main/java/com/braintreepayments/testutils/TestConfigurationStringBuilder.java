@@ -6,41 +6,41 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
-public class TestConfigurationBuilder extends JSONBuilder {
+public class TestConfigurationStringBuilder extends JSONBuilder {
 
-    public TestConfigurationBuilder() {
+    public TestConfigurationStringBuilder() {
         super();
         clientApiUrl("client_api_url");
         environment("test");
         merchantId("integration_merchant_id");
     }
 
-    public TestConfigurationBuilder clientApiUrl(String clientApiUrl) {
+    public TestConfigurationStringBuilder clientApiUrl(String clientApiUrl) {
         put(clientApiUrl);
         return this;
     }
 
-    public TestConfigurationBuilder challenges(String... challenges) {
+    public TestConfigurationStringBuilder challenges(String... challenges) {
         put(Arrays.toString(challenges));
         return this;
     }
 
-    public TestConfigurationBuilder environment(String environment) {
+    public TestConfigurationStringBuilder environment(String environment) {
         put(environment);
         return this;
     }
 
-    public TestConfigurationBuilder merchantId(String merchantId) {
+    public TestConfigurationStringBuilder merchantId(String merchantId) {
         put(merchantId);
         return this;
     }
 
-    public TestConfigurationBuilder merchantAccountId(String merchantAccountId) {
+    public TestConfigurationStringBuilder merchantAccountId(String merchantAccountId) {
         put(merchantAccountId);
         return this;
     }
 
-    public TestConfigurationBuilder paypalEnabled(boolean paypalEnabled) {
+    public TestConfigurationStringBuilder paypalEnabled(boolean paypalEnabled) {
         put(Boolean.toString(paypalEnabled));
         paypal(new TestPayPalConfigurationBuilder()
                 .environment("test")
@@ -52,12 +52,12 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return this;
     }
 
-    public TestConfigurationBuilder threeDSecureEnabled(boolean threeDSecureEnabled) {
+    public TestConfigurationStringBuilder threeDSecureEnabled(boolean threeDSecureEnabled) {
         put(Boolean.toString(threeDSecureEnabled));
         return this;
     }
 
-    public TestConfigurationBuilder analytics(String analyticsUrl) {
+    public TestConfigurationStringBuilder analytics(String analyticsUrl) {
         try {
             JSONObject analyticsJson = new JSONObject();
             analyticsJson.put("url", analyticsUrl);
@@ -66,34 +66,50 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return this;
     }
 
-    public TestConfigurationBuilder paypal(TestPayPalConfigurationBuilder builder) {
+    public TestConfigurationStringBuilder paypal(TestPayPalConfigurationBuilder builder) {
         try {
             put(new JSONObject(builder.build()));
         } catch (JSONException ignored) {}
         return this;
     }
 
-    public TestConfigurationBuilder androidPay(TestAndroidPayConfigurationBuilder builder) {
+    public TestConfigurationStringBuilder androidPay(TestAndroidPayConfigurationBuilder builder) {
         try {
             put(new JSONObject(builder.build()));
         } catch (JSONException ignored) {}
         return this;
     }
 
-    public TestConfigurationBuilder payWithVenmo(String accessToken) {
+    public TestConfigurationStringBuilder payWithVenmo(TestVenmoConfigurationBuilder venmoConfigurationBuilder) {
         try {
-            JSONObject venmoJson = new JSONObject();
-            venmoJson.put("accessToken", accessToken);
-            put(venmoJson);
-        } catch (JSONException ignored) {}
+            put(new JSONObject(venmoConfigurationBuilder.build()));
+        } catch(JSONException ignored) {}
         return this;
     }
 
-    public TestConfigurationBuilder kount(TestKountConfigurationBuilder kountConfigurationBuilder) {
+    public TestConfigurationStringBuilder kount(TestKountConfigurationBuilder kountConfigurationBuilder) {
         try {
             put(new JSONObject(kountConfigurationBuilder.build()));
         } catch (JSONException ignored) {}
         return this;
+    }
+
+    public static class TestVenmoConfigurationBuilder extends JSONBuilder {
+
+        public TestVenmoConfigurationBuilder accessToken(String accessToken) {
+            put(accessToken);
+            return this;
+        }
+
+        public TestVenmoConfigurationBuilder merchantId(String merchantId) {
+            put(merchantId);
+            return this;
+        }
+
+        public TestVenmoConfigurationBuilder environment(String environment) {
+            put(environment);
+            return this;
+        }
     }
 
     public static class TestPayPalConfigurationBuilder extends JSONBuilder {

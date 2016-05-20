@@ -23,7 +23,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.testutils.FragmentTestActivity;
-import com.braintreepayments.testutils.TestConfigurationBuilder;
+import com.braintreepayments.testutils.TestConfigurationStringBuilder;
 
 import org.json.JSONException;
 import org.junit.Before;
@@ -628,7 +628,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void onStop_flushesAnalyticsEvents() throws JSONException, InvalidArgumentException {
-        String configuration = new TestConfigurationBuilder().analytics("analytics_url").build();
+        String configuration = new TestConfigurationStringBuilder().analytics("analytics_url").build();
         mockConfigurationManager(Configuration.fromJson(configuration));
 
         Robolectric.getForegroundThreadScheduler().pause();

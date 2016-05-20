@@ -3,9 +3,10 @@ package com.braintreepayments.api;
 import android.text.TextUtils;
 
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
+import com.braintreepayments.api.internal.TestConfigurationBuilder;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.testutils.TestConfigurationBuilder;
-import com.braintreepayments.testutils.TestConfigurationBuilder.TestKountConfigurationBuilder;
+import com.braintreepayments.testutils.TestConfigurationStringBuilder;
+import com.braintreepayments.testutils.TestConfigurationStringBuilder.TestKountConfigurationBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,7 +68,7 @@ public class DataCollectorTest {
 
     @Test
     public void collectDeviceData_withListener() throws InterruptedException {
-        String configuration = new TestConfigurationBuilder()
+        String configuration = new TestConfigurationStringBuilder()
                 .kount(new TestKountConfigurationBuilder()
                         .enabled(true)
                         .kountMerchantId("500000"))

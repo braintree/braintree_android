@@ -48,12 +48,12 @@ public class Venmo {
         return new Intent().setComponent(new ComponentName(PACKAGE_NAME, PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
     }
 
-    static Intent getLaunchIntent(Configuration configuration) {
+    static Intent getLaunchIntent(VenmoConfiguration venmoConfiguration) {
         return getVenmoIntent()
-                .putExtra(EXTRA_MERCHANT_ID, configuration.getMerchantId())
+                .putExtra(EXTRA_MERCHANT_ID, venmoConfiguration.getMerchantId())
                 .putExtra(EXTRA_SDK_VERSION, BuildConfig.VERSION_NAME)
-                .putExtra(EXTRA_ACCESS_TOKEN, configuration.getPayWithVenmo().getAccessToken())
-                .putExtra(EXTRA_ENVIRONMENT, configuration.getEnvironment());
+                .putExtra(EXTRA_ACCESS_TOKEN, venmoConfiguration.getAccessToken())
+                .putExtra(EXTRA_ENVIRONMENT, venmoConfiguration.getEnvironment());
     }
 
     /**
@@ -68,16 +68,15 @@ public class Venmo {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                authorizeAccount(fragment, configuration);
+                authorizeAccount(fragment, configuration.getPayWithVenmo());
             }
         });
     }
 
-    static void authorizeAccount(BraintreeFragment fragment, Configuration configuration) {
+    static void authorizeAccount(BraintreeFragment fragment, VenmoConfiguration venmoConfiguration) {
         fragment.sendAnalyticsEvent("pay-with-venmo.selected");
 
         String exceptionMessage = "";
-        VenmoConfiguration venmoConfiguration = configuration.getPayWithVenmo();
         if(!venmoConfiguration.isAccessTokenValid()) {
             exceptionMessage = "Venmo is not enabled";
         } else if (!Venmo.isVenmoInstalled(fragment.getApplicationContext())) {
@@ -90,7 +89,7 @@ public class Venmo {
             fragment.postCallback(new AppSwitchNotAvailableException(exceptionMessage));
             fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
         } else {
-            fragment.startActivityForResult(Venmo.getLaunchIntent(configuration), VENMO_REQUEST_CODE);
+            fragment.startActivityForResult(Venmo.getLaunchIntent(venmoConfiguration), VENMO_REQUEST_CODE);
             fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
         }
     }

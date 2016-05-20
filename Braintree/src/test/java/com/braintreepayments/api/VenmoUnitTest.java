@@ -2,16 +2,16 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
+import com.braintreepayments.api.internal.TestConfigurationBuilder;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.VenmoAccountNonce;
-import com.braintreepayments.api.models.VenmoConfiguration;
 import com.braintreepayments.api.test.VenmoMockContext;
+import com.braintreepayments.testutils.TestConfigurationStringBuilder.TestVenmoConfigurationBuilder;
 
 import org.json.JSONException;
 import org.junit.Test;
@@ -23,12 +23,9 @@ import org.robolectric.RobolectricGradleTestRunner;
 import static com.braintreepayments.api.internal.SignatureVerificationUnitTestUtils.disableSignatureVerification;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricGradleTestRunner.class)
 public class VenmoUnitTest {
@@ -71,14 +68,14 @@ public class VenmoUnitTest {
 
     @Test
     public void containsCorrectVenmoExtras() throws JSONException {
-        Configuration configuration = mock(Configuration.class);
-        VenmoConfiguration venmoConfiguration = mock(VenmoConfiguration.class);
-        when(configuration.getPayWithVenmo()).thenReturn(venmoConfiguration);
-        when(configuration.getMerchantId()).thenReturn("merchant_id");
-        when(venmoConfiguration.getAccessToken()).thenReturn("access-token");
-        when(configuration.getEnvironment()).thenReturn("environment");
+        Configuration configuration = new TestConfigurationBuilder()
+                .payWithVenmo(new TestVenmoConfigurationBuilder()
+                        .accessToken("access-token")
+                        .merchantId("merchant_id")
+                        .environment("environment"))
+                .build(Configuration.class);
 
-        Intent intent = Venmo.getLaunchIntent(configuration);
+        Intent intent = Venmo.getLaunchIntent(configuration.getPayWithVenmo());
 
         assertEquals(new ComponentName("com.venmo", "com.venmo.controller.SetupMerchantActivity"),
                 intent.getComponent());
@@ -89,17 +86,15 @@ public class VenmoUnitTest {
     }
 
     @Test
-    public void authorizeAccount_postsExceptionWhenNotEnabled() {
-        Configuration configuration = mock(Configuration.class);
-        VenmoConfiguration venmoConfiguration = mock(VenmoConfiguration.class);
+    public void authorizeAccount_postsExceptionWhenNotEnabled() throws JSONException {
+        Configuration configuration = new TestConfigurationBuilder()
+                .build(Configuration.class);
+
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(configuration)
                 .build();
-        when(configuration.getMerchantId()).thenReturn("merchant_id");
-        when(configuration.getEnvironment()).thenReturn("environment");
-        when(configuration.getPayWithVenmo()).thenReturn(venmoConfiguration);
 
-        Venmo.authorizeAccount(fragment, configuration);
+        Venmo.authorizeAccount(fragment, configuration.getPayWithVenmo());
 
         ArgumentCaptor<AppSwitchNotAvailableException> captor =
                 ArgumentCaptor.forClass(AppSwitchNotAvailableException.class);
@@ -109,19 +104,18 @@ public class VenmoUnitTest {
 
     @Test
     public void authorizeAccount_postsExceptionWhenNotInstalled() {
-        VenmoConfiguration venmoConfiguration = mock(VenmoConfiguration.class);
-        when(venmoConfiguration.getAccessToken()).thenReturn("access-token");
-        when(venmoConfiguration.isAccessTokenValid()).thenReturn(true);
-        when(venmoConfiguration.isVenmoWhitelisted(any(ContentResolver.class))).thenReturn(true);
-        Configuration configuration = mock(Configuration.class);
-        when(configuration.getMerchantId()).thenReturn("merchant_id");
-        when(configuration.getEnvironment()).thenReturn("environment");
-        when(configuration.getPayWithVenmo()).thenReturn(venmoConfiguration);
+         Configuration configuration = new TestConfigurationBuilder()
+                .payWithVenmo(new TestVenmoConfigurationBuilder()
+                        .accessToken("access-token")
+                        .merchantId("merchant_id")
+                        .environment("environment"))
+                 .build(Configuration.class);
+
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(configuration)
                 .build();
 
-        Venmo.authorizeAccount(fragment, configuration);
+        Venmo.authorizeAccount(fragment, configuration.getPayWithVenmo());
 
         ArgumentCaptor<AppSwitchNotAvailableException> captor =
                 ArgumentCaptor.forClass(AppSwitchNotAvailableException.class);
@@ -131,16 +125,15 @@ public class VenmoUnitTest {
 
     @Test
     public void authorizeAccount_postsExceptionWhenNotWhitelisted() {
-        Configuration configuration = mock(Configuration.class);
-        VenmoConfiguration venmoConfiguration = mock(VenmoConfiguration.class);
-        when(venmoConfiguration.getAccessToken()).thenReturn("access-token");
-        when(venmoConfiguration.isAccessTokenValid()).thenReturn(true);
-        when(configuration.getMerchantId()).thenReturn("merchant_id");
-        when(configuration.getEnvironment()).thenReturn("environment");
-        when(configuration.getPayWithVenmo()).thenReturn(venmoConfiguration);
+        Configuration configuration = new TestConfigurationBuilder()
+                .payWithVenmo(new TestVenmoConfigurationBuilder()
+                        .accessToken("access-token")
+                        .merchantId("merchant_id")
+                        .environment("environment"))
+                .build(Configuration.class);
         Context context = new VenmoMockContext()
                 .venmoInstalled()
-                .whitelistValue("true")
+                .whitelistValue("false")
                 .build();
         disableSignatureVerification();
         BraintreeFragment fragment = new MockFragmentBuilder()
@@ -148,7 +141,7 @@ public class VenmoUnitTest {
                 .configuration(configuration)
                 .build();
 
-        Venmo.authorizeAccount(fragment, configuration);
+        Venmo.authorizeAccount(fragment, configuration.getPayWithVenmo());
 
         ArgumentCaptor<AppSwitchNotAvailableException> captor =
                 ArgumentCaptor.forClass(AppSwitchNotAvailableException.class);
@@ -158,14 +151,12 @@ public class VenmoUnitTest {
 
     @Test(timeout = 1000)
     public void performAppSwitch_appSwitchesWithVenmoLaunchIntent() {
-        VenmoConfiguration venmoConfiguration = mock(VenmoConfiguration.class);
-        when(venmoConfiguration.getAccessToken()).thenReturn("access-token");
-        when(venmoConfiguration.isAccessTokenValid()).thenReturn(true);
-        when(venmoConfiguration.isVenmoWhitelisted(any(ContentResolver.class))).thenReturn(true);
-        Configuration configuration = mock(Configuration.class);
-        when(configuration.getMerchantId()).thenReturn("merchant_id");
-        when(configuration.getEnvironment()).thenReturn("environment");
-        when(configuration.getPayWithVenmo()).thenReturn(venmoConfiguration);
+        Configuration configuration = new TestConfigurationBuilder()
+                .payWithVenmo(new TestVenmoConfigurationBuilder()
+                        .accessToken("access-token")
+                        .merchantId("merchant_id")
+                        .environment("environment"))
+                .build(Configuration.class);
         Context context = new VenmoMockContext()
                 .venmoInstalled()
                 .whitelistValue("true")
@@ -176,7 +167,7 @@ public class VenmoUnitTest {
                 .configuration(configuration)
                 .build();
 
-        Venmo.authorizeAccount(fragment, configuration);
+        Venmo.authorizeAccount(fragment, configuration.getPayWithVenmo());
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(fragment).startActivityForResult(captor.capture(), eq(Venmo.VENMO_REQUEST_CODE));
@@ -191,10 +182,12 @@ public class VenmoUnitTest {
 
     @Test
     public void performAppSwitch_sendsAnalyticsEvent() {
-        VenmoConfiguration venmoConfiguration = mock(VenmoConfiguration.class);
-        when(venmoConfiguration.getAccessToken()).thenReturn("access-token");
-        Configuration configuration = mock(Configuration.class);
-        when(configuration.getPayWithVenmo()).thenReturn(venmoConfiguration);
+        Configuration configuration = new TestConfigurationBuilder()
+                .payWithVenmo(new TestVenmoConfigurationBuilder()
+                        .accessToken("access-token")
+                        .merchantId("merchant_id")
+                        .environment("environment"))
+                .build(Configuration.class);
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(configuration)
                 .build();
@@ -206,11 +199,12 @@ public class VenmoUnitTest {
 
     @Test
     public void performAppSwitch_sendsAnalyticsEventWhenStarted() {
-        VenmoConfiguration venmoConfiguration = mock(VenmoConfiguration.class);
-        when(venmoConfiguration.isAccessTokenValid()).thenReturn(true);
-        when(venmoConfiguration.isVenmoWhitelisted(any(ContentResolver.class))).thenReturn(true);
-        Configuration configuration = mock(Configuration.class);
-        when(configuration.getPayWithVenmo()).thenReturn(venmoConfiguration);
+        Configuration configuration = new TestConfigurationBuilder()
+                .payWithVenmo(new TestVenmoConfigurationBuilder()
+                        .accessToken("access-token")
+                        .merchantId("merchant_id")
+                        .environment("environment"))
+                .build(Configuration.class);
         Context context = new VenmoMockContext()
                 .whitelistValue("true")
                 .venmoInstalled()
@@ -220,7 +214,7 @@ public class VenmoUnitTest {
                 .configuration(configuration)
                 .build();
 
-        Venmo.authorizeAccount(fragment, configuration);
+        Venmo.authorizeAccount(fragment, configuration.getPayWithVenmo());
 
         verify(fragment).sendAnalyticsEvent("pay-with-venmo.selected");
         verify(fragment).sendAnalyticsEvent("pay-with-venmo.app-switch.started");
@@ -228,15 +222,17 @@ public class VenmoUnitTest {
 
     @Test
     public void performAppSwitch_sendsAnalyticsEventWhenUnavailableAndPostException() {
-        VenmoConfiguration venmoConfiguration = mock(VenmoConfiguration.class);
-        when(venmoConfiguration.isAccessTokenValid()).thenReturn(true);
-        Configuration configuration = mock(Configuration.class);
-        when(configuration.getPayWithVenmo()).thenReturn(venmoConfiguration);
+        Configuration configuration = new TestConfigurationBuilder()
+                .payWithVenmo(new TestVenmoConfigurationBuilder()
+                        .accessToken("access-token")
+                        .merchantId("merchant_id")
+                        .environment("environment"))
+                .build(Configuration.class);
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(configuration)
                 .build();
 
-        Venmo.authorizeAccount(fragment, configuration);
+        Venmo.authorizeAccount(fragment, configuration.getPayWithVenmo());
 
         ArgumentCaptor<AppSwitchNotAvailableException> captor =
                 ArgumentCaptor.forClass(AppSwitchNotAvailableException.class);

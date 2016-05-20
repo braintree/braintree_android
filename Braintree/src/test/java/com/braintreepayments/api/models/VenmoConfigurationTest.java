@@ -30,6 +30,8 @@ public class VenmoConfigurationTest {
     @Test
     public void fromJson_parsesPayWithVenmoConfiguration() throws JSONException {
         assertEquals("access-token", mConfiguration.getPayWithVenmo().getAccessToken());
+        assertEquals("environment", mConfiguration.getPayWithVenmo().getEnvironment());
+        assertEquals("merchant-id", mConfiguration.getPayWithVenmo().getMerchantId());
     }
 
     @Test
