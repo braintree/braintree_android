@@ -1,5 +1,7 @@
 package com.braintreepayments.api.models;
 
+import android.text.TextUtils;
+
 import org.json.JSONObject;
 
 /**
@@ -7,10 +9,8 @@ import org.json.JSONObject;
  */
 public class KountConfiguration {
 
-    private final static String ENABLED_KEY = "enabled";
     private final static String KOUNT_MERCHANT_ID_KEY = "kountMerchantId";
 
-    private boolean mEnabled;
     private String mKountMerchantId;
 
     /**
@@ -26,8 +26,7 @@ public class KountConfiguration {
         }
 
         KountConfiguration kountConfiguration = new KountConfiguration();
-        kountConfiguration.mEnabled = json.optBoolean(ENABLED_KEY);
-        kountConfiguration.mKountMerchantId = json.optString(KOUNT_MERCHANT_ID_KEY, "0");
+        kountConfiguration.mKountMerchantId = json.optString(KOUNT_MERCHANT_ID_KEY, "");
 
         return kountConfiguration;
     }
@@ -36,7 +35,7 @@ public class KountConfiguration {
      * @return {@code true} if Kount is enabled, {@code false} otherwise.
      */
     public boolean isEnabled() {
-        return mEnabled;
+        return !TextUtils.isEmpty(mKountMerchantId);
     }
 
     /**

@@ -4,7 +4,6 @@
     "merchantId": "integration_merchant_id",
     "merchantAccountId": "integration_merchant_account_id",
     "kount": {
-        "enabled": true,
         "kountMerchantId": "600000"
     }
 }
