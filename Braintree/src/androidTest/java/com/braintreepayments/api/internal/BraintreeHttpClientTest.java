@@ -28,7 +28,6 @@ import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
@@ -271,22 +270,21 @@ public class BraintreeHttpClientTest {
 
     @Test(timeout = 5000)
     @MediumTest
-    public void getRequestSslCertificateSuccessfulInSandbox()
-            throws InterruptedException, InvalidArgumentException {
+    public void getRequestSslCertificateSuccessfulInSandbox() throws InterruptedException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
                 TokenizationKey.fromString(TOKENIZATION_KEY));
         httpClient.setBaseUrl("https://api.sandbox.braintreegateway.com");
 
-        httpClient.get("/wellness", new HttpResponseCallback() {
+        httpClient.get("/", new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
-                assertNotNull(responseBody);
-                mCountDownLatch.countDown();
+                fail("Request failed");
             }
 
             @Override
             public void failure(Exception exception) {
-                fail("Request failed");
+                assertTrue(exception instanceof AuthorizationException);
+                mCountDownLatch.countDown();
             }
         });
 
@@ -295,22 +293,21 @@ public class BraintreeHttpClientTest {
 
     @Test(timeout = 5000)
     @MediumTest
-    public void getRequestSslCertificateSuccessfulInProduction()
-            throws InterruptedException, InvalidArgumentException {
+    public void getRequestSslCertificateSuccessfulInProduction() throws InterruptedException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
                 TokenizationKey.fromString(TOKENIZATION_KEY));
         httpClient.setBaseUrl("https://api.braintreegateway.com");
 
-        httpClient.get("/wellness", new HttpResponseCallback() {
+        httpClient.get("/", new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
-                assertNotNull(responseBody);
-                mCountDownLatch.countDown();
+                fail("Request failed");
             }
 
             @Override
             public void failure(Exception exception) {
-                fail("Request failed");
+                assertTrue(exception instanceof AuthorizationException);
+                mCountDownLatch.countDown();
             }
         });
 
