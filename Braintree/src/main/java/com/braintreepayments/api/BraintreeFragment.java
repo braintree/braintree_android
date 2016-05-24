@@ -234,6 +234,7 @@ public class BraintreeFragment extends Fragment {
 
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
+            mGoogleApiClient = null;
         }
         flushAnalyticsEvents();
     }
@@ -590,12 +591,20 @@ public class BraintreeFragment extends Fragment {
         waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                listener.onResponse(getGoogleApiClient());
+                GoogleApiClient googleApiClient = getGoogleApiClient();
+                if (googleApiClient != null) {
+                    listener.onResponse(googleApiClient);
+                }
             }
         });
     }
 
     protected GoogleApiClient getGoogleApiClient() {
+        if (getActivity() == null) {
+            postCallback(new GoogleApiClientException("BraintreeFragment is not attached to an Activity"));
+            return null;
+        }
+
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                     .addApi(Wallet.API, new Wallet.WalletOptions.Builder()
@@ -619,8 +628,7 @@ public class BraintreeFragment extends Fragment {
             mGoogleApiClient.registerConnectionFailedListener(new OnConnectionFailedListener() {
                 @Override
                 public void onConnectionFailed(ConnectionResult connectionResult) {
-                    postCallback(new GoogleApiClientException(
-                            "Connection failed: " + connectionResult.getErrorCode()));
+                    postCallback(new GoogleApiClientException("Connection failed: " + connectionResult.getErrorCode()));
                 }
             });
 
