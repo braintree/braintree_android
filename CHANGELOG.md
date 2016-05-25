@@ -1,5 +1,12 @@
 # Braintree Android SDK Release Notes
 
+## 2.3.1
+
+* Fix `NullPointerException`s in `BraintreeFragment` when not attached to an `Activity`
+* Fix Chrome Custom Tabs Intent flags interfering with browser switch
+* Add new `DataCollector#collectDeviceData` methods that use a callback; deprecate synchronous methods
+* Reduce size of assets in Drop-In
+
 ## 2.3.0
 
 * UnionPay Beta *Please note*: this API is in beta and subject to change
