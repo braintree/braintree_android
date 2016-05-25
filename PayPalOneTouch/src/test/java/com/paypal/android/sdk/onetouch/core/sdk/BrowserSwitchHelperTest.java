@@ -11,26 +11,14 @@ import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.config.ConfigManager;
 import com.paypal.android.sdk.onetouch.core.enums.Protocol;
 import com.paypal.android.sdk.onetouch.core.enums.ResponseType;
-import com.paypal.android.sdk.onetouch.core.exception.InvalidEncryptionDataException;
 import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
 import com.paypal.android.sdk.onetouch.core.network.PayPalHttpClient;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
-
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.spec.InvalidKeySpecException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import static com.paypal.android.sdk.onetouch.core.test.TestSetupHelper.getMockContextInspector;
 import static junit.framework.Assert.assertEquals;
@@ -57,22 +45,15 @@ public class BrowserSwitchHelperTest {
     }
 
     @Test
-    public void getBrowserIntent_returnsIntent()
-            throws CertificateException, NoSuchAlgorithmException, JSONException,
-            InvalidEncryptionDataException, InvalidKeyException, NoSuchPaddingException,
-            BadPaddingException, UnsupportedEncodingException, InvalidKeySpecException,
-            IllegalBlockSizeException {
+    public void getBrowserIntent_returnsIntent() throws Exception {
         CheckoutRequest request = spy(new CheckoutRequest());
         doNothing().when(request).trackFpti(any(Context.class), any(TrackingPoint.class),
                 any(Protocol.class));
         request.approvalURL("https://paypal.com/?token=test-token-key");
 
-        Intent intent = BrowserSwitchHelper.getBrowserSwitchIntent(mContextInspector, mConfigManager,
-                request);
+        Intent intent = BrowserSwitchHelper.getBrowserSwitchIntent(mContextInspector, mConfigManager, request);
 
-        verify(mContextInspector).setPreference("com.paypal.otc.hermes.token", "test-token-key");
-        verify(request).trackFpti(any(Context.class), eq(TrackingPoint.SwitchToBrowser),
-                any(Protocol.class));
+        verify(request).trackFpti(any(Context.class), eq(TrackingPoint.SwitchToBrowser), any(Protocol.class));
 
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
         assertEquals("https://paypal.com/?token=test-token-key", intent.getData().toString());

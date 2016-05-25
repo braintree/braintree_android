@@ -10,13 +10,20 @@ import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
 
 public class BillingAgreementRequest extends CheckoutRequest {
 
+    private static final String TOKEN_QUERY_PARAM_KEY_BA_TOKEN = "ba_token";
+
+    public BillingAgreementRequest() {}
+
+    @Override
     public BillingAgreementRequest pairingId(String pairingId) {
         super.pairingId(pairingId);
         return this;
     }
 
+    @Override
     public BillingAgreementRequest approvalURL(String approvalURL) {
         super.approvalURL(approvalURL);
+        mTokenQueryParamKey = TOKEN_QUERY_PARAM_KEY_BA_TOKEN;
         return this;
     }
 
@@ -38,25 +45,8 @@ public class BillingAgreementRequest extends CheckoutRequest {
         return null;
     }
 
-    public BillingAgreementRequest() {}
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(getClientMetadataId());
-        dest.writeString(getClientId());
-        dest.writeString(getEnvironment());
-
-        dest.writeString(mApprovalUrl);
-        dest.writeString(mTokenQueryParamKey);
-    }
-
-    private BillingAgreementRequest(Parcel source) {
-        clientMetadataId(source.readString());
-        clientId(source.readString());
-        environment(source.readString());
-
-        mApprovalUrl = source.readString();
-        mTokenQueryParamKey = source.readString();
+    protected BillingAgreementRequest(Parcel source) {
+        super(source);
     }
 
     public static final Creator<BillingAgreementRequest> CREATOR = new Creator<BillingAgreementRequest>() {

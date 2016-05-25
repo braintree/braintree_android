@@ -3,6 +3,7 @@ package com.paypal.android.sdk.onetouch.core;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
@@ -99,8 +100,6 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
 
     public abstract Recipe getBrowserSwitchRecipe(OtcConfiguration config);
 
-    public abstract void persistRequiredFields(ContextInspector contextInspector);
-
     public abstract Result parseBrowserResponse(ContextInspector contextInspector, Uri uri);
 
     public abstract boolean validateV1V2Response(ContextInspector contextInspector, Bundle extras);
@@ -108,4 +107,28 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
     public abstract Recipe getRecipeToExecute(Context context, OtcConfiguration config);
 
     public abstract void trackFpti(Context context, TrackingPoint trackingPoint, Protocol protocol);
+
+    protected Request() {}
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mEnvironment);
+        dest.writeString(mClientId);
+        dest.writeString(mClientMetadataId);
+        dest.writeString(mCancelUrl);
+        dest.writeString(mSuccessUrl);
+    }
+
+    protected Request(Parcel source) {
+        mEnvironment = source.readString();
+        mClientId = source.readString();
+        mClientMetadataId = source.readString();
+        mCancelUrl = source.readString();
+        mSuccessUrl = source.readString();
+    }
 }

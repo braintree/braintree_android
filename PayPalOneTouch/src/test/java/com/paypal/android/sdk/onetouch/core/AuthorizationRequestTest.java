@@ -1,8 +1,10 @@
 package com.paypal.android.sdk.onetouch.core;
 
 import android.net.Uri;
+import android.os.Parcel;
 
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
+import com.paypal.android.sdk.onetouch.core.encryption.EncryptionUtils;
 import com.paypal.android.sdk.onetouch.core.enums.ResultType;
 import com.paypal.android.sdk.onetouch.core.exception.BrowserSwitchException;
 import com.paypal.android.sdk.onetouch.core.exception.ResponseParsingException;
@@ -17,8 +19,12 @@ import org.robolectric.annotation.Config;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -133,8 +139,8 @@ public class AuthorizationRequestTest {
 
     @Test
     public void parseBrowserSwitchResponse_parsesSuccessResponses() throws JSONException {
-        when(mContextInspector.getStringPreference("com.paypal.otc.msg_guid")).thenReturn("19342c28-c6d3-4948-a989-8ee1d40dae5c");
-        when(mContextInspector.getStringPreference("com.paypal.otc.key")).thenReturn("96BF26A3851D0127AF474CC556D9C296A9A02171CD319EE5249C4B3033FC7BB6");
+        setMsgGUID("19342c28-c6d3-4948-a989-8ee1d40dae5c");
+        setEncryptionKey("96BF26A3851D0127AF474CC556D9C296A9A02171CD319EE5249C4B3033FC7BB6");
         Uri uri = Uri.parse("com.braintreepayments.demo.braintree://onetouch/v1/success?payloadEnc=9kuRyRmR8PpMoc3umclWyuGeibf4%2FIWdDyF9ehFL0TWI33GJ83iAHC7NdZszNRXrsa5uvO20N6BpGCKm3M%2F%2FjXzI5XrkxHhpKnH4j96mLNlTjDI2012cUZ7hotqm8rahnFkobykEwfI6OTGu3Zk%2Bc6FQ4Vi44nEeIw7Ocs%2Fiw%2BwzXGaZz3LgJajediKcwL%2BrDJIRgoZTnjzT2aM2No7wvORpAk%2FBRmAp1QxZkzTor0zcYgPEia%2B%2FivuEDRFKDUIC%2BC4GRulZB70Bzo7FBSvSOyy1rldRjaLg9W8bhBd8WOXjyg%2F0gLryjIqppmA%2FWFwUH7nBrbqpOyCyp5hskE5NZSNFZEokUEh4oOHI%2BMQshZETuivdWEjNrvbWq8bp2JHv5fnM9NjqmHY%2Bu23sEHQoJQ%3D%3D&payload=eyJ2ZXJzaW9uIjozLCJtc2dfR1VJRCI6IjE5MzQyYzI4LWM2ZDMtNDk0OC1hOTg5LThlZTFkNDBkYWU1YyIsInJlc3BvbnNlX3R5cGUiOiJjb2RlIiwiZW52aXJvbm1lbnQiOiJtb2NrIiwiZXJyb3IiOm51bGx9&x-source=com.braintree.browserswitch");
 
         Result result = mRequest.parseBrowserResponse(mContextInspector, uri);
@@ -145,8 +151,8 @@ public class AuthorizationRequestTest {
 
     @Test
     public void parseBrowserSwitchResponse_parsesSuccessResponseAndReturnsErrorWhenErrorIsPresent() {
-        when(mContextInspector.getStringPreference("com.paypal.otc.msg_guid")).thenReturn("19342c28-c6d3-4948-a989-8ee1d40dae5c");
-        when(mContextInspector.getStringPreference("com.paypal.otc.key")).thenReturn("96BF26A3851D0127AF474CC556D9C296A9A02171CD319EE5249C4B3033FC7BB6");
+        setMsgGUID("19342c28-c6d3-4948-a989-8ee1d40dae5c");
+        setEncryptionKey("96BF26A3851D0127AF474CC556D9C296A9A02171CD319EE5249C4B3033FC7BB6");
         Uri uri = Uri.parse("com.braintreepayments.demo.braintree://onetouch/v1/success?payloadEnc=9kuRyRmR8PpMoc3umclWyuGeibf4%2FIWdDyF9ehFL0TWI33GJ83iAHC7NdZszNRXrsa5uvO20N6BpGCKm3M%2F%2FjXzI5XrkxHhpKnH4j96mLNlTjDI2012cUZ7hotqm8rahnFkobykEwfI6OTGu3Zk%2Bc6FQ4Vi44nEeIw7Ocs%2Fiw%2BwzXGaZz3LgJajediKcwL%2BrDJIRgoZTnjzT2aM2No7wvORpAk%2FBRmAp1QxZkzTor0zcYgPEia%2B%2FivuEDRFKDUIC%2BC4GRulZB70Bzo7FBSvSOyy1rldRjaLg9W8bhBd8WOXjyg%2F0gLryjIqppmA%2FWFwUH7nBrbqpOyCyp5hskE5NZSNFZEokUEh4oOHI%2BMQshZETuivdWEjNrvbWq8bp2JHv5fnM9NjqmHY%2Bu23sEHQoJQ%3D%3D&payload=eyJ2ZXJzaW9uIjozLCJtc2dfR1VJRCI6IjE5MzQyYzI4LWM2ZDMtNDk0OC1hOTg5LThlZTFkNDBkYWU1YyIsImVycm9yIjoiVGhlcmUgd2FzIGFuIGVycm9yIn0=");
 
         Result result = mRequest.parseBrowserResponse(mContextInspector, uri);
@@ -158,8 +164,7 @@ public class AuthorizationRequestTest {
 
     @Test
     public void parseBrowserSwitchResponse_parsesSuccessResponsesAndReturnsErrorWhenInvalidPayloadEncIsReturned() {
-        when(mContextInspector.getStringPreference("com.paypal.otc.msg_guid")).thenReturn("19342c28-c6d3-4948-a989-8ee1d40dae5c");
-        when(mContextInspector.getStringPreference("com.paypal.otc.key")).thenReturn("key");
+        setMsgGUID("19342c28-c6d3-4948-a989-8ee1d40dae5c");
         Uri uri = Uri.parse("com.braintreepayments.demo.braintree://onetouch/v1/success?payloadEnc=9kuRy&payload=eyJ2ZXJzaW9uIjozLCJtc2dfR1VJRCI6IjE5MzQyYzI4LWM2ZDMtNDk0OC1hOTg5LThlZTFkNDBkYWU1YyIsInJlc3BvbnNlX3R5cGUiOiJjb2RlIiwiZW52aXJvbm1lbnQiOiJtb2NrIiwiZXJyb3IiOm51bGx9");
 
         Result result = mRequest.parseBrowserResponse(mContextInspector, uri);
@@ -199,5 +204,69 @@ public class AuthorizationRequestTest {
         assertEquals(ResultType.Error, result.getResultType());
         assertTrue(result.getError() instanceof ResponseParsingException);
         assertEquals("Response uri invalid", result.getError().getMessage());
+    }
+
+    @Test
+    public void parcels() {
+        AuthorizationRequest request = new AuthorizationRequest(RuntimeEnvironment.application);
+        request.environment("test");
+        request.clientId("client-id");
+        request.clientMetadataId("client-metadata-id");
+        request.cancelUrl("com.braintreepayments.demo.braintree.cancel", "cancel");
+        request.successUrl("com.braintreepayments.demo.braintree.success", "success");
+        request.privacyUrl("privacy-url");
+        request.userAgreementUrl("user-agreement-url");
+        request.withAdditionalPayloadAttribute("payload-key", "payload-value");
+        request.withScopeValue("email");
+        request.withScopeValue("address");
+
+        Parcel parcel = Parcel.obtain();
+        request.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        AuthorizationRequest parceledRequest = AuthorizationRequest.CREATOR.createFromParcel(parcel);
+
+        assertEquals("test", parceledRequest.getEnvironment());
+        assertEquals("client-id", parceledRequest.getClientId());
+        assertEquals("client-metadata-id", parceledRequest.getClientMetadataId());
+        assertEquals("com.braintreepayments.demo.braintree.cancel://onetouch/v1/cancel", parceledRequest.getCancelUrl());
+        assertEquals("com.braintreepayments.demo.braintree.success://onetouch/v1/success", parceledRequest.getSuccessUrl());
+        assertEquals("privacy-url", parceledRequest.getPrivacyUrl());
+        assertEquals("user-agreement-url", parceledRequest.getUserAgreementUrl());
+        assertEquals("{payload-key=payload-value}", parceledRequest.getAdditionalPayloadAttributes().toString());
+        assertEquals("address email", parceledRequest.getScopeString());
+    }
+
+    private void setMsgGUID(String msgGUID) {
+        try {
+            Field field = AuthorizationRequest.class.getDeclaredField("mMsgGuid");
+            field.setAccessible(true);
+
+            Field modifiersField = Field.class.getDeclaredField("modifiers");
+            modifiersField.setAccessible(true);
+            modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+
+            field.set(mRequest, msgGUID);
+        } catch (NoSuchFieldException e) {
+            fail(e.getMessage());
+        } catch (IllegalAccessException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    private void setEncryptionKey(String encryptionKey) {
+        try {
+            Field field = AuthorizationRequest.class.getDeclaredField("mEncryptionKey");
+            field.setAccessible(true);
+
+            Field modifiersField = Field.class.getDeclaredField("modifiers");
+            modifiersField.setAccessible(true);
+            modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+
+            field.set(mRequest, EncryptionUtils.hexStringToByteArray(encryptionKey));
+        } catch (NoSuchFieldException e) {
+            fail(e.getMessage());
+        } catch (IllegalAccessException e) {
+            fail(e.getMessage());
+        }
     }
 }

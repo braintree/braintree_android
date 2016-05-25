@@ -18,7 +18,6 @@ import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PostalAddress;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
-import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
 
 import org.json.JSONException;
@@ -34,6 +33,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
@@ -136,13 +136,23 @@ public class PayPalTest {
 
     @Test
     public void authorizeAccount_isSuccessful() throws Exception {
-        spy(AuthorizationRequest.class);
-        doReturn(true).when(AuthorizationRequest.class, "isValidResponse", any(ContextInspector.class), anyString());
+        doAnswer(new Answer<AuthorizationRequest>() {
+            @Override
+            public AuthorizationRequest answer(InvocationOnMock invocation) throws Throwable {
+                AuthorizationRequest request = spy(new AuthorizationRequest(RuntimeEnvironment.application));
+                request.environment("test");
+                request.successUrl("com.braintreepayments.api.test.braintree", "success");
 
-        JSONObject decryptedPayload = mock(JSONObject.class);
-        when(decryptedPayload.getString("payment_code")).thenReturn("code");
-        when(decryptedPayload.getString("email")).thenReturn("test@paypal.com");
-        doReturn(decryptedPayload).when(AuthorizationRequest.class, "getDecryptedPayload", anyString(), anyString());
+                doReturn(true).when(request, "isValidResponse", anyString());
+
+                JSONObject decryptedPayload = mock(JSONObject.class);
+                when(decryptedPayload.getString("payment_code")).thenReturn("code");
+                when(decryptedPayload.getString("email")).thenReturn("test@paypal.com");
+                doReturn(decryptedPayload).when(request, "getDecryptedPayload", anyString());
+
+                return request;
+            }
+        }).when(PayPal.class, "getAuthorizationRequest", any(Context.class), any(PayPalConfiguration.class), anyString());
 
         final BraintreeFragment fragment = mMockFragmentBuilder.build();
         doAnswer(new Answer() {
@@ -173,13 +183,23 @@ public class PayPalTest {
 
     @Test
     public void authorizeAccount_doesNotCallCancelListenerWhenSuccessful() throws Exception {
-        spy(AuthorizationRequest.class);
-        doReturn(true).when(AuthorizationRequest.class, "isValidResponse", any(ContextInspector.class), anyString());
+        doAnswer(new Answer<AuthorizationRequest>() {
+            @Override
+            public AuthorizationRequest answer(InvocationOnMock invocation) throws Throwable {
+                AuthorizationRequest request = spy(new AuthorizationRequest(RuntimeEnvironment.application));
+                request.environment("test");
+                request.successUrl("com.braintreepayments.api.test.braintree", "success");
 
-        JSONObject decryptedPayload = mock(JSONObject.class);
-        when(decryptedPayload.getString("payment_code")).thenReturn("code");
-        when(decryptedPayload.getString("email")).thenReturn("test@paypal.com");
-        doReturn(decryptedPayload).when(AuthorizationRequest.class, "getDecryptedPayload", anyString(), anyString());
+                doReturn(true).when(request, "isValidResponse", anyString());
+
+                JSONObject decryptedPayload = mock(JSONObject.class);
+                when(decryptedPayload.getString("payment_code")).thenReturn("code");
+                when(decryptedPayload.getString("email")).thenReturn("test@paypal.com");
+                doReturn(decryptedPayload).when(request, "getDecryptedPayload", anyString());
+
+                return request;
+            }
+        }).when(PayPal.class, "getAuthorizationRequest", any(Context.class), any(PayPalConfiguration.class), anyString());
 
         final BraintreeFragment fragment = mMockFragmentBuilder.build();
         doAnswer(new Answer() {
@@ -269,13 +289,13 @@ public class PayPalTest {
     @Test
     public void requestBillingAgreement_isSuccessful() {
         final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .successResponse(stringFromFixture("paypal_hermes_billing_agreement_response.json"))
                 .build();
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Intent intent = new Intent()
-                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN"));
+                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&ba_token=EC-HERMES-SANDBOX-EC-TOKEN"));
                 PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }

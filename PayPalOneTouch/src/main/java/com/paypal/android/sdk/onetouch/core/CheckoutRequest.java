@@ -26,9 +26,7 @@ import java.util.Map;
 
 public class CheckoutRequest extends Request<CheckoutRequest> implements Parcelable {
 
-    private static final String PREFS_HERMES_TOKEN = "com.paypal.otc.hermes.token";
     private static final String TOKEN_QUERY_PARAM_KEY_TOKEN = "token";
-    private static final String TOKEN_QUERY_PARAM_KEY_BA_TOKEN = "ba_token";
 
     protected String mApprovalUrl;
     protected String mTokenQueryParamKey;
@@ -50,16 +48,8 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
 
     public CheckoutRequest approvalURL(String approvalURL) {
         mApprovalUrl = approvalURL;
-        selectTokenQueryParamKey(approvalURL);
+        mTokenQueryParamKey = TOKEN_QUERY_PARAM_KEY_TOKEN;
         return this;
-    }
-
-    private void selectTokenQueryParamKey(String url) {
-        if (!TextUtils.isEmpty(url) && url.contains("ba_token")) {
-            mTokenQueryParamKey = TOKEN_QUERY_PARAM_KEY_BA_TOKEN;
-        } else {
-            mTokenQueryParamKey = TOKEN_QUERY_PARAM_KEY_TOKEN;
-        }
     }
 
     @Override
@@ -73,12 +63,6 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
     }
 
     @Override
-    public void persistRequiredFields(ContextInspector contextInspector) {
-        contextInspector.setPreference(PREFS_HERMES_TOKEN,
-                Uri.parse(mApprovalUrl).getQueryParameter(mTokenQueryParamKey));
-    }
-
-    @Override
     public Result parseBrowserResponse(ContextInspector contextInspector, Uri uri) {
         String status = uri.getLastPathSegment();
 
@@ -87,9 +71,9 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
             return new Result();
         }
 
-        String persistedXoToken = contextInspector.getStringPreference(PREFS_HERMES_TOKEN);
+        String requestXoToken = Uri.parse(mApprovalUrl).getQueryParameter(mTokenQueryParamKey);
         String responseXoToken = uri.getQueryParameter(mTokenQueryParamKey);
-        if (null != responseXoToken && TextUtils.equals(persistedXoToken, responseXoToken)) {
+        if (responseXoToken != null && TextUtils.equals(requestXoToken, responseXoToken)) {
             try {
                 JSONObject response = new JSONObject();
                 response.put("webURL", uri.toString());
@@ -109,11 +93,11 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
 
     @Override
     public boolean validateV1V2Response(ContextInspector contextInspector, Bundle extras) {
-        String persistedXoToken = contextInspector.getStringPreference(PREFS_HERMES_TOKEN);
+        String requestXoToken = Uri.parse(mApprovalUrl).getQueryParameter(mTokenQueryParamKey);
         String webUrl = extras.getString("webURL");
-        if (null != webUrl) {
+        if (webUrl != null) {
             String responseXoToken = Uri.parse(webUrl).getQueryParameter(mTokenQueryParamKey);
-            if (null != responseXoToken && TextUtils.equals(persistedXoToken, responseXoToken)) {
+            if (responseXoToken != null && TextUtils.equals(requestXoToken, responseXoToken)) {
                 return true;
             }
         }
@@ -151,27 +135,20 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
     }
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(getClientMetadataId());
-        dest.writeString(getClientId());
-        dest.writeString(getEnvironment());
+        super.writeToParcel(dest, flags);
 
         dest.writeString(mApprovalUrl);
         dest.writeString(mTokenQueryParamKey);
+        dest.writeString(mPairingId);
     }
 
-    private CheckoutRequest(Parcel source) {
-        clientMetadataId(source.readString());
-        clientId(source.readString());
-        environment(source.readString());
+    protected CheckoutRequest(Parcel source) {
+        super(source);
 
         mApprovalUrl = source.readString();
         mTokenQueryParamKey = source.readString();
+        mPairingId = source.readString();
     }
 
     public static final Creator<CheckoutRequest> CREATOR = new Creator<CheckoutRequest>() {

@@ -42,8 +42,8 @@ public class AppSwitchHelper {
                 .setPackage(packageName);
     }
 
-    public static Intent getAppSwitchIntent(ContextInspector contextInspector,
-            ConfigManager configManager, Request request, Recipe recipe) {
+    public static Intent getAppSwitchIntent(ContextInspector contextInspector, ConfigManager configManager,
+            Request request, Recipe recipe) {
         Intent intent = createBaseIntent(recipe.getTargetIntentAction(), WALLET_APP_PACKAGE);
         intent.putExtra("version", recipe.getProtocol().getVersion());
         // app_guid now present on all v1/v2 requests.  Deemed not sensitive.
@@ -69,9 +69,6 @@ public class AppSwitchHelper {
             String webURL = checkoutRequest.getBrowserSwitchUrl(contextInspector.getContext(),
                     configManager.getConfig());
             intent.putExtra("webURL", webURL);
-
-            // only checkoutRequest actually cares about correlating request/response, since there's no v3 consent support.
-            checkoutRequest.persistRequiredFields(contextInspector);
         }
 
         return intent;

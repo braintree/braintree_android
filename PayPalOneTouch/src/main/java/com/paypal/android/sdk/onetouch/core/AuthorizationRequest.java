@@ -55,9 +55,6 @@ import javax.crypto.NoSuchPaddingException;
 
 public class AuthorizationRequest extends Request<AuthorizationRequest> implements Parcelable {
 
-    private static final String PREFS_ENCRYPTION_KEY = "com.paypal.otc.key";
-    private static final String PREFS_MSG_GUID = "com.paypal.otc.msg_guid";
-
     private final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
     private final OtcCrypto mOtcCrypto = new OtcCrypto();
     private final HashSet<String> mScopes;
@@ -80,6 +77,10 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     public AuthorizationRequest withAdditionalPayloadAttribute(String key, String value) {
         mAdditionalPayloadAttributes.put(key, value);
         return this;
+    }
+
+    protected Map<String, String> getAdditionalPayloadAttributes() {
+        return new HashMap<>(mAdditionalPayloadAttributes);
     }
 
     public AuthorizationRequest withScopeValue(String scopeValue) {
@@ -140,18 +141,8 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         return config.getBrowserOauth2Config(getScopes());
     }
 
-    @Override
-    public void persistRequiredFields(ContextInspector contextInspector) {
-        contextInspector.setPreference(PREFS_MSG_GUID, mMsgGuid);
-        contextInspector.setPreference(PREFS_ENCRYPTION_KEY, EncryptionUtils.byteArrayToHexString(mEncryptionKey));
-    }
-
-    private static boolean isValidResponse(ContextInspector contextInspector, String msgGUID) {
-        String prefsMsgGUID = contextInspector.getStringPreference(AuthorizationRequest.PREFS_MSG_GUID);
-        String prefsSymmetricKey = getStoredSymmetricKey(contextInspector);
-
-        return (!TextUtils.isEmpty(prefsMsgGUID) && prefsMsgGUID.equals(msgGUID) &&
-                !TextUtils.isEmpty(prefsSymmetricKey));
+    private boolean isValidResponse(String msgGUID) {
+        return (mMsgGuid.equals(msgGUID));
     }
 
     private class RFC3339DateFormat extends SimpleDateFormat {
@@ -212,10 +203,6 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         return intent.resolveActivity(context.getPackageManager()) != null;
     }
 
-    private static String getStoredSymmetricKey(ContextInspector contextInspector) {
-        return contextInspector.getStringPreference(AuthorizationRequest.PREFS_ENCRYPTION_KEY);
-    }
-
     @Override
     public Result parseBrowserResponse(ContextInspector contextInspector, Uri uri) {
         String status = uri.getLastPathSegment();
@@ -232,14 +219,12 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
                 return new Result(new ResponseParsingException("Response incomplete"));
             }
 
-            String msgGUID = payload.optString("msg_GUID");
-            if (TextUtils.isEmpty(payloadEnc) || !isValidResponse(contextInspector, msgGUID)) {
+            if (TextUtils.isEmpty(payloadEnc) || !isValidResponse(payload.optString("msg_GUID"))) {
                 return new Result(new ResponseParsingException("Response invalid"));
             }
 
             try {
-                JSONObject decryptedPayloadEnc = getDecryptedPayload(payloadEnc,
-                        getStoredSymmetricKey(contextInspector));
+                JSONObject decryptedPayloadEnc = getDecryptedPayload(payloadEnc);
 
                 String error = payload.optString("error");
                 // the string 'null' is coming back in production
@@ -305,27 +290,19 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         PayPalOneTouchCore.getFptiManager(context).trackFpti(trackingPoint, getEnvironment(), fptiDataBundle, protocol);
     }
 
-    private static JSONObject getDecryptedPayload(String payloadEnc, String symmetricKey)
-            throws IllegalBlockSizeException, InvalidKeyException, NoSuchAlgorithmException,
-            InvalidAlgorithmParameterException, NoSuchPaddingException, BadPaddingException,
+    private JSONObject getDecryptedPayload(String payloadEnc) throws IllegalBlockSizeException, InvalidKeyException,
+            NoSuchAlgorithmException, InvalidAlgorithmParameterException, NoSuchPaddingException, BadPaddingException,
             InvalidEncryptionDataException, JSONException, IllegalArgumentException {
         byte[] base64PayloadEnc = Base64.decode(payloadEnc, Base64.DEFAULT);
-        byte[] key = EncryptionUtils.hexStringToByteArray(symmetricKey);
-        byte[] output = new OtcCrypto().decryptAESCTRData(base64PayloadEnc, key);
+        byte[] output = new OtcCrypto().decryptAESCTRData(base64PayloadEnc, mEncryptionKey);
 
         return new JSONObject(new String(output));
     }
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(getClientMetadataId());
-        dest.writeString(getClientId());
-        dest.writeString(getEnvironment());
+        super.writeToParcel(dest, flags);
+
         dest.writeString(mPrivacyUrl);
         dest.writeString(mUserAgreementUrl);
         dest.writeSerializable(mScopes);
@@ -336,9 +313,8 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     }
 
     private AuthorizationRequest(Parcel source) {
-        clientMetadataId(source.readString());
-        clientId(source.readString());
-        environment(source.readString());
+        super(source);
+
         mPrivacyUrl = source.readString();
         mUserAgreementUrl = source.readString();
         mScopes = (HashSet) source.readSerializable();

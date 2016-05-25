@@ -31,8 +31,6 @@ public class BrowserSwitchHelper {
         try {
             String url = request.getBrowserSwitchUrl(contextInspector.getContext(), configuration);
 
-            request.persistRequiredFields(contextInspector);
-
             Recipe<?> recipe = request.getBrowserSwitchRecipe(configuration);
 
             for (String allowedBrowserPackage : recipe.getTargetPackagesInReversePriorityOrder()) {
