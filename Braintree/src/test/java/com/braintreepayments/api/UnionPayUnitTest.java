@@ -29,7 +29,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricGradleTestRunner;
 
-import static com.braintreepayments.testutils.CardNumber.UNIONPAY_ENROLLMENT_REQUIRED;
+import static com.braintreepayments.testutils.CardNumber.UNIONPAY_CREDIT;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -274,11 +274,11 @@ public class UnionPayUnitTest {
 
         when(fragment.getHttpClient()).thenReturn(httpClient);
 
-        UnionPay.fetchCapabilities(fragment, UNIONPAY_ENROLLMENT_REQUIRED);
+        UnionPay.fetchCapabilities(fragment, UNIONPAY_CREDIT);
 
         String expectedUrl = Uri.parse("/v1/payment_methods/credit_cards/capabilities")
                 .buildUpon()
-                .appendQueryParameter("creditCard[number]", UNIONPAY_ENROLLMENT_REQUIRED)
+                .appendQueryParameter("creditCard[number]", UNIONPAY_CREDIT)
                 .build()
                 .toString();
 
@@ -293,7 +293,7 @@ public class UnionPayUnitTest {
                 .errorResponse(expected)
                 .build();
 
-        UnionPay.fetchCapabilities(fragment, UNIONPAY_ENROLLMENT_REQUIRED);
+        UnionPay.fetchCapabilities(fragment, UNIONPAY_CREDIT);
 
         verify(fragment).postCallback(expected);
     }
@@ -305,7 +305,7 @@ public class UnionPayUnitTest {
                 .errorResponse(new RuntimeException("expected runtime exception"))
                 .build();
 
-        UnionPay.fetchCapabilities(fragment, UNIONPAY_ENROLLMENT_REQUIRED);
+        UnionPay.fetchCapabilities(fragment, UNIONPAY_CREDIT);
 
         verify(fragment).sendAnalyticsEvent("union-pay.capabilities-failed");
     }
@@ -317,7 +317,7 @@ public class UnionPayUnitTest {
                 .successResponse(stringFromFixture("unionpay_fetchcapabilities_success_response.json"))
                 .build();
 
-        UnionPay.fetchCapabilities(fragment, UNIONPAY_ENROLLMENT_REQUIRED);
+        UnionPay.fetchCapabilities(fragment, UNIONPAY_CREDIT);
 
         ArgumentCaptor<UnionPayCapabilities> argumentCaptor = ArgumentCaptor.forClass(UnionPayCapabilities.class);
         verify(fragment).postCallback(argumentCaptor.capture());
@@ -337,7 +337,7 @@ public class UnionPayUnitTest {
                 .successResponse(stringFromFixture("unionpay_fetchcapabilities_success_response.json"))
                 .build();
 
-        UnionPay.fetchCapabilities(fragment, UNIONPAY_ENROLLMENT_REQUIRED);
+        UnionPay.fetchCapabilities(fragment, UNIONPAY_CREDIT);
 
         verify(fragment).sendAnalyticsEvent("union-pay.capabilities-received");
     }
@@ -348,7 +348,7 @@ public class UnionPayUnitTest {
                 .configuration(Configuration.fromJson(stringFromFixture("configuration.json")))
                 .build();
 
-        UnionPay.fetchCapabilities(fragment, UNIONPAY_ENROLLMENT_REQUIRED);
+        UnionPay.fetchCapabilities(fragment, UNIONPAY_CREDIT);
 
         ArgumentCaptor<ConfigurationException> argumentCaptor = ArgumentCaptor.forClass(ConfigurationException.class);
         verify(fragment).postCallback(argumentCaptor.capture());

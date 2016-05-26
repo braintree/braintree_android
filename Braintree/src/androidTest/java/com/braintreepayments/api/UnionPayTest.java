@@ -25,7 +25,10 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
 
+import static com.braintreepayments.testutils.CardNumber.UNIONPAY_CREDIT;
+import static com.braintreepayments.testutils.CardNumber.UNIONPAY_DEBIT;
 import static com.braintreepayments.testutils.CardNumber.UNIONPAY_ENROLLMENT_NOT_REQUIRED;
+import static com.braintreepayments.testutils.CardNumber.UNIONPAY_SINGLE_STEP_SALE;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -50,7 +53,53 @@ public class UnionPayTest {
     }
 
     @Test(timeout = 10000)
-    public void fetchCapabilities_returnsCardCapabilities() throws InterruptedException {
+    public void fetchCapabilities_whenDebit_isDebitIsTrue() throws InterruptedException {
+        mBraintreeFragment.addListener(new UnionPayListener() {
+            @Override
+            public void onCapabilitiesFetched(UnionPayCapabilities unionPayCapabilities) {
+                assertTrue(unionPayCapabilities.isUnionPayEnrollmentRequired());
+                assertTrue(unionPayCapabilities.supportsTwoStepAuthAndCapture());
+                assertTrue(unionPayCapabilities.isDebit());
+                assertTrue(unionPayCapabilities.isUnionPay());
+                mCountDownLatch.countDown();
+            }
+
+            @Override
+            public void onSmsCodeSent(String enrollmentId) {
+                fail("Not expecting onSmsCodeSent");
+            }
+        });
+
+        UnionPay.fetchCapabilities(mBraintreeFragment, UNIONPAY_DEBIT);
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    public void fetchCapabilities_whenCredit_isDebitIsFalse() throws InterruptedException {
+        mBraintreeFragment.addListener(new UnionPayListener() {
+            @Override
+            public void onCapabilitiesFetched(UnionPayCapabilities unionPayCapabilities) {
+                assertTrue(unionPayCapabilities.isUnionPayEnrollmentRequired());
+                assertTrue(unionPayCapabilities.supportsTwoStepAuthAndCapture());
+                assertFalse(unionPayCapabilities.isDebit());
+                assertTrue(unionPayCapabilities.isUnionPay());
+                mCountDownLatch.countDown();
+            }
+
+            @Override
+            public void onSmsCodeSent(String enrollmentId) {
+                fail("Not expecting onSmsCodeSent");
+            }
+        });
+
+        UnionPay.fetchCapabilities(mBraintreeFragment, UNIONPAY_CREDIT);
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    public void fetchCapabilities_whenEnrollmentNotRequired_enrollmentRequiredIsFalse() throws InterruptedException {
         mBraintreeFragment.addListener(new UnionPayListener() {
             @Override
             public void onCapabilitiesFetched(UnionPayCapabilities unionPayCapabilities) {
@@ -73,9 +122,32 @@ public class UnionPayTest {
     }
 
     @Test(timeout = 10000)
-    public void enroll_returnsEnrollmentIdWhenEnrollmentRequired() throws InterruptedException {
+    public void fetchCapabilities_whenSingleStepSale_twoStepAuthAndCaptureIsFalse() throws InterruptedException {
+        mBraintreeFragment.addListener(new UnionPayListener() {
+            @Override
+            public void onCapabilitiesFetched(UnionPayCapabilities unionPayCapabilities) {
+                assertTrue(unionPayCapabilities.isUnionPayEnrollmentRequired());
+                assertFalse(unionPayCapabilities.supportsTwoStepAuthAndCapture());
+                assertTrue(unionPayCapabilities.isDebit());
+                assertTrue(unionPayCapabilities.isUnionPay());
+                mCountDownLatch.countDown();
+            }
+
+            @Override
+            public void onSmsCodeSent(String enrollmentId) {
+                fail("Not expecting onSmsCodeSent");
+            }
+        });
+
+        UnionPay.fetchCapabilities(mBraintreeFragment, UNIONPAY_SINGLE_STEP_SALE);
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    public void enroll_whenCredit_returnsEnrollmentId() throws InterruptedException {
         UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
-                .cardNumber(CardNumber.UNIONPAY_ENROLLMENT_REQUIRED)
+                .cardNumber(CardNumber.UNIONPAY_CREDIT)
                 .expirationMonth("12")
                 .expirationYear("2019")
                 .mobileCountryCode("62")
@@ -100,7 +172,7 @@ public class UnionPayTest {
     }
 
     @Test(timeout = 10000)
-    public void enroll_failsWhenEnrollmentNotRequired() throws InterruptedException {
+    public void enroll_whenEnrollmentNotRequired_returnsError() throws InterruptedException {
         UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
                 .cardNumber(UNIONPAY_ENROLLMENT_NOT_REQUIRED)
                 .expirationMonth("12")
@@ -134,7 +206,30 @@ public class UnionPayTest {
     }
 
     @Test(timeout = 10000)
-    public void tokenize_unionPaywithoutEnrollment() throws InvalidArgumentException, InterruptedException {
+    public void tokenize_whenEnrollmentNotRequired_withExpirationMonthAndYear() throws InvalidArgumentException,
+            InterruptedException {
+        UnionPayCardBuilder cardBuilder = new UnionPayCardBuilder()
+                .cardNumber(UNIONPAY_ENROLLMENT_NOT_REQUIRED)
+                .expirationMonth("08")
+                .expirationYear("20")
+                .cvv("123");
+
+        mBraintreeFragment.addListener(new PaymentMethodNonceCreatedListener() {
+            @Override
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertEquals("85", ((CardNonce) paymentMethodNonce).getLastTwo());
+                mCountDownLatch.countDown();
+            }
+        });
+
+        UnionPay.tokenize(mBraintreeFragment, cardBuilder);
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    public void tokenize_whenEnrollmentNotRequired_withExpirationDate() throws InvalidArgumentException,
+            InterruptedException {
         UnionPayCardBuilder cardBuilder = new UnionPayCardBuilder()
                 .cardNumber(UNIONPAY_ENROLLMENT_NOT_REQUIRED)
                 .expirationDate("08/20")
@@ -154,18 +249,41 @@ public class UnionPayTest {
     }
 
     @Test(timeout = 10000)
-    public void tokenize_unionPaywithEnrollment() throws InvalidArgumentException, InterruptedException {
+    public void tokenize_unionPayCredit_withExpirationDate() throws InvalidArgumentException, InterruptedException {
         UnionPayCardBuilder cardBuilder = new UnionPayCardBuilder()
-                .cardNumber(CardNumber.UNIONPAY_ENROLLMENT_REQUIRED)
+                .cardNumber(CardNumber.UNIONPAY_CREDIT)
                 .expirationDate("08/20")
-                .enrollmentId("enrollmentId")
+                .enrollmentId("3nr011m3nt")
                 .smsCode("12345")
                 .cvv("123");
 
         mBraintreeFragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
-                assertEquals("17", ((CardNonce) paymentMethodNonce).getLastTwo());
+                assertEquals("32", ((CardNonce) paymentMethodNonce).getLastTwo());
+                mCountDownLatch.countDown();
+            }
+        });
+
+        UnionPay.tokenize(mBraintreeFragment, cardBuilder);
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    public void tokenize_unionPayCredit_withExpirationMonthAndYear() throws InvalidArgumentException, InterruptedException {
+        UnionPayCardBuilder cardBuilder = new UnionPayCardBuilder()
+                .cardNumber(CardNumber.UNIONPAY_CREDIT)
+                .expirationMonth("08")
+                .expirationYear("20")
+                .enrollmentId("3nr011m3nt")
+                .smsCode("12345")
+                .cvv("123");
+
+        mBraintreeFragment.addListener(new PaymentMethodNonceCreatedListener() {
+            @Override
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertEquals("32", ((CardNonce) paymentMethodNonce).getLastTwo());
                 mCountDownLatch.countDown();
             }
         });
