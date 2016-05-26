@@ -3,12 +3,14 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
+import com.braintreepayments.api.internal.BraintreeSharedPreferences;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
@@ -19,6 +21,7 @@ import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PostalAddress;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
+import com.paypal.android.sdk.onetouch.core.encryption.EncryptionUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,11 +37,14 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -136,20 +142,15 @@ public class PayPalTest {
 
     @Test
     public void authorizeAccount_isSuccessful() throws Exception {
+        final AuthorizationRequest request = new AuthorizationRequest(RuntimeEnvironment.application);
+        request.environment("test");
+        request.successUrl("com.braintreepayments.api.test.braintree", "success");
+        setField("mMsgGuid", request, "c862cf00-f878-4e38-bb83-65bcc4b51831");
+        setField("mEncryptionKey", request, EncryptionUtils.hexStringToByteArray("0481806100DE4EBB5581163579990EE825737255A81A883B791A1BB6F5A7E81C"));
+
         doAnswer(new Answer<AuthorizationRequest>() {
             @Override
             public AuthorizationRequest answer(InvocationOnMock invocation) throws Throwable {
-                AuthorizationRequest request = spy(new AuthorizationRequest(RuntimeEnvironment.application));
-                request.environment("test");
-                request.successUrl("com.braintreepayments.api.test.braintree", "success");
-
-                doReturn(true).when(request, "isValidResponse", anyString());
-
-                JSONObject decryptedPayload = mock(JSONObject.class);
-                when(decryptedPayload.getString("payment_code")).thenReturn("code");
-                when(decryptedPayload.getString("email")).thenReturn("test@paypal.com");
-                doReturn(decryptedPayload).when(request, "getDecryptedPayload", anyString());
-
                 return request;
             }
         }).when(PayPal.class, "getAuthorizationRequest", any(Context.class), any(PayPalConfiguration.class), anyString());
@@ -159,7 +160,7 @@ public class PayPalTest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Intent intent = new Intent()
-                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?payloadEnc=3vsdKACxHUPPfEFpfI9DeJcPw4f%2Bj9Rp5fJjf%2B9h%2FN6GjoBaRQkIa9oUV2Vtm1I%2FiZqjZqd%2FXWQ56sts0iyl7eAVCfEvXHlpfrBg5e89JDINUUSAGAhTYmJWvoNm5YGxkSXmefLHhdvao8bIHZ26ExNL25oKS9E7RWgBtwOx%2BzChE3u0klAlgSN027ex7GSezjk5CsXMrns7%2BmcebLObQoZb3C1XjKik2m4HhSwXSdR5ygRkaRSVO5e1PVz0oiUBxpzGiubNb9aPrRtWvx%2FRwq3RSHNUIa4LuslgrxVx2WIa0isNKR3bBwzFcYClLbS6065Cs60Desg0BZSrudkwgSNJDwKnIzJM8FC1m4Xd2ASd63XnMzBh1RzbouAXqsrdIJFFVcVTrU4yO6mWTFqklw%3D%3D&payload=eyJ2ZXJzaW9uIjozLCJtc2dfR1VJRCI6IjRhMDcwYjhmLTgyMDQtNDczMC05Y2M0LWZiNWQ3ZjE3YWY3OCIsInJlc3BvbnNlX3R5cGUiOiJjb2RlIiwiZW52aXJvbm1lbnQiOiJtb2NrIiwiZXJyb3IiOm51bGx9&x-source=com.braintree.browserswitch"));
+                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?payloadEnc=k7mNFgzs404Wy8VOReO2E%2FTpfDoC44E1iwjptDooIkjjh1TcAupUCM8812g3zmBruc%2BFeIIwZlEhu6ugAXvLs5u6aHG4KU7FuPPLDS9OO87WAw0v3n7QIPp%2Bd5o%2Bk4VZ047w%2FXiijFuFKb4SRe9fg8kYGAYCtUR1IrK%2BhuvB3VCg7rkLk9V0n2YF3WcvmaLUt8SIYok1dbG8Ou4zDIXaZp7%2ByGalcyjN3MW3OLstaehD2jpuxlP6WDG6dkB6LZ2LEnHDV0X7j2vOtmSrrCtYZuFhlB%2FkKNkgsVhBrbHdqsfsBKyc7sHlsgT0Dz0TXc3BHqjJIWLrOuglt78QOM92%2B7GFM6JL5%2BARzJ4Tp9iI%2BU4QyQLTSkOGTA0LgSBUhr2srF41lWTXw65F4A%3D%3D&payload=eyJ2ZXJzaW9uIjozLCJtc2dfR1VJRCI6ImM4NjJjZjAwLWY4NzgtNGUzOC1iYjgzLTY1YmNjNGI1MTgzMSIsInJlc3BvbnNlX3R5cGUiOiJjb2RlIiwiZW52aXJvbm1lbnQiOiJtb2NrIiwiZXJyb3IiOm51bGx9&x-source=com.braintree.browserswitch"));
                 PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
@@ -183,20 +184,15 @@ public class PayPalTest {
 
     @Test
     public void authorizeAccount_doesNotCallCancelListenerWhenSuccessful() throws Exception {
+        final AuthorizationRequest request = new AuthorizationRequest(RuntimeEnvironment.application);
+        request.environment("test");
+        request.successUrl("com.braintreepayments.api.test.braintree", "success");
+        setField("mMsgGuid", request, "c862cf00-f878-4e38-bb83-65bcc4b51831");
+        setField("mEncryptionKey", request, EncryptionUtils.hexStringToByteArray("0481806100DE4EBB5581163579990EE825737255A81A883B791A1BB6F5A7E81C"));
+
         doAnswer(new Answer<AuthorizationRequest>() {
             @Override
             public AuthorizationRequest answer(InvocationOnMock invocation) throws Throwable {
-                AuthorizationRequest request = spy(new AuthorizationRequest(RuntimeEnvironment.application));
-                request.environment("test");
-                request.successUrl("com.braintreepayments.api.test.braintree", "success");
-
-                doReturn(true).when(request, "isValidResponse", anyString());
-
-                JSONObject decryptedPayload = mock(JSONObject.class);
-                when(decryptedPayload.getString("payment_code")).thenReturn("code");
-                when(decryptedPayload.getString("email")).thenReturn("test@paypal.com");
-                doReturn(decryptedPayload).when(request, "getDecryptedPayload", anyString());
-
                 return request;
             }
         }).when(PayPal.class, "getAuthorizationRequest", any(Context.class), any(PayPalConfiguration.class), anyString());
@@ -206,7 +202,7 @@ public class PayPalTest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Intent intent = new Intent()
-                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?payloadEnc=3vsdKACxHUPPfEFpfI9DeJcPw4f%2Bj9Rp5fJjf%2B9h%2FN6GjoBaRQkIa9oUV2Vtm1I%2FiZqjZqd%2FXWQ56sts0iyl7eAVCfEvXHlpfrBg5e89JDINUUSAGAhTYmJWvoNm5YGxkSXmefLHhdvao8bIHZ26ExNL25oKS9E7RWgBtwOx%2BzChE3u0klAlgSN027ex7GSezjk5CsXMrns7%2BmcebLObQoZb3C1XjKik2m4HhSwXSdR5ygRkaRSVO5e1PVz0oiUBxpzGiubNb9aPrRtWvx%2FRwq3RSHNUIa4LuslgrxVx2WIa0isNKR3bBwzFcYClLbS6065Cs60Desg0BZSrudkwgSNJDwKnIzJM8FC1m4Xd2ASd63XnMzBh1RzbouAXqsrdIJFFVcVTrU4yO6mWTFqklw%3D%3D&payload=eyJ2ZXJzaW9uIjozLCJtc2dfR1VJRCI6IjRhMDcwYjhmLTgyMDQtNDczMC05Y2M0LWZiNWQ3ZjE3YWY3OCIsInJlc3BvbnNlX3R5cGUiOiJjb2RlIiwiZW52aXJvbm1lbnQiOiJtb2NrIiwiZXJyb3IiOm51bGx9&x-source=com.braintree.browserswitch"));
+                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?payloadEnc=k7mNFgzs404Wy8VOReO2E%2FTpfDoC44E1iwjptDooIkjjh1TcAupUCM8812g3zmBruc%2BFeIIwZlEhu6ugAXvLs5u6aHG4KU7FuPPLDS9OO87WAw0v3n7QIPp%2Bd5o%2Bk4VZ047w%2FXiijFuFKb4SRe9fg8kYGAYCtUR1IrK%2BhuvB3VCg7rkLk9V0n2YF3WcvmaLUt8SIYok1dbG8Ou4zDIXaZp7%2ByGalcyjN3MW3OLstaehD2jpuxlP6WDG6dkB6LZ2LEnHDV0X7j2vOtmSrrCtYZuFhlB%2FkKNkgsVhBrbHdqsfsBKyc7sHlsgT0Dz0TXc3BHqjJIWLrOuglt78QOM92%2B7GFM6JL5%2BARzJ4Tp9iI%2BU4QyQLTSkOGTA0LgSBUhr2srF41lWTXw65F4A%3D%3D&payload=eyJ2ZXJzaW9uIjozLCJtc2dfR1VJRCI6ImM4NjJjZjAwLWY4NzgtNGUzOC1iYjgzLTY1YmNjNGI1MTgzMSIsInJlc3BvbnNlX3R5cGUiOiJjb2RlIiwiZW52aXJvbm1lbnQiOiJtb2NrIiwiZXJyb3IiOm51bGx9&x-source=com.braintree.browserswitch"));
                 PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
@@ -542,6 +538,10 @@ public class PayPalTest {
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
 
         verify(fragment).postCallback(any(PayPalAccountNonce.class));
+
+        SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(RuntimeEnvironment.application);
+        assertNull(prefs.getString("com.braintreepayments.api.PayPal.REQUEST_KEY", null));
+        assertNull(prefs.getString("com.braintreepayments.api.PayPal.REQUEST_TYPE_KEY", null));
     }
 
     @Test
@@ -613,5 +613,23 @@ public class PayPalTest {
         PayPal.onActivityResult(fragment, Activity.RESULT_OK, null);
 
         verify(fragment).postCancelCallback(PayPal.PAYPAL_REQUEST_CODE);
+    }
+
+    private void setField(String fieldName, Object src, Object value)
+            throws NoSuchFieldException, IllegalAccessException {
+        Field field = AuthorizationRequest.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+
+        field.set(src, value);
+    }
+
+    private Object getField(String fieldName, Object src) throws IllegalAccessException, NoSuchFieldException {
+        Field field = src.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field.get(src);
     }
 }
