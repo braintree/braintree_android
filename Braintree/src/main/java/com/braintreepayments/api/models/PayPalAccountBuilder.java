@@ -2,6 +2,8 @@ package com.braintreepayments.api.models;
 
 import android.content.Context;
 
+import com.braintreepayments.api.models.PayPalRequest.PayPalPaymentIntent;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,9 +16,11 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
 
     private static final String PAYPAL_ACCOUNT_KEY = "paypalAccount";
     private static final String CORRELATION_ID_KEY = "correlationId";
+    private static final String INTENT_KEY = "intent";
 
     private String mClientMetadataId;
     private JSONObject mOneTouchCoreData = new JSONObject();
+    private String mIntent;
 
     public PayPalAccountBuilder() {
         super();
@@ -48,9 +52,21 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
         return this;
     }
 
+    /**
+     * Used by PayPal wrappers to construct a request to create a PayPal account.
+     *
+     * @param intent Can be either {@link PayPalRequest#INTENT_AUTHORIZE} or {@link PayPalRequest#INTENT_SALE}.
+     * @return
+     */
+    public PayPalAccountBuilder intent(@PayPalPaymentIntent String intent) {
+        mIntent = intent;
+        return this;
+    }
+
     @Override
     protected void build(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
         paymentMethodNonceJson.put(CORRELATION_ID_KEY, mClientMetadataId);
+        paymentMethodNonceJson.put(INTENT_KEY, mIntent);
 
         Iterator<String> otcKeyIterator = mOneTouchCoreData.keys();
         while (otcKeyIterator.hasNext()) {

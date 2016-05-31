@@ -70,6 +70,7 @@ public class PayPal {
 
     private static final String REQUEST_KEY = "com.braintreepayments.api.PayPal.REQUEST_KEY";
     private static final String REQUEST_TYPE_KEY = "com.braintreepayments.api.PayPal.REQUEST_TYPE_KEY";
+    private static final String PAYPAL_REQUEST_KEY = "com.braintreepayments.api.PayPal.PAYPAL_REQUEST_KEY";
 
     protected static boolean sFuturePaymentsOverride = false;
 
@@ -87,6 +88,7 @@ public class PayPal {
     private static final String AMOUNT_KEY = "amount";
     private static final String CURRENCY_ISO_CODE_KEY = "currency_iso_code";
     private static final String PAYLOAD_CLIENT_TOKEN_KEY = "client_token";
+    private static final String INTENT_KEY = "intent";
 
     /**
      * Starts the Pay With PayPal flow. This will launch the PayPal app if installed or switch to
@@ -239,6 +241,7 @@ public class PayPal {
                 }
 
                 try {
+                    persistPayPalRequest(fragment.getApplicationContext(), paypalRequest);
                     createPaymentResource(fragment, paypalRequest, isBillingAgreement, callback);
                 } catch (JSONException | ErrorWithResponse | BraintreeException ex) {
                     fragment.postCallback(ex);
@@ -281,6 +284,7 @@ public class PayPal {
         if (!isBillingAgreement) {
             parameters.put(AMOUNT_KEY, request.getAmount())
                     .put(CURRENCY_ISO_CODE_KEY, currencyCode);
+            parameters.put(INTENT_KEY, request.getIntent());
         } else {
             if (!TextUtils.isEmpty(request.getBillingAgreementDescription())) {
                 parameters.put(DESCRIPTION_KEY, request.getBillingAgreementDescription());
@@ -397,7 +401,8 @@ public class PayPal {
     }
 
     private static void onSuccess(final BraintreeFragment fragment, Intent data, Request request, Result result) {
-        TokenizationClient.tokenize(fragment, parseResponse(request, result, data), new PaymentMethodNonceCallback() {
+        PayPalRequest paypalRequest = getPersistedPayPalRequest(fragment.getApplicationContext());
+        TokenizationClient.tokenize(fragment, parseResponse(paypalRequest, request, result, data), new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 fragment.postCallback(paymentMethodNonce);
@@ -413,13 +418,19 @@ public class PayPal {
     /**
      * Parse the PayPal response URL using OneTouchCore.
      *
+     * @param paypalRequest Original {@link PayPalRequest} that started this flow.
      * @param result Context that received the result.
      * @param intent The {@link Intent} returned in result.
      * @return A {@link PayPalAccountBuilder} or null if the intent is invalid.
      */
-    private static PayPalAccountBuilder parseResponse(Request request, Result result, Intent intent) {
+    private static PayPalAccountBuilder parseResponse(PayPalRequest paypalRequest, Request request, Result result,
+            Intent intent) {
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
                 .clientMetadataId(request.getClientMetadataId());
+
+        if (request instanceof CheckoutRequest && paypalRequest != null) {
+            paypalAccountBuilder.intent(paypalRequest.getIntent());
+        }
 
         if (isAppSwitch(intent)) {
             paypalAccountBuilder.source("paypal-app");
@@ -527,6 +538,14 @@ public class PayPal {
         return data.getData() == null;
     }
 
+    private static void persistPayPalRequest(Context context, PayPalRequest paypalRequest) {
+        Parcel parcel = Parcel.obtain();
+        paypalRequest.writeToParcel(parcel, 0);
+        BraintreeSharedPreferences.getSharedPreferences(context).edit()
+                .putString(PAYPAL_REQUEST_KEY, Base64.encodeToString(parcel.marshall(), 0))
+                .apply();
+    }
+
     private static void persistRequest(Context context, Request request) {
         Parcel parcel = Parcel.obtain();
         request.writeToParcel(parcel, 0);
@@ -534,6 +553,30 @@ public class PayPal {
                 .putString(REQUEST_KEY, Base64.encodeToString(parcel.marshall(), 0))
                 .putString(REQUEST_TYPE_KEY, request.getClass().getSimpleName())
                 .apply();
+    }
+
+    /**
+     * PayPalRequest is only used for One Time Payments
+     * @param context
+     * @return
+     */
+    private static PayPalRequest getPersistedPayPalRequest(Context context) {
+        SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(context);
+
+        try {
+            byte[] requestBytes = Base64.decode(prefs.getString(PAYPAL_REQUEST_KEY, ""), 0);
+            Parcel parcel = Parcel.obtain();
+            parcel.unmarshall(requestBytes, 0, requestBytes.length);
+            parcel.setDataPosition(0);
+            return PayPalRequest.CREATOR.createFromParcel(parcel);
+        } catch (Exception ignored) {
+        } finally {
+            prefs.edit()
+                    .remove(PAYPAL_REQUEST_KEY)
+                    .apply();
+        }
+
+        return null;
     }
 
     @Nullable
@@ -554,8 +597,8 @@ public class PayPal {
             } else if (CheckoutRequest.class.getSimpleName().equals(type)) {
                 return CheckoutRequest.CREATOR.createFromParcel(parcel);
             }
-        } catch (Exception ignored) {}
-        finally {
+        } catch (Exception ignored) {
+        } finally {
             prefs.edit()
                     .remove(REQUEST_KEY)
                     .remove(REQUEST_TYPE_KEY)

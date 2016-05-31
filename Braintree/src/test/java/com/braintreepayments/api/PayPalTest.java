@@ -14,6 +14,7 @@ import com.braintreepayments.api.internal.BraintreeSharedPreferences;
 import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PayPalConfiguration;
 import com.braintreepayments.api.models.PayPalRequest;
@@ -39,6 +40,7 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
@@ -49,6 +51,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -283,6 +286,21 @@ public class PayPalTest {
     }
 
     @Test
+    public void requestBillingAgreement_defaultPostParamsIncludeCorrectValues() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPal.requestBillingAgreement(fragment, new PayPalRequest());
+
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/setup_billing_agreement"), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        assertNull(json.opt("amount"));
+        assertNull(json.opt("intent"));
+    }
+
+    @Test
     public void requestBillingAgreement_isSuccessful() {
         final BraintreeFragment fragment = mMockFragmentBuilder
                 .successResponse(stringFromFixture("paypal_hermes_billing_agreement_response.json"))
@@ -365,6 +383,16 @@ public class PayPalTest {
     }
 
     @Test
+    public void requestBillingAgreement_persistsPayPalRequest() {
+        BraintreeFragment braintreeFragment = mMockFragmentBuilder.build();
+        SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(RuntimeEnvironment.application);
+
+        PayPal.requestOneTimePayment(braintreeFragment, new PayPalRequest("1").intent(PayPalRequest.INTENT_SALE));
+
+        assertNotNull(prefs.getString("com.braintreepayments.api.PayPal.PAYPAL_REQUEST_KEY", null));
+    }
+
+    @Test
     public void requestOneTimePayment_postsExceptionWhenNoAmountIsSet() {
         BraintreeFragment fragment = mMockFragmentBuilder.build();
 
@@ -392,6 +420,24 @@ public class PayPalTest {
         assertEquals("1", json.get("amount"));
         assertEquals(true, json.getJSONObject("experience_profile").get("no_shipping"));
         assertEquals(false, json.getJSONObject("experience_profile").get("address_override"));
+        assertEquals(PayPalRequest.INTENT_AUTHORIZE, json.get("intent"));
+    }
+
+    @Test
+    public void requestOneTimePayment_intent_canBeSetToSale() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").intent(PayPalRequest.INTENT_SALE));
+
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/create_payment_resource"), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        assertEquals("1", json.get("amount"));
+        assertEquals(true, json.getJSONObject("experience_profile").get("no_shipping"));
+        assertEquals(false, json.getJSONObject("experience_profile").get("address_override"));
+        assertEquals(PayPalRequest.INTENT_SALE, json.get("intent"));
     }
 
     @Test
@@ -545,6 +591,43 @@ public class PayPalTest {
     }
 
     @Test
+    public void requestOneTimePayment_containsPaymentIntent() throws JSONException, InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final BraintreeFragment fragment = mMockFragmentBuilder
+                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .build();
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Intent intent = new Intent()
+                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN"));
+                PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
+                return null;
+            }
+        }).when(fragment).startActivity(any(Intent.class));
+
+        mockStatic(TokenizationClient.class);
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                PayPalAccountBuilder payPalAccountBuilder = (PayPalAccountBuilder) invocation.getArguments()[1];
+                JSONObject payload = new JSONObject(payPalAccountBuilder.build());
+                assertEquals(PayPalRequest.INTENT_SALE, payload.getJSONObject("paypalAccount").getString("intent"));
+                ((PaymentMethodNonceCallback) invocation.getArguments()[2]).success(new PayPalAccountNonce());
+                latch.countDown();
+                return null;
+            }
+        }).when(TokenizationClient.class);
+        TokenizationClient.tokenize(any(BraintreeFragment.class), any(PaymentMethodBuilder.class),
+                any(PaymentMethodNonceCallback.class));
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").intent(PayPalRequest.INTENT_SALE));
+
+        SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(RuntimeEnvironment.application);
+        assertNull(prefs.getString("com.braintreepayments.api.PayPal.PAYPAL_REQUEST_KEY", null));
+        latch.await();
+    }
+
+    @Test
     public void requestOneTimePayment_doesNotCallCancelListenerWhenSuccessful() {
         final BraintreeFragment fragment = mMockFragmentBuilder
                 .successResponse(stringFromFixture("paypal_hermes_response.json"))
@@ -573,6 +656,16 @@ public class PayPalTest {
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
 
         verify(fragment, never()).postCancelCallback(anyInt());
+    }
+
+    @Test
+    public void requestOneTimePayment_persistsPayPalRequest() {
+        BraintreeFragment braintreeFragment = mMockFragmentBuilder.build();
+        SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(RuntimeEnvironment.application);
+
+        PayPal.requestOneTimePayment(braintreeFragment, new PayPalRequest("1").intent(PayPalRequest.INTENT_SALE));
+
+        assertNotNull(prefs.getString("com.braintreepayments.api.PayPal.PAYPAL_REQUEST_KEY", null));
     }
 
     @Test

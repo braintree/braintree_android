@@ -1,5 +1,8 @@
 package com.braintreepayments.api.models;
 
+import android.os.Parcel;
+
+import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -21,6 +24,7 @@ public class PayPalRequestTest {
         assertNull(request.getLocaleCode());
         assertFalse(request.isShippingAddressRequired());
         assertNull(request.getShippingAddressOverride());
+        assertEquals(PayPalRequest.INTENT_AUTHORIZE, request.getIntent());
     }
 
     @Test
@@ -31,7 +35,8 @@ public class PayPalRequestTest {
                 .localeCode("US")
                 .billingAgreementDescription("Billing Agreement Description")
                 .shippingAddressRequired(true)
-                .shippingAddressOverride(postalAddress);
+                .shippingAddressOverride(postalAddress)
+                .intent(PayPalRequest.INTENT_SALE);
 
         assertEquals("1.00", request.getAmount());
         assertEquals("USD", request.getCurrencyCode());
@@ -39,5 +44,32 @@ public class PayPalRequestTest {
         assertEquals("Billing Agreement Description", request.getBillingAgreementDescription());
         assertTrue(request.isShippingAddressRequired());
         assertEquals(postalAddress, request.getShippingAddressOverride());
+        assertEquals(PayPalRequest.INTENT_SALE, request.getIntent());
+    }
+
+    @Test
+    public void testWriteToParcel_serializesCorrectly() throws JSONException {
+        PostalAddress postalAddress = new PostalAddress();
+        PayPalRequest expected = new PayPalRequest("1.00")
+                .currencyCode("USD")
+                .localeCode("US")
+                .billingAgreementDescription("Billing Agreement Description")
+                .shippingAddressRequired(true)
+                .shippingAddressOverride(postalAddress)
+                .intent(PayPalRequest.INTENT_SALE);
+
+        Parcel parcel = Parcel.obtain();
+        expected.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+
+        PayPalRequest actual = new PayPalRequest(parcel);
+
+        assertEquals(expected.getAmount(), actual.getAmount());
+        assertEquals(expected.getBillingAgreementDescription(), actual.getBillingAgreementDescription());
+        assertEquals(expected.getCurrencyCode(), actual.getCurrencyCode());
+        assertEquals(expected.getIntent(), actual.getIntent());
+        assertEquals(expected.getLocaleCode(), actual.getLocaleCode());
+        assertEquals(expected.getShippingAddressOverride().toString(), actual.getShippingAddressOverride().toString());
+        assertEquals(expected.isShippingAddressRequired(), actual.isShippingAddressRequired());
     }
 }

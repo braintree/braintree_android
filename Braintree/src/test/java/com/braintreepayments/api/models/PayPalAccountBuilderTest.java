@@ -20,6 +20,7 @@ public class PayPalAccountBuilderTest {
     @Test
     public void build_correctlyBuildsAPayPalAccount() throws JSONException {
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
+                .intent(PayPalRequest.INTENT_SALE)
                 .clientMetadataId("correlation_id")
                 .source("paypal-sdk");
 
@@ -30,6 +31,7 @@ public class PayPalAccountBuilderTest {
 
         assertNull(jsonAccount.opt("details"));
         assertEquals("correlation_id", jsonAccount.getString("correlationId"));
+        assertEquals(PayPalRequest.INTENT_SALE, jsonAccount.getString("intent"));
         assertEquals("custom", jsonMetadata.getString("integration"));
         assertEquals("paypal-sdk", jsonMetadata.getString("source"));
     }
@@ -96,5 +98,15 @@ public class PayPalAccountBuilderTest {
         JSONAssert.assertEquals(oneTouchCoreData, paymentMethodNonceJson, JSONCompareMode.NON_EXTENSIBLE);
         JSONAssert.assertEquals(paymentMethodNonceJson, base.getJSONObject("paypalAccount"),
                 JSONCompareMode.NON_EXTENSIBLE);
+    }
+
+    @Test
+    public void build_doesNotIncludeIntentIfNotSet() throws JSONException {
+        PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder();
+        String json = paypalAccountBuilder.build();
+        JSONObject jsonObject = new JSONObject(json);
+        JSONObject jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY);
+
+        assertFalse(jsonAccount.has("intent"));
     }
 }

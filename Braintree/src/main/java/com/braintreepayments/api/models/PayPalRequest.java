@@ -1,5 +1,14 @@
 package com.braintreepayments.api.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.annotation.StringDef;
+
+import com.braintreepayments.api.BraintreeFragment;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Represents the parameters that are needed to start a Checkout with PayPal
  *
@@ -9,7 +18,13 @@ package com.braintreepayments.api.models;
  *
  * @see <a href="https://developer.paypal.com/docs/api/#inputfields-object">PayPal REST API Reference</a>
  */
-public class PayPalRequest {
+public class PayPalRequest implements Parcelable {
+
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({PayPalRequest.INTENT_SALE, PayPalRequest.INTENT_AUTHORIZE})
+    public @interface PayPalPaymentIntent {}
+    public static final String INTENT_SALE = "sale";
+    public static final String INTENT_AUTHORIZE = "authorize";
 
     private String mAmount;
     private String mCurrencyCode;
@@ -17,6 +32,7 @@ public class PayPalRequest {
     private String mBillingAgreementDescription;
     private boolean mShippingAddressRequired;
     private PostalAddress mShippingAddressOverride;
+    private String mIntent = INTENT_AUTHORIZE;
 
     /**
      * Constructs a description of a PayPal checkout for Single Payment and Billing Agreements.
@@ -39,7 +55,8 @@ public class PayPalRequest {
      * Constructs a {@link PayPalRequest} with a null amount.
      */
     public PayPalRequest() {
-        this(null);
+        mAmount = null;
+        mShippingAddressRequired = false;
     }
 
     /**
@@ -96,6 +113,17 @@ public class PayPalRequest {
         return this;
     }
 
+    /**
+     * Payment intent. Only applies when calling
+     * {@link com.braintreepayments.api.PayPal#requestOneTimePayment(BraintreeFragment, PayPalRequest)}.
+     *
+     * @param intent Can be either {@link PayPalRequest#INTENT_AUTHORIZE} or {@link PayPalRequest#INTENT_SALE}.
+     */
+    public PayPalRequest intent(@PayPalPaymentIntent String intent) {
+        mIntent = intent;
+        return this;
+    }
+
     public String getAmount() {
         return mAmount;
     }
@@ -119,4 +147,47 @@ public class PayPalRequest {
     public PostalAddress getShippingAddressOverride() {
         return mShippingAddressOverride;
     }
+
+    @PayPalPaymentIntent
+    public String getIntent() {
+        return mIntent;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(mAmount);
+        parcel.writeString(mCurrencyCode);
+        parcel.writeString(mLocaleCode);
+        parcel.writeString(mBillingAgreementDescription);
+        parcel.writeByte(mShippingAddressRequired ? (byte) 1:0);
+        parcel.writeParcelable(mShippingAddressOverride, i);
+        parcel.writeString(mIntent);
+    }
+
+    public PayPalRequest(Parcel in) {
+        mAmount = in.readString();
+        mCurrencyCode = in.readString();
+        mLocaleCode = in.readString();
+        mBillingAgreementDescription = in.readString();
+        mShippingAddressRequired = in.readByte() > 0;
+        mShippingAddressOverride = in.readParcelable(PostalAddress.class.getClassLoader());
+        mIntent = in.readString();
+    }
+
+    public static final Creator<PayPalRequest> CREATOR = new Creator<PayPalRequest>() {
+        @Override
+        public PayPalRequest createFromParcel(Parcel in) {
+            return new PayPalRequest(in);
+        }
+
+        @Override
+        public PayPalRequest[] newArray(int size) {
+            return new PayPalRequest[size];
+        }
+    };
 }
