@@ -76,6 +76,7 @@ public class AddPaymentMethodViewController extends BraintreeViewController impl
                 mBraintreeFragment.getConfiguration().isCvvChallengePresent(),
                 mBraintreeFragment.getConfiguration().isPostalCodeChallengePresent(),
                 getCustomizedCallToAction());
+        mCardForm.useDialogForExpirationDateEntry(mActivity, false);
         mCardForm.setOnCardFormValidListener(this);
         mCardForm.setOnCardFormSubmitListener(this);
         mCardForm.setOnFormFieldFocusedListener(this);
