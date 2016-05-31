@@ -67,7 +67,7 @@ public class Settings {
     }
 
     public static boolean shouldCollectDeviceData(Context context) {
-        return getPreferences(context).getBoolean("collect_device_data", true);
+        return getPreferences(context).getBoolean("collect_device_data", false);
     }
 
     public static String getThreeDSecureMerchantAccountId(Context context) {

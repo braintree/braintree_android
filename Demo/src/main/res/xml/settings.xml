@@ -30,7 +30,7 @@
             android:key="collect_device_data"
             android:title="@string/collect_device_data"
             android:summary="@string/collect_device_data_summary"
-            android:defaultValue="true" />
+            android:defaultValue="false" />
 
     </PreferenceCategory>
 
