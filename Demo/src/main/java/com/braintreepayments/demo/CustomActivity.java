@@ -2,6 +2,7 @@ package com.braintreepayments.demo;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -60,10 +61,10 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     private static final int ANDROID_PAY_MASKED_WALLET_REQUEST_CODE = 1;
     private static final int ANDROID_PAY_FULL_WALLET_REQUEST_CODE = 2;
 
+    private Configuration mConfiguration;
     private GoogleApiClient mGoogleApiClient;
     private Cart mCart;
     private String mDeviceData;
-    private boolean mUnionPayEnabled;
     private boolean mIsUnionPay;
     private String mEnrollmentId;
 
@@ -92,7 +93,6 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
         mAndroidPayButton = (ImageButton) findViewById(R.id.android_pay_button);
 
         mCardForm = (CardForm) findViewById(R.id.card_form);
-        mCardForm.setRequiredFields(this, true, true, false, false, getString(R.string.purchase));
         mCardForm.setOnFormFieldFocusedListener(this);
         mCardForm.setOnCardFormSubmitListener(this);
 
@@ -145,6 +145,11 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
 
     @Override
     public void onConfigurationFetched(Configuration configuration) {
+        mConfiguration = configuration;
+
+        mCardForm.setRequiredFields(this, true, true, configuration.isCvvChallengePresent(),
+                configuration.isPostalCodeChallengePresent(), getString(R.string.purchase));
+
         if (configuration.isPayPalEnabled()) {
             mPayPalButton.setVisibility(VISIBLE);
         }
@@ -160,10 +165,6 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
             });
         }
 
-        if (configuration.getUnionPay().isEnabled()) {
-            mUnionPayEnabled = true;
-        }
-
         if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {
             mDeviceData = DataCollector.collectDeviceData(mBraintreeFragment);
         }
@@ -171,12 +172,12 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
 
     @Override
     public void onCardFormFieldFocused(View field) {
-        if (!(field instanceof CardEditText)) {
+        if (!(field instanceof CardEditText) && !TextUtils.isEmpty(mCardForm.getCardNumber())) {
             CardType cardType = CardType.forCardNumber(mCardForm.getCardNumber());
             if (mCardType != cardType) {
                 mCardType  = cardType;
 
-                if (mUnionPayEnabled) {
+                if (mConfiguration.getUnionPay().isEnabled()) {
                     UnionPay.fetchCapabilities(mBraintreeFragment, mCardForm.getCardNumber());
                 }
             }
@@ -190,6 +191,9 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
             mCountryCode.setVisibility(VISIBLE);
             mMobilePhone.setVisibility(VISIBLE);
             mSendSmsButton.setVisibility(VISIBLE);
+
+            mCardForm.setRequiredFields(this, true, true, true, mConfiguration.isPostalCodeChallengePresent(),
+                    getString(R.string.purchase));
         } else {
             mIsUnionPay = false;
             mCountryCode.setVisibility(GONE);
@@ -197,6 +201,13 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
             mMobilePhone.setVisibility(GONE);
             mMobilePhone.setText("");
             mSendSmsButton.setVisibility(GONE);
+
+            mCardForm.setRequiredFields(this, true, true, mConfiguration.isCvvChallengePresent(),
+                    mConfiguration.isPostalCodeChallengePresent(), getString(R.string.purchase));
+
+            if (!mConfiguration.isCvvChallengePresent()) {
+                ((EditText) findViewById(R.id.bt_card_form_cvv)).setText("");
+            }
         }
     }
 
