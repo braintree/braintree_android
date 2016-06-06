@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 2.3.2
+
+* Fix `NullPointerException` when handling a PayPal response (fixes [#101](https://github.com/braintree/braintree_android/issues/101))
+
 ## 2.3.1
 
 * Fix `NullPointerException`s in `BraintreeFragment` when not attached to an `Activity`
