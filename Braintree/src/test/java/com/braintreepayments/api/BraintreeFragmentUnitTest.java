@@ -31,6 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -651,7 +652,7 @@ public class BraintreeFragmentUnitTest {
         mockConfigurationManager(Configuration.fromJson(configuration));
 
         Robolectric.getForegroundThreadScheduler().pause();
-        Context context = spy(RuntimeEnvironment.application);
+        Context context = Mockito.spy(RuntimeEnvironment.application);
         when(mActivity.getApplicationContext()).thenReturn(context);
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         Robolectric.getForegroundThreadScheduler().unPause();
