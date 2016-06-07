@@ -120,6 +120,25 @@ public class BraintreeFragmentUnitTest {
         assertEquals(fragment1, fragment2);
     }
 
+    @Test(expected = InvalidArgumentException.class)
+    public void newInstance_throwsAnExceptionWhenActivityIsNull() throws InvalidArgumentException {
+        BraintreeFragment.newInstance(null, TOKENIZATION_KEY);
+    }
+
+    @Test(expected = InvalidArgumentException.class)
+    public void newInstance_throwsAnExceptionWhenActivityIsDestroyed() throws InvalidArgumentException {
+        Activity activity = Robolectric.buildActivity(FragmentTestActivity.class)
+                .create()
+                .start()
+                .resume()
+                .pause()
+                .stop()
+                .destroy()
+                .get();
+
+        BraintreeFragment.newInstance(activity, TOKENIZATION_KEY);
+    }
+
     @Test
     public void onCreate_callsFetchConfiguration() throws InvalidArgumentException {
         mockStatic(ConfigurationManager.class);

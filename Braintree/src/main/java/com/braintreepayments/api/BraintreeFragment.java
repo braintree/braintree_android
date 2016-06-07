@@ -106,6 +106,10 @@ public class BraintreeFragment extends Fragment {
      */
     public static BraintreeFragment newInstance(Activity activity, String authorization)
             throws InvalidArgumentException {
+        if (activity == null) {
+            throw new InvalidArgumentException("Activity is null");
+        }
+
         FragmentManager fm = activity.getFragmentManager();
 
         String integrationType = "custom";
@@ -130,7 +134,12 @@ public class BraintreeFragment extends Fragment {
 
             bundle.putString(EXTRA_INTEGRATION_TYPE, integrationType);
             braintreeFragment.setArguments(bundle);
-            fm.beginTransaction().add(braintreeFragment, TAG).commit();
+
+            try {
+                fm.beginTransaction().add(braintreeFragment, TAG).commit();
+            } catch (IllegalStateException e) {
+                throw new InvalidArgumentException(e.getMessage());
+            }
         }
 
         braintreeFragment.mContext = activity.getApplicationContext();
