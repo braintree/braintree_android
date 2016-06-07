@@ -135,6 +135,9 @@ public class BraintreePaymentActivity extends Activity implements
         if (mPaymentRequest.shouldCollectDeviceData()) {
             mDeviceData = DataCollector.collectDeviceData(mBraintreeFragment);
         }
+        if (mAddPaymentMethodViewController != null) {
+            mAddPaymentMethodViewController.onConfigurationFetched(configuration);
+        }
     }
 
     @Override

@@ -12,7 +12,9 @@ import com.braintreepayments.api.exceptions.BraintreeError;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
+import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.cardform.OnCardFormFieldFocusedListener;
 import com.braintreepayments.cardform.OnCardFormSubmitListener;
 import com.braintreepayments.cardform.OnCardFormValidListener;
@@ -23,7 +25,7 @@ import com.braintreepayments.cardform.view.CardForm;
  * Responsible for managing views and form element bindings associated with adding a payment method.
  */
 public class AddPaymentMethodViewController extends BraintreeViewController implements OnClickListener,
-        OnCardFormSubmitListener, OnCardFormValidListener, OnCardFormFieldFocusedListener {
+        OnCardFormSubmitListener, OnCardFormValidListener, OnCardFormFieldFocusedListener, ConfigurationListener {
 
     private static final String EXTRA_FORM_IS_SUBMITTING = "com.braintreepayments.dropin.EXTRA_FORM_IS_SUBMITTING";
     private static final String EXTRA_SUBMIT_BUTTON_ENABLED = "com.braintreepayments.dropin.EXTRA_SUBMIT_BUTTON_ENABLED";
@@ -72,10 +74,13 @@ public class AddPaymentMethodViewController extends BraintreeViewController impl
             // already checked in BraintreePaymentActivity
         }
 
-        mCardForm.setRequiredFields(mActivity, true, true,
+        if (mBraintreeFragment.getConfiguration() == null) {
+            mCardForm.setRequiredFields(mActivity, true, true, false, false, getCustomizedCallToAction());
+        } else {
+            mCardForm.setRequiredFields(mActivity, true, true,
                 mBraintreeFragment.getConfiguration().isCvvChallengePresent(),
-                mBraintreeFragment.getConfiguration().isPostalCodeChallengePresent(),
-                getCustomizedCallToAction());
+                mBraintreeFragment.getConfiguration().isPostalCodeChallengePresent(), getCustomizedCallToAction());
+        }
         mCardForm.setOnCardFormValidListener(this);
         mCardForm.setOnCardFormSubmitListener(this);
         mCardForm.setOnFormFieldFocusedListener(this);
@@ -252,5 +257,13 @@ public class AddPaymentMethodViewController extends BraintreeViewController impl
 
     private void setDisabledSubmitButtonStyle() {
         mSubmitButton.setBackgroundResource(com.braintreepayments.api.dropin.R.color.bt_button_disabled_color);
+    }
+
+    @Override
+    public void onConfigurationFetched(Configuration configuration) {
+        mCardForm.setRequiredFields(mActivity, true, true,
+                configuration.isCvvChallengePresent(),
+                configuration.isPostalCodeChallengePresent(),
+                getCustomizedCallToAction());
     }
 }
