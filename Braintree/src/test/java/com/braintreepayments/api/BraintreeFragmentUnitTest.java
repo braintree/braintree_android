@@ -211,8 +211,10 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void onSaveInstanceState_savesState() throws InvalidArgumentException {
+    public void onSaveInstanceState_savesState() throws InvalidArgumentException, JSONException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        Configuration configuration = Configuration.fromJson(new TestConfigurationStringBuilder().build());
+        fragment.mConfiguration = configuration;
         Bundle bundle = new Bundle();
 
         fragment.onSaveInstanceState(bundle);
@@ -220,6 +222,7 @@ public class BraintreeFragmentUnitTest {
         assertTrue(bundle.getParcelableArrayList(BraintreeFragment.EXTRA_CACHED_PAYMENT_METHOD_NONCES).isEmpty());
         assertFalse(bundle.getBoolean(BraintreeFragment.EXTRA_FETCHED_PAYMENT_METHOD_NONCES));
         assertFalse(bundle.getBoolean(BraintreeFragment.EXTRA_BROWSER_SWITCHING));
+        assertEquals(configuration.toJson(), bundle.getString(BraintreeFragment.EXTRA_CONFIGURATION));
     }
 
     @Test

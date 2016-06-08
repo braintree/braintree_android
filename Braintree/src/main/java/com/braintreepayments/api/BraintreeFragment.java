@@ -20,10 +20,10 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
+import com.braintreepayments.api.interfaces.UnionPayListener;
 import com.braintreepayments.api.internal.AnalyticsDatabase;
 import com.braintreepayments.api.internal.AnalyticsEvent;
 import com.braintreepayments.api.internal.AnalyticsIntentService;
-import com.braintreepayments.api.interfaces.UnionPayListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.internal.UUIDHelper;
 import com.braintreepayments.api.models.Authorization;
@@ -37,6 +37,8 @@ import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
+
+import org.json.JSONException;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -55,6 +57,8 @@ public class BraintreeFragment extends Fragment {
     private static final String EXTRA_INTEGRATION_TYPE = "com.braintreepayments.api.EXTRA_INTEGRATION_TYPE";
     private static final String EXTRA_SESSION_ID = "com.braintreepayments.api.EXTRA_SESSION_ID";
 
+    @VisibleForTesting
+    static final String EXTRA_CONFIGURATION = "com.braintreepayments.api.EXTRA_CONFIGURATION";
     @VisibleForTesting
     static final String EXTRA_BROWSER_SWITCHING = "com.braintreepayments.api.EXTRA_BROWSER_SWITCHING";
     @VisibleForTesting
@@ -156,10 +160,6 @@ public class BraintreeFragment extends Fragment {
             mHttpClient = new BraintreeHttpClient(mAuthorization);
         }
 
-        if (getConfiguration() == null) {
-            fetchConfiguration();
-        }
-
         if (savedInstanceState != null) {
             List<PaymentMethodNonce> paymentMethodNonces =
                     savedInstanceState.getParcelableArrayList(EXTRA_CACHED_PAYMENT_METHOD_NONCES);
@@ -170,6 +170,9 @@ public class BraintreeFragment extends Fragment {
             mHasFetchedPaymentMethodNonces = savedInstanceState.getBoolean(EXTRA_FETCHED_PAYMENT_METHOD_NONCES);
             mIsBrowserSwitching = savedInstanceState.getBoolean(EXTRA_BROWSER_SWITCHING);
             mSessionId = savedInstanceState.getString(EXTRA_SESSION_ID);
+            try {
+                mConfiguration = Configuration.fromJson(savedInstanceState.getString(EXTRA_CONFIGURATION));
+            } catch (JSONException ignored) {}
         } else {
             mSessionId = UUIDHelper.getFormattedUUID();
             if (mAuthorization instanceof TokenizationKey) {
@@ -177,6 +180,10 @@ public class BraintreeFragment extends Fragment {
             } else {
                 sendAnalyticsEvent("started.client-token");
             }
+        }
+
+        if (getConfiguration() == null) {
+            fetchConfiguration();
         }
     }
 
@@ -226,6 +233,7 @@ public class BraintreeFragment extends Fragment {
         outState.putBoolean(EXTRA_FETCHED_PAYMENT_METHOD_NONCES, mHasFetchedPaymentMethodNonces);
         outState.putBoolean(EXTRA_BROWSER_SWITCHING, mIsBrowserSwitching);
         outState.putString(EXTRA_SESSION_ID, mSessionId);
+        outState.putString(EXTRA_CONFIGURATION, mConfiguration.toJson());
     }
 
     @Override
