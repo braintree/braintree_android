@@ -250,12 +250,25 @@ public class UnionPayTest {
 
     @Test(timeout = 10000)
     public void tokenize_unionPayCredit_withExpirationDate() throws InvalidArgumentException, InterruptedException {
-        UnionPayCardBuilder cardBuilder = new UnionPayCardBuilder()
+        final UnionPayCardBuilder cardBuilder = new UnionPayCardBuilder()
                 .cardNumber(CardNumber.UNIONPAY_CREDIT)
                 .expirationDate("08/20")
-                .enrollmentId("3nr011m3nt")
-                .smsCode("12345")
-                .cvv("123");
+                .cvv("123")
+                .mobileCountryCode("62")
+                .mobilePhoneNumber("1111111111");
+
+        mBraintreeFragment.addListener(new UnionPayListener() {
+            @Override
+            public void onCapabilitiesFetched(UnionPayCapabilities capabilities) {}
+
+            @Override
+            public void onSmsCodeSent(String enrollmentId) {
+                cardBuilder.enrollmentId(enrollmentId);
+                cardBuilder.smsCode("12345");
+                UnionPay.tokenize(mBraintreeFragment, cardBuilder);
+
+            }
+        });
 
         mBraintreeFragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
@@ -265,20 +278,32 @@ public class UnionPayTest {
             }
         });
 
-        UnionPay.tokenize(mBraintreeFragment, cardBuilder);
+        UnionPay.enroll(mBraintreeFragment, cardBuilder);
 
         mCountDownLatch.await();
     }
 
-    @Test(timeout = 10000)
+    @Test(timeout = 30000)
     public void tokenize_unionPayCredit_withExpirationMonthAndYear() throws InvalidArgumentException, InterruptedException {
-        UnionPayCardBuilder cardBuilder = new UnionPayCardBuilder()
+        final UnionPayCardBuilder cardBuilder = new UnionPayCardBuilder()
                 .cardNumber(CardNumber.UNIONPAY_CREDIT)
                 .expirationMonth("08")
                 .expirationYear("20")
-                .enrollmentId("3nr011m3nt")
-                .smsCode("12345")
-                .cvv("123");
+                .cvv("123")
+                .mobileCountryCode("62")
+                .mobilePhoneNumber("1111111111");
+
+        mBraintreeFragment.addListener(new UnionPayListener() {
+            @Override
+            public void onCapabilitiesFetched(UnionPayCapabilities capabilities) {}
+
+            @Override
+            public void onSmsCodeSent(String enrollmentId) {
+                cardBuilder.enrollmentId(enrollmentId);
+                cardBuilder.smsCode("12345");
+                UnionPay.tokenize(mBraintreeFragment, cardBuilder);
+            }
+        });
 
         mBraintreeFragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
@@ -288,7 +313,7 @@ public class UnionPayTest {
             }
         });
 
-        UnionPay.tokenize(mBraintreeFragment, cardBuilder);
+        UnionPay.enroll(mBraintreeFragment, cardBuilder);
 
         mCountDownLatch.await();
     }
