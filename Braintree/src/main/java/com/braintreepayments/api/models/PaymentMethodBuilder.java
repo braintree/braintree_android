@@ -15,9 +15,9 @@ import org.json.JSONObject;
 public abstract class PaymentMethodBuilder<T> {
 
     protected static final String METADATA_KEY = "_meta";
+    protected static final String OPTIONS_KEY = "options";
     private static final String SOURCE_KEY = "source";
     private static final String INTEGRATION_KEY = "integration";
-    private static final String OPTIONS_KEY = "options";
     private static final String VALIDATE_KEY = "validate";
     private static final String SESSION_ID_KEY = "sessionId";
 

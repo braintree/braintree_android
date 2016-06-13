@@ -13,7 +13,6 @@ public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> im
 
     private static final String UNIONPAY_ENROLLMENT_KEY = "unionPayEnrollment";
     private static final String UNIONPAY_KEY = "creditCard";
-    private static final String OPTIONS_KEY = "options";
     private static final String MOBILE_COUNTRY_CODE_KEY = "mobileCountryCode";
     private static final String MOBILE_PHONE_NUMBER_KEY = "mobileNumber";
     private static final String SMS_CODE_KEY = "smsCode";
