@@ -78,6 +78,14 @@ public class Settings {
         }
     }
 
+    public static String getUnionPayMerchantAccountId(Context context) {
+        if (getEnvironment(context) == 0) {
+            return "fake_switch_usd";
+        } else {
+            return null;
+        }
+    }
+
     public static boolean useTokenizationKey(Context context) {
         return getPreferences(context).getBoolean("tokenization_key", false);
     }

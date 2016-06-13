@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.braintreepayments.api.dropin.view.SecureLoadingProgressBar;
+import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.demo.models.Transaction;
 
@@ -27,12 +28,10 @@ public class CreateTransactionActivity extends Activity {
         mLoadingSpinner = (SecureLoadingProgressBar) findViewById(R.id.loading_spinner);
         setTitle(R.string.processing_transaction);
 
-        sendNonceToServer(
-                ((PaymentMethodNonce) getIntent().getParcelableExtra(EXTRA_PAYMENT_METHOD_NONCE))
-                        .getNonce());
+        sendNonceToServer((PaymentMethodNonce) getIntent().getParcelableExtra(EXTRA_PAYMENT_METHOD_NONCE));
     }
 
-    private void sendNonceToServer(String nonce) {
+    private void sendNonceToServer(PaymentMethodNonce nonce) {
         Callback<Transaction> callback = new Callback<Transaction>() {
             @Override
             public void success(Transaction transaction, Response response) {
@@ -60,13 +59,16 @@ public class CreateTransactionActivity extends Activity {
         };
 
         if (Settings.isThreeDSecureEnabled(this) && Settings.isThreeDSecureRequired(this)) {
-            DemoApplication.getApiClient(this).createTransaction(nonce,
+            DemoApplication.getApiClient(this).createTransaction(nonce.getNonce(),
                     Settings.getThreeDSecureMerchantAccountId(this), true, callback);
         } else if (Settings.isThreeDSecureEnabled(this)) {
-            DemoApplication.getApiClient(this).createTransaction(nonce,
+            DemoApplication.getApiClient(this).createTransaction(nonce.getNonce(),
                     Settings.getThreeDSecureMerchantAccountId(this), callback);
+        } else if (nonce instanceof CardNonce && ((CardNonce) nonce).getCardType().equals("UnionPay")) {
+            DemoApplication.getApiClient(this).createTransaction(nonce.getNonce(),
+                    Settings.getUnionPayMerchantAccountId(this), callback);
         } else {
-            DemoApplication.getApiClient(this).createTransaction(nonce, callback);
+            DemoApplication.getApiClient(this).createTransaction(nonce.getNonce(), callback);
         }
     }
 
