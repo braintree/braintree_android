@@ -67,6 +67,19 @@ public class CustomTest extends TestHelper {
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
+    @Test(timeout = 60000)
+    public void tokenizesUnionPay_whenEnrollmentIsNotRequired() {
+        onDevice(withText("Card Number")).perform(setText(CardNumber.UNIONPAY_ENROLLMENT_NOT_REQUIRED));
+        fillInExpiration();
+        onDevice(withText("CVV")).perform(setText("123"));
+        onDevice(withText("Purchase")).perform(click());
+
+        getNonceDetails().check(text(containsString("Card Last Two: 85")));
+
+        onDevice(withText("Create a Transaction")).perform(click());
+        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
+    }
+
     @RequiresDevice
     @Test(timeout = 60000)
     public void tokenizesAndroidPay() {

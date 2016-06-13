@@ -188,19 +188,12 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     public void onCapabilitiesFetched(UnionPayCapabilities capabilities) {
         if (capabilities.isUnionPay()) {
             mIsUnionPay = true;
-            mCountryCode.setVisibility(VISIBLE);
-            mMobilePhone.setVisibility(VISIBLE);
-            mSendSmsButton.setVisibility(VISIBLE);
+            mEnrollmentId = null;
 
             mCardForm.setRequiredFields(this, true, true, true, mConfiguration.isPostalCodeChallengePresent(),
                     getString(R.string.purchase));
         } else {
             mIsUnionPay = false;
-            mCountryCode.setVisibility(GONE);
-            mCountryCode.setText("");
-            mMobilePhone.setVisibility(GONE);
-            mMobilePhone.setText("");
-            mSendSmsButton.setVisibility(GONE);
 
             mCardForm.setRequiredFields(this, true, true, mConfiguration.isCvvChallengePresent(),
                     mConfiguration.isPostalCodeChallengePresent(), getString(R.string.purchase));
@@ -208,6 +201,18 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
             if (!mConfiguration.isCvvChallengePresent()) {
                 ((EditText) findViewById(R.id.bt_card_form_cvv)).setText("");
             }
+        }
+
+        if (capabilities.isUnionPayEnrollmentRequired()) {
+            mCountryCode.setVisibility(VISIBLE);
+            mMobilePhone.setVisibility(VISIBLE);
+            mSendSmsButton.setVisibility(VISIBLE);
+        } else {
+            mCountryCode.setVisibility(GONE);
+            mCountryCode.setText("");
+            mMobilePhone.setVisibility(GONE);
+            mMobilePhone.setText("");
+            mSendSmsButton.setVisibility(GONE);
         }
     }
 

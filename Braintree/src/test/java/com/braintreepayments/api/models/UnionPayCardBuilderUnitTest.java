@@ -7,7 +7,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 
+import static com.braintreepayments.api.models.BaseCardBuilder.BILLING_ADDRESS_KEY;
+import static com.braintreepayments.api.models.BaseCardBuilder.CREDIT_CARD_KEY;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricGradleTestRunner.class)
@@ -117,6 +120,33 @@ public class UnionPayCardBuilderUnitTest {
                 .getJSONObject("options")
                 .getJSONObject("unionPayEnrollment")
                 .getString("id"));
+    }
+
+    @Test
+    public void doesNotIncludeEmptyStrings() throws JSONException {
+        UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
+                .cardNumber("")
+                .expirationDate("")
+                .expirationMonth("")
+                .expirationYear("")
+                .cvv("")
+                .postalCode("")
+                .cardholderName("")
+                .firstName("")
+                .lastName("")
+                .streetAddress("")
+                .locality("")
+                .postalCode("")
+                .region("")
+                .countryName("")
+                .enrollmentId("")
+                .mobileCountryCode("")
+                .mobilePhoneNumber("")
+                .smsCode("");
+
+        assertEquals("{\"options\":{\"unionPayEnrollment\":{}}}",
+                new JSONObject(unionPayCardBuilder.build()).getJSONObject(CREDIT_CARD_KEY).toString());
+        assertFalse(new JSONObject(unionPayCardBuilder.build()).has(BILLING_ADDRESS_KEY));
     }
 
     @Test

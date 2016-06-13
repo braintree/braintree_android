@@ -2,6 +2,7 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,7 +31,11 @@ public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> im
      * @return {@link com.braintreepayments.api.models.UnionPayCardBuilder}
      */
     public UnionPayCardBuilder mobileCountryCode(String mobileCountryCode) {
-        mMobileCountryCode = mobileCountryCode;
+        if (TextUtils.isEmpty(mobileCountryCode)) {
+            mMobileCountryCode = null;
+        } else {
+            mMobileCountryCode = mobileCountryCode;
+        }
         return this;
     }
 
@@ -39,7 +44,11 @@ public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> im
      * @return {@link com.braintreepayments.api.models.UnionPayCardBuilder}
      */
     public UnionPayCardBuilder mobilePhoneNumber(String mobilePhoneNumber) {
-        mMobilePhoneNumber = mobilePhoneNumber;
+        if (TextUtils.isEmpty(mobilePhoneNumber)) {
+            mMobilePhoneNumber = null;
+        } else {
+            mMobilePhoneNumber = mobilePhoneNumber;
+        }
         return this;
     }
 
@@ -48,7 +57,11 @@ public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> im
      * @return {@link com.braintreepayments.api.models.UnionPayCardBuilder}
      */
     public UnionPayCardBuilder smsCode(String smsCode) {
-        mSmsCode = smsCode;
+        if (TextUtils.isEmpty(smsCode)) {
+            mSmsCode = null;
+        } else {
+            mSmsCode = smsCode;
+        }
         return this;
     }
 
@@ -57,7 +70,11 @@ public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> im
      * @return {@link com.braintreepayments.api.models.UnionPayCardBuilder}
      */
     public UnionPayCardBuilder enrollmentId(String enrollmentId) {
-        mEnrollmentId = enrollmentId;
+        if (TextUtils.isEmpty(enrollmentId)) {
+            mEnrollmentId = null;
+        } else {
+            mEnrollmentId = enrollmentId;
+        }
         return this;
     }
 
