@@ -1,9 +1,8 @@
 package com.braintreepayments.api.models;
 
-import android.content.Context;
 import android.text.TextUtils;
 
-import com.braintreepayments.api.test.VenmoMockContext;
+import com.braintreepayments.api.test.VenmoInstalledContextFactory;
 
 import org.json.JSONException;
 import org.junit.Before;
@@ -28,6 +27,12 @@ public class VenmoConfigurationUnitTest {
     }
 
     @Test
+    public void isVenmoWhitelisted_returnsTrueForWhitelist() {
+        assertTrue(mConfiguration.getPayWithVenmo().isVenmoWhitelisted(VenmoInstalledContextFactory
+                .venmoInstalledContext(true).getContentResolver()));
+    }
+
+    @Test
     public void fromJson_parsesPayWithVenmoConfiguration() throws JSONException {
         assertEquals("access-token", mConfiguration.getPayWithVenmo().getAccessToken());
         assertEquals("environment", mConfiguration.getPayWithVenmo().getEnvironment());
@@ -48,50 +53,13 @@ public class VenmoConfigurationUnitTest {
     }
 
     @Test
-    public void isVenmoWhitelisted_returnsTrueForWhitelist() throws JSONException {
-        Context context = new VenmoMockContext()
-                .whitelistValue("true")
-                .build();
-
-        assertTrue(mConfiguration.getPayWithVenmo().isVenmoWhitelisted(context.getContentResolver()));
-    }
-
-    @Test
-    public void isVenmoWhitelisted_returnsFalseForInvalidWhitelist() {
-        Context context = new VenmoMockContext()
-                .whitelistValue("false")
-                .build();
-
-        assertFalse(mConfiguration.getPayWithVenmo().isVenmoWhitelisted(context.getContentResolver()));
-    }
-
-    @Test
-    public void isVenmoWhitelisted_returnsFalseForJunkContentProviderAndExceptionIsPosted() {
-        Context context = new VenmoMockContext()
-                .whitelistValue("neither")
-                .build();
-
-        assertFalse(mConfiguration.getPayWithVenmo().isVenmoWhitelisted(context.getContentResolver()));
-    }
-
-    @Test
     public void isEnabled_returnsTrueWhenAppIsInstalled() throws JSONException {
-        Context context = new VenmoMockContext()
-                .whitelistValue("true")
-                .venmoInstalled()
-                .build();
-
         disableSignatureVerification();
-
-        assertTrue(mConfiguration.getPayWithVenmo().isEnabled(context));
+        assertTrue(mConfiguration.getPayWithVenmo().isEnabled(VenmoInstalledContextFactory.venmoInstalledContext(true)));
     }
 
     @Test
     public void isEnabled_returnsFalseForNotInstalled() {
-        Context context = new VenmoMockContext()
-                .whitelistValue("true")
-                .build();
-
-        assertFalse(mConfiguration.getPayWithVenmo().isEnabled(context));
+        assertFalse(mConfiguration.getPayWithVenmo().isEnabled(VenmoInstalledContextFactory.venmoInstalledContext(false)));
     }
 }

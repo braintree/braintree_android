@@ -3,7 +3,6 @@ package com.braintreepayments.api.models;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -75,24 +74,18 @@ public class VenmoConfiguration {
      * @return boolean if Venmo is enabled, and available to be used
      */
     public boolean isEnabled(Context context) {
-        return isAccessTokenValid() &&
-                isVenmoWhitelisted(context.getContentResolver()) &&
-                Venmo.isVenmoInstalled(context);
+        return isAccessTokenValid() && Venmo.isVenmoInstalled(context);
     }
 
     public boolean isAccessTokenValid() {
         return !TextUtils.isEmpty(mAccessToken);
     }
 
+    /**
+     * @deprecated Pay with Venmo no longer requires a user whitelist
+     */
+    @Deprecated
     public boolean isVenmoWhitelisted(ContentResolver contentResolver) {
-        Cursor cursor = contentResolver.query(VENMO_AUTHORITY_URI, null, null, null, null);
-
-        boolean isVenmoWhiteListed = cursor != null && cursor.moveToFirst() && "true".equals(cursor.getString(0));
-
-        if (cursor != null) {
-            cursor.close();
-        }
-
-        return isVenmoWhiteListed;
+        return true;
     }
 }

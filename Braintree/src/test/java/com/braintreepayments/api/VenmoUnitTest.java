@@ -2,7 +2,6 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -12,7 +11,7 @@ import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.VenmoAccountNonce;
-import com.braintreepayments.api.test.VenmoMockContext;
+import com.braintreepayments.api.test.VenmoInstalledContextFactory;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestVenmoConfigurationBuilder;
 import com.braintreepayments.testutils.TestTokenizationKey;
@@ -67,13 +66,8 @@ public class VenmoUnitTest {
 
     @Test
     public void isVenmoInstalled_returnsTrueWhenInstalled() {
-        Context context = new VenmoMockContext()
-                .whitelistValue("true")
-                .venmoInstalled()
-                .build();
         disableSignatureVerification();
-
-        assertTrue(Venmo.isVenmoInstalled(context));
+        assertTrue(Venmo.isVenmoInstalled(VenmoInstalledContextFactory.venmoInstalledContext(true)));
     }
 
     @Test
@@ -150,34 +144,7 @@ public class VenmoUnitTest {
     }
 
     @Test
-    public void authorizeAccount_postsExceptionWhenNotWhitelisted() {
-        Configuration configuration = new TestConfigurationBuilder()
-                .payWithVenmo(new TestVenmoConfigurationBuilder()
-                        .accessToken("access-token")
-                        .merchantId("merchant_id")
-                        .environment("environment"))
-                .buildConfiguration();
-
-        Context context = new VenmoMockContext()
-                .venmoInstalled()
-                .whitelistValue("false")
-                .build();
-        disableSignatureVerification();
-        BraintreeFragment fragment = new MockFragmentBuilder()
-                .context(context)
-                .configuration(configuration)
-                .build();
-
-        Venmo.authorizeAccount(fragment, false);
-
-        ArgumentCaptor<AppSwitchNotAvailableException> captor =
-                ArgumentCaptor.forClass(AppSwitchNotAvailableException.class);
-        verify(fragment).postCallback(captor.capture());
-        assertEquals("Venmo is not whitelisted", captor.getValue().getMessage());
-    }
-
-    @Test
-    public void performAppSwitch_appSwitchesWithVenmoLaunchIntent() throws JSONException, InvalidArgumentException {
+    public void performAppSwitch_appSwitchesWithVenmoLaunchIntent() throws InvalidArgumentException, JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .payWithVenmo(new TestVenmoConfigurationBuilder()
                         .accessToken("access-token")
@@ -186,14 +153,10 @@ public class VenmoUnitTest {
                 .buildConfiguration();
 
         ClientToken clientToken = (ClientToken) Authorization.fromString(stringFromFixture("base_64_client_token.txt"));
-
-        Context context = new VenmoMockContext()
-                .venmoInstalled()
-                .whitelistValue("true")
-                .build();
         disableSignatureVerification();
+
         BraintreeFragment fragment = new MockFragmentBuilder()
-                .context(context)
+                .context(VenmoInstalledContextFactory.venmoInstalledContext(true))
                 .authorization(clientToken)
                 .configuration(configuration)
                 .build();
@@ -235,14 +198,10 @@ public class VenmoUnitTest {
                 .buildConfiguration();
 
         Authorization clientToken = Authorization.fromString(TestTokenizationKey.TOKENIZATION_KEY);
-
-        Context context = new VenmoMockContext()
-                .venmoInstalled()
-                .whitelistValue("true")
-                .build();
         disableSignatureVerification();
+
         BraintreeFragment fragment = new MockFragmentBuilder()
-                .context(context)
+                .context(VenmoInstalledContextFactory.venmoInstalledContext(true))
                 .authorization(clientToken)
                 .configuration(configuration)
                 .build();
@@ -292,12 +251,8 @@ public class VenmoUnitTest {
                         .environment("environment"))
                 .buildConfiguration();
 
-        Context context = new VenmoMockContext()
-                .whitelistValue("true")
-                .venmoInstalled()
-                .build();
         BraintreeFragment fragment = new MockFragmentBuilder()
-                .context(context)
+                .context(VenmoInstalledContextFactory.venmoInstalledContext(true))
                 .configuration(configuration)
                 .build();
 

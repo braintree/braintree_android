@@ -107,8 +107,6 @@ public class Venmo {
                     exceptionMessage = "Venmo is not enabled";
                 } else if (!Venmo.isVenmoInstalled(fragment.getApplicationContext())) {
                     exceptionMessage = "Venmo is not installed";
-                } else if (!configuration.getPayWithVenmo().isVenmoWhitelisted(fragment.getApplicationContext().getContentResolver())) {
-                    exceptionMessage = "Venmo is not whitelisted";
                 }
 
                 if(!TextUtils.isEmpty(exceptionMessage)) {
