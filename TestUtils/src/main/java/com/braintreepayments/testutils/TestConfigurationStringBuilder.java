@@ -21,7 +21,11 @@ public class TestConfigurationStringBuilder extends JSONBuilder {
     }
 
     public TestConfigurationStringBuilder challenges(String... challenges) {
-        put(Arrays.toString(challenges));
+        JSONArray challengesJson = new JSONArray();
+        for (String challenge : challenges) {
+            challengesJson.put(challenge);
+        }
+        put(challengesJson);
         return this;
     }
 
