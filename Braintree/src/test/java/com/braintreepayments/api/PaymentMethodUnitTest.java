@@ -5,7 +5,6 @@ import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 
 import org.junit.Test;
@@ -20,7 +19,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.contains;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +28,6 @@ public class PaymentMethodUnitTest {
     @Test
     public void getPaymentMethodNonces_returnsAnEmptyListIfEmpty() {
         BraintreeFragment fragment = new MockFragmentBuilder()
-                .configuration(mock(Configuration.class))
                 .successResponse(stringFromFixture("payment_methods/get_payment_methods_empty_response.json"))
                 .build();
 
@@ -44,7 +41,6 @@ public class PaymentMethodUnitTest {
     @Test
     public void getPaymentMethodNonces_throwsAnError() {
         BraintreeFragment fragment = new MockFragmentBuilder()
-                .configuration(mock(Configuration.class))
                 .errorResponse(new UnexpectedException("Error"))
                 .build();
 
@@ -58,7 +54,6 @@ public class PaymentMethodUnitTest {
     @Test
     public void getPaymentMethodNonces_sendsAnAnalyticsEventForParsingErrors() {
         BraintreeFragment fragment = new MockFragmentBuilder()
-                .configuration(mock(Configuration.class))
                 .successResponse("{}")
                 .build();
 
@@ -70,7 +65,6 @@ public class PaymentMethodUnitTest {
     @Test
     public void getPaymentMethodNonces_sendsAnAnalyticsEventForErrors() {
         BraintreeFragment fragment = new MockFragmentBuilder()
-                .configuration(mock(Configuration.class))
                 .errorResponse(new UnexpectedException("Error"))
                 .build();
 
@@ -82,7 +76,6 @@ public class PaymentMethodUnitTest {
     @Test
     public void getPaymentMethodNonces_fetchesPaymentMethods() {
         BraintreeFragment fragment = new MockFragmentBuilder()
-                .configuration(mock(Configuration.class))
                 .successResponse(stringFromFixture("payment_methods/get_payment_methods_response.json"))
                 .build();
 
@@ -100,7 +93,6 @@ public class PaymentMethodUnitTest {
     @Test
     public void getPaymentMethodNonces_sendsAnAnalyticsEventForSuccess() {
         BraintreeFragment fragment = new MockFragmentBuilder()
-                .configuration(mock(Configuration.class))
                 .successResponse(stringFromFixture("payment_methods/get_payment_methods_response.json"))
                 .build();
 
@@ -112,8 +104,7 @@ public class PaymentMethodUnitTest {
     @Test
     public void getPaymentMethodNonces_includesDefaultFirstParamInRequestPath()
             throws InvalidArgumentException, InterruptedException {
-        BraintreeFragment fragment = new MockFragmentBuilder().configuration(mock(Configuration.class))
-                .build();
+        BraintreeFragment fragment = new MockFragmentBuilder().build();
         when(fragment.getSessionId()).thenReturn("session-id");
 
         PaymentMethod.getPaymentMethodNonces(fragment, true);

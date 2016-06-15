@@ -3,10 +3,9 @@ package com.braintreepayments.api;
 import android.text.TextUtils;
 
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
-import com.braintreepayments.api.internal.TestConfigurationBuilder;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.testutils.TestConfigurationStringBuilder;
-import com.braintreepayments.testutils.TestConfigurationStringBuilder.TestKountConfigurationBuilder;
+import com.braintreepayments.testutils.TestConfigurationBuilder;
+import com.braintreepayments.testutils.TestConfigurationBuilder.TestKountConfigurationBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,7 +19,6 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.fail;
-import static org.mockito.Mockito.mock;
 
 @RunWith(RobolectricGradleTestRunner.class)
 public class DataCollectorTest {
@@ -34,9 +32,7 @@ public class DataCollectorTest {
 
     @Test
     public void collectDeviceData() throws JSONException {
-        BraintreeFragment fragment = new MockFragmentBuilder()
-                .configuration(mock(Configuration.class))
-                .build();
+        BraintreeFragment fragment = new MockFragmentBuilder().build();
 
         String deviceData = DataCollector.collectDeviceData(fragment);
 
@@ -48,9 +44,7 @@ public class DataCollectorTest {
 
     @Test
     public void collectDeviceData_usesDirectMerchantId() throws JSONException {
-        BraintreeFragment fragment = new MockFragmentBuilder()
-                .configuration(mock(Configuration.class))
-                .build();
+        BraintreeFragment fragment = new MockFragmentBuilder().build();
 
         String deviceData = DataCollector.collectDeviceData(fragment, "100");
 
@@ -62,17 +56,17 @@ public class DataCollectorTest {
     @Test
     public void getPayPalClientMetadataId_returnsClientMetadataId() {
         String clientMetadataId = DataCollector.getPayPalClientMetadataId(RuntimeEnvironment.application);
-
         assertFalse(TextUtils.isEmpty(clientMetadataId));
     }
 
     @Test
     public void collectDeviceData_withListener() throws InterruptedException {
-        String configuration = new TestConfigurationStringBuilder()
+        Configuration configuration = new TestConfigurationBuilder()
                 .kount(new TestKountConfigurationBuilder()
                         .enabled(true)
                         .kountMerchantId("500000"))
-                .build();
+                .buildConfiguration();
+
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(configuration)
                 .build();
@@ -94,11 +88,12 @@ public class DataCollectorTest {
 
     @Test
     public void collectDeviceData_withListener_usesDirectMerchantId() {
-        String configuration = new TestConfigurationBuilder()
+        Configuration configuration = new TestConfigurationBuilder()
                 .kount(new TestKountConfigurationBuilder()
                         .enabled(true)
                         .kountMerchantId("600000"))
-                .build();
+                .buildConfiguration();
+
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(configuration)
                 .build();
@@ -120,9 +115,7 @@ public class DataCollectorTest {
 
     @Test
     public void collectDeviceData_doesNotCollectKountDataIfKountDisabledInConfiguration() {
-        BraintreeFragment fragment = new MockFragmentBuilder()
-                .configuration(new TestConfigurationBuilder().build())
-                .build();
+        BraintreeFragment fragment = new MockFragmentBuilder().build();
 
         DataCollector.collectDeviceData(fragment, new BraintreeResponseListener<String>() {
             @Override

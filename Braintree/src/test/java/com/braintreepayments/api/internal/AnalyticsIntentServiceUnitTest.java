@@ -7,6 +7,7 @@ import android.os.Build.VERSION;
 import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.Venmo;
 import com.braintreepayments.api.exceptions.ServerException;
+import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestTokenizationKey;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 

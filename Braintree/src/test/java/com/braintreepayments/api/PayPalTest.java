@@ -11,7 +11,6 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.internal.BraintreeSharedPreferences;
-import com.braintreepayments.api.models.AnalyticsConfiguration;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
@@ -20,6 +19,8 @@ import com.braintreepayments.api.models.PayPalConfiguration;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PostalAddress;
+import com.braintreepayments.testutils.TestConfigurationBuilder;
+import com.braintreepayments.testutils.TestConfigurationBuilder.TestPayPalConfigurationBuilder;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
 import com.paypal.android.sdk.onetouch.core.encryption.EncryptionUtils;
@@ -38,6 +39,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.CountDownLatch;
@@ -82,18 +84,12 @@ public class PayPalTest {
         Authorization authorization = mock(Authorization.class);
         when(authorization.toString()).thenReturn("authorization");
 
-        AnalyticsConfiguration analyticsConfiguration = mock(AnalyticsConfiguration.class);
-        when(analyticsConfiguration.isEnabled()).thenReturn(true);
-
-        PayPalConfiguration payPalConfiguration = mock(PayPalConfiguration.class);
-        when(payPalConfiguration.isEnabled()).thenReturn(true);
-        when(payPalConfiguration.getEnvironment()).thenReturn("offline");
-        when(payPalConfiguration.shouldUseBillingAgreement()).thenReturn(false);
-
-        Configuration configuration = mock(Configuration.class);
-        when(configuration.getAnalytics()).thenReturn(analyticsConfiguration);
-        when(configuration.isPayPalEnabled()).thenReturn(true);
-        when(configuration.getPayPal()).thenReturn(payPalConfiguration);
+        Configuration configuration = new TestConfigurationBuilder()
+                .withAnalytics()
+                .paypal(new TestPayPalConfigurationBuilder(true)
+                        .environment("offline")
+                        .billingAgreementsEnabled(false))
+                .buildConfiguration();
 
         mMockFragmentBuilder = new MockFragmentBuilder()
                 .authorization(authorization)
@@ -111,9 +107,7 @@ public class PayPalTest {
 
     @Test
     public void authorizeAccount_postsExceptionWhenNotEnabled() throws JSONException, InterruptedException {
-        BraintreeFragment fragment = new MockFragmentBuilder()
-                .configuration(mock(Configuration.class))
-                .build();
+        BraintreeFragment fragment = new MockFragmentBuilder().build();
 
         PayPal.authorizeAccount(fragment);
 
