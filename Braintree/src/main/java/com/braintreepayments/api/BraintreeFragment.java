@@ -242,7 +242,10 @@ public class BraintreeFragment extends Fragment {
         outState.putBoolean(EXTRA_FETCHED_PAYMENT_METHOD_NONCES, mHasFetchedPaymentMethodNonces);
         outState.putBoolean(EXTRA_BROWSER_SWITCHING, mIsBrowserSwitching);
         outState.putString(EXTRA_SESSION_ID, mSessionId);
-        outState.putString(EXTRA_CONFIGURATION, mConfiguration.toJson());
+
+        if (mConfiguration != null) {
+            outState.putString(EXTRA_CONFIGURATION, mConfiguration.toJson());
+        }
     }
 
     @Override
