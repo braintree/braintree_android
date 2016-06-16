@@ -16,7 +16,7 @@ task :tests => :lint do
     begin
       log_listener_pid = fork { exec 'ruby', 'script/log_listener.rb' }
       sh "ruby script/httpsd.rb /tmp/httpsd.pid"
-      sh "./gradlew --continue runAllTests test connectedAndroidTest"
+      sh "./gradlew --continue runAllTests test connectedAndroidTest -x :TestUtils:connectedAndroidTest"
     ensure
       `kill -9 \`cat /tmp/httpsd.pid\``
       `kill -9 #{log_listener_pid}`
