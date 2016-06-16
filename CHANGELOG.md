@@ -1,5 +1,14 @@
 # Braintree Android SDK Release Notes
 
+## 2.3.3
+
+* Add PayPal Checkout intent option (authorize or sale). See `PayPalRequest#intent`
+* Update UnionPay support in demo app custom integration
+* Update `android-card-form` to 2.3.1
+* Fix `NullPointerException` in `AddPaymentMethodViewController` (fixes [#100](https://github.com/braintree/braintree_android/issues/100))
+* Fix `IllegalStateException` when creating a `BraintreeFragment` (fixes [#104](https://github.com/braintree/braintree_android/issues/104))
+* Fix `NullPointerExcepetion` when `BraintreeFragment` is not attached to an `Activity` (fixes [#105](https://github.com/braintree/braintree_android/issues/105))
+
 ## 2.3.2
 
 * Fix `NullPointerException` when handling a PayPal response (fixes [#101](https://github.com/braintree/braintree_android/issues/101))
