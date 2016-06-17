@@ -66,6 +66,10 @@ public class Settings {
         return getPreferences(context).getString("customer", null);
     }
 
+    public static String getMerchantAccountId(Context context) {
+        return getPreferences(context).getString("merchant_account", null);
+    }
+
     public static boolean shouldCollectDeviceData(Context context) {
         return getPreferences(context).getBoolean("collect_device_data", false);
     }

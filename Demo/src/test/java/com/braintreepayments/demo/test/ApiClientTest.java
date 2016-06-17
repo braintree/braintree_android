@@ -118,6 +118,44 @@ public class ApiClientTest {
 
     @Test(timeout = 10000)
     @MediumTest
+    public void createTransaction_createsATransactionWhenMerchantAccountIsNull() throws InterruptedException {
+        mApiClient.createTransaction("fake-valid-nonce", null, new Callback<Transaction>() {
+            @Override
+            public void success(Transaction transaction, Response response) {
+                assertTrue(transaction.getMessage().contains("created") && transaction.getMessage().contains("authorized"));
+                mCountDownLatch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(error.getMessage());
+            }
+        });
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    @MediumTest
+    public void createTransaction_createsATransactionWhenMerchantAccountIsEmpty() throws InterruptedException {
+        mApiClient.createTransaction("fake-valid-nonce", "", new Callback<Transaction>() {
+            @Override
+            public void success(Transaction transaction, Response response) {
+                assertTrue(transaction.getMessage().contains("created") && transaction.getMessage().contains("authorized"));
+                mCountDownLatch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(error.getMessage());
+            }
+        });
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    @MediumTest
     public void createTransaction_failsWhenNonceIsAlreadyConsumed() throws InterruptedException {
         mApiClient.createTransaction("fake-consumed-nonce", new Callback<Transaction>() {
             @Override

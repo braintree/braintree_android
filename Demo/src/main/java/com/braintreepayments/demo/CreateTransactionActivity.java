@@ -68,7 +68,8 @@ public class CreateTransactionActivity extends Activity {
             DemoApplication.getApiClient(this).createTransaction(nonce.getNonce(),
                     Settings.getUnionPayMerchantAccountId(this), callback);
         } else {
-            DemoApplication.getApiClient(this).createTransaction(nonce.getNonce(), callback);
+            DemoApplication.getApiClient(this).createTransaction(nonce.getNonce(), Settings.getMerchantAccountId(this),
+                    callback);
         }
     }
 

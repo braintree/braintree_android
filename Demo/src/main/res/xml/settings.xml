@@ -26,6 +26,12 @@
     <PreferenceCategory
         android:title="@string/options">
 
+        <com.braintreepayments.demo.views.SummaryEditTestPreference
+            android:key="merchant_account"
+            android:title="@string/merchant_account"
+            android:summary="@string/empty_merchant_account"
+            android:defaultValue=""/>
+
         <CheckBoxPreference
             android:key="collect_device_data"
             android:title="@string/collect_device_data"
