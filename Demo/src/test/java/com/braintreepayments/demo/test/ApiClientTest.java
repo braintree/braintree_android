@@ -118,6 +118,44 @@ public class ApiClientTest {
 
     @Test(timeout = 10000)
     @MediumTest
+    public void createTransaction_createsATransactionWhenMerchantAccountIsNull() throws InterruptedException {
+        mApiClient.createTransaction("fake-valid-nonce", null, new Callback<Transaction>() {
+            @Override
+            public void success(Transaction transaction, Response response) {
+                assertTrue(transaction.getMessage().contains("created") && transaction.getMessage().contains("authorized"));
+                mCountDownLatch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(error.getMessage());
+            }
+        });
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    @MediumTest
+    public void createTransaction_createsATransactionWhenMerchantAccountIsEmpty() throws InterruptedException {
+        mApiClient.createTransaction("fake-valid-nonce", "", new Callback<Transaction>() {
+            @Override
+            public void success(Transaction transaction, Response response) {
+                assertTrue(transaction.getMessage().contains("created") && transaction.getMessage().contains("authorized"));
+                mCountDownLatch.countDown();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                fail(error.getMessage());
+            }
+        });
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    @MediumTest
     public void createTransaction_failsWhenNonceIsAlreadyConsumed() throws InterruptedException {
         mApiClient.createTransaction("fake-consumed-nonce", null, false, new Callback<Transaction>() {
             @Override
@@ -138,30 +176,10 @@ public class ApiClientTest {
     @Test(timeout = 10000)
     @MediumTest
     public void createTransaction_failsWhenThreeDSecureIsRequired() throws InterruptedException {
-        mApiClient.createTransaction("fake-valid-nonce", "test_AIB", true,
-                new Callback<Transaction>() {
-                    @Override
-                    public void success(Transaction transaction, Response response) {
-                        assertEquals("Gateway Rejected: three_d_secure", transaction.getMessage());
-                        mCountDownLatch.countDown();
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        fail(error.getMessage());
-                    }
-                });
-
-        mCountDownLatch.await();
-    }
-
-    @Test(timeout = 10000)
-    @MediumTest
-    public void createTransaction_doesNotFailWhenThreeDSecureIsNotRequired() throws InterruptedException {
-        mApiClient.createTransaction("fake-valid-nonce", "test_AIB", new Callback<Transaction>() {
+        mApiClient.createTransaction("fake-valid-nonce", null, true, new Callback<Transaction>() {
             @Override
             public void success(Transaction transaction, Response response) {
-                assertTrue(transaction.getMessage().contains("created") && transaction.getMessage().contains("authorized"));
+                assertEquals("Gateway Rejected: three_d_secure", transaction.getMessage());
                 mCountDownLatch.countDown();
             }
 
