@@ -19,8 +19,8 @@ import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextContaining;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.StringEndsWith.endsWith;
+import static org.hamcrest.text.IsEqualIgnoringCase.equalToIgnoringCase;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -66,6 +66,6 @@ public class DropInTest extends TestHelper {
 
         onDevice().pressBack();
 
-        onDevice(withText("Drop-In")).check(text(equalTo("Drop-In")));
+        onDevice(withText("Drop-In")).check(text(equalToIgnoringCase("Drop-In")));
     }
 }

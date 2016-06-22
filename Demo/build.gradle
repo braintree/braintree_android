@@ -85,5 +85,5 @@ dependencies {
 
     androidTestCompile project(path: ':TestUtils', configuration: 'instrumentationTestDebug')
     testCompile project(path: ':TestUtils', configuration: 'unitTestDebug')
-    androidTestCompile 'com.github.lkorth:device-automator:052d3ed513'
+    androidTestCompile 'com.github.lkorth:device-automator:a4bdf68dc7'
 }

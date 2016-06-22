@@ -105,11 +105,9 @@ public class CustomTest extends TestHelper {
 
         onDevice(withText("Authentication")).waitForExists();
 
-        onDevice().typeText("\t");
+        onDevice().pressTab();
         onDevice().typeText("1234");
-        onDevice().typeText("\t");
-        onDevice().typeText("\t");
-        onDevice().typeText("\n");
+        onDevice().pressTab().pressTab().pressEnter();
 
         getNonceDetails().check(text(containsString("Card Last Two: 02")));
         getNonceDetails().check(text(containsString("3DS isLiabilityShifted: true")));

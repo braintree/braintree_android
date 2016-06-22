@@ -15,7 +15,7 @@ import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -66,6 +66,6 @@ public class PayPalAppSwitchTest extends TestHelper {
         onDevice(withText("OK")).perform(click());
 
         onDevice().checkForegroundAppIs("com.braintreepayments.demo");
-        onDevice(withText("Single Payment")).check(text(containsString("Single Payment")));
+        onDevice(withText("Single Payment")).check(text(equalToIgnoringCase("Single Payment")));
     }
 }

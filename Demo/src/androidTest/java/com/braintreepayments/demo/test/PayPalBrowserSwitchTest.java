@@ -19,7 +19,7 @@ import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescripti
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.core.StringEndsWith.endsWith;
+import static org.hamcrest.Matchers.endsWith;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -48,7 +48,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
     public void browserSwitch_makesAFuturePayment() {
         onDevice(withText("Future Payment")).waitForEnabled().perform(click());
         onDevice(withContentDescription("Email")).perform(click(), setText("test@paypal.com"));
-        onDevice().pressDPadDown().typeText("password");
+        onDevice().pressTab().typeText("password");
         onDevice(withContentDescription("Log In")).perform(click());
         onDevice(withContentDescription("Agree")).perform(click());
 
@@ -62,7 +62,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
     public void browserSwitch_makesAFuturePaymentWithAddressScope() {
         onDevice(withText("Future Payment (Address Scope)")).waitForEnabled().perform(click());
         onDevice(withContentDescription("Email")).perform(click(), setText("test@paypal.com"));
-        onDevice().pressDPadDown().typeText("password");
+        onDevice().pressTab().typeText("password");
         onDevice(withContentDescription("Log In")).perform(click());
         onDevice(withContentDescription("Agree")).perform(click());
 
