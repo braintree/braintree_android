@@ -528,8 +528,8 @@ public class PayPal {
 
         request.environment(environment)
                 .clientId(clientId)
-                .cancelUrl(context.getPackageName() + ".braintree", "cancel")
-                .successUrl(context.getPackageName() + ".braintree", "success");
+                .cancelUrl(getSchemeFromPackageName(context), "cancel")
+                .successUrl(getSchemeFromPackageName(context), "success");
 
         return request;
     }
@@ -610,11 +610,16 @@ public class PayPal {
 
     private static boolean isManifestValid(Context context) {
         Intent intent = new Intent(Intent.ACTION_VIEW)
-                .setData(Uri.parse(context.getPackageName() + ".braintree://"))
+                .setData(Uri.parse(getSchemeFromPackageName(context) + "://"))
                 .addCategory(Intent.CATEGORY_DEFAULT)
                 .addCategory(Intent.CATEGORY_BROWSABLE);
+
         ActivityInfo activityInfo = ManifestValidator.getActivityInfo(context, BraintreeBrowserSwitchActivity.class);
         return (activityInfo != null && activityInfo.launchMode == ActivityInfo.LAUNCH_SINGLE_TASK &&
                 AppHelper.isIntentAvailable(context, intent));
+    }
+
+    private static String getSchemeFromPackageName(Context context) {
+        return context.getPackageName().replace("_", "") + ".braintree";
     }
 }
