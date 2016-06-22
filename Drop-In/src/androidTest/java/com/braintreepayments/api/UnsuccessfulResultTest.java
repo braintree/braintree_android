@@ -2,7 +2,6 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.test.suitebuilder.annotation.LargeTest;
 import android.view.KeyEvent;
 
 import com.braintreepayments.api.exceptions.AuthenticationException;
@@ -36,7 +35,6 @@ import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-@LargeTest
 public class UnsuccessfulResultTest extends BraintreePaymentActivityTestRunner {
 
     private BraintreePaymentActivity mActivity;

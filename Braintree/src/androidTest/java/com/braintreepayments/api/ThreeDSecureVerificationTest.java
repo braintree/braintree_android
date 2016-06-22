@@ -3,8 +3,6 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.support.test.espresso.web.webdriver.Locator;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.LargeTest;
-import android.test.suitebuilder.annotation.MediumTest;
 
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
@@ -70,7 +68,6 @@ public class ThreeDSecureVerificationTest {
     }
 
     @Test(timeout = 30000)
-    @LargeTest
     public void performVerification_callsCancelListenerWhenUpIsPressed() throws InterruptedException {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(THREE_D_SECURE_VERIFICATON)
@@ -92,7 +89,6 @@ public class ThreeDSecureVerificationTest {
     }
 
     @Test(timeout = 30000)
-    @LargeTest
     public void performVerification_callsCancelListenerWhenBackIsPressed() throws InterruptedException {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(THREE_D_SECURE_VERIFICATON)
@@ -114,7 +110,6 @@ public class ThreeDSecureVerificationTest {
     }
 
     @Test(timeout = 10000)
-    @MediumTest
     public void performVerification_doesALookupAndReturnsACardAndANullACSUrlWhenAuthenticationIsNotRequired()
             throws InterruptedException {
         BraintreeFragment fragment = getFragment();
@@ -141,7 +136,6 @@ public class ThreeDSecureVerificationTest {
     }
 
     @Test(timeout = 30000)
-    @MediumTest
     public void performVerification_doesALookupAndReturnsACardAfterATimeout() throws InterruptedException {
         BraintreeFragment fragment = getFragment();
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
@@ -167,7 +161,6 @@ public class ThreeDSecureVerificationTest {
     }
 
     @Test(timeout = 10000)
-    @MediumTest
     public void performVerification_doesALookupAndReturnsACardWhenAuthenticationIsUnavailable()
             throws InterruptedException {
         BraintreeFragment fragment = getFragment();
@@ -194,7 +187,6 @@ public class ThreeDSecureVerificationTest {
     }
 
     @Test(timeout = 10000)
-    @MediumTest
     public void performVerification_failsWithATokenizationKey() throws InterruptedException {
         BraintreeFragment fragment = BraintreeFragmentTestUtils.getFragment(mActivity,
                 TOKENIZATION_KEY, new TestClientTokenBuilder().withThreeDSecure().build());
@@ -218,7 +210,6 @@ public class ThreeDSecureVerificationTest {
     }
 
     @Test(timeout = 10000)
-    @MediumTest
     public void performVerification_doesALookupAndReturnsACardWhenThereIsALookupError() throws InterruptedException {
         BraintreeFragment fragment = getFragment();
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
@@ -244,7 +235,6 @@ public class ThreeDSecureVerificationTest {
     }
 
     @Test(timeout = 10000)
-    @MediumTest
     public void performVerification_doesALookupAndReturnsACardWhenThereIsAMPILookupError() throws InterruptedException {
         BraintreeFragment fragment = getFragment();
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
@@ -270,7 +260,6 @@ public class ThreeDSecureVerificationTest {
     }
 
     @Test(timeout = 30000)
-    @LargeTest
     public void performVerification_requestsAuthenticationWhenRequired() throws InterruptedException {
         BraintreeFragment fragment = getFragment();
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
@@ -301,7 +290,6 @@ public class ThreeDSecureVerificationTest {
     }
 
     @Test(timeout = 30000)
-    @LargeTest
     public void performVerification_returnsAnErrorWhenAuthenticationFails() throws InterruptedException {
         BraintreeFragment fragment = getFragment();
         fragment.addListener(new BraintreeErrorListener() {
@@ -327,7 +315,6 @@ public class ThreeDSecureVerificationTest {
     }
 
     @Test(timeout = 30000)
-    @LargeTest
     public void performVerification_returnsASuccessfulAuthenticationWhenIssuerDoesNotParticipate()
             throws InterruptedException {
         BraintreeFragment fragment = getFragment();
@@ -354,7 +341,6 @@ public class ThreeDSecureVerificationTest {
     }
 
     @Test(timeout = 30000)
-    @LargeTest
     public void performVerification_returnsAFailedAuthenticationWhenSignatureVerificationFails()
             throws InterruptedException {
         BraintreeFragment fragment = getFragment();
@@ -381,7 +367,6 @@ public class ThreeDSecureVerificationTest {
     }
 
     @Test(timeout = 30000)
-    @LargeTest
     public void performVerification_returnsAnUnexpectedErrorWhenIssuerIsDown() throws InterruptedException {
         BraintreeFragment fragment = getFragment();
         fragment.addListener(new BraintreeErrorListener() {
@@ -406,7 +391,6 @@ public class ThreeDSecureVerificationTest {
     }
 
     @Test(timeout = 30000)
-    @LargeTest
     public void performVerification_returnsAnErrorWhenCardinalReturnsError()
             throws InterruptedException {
         BraintreeFragment fragment = getFragment();

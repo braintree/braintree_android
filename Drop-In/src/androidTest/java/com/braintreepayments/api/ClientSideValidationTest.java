@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import android.test.suitebuilder.annotation.LargeTest;
 import android.view.KeyEvent;
 
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
@@ -27,7 +26,6 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-@LargeTest
 public class ClientSideValidationTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)

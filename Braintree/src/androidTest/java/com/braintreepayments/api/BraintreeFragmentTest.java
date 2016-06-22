@@ -2,8 +2,6 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.MediumTest;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
@@ -43,7 +41,6 @@ public class BraintreeFragmentTest {
     }
 
     @Test(timeout = 10000)
-    @MediumTest
     public void fetchConfiguration_worksWithATokenizationKey() throws InterruptedException {
         final BraintreeFragment fragment = getFragment(mActivity, TOKENIZATION_KEY);
         fragment.waitForConfiguration(new ConfigurationListener() {
@@ -58,7 +55,6 @@ public class BraintreeFragmentTest {
     }
 
     @Test(timeout = 10000)
-    @MediumTest
     public void fetchConfiguration_worksWithAClientToken() throws InterruptedException {
         final BraintreeFragment fragment = getFragment(mActivity, mClientToken);
         fragment.waitForConfiguration(new ConfigurationListener() {
@@ -73,7 +69,6 @@ public class BraintreeFragmentTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void getGoogleApiClient_returnsGoogleApiClient() throws InterruptedException {
         BraintreeFragment fragment = getFragment(mActivity, mClientToken);
 

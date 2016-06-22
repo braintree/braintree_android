@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import android.test.suitebuilder.annotation.LargeTest;
-
 import com.braintreepayments.api.test.BraintreePaymentActivityTestRunner;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
@@ -14,7 +12,6 @@ import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPayme
 import static com.braintreepayments.testutils.ui.Matchers.withId;
 import static org.hamcrest.CoreMatchers.not;
 
-@LargeTest
 public class AddPaymentMethodFormTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)

@@ -2,7 +2,6 @@ package com.braintreepayments.api.internal;
 
 import android.os.Looper;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.core.BuildConfig;
 import com.braintreepayments.api.exceptions.AuthenticationException;
@@ -47,7 +46,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
-@SmallTest
 public class HttpClientTest {
 
     @Test(timeout = 1000)

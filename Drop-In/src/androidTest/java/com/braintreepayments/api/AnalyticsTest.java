@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Handler;
 import android.os.Looper;
-import android.test.suitebuilder.annotation.LargeTest;
 import android.view.KeyEvent;
 
 import com.braintreepayments.api.exceptions.AuthenticationException;
@@ -47,7 +46,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
 
-@LargeTest
 public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
 
     private BraintreeFragment mFragment;

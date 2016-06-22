@@ -3,8 +3,6 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.MediumTest;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
@@ -56,7 +54,6 @@ public class ThreeDSecureTest {
     }
 
     @Test(timeout = 10000)
-    @MediumTest
     public void performVerification_postsPaymentMethodNonceToListenersWhenLookupReturnsACard()
             throws InterruptedException, InvalidArgumentException {
         String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
@@ -79,7 +76,6 @@ public class ThreeDSecureTest {
     }
 
     @Test(timeout = 10000)
-    @MediumTest
     public void performVerification_acceptsACardBuilderAndPostsAPaymentMethodNonceToListener()
             throws InterruptedException {
         String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
@@ -102,7 +98,6 @@ public class ThreeDSecureTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void onActivityResult_postsPaymentMethodNonceToListener() throws JSONException, InterruptedException {
         Configuration configuration = mock(Configuration.class);
         when(configuration.getAnalytics()).thenReturn(mock(AnalyticsConfiguration.class));
@@ -127,7 +122,6 @@ public class ThreeDSecureTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void onActivityResult_postsUnrecoverableErrorsToListeners() throws InterruptedException {
         Configuration configuration = mock(Configuration.class);
         when(configuration.getAnalytics()).thenReturn(mock(AnalyticsConfiguration.class));
@@ -150,7 +144,6 @@ public class ThreeDSecureTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void onActivityResult_postsRecoverableErrorsToListener() throws InterruptedException {
         Configuration configuration = mock(Configuration.class);
         when(configuration.getAnalytics()).thenReturn(mock(AnalyticsConfiguration.class));
@@ -174,7 +167,6 @@ public class ThreeDSecureTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void onActivityResult_doesNothingWhenResultCodeNotOk() {
         Intent intent = mock(Intent.class);
 

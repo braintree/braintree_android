@@ -1,7 +1,6 @@
 package com.braintreepayments.api.internal;
 
 import android.content.Intent;
-import android.support.test.filters.MediumTest;
 import android.support.test.rule.ServiceTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -24,7 +23,6 @@ import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
-@MediumTest
 public class AnalyticsIntentServiceTest {
 
     @Rule

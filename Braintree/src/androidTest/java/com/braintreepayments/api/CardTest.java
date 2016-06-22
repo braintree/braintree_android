@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.MediumTest;
 
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
@@ -27,7 +26,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
-@MediumTest
 public class CardTest {
 
     @Rule

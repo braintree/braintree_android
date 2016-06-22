@@ -2,7 +2,6 @@ package com.braintreepayments.demo.test;
 
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.LargeTest;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
 
@@ -23,7 +22,6 @@ import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.hamcrest.text.IsEqualIgnoringCase.equalToIgnoringCase;
 
 @RunWith(AndroidJUnit4.class)
-@LargeTest
 public class DropInTest extends TestHelper {
 
     @Before

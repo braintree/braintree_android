@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.test.espresso.NoMatchingViewException;
-import android.test.suitebuilder.annotation.LargeTest;
 import android.widget.ImageView;
 
 import com.braintreepayments.api.exceptions.UnexpectedException;
@@ -44,7 +43,6 @@ import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.allOf;
 
 @SuppressLint("NewApi")
-@LargeTest
 public class ListPaymentMethodNonceTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)

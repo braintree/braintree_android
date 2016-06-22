@@ -2,7 +2,6 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.MediumTest;
 
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
@@ -27,7 +26,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
-@MediumTest
 public class TokenizationClientTest {
 
     @Rule

@@ -1,7 +1,6 @@
 package com.braintreepayments.demo.test;
 
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.LargeTest;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
 
@@ -18,7 +17,6 @@ import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 
 @RunWith(AndroidJUnit4.class)
-@LargeTest
 public class PayPalAppSwitchTest extends TestHelper {
 
     @Before

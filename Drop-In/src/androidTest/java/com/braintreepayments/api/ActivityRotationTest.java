@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.content.Intent;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
-import android.test.suitebuilder.annotation.LargeTest;
 
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.test.BraintreePaymentActivityTestRunner;
@@ -50,7 +49,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-@LargeTest
 public class ActivityRotationTest extends BraintreePaymentActivityTestRunner {
 
     @Before

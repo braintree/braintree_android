@@ -4,7 +4,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.SystemClock;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.LargeTest;
 import android.util.Log;
 
 import org.junit.Test;
@@ -15,7 +14,6 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
-@LargeTest
 public class SignatureVerificationTest {
 
     @Test(timeout = 20000)

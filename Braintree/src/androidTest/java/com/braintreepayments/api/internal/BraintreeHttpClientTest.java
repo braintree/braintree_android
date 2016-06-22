@@ -1,8 +1,6 @@
 package com.braintreepayments.api.internal;
 
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.MediumTest;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.exceptions.AuthorizationException;
@@ -43,14 +41,12 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void getUserAgent_returnsCorrectUserAgent() {
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME,
                 BraintreeHttpClient.getUserAgent());
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void sendsUserAgent() throws IOException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
                 TokenizationKey.fromString(TOKENIZATION_KEY));
@@ -62,7 +58,6 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void sendsTokenizationKeyWhenPresent() throws IOException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
                 TokenizationKey.fromString(TOKENIZATION_KEY));
@@ -73,7 +68,6 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void doesNotSendTokenizationKeyWhenNotPresent()
             throws IOException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
@@ -85,7 +79,6 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void get_includesAuthorizationFingerprintWhenPresent()
             throws IOException, InterruptedException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(Authorization.fromString(stringFromFixture("client_token.json"))) {
@@ -104,7 +97,6 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void get_doesNotIncludeAuthorizationFingerprintWhenNotPresent()
             throws IOException, InterruptedException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
@@ -124,7 +116,6 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void postsErrorWhenBaseUrlIsNotSet()
             throws InterruptedException, IOException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
@@ -163,7 +154,6 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void postsErrorWhenBaseUrlIsNull()
             throws InterruptedException, InvalidArgumentException, IOException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
@@ -175,7 +165,6 @@ public class BraintreeHttpClientTest {
 
 
     @Test(timeout = 1000)
-    @SmallTest
     public void postsErrorWhenBaseUrlIsEmpty()
             throws InterruptedException, IOException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
@@ -186,7 +175,6 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void postsErrorWhenPathIsNull() throws InterruptedException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
                 TokenizationKey.fromString(TOKENIZATION_KEY));
@@ -224,7 +212,6 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void postsErrorWhenClientTokenIsUsedAndInvalidJsonIsSent()
             throws InvalidArgumentException, InterruptedException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
@@ -249,7 +236,6 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void throwsAuthorizationExceptionWithCorrectMessageOn403() throws IOException,
             InterruptedException, ErrorWithResponse, InvalidArgumentException {
         BraintreeHttpClient httpClient = clientWithExpectedResponse(403,
@@ -259,7 +245,6 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void throwsErrorWithResponseOn422() throws IOException, InterruptedException,
             ErrorWithResponse, InvalidArgumentException {
         BraintreeHttpClient httpClient = clientWithExpectedResponse(422,
@@ -269,7 +254,6 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 5000)
-    @MediumTest
     public void getRequestSslCertificateSuccessfulInSandbox() throws InterruptedException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
                 TokenizationKey.fromString(TOKENIZATION_KEY));
@@ -292,7 +276,6 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 5000)
-    @MediumTest
     public void getRequestSslCertificateSuccessfulInProduction() throws InterruptedException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
                 TokenizationKey.fromString(TOKENIZATION_KEY));
@@ -315,7 +298,6 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 5000)
-    @MediumTest
     public void getRequestBadCertificateCheck()
             throws InterruptedException, InvalidArgumentException {
         if (!BuildConfig.RUN_ALL_TESTS) {

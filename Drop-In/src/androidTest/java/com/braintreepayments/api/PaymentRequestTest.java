@@ -7,21 +7,16 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
-import android.os.Parcel;
-import android.test.suitebuilder.annotation.LargeTest;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
 import com.braintreepayments.api.test.BraintreePaymentActivityTestRunner;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
-import com.google.android.gms.wallet.Cart;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import java.util.Collections;
 import java.util.Map;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
@@ -46,7 +41,6 @@ import static org.hamcrest.Matchers.startsWith;
 
 public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
 
-    @SmallTest
     @Test(timeout = 1000)
     public void getIntent_includesClientToken() {
         PaymentRequest paymentRequest = new PaymentRequest()
@@ -55,7 +49,6 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
         assertEquals(stringFromFixture("client_token.json") , paymentRequest.getAuthorization());
     }
 
-    @SmallTest
     @Test(timeout = 1000)
     public void getIntent_includesClientKey() {
         PaymentRequest paymentRequest = new PaymentRequest()
@@ -64,7 +57,6 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
         assertEquals(TOKENIZATION_KEY, paymentRequest.getAuthorization());
     }
 
-    @LargeTest
     @Test(timeout = 30000)
     public void returnsDeviceDataStringWhenRequested() throws JSONException {
         Intent intent = new PaymentRequest()
@@ -88,7 +80,6 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
         assertFalse(TextUtils.isEmpty(json.getString("correlation_id")));
     }
 
-    @LargeTest
     @Test(timeout = 30000)
     public void descriptionIsNotNecessary() {
         Intent intent = new PaymentRequest()
@@ -100,7 +91,6 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_primary_description)).check(matches(not(isDisplayed())));
     }
 
-    @LargeTest
     @Test(timeout = 30000)
     public void submitButtonUsesDefaultTextIfNoCustomizationProvided() {
         Intent intent = new PaymentRequest()
@@ -113,7 +103,6 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
                 com.braintreepayments.api.dropin.R.string.bt_default_submit_button_text)));
     }
 
-    @LargeTest
     @Test(timeout = 30000)
     public void submitButtonUsesCustomizationForCardFormIfIncludedAsAnExtra() {
         Intent intent = new PaymentRequest()
@@ -127,7 +116,6 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).check(matches(withText("$19 - SUBSCRIBE")));
     }
 
-    @LargeTest
     @Test(timeout = 30000)
     public void submitButtonUsesCustomizationForSelectPaymentMethodIfIncludedAsAnExtra() {
         Intent intent = new PaymentRequest()
@@ -143,7 +131,6 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_select_payment_method_submit_button)).check(matches(withText("$19 - SUBSCRIBE")));
     }
 
-    @LargeTest
     @Test(timeout = 30000)
     public void descriptionsAreDisplayedIfIncludedAsAnExtra() {
         Intent intent = new PaymentRequest()
@@ -161,7 +148,6 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
                 startsWith("$1,000,000,000.00"))));
     }
 
-    @LargeTest
     @Test(timeout = 30000)
     public void defaultButtonTextIsUsedWhenCustomizationIsPresentWithoutSpecifyingButtonText() {
         Intent intent = new PaymentRequest()
@@ -174,7 +160,6 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_card_form_submit_button)).check(matches(withText("$19 - PURCHASE")));
     }
 
-    @LargeTest
     @Test(timeout = 30000)
     public void actionBarTitleAndLogoAreUsedIfIncludedAsAnExtra() {
         Intent intent = new PaymentRequest()
@@ -196,7 +181,6 @@ public class PaymentRequestTest extends BraintreePaymentActivityTestRunner {
         }
     }
 
-    @LargeTest
     @Test(timeout = 30000)
     public void defaultActionBarTitleAndLogoAreUsedWhenCustomizationIsPresentWithoutSpecifyingTitleAndLogo() {
         Intent intent = new PaymentRequest()

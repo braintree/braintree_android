@@ -1,7 +1,6 @@
 package com.braintreepayments.api.models;
 
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -23,7 +22,6 @@ import static junit.framework.Assert.fail;
 public class AndroidPayConfigurationTest {
 
     @Test(timeout = 1000)
-    @SmallTest
     public void parsesAndroidPayConfigurationFromToken() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration_with_android_pay.json"));
@@ -43,7 +41,6 @@ public class AndroidPayConfigurationTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void fromJson_parsesConfiguration() throws JSONException {
         JSONObject json = new JSONObject(stringFromFixture("configuration_with_android_pay.json"))
                 .getJSONObject("androidPay");
@@ -63,7 +60,6 @@ public class AndroidPayConfigurationTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void fromJson_returnsNewAndroidPayConfigurationWithDefaultValuesWhenJSONObjectIsNull() {
         AndroidPayConfiguration androidPayConfiguration = AndroidPayConfiguration.fromJson(null);
 
@@ -77,7 +73,6 @@ public class AndroidPayConfigurationTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void fromJson_returnsNewAndroidPayConfigurationWithDefaultValuesWhenNoDataIsPresent() {
         AndroidPayConfiguration androidPayConfiguration = AndroidPayConfiguration.fromJson(new JSONObject());
 

@@ -4,8 +4,6 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Parcelable;
-import android.test.FlakyTest;
-import android.test.suitebuilder.annotation.LargeTest;
 import android.view.KeyEvent;
 import android.widget.Button;
 
@@ -58,7 +56,6 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.not;
 
-@LargeTest
 public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRunner {
 
     @Test(timeout = 30000)
@@ -67,7 +64,6 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
     }
 
     @Test(timeout = 30000)
-    @FlakyTest
     public void cardFormCreatesAPaymentMethodNonceWithACustomer() {
         addCardAndAssertSuccess(getActivity(new TestClientTokenBuilder().build()));
     }

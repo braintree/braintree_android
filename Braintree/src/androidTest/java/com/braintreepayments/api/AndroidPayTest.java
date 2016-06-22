@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
@@ -69,7 +68,6 @@ public class AndroidPayTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void isReadyToPay_returnsFalseWhenAndroidPayIsNotEnabled()
             throws InvalidArgumentException, InterruptedException {
         Configuration configuration = new TestConfigurationBuilder()
@@ -92,7 +90,6 @@ public class AndroidPayTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void getTokenizationParameters_returnsCorrectParametersInCallback()
             throws InvalidArgumentException, InterruptedException {
         final Configuration configuration = mBaseConfiguration.androidPay(mBaseConfiguration.androidPay()
@@ -131,7 +128,6 @@ public class AndroidPayTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void getTokenizationParameters_returnsCorrectParameters() throws InvalidArgumentException {
         Configuration configuration = mBaseConfiguration.withAnalytics().buildConfiguration();
 
@@ -151,7 +147,6 @@ public class AndroidPayTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void getTokenizationParameters_doesNotIncludeATokenizationKeyWhenNotPresent()
             throws InvalidArgumentException {
         Configuration configuration = mBaseConfiguration.buildConfiguration();
@@ -165,7 +160,6 @@ public class AndroidPayTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void getTokenizationParameters_includesATokenizationKeyWhenPresent()
             throws InvalidArgumentException, InterruptedException {
         Configuration configuration = mBaseConfiguration.withAnalytics().buildConfiguration();
@@ -184,7 +178,6 @@ public class AndroidPayTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void getAllowedCardNetworks_returnsSupportedNetworks() {
         Configuration configuration = mBaseConfiguration.androidPay(mBaseConfiguration.androidPay()
                 .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"}))
@@ -203,7 +196,6 @@ public class AndroidPayTest {
     }
 
     @Test(timeout = 5000)
-    @SmallTest
     public void performMaskedWalletRequest_sendsAnalyticsEvent()
             throws InterruptedException, InvalidArgumentException {
         BraintreeFragment fragment = getSetupFragment();
@@ -220,7 +212,6 @@ public class AndroidPayTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void performMaskedWalletRequest_sendsFailedEventWhenCartIsNull()
             throws InterruptedException, InvalidArgumentException {
         BraintreeFragment fragment = getSetupFragment();
@@ -236,7 +227,6 @@ public class AndroidPayTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void onActivityResult_sendsAnalyticsEventOnCancel() {
         BraintreeFragment fragment = getSetupFragment();
 
@@ -246,7 +236,6 @@ public class AndroidPayTest {
     }
 
     @Test(timeout = 5000)
-    @SmallTest
     public void onActivityResult_sendsAnalyticsEventOnNonOkOrCanceledResult() {
         BraintreeFragment fragment = getSetupFragment();
 
@@ -257,7 +246,6 @@ public class AndroidPayTest {
     }
 
     @Test(timeout = 1000)
-    @SmallTest
     public void onActivityResult_sendsAnalyticsEventOnMaskedWalletResponse()
             throws InterruptedException {
         final BraintreeFragment fragment = getSetupFragment();

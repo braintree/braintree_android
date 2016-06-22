@@ -3,7 +3,6 @@ package com.braintreepayments.demo.test;
 import android.preference.PreferenceManager;
 import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.LargeTest;
 import android.widget.ScrollView;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
@@ -27,7 +26,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
 @RunWith(AndroidJUnit4.class)
-@LargeTest
 public class CustomTest extends TestHelper {
 
     @Before

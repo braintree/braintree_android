@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import android.net.Uri;
 import android.os.SystemClock;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.util.Base64;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
@@ -34,7 +33,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
-@SmallTest
 public class ConfigurationManagerTest {
 
     private Authorization mTokenizationKey;

@@ -2,7 +2,6 @@ package com.braintreepayments.api.internal;
 
 import android.content.pm.ActivityInfo;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.SmallTest;
 
 import com.braintreepayments.api.test.ManifestTestActivity;
 import com.braintreepayments.api.test.MissingManifestTestActivity;
@@ -18,7 +17,6 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
-@SmallTest
 public class ManifestValidatorTest {
 
     @Test(timeout = 1000)
