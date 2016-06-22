@@ -52,7 +52,7 @@ public class DataCollector {
             startDeviceCollector(fragment, merchantId, deviceSessionId);
             deviceData.put(DEVICE_SESSION_ID_KEY, deviceSessionId);
             deviceData.put(FRAUD_MERCHANT_ID_KEY, merchantId);
-        } catch (NoClassDefFoundError | JSONException ignored) {}
+        } catch (ClassNotFoundException | NoClassDefFoundError | JSONException ignored) {}
 
         try {
             String clientMetadataId = getPayPalClientMetadataId(fragment.getApplicationContext());
@@ -99,7 +99,7 @@ public class DataCollector {
                         startDeviceCollector(fragment, id, deviceSessionId);
                         deviceData.put(DEVICE_SESSION_ID_KEY, deviceSessionId);
                         deviceData.put(FRAUD_MERCHANT_ID_KEY, id);
-                    } catch (NoClassDefFoundError | JSONException ignored) {}
+                    } catch (ClassNotFoundException | NoClassDefFoundError | JSONException ignored) {}
                 }
 
                 try {
@@ -149,7 +149,8 @@ public class DataCollector {
     }
 
     private static void startDeviceCollector(final BraintreeFragment fragment,
-            final String merchantId, final String deviceSessionId) throws NoClassDefFoundError {
+            final String merchantId, final String deviceSessionId) throws ClassNotFoundException {
+        Class.forName(DataCollector.class.getName());
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
