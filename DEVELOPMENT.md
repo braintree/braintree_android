@@ -4,7 +4,7 @@ This document outlines development practices that we follow internally while dev
 
 ## Setup
 
-* Make sure Java 7 is installed and available in your `PATH`.
+* Make sure Java 8 is installed and available in your `PATH`.
 * If you do not have the Android SDK installed, run `./gradlew build` 3 times to download the Android SDK and install all required tools as well as set your `local.properties` file (we use [sdk-manager-plugin](https://github.com/JakeWharton/sdk-manager-plugin) to do this automatically).
 * If you do have the Android SDK installed, add a `local.properties` file to the top level directory with `sdk.dir=/path/to/your/sdk/.android-sdk`
 * Run `./gradlew :Demo:installDebug` to install the [Demo](Demo) app on a device.
@@ -55,7 +55,7 @@ The individual components may be of interest for advanced integrations and are e
 
 ## Environmental Assumptions
 
-* Java 7
+* Java 8
 * Android Studio
 * Gradle
 * Android SDK >= 15
