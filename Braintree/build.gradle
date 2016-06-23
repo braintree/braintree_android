@@ -14,11 +14,6 @@ android {
         testInstrumentationRunner 'com.braintreepayments.testutils.ui.NoAnimationsInstrumentationTestRunner'
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
-
     packagingOptions {
         exclude 'META-INF/maven/com.google.guava/guava/pom.properties'
         exclude 'META-INF/maven/com.google.guava/guava/pom.xml'

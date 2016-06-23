@@ -28,11 +28,6 @@ android {
         buildConfigField "String", "PRODUCT_VERSION", "\"${product_version}\""
         buildConfigField "String", "CONFIGURATION", "\"${config}\""
     }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
 }
 
 dependencies {
