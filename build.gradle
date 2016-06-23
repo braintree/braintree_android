@@ -80,7 +80,7 @@ allprojects {
     version = '2.3.4-SNAPSHOT'
     ext {
         compileSdkVersion = 24
-        buildToolsVersion = '23.0.2'
+        buildToolsVersion = '24.0.0'
         minSdkVersion = 15
         targetSdkVersion = 24
         versionCode = 49
