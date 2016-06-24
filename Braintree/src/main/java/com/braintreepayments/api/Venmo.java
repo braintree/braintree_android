@@ -10,9 +10,12 @@ import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.internal.AppHelper;
 import com.braintreepayments.api.internal.SignatureVerification;
+import com.braintreepayments.api.models.BraintreeMetadataBuilder;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.VenmoAccountNonce;
 import com.braintreepayments.api.models.VenmoConfiguration;
+
+import org.json.JSONObject;
 
 /**
  * Class containing Venmo specific logic.
@@ -20,9 +23,9 @@ import com.braintreepayments.api.models.VenmoConfiguration;
 public class Venmo {
 
     static final String EXTRA_MERCHANT_ID = "com.braintreepayments.api.MERCHANT_ID";
-    static final String EXTRA_SDK_VERSION = "com.braintreepayments.api.SDK_VERSION";
     static final String EXTRA_ACCESS_TOKEN = "com.braintreepayments.api.ACCESS_TOKEN";
     static final String EXTRA_ENVIRONMENT = "com.braintreepayments.api.ENVIRONMENT";
+    static final String EXTRA_METADATA = "com.braintreepayments.api.METADATA";
     static final String EXTRA_PAYMENT_METHOD_NONCE = "com.braintreepayments.api.EXTRA_PAYMENT_METHOD_NONCE";
     static final String EXTRA_USERNAME = "com.braintreepayments.api.EXTRA_USER_NAME";
 
@@ -48,12 +51,24 @@ public class Venmo {
         return new Intent().setComponent(new ComponentName(PACKAGE_NAME, PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
     }
 
-    static Intent getLaunchIntent(VenmoConfiguration venmoConfiguration) {
-        return getVenmoIntent()
+    static Intent getLaunchIntent(VenmoConfiguration venmoConfiguration, String integrationType, String sessionId) {
+        JSONObject meta = new BraintreeMetadataBuilder()
+                .sessionId(sessionId)
+                .integration(integrationType)
+                .version()
+                .platform()
+                .build();
+
+        Intent venmoIntent = getVenmoIntent()
                 .putExtra(EXTRA_MERCHANT_ID, venmoConfiguration.getMerchantId())
-                .putExtra(EXTRA_SDK_VERSION, BuildConfig.VERSION_NAME)
                 .putExtra(EXTRA_ACCESS_TOKEN, venmoConfiguration.getAccessToken())
                 .putExtra(EXTRA_ENVIRONMENT, venmoConfiguration.getEnvironment());
+
+        if (meta != null) {
+            venmoIntent.putExtra(EXTRA_METADATA, meta.toString());
+        }
+
+        return venmoIntent;
     }
 
     /**
@@ -89,7 +104,9 @@ public class Venmo {
             fragment.postCallback(new AppSwitchNotAvailableException(exceptionMessage));
             fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
         } else {
-            fragment.startActivityForResult(Venmo.getLaunchIntent(venmoConfiguration), VENMO_REQUEST_CODE);
+            fragment.startActivityForResult(
+                    Venmo.getLaunchIntent(venmoConfiguration, fragment.getIntegrationType(), fragment.getSessionId()),
+                    VENMO_REQUEST_CODE);
             fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
         }
     }

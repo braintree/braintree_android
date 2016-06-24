@@ -14,6 +14,7 @@ import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestVenmoConfigurationBuilder;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -22,10 +23,12 @@ import org.robolectric.RobolectricGradleTestRunner;
 
 import static com.braintreepayments.api.internal.SignatureVerificationUnitTestUtils.disableSignatureVerification;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricGradleTestRunner.class)
 public class VenmoUnitTest {
@@ -75,14 +78,20 @@ public class VenmoUnitTest {
                         .environment("environment"))
                 .buildConfiguration();
 
-        Intent intent = Venmo.getLaunchIntent(configuration.getPayWithVenmo());
+        Intent intent = Venmo.getLaunchIntent(configuration.getPayWithVenmo(), "custom", "session-id");
 
         assertEquals(new ComponentName("com.venmo", "com.venmo.controller.SetupMerchantActivity"),
                 intent.getComponent());
         assertEquals("merchant_id", intent.getStringExtra(Venmo.EXTRA_MERCHANT_ID));
         assertEquals("access-token", intent.getStringExtra(Venmo.EXTRA_ACCESS_TOKEN));
-        assertEquals(BuildConfig.VERSION_NAME, intent.getStringExtra(Venmo.EXTRA_SDK_VERSION));
         assertEquals("environment", intent.getStringExtra(Venmo.EXTRA_ENVIRONMENT));
+
+        JSONObject json = new JSONObject(intent.getStringExtra(Venmo.EXTRA_METADATA));
+        assertNotNull(json);
+        assertEquals("session-id", json.getString("sessionId"));
+        assertEquals("custom", json.getString("integration"));
+        assertEquals(BuildConfig.VERSION_NAME, json.getString("version"));
+        assertEquals("android", json.getString("platform"));
     }
 
     @Test
@@ -149,8 +158,8 @@ public class VenmoUnitTest {
         assertEquals("Venmo is not whitelisted", captor.getValue().getMessage());
     }
 
-    @Test(timeout = 1000)
-    public void performAppSwitch_appSwitchesWithVenmoLaunchIntent() {
+    @Test
+    public void performAppSwitch_appSwitchesWithVenmoLaunchIntent() throws JSONException {
         Configuration configuration = new TestConfigurationBuilder()
                 .payWithVenmo(new TestVenmoConfigurationBuilder()
                         .accessToken("access-token")
@@ -167,6 +176,8 @@ public class VenmoUnitTest {
                 .context(context)
                 .configuration(configuration)
                 .build();
+        when(fragment.getSessionId()).thenReturn("a-session-id");
+        when(fragment.getIntegrationType()).thenReturn("custom");
 
         Venmo.authorizeAccount(fragment, configuration.getPayWithVenmo());
 
@@ -177,8 +188,14 @@ public class VenmoUnitTest {
         Bundle extras = captor.getValue().getExtras();
         assertEquals("merchant_id", extras.getString(Venmo.EXTRA_MERCHANT_ID));
         assertEquals("access-token", extras.getString(Venmo.EXTRA_ACCESS_TOKEN));
-        assertEquals(BuildConfig.VERSION_NAME, extras.getString(Venmo.EXTRA_SDK_VERSION));
         assertEquals("environment", extras.getString(Venmo.EXTRA_ENVIRONMENT));
+
+        JSONObject json = new JSONObject(extras.getString(Venmo.EXTRA_METADATA));
+        assertNotNull(json);
+        assertEquals(fragment.getSessionId(), json.getString("sessionId"));
+        assertEquals(fragment.getIntegrationType(), json.getString("integration"));
+        assertEquals(BuildConfig.VERSION_NAME, json.getString("version"));
+        assertEquals("android", json.getString("platform"));
     }
 
     @Test

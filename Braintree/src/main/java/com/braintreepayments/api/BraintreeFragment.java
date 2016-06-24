@@ -586,6 +586,10 @@ public class BraintreeFragment extends Fragment {
         return mSessionId;
     }
 
+    protected String getIntegrationType() {
+        return mIntegrationType;
+    }
+
     protected boolean hasFetchedPaymentMethodNonces() {
         return mHasFetchedPaymentMethodNonces;
     }
