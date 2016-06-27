@@ -42,6 +42,15 @@
         "cardType": "Visa",
         "lastTwo": "11"
       }
+    },
+    {
+      "type": "VenmoAccount",
+      "nonce": "fake-venmo-nonce",
+      "description": "VenmoAccount",
+      "details": {
+        "cardType": "Visa",
+        "username": "happy-venmo-joe"
+      }
     }
   ]
 }

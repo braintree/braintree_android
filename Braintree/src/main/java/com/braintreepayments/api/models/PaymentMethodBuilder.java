@@ -80,14 +80,14 @@ public abstract class PaymentMethodBuilder<T> {
         JSONObject json = new JSONObject();
         JSONObject optionsJson = new JSONObject();
         JSONObject paymentMethodNonceJson = new JSONObject();
-        JSONObject metaJson = new BraintreeMetadataBuilder()
+        JSONObject metaJson = new MetadataBuilder()
                 .sessionId(mSessionId)
                 .source(mSource)
                 .integration(mIntegration)
                 .build();
 
         try {
-            json.put(BraintreeMetadataBuilder.META_KEY, metaJson);
+            json.put(MetadataBuilder.META_KEY, metaJson);
 
             if (mValidate) {
                 optionsJson.put(VALIDATE_KEY, mValidate);

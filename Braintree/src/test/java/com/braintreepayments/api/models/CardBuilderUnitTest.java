@@ -36,7 +36,7 @@ public class CardBuilderUnitTest {
         JSONObject json = new JSONObject(cardBuilder.build());
         JSONObject jsonCard = json.getJSONObject(CREDIT_CARD_KEY);
         JSONObject jsonBillingAddress = jsonCard.getJSONObject(BILLING_ADDRESS_KEY);
-        JSONObject jsonMetadata = json.getJSONObject(PaymentMethodBuilder.METADATA_KEY);
+        JSONObject jsonMetadata = json.getJSONObject(MetadataBuilder.META_KEY);
 
         assertEquals(VISA, jsonCard.getString("number"));
         assertEquals("01/2015", jsonCard.getString("expirationDate"));
@@ -94,7 +94,7 @@ public class CardBuilderUnitTest {
         CardBuilder cardBuilder = new CardBuilder();
 
         JSONObject metadata = new JSONObject(cardBuilder.build())
-                .getJSONObject(PaymentMethodBuilder.METADATA_KEY);
+                .getJSONObject(MetadataBuilder.META_KEY);
 
         assertEquals("custom", metadata.getString("integration"));
         assertEquals("form", metadata.getString("source"));
@@ -121,7 +121,7 @@ public class CardBuilderUnitTest {
         CardBuilder cardBuilder = new CardBuilder().integration("test-integration");
 
         JSONObject metadata = new JSONObject(cardBuilder.build())
-                .getJSONObject(PaymentMethodBuilder.METADATA_KEY);
+                .getJSONObject(MetadataBuilder.META_KEY);
 
         assertEquals("test-integration", metadata.getString("integration"));
     }

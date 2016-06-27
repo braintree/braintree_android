@@ -6,7 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class BraintreeMetadataBuilder {
+public class MetadataBuilder {
 
     public static final String META_KEY = "_meta";
 
@@ -18,11 +18,14 @@ public class BraintreeMetadataBuilder {
 
     private JSONObject mJson;
 
-    public BraintreeMetadataBuilder() {
+    public MetadataBuilder() {
         mJson = new JSONObject();
+        try {
+            mJson.put(PLATFORM_KEY, "android");
+        } catch (JSONException ignored) {}
     }
 
-    public BraintreeMetadataBuilder source(String source) {
+    public MetadataBuilder source(String source) {
         try {
             mJson.put(SOURCE_KEY, source);
         } catch (JSONException ignored) {}
@@ -30,7 +33,7 @@ public class BraintreeMetadataBuilder {
         return this;
     }
 
-    public BraintreeMetadataBuilder integration(String integration) {
+    public MetadataBuilder integration(String integration) {
         try {
             mJson.put(INTEGRATION_KEY, integration);
         } catch (JSONException ignored) {}
@@ -38,7 +41,7 @@ public class BraintreeMetadataBuilder {
         return this;
     }
 
-    public BraintreeMetadataBuilder sessionId(String sessionId) {
+    public MetadataBuilder sessionId(String sessionId) {
         try {
             mJson.put(SESSION_ID_KEY, sessionId);
         } catch (JSONException ignored) {}
@@ -46,17 +49,9 @@ public class BraintreeMetadataBuilder {
         return this;
     }
 
-    public BraintreeMetadataBuilder version() {
+    public MetadataBuilder version() {
         try {
             mJson.put(VERSION_KEY, BuildConfig.VERSION_NAME);
-        } catch (JSONException ignored) {}
-
-        return this;
-    }
-
-    public BraintreeMetadataBuilder platform() {
-        try {
-            mJson.put(PLATFORM_KEY, "android");
         } catch (JSONException ignored) {}
 
         return this;

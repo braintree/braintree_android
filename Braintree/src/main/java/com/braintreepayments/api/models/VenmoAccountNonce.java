@@ -3,13 +3,19 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * {@link PaymentMethodNonce} representing a {@link VenmoAccountNonce}
  * @see PaymentMethodNonce
  */
 public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable {
 
-    private static final String TYPE = "Venmo";
+    protected static final String TYPE = "VenmoAccount";
+    protected static final String API_RESOURCE_KEY = "venmoAccount";
+    private static final String VENMO_DETAILS_KEY = "details";
+    private static final String VENMO_USERNAME_KEY = "username";
 
     private String mUsername;
 
@@ -17,6 +23,27 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
         mNonce = nonce;
         mDescription = description;
         mUsername = username;
+    }
+
+    /**
+     * Convert an API response to an {@link VenmoAccountNonce}.
+     *
+     * @param json Raw JSON response from Braintree of a {@link VenmoAccountNonce}.
+     * @return {@link VenmoAccountNonce}.
+     * @throws JSONException when parsing the response fails.
+     */
+    public static VenmoAccountNonce fromJson(String json) throws JSONException {
+        VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce();
+        venmoAccountNonce.fromJson(new JSONObject(json));
+        return venmoAccountNonce;
+    }
+
+    protected void fromJson(JSONObject json) throws JSONException {
+        super.fromJson(json);
+
+        JSONObject details = json.getJSONObject(VENMO_DETAILS_KEY);
+        mUsername = details.getString(VENMO_USERNAME_KEY);
+        mDescription = mUsername;
     }
 
     /**
@@ -28,7 +55,7 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
 
     @Override
     public String getTypeLabel() {
-        return TYPE;
+        return "Venmo";
     }
 
     @Override
@@ -36,6 +63,8 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
         super.writeToParcel(dest, flags);
         dest.writeString(mUsername);
     }
+
+    public VenmoAccountNonce() {}
 
     protected VenmoAccountNonce(Parcel in) {
         super(in);

@@ -11,13 +11,12 @@ import org.robolectric.RobolectricGradleTestRunner;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(RobolectricGradleTestRunner.class)
-public class BraintreeMetadataBuilderTest {
+public class MetadataBuilderTest {
 
-    @Test(timeout = 1000)
+    @Test
     public void build_correctlyBuildsMetadata() throws JSONException {
-        JSONObject json = new BraintreeMetadataBuilder()
+        JSONObject json = new MetadataBuilder()
                 .integration("custom")
-                .platform()
                 .version()
                 .sessionId("session-id")
                 .source("form")

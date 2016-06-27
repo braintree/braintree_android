@@ -27,7 +27,7 @@ public class PayPalAccountBuilderUnitTest {
         String json = paypalAccountBuilder.build();
         JSONObject jsonObject = new JSONObject(json);
         JSONObject jsonAccount = jsonObject.getJSONObject(PAYPAL_KEY);
-        JSONObject jsonMetadata = jsonObject.getJSONObject(PaymentMethodBuilder.METADATA_KEY);
+        JSONObject jsonMetadata = jsonObject.getJSONObject(MetadataBuilder.META_KEY);
 
         assertNull(jsonAccount.opt("details"));
         assertEquals("correlation_id", jsonAccount.getString("correlationId"));
@@ -42,7 +42,7 @@ public class PayPalAccountBuilderUnitTest {
                 .source("paypal-app");
 
         String json = payPalAccountBuilder.build();
-        JSONObject metadata = new JSONObject(json).getJSONObject(PaymentMethodBuilder.METADATA_KEY);
+        JSONObject metadata = new JSONObject(json).getJSONObject(MetadataBuilder.META_KEY);
 
         assertEquals("custom", metadata.getString("integration"));
         assertEquals("paypal-app", metadata.getString("source"));
@@ -54,7 +54,7 @@ public class PayPalAccountBuilderUnitTest {
                 "test-integration");
 
         String json = payPalAccountBuilder.build();
-        JSONObject metadata = new JSONObject(json).getJSONObject(PaymentMethodBuilder.METADATA_KEY);
+        JSONObject metadata = new JSONObject(json).getJSONObject(MetadataBuilder.META_KEY);
 
         assertEquals("test-integration", metadata.getString("integration"));
     }
