@@ -20,9 +20,10 @@ public class CardNumber {
     public static final String THREE_D_SECURE_MPI_LOOKUP_ERROR = "4000000000000085";
     public static final String THREE_D_SECURE_MPI_SERVICE_ERROR = "4000000000000093";
 
+    public static final String UNIONPAY_INTEGRATION_CREDIT = "6222821234560017";
+    public static final String UNIONPAY_INTEGRATION_DEBIT = "6223164991230014";
     public static final String UNIONPAY_CREDIT = "6212345678901232";
     public static final String UNIONPAY_DEBIT = "6212345678901265";
     public static final String UNIONPAY_SINGLE_STEP_SALE = "6212345678900093";
-    public static final String UNIONPAY_ENROLLMENT_NOT_REQUIRED = "6212345678900085";
-
+    public static final String UNIONPAY_SMS_NOT_REQUIRED = "6212345678900085";
 }

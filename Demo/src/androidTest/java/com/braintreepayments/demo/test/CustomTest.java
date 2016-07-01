@@ -67,7 +67,7 @@ public class CustomTest extends TestHelper {
 
     @Test(timeout = 60000)
     public void tokenizesUnionPay_whenEnrollmentIsNotRequired() {
-        onDevice(withText("Card Number")).perform(setText(CardNumber.UNIONPAY_ENROLLMENT_NOT_REQUIRED));
+        onDevice(withText("Card Number")).perform(setText(CardNumber.UNIONPAY_SMS_NOT_REQUIRED));
         fillInExpiration();
         onDevice(withText("CVV")).perform(setText("123"));
         onDevice(withText("Purchase")).perform(click());

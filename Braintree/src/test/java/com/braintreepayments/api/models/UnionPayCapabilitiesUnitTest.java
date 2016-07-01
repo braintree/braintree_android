@@ -28,7 +28,7 @@ public class UnionPayCapabilitiesUnitTest {
         assertTrue(mUnionPayCapabilities.isUnionPay());
         assertFalse(mUnionPayCapabilities.isDebit());
         assertTrue(mUnionPayCapabilities.supportsTwoStepAuthAndCapture());
-        assertFalse(mUnionPayCapabilities.isUnionPayEnrollmentRequired());
+        assertFalse(mUnionPayCapabilities.isSupported());
     }
 
     @Test
@@ -42,7 +42,7 @@ public class UnionPayCapabilitiesUnitTest {
         assertEquals(mUnionPayCapabilities.isUnionPay(), actual.isUnionPay());
         assertEquals(mUnionPayCapabilities.isDebit(), actual.isDebit());
         assertEquals(mUnionPayCapabilities.supportsTwoStepAuthAndCapture(), actual.supportsTwoStepAuthAndCapture());
-        assertEquals(mUnionPayCapabilities.isUnionPayEnrollmentRequired(), actual.isUnionPayEnrollmentRequired());
+        assertEquals(mUnionPayCapabilities.isSupported(), actual.isSupported());
     }
 
     @Test
@@ -53,7 +53,7 @@ public class UnionPayCapabilitiesUnitTest {
 
         JSONObject unionPayObject = new JSONObject();
         unionPayObject.put("supportsTwoStepAuthAndCapture", true);
-        unionPayObject.put("isUnionPayEnrollmentRequired", false);
+        unionPayObject.put("isSupported", false);
 
         jsonObject.put("unionPay", unionPayObject);
 
@@ -61,7 +61,7 @@ public class UnionPayCapabilitiesUnitTest {
         assertTrue(unionPayCapabilities.isUnionPay());
         assertFalse(unionPayCapabilities.isDebit());
         assertTrue(unionPayCapabilities.supportsTwoStepAuthAndCapture());
-        assertFalse(unionPayCapabilities.isUnionPayEnrollmentRequired());
+        assertFalse(unionPayCapabilities.isSupported());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class UnionPayCapabilitiesUnitTest {
         assertFalse(unionPayCapabilities.isUnionPay());
         assertFalse(unionPayCapabilities.isDebit());
         assertFalse(unionPayCapabilities.supportsTwoStepAuthAndCapture());
-        assertFalse(unionPayCapabilities.isUnionPayEnrollmentRequired());
+        assertFalse(unionPayCapabilities.isSupported());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class UnionPayCapabilitiesUnitTest {
         assertTrue(unionPayCapabilities.isUnionPay());
         assertTrue(unionPayCapabilities.isDebit());
         assertFalse(unionPayCapabilities.supportsTwoStepAuthAndCapture());
-        assertFalse(unionPayCapabilities.isUnionPayEnrollmentRequired());
+        assertFalse(unionPayCapabilities.isSupported());
     }
 
     @Test
@@ -95,6 +95,6 @@ public class UnionPayCapabilitiesUnitTest {
         assertFalse(unionPayCapabilities.isUnionPay());
         assertFalse(unionPayCapabilities.isDebit());
         assertFalse(unionPayCapabilities.supportsTwoStepAuthAndCapture());
-        assertFalse(unionPayCapabilities.isUnionPayEnrollmentRequired());
+        assertFalse(unionPayCapabilities.isSupported());
     }
 }

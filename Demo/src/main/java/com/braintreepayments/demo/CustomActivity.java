@@ -8,6 +8,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.braintreepayments.api.AndroidPay;
 import com.braintreepayments.api.BraintreeFragment;
@@ -187,11 +188,19 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     @Override
     public void onCapabilitiesFetched(UnionPayCapabilities capabilities) {
         if (capabilities.isUnionPay()) {
+            if (!capabilities.isSupported()) {
+                Toast.makeText(this, "This card is not supported, we can not process it", Toast.LENGTH_SHORT).show();
+                return;
+            }
             mIsUnionPay = true;
             mEnrollmentId = null;
 
             mCardForm.setRequiredFields(this, true, true, true, mConfiguration.isPostalCodeChallengePresent(),
                     getString(R.string.purchase));
+
+            mCountryCode.setVisibility(VISIBLE);
+            mMobilePhone.setVisibility(VISIBLE);
+            mSendSmsButton.setVisibility(VISIBLE);
         } else {
             mIsUnionPay = false;
 
@@ -201,19 +210,13 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
             if (!mConfiguration.isCvvChallengePresent()) {
                 ((EditText) findViewById(R.id.bt_card_form_cvv)).setText("");
             }
-        }
-
-        if (capabilities.isUnionPayEnrollmentRequired()) {
-            mCountryCode.setVisibility(VISIBLE);
-            mMobilePhone.setVisibility(VISIBLE);
-            mSendSmsButton.setVisibility(VISIBLE);
-        } else {
             mCountryCode.setVisibility(GONE);
             mCountryCode.setText("");
             mMobilePhone.setVisibility(GONE);
             mMobilePhone.setText("");
             mSendSmsButton.setVisibility(GONE);
         }
+
     }
 
     public void sendSms(View v) {

@@ -4,8 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import com.braintreepayments.api.BraintreeFragment;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,18 +16,18 @@ public class UnionPayCapabilities implements Parcelable {
     private static final String IS_DEBIT_KEY = "isDebit";
     private static final String UNIONPAY_KEY = "unionPay";
     private static final String SUPPORTS_TWO_STEP_AUTH_AND_CAPTURE_KEY = "supportsTwoStepAuthAndCapture";
-    private static final String IS_UNIONPAY_ENROLLMENT_REQUIRED_KEY = "isUnionPayEnrollmentRequired";
+    private static final String IS_SUPPORTED = "isSupported";
 
     private final boolean mIsUnionPay;
     private final boolean mIsDebit;
     private final boolean mSupportsTwoStepAuthAndCapture;
-    private final boolean mIsUnionPayEnrollmentRequired;
+    private final boolean mIsSupported;
 
     public static UnionPayCapabilities fromJson(@NonNull String jsonString) {
         boolean isUnionPay = false;
         boolean isDebit = false;
         boolean supportsTwoStepAuthAndCapture = false;
-        boolean isUnionPayEnrollmentRequired = false;
+        boolean isSupported = false;
         try {
             JSONObject json = new JSONObject(jsonString);
             isUnionPay = json.optBoolean(IS_UNIONPAY_KEY);
@@ -38,20 +36,20 @@ public class UnionPayCapabilities implements Parcelable {
             if (json.has(UNIONPAY_KEY)) {
                 JSONObject unionPay = json.getJSONObject(UNIONPAY_KEY);
                 supportsTwoStepAuthAndCapture = unionPay.optBoolean(SUPPORTS_TWO_STEP_AUTH_AND_CAPTURE_KEY);
-                isUnionPayEnrollmentRequired = unionPay.optBoolean(IS_UNIONPAY_ENROLLMENT_REQUIRED_KEY);
+                isSupported = unionPay.optBoolean(IS_SUPPORTED);
             }
         } catch (JSONException ignored) {}
 
         return new UnionPayCapabilities(isUnionPay, isDebit, supportsTwoStepAuthAndCapture,
-                isUnionPayEnrollmentRequired);
+                isSupported);
     }
 
     UnionPayCapabilities(boolean isUnionPay, boolean isDebit, boolean supportsTwoStepAuthAndCapture,
-            boolean isUnionPayEnrollmentRequired) {
+            boolean isSupported) {
         mIsUnionPay = isUnionPay;
         mIsDebit = isDebit;
         mSupportsTwoStepAuthAndCapture = supportsTwoStepAuthAndCapture;
-        mIsUnionPayEnrollmentRequired = isUnionPayEnrollmentRequired;
+        mIsSupported = isSupported;
     }
 
     /**
@@ -76,11 +74,11 @@ public class UnionPayCapabilities implements Parcelable {
     }
 
     /**
-     * @return true if a {@link com.braintreepayments.api.UnionPay#enroll(BraintreeFragment, UnionPayCardBuilder)}
-     * should be completed.
+     * @return true if we can process this UnionPay card. When false, we cannot process this card.
+     * If we cannot process this card, the customer should be informed.
      */
-    public boolean isUnionPayEnrollmentRequired() {
-        return mIsUnionPayEnrollmentRequired;
+    public boolean isSupported() {
+        return mIsSupported;
     }
 
     @Override
@@ -92,7 +90,7 @@ public class UnionPayCapabilities implements Parcelable {
         mIsUnionPay = in.readByte() > 0;
         mIsDebit = in.readByte() > 0;
         mSupportsTwoStepAuthAndCapture = in.readByte() > 0;
-        mIsUnionPayEnrollmentRequired = in.readByte() > 0;
+        mIsSupported = in.readByte() > 0;
     }
 
     @Override
@@ -100,7 +98,7 @@ public class UnionPayCapabilities implements Parcelable {
         dest.writeByte(mIsUnionPay ? (byte) 1 : 0);
         dest.writeByte(mIsDebit ? (byte) 1 : 0);
         dest.writeByte(mSupportsTwoStepAuthAndCapture ? (byte) 1 : 0);
-        dest.writeByte(mIsUnionPayEnrollmentRequired ? (byte) 1 : 0);
+        dest.writeByte(mIsSupported ? (byte) 1 : 0);
     }
 
     public static final Creator<UnionPayCapabilities> CREATOR = new Creator<UnionPayCapabilities>() {

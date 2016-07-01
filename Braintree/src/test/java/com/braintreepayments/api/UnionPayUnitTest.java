@@ -327,7 +327,7 @@ public class UnionPayUnitTest {
         assertTrue(capabilities.isUnionPay());
         assertFalse(capabilities.isDebit());
         assertTrue(capabilities.supportsTwoStepAuthAndCapture());
-        assertFalse(capabilities.isUnionPayEnrollmentRequired());
+        assertFalse(capabilities.isSupported());
     }
 
     @Test
