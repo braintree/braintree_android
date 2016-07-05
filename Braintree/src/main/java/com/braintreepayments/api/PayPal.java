@@ -620,6 +620,6 @@ public class PayPal {
     }
 
     private static String getSchemeFromPackageName(Context context) {
-        return context.getPackageName().replace("_", "") + ".braintree";
+        return context.getPackageName().toLowerCase().replace("_", "") + ".braintree";
     }
 }
