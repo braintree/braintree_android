@@ -136,6 +136,7 @@ public class BraintreeFragment extends Fragment {
                 throw new InvalidArgumentException("Tokenization Key or client token was invalid.");
             }
 
+            bundle.putString(EXTRA_SESSION_ID, UUIDHelper.getFormattedUUID());
             bundle.putString(EXTRA_INTEGRATION_TYPE, integrationType);
             braintreeFragment.setArguments(bundle);
 
@@ -161,6 +162,7 @@ public class BraintreeFragment extends Fragment {
         }
 
         mCrashReporter = CrashReporter.setup(this);
+        mSessionId = getArguments().getString(EXTRA_SESSION_ID);
         mIntegrationType = getArguments().getString(EXTRA_INTEGRATION_TYPE);
         mAuthorization = getArguments().getParcelable(EXTRA_AUTHORIZATION_TOKEN);
         mAnalyticsDatabase = AnalyticsDatabase.getInstance(getApplicationContext());
@@ -178,12 +180,10 @@ public class BraintreeFragment extends Fragment {
 
             mHasFetchedPaymentMethodNonces = savedInstanceState.getBoolean(EXTRA_FETCHED_PAYMENT_METHOD_NONCES);
             mIsBrowserSwitching = savedInstanceState.getBoolean(EXTRA_BROWSER_SWITCHING);
-            mSessionId = savedInstanceState.getString(EXTRA_SESSION_ID);
             try {
                 mConfiguration = Configuration.fromJson(savedInstanceState.getString(EXTRA_CONFIGURATION));
             } catch (JSONException ignored) {}
         } else {
-            mSessionId = UUIDHelper.getFormattedUUID();
             if (mAuthorization instanceof TokenizationKey) {
                 sendAnalyticsEvent("started.client-key");
             } else {
@@ -241,7 +241,6 @@ public class BraintreeFragment extends Fragment {
                 (ArrayList<? extends Parcelable>) mCachedPaymentMethodNonces);
         outState.putBoolean(EXTRA_FETCHED_PAYMENT_METHOD_NONCES, mHasFetchedPaymentMethodNonces);
         outState.putBoolean(EXTRA_BROWSER_SWITCHING, mIsBrowserSwitching);
-        outState.putString(EXTRA_SESSION_ID, mSessionId);
 
         if (mConfiguration != null) {
             outState.putString(EXTRA_CONFIGURATION, mConfiguration.toJson());

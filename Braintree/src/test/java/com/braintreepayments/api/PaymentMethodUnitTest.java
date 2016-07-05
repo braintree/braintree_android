@@ -18,7 +18,6 @@ import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -102,13 +101,18 @@ public class PaymentMethodUnitTest {
     }
 
     @Test
-    public void getPaymentMethodNonces_includesDefaultFirstParamInRequestPath()
+    public void getPaymentMethodNonces_includesDefaultFirstParamAndSessionIdInRequestPath()
             throws InvalidArgumentException, InterruptedException {
         BraintreeFragment fragment = new MockFragmentBuilder().build();
         when(fragment.getSessionId()).thenReturn("session-id");
 
         PaymentMethod.getPaymentMethodNonces(fragment, true);
 
-        verify(fragment.getHttpClient()).get(contains("default_first=true"), any(HttpResponseCallback.class));
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).get(captor.capture(), any(HttpResponseCallback.class));
+
+        String requestUri = captor.getValue();
+        assertTrue(requestUri.contains("default_first=true"));
+        assertTrue(requestUri.contains("session_id=" + fragment.getSessionId()));
     }
 }

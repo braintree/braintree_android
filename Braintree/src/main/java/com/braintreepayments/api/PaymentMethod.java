@@ -31,6 +31,7 @@ public class PaymentMethod {
         final Uri uri = Uri.parse(TokenizationClient.versionedPath(TokenizationClient.PAYMENT_METHOD_ENDPOINT))
                 .buildUpon()
                 .appendQueryParameter("default_first", String.valueOf(defaultFirst))
+                .appendQueryParameter("session_id", fragment.getSessionId())
                 .build();
 
         fragment.waitForConfiguration(new ConfigurationListener() {
