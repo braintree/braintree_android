@@ -16,7 +16,7 @@ public class UnionPayCapabilities implements Parcelable {
     private static final String IS_DEBIT_KEY = "isDebit";
     private static final String UNIONPAY_KEY = "unionPay";
     private static final String SUPPORTS_TWO_STEP_AUTH_AND_CAPTURE_KEY = "supportsTwoStepAuthAndCapture";
-    private static final String IS_SUPPORTED = "isSupported";
+    private static final String IS_SUPPORTED_KEY = "isSupported";
 
     private final boolean mIsUnionPay;
     private final boolean mIsDebit;
@@ -36,12 +36,11 @@ public class UnionPayCapabilities implements Parcelable {
             if (json.has(UNIONPAY_KEY)) {
                 JSONObject unionPay = json.getJSONObject(UNIONPAY_KEY);
                 supportsTwoStepAuthAndCapture = unionPay.optBoolean(SUPPORTS_TWO_STEP_AUTH_AND_CAPTURE_KEY);
-                isSupported = unionPay.optBoolean(IS_SUPPORTED);
+                isSupported = unionPay.optBoolean(IS_SUPPORTED_KEY);
             }
         } catch (JSONException ignored) {}
 
-        return new UnionPayCapabilities(isUnionPay, isDebit, supportsTwoStepAuthAndCapture,
-                isSupported);
+        return new UnionPayCapabilities(isUnionPay, isDebit, supportsTwoStepAuthAndCapture, isSupported);
     }
 
     UnionPayCapabilities(boolean isUnionPay, boolean isDebit, boolean supportsTwoStepAuthAndCapture,
@@ -74,8 +73,8 @@ public class UnionPayCapabilities implements Parcelable {
     }
 
     /**
-     * @return true if we can process this UnionPay card. When false, we cannot process this card.
-     * If we cannot process this card, the customer should be informed.
+     * @return true if Braintree can process this UnionPay card. When false, Braintree cannot process this card.
+     * If Braintree cannot process this card, the customer should be informed.
      */
     public boolean isSupported() {
         return mIsSupported;

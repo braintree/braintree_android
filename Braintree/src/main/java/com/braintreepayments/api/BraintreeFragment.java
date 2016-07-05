@@ -422,7 +422,7 @@ public class BraintreeFragment extends Fragment {
         });
     }
 
-    protected void postUnionPayCallback(final String enrollmentId) {
+    protected void postUnionPayCallback(final String enrollmentId, final boolean smsCodeRequired) {
         postOrQueueCallback(new QueuedCallback() {
             @Override
             public boolean shouldRun() {
@@ -431,7 +431,7 @@ public class BraintreeFragment extends Fragment {
 
             @Override
             public void run() {
-                mUnionPayListener.onSmsCodeSent(enrollmentId);
+                mUnionPayListener.onSmsCodeSent(enrollmentId, smsCodeRequired);
             }
         });
     }

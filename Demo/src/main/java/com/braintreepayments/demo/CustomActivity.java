@@ -189,6 +189,7 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     public void onCapabilitiesFetched(UnionPayCapabilities capabilities) {
         if (capabilities.isUnionPay()) {
             if (!capabilities.isSupported()) {
+                mCardForm.setCardNumberError();
                 Toast.makeText(this, "This card is not supported, we can not process it", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -216,7 +217,6 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
             mMobilePhone.setText("");
             mSendSmsButton.setVisibility(GONE);
         }
-
     }
 
     public void sendSms(View v) {
@@ -233,9 +233,13 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     }
 
     @Override
-    public void onSmsCodeSent(String enrollmentId) {
+    public void onSmsCodeSent(String enrollmentId, boolean smsCodeRequired) {
         mEnrollmentId = enrollmentId;
-        mSmsCode.setVisibility(VISIBLE);
+        if (smsCodeRequired) {
+            mSmsCode.setVisibility(VISIBLE);
+        } else {
+            onCardFormSubmit();
+        }
     }
 
     @Override

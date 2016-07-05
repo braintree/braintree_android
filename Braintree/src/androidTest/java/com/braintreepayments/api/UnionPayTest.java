@@ -34,6 +34,7 @@ import static com.braintreepayments.testutils.CardNumber.UNIONPAY_SINGLE_STEP_SA
 import static com.braintreepayments.testutils.CardNumber.UNIONPAY_SMS_NOT_REQUIRED;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
@@ -66,7 +67,7 @@ public class UnionPayTest {
             }
 
             @Override
-            public void onSmsCodeSent(String enrollmentId) {
+            public void onSmsCodeSent(String enrollmentId, boolean smsCodeRequired) {
                 fail("Not expecting onSmsCodeSent");
             }
         });
@@ -88,7 +89,7 @@ public class UnionPayTest {
             }
 
             @Override
-            public void onSmsCodeSent(String enrollmentId) {
+            public void onSmsCodeSent(String enrollmentId, boolean smsCodeRequired) {
                 fail("Not expecting onSmsCodeSent");
             }
         });
@@ -141,7 +142,7 @@ public class UnionPayTest {
             }
 
             @Override
-            public void onSmsCodeSent(String enrollmentId) {
+            public void onSmsCodeSent(String enrollmentId, boolean smsCodeRequired) {
                 fail("Not expecting onSmsCodeSent");
             }
         });
@@ -169,8 +170,9 @@ public class UnionPayTest {
             }
 
             @Override
-            public void onSmsCodeSent(String enrollmentId) {
+            public void onSmsCodeSent(String enrollmentId, boolean smsCodeRequired) {
                 assertFalse(TextUtils.isEmpty(enrollmentId));
+                assertTrue(smsCodeRequired);
                 mCountDownLatch.countDown();
             }
         });
@@ -180,7 +182,6 @@ public class UnionPayTest {
         mCountDownLatch.await();
     }
 
-    @Ignore("enroll(VISA) should not be allowed https://trello.com/c/iJvv793H")
     @Test(timeout = 10000)
     public void enroll_whenIsUnionPayFalse_willError() throws InterruptedException {
         String cardNumber = CardNumber.VISA;
@@ -199,7 +200,7 @@ public class UnionPayTest {
             }
 
             @Override
-            public void onSmsCodeSent(String enrollmentId) {
+            public void onSmsCodeSent(String enrollmentId, boolean smsCodeRequired) {
                 fail("Not expecting onSmsCodeSent");
             }
         });
@@ -210,6 +211,46 @@ public class UnionPayTest {
                 assertTrue(error instanceof ErrorWithResponse);
                 assertEquals("UnionPay Enrollment is invalid", error.getMessage());
                 mCountDownLatch.countDown();
+            }
+        });
+
+        UnionPay.fetchCapabilities(mBraintreeFragment, cardNumber);
+        mCountDownLatch.await();
+    }
+
+    @Ignore("Waiting on a card that returns smsCodeRequired = false")
+    @Test(timeout = 10000)
+    public void enroll_whenSmsCodeRequiredFalse_onSmsCodeSentReturnsFalse() throws InterruptedException {
+        mCountDownLatch = new CountDownLatch(2);
+        String cardNumber = CardNumber.UNIONPAY_SMS_NOT_REQUIRED;
+        final UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
+                .cardNumber(cardNumber)
+                .expirationMonth("12")
+                .expirationYear("2019")
+                .mobileCountryCode("62")
+                .mobilePhoneNumber("11111111111");
+
+        mBraintreeFragment.addListener(new UnionPayListener() {
+            @Override
+            public void onCapabilitiesFetched(UnionPayCapabilities capabilities) {
+                assertTrue(capabilities.isUnionPay());
+                assertFalse(capabilities.isSupported());
+                UnionPay.enroll(mBraintreeFragment, unionPayCardBuilder);
+                mCountDownLatch.countDown();
+            }
+
+            @Override
+            public void onSmsCodeSent(String enrollmentId, boolean smsCodeRequired) {
+                assertNotNull(enrollmentId);
+                assertFalse(smsCodeRequired);
+                mCountDownLatch.countDown();
+            }
+        });
+
+        mBraintreeFragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onError(Exception error) {
+                fail("Not expecting error");
             }
         });
 
@@ -231,7 +272,8 @@ public class UnionPayTest {
             public void onCapabilitiesFetched(UnionPayCapabilities capabilities) {}
 
             @Override
-            public void onSmsCodeSent(String enrollmentId) {
+            public void onSmsCodeSent(String enrollmentId, boolean smsCodeRequired) {
+                assertTrue(smsCodeRequired);
                 cardBuilder.enrollmentId(enrollmentId);
                 cardBuilder.smsCode("12345");
                 UnionPay.tokenize(mBraintreeFragment, cardBuilder);
@@ -268,7 +310,8 @@ public class UnionPayTest {
             public void onCapabilitiesFetched(UnionPayCapabilities capabilities) {}
 
             @Override
-            public void onSmsCodeSent(String enrollmentId) {
+            public void onSmsCodeSent(String enrollmentId, boolean smsCodeRequired) {
+                assertTrue(smsCodeRequired);
                 cardBuilder.enrollmentId(enrollmentId);
                 cardBuilder.smsCode("12345");
                 UnionPay.tokenize(mBraintreeFragment, cardBuilder);
@@ -289,8 +332,6 @@ public class UnionPayTest {
         mCountDownLatch.await();
     }
 
-    // Helper Methods
-
     private void assertSupported(final String cardNumber, final boolean expected) throws InterruptedException {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         mBraintreeFragment.addListener(new UnionPayListener() {
@@ -303,12 +344,11 @@ public class UnionPayTest {
             }
 
             @Override
-            public void onSmsCodeSent(String enrollmentId) {
+            public void onSmsCodeSent(String enrollmentId, boolean smsCodeRequired) {
                 fail("Not expecting onSmsCodeSent");
             }
         });
         UnionPay.fetchCapabilities(mBraintreeFragment, cardNumber);
         countDownLatch.await();
     }
-
 }

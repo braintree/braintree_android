@@ -3,6 +3,6 @@
   "isDebit": false,
   "unionPay": {
     "supportsTwoStepAuthAndCapture": true,
-    "isUnionPayEnrollmentRequired": false
+    "isSupported": true
   }
 }

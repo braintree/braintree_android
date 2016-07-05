@@ -20,7 +20,8 @@ import org.json.JSONObject;
  */
 public class UnionPay {
 
-    private static final String UNIONPAY_ENROLLMENT_ID = "unionPayEnrollmentId";
+    private static final String UNIONPAY_ENROLLMENT_ID_KEY = "unionPayEnrollmentId";
+    private static final String UNIONPAY_SMS_REQUIRED_KEY = "smsCodeRequired";
     private static final String UNIONPAY_CAPABILITIES_PATH = TokenizationClient.versionedPath(
             "payment_methods/credit_cards/capabilities");
     private static final String UNIONPAY_ENROLLMENT_PATH = TokenizationClient.versionedPath("union_pay_enrollments");
@@ -103,9 +104,10 @@ public class UnionPay {
                                     @Override
                                     public void success(String responseBody) {
                                         try {
-                                            String enrollmentId = new JSONObject(responseBody)
-                                                    .optString(UNIONPAY_ENROLLMENT_ID, null);
-                                            fragment.postUnionPayCallback(enrollmentId);
+                                            JSONObject response = new JSONObject(responseBody);
+                                            String enrollmentId = response.getString(UNIONPAY_ENROLLMENT_ID_KEY);
+                                            boolean smsCodeRequired = response.getBoolean(UNIONPAY_SMS_REQUIRED_KEY);
+                                            fragment.postUnionPayCallback(enrollmentId, smsCodeRequired);
                                             fragment.sendAnalyticsEvent("union-pay.enrollment-succeeded");
                                         } catch (JSONException e) {
                                             failure(e);

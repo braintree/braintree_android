@@ -1,14 +1,12 @@
 package com.braintreepayments.api;
 
 import android.net.Uri;
-import android.text.TextUtils;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.interfaces.UnionPayListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
@@ -65,21 +63,9 @@ public class UnionPayUnitTest {
     }
 
     @Test
-    public void tokenize_whenCardBuilderHasSMSCode_callsListenerWithNonceOnSuccess() {
-        mockSuccessCallback();
-        UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
-                .smsCode("12345");
-
-        UnionPay.tokenize(mBraintreeFragment, unionPayCardBuilder);
-
-        verify(mBraintreeFragment).postCallback(any(CardNonce.class));
-    }
-
-    @Test
     public void tokenize_sendsAnalyticsEventOnTokenizeResult() {
         mockSuccessCallback();
-        UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
-                .smsCode("12345");
+        UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
 
         UnionPay.tokenize(mBraintreeFragment, unionPayCardBuilder);
 
@@ -139,29 +125,56 @@ public class UnionPayUnitTest {
     }
 
     @Test
+    public void tokenize_optionalSmsCode_sendsPayloadToEndpoint() throws JSONException {
+        UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
+                .cardNumber("someCardNumber")
+                .expirationMonth("expirationMonth")
+                .expirationYear("expirationYear")
+                .cvv("cvv")
+                .enrollmentId("enrollmentId")
+                .validate(true);
+
+        BraintreeHttpClient httpClient = mock(BraintreeHttpClient.class);
+        doNothing().when(httpClient).get(anyString(), any(HttpResponseCallback.class));
+        when(mBraintreeFragment.getHttpClient()).thenReturn(httpClient);
+        ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
+
+        UnionPay.tokenize(mBraintreeFragment, unionPayCardBuilder);
+
+        verify(httpClient).post(eq("/v1/payment_methods/credit_cards"), argumentCaptor.capture(),
+                any(HttpResponseCallback.class));
+
+        JSONObject tokenizePayload = new JSONObject(argumentCaptor.getValue());
+        JSONObject creditCardPayload = tokenizePayload.getJSONObject("creditCard");
+        JSONObject optionsPayload = creditCardPayload.getJSONObject("options");
+        JSONObject unionPayEnrollmentPayload = optionsPayload.getJSONObject("unionPayEnrollment");
+
+        assertEquals("someCardNumber", creditCardPayload.getString("number"));
+        assertEquals("expirationMonth", creditCardPayload.getString("expirationMonth"));
+        assertEquals("expirationYear", creditCardPayload.getString("expirationYear"));
+        assertEquals("cvv", creditCardPayload.getString("cvv"));
+
+        assertTrue(optionsPayload.getBoolean("validate"));
+        assertEquals("enrollmentId", unionPayEnrollmentPayload.getString("id"));
+        assertFalse(unionPayEnrollmentPayload.has("smsCode"));
+    }
+
+    @Test
     public void enroll_callsListenerWithUnionPayEnrollmentIdAdded() throws JSONException {
-        final String expectedEnrollmentId = "some-enrollment-id";
+        String expectedEnrollmentId = "some-enrollment-id";
+        boolean expectedSmsCodeRequired = true;
         JSONObject response = new JSONObject();
         response.put("unionPayEnrollmentId", expectedEnrollmentId);
+        response.put("smsCodeRequired", expectedSmsCodeRequired);
 
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(mConfigurationWithUnionPay)
                 .successResponse(response.toString())
                 .build();
 
-        fragment.addListener(new UnionPayListener() {
-            @Override
-            public void onCapabilitiesFetched(UnionPayCapabilities unionPayCapabilities) {
-            }
-
-            @Override
-            public void onSmsCodeSent(String enrollmentId) {
-                assertFalse(TextUtils.isEmpty(enrollmentId));
-            }
-        });
-
         UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder();
         UnionPay.enroll(fragment, unionPayCardBuilder);
+        verify(fragment).postUnionPayCallback(expectedEnrollmentId, expectedSmsCodeRequired);
     }
 
     @Test
@@ -201,7 +214,8 @@ public class UnionPayUnitTest {
                 .cardNumber("some-card-number");
 
         JSONObject successObject = new JSONObject()
-                .put("unionPayEnrollmentId", "unionPayEnrollmentId");
+                .put("unionPayEnrollmentId", "unionPayEnrollmentId")
+                .put("smsCodeRequired", true);
 
         BraintreeFragment braintreeFragment = new MockFragmentBuilder()
                 .configuration(mConfigurationWithUnionPay)
@@ -327,7 +341,7 @@ public class UnionPayUnitTest {
         assertTrue(capabilities.isUnionPay());
         assertFalse(capabilities.isDebit());
         assertTrue(capabilities.supportsTwoStepAuthAndCapture());
-        assertFalse(capabilities.isSupported());
+        assertTrue(capabilities.isSupported());
     }
 
     @Test
