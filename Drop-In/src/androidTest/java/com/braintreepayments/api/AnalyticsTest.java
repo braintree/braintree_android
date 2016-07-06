@@ -218,7 +218,7 @@ public class AnalyticsTest extends BraintreePaymentActivityTestRunner {
     public void doesNotCrashWhenUserExitsRightAfterDropInIsLaunched() {
         setupActivity(new TestClientTokenBuilder().withAnalytics().build());
 
-        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_loading_progress_bar));
+        waitForView(withId(com.braintreepayments.api.dropin.R.id.bt_inflated_loading_view));
         getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
 
         waitForActivityToFinish(mActivity);
