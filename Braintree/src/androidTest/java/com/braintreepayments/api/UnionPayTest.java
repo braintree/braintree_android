@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
 
+import static com.braintreepayments.testutils.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.CardNumber.UNIONPAY_CREDIT;
 import static com.braintreepayments.testutils.CardNumber.UNIONPAY_DEBIT;
 import static com.braintreepayments.testutils.CardNumber.UNIONPAY_ENROLLMENT_NOT_REQUIRED;
@@ -217,6 +218,7 @@ public class UnionPayTest {
         mBraintreeFragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertIsANonce(paymentMethodNonce.getNonce());
                 assertEquals("85", ((CardNonce) paymentMethodNonce).getLastTwo());
                 mCountDownLatch.countDown();
             }
@@ -238,6 +240,7 @@ public class UnionPayTest {
         mBraintreeFragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertIsANonce(paymentMethodNonce.getNonce());
                 assertEquals("85", ((CardNonce) paymentMethodNonce).getLastTwo());
                 mCountDownLatch.countDown();
             }
@@ -273,6 +276,7 @@ public class UnionPayTest {
         mBraintreeFragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertIsANonce(paymentMethodNonce.getNonce());
                 assertEquals("32", ((CardNonce) paymentMethodNonce).getLastTwo());
                 mCountDownLatch.countDown();
             }
@@ -308,6 +312,7 @@ public class UnionPayTest {
         mBraintreeFragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertIsANonce(paymentMethodNonce.getNonce());
                 assertEquals("32", ((CardNonce) paymentMethodNonce).getLastTwo());
                 mCountDownLatch.countDown();
             }

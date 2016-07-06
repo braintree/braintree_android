@@ -25,6 +25,7 @@ import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.tokenize;
+import static com.braintreepayments.testutils.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
@@ -57,6 +58,7 @@ public class PaymentMethodTest {
             @Override
             public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {
                 assertEquals(1, paymentMethodNonces.size());
+                assertIsANonce(paymentMethodNonces.get(0).getNonce());
                 assertEquals("11", ((CardNonce) paymentMethodNonces.get(0)).getLastTwo());
                 latch.countDown();
             }

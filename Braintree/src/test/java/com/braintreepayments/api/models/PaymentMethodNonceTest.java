@@ -37,7 +37,7 @@ public class PaymentMethodNonceTest {
 
         assertTrue(paymentMethodNonces.get(1) instanceof PayPalAccountNonce);
         assertEquals("PayPal", paymentMethodNonces.get(1).getTypeLabel());
-        assertEquals("aaaaaa-bbbbbbb-109934023-1", paymentMethodNonces.get(1).getNonce());
+        assertEquals("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", paymentMethodNonces.get(1).getNonce());
         assertEquals("with email paypalaccount@example.com", paymentMethodNonces.get(1).getDescription());
         assertFalse(paymentMethodNonces.get(1).isDefault());
     }

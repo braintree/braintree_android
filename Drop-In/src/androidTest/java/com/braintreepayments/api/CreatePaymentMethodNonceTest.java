@@ -34,6 +34,8 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
+import static com.braintreepayments.api.test.ActivityResultHelper.getActivityResult;
+import static com.braintreepayments.api.test.WaitForActivityHelper.waitForActivityToFinish;
 import static com.braintreepayments.api.utils.Assertions.assertSelectedPaymentMethodIs;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.addCardAndAssertSuccess;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.fillInCardForm;
@@ -41,7 +43,7 @@ import static com.braintreepayments.api.utils.PaymentFormHelpers.onAddPaymentFor
 import static com.braintreepayments.api.utils.PaymentFormHelpers.performPayPalAdd;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForAddPaymentFormHeader;
 import static com.braintreepayments.api.utils.PaymentFormHelpers.waitForPaymentMethodNonceList;
-import static com.braintreepayments.api.test.ActivityResultHelper.getActivityResult;
+import static com.braintreepayments.testutils.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
@@ -51,10 +53,8 @@ import static com.braintreepayments.testutils.ui.ViewHelper.THREE_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.TWO_SECONDS;
 import static com.braintreepayments.testutils.ui.ViewHelper.closeSoftKeyboard;
 import static com.braintreepayments.testutils.ui.ViewHelper.waitForView;
-import static com.braintreepayments.api.test.WaitForActivityHelper.waitForActivityToFinish;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.not;
 
@@ -98,7 +98,7 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
                         .getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE);
 
         assertEquals(Activity.RESULT_OK, result.get("resultCode"));
-        assertNotNull(response.getNonce());
+        assertIsANonce(response.getNonce());
         assertEquals("11", ((CardNonce) response).getLastTwo());
     }
 
@@ -147,7 +147,7 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
                 .getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE);
 
         assertEquals(Activity.RESULT_OK, result.get("resultCode"));
-        assertNotNull(response.getNonce());
+        assertIsANonce(response.getNonce());
         assertEquals("11", ((CardNonce) response).getLastTwo());
     }
 
@@ -481,7 +481,7 @@ public class CreatePaymentMethodNonceTest extends BraintreePaymentActivityTestRu
                 .getParcelableExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE);
 
         assertEquals(Activity.RESULT_OK, result.get("resultCode"));
-        assertNotNull(paymentMethodNonce.getNonce());
+        assertIsANonce(paymentMethodNonce.getNonce());
     }
 
     private boolean checkHomeAsUpEnabled(Activity activity) {

@@ -32,6 +32,7 @@ import static android.support.test.espresso.web.sugar.Web.onWebView;
 import static android.support.test.espresso.web.webdriver.DriverAtoms.findElement;
 import static android.support.test.espresso.web.webdriver.DriverAtoms.webClick;
 import static android.support.test.espresso.web.webdriver.DriverAtoms.webKeys;
+import static com.braintreepayments.testutils.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_AUTHENTICATION_FAILED;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_AUTHENTICATION_UNAVAILABLE;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_ISSUER_DOES_NOT_PARTICIPATE;
@@ -120,6 +121,7 @@ public class ThreeDSecureVerificationTest {
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertIsANonce(paymentMethodNonce.getNonce());
                 CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
                 assertEquals("51", cardNonce.getLastTwo());
@@ -145,6 +147,7 @@ public class ThreeDSecureVerificationTest {
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertIsANonce(paymentMethodNonce.getNonce());
                 CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
                 assertEquals("44", cardNonce.getLastTwo());
@@ -171,6 +174,7 @@ public class ThreeDSecureVerificationTest {
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertIsANonce(paymentMethodNonce.getNonce());
                 CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
                 assertEquals("69", cardNonce.getLastTwo());
@@ -220,6 +224,7 @@ public class ThreeDSecureVerificationTest {
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertIsANonce(paymentMethodNonce.getNonce());
                 CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
                 assertEquals("77", cardNonce.getLastTwo());
@@ -245,6 +250,7 @@ public class ThreeDSecureVerificationTest {
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertIsANonce(paymentMethodNonce.getNonce());
                 CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
                 assertEquals("85", cardNonce.getLastTwo());
@@ -270,6 +276,7 @@ public class ThreeDSecureVerificationTest {
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertIsANonce(paymentMethodNonce.getNonce());
                 CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
                 assertEquals("02", cardNonce.getLastTwo());
@@ -327,7 +334,9 @@ public class ThreeDSecureVerificationTest {
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertIsANonce(paymentMethodNonce.getNonce());
                 CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+
                 assertEquals("01", cardNonce.getLastTwo());
                 assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
                 assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());

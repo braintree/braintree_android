@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
 
+import static com.braintreepayments.testutils.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
@@ -112,6 +113,7 @@ public class CardTest {
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertIsANonce(paymentMethodNonce.getNonce());
                 assertEquals("11", ((CardNonce) paymentMethodNonce).getLastTwo());
                 countDownLatch.countDown();
             }

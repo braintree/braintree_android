@@ -15,7 +15,7 @@
     },
     {
       "type": "PayPalAccount",
-      "nonce": "aaaaaa-bbbbbbb-109934023-1",
+      "nonce": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
       "description": "with email paypalaccount@example.com",
       "default": false,
       "isLocked": false,

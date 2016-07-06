@@ -1,7 +1,7 @@
 {
     "paymentMethod": {
         "type": "CreditCard",
-        "nonce": "123456-12345-12345-a-adfa",
+        "nonce": "12345678-1234-1234-1234-123456789012",
         "description": "ending in ••11",
         "isDefault": false,
         "isLocked": false,
