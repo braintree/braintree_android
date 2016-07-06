@@ -79,6 +79,13 @@ public class TestConfigurationBuilder extends JSONBuilder {
 
     public TestConfigurationBuilder paypalEnabled(boolean enabled) {
         put(enabled);
+
+        if (enabled) {
+            try {
+                put("paypal", new JSONObject(new TestPayPalConfigurationBuilder(true).build()));
+            } catch (JSONException ignored) {}
+        }
+
         return this;
     }
 

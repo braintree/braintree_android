@@ -27,8 +27,12 @@ public abstract class JSONBuilder {
         }
 
         StackTraceElement current = stack[stackIndex];
+        put(current.getMethodName(), value);
+    }
+
+    public void put(String key, Object value) {
         try {
-            mJsonBody.put(current.getMethodName(), value);
+            mJsonBody.put(key, value);
         } catch (JSONException ignored) {}
     }
 }
