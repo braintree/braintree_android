@@ -1,8 +1,5 @@
 package com.braintreepayments.api.models;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +49,10 @@ public class Configuration {
     }
 
     protected Configuration(String configurationString) throws JSONException {
+        if (configurationString == null) {
+            throw new JSONException("Configuration cannot be null");
+        }
+
         mConfigurationString = configurationString;
         JSONObject json = new JSONObject(configurationString);
 
