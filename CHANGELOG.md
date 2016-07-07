@@ -1,5 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## 2.3.4
+
+* Prevent invalid schemes from being used for browser switching (Packages containing underscores would generate invalid schemes)
+* Fix `NoClassDefFoundError` in `DataCollector`
+* Fix `NullPointerException` in `BraintreeFragment`
+
 ## 2.3.3
 
 * Add PayPal Checkout intent option (authorize or sale). See `PayPalRequest#intent`
