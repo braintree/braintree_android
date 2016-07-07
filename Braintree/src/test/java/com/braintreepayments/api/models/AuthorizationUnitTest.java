@@ -38,6 +38,16 @@ public class AuthorizationUnitTest {
     }
 
     @Test(expected = InvalidArgumentException.class)
+    public void fromString_throwsWhenPassedNull() throws InvalidArgumentException {
+        Authorization.fromString(null);
+    }
+
+    @Test(expected = InvalidArgumentException.class)
+    public void fromString_throwsWhenPassedAnEmptyString() throws InvalidArgumentException {
+        Authorization.fromString("");
+    }
+
+    @Test(expected = InvalidArgumentException.class)
     public void fromString_throwsWhenPassedJunk() throws InvalidArgumentException {
         Authorization.fromString("not authorization");
     }

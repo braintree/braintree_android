@@ -2,6 +2,7 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
@@ -25,7 +26,7 @@ public abstract class Authorization implements Parcelable {
      * @throws InvalidArgumentException This method will throw this exception type if the string
      * passed does not meet any of the criteria supplied for {@link ClientToken} or {@link TokenizationKey}.
      */
-    public static Authorization fromString(String authorizationString) throws InvalidArgumentException {
+    public static Authorization fromString(@Nullable String authorizationString) throws InvalidArgumentException {
         if (isTokenizationKey(authorizationString)) {
             return new TokenizationKey(authorizationString);
         } else {
