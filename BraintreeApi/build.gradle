@@ -80,6 +80,7 @@ tasks.whenTaskAdded { task ->
 task javadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    failOnError false
 }
 
 task javadocsJar(type: Jar, dependsOn: javadocs) {
