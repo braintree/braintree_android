@@ -55,7 +55,7 @@ public class AddCardTest extends AndroidTestCase {
             assertEquals(1, e.getFieldErrors().size());
             assertEquals(3, e.errorFor("creditCard").getFieldErrors().size());
             assertEquals("Credit card must include number, payment_method_nonce, or venmo_sdk_payment_method_code", e.errorFor("creditCard").errorFor("base").getMessage());
-            assertEquals("Expiration year is invalid", e.errorFor("creditCard").errorFor("expirationYear").getMessage());
+            assertEquals("Expiration date is required", e.errorFor("creditCard").errorFor("expirationDate").getMessage());
             assertEquals("Credit card number is required", e.errorFor("creditCard").errorFor("number").getMessage());
             assertNull(e.errorFor("creditCard").errorFor("expirationMonth"));
             // @formatter:on
