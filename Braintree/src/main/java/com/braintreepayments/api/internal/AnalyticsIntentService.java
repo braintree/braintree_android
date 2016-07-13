@@ -63,6 +63,7 @@ public class AnalyticsIntentService extends IntentService {
 
     public AnalyticsIntentService() {
         super(AnalyticsIntentService.class.getSimpleName());
+        setIntentRedelivery(true);
     }
 
     @Override
