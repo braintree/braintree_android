@@ -61,20 +61,25 @@ public class AnalyticsIntentService extends IntentService {
     protected HttpClient mHttpClient;
     protected Context mContext;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        if (mContext == null) {
-            mContext = getApplicationContext();
-        }
-    }
-
     public AnalyticsIntentService() {
         super(AnalyticsIntentService.class.getSimpleName());
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+
+        if (mContext == null) {
+            mContext = this;
+        }
+    }
+
+    @Override
     protected void onHandleIntent(final Intent intent) {
+        if (intent == null) {
+            return;
+        }
+
         try {
             final AnalyticsDatabase db = AnalyticsDatabase.getInstance(mContext);
             Authorization authorization = Authorization.fromString(intent.getStringExtra(EXTRA_AUTHORIZATION));

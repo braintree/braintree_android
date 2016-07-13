@@ -27,6 +27,7 @@ import java.util.List;
 import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.clearAllEvents;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -45,8 +46,10 @@ public class AnalyticsIntentServiceUnitTest {
     @Before
     public void setup() throws IOException {
         mService = new AnalyticsIntentService();
-        mService.onCreate();
+        mService.mContext = RuntimeEnvironment.application;
         mService.mHttpClient = mock(BraintreeHttpClient.class);
+
+        mService.onCreate();
         mServiceIntent = new Intent(RuntimeEnvironment.application, AnalyticsIntentService.class)
             .putExtra(AnalyticsIntentService.EXTRA_CONFIGURATION, new TestConfigurationBuilder().build())
             .putExtra(AnalyticsIntentService.EXTRA_AUTHORIZATION, AUTHORIZATION);
@@ -55,6 +58,15 @@ public class AnalyticsIntentServiceUnitTest {
     @After
     public void tearDown() throws IOException {
         clearAllEvents(RuntimeEnvironment.application);
+    }
+
+    @Test
+    public void handlesNullIntent() {
+        try {
+            mService.onHandleIntent(null);
+        } catch (Exception e) {
+            fail("Exception was thrown: " + e);
+        }
     }
 
     @Test
