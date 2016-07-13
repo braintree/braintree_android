@@ -18,37 +18,29 @@ public class UnionPayCapabilities implements Parcelable {
     private static final String SUPPORTS_TWO_STEP_AUTH_AND_CAPTURE_KEY = "supportsTwoStepAuthAndCapture";
     private static final String IS_SUPPORTED_KEY = "isSupported";
 
-    private final boolean mIsUnionPay;
-    private final boolean mIsDebit;
-    private final boolean mSupportsTwoStepAuthAndCapture;
-    private final boolean mIsSupported;
+    private boolean mIsUnionPay;
+    private boolean mIsDebit;
+    private boolean mSupportsTwoStepAuthAndCapture;
+    private boolean mIsSupported;
 
+    @NonNull
     public static UnionPayCapabilities fromJson(@NonNull String jsonString) {
-        boolean isUnionPay = false;
-        boolean isDebit = false;
-        boolean supportsTwoStepAuthAndCapture = false;
-        boolean isSupported = false;
+        UnionPayCapabilities unionPayCapabilities = new UnionPayCapabilities();
+
         try {
             JSONObject json = new JSONObject(jsonString);
-            isUnionPay = json.optBoolean(IS_UNIONPAY_KEY);
-            isDebit = json.optBoolean(IS_DEBIT_KEY);
+            unionPayCapabilities.mIsUnionPay = json.optBoolean(IS_UNIONPAY_KEY);
+            unionPayCapabilities.mIsDebit = json.optBoolean(IS_DEBIT_KEY);
 
             if (json.has(UNIONPAY_KEY)) {
                 JSONObject unionPay = json.getJSONObject(UNIONPAY_KEY);
-                supportsTwoStepAuthAndCapture = unionPay.optBoolean(SUPPORTS_TWO_STEP_AUTH_AND_CAPTURE_KEY);
-                isSupported = unionPay.optBoolean(IS_SUPPORTED_KEY);
+                unionPayCapabilities.mSupportsTwoStepAuthAndCapture = unionPay.optBoolean(
+                        SUPPORTS_TWO_STEP_AUTH_AND_CAPTURE_KEY);
+                unionPayCapabilities.mIsSupported = unionPay.optBoolean(IS_SUPPORTED_KEY);
             }
         } catch (JSONException ignored) {}
 
-        return new UnionPayCapabilities(isUnionPay, isDebit, supportsTwoStepAuthAndCapture, isSupported);
-    }
-
-    UnionPayCapabilities(boolean isUnionPay, boolean isDebit, boolean supportsTwoStepAuthAndCapture,
-            boolean isSupported) {
-        mIsUnionPay = isUnionPay;
-        mIsDebit = isDebit;
-        mSupportsTwoStepAuthAndCapture = supportsTwoStepAuthAndCapture;
-        mIsSupported = isSupported;
+        return unionPayCapabilities;
     }
 
     /**
@@ -79,6 +71,8 @@ public class UnionPayCapabilities implements Parcelable {
     public boolean isSupported() {
         return mIsSupported;
     }
+
+    private UnionPayCapabilities() {}
 
     @Override
     public int describeContents() {

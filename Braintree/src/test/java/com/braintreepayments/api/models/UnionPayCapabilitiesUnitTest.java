@@ -20,7 +20,18 @@ public class UnionPayCapabilitiesUnitTest {
 
     @Before
     public void setup() {
-        mUnionPayCapabilities = new UnionPayCapabilities(true, false, true, false);
+        JSONObject unionPayCapabilitiesJson = new JSONObject();
+        JSONObject unionPay = new JSONObject();
+        try {
+            unionPayCapabilitiesJson.put("isUnionPay", true);
+            unionPayCapabilitiesJson.put("isDebit", false);
+            unionPay.put("supportsTwoStepAuthAndCapture", true);
+            unionPay.put("isSupported", false);
+            unionPayCapabilitiesJson.put("unionPay", unionPay);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mUnionPayCapabilities = UnionPayCapabilities.fromJson(unionPayCapabilitiesJson.toString());
     }
 
     @Test
