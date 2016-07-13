@@ -26,4 +26,5 @@ public class CardNumber {
     public static final String UNIONPAY_DEBIT = "6212345678901265";
     public static final String UNIONPAY_SINGLE_STEP_SALE = "6212345678900093";
     public static final String UNIONPAY_SMS_NOT_REQUIRED = "6212345678900085";
+    public static final String UNIONPAY_NOT_ACCEPTED = "62123456789000028";
 }

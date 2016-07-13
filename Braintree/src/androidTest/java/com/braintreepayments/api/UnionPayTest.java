@@ -18,7 +18,6 @@ import com.braintreepayments.testutils.CardNumber;
 import com.braintreepayments.testutils.TestClientTokenBuilder;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +29,7 @@ import static com.braintreepayments.testutils.CardNumber.UNIONPAY_CREDIT;
 import static com.braintreepayments.testutils.CardNumber.UNIONPAY_DEBIT;
 import static com.braintreepayments.testutils.CardNumber.UNIONPAY_INTEGRATION_CREDIT;
 import static com.braintreepayments.testutils.CardNumber.UNIONPAY_INTEGRATION_DEBIT;
+import static com.braintreepayments.testutils.CardNumber.UNIONPAY_NOT_ACCEPTED;
 import static com.braintreepayments.testutils.CardNumber.UNIONPAY_SINGLE_STEP_SALE;
 import static com.braintreepayments.testutils.CardNumber.UNIONPAY_SMS_NOT_REQUIRED;
 import static junit.framework.Assert.assertEquals;
@@ -126,7 +126,7 @@ public class UnionPayTest {
 
     @Test(timeout = 10000)
     public void fetchCapabilities_unionPaySmsNotRequired_isNotSupported() throws InterruptedException {
-        assertSupported(UNIONPAY_SMS_NOT_REQUIRED, false);
+        assertSupported(UNIONPAY_NOT_ACCEPTED, false);
     }
 
     @Test(timeout = 10000)
@@ -218,11 +218,10 @@ public class UnionPayTest {
         mCountDownLatch.await();
     }
 
-    @Ignore("Waiting on a card that returns smsCodeRequired = false")
     @Test(timeout = 10000)
     public void enroll_whenSmsCodeRequiredFalse_onSmsCodeSentReturnsFalse() throws InterruptedException {
         mCountDownLatch = new CountDownLatch(2);
-        String cardNumber = CardNumber.UNIONPAY_SMS_NOT_REQUIRED;
+        String cardNumber = UNIONPAY_SMS_NOT_REQUIRED;
         final UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
                 .cardNumber(cardNumber)
                 .expirationMonth("12")
@@ -234,7 +233,7 @@ public class UnionPayTest {
             @Override
             public void onCapabilitiesFetched(UnionPayCapabilities capabilities) {
                 assertTrue(capabilities.isUnionPay());
-                assertFalse(capabilities.isSupported());
+                assertTrue(capabilities.isSupported());
                 UnionPay.enroll(mBraintreeFragment, unionPayCardBuilder);
                 mCountDownLatch.countDown();
             }
