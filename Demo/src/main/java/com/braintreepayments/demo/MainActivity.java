@@ -15,6 +15,7 @@ import com.braintreepayments.api.PaymentRequest;
 import com.braintreepayments.api.ThreeDSecure;
 import com.braintreepayments.api.dropin.utils.PaymentMethodType;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
@@ -32,7 +33,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 public class MainActivity extends BaseActivity implements PaymentMethodNonceCreatedListener,
-        BraintreeErrorListener {
+        BraintreeCancelListener, BraintreeErrorListener {
 
     static final String EXTRA_PAYMENT_REQUEST = "payment_request";
     static final String EXTRA_COLLECT_DEVICE_DATA = "collect_device_data";
@@ -147,18 +148,25 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
     }
 
     @Override
-    public void onError(Exception error) {
-        super.onError(error);
-
-        safelyCloseLoadingView();
-    }
-
-    @Override
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         displayResult(new Intent()
                 .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce));
+        safelyCloseLoadingView();
+    }
+
+    @Override
+    public void onCancel(int requestCode) {
+        super.onCancel(requestCode);
+
+        safelyCloseLoadingView();
+    }
+
+    @Override
+    public void onError(Exception error) {
+        super.onError(error);
+
         safelyCloseLoadingView();
     }
 
