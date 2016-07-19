@@ -170,7 +170,7 @@ public class HttpClientTest {
     public void postsErrorWhenBaseUrlIsNotSet() throws InterruptedException, IOException {
         HttpClient httpClient = new HttpClient();
 
-        assertExceptionIsPosted(httpClient, MalformedURLException.class, "Protocol not found: null/");
+        assertExceptionIsPosted(httpClient, MalformedURLException.class, null);
     }
 
     @Test(timeout = 1000)
@@ -178,7 +178,7 @@ public class HttpClientTest {
         HttpClient httpClient = new HttpClient();
         httpClient.setBaseUrl(null);
 
-        assertExceptionIsPosted(httpClient, MalformedURLException.class, "Protocol not found: /");
+        assertExceptionIsPosted(httpClient, MalformedURLException.class, null);
     }
 
     @Test(timeout = 1000)
@@ -186,7 +186,7 @@ public class HttpClientTest {
         HttpClient httpClient = new HttpClient();
         httpClient.setBaseUrl("");
 
-        assertExceptionIsPosted(httpClient, MalformedURLException.class, "Protocol not found: /");
+        assertExceptionIsPosted(httpClient, MalformedURLException.class, null);
     }
 
     @Test(timeout = 1000)
@@ -388,9 +388,8 @@ public class HttpClientTest {
     }
 
     /* helpers */
-    private void assertExceptionIsPosted(HttpClient httpClient,
-            final Class<? extends Exception> exceptionType, final String exceptionMessage)
-            throws IOException, InterruptedException {
+    private void assertExceptionIsPosted(HttpClient httpClient, final Class<? extends Exception> exceptionType,
+            final String exceptionMessage) throws IOException, InterruptedException {
         final CountDownLatch countDownLatch = new CountDownLatch(2);
 
         httpClient.get("/", new HttpResponseCallback() {
