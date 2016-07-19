@@ -192,8 +192,8 @@ public class ApiClientUnitTest {
         mCountDownLatch.await();
     }
 
-//    @Test(timeout = 10000)
-//    @MediumTest
+    @Test(timeout = 10000)
+    @MediumTest
     public void createTransaction_createsAUnionPayTransaction() throws InterruptedException {
         mApiClient.createTransaction("fake-valid-unionpay-credit-nonce", "fake_switch_usd",
                 new Callback<Transaction>() {
