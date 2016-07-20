@@ -7,6 +7,10 @@ sudo: true
 env:
   global:
     - TERM=dumb
+android:
+  components:
+    - tools
+    - tools
 before_script:
   - echo y | android update sdk --no-ui --all --filter tools,platform-tools
   # Build three times, the first two builds will resolve dependencies via sdk-manager-plugin and then fail
