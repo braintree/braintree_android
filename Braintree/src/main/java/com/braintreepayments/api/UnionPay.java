@@ -76,7 +76,7 @@ public class UnionPay {
      * UnionPay#fetchCapabilities(BraintreeFragment, String)} if your card needs to be enrolled.
      * <p/>
      * On completion, returns a enrollmentId to
-     * {@link com.braintreepayments.api.interfaces.UnionPayListener#onSmsCodeSent(String)}
+     * {@link com.braintreepayments.api.interfaces.UnionPayListener#onSmsCodeSent(String, boolean)}
      * This enrollmentId needs to be applied to {@link UnionPayCardBuilder} along with the SMS code
      * collected from the merchant before invoking {@link UnionPay#tokenize(BraintreeFragment, UnionPayCardBuilder)}
      * <p/>

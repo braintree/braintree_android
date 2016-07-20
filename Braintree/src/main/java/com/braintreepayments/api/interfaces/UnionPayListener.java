@@ -25,7 +25,7 @@ public interface UnionPayListener extends BraintreeListener {
      * If smsCodeRequired is false, enrollment is not required, and tokenization can be done immediately
      * without an SMS code.
      * </p>
-     * EnrollmentId, and the SMS code collected from the customer will need to be set on the
+     * The enrollment id and SMS code collected from the customer will need to be set on the
      * {@link UnionPayCardBuilder} before invoking
      * {@link com.braintreepayments.api.UnionPay#tokenize(BraintreeFragment, UnionPayCardBuilder)}
      *
