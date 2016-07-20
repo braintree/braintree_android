@@ -120,8 +120,8 @@ public class ThreeDSecureVerificationTest {
                 CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
                 assertEquals("51", cardNonce.getLastTwo());
-                assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
-                assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+                assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+                assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
 
                 mCountDownLatch.countDown();
             }
