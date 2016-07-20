@@ -9,7 +9,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
-        testInstrumentationRunner 'com.braintreepayments.testutils.ui.NoAnimationsInstrumentationTestRunner'
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
     resourcePrefix 'bt_'
@@ -27,16 +27,6 @@ dependencies {
 
     androidTestCompile project(path: ':TestUtils', configuration: 'instrumentationTestDebug')
     testCompile project(path: ':TestUtils', configuration: 'unitTestDebug')
-}
-
-task grantAnimationPermission(type: Exec, dependsOn: 'installDebugAndroidTest') {
-    commandLine 'adb shell pm grant com.braintreepayments.api.dropin.test android.permission.SET_ANIMATION_SCALE'.split(' ')
-}
-
-tasks.whenTaskAdded { task ->
-    if (task.name.startsWith('connectedAndroidTest')) {
-        task.dependsOn grantAnimationPermission
-    }
 }
 
 /* maven deploy + signing */
