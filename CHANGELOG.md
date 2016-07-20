@@ -2,8 +2,8 @@
 
 ## 2.3.5
 
-* Change UnionPayCallback to include smsCodeRequired
-* Change UnionPayCapabilities#isUnionPayEnrollmentRequired to UnionPayCapabilities#isSupported
+* Change `UnionPayCallback` to include `smsCodeRequired`
+* Change `UnionPayCapabilities#isUnionPayEnrollmentRequired` to `UnionPayCapabilities#isSupported`
 * Upgrade Google Play Services to [9.0.0,10.0.0)
 * Upgrade support annotations to [24.0.0,25.0.0)
 * Upgrade build tools to 24.0.0
