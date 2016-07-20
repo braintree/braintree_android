@@ -1,5 +1,15 @@
 # Braintree Android SDK Release Notes
 
+## 2.3.5
+
+* Change UnionPayCallback to include smsCodeRequired
+* Change UnionPayCapabilities#isUnionPayEnrollmentRequired to UnionPayCapabilities#isSupported
+* Upgrade Google Play Services to [9.0.0,10.0.0)
+* Upgrade support annotations to [24.0.0,25.0.0)
+* Upgrade build tools to 24.0.0
+* Update compile and target API versions to 24
+* Fix `NullPointerException` in `AnalyticsIntentService`
+
 ## 2.3.4
 
 * Prevent invalid schemes from being used for browser switching (Packages containing underscores would generate invalid schemes)
