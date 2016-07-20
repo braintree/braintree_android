@@ -190,7 +190,7 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
         if (capabilities.isUnionPay()) {
             if (!capabilities.isSupported()) {
                 mCardForm.setCardNumberError();
-                Toast.makeText(this, "This card is not supported, we can not process it", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "This card is not supported", Toast.LENGTH_SHORT).show();
                 return;
             }
             mIsUnionPay = true;
