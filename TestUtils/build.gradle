@@ -24,6 +24,8 @@ android {
 
     lintOptions {
         disable 'InvalidPackage'
+        textReport true
+        textOutput 'stdout'
     }
 
     packagingOptions {

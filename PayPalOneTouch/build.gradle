@@ -28,6 +28,11 @@ android {
         buildConfigField "String", "PRODUCT_VERSION", "\"${product_version}\""
         buildConfigField "String", "CONFIGURATION", "\"${config}\""
     }
+
+    lintOptions {
+        textReport true
+        textOutput 'stdout'
+    }
 }
 
 dependencies {

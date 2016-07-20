@@ -12,6 +12,11 @@ android {
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
     }
+
+    lintOptions {
+        textReport true
+        textOutput 'stdout'
+    }
 }
 
 dependencies {
