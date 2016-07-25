@@ -187,7 +187,7 @@ public class PaymentButton extends Fragment implements ConfigurationListener,
         if (v.getId() == R.id.bt_paypal_button || v.getId() == R.id.bt_paypal_monogram_button) {
             PayPal.authorizeAccount(mBraintreeFragment, mPaymentRequest.getPayPalAdditionalScopes());
         } else if (v.getId() == R.id.bt_venmo_button) {
-            Venmo.authorizeAccount(mBraintreeFragment);
+            Venmo.authorizeAccount(mBraintreeFragment, true);
         } else if (v.getId() == R.id.bt_android_pay_button) {
             AndroidPay.performMaskedWalletRequest(mBraintreeFragment, mPaymentRequest.getAndroidPayCart(),
                     mPaymentRequest.isAndroidPayShippingAddressRequired(),

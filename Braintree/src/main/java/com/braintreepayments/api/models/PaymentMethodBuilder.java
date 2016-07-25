@@ -14,12 +14,8 @@ import org.json.JSONObject;
  */
 public abstract class PaymentMethodBuilder<T> {
 
-    protected static final String METADATA_KEY = "_meta";
     protected static final String OPTIONS_KEY = "options";
-    private static final String SOURCE_KEY = "source";
-    private static final String INTEGRATION_KEY = "integration";
     private static final String VALIDATE_KEY = "validate";
-    private static final String SESSION_ID_KEY = "sessionId";
 
     private String mIntegration = getDefaultIntegration();
     private String mSource = getDefaultSource();
@@ -82,15 +78,16 @@ public abstract class PaymentMethodBuilder<T> {
      */
     public String build() {
         JSONObject json = new JSONObject();
-        JSONObject metaJson = new JSONObject();
         JSONObject optionsJson = new JSONObject();
         JSONObject paymentMethodNonceJson = new JSONObject();
+        JSONObject metaJson = new MetadataBuilder()
+                .sessionId(mSessionId)
+                .source(mSource)
+                .integration(mIntegration)
+                .build();
 
         try {
-            metaJson.put(INTEGRATION_KEY, mIntegration);
-            metaJson.put(SOURCE_KEY, mSource);
-            metaJson.put(SESSION_ID_KEY, mSessionId);
-            json.put(METADATA_KEY, metaJson);
+            json.put(MetadataBuilder.META_KEY, metaJson);
 
             if (mValidate) {
                 optionsJson.put(VALIDATE_KEY, mValidate);

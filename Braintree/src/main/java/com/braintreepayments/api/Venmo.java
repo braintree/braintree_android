@@ -10,19 +10,28 @@ import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.internal.AppHelper;
 import com.braintreepayments.api.internal.SignatureVerification;
+import com.braintreepayments.api.models.MetadataBuilder;
+import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.VenmoAccountNonce;
 import com.braintreepayments.api.models.VenmoConfiguration;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Class containing Venmo specific logic.
  */
 public class Venmo {
 
+    private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
+    private static final String VALIDATE_KEY = "validate";
+    private static final String META_KEY = "_meta";
+
     static final String EXTRA_MERCHANT_ID = "com.braintreepayments.api.MERCHANT_ID";
-    static final String EXTRA_SDK_VERSION = "com.braintreepayments.api.SDK_VERSION";
     static final String EXTRA_ACCESS_TOKEN = "com.braintreepayments.api.ACCESS_TOKEN";
     static final String EXTRA_ENVIRONMENT = "com.braintreepayments.api.ENVIRONMENT";
+    static final String EXTRA_BRAINTREE_DATA = "com.braintreepayments.api.EXTRA_BRAINTREE_DATA";
     static final String EXTRA_PAYMENT_METHOD_NONCE = "com.braintreepayments.api.EXTRA_PAYMENT_METHOD_NONCE";
     static final String EXTRA_USERNAME = "com.braintreepayments.api.EXTRA_USER_NAME";
 
@@ -48,12 +57,32 @@ public class Venmo {
         return new Intent().setComponent(new ComponentName(PACKAGE_NAME, PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
     }
 
-    static Intent getLaunchIntent(VenmoConfiguration venmoConfiguration) {
-        return getVenmoIntent()
+    static Intent getLaunchIntent(VenmoConfiguration venmoConfiguration, BraintreeFragment fragment, boolean validate) {
+        Intent venmoIntent = getVenmoIntent()
                 .putExtra(EXTRA_MERCHANT_ID, venmoConfiguration.getMerchantId())
-                .putExtra(EXTRA_SDK_VERSION, BuildConfig.VERSION_NAME)
                 .putExtra(EXTRA_ACCESS_TOKEN, venmoConfiguration.getAccessToken())
                 .putExtra(EXTRA_ENVIRONMENT, venmoConfiguration.getEnvironment());
+
+        try {
+            JSONObject braintreeData = new JSONObject()
+                    .put(VALIDATE_KEY, validate);
+
+            if (fragment.getAuthorization() instanceof ClientToken) {
+                braintreeData.put(AUTHORIZATION_FINGERPRINT_KEY,
+                        ((ClientToken) fragment.getAuthorization()).getAuthorizationFingerprint());
+            }
+
+            JSONObject meta = new MetadataBuilder()
+                    .sessionId(fragment.getSessionId())
+                    .integration(fragment.getIntegrationType())
+                    .version()
+                    .build();
+
+            braintreeData.put(META_KEY, meta);
+            venmoIntent.putExtra(EXTRA_BRAINTREE_DATA, braintreeData.toString());
+        } catch (JSONException ignored) {}
+
+        return venmoIntent;
     }
 
     /**
@@ -63,43 +92,47 @@ public class Venmo {
      * {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}.
      *
      * @param fragment {@link BraintreeFragment}
+     * @param vault If true, and you are using Client Token authorization with a customer ID, this payment
+     *  method will be added to your customer's vault. @see <a href="https://developers.braintreepayments.com/guides/authorization/overview">our docs on client authorization</a>
+     *  for more info.
      */
-    public static void authorizeAccount(final BraintreeFragment fragment) {
+    public static void authorizeAccount(final BraintreeFragment fragment, final boolean vault) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                authorizeAccount(fragment, configuration.getPayWithVenmo());
+                fragment.sendAnalyticsEvent("pay-with-venmo.selected");
+
+                String exceptionMessage = "";
+                if(!configuration.getPayWithVenmo().isAccessTokenValid()) {
+                    exceptionMessage = "Venmo is not enabled";
+                } else if (!Venmo.isVenmoInstalled(fragment.getApplicationContext())) {
+                    exceptionMessage = "Venmo is not installed";
+                } else if (!configuration.getPayWithVenmo().isVenmoWhitelisted(fragment.getApplicationContext().getContentResolver())) {
+                    exceptionMessage = "Venmo is not whitelisted";
+                }
+
+                if(!TextUtils.isEmpty(exceptionMessage)) {
+                    fragment.postCallback(new AppSwitchNotAvailableException(exceptionMessage));
+                    fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
+                } else {
+                    fragment.startActivityForResult(
+                            Venmo.getLaunchIntent(configuration.getPayWithVenmo(), fragment, vault),
+                            VENMO_REQUEST_CODE);
+                    fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
+                }
             }
         });
     }
 
-    static void authorizeAccount(BraintreeFragment fragment, VenmoConfiguration venmoConfiguration) {
-        fragment.sendAnalyticsEvent("pay-with-venmo.selected");
-
-        String exceptionMessage = "";
-        if(!venmoConfiguration.isAccessTokenValid()) {
-            exceptionMessage = "Venmo is not enabled";
-        } else if (!Venmo.isVenmoInstalled(fragment.getApplicationContext())) {
-            exceptionMessage = "Venmo is not installed";
-        } else if (!venmoConfiguration.isVenmoWhitelisted(fragment.getApplicationContext().getContentResolver())) {
-            exceptionMessage = "Venmo is not whitelisted";
-        }
-
-        if(!TextUtils.isEmpty(exceptionMessage)) {
-            fragment.postCallback(new AppSwitchNotAvailableException(exceptionMessage));
-            fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
-        } else {
-            fragment.startActivityForResult(Venmo.getLaunchIntent(venmoConfiguration), VENMO_REQUEST_CODE);
-            fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
-        }
+    public static void authorizeAccount(final BraintreeFragment fragment) {
+        authorizeAccount(fragment, false);
     }
 
     static void onActivityResult(final BraintreeFragment fragment, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             String nonce = data.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
             String venmoUsername = data.getStringExtra(EXTRA_USERNAME);
-            VenmoAccountNonce venmoAccountNonce =
-                    new VenmoAccountNonce(nonce, venmoUsername, venmoUsername);
+            VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(nonce, venmoUsername, venmoUsername);
             fragment.postCallback(venmoAccountNonce);
             fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.success");
         } else if (resultCode == Activity.RESULT_CANCELED) {

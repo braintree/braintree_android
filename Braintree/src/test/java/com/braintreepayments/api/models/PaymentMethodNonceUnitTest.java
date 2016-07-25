@@ -56,6 +56,17 @@ public class PaymentMethodNonceUnitTest {
     }
 
     @Test
+    public void parsePaymentMethods_parsesVenmoAccountNonce() throws JSONException {
+        List<PaymentMethodNonce> paymentMethodNonces =
+                parsePaymentMethodNonces(stringFromFixture("payment_methods/get_payment_methods_response.json"));
+
+        assertTrue(paymentMethodNonces.get(3) instanceof VenmoAccountNonce);
+        assertEquals("Venmo", paymentMethodNonces.get(3).getTypeLabel());
+        assertEquals("fake-venmo-nonce", paymentMethodNonces.get(3).getNonce());
+        assertEquals("happy-venmo-joe", ((VenmoAccountNonce) paymentMethodNonces.get(3)).getUsername());
+    }
+
+    @Test
     public void parsePaymentMethod_parsesCards() throws JSONException {
         JSONObject card = new JSONObject(stringFromFixture("payment_methods/visa_credit_card.json"));
 

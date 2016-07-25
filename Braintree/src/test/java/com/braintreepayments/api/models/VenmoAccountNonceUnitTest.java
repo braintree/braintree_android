@@ -2,10 +2,12 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 
+import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 
+import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(RobolectricGradleTestRunner.class)
@@ -15,6 +17,17 @@ public class VenmoAccountNonceUnitTest {
     private static final String DESCRIPTION = "description";
     private static final String USERNAME = "username";
     private static final VenmoAccountNonce VENMO_NONCE = new VenmoAccountNonce(NONCE, DESCRIPTION, USERNAME);
+
+    @Test
+    public void fromJson_parsesResponse() throws JSONException {
+        VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.fromJson(
+                stringFromFixture("payment_methods/venmo_account.json"));
+
+        assertEquals("happy-venmo-joe", venmoAccountNonce.getDescription());
+        assertEquals("happy-venmo-joe", venmoAccountNonce.getUsername());
+        assertEquals("fake-venmo-nonce", venmoAccountNonce.getNonce());
+        assertEquals("Venmo", venmoAccountNonce.getTypeLabel());
+    }
 
     @Test
     public void getTypeLabel_returnsPayWithVenmo() {

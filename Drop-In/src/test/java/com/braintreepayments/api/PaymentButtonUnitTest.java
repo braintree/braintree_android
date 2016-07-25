@@ -438,7 +438,7 @@ public class PaymentButtonUnitTest {
         paymentButton.getView().findViewById(R.id.bt_venmo_button).performClick();
 
         verifyStatic();
-        Venmo.authorizeAccount(mBraintreeFragment);
+        Venmo.authorizeAccount(mBraintreeFragment, true);
     }
 
     @Test

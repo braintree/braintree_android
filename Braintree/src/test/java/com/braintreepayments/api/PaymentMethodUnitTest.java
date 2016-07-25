@@ -6,6 +6,7 @@ import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.VenmoAccountNonce;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -83,10 +84,11 @@ public class PaymentMethodUnitTest {
         ArgumentCaptor<List<PaymentMethodNonce>> captor = ArgumentCaptor.forClass((Class) List.class);
         verify(fragment).postCallback(captor.capture());
         List<PaymentMethodNonce> paymentMethodNonces = captor.getValue();
-        assertEquals(3, paymentMethodNonces.size());
+        assertEquals(4, paymentMethodNonces.size());
         assertEquals("11", ((CardNonce) paymentMethodNonces.get(0)).getLastTwo());
         assertEquals("PayPal", paymentMethodNonces.get(1).getTypeLabel());
         assertEquals("11", ((AndroidPayCardNonce) paymentMethodNonces.get(2)).getLastTwo());
+        assertEquals("happy-venmo-joe", ((VenmoAccountNonce) paymentMethodNonces.get(3)).getUsername());
     }
 
     @Test
