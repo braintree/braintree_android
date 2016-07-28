@@ -713,10 +713,4 @@ public class PayPalUnitTest {
 
         field.set(src, value);
     }
-
-    private Object getField(String fieldName, Object src) throws IllegalAccessException, NoSuchFieldException {
-        Field field = src.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        return field.get(src);
-    }
 }

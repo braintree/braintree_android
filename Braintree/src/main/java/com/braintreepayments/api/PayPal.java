@@ -379,8 +379,8 @@ public class PayPal {
                     sendAnalyticsEventForSwitchResult(fragment, request, isAppSwitch, "failed");
                     break;
                 case Cancel:
-                    fragment.postCancelCallback(PAYPAL_REQUEST_CODE);
                     sendAnalyticsEventForSwitchResult(fragment, request, isAppSwitch, "canceled");
+                    fragment.postCancelCallback(PAYPAL_REQUEST_CODE);
                     break;
                 case Success:
                     onSuccess(fragment, data, request, result);
@@ -396,7 +396,9 @@ public class PayPal {
             }
             fragment.sendAnalyticsEvent("paypal." + type + ".canceled");
 
-            fragment.postCancelCallback(PAYPAL_REQUEST_CODE);
+            if (resultCode != Activity.RESULT_CANCELED) {
+                fragment.postCancelCallback(PAYPAL_REQUEST_CODE);
+            }
         }
     }
 
