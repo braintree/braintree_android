@@ -1,5 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## 2.3.6
+
+* Allow vaulting of Venmo accounts. See `Venmo#authorizeAccount`.
+* Remove Venmo whitelist check
+* Fix `BraintreeCancelListener#onCancel` being invoked twice for PayPal cancellations (fixes [#112](https://github.com/braintree/braintree_android/issues/112))
+
 ## 2.3.5
 
 * Change `UnionPayCallback` to include `smsCodeRequired`
