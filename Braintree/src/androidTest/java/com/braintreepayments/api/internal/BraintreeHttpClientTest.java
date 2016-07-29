@@ -118,8 +118,7 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     public void postsErrorWhenBaseUrlIsNotSet()
             throws InterruptedException, IOException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(
-                TokenizationKey.fromString(TOKENIZATION_KEY));
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY));
         final CountDownLatch countDownLatch = new CountDownLatch(2);
 
         httpClient.get("/", new HttpResponseCallback() {
@@ -131,7 +130,6 @@ public class BraintreeHttpClientTest {
             @Override
             public void failure(Exception exception) {
                 assertEquals(MalformedURLException.class, exception.getClass());
-                assertEquals("Protocol not found: nullnull/", exception.getMessage());
                 countDownLatch.countDown();
             }
         });
@@ -145,7 +143,6 @@ public class BraintreeHttpClientTest {
             @Override
             public void failure(Exception exception) {
                 assertEquals(MalformedURLException.class, exception.getClass());
-                assertEquals("Protocol not found: null/", exception.getMessage());
                 countDownLatch.countDown();
             }
         });
@@ -156,28 +153,25 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     public void postsErrorWhenBaseUrlIsNull()
             throws InterruptedException, InvalidArgumentException, IOException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(
-                TokenizationKey.fromString(TOKENIZATION_KEY));
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY));
         httpClient.setBaseUrl(null);
 
-        assertExceptionIsPosted(httpClient, MalformedURLException.class, "Protocol not found: /");
+        assertExceptionIsPosted(httpClient, MalformedURLException.class, null);
     }
 
 
     @Test(timeout = 1000)
     public void postsErrorWhenBaseUrlIsEmpty()
             throws InterruptedException, IOException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(
-                TokenizationKey.fromString(TOKENIZATION_KEY));
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY));
         httpClient.setBaseUrl("");
 
-        assertExceptionIsPosted(httpClient, MalformedURLException.class, "Protocol not found: /");
+        assertExceptionIsPosted(httpClient, MalformedURLException.class, null);
     }
 
     @Test(timeout = 1000)
     public void postsErrorWhenPathIsNull() throws InterruptedException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(
-                TokenizationKey.fromString(TOKENIZATION_KEY));
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY));
         final CountDownLatch countDownLatch = new CountDownLatch(2);
 
         httpClient.get(null, new HttpResponseCallback() {
@@ -245,10 +239,9 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 1000)
-    public void throwsErrorWithResponseOn422() throws IOException, InterruptedException,
-            ErrorWithResponse, InvalidArgumentException {
-        BraintreeHttpClient httpClient = clientWithExpectedResponse(422,
-                stringFromFixture("error_response.json"));
+    public void throwsErrorWithResponseOn422() throws IOException, InterruptedException, ErrorWithResponse,
+            InvalidArgumentException {
+        BraintreeHttpClient httpClient = clientWithExpectedResponse(422, stringFromFixture("error_response.json"));
 
         assertExceptionIsPosted(httpClient, ErrorWithResponse.class, "There was an error");
     }
