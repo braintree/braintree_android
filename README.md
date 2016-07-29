@@ -8,13 +8,13 @@ Welcome to Braintree's Android SDK. This library will help you accept card and a
 
 ## Documentation
 
-Start with [**'Hello, Client!'**](https://developers.braintreepayments.com/android/start/hello-client) for instructions on basic setup and usage.
+Start with [**'Hello, Client!'**](https://developers.braintreepayments.com/start/hello-client/android/v2) for instructions on basic setup and usage.
 
-Next, read the [**full documentation**](https://developers.braintreepayments.com/android/sdk/client) for information about integration options, such as Drop-In UI, PayPal and credit card tokenization.
+Next, read the [**full documentation**](https://developers.braintreepayments.com/guides/overview) for information about integration options, such as Drop-In UI, PayPal and credit card tokenization.
 
 ## Help
 
-* [Read the docs](https://developers.braintreepayments.com/start/hello-client/android/v2)
+* [Read the docs](https://developers.braintreepayments.com/guides/overview)
 * Find a bug? [Open an issue](https://github.com/braintree/braintree_android/issues)
 * Want to contribute? [Check out contributing guidelines](CONTRIBUTING.md) and [submit a pull request](https://help.github.com/articles/creating-a-pull-request).
 
