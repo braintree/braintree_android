@@ -1,5 +1,5 @@
-Summary
--------
+Acknowledgements
+----------------
 
 The Braintree SDK uses code from the following libraries:
 
