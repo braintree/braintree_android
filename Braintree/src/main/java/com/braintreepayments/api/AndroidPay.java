@@ -11,6 +11,7 @@ import com.braintreepayments.api.interfaces.TokenizationParametersListener;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.models.MetadataBuilder;
 import com.braintreepayments.api.models.TokenizationKey;
 import com.google.android.gms.common.api.BooleanResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -119,7 +120,12 @@ public class AndroidPay {
                 .addParameter("braintree:authorizationFingerprint",
                         fragment.getConfiguration().getAndroidPay().getGoogleAuthorizationFingerprint())
                 .addParameter("braintree:apiVersion", "v1")
-                .addParameter("braintree:sdkVersion", BuildConfig.VERSION_NAME);
+                .addParameter("braintree:sdkVersion", BuildConfig.VERSION_NAME)
+                .addParameter("braintree:metadata", new MetadataBuilder()
+                        .integration(fragment.getIntegrationType())
+                        .sessionId(fragment.getSessionId())
+                        .version()
+                        .toString());
 
         if (fragment.getAuthorization() instanceof TokenizationKey) {
             parameters.addParameter("braintree:clientKey", fragment.getAuthorization().toString());

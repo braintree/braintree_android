@@ -26,6 +26,8 @@ import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 import com.google.android.gms.wallet.WalletConstants.CardNetwork;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,8 +45,10 @@ import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -98,6 +102,8 @@ public class AndroidPayTest {
 
         BraintreeFragment fragment = getMockFragment(mActivityTestRule.getActivity(), configuration);
         when(fragment.getAuthorization()).thenReturn(Authorization.fromString(TOKENIZATION_KEY));
+        when(fragment.getSessionId()).thenReturn("session-id");
+        when(fragment.getIntegrationType()).thenReturn("custom");
         final CountDownLatch latch = new CountDownLatch(1);
 
         AndroidPay.getTokenizationParameters(fragment, new TokenizationParametersListener() {
@@ -113,6 +119,17 @@ public class AndroidPayTest {
                         parameters.getParameters().getString("braintree:apiVersion"));
                 assertEquals(BuildConfig.VERSION_NAME,
                         parameters.getParameters().getString("braintree:sdkVersion"));
+
+                try {
+                    JSONObject metadata = new JSONObject(parameters.getParameters().getString("braintree:metadata"));
+                    assertNotNull(metadata);
+                    assertEquals(BuildConfig.VERSION_NAME, metadata.getString("version"));
+                    assertEquals("session-id", metadata.getString("sessionId"));
+                    assertEquals("custom", metadata.getString("integration"));
+                    assertEquals("android", metadata.get("platform"));
+                } catch (JSONException e) {
+                    fail("Failed to unpack json from tokenization parameters: " + e.getMessage());
+                }
 
                 assertEquals(4, allowedCardNetworks.size());
                 assertTrue(allowedCardNetworks.contains(CardNetwork.VISA));

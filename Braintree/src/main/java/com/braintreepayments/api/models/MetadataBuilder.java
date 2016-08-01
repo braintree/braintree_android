@@ -60,4 +60,9 @@ public class MetadataBuilder {
     public JSONObject build() {
         return mJson;
     }
+
+    @Override
+    public String toString() {
+        return mJson.toString();
+    }
 }
