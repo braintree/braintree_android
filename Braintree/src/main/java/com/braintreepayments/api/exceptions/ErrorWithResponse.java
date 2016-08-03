@@ -33,13 +33,27 @@ public class ErrorWithResponse extends Exception implements Parcelable {
         mOriginalResponse = jsonString;
 
         try {
-            JSONObject json = new JSONObject(jsonString);
-            mMessage = json.getJSONObject(ERROR_KEY).getString(MESSAGE_KEY);
-            mFieldErrors = BraintreeError.fromJsonArray(json.optJSONArray(FIELD_ERRORS_KEY));
+            parseJson(jsonString);
         } catch (JSONException e) {
             mMessage = "Parsing error response failed";
             mFieldErrors = new ArrayList<>();
         }
+    }
+
+    private ErrorWithResponse() {}
+
+    public static ErrorWithResponse fromJson(String json) throws JSONException {
+        ErrorWithResponse errorWithResponse = new ErrorWithResponse();
+        errorWithResponse.mOriginalResponse = json;
+        errorWithResponse.parseJson(json);
+
+        return errorWithResponse;
+    }
+
+    private void parseJson(String jsonString) throws JSONException {
+        JSONObject json = new JSONObject(jsonString);
+        mMessage = json.getJSONObject(ERROR_KEY).getString(MESSAGE_KEY);
+        mFieldErrors = BraintreeError.fromJsonArray(json.optJSONArray(FIELD_ERRORS_KEY));
     }
 
     /**

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
+import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.TokenizationParametersListener;
@@ -170,8 +171,13 @@ public class AndroidPay {
             fragment.postCallback(AndroidPayCardNonce.fromFullWallet(wallet));
             fragment.sendAnalyticsEvent("android-pay.nonce-received");
         } catch (JSONException e) {
-            fragment.postCallback(e);
             fragment.sendAnalyticsEvent("android-pay.failed");
+
+            try {
+                fragment.postCallback(ErrorWithResponse.fromJson(wallet.getPaymentMethodToken().getToken()));
+            } catch (JSONException e1) {
+                fragment.postCallback(e1);
+            }
         }
     }
 
