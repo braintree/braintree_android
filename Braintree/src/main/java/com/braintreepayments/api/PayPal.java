@@ -120,8 +120,10 @@ public class PayPal {
                 }
 
                 if (!isManifestValid(fragment.getApplicationContext())) {
-                    fragment.postCallback(new BraintreeException("BraintreeBrowserSwitchActivity missing or " +
-                            " incorrectly configured in AndroidManifest.xml. See " +
+                    fragment.sendAnalyticsEvent("paypal.invalid-manifest");
+                    fragment.postCallback(new BraintreeException("BraintreeBrowserSwitchActivity missing, " +
+                            "incorrectly configured in AndroidManifest.xml or another app defines the same browser " +
+                            "switch url as this app. See " +
                             "https://developers.braintreepayments.com/guides/client-sdk/android/v2#browser-switch " +
                             "for the correct configuration"));
                     return;
@@ -233,8 +235,10 @@ public class PayPal {
                 }
 
                 if (!isManifestValid(fragment.getApplicationContext())) {
-                    fragment.postCallback(new BraintreeException("BraintreeBrowserSwitchActivity missing or " +
-                            " incorrectly configured in AndroidManifest.xml. See " +
+                    fragment.sendAnalyticsEvent("paypal.invalid-manifest");
+                    fragment.postCallback(new BraintreeException("BraintreeBrowserSwitchActivity missing, " +
+                            "incorrectly configured in AndroidManifest.xml or another app defines the same browser " +
+                            "switch url as this app. See " +
                             "https://developers.braintreepayments.com/guides/client-sdk/android/v2#browser-switch " +
                             "for the correct configuration"));
                     return;
