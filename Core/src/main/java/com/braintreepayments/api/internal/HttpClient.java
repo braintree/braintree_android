@@ -307,15 +307,22 @@ public class HttpClient<T extends HttpClient> {
             return null;
         }
 
-        if (gzip) {
-            in = new GZIPInputStream(in);
-        }
+        try {
+            if (gzip) {
+                in = new GZIPInputStream(in);
+            }
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        for (int count; (count = in.read(buffer)) != -1; ) {
-            out.write(buffer, 0, count);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            for (int count; (count = in.read(buffer)) != -1; ) {
+                out.write(buffer, 0, count);
+            }
+
+            return new String(out.toByteArray(), UTF_8);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException ignored) {}
         }
-        return new String(out.toByteArray(), UTF_8);
     }
 }
