@@ -2,6 +2,7 @@ package com.braintreepayments.demo;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.StrictMode;
 
 import com.braintreepayments.demo.internal.ApiClient;
 import com.braintreepayments.demo.internal.ApiClientRequestInterceptor;
@@ -22,6 +23,20 @@ public class DemoApplication extends Application implements UncaughtExceptionHan
 
     @Override
     public void onCreate() {
+        if (BuildConfig.DEBUG) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectCustomSlowCalls()
+                    .detectNetwork()
+                    .penaltyLog()
+                    .penaltyDeath()
+                    .build());
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .penaltyDeath()
+                    .build());
+        }
+
         super.onCreate();
 
         if (Settings.getVersion(this) != BuildConfig.VERSION_CODE) {
