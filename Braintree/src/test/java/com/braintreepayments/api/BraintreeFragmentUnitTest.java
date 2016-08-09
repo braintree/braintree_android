@@ -737,6 +737,41 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
+    public void startActivityForResult_postsExceptionWhenNotAttached() throws JSONException,
+            InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        mActivity.getFragmentManager().beginTransaction().detach(fragment).commit();
+        mActivity.getFragmentManager().executePendingTransactions();
+        fragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onError(Exception error) {
+                assertEquals("BraintreeFragment is not attached to an Activity. Please ensure it is attached and try again.",
+                        error.getMessage());
+                mCalled.set(true);
+            }
+        });
+
+        fragment.startActivityForResult(new Intent(), 1);
+
+        assertTrue(mCalled.get());
+    }
+
+    @Test
+    public void startActivityForResult_doesNotPostExceptionWhenAttached() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        fragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onError(Exception error) {
+                fail("onError was called");
+            }
+        });
+
+        fragment.startActivityForResult(new Intent(), 1);
+
+        assertFalse(mCalled.get());
+    }
+
+    @Test
     public void onResume_doesNothingIfNotBrowserSwitching() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         mockStatic(PayPal.class);

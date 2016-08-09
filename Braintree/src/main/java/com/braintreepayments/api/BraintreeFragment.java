@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.VisibleForTesting;
 
+import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.GoogleApiClientException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
@@ -273,6 +274,16 @@ public class BraintreeFragment extends Fragment {
             getApplicationContext().startActivity(intent);
         } else {
             super.startActivity(intent);
+        }
+    }
+
+    @Override
+    public void startActivityForResult(Intent intent, int requestCode) {
+        if (!isAdded()) {
+            postCallback(new BraintreeException("BraintreeFragment is not attached to an Activity. Please ensure it " +
+                    "is attached and try again."));
+        } else {
+            super.startActivityForResult(intent, requestCode);
         }
     }
 
