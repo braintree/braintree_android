@@ -40,11 +40,10 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static com.braintreepayments.testutils.ReflectionHelper.setField;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -142,8 +141,8 @@ public class PayPalUnitTest {
         final AuthorizationRequest request = new AuthorizationRequest(RuntimeEnvironment.application);
         request.environment("test");
         request.successUrl("com.braintreepayments.api.test.braintree", "success");
-        setField("mMsgGuid", request, "c862cf00-f878-4e38-bb83-65bcc4b51831");
-        setField("mEncryptionKey", request, EncryptionUtils.hexStringToByteArray("0481806100DE4EBB5581163579990EE825737255A81A883B791A1BB6F5A7E81C"));
+        setField(AuthorizationRequest.class, "mMsgGuid", request, "c862cf00-f878-4e38-bb83-65bcc4b51831");
+        setField(AuthorizationRequest.class, "mEncryptionKey", request, EncryptionUtils.hexStringToByteArray("0481806100DE4EBB5581163579990EE825737255A81A883B791A1BB6F5A7E81C"));
 
         doAnswer(new Answer<AuthorizationRequest>() {
             @Override
@@ -184,8 +183,8 @@ public class PayPalUnitTest {
         final AuthorizationRequest request = new AuthorizationRequest(RuntimeEnvironment.application);
         request.environment("test");
         request.successUrl("com.braintreepayments.api.test.braintree", "success");
-        setField("mMsgGuid", request, "c862cf00-f878-4e38-bb83-65bcc4b51831");
-        setField("mEncryptionKey", request, EncryptionUtils.hexStringToByteArray("0481806100DE4EBB5581163579990EE825737255A81A883B791A1BB6F5A7E81C"));
+        setField(AuthorizationRequest.class, "mMsgGuid", request, "c862cf00-f878-4e38-bb83-65bcc4b51831");
+        setField(AuthorizationRequest.class, "mEncryptionKey", request, EncryptionUtils.hexStringToByteArray("0481806100DE4EBB5581163579990EE825737255A81A883B791A1BB6F5A7E81C"));
 
         doAnswer(new Answer<AuthorizationRequest>() {
             @Override
@@ -700,17 +699,5 @@ public class PayPalUnitTest {
         PayPal.onActivityResult(fragment, Activity.RESULT_OK, null);
 
         verify(fragment).postCancelCallback(PayPal.PAYPAL_REQUEST_CODE);
-    }
-
-    private void setField(String fieldName, Object src, Object value)
-            throws NoSuchFieldException, IllegalAccessException {
-        Field field = AuthorizationRequest.class.getDeclaredField(fieldName);
-        field.setAccessible(true);
-
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-
-        field.set(src, value);
     }
 }

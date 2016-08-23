@@ -17,6 +17,7 @@ import com.braintreepayments.api.interfaces.QueuedCallback;
 import com.braintreepayments.api.internal.AnalyticsDatabase;
 import com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils;
 import com.braintreepayments.api.internal.AnalyticsIntentService;
+import com.braintreepayments.api.internal.HttpClient;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
@@ -47,6 +48,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.verifyAnalyticsEvent;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static com.braintreepayments.testutils.ReflectionHelper.getField;
 import static com.braintreepayments.testutils.TestConfigurationBuilder.basicConfig;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
@@ -164,6 +166,26 @@ public class BraintreeFragmentUnitTest {
         ConfigurationManager.getConfiguration(eq(fragment), any(ConfigurationListener.class),
                 any(BraintreeResponseListener.class));
     }
+
+    @Test
+    public void onCreate_restoresConfigurationAndHttpClient() throws InvalidArgumentException, NoSuchFieldException,
+            IllegalAccessException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        fragment.mConfiguration = new TestConfigurationBuilder()
+                .clientApiUrl("client_api_url")
+                .buildConfiguration();
+        Bundle bundle = new Bundle();
+        fragment.onSaveInstanceState(bundle);
+        fragment.mConfiguration = null;
+        fragment.mHttpClient = null;
+
+        fragment.onCreate(bundle);
+
+        assertNotNull(fragment.mConfiguration);
+        assertNotNull(fragment.mHttpClient);
+        assertEquals("client_api_url", getField(HttpClient.class, "mBaseUrl", fragment.mHttpClient));
+    }
+
 
     @Test
     public void newInstance_setsIntegrationTypeToCustomForAllActivities() throws InvalidArgumentException {

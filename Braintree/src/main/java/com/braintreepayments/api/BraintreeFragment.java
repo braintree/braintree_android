@@ -182,7 +182,7 @@ public class BraintreeFragment extends Fragment {
             mHasFetchedPaymentMethodNonces = savedInstanceState.getBoolean(EXTRA_FETCHED_PAYMENT_METHOD_NONCES);
             mIsBrowserSwitching = savedInstanceState.getBoolean(EXTRA_BROWSER_SWITCHING);
             try {
-                mConfiguration = Configuration.fromJson(savedInstanceState.getString(EXTRA_CONFIGURATION));
+                setConfiguration(Configuration.fromJson(savedInstanceState.getString(EXTRA_CONFIGURATION)));
             } catch (JSONException ignored) {}
         } else {
             if (mAuthorization instanceof TokenizationKey) {
