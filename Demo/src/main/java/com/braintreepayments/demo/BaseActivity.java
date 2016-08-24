@@ -44,6 +44,7 @@ public abstract class BaseActivity extends Activity implements ActivityCompat.On
     private static final String KEY_AUTHORIZATION = "com.braintreepayments.demo.KEY_AUTHORIZATION";
 
     protected String mAuthorization;
+    protected String mCustomerId;
     protected BraintreeFragment mBraintreeFragment;
     protected Logger mLogger;
 
@@ -88,8 +89,9 @@ public abstract class BaseActivity extends Activity implements ActivityCompat.On
     }
 
     private void handleAuthorizationState() {
-        if (mAuthorization == null || (Settings.useTokenizationKey(this) &&
-                !mAuthorization.equals(Settings.getEnvironmentTokenizationKey(this)))) {
+        if (mAuthorization == null ||
+                (Settings.useTokenizationKey(this) && !mAuthorization.equals(Settings.getEnvironmentTokenizationKey(this))) ||
+                !TextUtils.equals(mCustomerId, Settings.getCustomerId(this))) {
             performReset();
         } else {
             onAuthorizationFetched();
@@ -124,6 +126,7 @@ public abstract class BaseActivity extends Activity implements ActivityCompat.On
 
     private void performReset() {
         mAuthorization = null;
+        mCustomerId = Settings.getCustomerId(this);
 
         Fragment paymentButton = getFragmentManager().findFragmentByTag(PaymentButton.TAG);
         if (paymentButton != null) {
