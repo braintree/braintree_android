@@ -22,6 +22,7 @@ import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.test.UnitTestListenerActivity;
 import com.braintreepayments.testutils.FragmentTestActivity;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 
@@ -60,6 +61,7 @@ import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -186,6 +188,20 @@ public class BraintreeFragmentUnitTest {
         assertEquals("client_api_url", getField(HttpClient.class, "mBaseUrl", fragment.mHttpClient));
     }
 
+    @Test
+    public void onAttach_callsConfigurationListenerIfActivityImplementsConfigurationListener()
+            throws JSONException, InvalidArgumentException {
+        final Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
+        mockConfigurationManager(configuration);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        UnitTestListenerActivity activity = mock(UnitTestListenerActivity.class);
+
+        fragment.onAttach(activity);
+
+        ArgumentCaptor<Configuration> captor = ArgumentCaptor.forClass(Configuration.class);
+        verify(activity).onConfigurationFetched(captor.capture());
+        assertEquals(configuration, captor.getValue());
+    }
 
     @Test
     public void newInstance_setsIntegrationTypeToCustomForAllActivities() throws InvalidArgumentException {

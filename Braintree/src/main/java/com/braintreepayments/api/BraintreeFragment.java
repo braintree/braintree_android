@@ -1,10 +1,12 @@
 package com.braintreepayments.api;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.VisibleForTesting;
@@ -194,6 +196,23 @@ public class BraintreeFragment extends Fragment {
 
         if (getConfiguration() == null) {
             fetchConfiguration();
+        }
+    }
+
+    @TargetApi(VERSION_CODES.M)
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        onAttach(getActivity());
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if (activity instanceof ConfigurationListener) {
+            mConfigurationListener = (ConfigurationListener) activity;
+            waitForConfiguration((ConfigurationListener) activity);
         }
     }
 
