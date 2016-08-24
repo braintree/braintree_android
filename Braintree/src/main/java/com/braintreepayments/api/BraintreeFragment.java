@@ -254,9 +254,19 @@ public class BraintreeFragment extends Fragment {
 
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
+        }
+
+        flushAnalyticsEvents();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.disconnect();
             mGoogleApiClient = null;
         }
-        flushAnalyticsEvents();
     }
 
     @Override
