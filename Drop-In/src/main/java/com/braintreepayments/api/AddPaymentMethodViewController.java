@@ -114,7 +114,6 @@ public class AddPaymentMethodViewController extends BraintreeViewController impl
     @Override
     public void onClick(View v) {
         if (v == mPaymentButton.getView()) {
-            mIsSubmitting = true;
             mActivity.showLoadingView();
         } else if (v == mSubmitButton) {
             if (mCardForm.isValid()) {
