@@ -8,6 +8,7 @@
     <string name="bt_change_payment_method">Change Payment Method</string>
     <string name="bt_add_new_payment_method">Add New Payment Method</string>
     <string name="bt_add_payment_method">Add Payment Method</string>
+    <string name="bt_change_android_pay_card" tools:ignore="MissingTranslation">Change Android Pay Card</string>
 
     <string name="bt_default_submit_button_text">PURCHASE</string>
     <string name="bt_default_action_bar_text">Purchase</string>

@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.braintreepayments.api.dropin.adapters.PaymentMethodNonceListAdapter;
 import com.braintreepayments.api.dropin.adapters.PaymentMethodNonceListAdapter.PaymentMethodNonceSelectedListener;
 import com.braintreepayments.api.dropin.view.PaymentMethodNonceView;
+import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 
 /**
@@ -28,6 +29,7 @@ public class SelectPaymentMethodNonceNonceViewController extends BraintreeViewCo
      * tests.
      */
     private PaymentMethodNonceView mPaymentMethodNonceView;
+    private TextView mChangeAndroidPayCardView;
     private TextView mChangeMethodView;
     private Button mSubmitButton;
 
@@ -40,6 +42,8 @@ public class SelectPaymentMethodNonceNonceViewController extends BraintreeViewCo
         mPaymentMethodNonceView = findView(com.braintreepayments.api.dropin.R.id.bt_selected_payment_method_view);
         mPaymentMethodNonceView.setOnClickListener(this);
 
+        mChangeAndroidPayCardView = findView(com.braintreepayments.api.dropin.R.id.bt_change_android_pay_backing_payment_method_link);
+        mChangeAndroidPayCardView.setOnClickListener(this);
         mChangeMethodView = findView(com.braintreepayments.api.dropin.R.id.bt_change_payment_method_link);
         mChangeMethodView.setOnClickListener(this);
 
@@ -66,6 +70,9 @@ public class SelectPaymentMethodNonceNonceViewController extends BraintreeViewCo
             if (mBraintreeFragment.getCachedPaymentMethodNonces().size() > 1) {
                 showPaymentMethodListDialog();
             }
+        } else if (v.getId() == mChangeAndroidPayCardView.getId()) {
+            AndroidPay.performChangeMaskedWalletRequest(mBraintreeFragment,
+                    (AndroidPayCardNonce) getActivePaymentMethod());
         } else if (v.getId() == mChangeMethodView.getId()) {
             if (mBraintreeFragment.getCachedPaymentMethodNonces().size() == 1) {
                 launchFormView();
@@ -80,6 +87,12 @@ public class SelectPaymentMethodNonceNonceViewController extends BraintreeViewCo
 
     protected void setupPaymentMethod() {
         mPaymentMethodNonceView.setPaymentMethodNonceDetails(getActivePaymentMethod());
+
+        if (getActivePaymentMethod() instanceof AndroidPayCardNonce) {
+            mChangeAndroidPayCardView.setVisibility(View.VISIBLE);
+        } else {
+            mChangeAndroidPayCardView.setVisibility(View.GONE);
+        }
 
         TextView link = findView(com.braintreepayments.api.dropin.R.id.bt_change_payment_method_link);
         if(mBraintreeFragment.getCachedPaymentMethodNonces().size() == 1) {

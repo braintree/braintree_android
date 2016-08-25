@@ -41,6 +41,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.not;
 
 @SuppressLint("NewApi")
 public class ListPaymentMethodNonceTest extends BraintreePaymentActivityTestRunner {
@@ -106,6 +107,31 @@ public class ListPaymentMethodNonceTest extends BraintreePaymentActivityTestRunn
         onView(withId(com.braintreepayments.api.dropin.R.id.bt_change_payment_method_link)).check(
                 matches(withText(
                         com.braintreepayments.api.dropin.R.string.bt_change_payment_method)));
+    }
+
+    @Test(timeout = 30000)
+    public void displaysChangeAndroidPayCardIfTheCurrentPaymentMethodIsAndroidPay() {
+        Intent intent = new PaymentRequest()
+                .clientToken(new TestClientTokenBuilder().build())
+                .getIntent(getTargetContext())
+                .putExtra(BraintreePaymentTestActivity.GET_PAYMENT_METHODS,
+                        stringFromFixture("responses/get_payment_methods_android_pay_response.json"));
+        getActivity(intent);
+
+        waitForPaymentMethodNonceList();
+
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_change_android_pay_backing_payment_method_link))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test(timeout = 30000)
+    public void doesNotDisplayChangeAndroidPayCardIfTheCurrentPaymentMethodIsNotAndroidPay() {
+        getActivity(getMultiplePaymentMethodNoncesIntent(new TestClientTokenBuilder().build()));
+
+        waitForPaymentMethodNonceList();
+
+        onView(withId(com.braintreepayments.api.dropin.R.id.bt_change_android_pay_backing_payment_method_link))
+                .check(matches(not((isDisplayed()))));
     }
 
     @Test(timeout = 30000)

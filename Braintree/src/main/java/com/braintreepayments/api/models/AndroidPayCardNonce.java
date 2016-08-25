@@ -27,11 +27,12 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
     private String mEmail;
     private UserAddress mBillingAddress;
     private UserAddress mShippingAddress;
+    private String mGoogleTransactionId;
 
     /**
      * Convert a {@link FullWallet} to an {@link AndroidPayCardNonce}.
      *
-     * @param wallet
+     * @param wallet the {@link FullWallet} from an Android Pay response
      * @return {@link AndroidPayCardNonce}.
      * @throws JSONException when parsing the response fails.
      */
@@ -41,6 +42,7 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
         androidPayCardNonce.mEmail = wallet.getEmail();
         androidPayCardNonce.mBillingAddress = wallet.getBuyerBillingAddress();
         androidPayCardNonce.mShippingAddress = wallet.getBuyerShippingAddress();
+        androidPayCardNonce.mGoogleTransactionId = wallet.getGoogleTransactionId();
 
         return androidPayCardNonce;
     }
@@ -107,6 +109,13 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
         return mShippingAddress;
     }
 
+    /**
+     * @return The Google transaction id associated with this payment method.
+     */
+    public String getGoogleTransactionId() {
+        return mGoogleTransactionId;
+    }
+
     public AndroidPayCardNonce() {}
 
     @Override
@@ -117,6 +126,7 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
         dest.writeString(mEmail);
         dest.writeParcelable(mBillingAddress, flags);
         dest.writeParcelable(mShippingAddress, flags);
+        dest.writeString(mGoogleTransactionId);
     }
 
     private AndroidPayCardNonce(Parcel in) {
@@ -126,6 +136,7 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
         mEmail = in.readString();
         mBillingAddress = in.readParcelable(UserAddress.class.getClassLoader());
         mShippingAddress = in.readParcelable(UserAddress.class.getClassLoader());
+        mGoogleTransactionId = in.readString();
     }
 
     public static final Creator<AndroidPayCardNonce> CREATOR = new Creator<AndroidPayCardNonce>() {

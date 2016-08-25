@@ -17,12 +17,24 @@
 
     <TextView
         style="@style/bt_base_textview"
+        android:id="@+id/bt_change_android_pay_backing_payment_method_link"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bt_default_item_height"
+        android:gravity="center"
+        android:textColor="@color/bt_blue"
+        android:layout_below="@id/bt_selected_payment_method_view"
+        android:text="@string/bt_change_android_pay_card"
+        android:visibility="gone"/>
+
+    <TextView
+        style="@style/bt_base_textview"
         android:id="@+id/bt_change_payment_method_link"
         android:layout_width="match_parent"
         android:layout_height="@dimen/bt_default_item_height"
         android:gravity="center"
         android:textColor="@color/bt_blue"
-        android:layout_below="@id/bt_selected_payment_method_view" />
+        android:layout_below="@id/bt_change_android_pay_backing_payment_method_link"
+        android:layout_alignWithParentIfMissing="true"/>
 
     <include layout="@layout/bt_list_submit_button" />
 

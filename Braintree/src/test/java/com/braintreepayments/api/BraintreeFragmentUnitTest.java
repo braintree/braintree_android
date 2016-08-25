@@ -18,6 +18,7 @@ import com.braintreepayments.api.internal.AnalyticsDatabase;
 import com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils;
 import com.braintreepayments.api.internal.AnalyticsIntentService;
 import com.braintreepayments.api.internal.HttpClient;
+import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
@@ -587,6 +588,30 @@ public class BraintreeFragmentUnitTest {
 
         assertEquals(2, fragment.getCachedPaymentMethodNonces().size());
         assertTrue(fragment.getCachedPaymentMethodNonces().get(0) instanceof PayPalAccountNonce);
+    }
+
+    @Test
+    public void postCallback_onlyAllowsOneAndroidPayCardNonceToBePresent() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        assertEquals(0, fragment.getCachedPaymentMethodNonces().size());
+
+        fragment.postCallback(new CardNonce());
+        fragment.postCallback(new AndroidPayCardNonce());
+        fragment.postCallback(new AndroidPayCardNonce());
+
+        assertEquals(2, fragment.getCachedPaymentMethodNonces().size());
+        assertTrue(fragment.getCachedPaymentMethodNonces().get(0) instanceof AndroidPayCardNonce);
+    }
+
+    @Test
+    public void postCallback_doesNotRemoveAndroidPayCardNonceWhenAnotherNonceIsAdded() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        assertEquals(0, fragment.getCachedPaymentMethodNonces().size());
+
+        fragment.postCallback(new AndroidPayCardNonce());
+        fragment.postCallback(new CardNonce());
+
+        assertEquals(2, fragment.getCachedPaymentMethodNonces().size());
     }
 
     @Test

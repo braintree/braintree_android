@@ -44,6 +44,7 @@ public class AndroidPayCardNonceUnitTest {
         when(wallet.getEmail()).thenReturn("android-user@example.com");
         when(wallet.getBuyerBillingAddress()).thenReturn(billingAddress);
         when(wallet.getBuyerShippingAddress()).thenReturn(shippingAddress);
+        when(wallet.getGoogleTransactionId()).thenReturn("google-transaction-id");
 
         AndroidPayCardNonce androidPayCardNonce = AndroidPayCardNonce.fromFullWallet(wallet);
 
@@ -55,6 +56,7 @@ public class AndroidPayCardNonceUnitTest {
         assertEquals("android-user@example.com", androidPayCardNonce.getEmail());
         assertEquals(billingAddress, androidPayCardNonce.getBillingAddress());
         assertEquals(shippingAddress, androidPayCardNonce.getShippingAddress());
+        assertEquals("google-transaction-id", androidPayCardNonce.getGoogleTransactionId());
     }
 
     @Test
@@ -81,6 +83,7 @@ public class AndroidPayCardNonceUnitTest {
         when(wallet.getEmail()).thenReturn("android-user@example.com");
         when(wallet.getBuyerBillingAddress()).thenReturn(billingAddress);
         when(wallet.getBuyerShippingAddress()).thenReturn(shippingAddress);
+        when(wallet.getGoogleTransactionId()).thenReturn("google-transaction-id");
         AndroidPayCardNonce androidPayCardNonce = AndroidPayCardNonce.fromFullWallet(wallet);
         Parcel parcel = Parcel.obtain();
         androidPayCardNonce.writeToParcel(parcel, 0);
@@ -96,6 +99,7 @@ public class AndroidPayCardNonceUnitTest {
         assertEquals("android-user@example.com", parceled.getEmail());
         assertNotNull(parceled.getBillingAddress());
         assertNotNull(parceled.getShippingAddress());
+        assertEquals("google-transaction-id", parceled.getGoogleTransactionId());
     }
 
     /* helpers */

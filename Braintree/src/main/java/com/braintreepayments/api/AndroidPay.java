@@ -41,6 +41,7 @@ public class AndroidPay {
 
     protected static final int ANDROID_PAY_MASKED_WALLET_REQUEST_CODE = 13489;
     protected static final int ANDROID_PAY_FULL_WALLET_REQUEST_CODE = 13590;
+    protected static final int ANDROID_PAY_CHANGE_MASKED_WALLET_REQUEST = 13586;
 
     private static final String VISA_NETWORK = "visa";
     private static final String MASTERCARD_NETWORK = "mastercard";
@@ -229,21 +230,44 @@ public class AndroidPay {
     }
 
     /**
+     * Perform a change masked wallet request. This will allow the user to change the backing card and other information
+     * associated with the payment method.
+     *
+     * @param fragment The current {@link BraintreeFragment} through which the callbacks should be forwarded
+     * @param androidPayCardNonce the {@link AndroidPayCardNonce} to update
+     */
+    static void performChangeMaskedWalletRequest(final BraintreeFragment fragment,
+            final AndroidPayCardNonce androidPayCardNonce) {
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                Wallet.Payments.changeMaskedWallet(fragment.getGoogleApiClient(),
+                        androidPayCardNonce.getGoogleTransactionId(), null, ANDROID_PAY_CHANGE_MASKED_WALLET_REQUEST);
+            }
+        });
+    }
+
+    /**
      * Perform a full wallet request. This can only be done after a masked wallet request has been
      * made.
      *
-     * @param fragment The current {@link BraintreeFragment} through which the callbacks should
-     *          be forwarded
+     * @param fragment The current {@link BraintreeFragment} through which the callbacks should be forwarded
      * @param cart The {@link Cart} that was used to create the MaskedWalletRequest
      * @param googleTransactionId The transaction id from the {@link MaskedWallet}.
      */
-    static void performFullWalletRequest(BraintreeFragment fragment, Cart cart, String googleTransactionId) {
-        FullWalletRequest.Builder fullWalletRequestBuilder = FullWalletRequest.newBuilder()
-                .setCart(cart)
-                .setGoogleTransactionId(googleTransactionId);
+    static void performFullWalletRequest(final BraintreeFragment fragment, final Cart cart,
+            final String googleTransactionId) {
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                FullWalletRequest.Builder fullWalletRequestBuilder = FullWalletRequest.newBuilder()
+                        .setCart(cart)
+                        .setGoogleTransactionId(googleTransactionId);
 
-        Wallet.Payments.loadFullWallet(fragment.getGoogleApiClient(), fullWalletRequestBuilder.build(),
-                ANDROID_PAY_FULL_WALLET_REQUEST_CODE);
+                Wallet.Payments.loadFullWallet(fragment.getGoogleApiClient(), fullWalletRequestBuilder.build(),
+                        ANDROID_PAY_FULL_WALLET_REQUEST_CODE);
+            }
+        });
     }
 
     static void onActivityResult(BraintreeFragment fragment, Cart cart, int resultCode, Intent data) {

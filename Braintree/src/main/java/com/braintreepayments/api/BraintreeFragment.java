@@ -29,6 +29,7 @@ import com.braintreepayments.api.internal.AnalyticsEvent;
 import com.braintreepayments.api.internal.AnalyticsIntentService;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.internal.UUIDHelper;
+import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
@@ -434,7 +435,16 @@ public class BraintreeFragment extends Fragment {
     }
 
     protected void postCallback(final PaymentMethodNonce paymentMethodNonce) {
+        if (paymentMethodNonce instanceof AndroidPayCardNonce) {
+            for (PaymentMethodNonce cachedPaymentMethodNonce : new ArrayList<>(mCachedPaymentMethodNonces)) {
+                if (cachedPaymentMethodNonce instanceof AndroidPayCardNonce) {
+                    mCachedPaymentMethodNonces.remove(cachedPaymentMethodNonce);
+                }
+            }
+        }
+
         mCachedPaymentMethodNonces.add(0, paymentMethodNonce);
+
         postOrQueueCallback(new QueuedCallback() {
             @Override
             public boolean shouldRun() {
