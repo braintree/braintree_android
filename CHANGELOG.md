@@ -1,5 +1,16 @@
 # Braintree Android SDK Release Notes
 
+## 2.3.7
+
+* Update exception message when Android Manifest setup is invalid
+* Fix unclosed `InputStream` (fixes [#115](https://github.com/braintree/braintree_android/issues/115))
+* Post exception to error listener instead of throwing `IllegalStateException` when `BraintreeFragment` is not attached to an `Activity`
+* Restore url when `BraintreeFragment` is recreated (fixes [#117](https://github.com/braintree/braintree_android/issues/117))
+* Upgrade gradle build tools to 2.1.3
+* Parse and return errors when Android Pay tokenization fails
+* Add support for changing the backing card for Android Pay in Drop-In
+* Call configuration callback whenever a new Activity is attached to `BraintreeFragment`
+
 ## 2.3.6
 
 * Allow vaulting of Venmo accounts. See `Venmo#authorizeAccount`.
