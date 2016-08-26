@@ -133,7 +133,7 @@ public class BraintreePaymentActivity extends Activity implements
 
     @Override
     public void onConfigurationFetched(Configuration configuration) {
-        if (mPaymentRequest.shouldCollectDeviceData()) {
+        if (mPaymentRequest.shouldCollectDeviceData() && TextUtils.isEmpty(mDeviceData)) {
             DataCollector.collectDeviceData(mBraintreeFragment, new BraintreeResponseListener<String>() {
                 @Override
                 public void onResponse(String deviceData) {
