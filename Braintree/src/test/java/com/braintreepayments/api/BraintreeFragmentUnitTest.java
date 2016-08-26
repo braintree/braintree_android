@@ -62,7 +62,6 @@ import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -190,18 +189,14 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void onAttach_callsConfigurationListenerIfActivityImplementsConfigurationListener()
-            throws JSONException, InvalidArgumentException {
-        final Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
-        mockConfigurationManager(configuration);
+    public void onAttach_recordsNewActivity()
+            throws JSONException, InvalidArgumentException, NoSuchFieldException, IllegalAccessException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        UnitTestListenerActivity activity = mock(UnitTestListenerActivity.class);
+        assertEquals(false, getField(BraintreeFragment.class, "mNewActivityNeedsConfiguration", fragment));
 
-        fragment.onAttach(activity);
+        fragment.onAttach(null);
 
-        ArgumentCaptor<Configuration> captor = ArgumentCaptor.forClass(Configuration.class);
-        verify(activity).onConfigurationFetched(captor.capture());
-        assertEquals(configuration, captor.getValue());
+        assertEquals(true, getField(BraintreeFragment.class, "mNewActivityNeedsConfiguration", fragment));
     }
 
     @Test
@@ -832,6 +827,34 @@ public class BraintreeFragmentUnitTest {
         fragment.startActivityForResult(new Intent(), 1);
 
         assertFalse(mCalled.get());
+    }
+
+    @Test
+    public void onResume_doesNotPostConfigurationToCallbackForTheSameActivity() throws InvalidArgumentException {
+        Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
+        mockConfigurationManager(configuration);
+        UnitTestListenerActivity activity = Robolectric.setupActivity(UnitTestListenerActivity.class);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(activity, TOKENIZATION_KEY);
+
+        fragment.onResume();
+
+        assertEquals(1, activity.configurations.size());
+        assertEquals(configuration, activity.configurations.get(0));
+    }
+
+    @Test
+    public void onResume_postsConfigurationToCallbackForNewActivity() throws InvalidArgumentException {
+        Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
+        mockConfigurationManager(configuration);
+        UnitTestListenerActivity activity = Robolectric.setupActivity(UnitTestListenerActivity.class);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(activity, TOKENIZATION_KEY);
+        fragment.onAttach(null);
+
+        fragment.onResume();
+
+        assertEquals(2, activity.configurations.size());
+        assertEquals(configuration, activity.configurations.get(0));
+        assertEquals(configuration, activity.configurations.get(1));
     }
 
     @Test

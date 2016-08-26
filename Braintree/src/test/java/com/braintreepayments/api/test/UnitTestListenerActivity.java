@@ -9,6 +9,7 @@ import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,11 +19,15 @@ import java.util.List;
 public class UnitTestListenerActivity extends Activity implements PaymentMethodNonceCreatedListener,
         PaymentMethodNoncesUpdatedListener, BraintreeErrorListener, ConfigurationListener {
 
+    public final List<Configuration> configurations = new ArrayList<>();
+
     @Override
     public void onError(Exception error) {}
 
     @Override
-    public void onConfigurationFetched(Configuration configuration) {}
+    public void onConfigurationFetched(Configuration configuration) {
+        configurations.add(configuration);
+    }
 
     @Override
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {}

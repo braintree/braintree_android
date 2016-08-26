@@ -87,6 +87,7 @@ public class BraintreeFragment extends Fragment {
     private final List<PaymentMethodNonce> mCachedPaymentMethodNonces = new ArrayList<>();
     private boolean mHasFetchedPaymentMethodNonces = false;
     private boolean mIsBrowserSwitching = false;
+    private boolean mNewActivityNeedsConfiguration;
     private int mConfigurationRequestAttempts = 0;
     private String mSessionId;
     private AnalyticsDatabase mAnalyticsDatabase;
@@ -165,6 +166,7 @@ public class BraintreeFragment extends Fragment {
             mContext = getActivity().getApplicationContext();
         }
 
+        mNewActivityNeedsConfiguration = false;
         mCrashReporter = CrashReporter.setup(this);
         mSessionId = getArguments().getString(EXTRA_SESSION_ID);
         mIntegrationType = getArguments().getString(EXTRA_INTEGRATION_TYPE);
@@ -210,11 +212,7 @@ public class BraintreeFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
-        if (activity instanceof ConfigurationListener) {
-            mConfigurationListener = (ConfigurationListener) activity;
-            waitForConfiguration((ConfigurationListener) activity);
-        }
+        mNewActivityNeedsConfiguration = true;
     }
 
     @Override
@@ -223,6 +221,11 @@ public class BraintreeFragment extends Fragment {
 
         if (getActivity() instanceof BraintreeListener) {
             addListener((BraintreeListener) getActivity());
+
+            if (mNewActivityNeedsConfiguration && getConfiguration() != null) {
+                mNewActivityNeedsConfiguration = false;
+                postConfigurationCallback();
+            }
         }
 
         flushCallbacks();
@@ -420,6 +423,20 @@ public class BraintreeFragment extends Fragment {
         }
     }
 
+    protected void postConfigurationCallback() {
+        postOrQueueCallback(new QueuedCallback() {
+            @Override
+            public boolean shouldRun() {
+                return mConfigurationListener != null;
+            }
+
+            @Override
+            public void run() {
+                mConfigurationListener.onConfigurationFetched(getConfiguration());
+            }
+        });
+    }
+
     protected void postCancelCallback(final int requestCode) {
         postOrQueueCallback(new QueuedCallback() {
             @Override
@@ -552,17 +569,7 @@ public class BraintreeFragment extends Fragment {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 setConfiguration(configuration);
-                postOrQueueCallback(new QueuedCallback() {
-                    @Override
-                    public boolean shouldRun() {
-                        return mConfigurationListener != null;
-                    }
-
-                    @Override
-                    public void run() {
-                        mConfigurationListener.onConfigurationFetched(getConfiguration());
-                    }
-                });
+                postConfigurationCallback();
                 flushCallbacks();
             }
         }, new BraintreeResponseListener<Exception>() {
