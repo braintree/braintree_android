@@ -34,6 +34,8 @@ public class DropInTest extends TestHelper {
     public void tokenizesACard() {
         onDevice(withText("Card Number")).perform(setText("4111111111111111"));
         onDevice(withText("Expiration")).perform(setText("1220"));
+        onDevice(withText("CVV")).perform(setText("123"));
+        onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withTextContaining("BUY")).perform(click());
 
         getNonceDetails().check(text(containsString("Card Last Two: 11")));

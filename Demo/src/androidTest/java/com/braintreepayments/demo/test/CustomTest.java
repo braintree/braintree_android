@@ -38,6 +38,8 @@ public class CustomTest extends TestHelper {
     public void tokenizesACard() {
         onDevice(withText("Card Number")).perform(setText("4111111111111111"));
         fillInExpiration();
+        onDevice(withText("CVV")).perform(setText("123"));
+        onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
         getNonceDetails().check(text(containsString("Card Last Two: 11")));
@@ -51,6 +53,7 @@ public class CustomTest extends TestHelper {
         onDevice(withText("Card Number")).perform(setText(CardNumber.UNIONPAY_CREDIT));
         fillInExpiration();
         onDevice(withText("CVV")).perform(setText("123"));
+        onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Country Code")).perform(setText("1"));
         onDevice(withText("Mobile Phone")).perform(setText("5555555555"));
         onDevice(withText("Send SMS")).perform(click());
@@ -70,6 +73,7 @@ public class CustomTest extends TestHelper {
         onDevice(withText("Card Number")).perform(setText(CardNumber.UNIONPAY_SMS_NOT_REQUIRED));
         fillInExpiration();
         onDevice(withText("CVV")).perform(setText("123"));
+        onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
         getNonceDetails().check(text(containsString("Card Last Two: 85")));
@@ -99,6 +103,8 @@ public class CustomTest extends TestHelper {
 
         onDevice(withText("Card Number")).perform(setText("4000000000000002"));
         fillInExpiration();
+        onDevice(withText("CVV")).perform(setText("123"));
+        onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
         onDevice(withText("Authentication")).waitForExists();
