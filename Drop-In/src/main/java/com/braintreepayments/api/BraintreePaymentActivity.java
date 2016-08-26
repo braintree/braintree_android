@@ -25,6 +25,7 @@ import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.exceptions.UpgradeRequiredException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
+import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
@@ -133,7 +134,12 @@ public class BraintreePaymentActivity extends Activity implements
     @Override
     public void onConfigurationFetched(Configuration configuration) {
         if (mPaymentRequest.shouldCollectDeviceData()) {
-            mDeviceData = DataCollector.collectDeviceData(mBraintreeFragment);
+            DataCollector.collectDeviceData(mBraintreeFragment, new BraintreeResponseListener<String>() {
+                @Override
+                public void onResponse(String deviceData) {
+                    mDeviceData = deviceData;
+                }
+            });
         }
     }
 
