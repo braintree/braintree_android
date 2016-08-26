@@ -71,6 +71,7 @@ public class SelectPaymentMethodNonceNonceViewController extends BraintreeViewCo
                 showPaymentMethodListDialog();
             }
         } else if (v.getId() == mChangeAndroidPayCardView.getId()) {
+            mActivity.showLoadingView();
             AndroidPay.performChangeMaskedWalletRequest(mBraintreeFragment,
                     (AndroidPayCardNonce) getActivePaymentMethod());
         } else if (v.getId() == mChangeMethodView.getId()) {

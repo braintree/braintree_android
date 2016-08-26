@@ -205,6 +205,7 @@ public class BraintreePaymentActivity extends Activity implements
         super.onActivityResult(requestCode, resultCode, data);
 
         if ((requestCode == AndroidPay.ANDROID_PAY_MASKED_WALLET_REQUEST_CODE ||
+                requestCode == AndroidPay.ANDROID_PAY_CHANGE_MASKED_WALLET_REQUEST ||
                 requestCode == AndroidPay.ANDROID_PAY_FULL_WALLET_REQUEST_CODE) &&
                 resultCode == RESULT_OK) {
             AndroidPay.onActivityResult(mBraintreeFragment, mPaymentRequest.getAndroidPayCart(),
