@@ -74,7 +74,9 @@ public class CustomTest extends TestHelper {
         fillInExpiration();
         onDevice(withText("CVV")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
-        onDevice(withText("Purchase")).perform(click());
+        onDevice(withText("Country Code")).perform(setText("1"));
+        onDevice(withText("Mobile Phone")).perform(setText("5555555555"));
+        onDevice(withText("Send SMS")).perform(click());
 
         getNonceDetails().check(text(containsString("Card Last Two: 85")));
 

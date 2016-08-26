@@ -211,6 +211,7 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
             if (!mConfiguration.isCvvChallengePresent()) {
                 ((EditText) findViewById(R.id.bt_card_form_cvv)).setText("");
             }
+
             mCountryCode.setVisibility(GONE);
             mCountryCode.setText("");
             mMobilePhone.setVisibility(GONE);
