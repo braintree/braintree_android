@@ -166,4 +166,12 @@ public class ConfigurationUnitTest {
         assertNotNull(configuration.getKount());
         assertFalse(configuration.getKount().isEnabled());
     }
+
+    @Test
+    public void returnsNewCardConfigurationWhenCardConfigurationIsAbsent() throws JSONException {
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
+
+        assertNotNull(configuration.getCardConfiguration());
+        assertEquals(0, configuration.getCardConfiguration().getSupportedCardTypes().length);
+    }
 }

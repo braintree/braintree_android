@@ -24,6 +24,7 @@ public class Configuration {
     private static final String THREE_D_SECURE_ENABLED_KEY = "threeDSecureEnabled";
     private static final String PAY_WITH_VENMO_KEY = "payWithVenmo";
     private static final String UNIONPAY_KEY = "unionPay";
+    private static final String CARD_KEY = "creditCards";
 
     private String mConfigurationString;
     private String mClientApiUrl;
@@ -32,12 +33,13 @@ public class Configuration {
     private String mMerchantId;
     private String mMerchantAccountId;
     private AnalyticsConfiguration mAnalyticsConfiguration;
+    private CardConfiguration mCardConfiguration;
     private boolean mPaypalEnabled;
-    private KountConfiguration mKountConfiguration;
     private PayPalConfiguration mPayPalConfiguration;
     private AndroidPayConfiguration mAndroidPayConfiguration;
     private boolean mThreeDSecureEnabled;
     private VenmoConfiguration mVenmoConfiguration;
+    private KountConfiguration mKountConfiguration;
     private UnionPayConfiguration mUnionPayConfiguration;
 
     /**
@@ -61,16 +63,17 @@ public class Configuration {
         mClientApiUrl = json.getString(CLIENT_API_URL_KEY);
         mChallenges = parseJsonChallenges(json.optJSONArray(CHALLENGES_KEY));
         mEnvironment = json.getString(ENVIRONMENT_KEY);
+        mMerchantId = json.getString(MERCHANT_ID_KEY);
+        mMerchantAccountId = json.optString(MERCHANT_ACCOUNT_ID_KEY, null);
+        mAnalyticsConfiguration = AnalyticsConfiguration.fromJson(json.optJSONObject(ANALYTICS_KEY));
+        mCardConfiguration = CardConfiguration.fromJson(json.optJSONObject(CARD_KEY));
         mPaypalEnabled = json.optBoolean(PAYPAL_ENABLED_KEY, false);
         mPayPalConfiguration = PayPalConfiguration.fromJson(json.optJSONObject(PAYPAL_KEY));
         mAndroidPayConfiguration = AndroidPayConfiguration.fromJson(json.optJSONObject(ANDROID_PAY_KEY));
         mThreeDSecureEnabled = json.optBoolean(THREE_D_SECURE_ENABLED_KEY, false);
-        mMerchantId = json.getString(MERCHANT_ID_KEY);
-        mMerchantAccountId = json.optString(MERCHANT_ACCOUNT_ID_KEY, null);
-        mAnalyticsConfiguration = AnalyticsConfiguration.fromJson(json.optJSONObject(ANALYTICS_KEY));
         mVenmoConfiguration = VenmoConfiguration.fromJson(json.optJSONObject(PAY_WITH_VENMO_KEY));
-        mUnionPayConfiguration = UnionPayConfiguration.fromJson(json.optJSONObject(UNIONPAY_KEY));
         mKountConfiguration = KountConfiguration.fromJson(json.optJSONObject(KOUNT_KEY));
+        mUnionPayConfiguration = UnionPayConfiguration.fromJson(json.optJSONObject(UNIONPAY_KEY));
     }
 
     public String toJson() {
@@ -103,6 +106,13 @@ public class Configuration {
      */
     public String getEnvironment() {
         return mEnvironment;
+    }
+
+    /**
+     * @return instance of {@link CardConfiguration}.
+     */
+    public CardConfiguration getCardConfiguration() {
+        return mCardConfiguration;
     }
 
     /**
