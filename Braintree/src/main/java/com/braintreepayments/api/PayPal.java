@@ -89,6 +89,7 @@ public class PayPal {
     private static final String CURRENCY_ISO_CODE_KEY = "currency_iso_code";
     private static final String PAYLOAD_CLIENT_TOKEN_KEY = "client_token";
     private static final String INTENT_KEY = "intent";
+    private static final String USER_ACTION_KEY = "useraction";
 
     /**
      * Starts the Pay With PayPal flow. This will launch the PayPal app if installed or switch to
@@ -208,12 +209,20 @@ public class PayPal {
                     return;
                 }
 
+                String redirectUrl = paypalPaymentResource.getRedirectUrl();
+                if (paypalRequest.getUserAction().equals(PayPalRequest.USER_ACTION_COMMIT)) {
+                    redirectUrl = Uri.parse(redirectUrl)
+                            .buildUpon()
+                            .appendQueryParameter(USER_ACTION_KEY, paypalRequest.getUserAction())
+                            .toString();
+                }
+
                 Request request;
                 if (isBillingAgreement) {
-                    request = getBillingAgreementRequest(paypalPaymentResource.getRedirectUrl(),
+                    request = getBillingAgreementRequest(redirectUrl,
                             fragment.getApplicationContext(), fragment.getConfiguration().getPayPal());
                 } else {
-                    request = getCheckoutRequest(paypalPaymentResource.getRedirectUrl(),
+                    request = getCheckoutRequest(redirectUrl,
                             fragment.getApplicationContext(), fragment.getConfiguration().getPayPal());
                 }
 

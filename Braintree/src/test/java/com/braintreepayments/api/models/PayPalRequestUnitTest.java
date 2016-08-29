@@ -36,7 +36,8 @@ public class PayPalRequestUnitTest {
                 .billingAgreementDescription("Billing Agreement Description")
                 .shippingAddressRequired(true)
                 .shippingAddressOverride(postalAddress)
-                .intent(PayPalRequest.INTENT_SALE);
+                .intent(PayPalRequest.INTENT_SALE)
+                .userAction(PayPalRequest.USER_ACTION_COMMIT);
 
         assertEquals("1.00", request.getAmount());
         assertEquals("USD", request.getCurrencyCode());
@@ -45,6 +46,7 @@ public class PayPalRequestUnitTest {
         assertTrue(request.isShippingAddressRequired());
         assertEquals(postalAddress, request.getShippingAddressOverride());
         assertEquals(PayPalRequest.INTENT_SALE, request.getIntent());
+        assertEquals(PayPalRequest.USER_ACTION_COMMIT, request.getUserAction());
     }
 
     @Test
@@ -56,7 +58,8 @@ public class PayPalRequestUnitTest {
                 .billingAgreementDescription("Billing Agreement Description")
                 .shippingAddressRequired(true)
                 .shippingAddressOverride(postalAddress)
-                .intent(PayPalRequest.INTENT_SALE);
+                .intent(PayPalRequest.INTENT_SALE)
+                .userAction(PayPalRequest.USER_ACTION_COMMIT);
 
         Parcel parcel = Parcel.obtain();
         expected.writeToParcel(parcel, 0);
@@ -71,5 +74,6 @@ public class PayPalRequestUnitTest {
         assertEquals(expected.getLocaleCode(), actual.getLocaleCode());
         assertEquals(expected.getShippingAddressOverride().toString(), actual.getShippingAddressOverride().toString());
         assertEquals(expected.isShippingAddressRequired(), actual.isShippingAddressRequired());
+        assertEquals(expected.getUserAction(), actual.getUserAction());
     }
 }

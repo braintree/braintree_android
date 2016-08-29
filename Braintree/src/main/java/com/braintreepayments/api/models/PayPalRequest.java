@@ -25,6 +25,8 @@ public class PayPalRequest implements Parcelable {
     public @interface PayPalPaymentIntent {}
     public static final String INTENT_SALE = "sale";
     public static final String INTENT_AUTHORIZE = "authorize";
+    public static final String USER_ACTION_DEFAULT = "";
+    public static final String USER_ACTION_COMMIT = "commit";
 
     private String mAmount;
     private String mCurrencyCode;
@@ -33,6 +35,7 @@ public class PayPalRequest implements Parcelable {
     private boolean mShippingAddressRequired;
     private PostalAddress mShippingAddressOverride;
     private String mIntent = INTENT_AUTHORIZE;
+    private String mUserAction = USER_ACTION_DEFAULT;
 
     /**
      * Constructs a description of a PayPal checkout for Single Payment and Billing Agreements.
@@ -124,6 +127,25 @@ public class PayPalRequest implements Parcelable {
         return this;
     }
 
+    /**
+     * The call-to-action in the PayPal one-time payment checkout flow.
+     * By default the final button will show the localized phrase for "Continue",
+     * implying that the final amount billed is not yet known.
+     *
+     * Setting the BTPayPalRequest's userAction to {@link PayPalRequest#USER_ACTION_COMMIT} changes the button text to "Pay Now",
+     * conveying to the user that billing will take place immediately.
+     *
+     * @param userAction Can be either {@link PayPalRequest#USER_ACTION_COMMIT} or {@link PayPalRequest#USER_ACTION_DEFAULT}.
+     */
+    public PayPalRequest userAction(String userAction) {
+        if (USER_ACTION_COMMIT.equals(userAction)) {
+            mUserAction = USER_ACTION_COMMIT;
+        } else {
+            mUserAction = USER_ACTION_DEFAULT;
+        }
+        return this;
+    }
+
     public String getAmount() {
         return mAmount;
     }
@@ -153,6 +175,10 @@ public class PayPalRequest implements Parcelable {
         return mIntent;
     }
 
+    public String getUserAction() {
+        return mUserAction;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -167,6 +193,7 @@ public class PayPalRequest implements Parcelable {
         parcel.writeByte(mShippingAddressRequired ? (byte) 1:0);
         parcel.writeParcelable(mShippingAddressOverride, i);
         parcel.writeString(mIntent);
+        parcel.writeString(mUserAction);
     }
 
     public PayPalRequest(Parcel in) {
@@ -177,6 +204,7 @@ public class PayPalRequest implements Parcelable {
         mShippingAddressRequired = in.readByte() > 0;
         mShippingAddressOverride = in.readParcelable(PostalAddress.class.getClassLoader());
         mIntent = in.readString();
+        mUserAction = in.readString();
     }
 
     public static final Creator<PayPalRequest> CREATOR = new Creator<PayPalRequest>() {

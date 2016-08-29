@@ -219,11 +219,12 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void sendEvent_doesNothingIfAnalyticsNotEnabled() throws InvalidArgumentException {
+        AnalyticsDatabase db = AnalyticsDatabase.getInstance(mActivity);
+
         BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY));
         when(fragment.getConfiguration()).thenReturn((Configuration) basicConfig());
         fragment.sendAnalyticsEvent("test.event");
 
-        AnalyticsDatabase db = AnalyticsDatabase.getInstance(mActivity);
         assertEquals(0, db.getPendingRequests().size());
     }
 

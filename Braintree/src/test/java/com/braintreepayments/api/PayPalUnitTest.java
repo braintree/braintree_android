@@ -434,6 +434,36 @@ public class PayPalUnitTest {
     }
 
     @Test
+    public void requestOneTimePayment_userAction_doesNotSetValueOnDefault() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder
+                .successResponse(stringFromFixture("paypal_hermes_billing_agreement_response.json"))
+                .build();
+
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").userAction(PayPalRequest.USER_ACTION_DEFAULT));
+
+        ArgumentCaptor<Intent> dataCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(fragment).startActivity(dataCaptor.capture());
+
+        Uri uri = dataCaptor.getValue().getData();
+        assertNull(uri.getQueryParameter("useraction"));
+    }
+
+    @Test
+    public void requestOneTimePayment_userAction_canBeSetToCommit() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder
+                .successResponse(stringFromFixture("paypal_hermes_billing_agreement_response.json"))
+                .build();
+
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").userAction(PayPalRequest.USER_ACTION_COMMIT));
+
+        ArgumentCaptor<Intent> dataCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(fragment).startActivity(dataCaptor.capture());
+
+        Uri uri = dataCaptor.getValue().getData();
+        assertEquals("commit", uri.getQueryParameter("useraction"));
+    }
+
+    @Test
     public void requestOneTimePayment_postParamsIncludeNoShipping() throws JSONException {
         BraintreeFragment fragment = mMockFragmentBuilder.build();
 
