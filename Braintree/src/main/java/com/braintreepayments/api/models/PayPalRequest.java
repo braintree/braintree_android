@@ -22,9 +22,13 @@ public class PayPalRequest implements Parcelable {
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalRequest.INTENT_SALE, PayPalRequest.INTENT_AUTHORIZE})
-    public @interface PayPalPaymentIntent {}
+    @interface PayPalPaymentIntent {}
     public static final String INTENT_SALE = "sale";
     public static final String INTENT_AUTHORIZE = "authorize";
+
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({PayPalRequest.USER_ACTION_DEFAULT, PayPalRequest.USER_ACTION_COMMIT})
+    @interface PayPalPaymentUserAction {}
     public static final String USER_ACTION_DEFAULT = "";
     public static final String USER_ACTION_COMMIT = "commit";
 
@@ -137,12 +141,8 @@ public class PayPalRequest implements Parcelable {
      *
      * @param userAction Can be either {@link PayPalRequest#USER_ACTION_COMMIT} or {@link PayPalRequest#USER_ACTION_DEFAULT}.
      */
-    public PayPalRequest userAction(String userAction) {
-        if (USER_ACTION_COMMIT.equals(userAction)) {
-            mUserAction = USER_ACTION_COMMIT;
-        } else {
-            mUserAction = USER_ACTION_DEFAULT;
-        }
+    public PayPalRequest userAction(@PayPalPaymentUserAction String userAction) {
+        mUserAction = userAction;
         return this;
     }
 
@@ -175,6 +175,7 @@ public class PayPalRequest implements Parcelable {
         return mIntent;
     }
 
+    @PayPalPaymentUserAction
     public String getUserAction() {
         return mUserAction;
     }
