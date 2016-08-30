@@ -90,6 +90,18 @@
             android:summary="@string/paypal_request_address_scope_summary"
             android:defaultValue="false" />
 
+        <CheckBoxPreference
+            android:key="paypal_intent_sale"
+            android:title="@string/paypal_intent_sale_title"
+            android:summary="@string/paypal_intent_sale_summary"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="paypal_useraction_commit"
+            android:title="@string/paypal_useraction_commit_title"
+            android:summary="@string/paypal_useraction_commit_summary"
+            android:defaultValue="false" />
+
         <ListPreference
             android:key="paypal_payment_type"
             android:title="@string/paypal_payment_type"

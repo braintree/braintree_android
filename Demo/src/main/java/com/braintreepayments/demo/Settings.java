@@ -134,6 +134,14 @@ public class Settings {
         return getPreferences(context).getBoolean("paypal_request_address_scope", false);
     }
 
+    public static boolean isPayPalIntentSaleEnabled(Context context) {
+        return getPreferences(context).getBoolean("paypal_intent_sale", false);
+    }
+
+    public static boolean isPayPalUseractionCommitEnabled(Context context) {
+        return getPreferences(context).getBoolean("paypal_useraction_commit", false);
+    }
+
     public static boolean isPayPalSignatureVerificationDisabled(Context context) {
         return getPreferences(context).getBoolean("paypal_disable_signature_verification", true);
     }

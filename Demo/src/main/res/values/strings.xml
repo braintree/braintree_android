@@ -76,4 +76,10 @@
 
     <!-- PayPalActivity -->
     <string name="paypal_wallet_available">PayPal Wallet app available for app switch: %b</string>
+    <string name="paypal_useraction_commit_title">Set Useraction to Commit</string>
+    <string name="paypal_useraction_commit_summary">Sets the Payment User Action to Commit for Express Checkout
+        Transactions
+    </string>
+    <string name="paypal_intent_sale_title">Set Intent to Sale</string>
+    <string name="paypal_intent_sale_summary">Sets the Payment Intent to Sale for Express Checkout Transactions</string>
 </resources>

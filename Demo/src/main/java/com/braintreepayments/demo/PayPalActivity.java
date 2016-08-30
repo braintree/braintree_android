@@ -2,6 +2,7 @@ package com.braintreepayments.demo;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -104,12 +105,12 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
 
     public void launchSinglePayment(View v) {
         setProgressBarIndeterminateVisibility(true);
-        PayPal.requestOneTimePayment(mBraintreeFragment, new PayPalRequest("1.00"));
+        PayPal.requestOneTimePayment(mBraintreeFragment, getPayPalRequest("1.00"));
     }
 
     public void launchBillingAgreement(View v) {
         setProgressBarIndeterminateVisibility(true);
-        PayPal.requestBillingAgreement(mBraintreeFragment, new PayPalRequest());
+        PayPal.requestBillingAgreement(mBraintreeFragment, getPayPalRequest(null));
     }
 
     @Override
@@ -140,5 +141,18 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
     public void onError(Exception error) {
         super.onError(error);
         setProgressBarIndeterminateVisibility(false);
+    }
+
+    private PayPalRequest getPayPalRequest(@Nullable String amount) {
+        PayPalRequest request = new PayPalRequest(amount);
+        if (Settings.isPayPalIntentSaleEnabled(this)) {
+            request.intent(PayPalRequest.INTENT_SALE);
+        }
+
+        if (Settings.isPayPalUseractionCommitEnabled(this)) {
+            request.userAction(PayPalRequest.USER_ACTION_COMMIT);
+        }
+
+        return request;
     }
 }
