@@ -3,6 +3,10 @@ package com.braintreepayments.api.models;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Contains the remote card configuration for the Braintree SDK.
  */
@@ -10,7 +14,7 @@ public class CardConfiguration {
 
     private static final String SUPPORTED_CARD_TYPES_KEY = "supportedCardTypes";
 
-    private String[] mSupportedCardTypes;
+    private final Set<String> mSupportedCardTypes = new HashSet<>();
 
     /**
      * Parse a {@link CardConfiguration} from json.
@@ -26,12 +30,9 @@ public class CardConfiguration {
         CardConfiguration cardConfiguration = new CardConfiguration();
 
         JSONArray jsonArray = json.optJSONArray(SUPPORTED_CARD_TYPES_KEY);
-        if (jsonArray == null) {
-            cardConfiguration.mSupportedCardTypes = new String[0];
-        } else {
-            cardConfiguration.mSupportedCardTypes = new String[jsonArray.length()];
+        if (jsonArray != null) {
             for (int i = 0; i < jsonArray.length(); i++) {
-                cardConfiguration.mSupportedCardTypes[i] = jsonArray.optString(i, "");
+                cardConfiguration.mSupportedCardTypes.add(jsonArray.optString(i, ""));
             }
         }
 
@@ -39,9 +40,9 @@ public class CardConfiguration {
     }
 
     /**
-     * @return a {@link String} array of card types supported by the merchant.
+     * @return a {@link Set<String>} of card types supported by the merchant.
      */
-    public String[] getSupportedCardTypes() {
-        return mSupportedCardTypes.clone();
+    public Set<String> getSupportedCardTypes() {
+        return Collections.unmodifiableSet(mSupportedCardTypes);
     }
 }

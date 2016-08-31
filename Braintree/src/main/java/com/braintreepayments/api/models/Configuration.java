@@ -6,6 +6,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Contains the remote configuration for the Braintree Android SDK.
  */
@@ -28,7 +31,7 @@ public class Configuration {
 
     private String mConfigurationString;
     private String mClientApiUrl;
-    private String[] mChallenges;
+    private final Set<String> mChallenges = new HashSet<>();
     private String mEnvironment;
     private String mMerchantId;
     private String mMerchantAccountId;
@@ -61,7 +64,7 @@ public class Configuration {
         JSONObject json = new JSONObject(configurationString);
 
         mClientApiUrl = json.getString(CLIENT_API_URL_KEY);
-        mChallenges = parseJsonChallenges(json.optJSONArray(CHALLENGES_KEY));
+        parseJsonChallenges(json.optJSONArray(CHALLENGES_KEY));
         mEnvironment = json.getString(ENVIRONMENT_KEY);
         mMerchantId = json.getString(MERCHANT_ID_KEY);
         mMerchantAccountId = json.optString(MERCHANT_ACCOUNT_ID_KEY, null);
@@ -91,14 +94,14 @@ public class Configuration {
      * @return {@code true} if cvv is required for card transactions, {@code false} otherwise.
      */
     public boolean isCvvChallengePresent() {
-        return isChallengePresent("cvv");
+        return mChallenges.contains("cvv");
     }
 
     /**
      * @return {@code true} if postal code is required for card transactions, {@code false} otherwise.
      */
     public boolean isPostalCodeChallengePresent() {
-        return isChallengePresent("postal_code");
+        return mChallenges.contains("postal_code");
     }
 
     /**
@@ -187,26 +190,11 @@ public class Configuration {
         return mKountConfiguration;
     }
 
-    private boolean isChallengePresent(String requestedChallenge) {
-        for (String challenge : mChallenges) {
-            if (challenge.equals(requestedChallenge)) {
-                return true;
+    private void parseJsonChallenges(JSONArray jsonArray) {
+        if (jsonArray != null) {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                mChallenges.add(jsonArray.optString(i, ""));
             }
         }
-
-        return false;
-    }
-
-    private static String[] parseJsonChallenges(JSONArray jsonArray) {
-        if (jsonArray == null) {
-            return new String[0];
-        }
-
-        String[] challenges = new String[jsonArray.length()];
-        for (int i = 0; i < jsonArray.length(); i++) {
-            challenges[i] = jsonArray.optString(i, "");
-        }
-
-        return challenges;
     }
 }

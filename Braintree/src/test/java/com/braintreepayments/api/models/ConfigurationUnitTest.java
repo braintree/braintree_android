@@ -172,6 +172,6 @@ public class ConfigurationUnitTest {
         Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
 
         assertNotNull(configuration.getCardConfiguration());
-        assertEquals(0, configuration.getCardConfiguration().getSupportedCardTypes().length);
+        assertEquals(0, configuration.getCardConfiguration().getSupportedCardTypes().size());
     }
 }
