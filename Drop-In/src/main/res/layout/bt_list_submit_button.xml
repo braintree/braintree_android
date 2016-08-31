@@ -1,9 +1,0 @@
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <!-- tablet version included in layout-w500dp/ dir -->
-    <Button
-        style="@style/bt_submit_button"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/bt_select_payment_method_submit_button" />
-
-</merge>

@@ -1,7 +1,6 @@
 include ':Braintree'
 include ':PayPalDataCollector'
 include ':BraintreeDataCollector'
-include ':Drop-In'
 include ':PayPalOneTouch'
 include ':Core'
 

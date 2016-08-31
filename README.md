@@ -4,8 +4,6 @@
 
 Welcome to Braintree's Android SDK. This library will help you accept card and alternative payments in your Android app.
 
-![Screenshot of v.zero](screenshot.png)
-
 ## Documentation
 
 Start with [**'Hello, Client!'**](https://developers.braintreepayments.com/start/hello-client/android/v2) for instructions on basic setup and usage.

@@ -31,7 +31,7 @@ desc "Publish current version as a SNAPSHOT"
 task :publish_snapshot => :tests do
   abort("Version must contain '-SNAPSHOT'!") unless get_current_version.end_with?('-SNAPSHOT')
 
-  sh "./gradlew clean :Core:uploadArchives :BraintreeDataCollector:uploadArchives :PayPalDataCollector:uploadArchives :PayPalOneTouch:uploadArchives :Braintree:uploadArchives :Drop-In:uploadArchives"
+  sh "./gradlew clean :Core:uploadArchives :BraintreeDataCollector:uploadArchives :PayPalDataCollector:uploadArchives :PayPalOneTouch:uploadArchives :Braintree:uploadArchives"
 end
 
 desc "Interactive release to publish new version"
@@ -50,7 +50,7 @@ task :release do
 end
 
 task :release_braintree do
-  sh "./gradlew clean :Core:uploadArchives :BraintreeDataCollector:uploadArchives :Braintree:uploadArchives :Drop-In:uploadArchives"
+  sh "./gradlew clean :Core:uploadArchives :BraintreeDataCollector:uploadArchives :Braintree:uploadArchives"
   sh "./gradlew :Braintree:closeRepository"
   puts "Sleeping for one minute to allow Braintree modules to close"
   sleep 60
