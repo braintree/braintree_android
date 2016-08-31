@@ -20,6 +20,7 @@ public abstract class PaymentMethodBuilder<T> {
     private String mIntegration = getDefaultIntegration();
     private String mSource = getDefaultSource();
     private boolean mValidate;
+    private boolean mValidateSet;
     private String mSessionId;
 
     public PaymentMethodBuilder() {}
@@ -59,6 +60,7 @@ public abstract class PaymentMethodBuilder<T> {
     @SuppressWarnings("unchecked")
     public T validate(boolean validate) {
         mValidate = validate;
+        mValidateSet = true;
         return (T) this;
     }
 
@@ -89,7 +91,7 @@ public abstract class PaymentMethodBuilder<T> {
         try {
             json.put(MetadataBuilder.META_KEY, metaJson);
 
-            if (mValidate) {
+            if (mValidateSet) {
                 optionsJson.put(VALIDATE_KEY, mValidate);
                 paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
             }
@@ -104,6 +106,7 @@ public abstract class PaymentMethodBuilder<T> {
         mIntegration = in.readString();
         mSource = in.readString();
         mValidate = in.readByte() > 0;
+        mValidateSet = in.readByte() > 0;
         mSessionId = in.readString();
     }
 
@@ -111,6 +114,7 @@ public abstract class PaymentMethodBuilder<T> {
         dest.writeString(mIntegration);
         dest.writeString(mSource);
         dest.writeByte(mValidate ? (byte) 1 : 0);
+        dest.writeByte(mValidateSet ? (byte) 1 : 0);
         dest.writeString(mSessionId);
     }
 

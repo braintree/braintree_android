@@ -127,12 +127,21 @@ public class CardBuilderUnitTest {
     }
 
     @Test
-    public void includesValidateOptionWhenSet() throws JSONException {
+    public void includesValidateOptionWhenSetToTrue() throws JSONException {
         CardBuilder cardBuilder = new CardBuilder().validate(true);
 
         JSONObject builtCard = new JSONObject(cardBuilder.build()).getJSONObject(CREDIT_CARD_KEY);
 
         assertEquals(true, builtCard.getJSONObject("options").getBoolean("validate"));
+    }
+
+    @Test
+    public void includesValidateOptionWhenSetToFalse() throws JSONException {
+        CardBuilder cardBuilder = new CardBuilder().validate(false);
+
+        JSONObject builtCard = new JSONObject(cardBuilder.build()).getJSONObject(CREDIT_CARD_KEY);
+
+        assertEquals(false, builtCard.getJSONObject("options").getBoolean("validate"));
     }
 
     @Test
