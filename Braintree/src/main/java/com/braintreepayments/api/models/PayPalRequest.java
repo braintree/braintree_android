@@ -26,10 +26,25 @@ public class PayPalRequest implements Parcelable {
     public static final String INTENT_SALE = "sale";
     public static final String INTENT_AUTHORIZE = "authorize";
 
+    /**
+     * @see <a href="https://developer.paypal.com/docs/classic/express-checkout/integration-guide/ECCustomizing/#allowing-buyers-to-complete-their-purchases-on-paypal">PayPal Express Checkout Guide</a>
+     * for more information
+     */
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalRequest.USER_ACTION_DEFAULT, PayPalRequest.USER_ACTION_COMMIT})
     @interface PayPalPaymentUserAction {}
+
+    /**
+     * Shows the default call-to-action text on the PayPal Express Checkout page. This option indicates that a final
+     * confirmation will be shown on the merchant checkout site before the user's payment method is charged.
+     */
     public static final String USER_ACTION_DEFAULT = "";
+
+    /**
+     * Shows a deterministic call-to-action. This option indicates to the user that their payment method will be charged
+     * when the click the call-to-action button on the PayPal Checkout page, and that no final confirmation page will
+     * be shown on the merchant's checkout page.
+     */
     public static final String USER_ACTION_COMMIT = "commit";
 
     private String mAmount;
@@ -132,12 +147,7 @@ public class PayPalRequest implements Parcelable {
     }
 
     /**
-     * The call-to-action in the PayPal one-time payment checkout flow.
-     * By default the final button will show the localized phrase for "Continue",
-     * implying that the final amount billed is not yet known.
-     *
-     * Setting the BTPayPalRequest's userAction to {@link PayPalRequest#USER_ACTION_COMMIT} changes the button text to "Pay Now",
-     * conveying to the user that billing will take place immediately.
+     * Set the checkout user action.
      *
      * @param userAction Can be either {@link PayPalRequest#USER_ACTION_COMMIT} or {@link PayPalRequest#USER_ACTION_DEFAULT}.
      */

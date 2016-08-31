@@ -209,13 +209,10 @@ public class PayPal {
                     return;
                 }
 
-                String redirectUrl = paypalPaymentResource.getRedirectUrl();
-                if (paypalRequest.getUserAction().equals(PayPalRequest.USER_ACTION_COMMIT)) {
-                    redirectUrl = Uri.parse(redirectUrl)
-                            .buildUpon()
-                            .appendQueryParameter(USER_ACTION_KEY, paypalRequest.getUserAction())
-                            .toString();
-                }
+                String redirectUrl = Uri.parse(paypalPaymentResource.getRedirectUrl())
+                        .buildUpon()
+                        .appendQueryParameter(USER_ACTION_KEY, paypalRequest.getUserAction())
+                        .toString();
 
                 Request request;
                 if (isBillingAgreement) {
