@@ -4,13 +4,11 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.models.TokenizationKey;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 
+import static com.braintreepayments.testutils.FixturesHelper.streamFromString;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -35,9 +33,5 @@ public class BraintreeHttpClientTestUtils {
         doReturn(connection).when(httpClient).init(anyString());
 
         return httpClient;
-    }
-
-    public static InputStream streamFromString(String string) throws UnsupportedEncodingException {
-        return new ByteArrayInputStream(string.getBytes("UTF-8"));
     }
 }
