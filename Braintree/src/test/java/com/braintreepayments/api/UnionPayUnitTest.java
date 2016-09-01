@@ -328,7 +328,7 @@ public class UnionPayUnitTest {
     public void fetchCapabilities_callsListenerWithCapabilitiesOnSuccess() throws JSONException {
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(mConfigurationWithUnionPay)
-                .successResponse(stringFromFixture("unionpay_fetchcapabilities_success_response.json"))
+                .successResponse(stringFromFixture("unionpay_capabilities_success_response.json"))
                 .build();
 
         UnionPay.fetchCapabilities(fragment, UNIONPAY_CREDIT);
@@ -348,7 +348,7 @@ public class UnionPayUnitTest {
     public void fetchCapabilities_sendsAnalyticsEventOnSuccess() throws JSONException {
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(mConfigurationWithUnionPay)
-                .successResponse(stringFromFixture("unionpay_fetchcapabilities_success_response.json"))
+                .successResponse(stringFromFixture("unionpay_capabilities_success_response.json"))
                 .build();
 
         UnionPay.fetchCapabilities(fragment, UNIONPAY_CREDIT);
