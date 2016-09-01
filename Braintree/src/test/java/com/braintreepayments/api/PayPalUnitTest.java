@@ -434,7 +434,7 @@ public class PayPalUnitTest {
     }
 
     @Test
-    public void requestOneTimePayment_userAction_doesNotSetValueOnDefault() throws JSONException {
+    public void requestOneTimePayment_userAction_setsUserActionToBlankStringonDefault() throws JSONException {
         BraintreeFragment fragment = mMockFragmentBuilder
                 .successResponse(stringFromFixture("paypal_hermes_billing_agreement_response.json"))
                 .build();
@@ -445,7 +445,7 @@ public class PayPalUnitTest {
         verify(fragment).startActivity(dataCaptor.capture());
 
         Uri uri = dataCaptor.getValue().getData();
-        assertNull(uri.getQueryParameter("useraction"));
+        assertEquals("", uri.getQueryParameter("useraction"));
     }
 
     @Test
