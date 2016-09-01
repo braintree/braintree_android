@@ -78,6 +78,18 @@ public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> im
         return this;
     }
 
+    /**
+     * @deprecated UnionPay enrollment performs validation. This value will not be used for UnionPay payment methods.
+     *
+     * @param validate Ignored
+     * @return {@link com.braintreepayments.api.models.UnionPayCardBuilder}
+     */
+    @Deprecated
+    @Override
+    public UnionPayCardBuilder validate(boolean validate) {
+        return this;
+    }
+
     public JSONObject buildEnrollment() throws JSONException {
         JSONObject unionPayEnrollment = new JSONObject();
         unionPayEnrollment.put(NUMBER_KEY, mCardnumber);
