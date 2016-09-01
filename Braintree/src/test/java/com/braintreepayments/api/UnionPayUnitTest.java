@@ -119,7 +119,7 @@ public class UnionPayUnitTest {
         assertEquals("expirationYear", creditCardPayload.getString("expirationYear"));
         assertEquals("cvv", creditCardPayload.getString("cvv"));
 
-        assertTrue(optionsPayload.getBoolean("validate"));
+        assertFalse(optionsPayload.has("validate"));
         assertEquals("enrollmentId", unionPayEnrollmentPayload.getString("id"));
         assertEquals("smsCode", unionPayEnrollmentPayload.getString("smsCode"));
     }
@@ -154,7 +154,7 @@ public class UnionPayUnitTest {
         assertEquals("expirationYear", creditCardPayload.getString("expirationYear"));
         assertEquals("cvv", creditCardPayload.getString("cvv"));
 
-        assertTrue(optionsPayload.getBoolean("validate"));
+        assertFalse(optionsPayload.has("validate"));
         assertEquals("enrollmentId", unionPayEnrollmentPayload.getString("id"));
         assertFalse(unionPayEnrollmentPayload.has("smsCode"));
     }
