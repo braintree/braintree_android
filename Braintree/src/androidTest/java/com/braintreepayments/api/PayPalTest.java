@@ -2,13 +2,11 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.test.TestActivity;
-import com.braintreepayments.testutils.BraintreeActivityTestRule;
+import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 
 import org.junit.Rule;

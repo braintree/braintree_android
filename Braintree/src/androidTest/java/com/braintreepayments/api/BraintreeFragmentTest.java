@@ -7,8 +7,8 @@ import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.TestActivity;
-import com.braintreepayments.testutils.BraintreeActivityTestRule;
-import com.braintreepayments.testutils.TestClientTokenBuilder;
+import com.braintreepayments.api.test.BraintreeActivityTestRule;
+import com.braintreepayments.api.test.TestClientTokenBuilder;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.junit.Before;

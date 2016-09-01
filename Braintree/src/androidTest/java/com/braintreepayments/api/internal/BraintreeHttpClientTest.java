@@ -9,7 +9,7 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.TokenizationKey;
-import com.braintreepayments.testutils.EnvironmentHelper;
+import com.braintreepayments.api.test.EnvironmentHelper;
 
 import org.json.JSONException;
 import org.junit.Before;

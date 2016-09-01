@@ -1,5 +1,6 @@
-package com.braintreepayments.testutils;
+package com.braintreepayments.api.test;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardLock;
@@ -8,7 +9,7 @@ import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static com.braintreepayments.testutils.SharedPreferencesHelper.getSharedPreferences;
+import static com.braintreepayments.api.test.SharedPreferencesHelper.getSharedPreferences;
 
 @SuppressWarnings("deprecation")
 public class BraintreeActivityTestRule<T extends Activity> extends ActivityTestRule<T> {
@@ -26,6 +27,7 @@ public class BraintreeActivityTestRule<T extends Activity> extends ActivityTestR
         init();
     }
 
+    @SuppressLint("MissingPermission")
     private void init() {
         getSharedPreferences().edit().clear().commit();
 
@@ -40,6 +42,7 @@ public class BraintreeActivityTestRule<T extends Activity> extends ActivityTestR
         super.afterActivityLaunched();
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     protected void afterActivityFinished() {
         super.afterActivityFinished();

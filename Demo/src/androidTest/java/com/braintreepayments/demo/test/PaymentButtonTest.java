@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static com.braintreepayments.testutils.AppInstallationHelper.uninstallPayPalWallet;
+import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.uninstallPayPalWallet;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;

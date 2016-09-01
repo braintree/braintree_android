@@ -7,7 +7,7 @@ import android.support.test.runner.AndroidJUnit4;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.testutils.TestClientTokenBuilder;
+import com.braintreepayments.api.test.TestClientTokenBuilder;
 
 import org.json.JSONException;
 import org.junit.Before;

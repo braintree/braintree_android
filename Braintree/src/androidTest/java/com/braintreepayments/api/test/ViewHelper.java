@@ -1,12 +1,7 @@
-package com.braintreepayments.testutils.ui;
+package com.braintreepayments.api.test;
 
-import android.content.Context;
-import android.support.test.espresso.UiController;
-import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.ViewInteraction;
-import android.support.test.espresso.action.CloseKeyboardAction;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 
 import org.hamcrest.Matcher;
 
@@ -56,42 +51,5 @@ public class ViewHelper {
 
     public static ViewInteraction waitForView(final Matcher<View> viewMatcher) {
         return waitForView(viewMatcher, TEN_SECONDS);
-    }
-
-    /**
-     * Closes the soft keyboard and sleeps to ensure the keyboard is fully closed.
-     *
-     * @return {@link android.support.test.espresso.ViewAction} instance for chaining
-     */
-    public static ViewAction closeSoftKeyboard() {
-        return new ViewAction() {
-            /**
-             * The delay time to allow the soft keyboard to dismiss.
-             */
-            private static final long KEYBOARD_DISMISSAL_DELAY_MILLIS = 500L;
-
-            /**
-             * The real {@link CloseKeyboardAction} instance.
-             */
-            private final ViewAction mCloseSoftKeyboard = new CloseKeyboardAction();
-
-            @Override
-            public Matcher<View> getConstraints() {
-                return mCloseSoftKeyboard.getConstraints();
-            }
-
-            @Override
-            public String getDescription() {
-                return mCloseSoftKeyboard.getDescription();
-            }
-
-            @Override
-            public void perform(final UiController uiController, final View view) {
-                InputMethodManager manager = (InputMethodManager) view.getContext().getSystemService(
-                        Context.INPUT_METHOD_SERVICE);
-                manager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-                uiController.loopMainThreadForAtLeast(KEYBOARD_DISMISSAL_DELAY_MILLIS);
-            }
-        };
     }
 }

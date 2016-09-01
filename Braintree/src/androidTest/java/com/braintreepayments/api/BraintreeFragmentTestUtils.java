@@ -16,7 +16,7 @@ import org.json.JSONException;
 import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
-import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
+import static com.braintreepayments.api.test.SharedPreferencesHelper.writeMockConfiguration;
 import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.spy;
 

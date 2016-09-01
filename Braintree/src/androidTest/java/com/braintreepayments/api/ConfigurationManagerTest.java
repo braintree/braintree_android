@@ -24,7 +24,7 @@ import java.util.concurrent.CountDownLatch;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
-import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
+import static com.braintreepayments.api.test.SharedPreferencesHelper.writeMockConfiguration;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;

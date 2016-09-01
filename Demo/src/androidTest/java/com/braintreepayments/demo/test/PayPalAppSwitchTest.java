@@ -8,8 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static com.braintreepayments.testutils.AppInstallationHelper.PAYPAL_WALLET_PACKAGE_NAME;
-import static com.braintreepayments.testutils.AppInstallationHelper.installPayPalWallet;
+import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.PAYPAL_WALLET_PACKAGE_NAME;
+import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.installPayPalWallet;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;

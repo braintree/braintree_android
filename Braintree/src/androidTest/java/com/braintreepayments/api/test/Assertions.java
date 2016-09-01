@@ -1,4 +1,4 @@
-package com.braintreepayments.testutils;
+package com.braintreepayments.api.test;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;

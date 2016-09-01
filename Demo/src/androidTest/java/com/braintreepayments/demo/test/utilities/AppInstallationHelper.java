@@ -1,4 +1,4 @@
-package com.braintreepayments.testutils;
+package com.braintreepayments.demo.test.utilities;
 
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;

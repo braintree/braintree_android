@@ -13,7 +13,7 @@ import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.TestActivity;
-import com.braintreepayments.testutils.BraintreeActivityTestRule;
+import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestAndroidPayConfigurationBuilder;
 import com.google.android.gms.common.api.GoogleApiClient;

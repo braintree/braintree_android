@@ -2,7 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.braintreepayments.api">
 
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+
     <application android:label="Braintree Test" tools:replace="android:label">
+
         <!--suppress AndroidDomInspection -->
         <activity android:name=".test.TestActivity" />
 
@@ -15,5 +18,6 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
+
     </application>
 </manifest>

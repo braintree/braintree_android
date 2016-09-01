@@ -24,7 +24,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.UnitTestListenerActivity;
-import com.braintreepayments.testutils.FragmentTestActivity;
+import com.braintreepayments.api.test.FragmentTestActivity;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 
 import org.json.JSONException;

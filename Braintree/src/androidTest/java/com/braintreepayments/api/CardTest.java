@@ -10,8 +10,8 @@ import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.TestActivity;
-import com.braintreepayments.testutils.BraintreeActivityTestRule;
-import com.braintreepayments.testutils.TestClientTokenBuilder;
+import com.braintreepayments.api.test.BraintreeActivityTestRule;
+import com.braintreepayments.api.test.TestClientTokenBuilder;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.testutils.Assertions.assertIsANonce;
+import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
