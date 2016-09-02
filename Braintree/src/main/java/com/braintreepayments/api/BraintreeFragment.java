@@ -401,6 +401,28 @@ public class BraintreeFragment extends Fragment {
         }
     }
 
+    /**
+     * A boolean indicating whether the current customer's payment methods have been fetched with
+     * {@link PaymentMethod#getPaymentMethodNonces(BraintreeFragment)} yet.
+     *
+     * @return {@code true} if the current customer's payment methods have been fetched, {@code false} otherwise.
+     */
+    public boolean hasFetchedPaymentMethodNonces() {
+        return mHasFetchedPaymentMethodNonces;
+    }
+
+    /**
+     * After fetching the current customer's {@link PaymentMethodNonce}s using
+     * {@link PaymentMethod#getPaymentMethodNonces(BraintreeFragment)}, the {@link PaymentMethodNonce}s will be cached
+     * for the life time of this instance of {@link BraintreeFragment} and can be returned without additional network
+     * requests using this method.
+     *
+     * @return A of {@link List<PaymentMethodNonce>}s for the current customer.
+     */
+    public List<PaymentMethodNonce> getCachedPaymentMethodNonces() {
+        return Collections.unmodifiableList(mCachedPaymentMethodNonces);
+    }
+
     protected void sendAnalyticsEvent(final String eventFragment) {
         final AnalyticsEvent request = new AnalyticsEvent(mContext, getSessionId(), mIntegrationType, eventFragment);
         waitForConfiguration(new ConfigurationListener() {
@@ -645,14 +667,6 @@ public class BraintreeFragment extends Fragment {
 
     protected String getIntegrationType() {
         return mIntegrationType;
-    }
-
-    protected boolean hasFetchedPaymentMethodNonces() {
-        return mHasFetchedPaymentMethodNonces;
-    }
-
-    protected List<PaymentMethodNonce> getCachedPaymentMethodNonces() {
-        return Collections.unmodifiableList(mCachedPaymentMethodNonces);
     }
 
     /**
