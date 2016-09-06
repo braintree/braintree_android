@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 
-def dataCollectorVersion = 'paypal-data-collector-3.1.1.jar'
+def dataCollectorVersion = 'paypal-data-collector-3.1.2.jar'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
