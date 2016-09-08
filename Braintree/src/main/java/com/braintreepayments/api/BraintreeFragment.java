@@ -424,7 +424,7 @@ public class BraintreeFragment extends Fragment {
         return Collections.unmodifiableList(mCachedPaymentMethodNonces);
     }
 
-    protected void sendAnalyticsEvent(final String eventFragment) {
+    public void sendAnalyticsEvent(final String eventFragment) {
         final AnalyticsEvent request = new AnalyticsEvent(mContext, getSessionId(), mIntegrationType, eventFragment);
         waitForConfiguration(new ConfigurationListener() {
             @Override
@@ -436,7 +436,7 @@ public class BraintreeFragment extends Fragment {
         });
     }
 
-    protected void flushAnalyticsEvents() {
+    private void flushAnalyticsEvents() {
         if (getConfiguration() != null && getConfiguration().toJson() != null) {
             Intent intent = new Intent(mContext, AnalyticsIntentService.class)
                     .putExtra(AnalyticsIntentService.EXTRA_AUTHORIZATION, getAuthorization().toString())
