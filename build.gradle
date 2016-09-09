@@ -77,7 +77,7 @@ allprojects {
         sign configurations.archives
     }
 
-    version = '2.3.8'
+    version = '2.3.8-SNAPSHOT'
     ext {
         compileSdkVersion = 24
         buildToolsVersion = '24.0.0'
