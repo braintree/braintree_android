@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 2.3.9
+
+* Update `AndroidPayCardNonce` description to include card type and last 4
+
 ## 2.3.8
 
 * Support changing user call to action in PayPal flows, see `PayPalRequest#userAction`
