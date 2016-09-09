@@ -39,6 +39,7 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
     public static AndroidPayCardNonce fromFullWallet(FullWallet wallet) throws JSONException {
         AndroidPayCardNonce androidPayCardNonce =
                 AndroidPayCardNonce.fromJson(wallet.getPaymentMethodToken().getToken());
+        androidPayCardNonce.mDescription = wallet.getPaymentDescriptions()[0];
         androidPayCardNonce.mEmail = wallet.getEmail();
         androidPayCardNonce.mBillingAddress = wallet.getBuyerBillingAddress();
         androidPayCardNonce.mShippingAddress = wallet.getBuyerShippingAddress();

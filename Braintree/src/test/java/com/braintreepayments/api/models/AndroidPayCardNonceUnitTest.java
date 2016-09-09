@@ -41,6 +41,7 @@ public class AndroidPayCardNonceUnitTest {
         UserAddress shippingAddress = mock(UserAddress.class);
         FullWallet wallet = mock(FullWallet.class);
         when(wallet.getPaymentMethodToken()).thenReturn(paymentMethodToken);
+        when(wallet.getPaymentDescriptions()).thenReturn(new String[] { "MasterCard 0276" });
         when(wallet.getEmail()).thenReturn("android-user@example.com");
         when(wallet.getBuyerBillingAddress()).thenReturn(billingAddress);
         when(wallet.getBuyerShippingAddress()).thenReturn(shippingAddress);
@@ -50,7 +51,7 @@ public class AndroidPayCardNonceUnitTest {
 
         assertEquals("Android Pay", androidPayCardNonce.getTypeLabel());
         assertEquals("fake-android-pay-nonce", androidPayCardNonce.getNonce());
-        assertEquals("Android Pay", androidPayCardNonce.getDescription());
+        assertEquals("MasterCard 0276", androidPayCardNonce.getDescription());
         assertEquals("Visa", androidPayCardNonce.getCardType());
         assertEquals("11", androidPayCardNonce.getLastTwo());
         assertEquals("android-user@example.com", androidPayCardNonce.getEmail());
@@ -80,6 +81,7 @@ public class AndroidPayCardNonceUnitTest {
         UserAddress shippingAddress = getAddressObject();
         FullWallet wallet = mock(FullWallet.class);
         when(wallet.getPaymentMethodToken()).thenReturn(paymentMethodToken);
+        when(wallet.getPaymentDescriptions()).thenReturn(new String[] { "MasterCard 0276" });
         when(wallet.getEmail()).thenReturn("android-user@example.com");
         when(wallet.getBuyerBillingAddress()).thenReturn(billingAddress);
         when(wallet.getBuyerShippingAddress()).thenReturn(shippingAddress);
@@ -93,7 +95,7 @@ public class AndroidPayCardNonceUnitTest {
 
         assertEquals("Android Pay", parceled.getTypeLabel());
         assertEquals("fake-android-pay-nonce", parceled.getNonce());
-        assertEquals("Android Pay", parceled.getDescription());
+        assertEquals("MasterCard 0276", parceled.getDescription());
         assertEquals("Visa", parceled.getCardType());
         assertEquals("11", parceled.getLastTwo());
         assertEquals("android-user@example.com", parceled.getEmail());
