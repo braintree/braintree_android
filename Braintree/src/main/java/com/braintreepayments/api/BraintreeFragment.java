@@ -418,7 +418,7 @@ public class BraintreeFragment extends Fragment {
      * for the life time of this instance of {@link BraintreeFragment} and can be returned without additional network
      * requests using this method.
      *
-     * @return A of {@link List<PaymentMethodNonce>}s for the current customer.
+     * @return {@link List<PaymentMethodNonce>}s for the current customer.
      */
     public List<PaymentMethodNonce> getCachedPaymentMethodNonces() {
         return Collections.unmodifiableList(mCachedPaymentMethodNonces);
