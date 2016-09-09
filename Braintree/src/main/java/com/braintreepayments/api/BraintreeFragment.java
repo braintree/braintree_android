@@ -123,12 +123,17 @@ public class BraintreeFragment extends Fragment {
 
         String integrationType = "custom";
         try {
-            if (Class.forName("com.braintreepayments.api.dropin.BraintreePaymentActivity").isInstance(activity)) {
-                integrationType = "dropin2";
-            } else if (Class.forName("com.braintreepayments.api.BraintreePaymentActivity").isInstance(activity)) {
+            if (Class.forName("com.braintreepayments.api.BraintreePaymentActivity").isInstance(activity)) {
                 integrationType = "dropin";
             }
         } catch (ClassNotFoundException ignored) {}
+
+        try {
+            if (Class.forName("com.braintreepayments.api.dropin.BraintreePaymentActivity").isInstance(activity)) {
+                integrationType = "dropin2";
+            }
+        } catch (ClassNotFoundException ignored) {}
+
 
         BraintreeFragment braintreeFragment = (BraintreeFragment) fm.findFragmentByTag(TAG);
         if (braintreeFragment == null) {
