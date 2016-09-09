@@ -1,5 +1,14 @@
 # Braintree Android SDK Release Notes
 
+## 2.3.8
+
+* Support changing user call to action in PayPal flows, see `PayPalRequest#userAction`
+* Fix validate option not being sent when set to false in `PaymentMethodBuilder`
+* Add merchant supported card types to `Configuration`
+* Expose methods on `BraintreeFragment` for getting cached payment methods
+* Update `paypal-data-collector` to 3.1.2
+* Move Drop-In to [it's own repo](https://github.com/braintree/braintree-android-drop-in)
+
 ## 2.3.7
 
 * Update exception message when Android Manifest setup is invalid
