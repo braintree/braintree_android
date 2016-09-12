@@ -17,6 +17,8 @@ import com.braintreepayments.api.exceptions.BrowserSwitchException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.interfaces.PayPalApprovalCallback;
+import com.braintreepayments.api.interfaces.PayPalApprovalHandler;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.internal.AppHelper;
 import com.braintreepayments.api.internal.BraintreeSharedPreferences;
@@ -147,7 +149,7 @@ public class PayPal {
                     }
                 }
 
-                startPayPal(fragment, request);
+                startPayPal(fragment, request, null);
             }
         });
     }
@@ -160,9 +162,21 @@ public class PayPal {
      * @param request A {@link PayPalRequest} used to customize the request.
      */
     public static void requestBillingAgreement(BraintreeFragment fragment, PayPalRequest request) {
+        requestBillingAgreement(fragment, request, null);
+    }
+
+    /**
+     * Starts the Billing Agreement flow for PayPal with custom PayPal approval handler.
+     *
+     * @param fragment A {@link BraintreeFragment} used to process the request.
+     * @param request A {@link PayPalRequest} used to customize the request.
+     * @param handler A {@link PayPalApprovalHandler} for custom approval handling.
+     */
+    public static void requestBillingAgreement(BraintreeFragment fragment, PayPalRequest request,
+            PayPalApprovalHandler handler) {
         if (request.getAmount() == null) {
             fragment.sendAnalyticsEvent("paypal.billing-agreement.selected");
-            requestOneTimePayment(fragment, request, true);
+            requestOneTimePayment(fragment, request, true, handler);
         } else {
             fragment.postCallback(new BraintreeException(
                     "There must be no amount specified for the Billing Agreement flow"));
@@ -174,20 +188,31 @@ public class PayPal {
      * fall back to a browser switch.
      *
      * @param fragment A {@link BraintreeFragment} used to process the request.
-     * @param request A {@link PayPalRequest} used to customize the request. An amount MUST be
-     *                 specified.
+     * @param request A {@link PayPalRequest} used to customize the request. An amount MUST be specified.
      */
     public static void requestOneTimePayment(BraintreeFragment fragment, PayPalRequest request) {
+        requestOneTimePayment(fragment, request, null);
+    }
+
+    /**
+     * Starts the Single Payment flow for PayPal with custom PayPal approval handler.
+     *
+     * @param fragment A {@link BraintreeFragment} used to process the request.
+     * @param request A {@link PayPalRequest} used to customize the request. An amount MUST be specified.
+     * @param handler A {@link PayPalApprovalHandler} for custom approval handling.
+     */
+    public static void requestOneTimePayment(BraintreeFragment fragment, PayPalRequest request,
+            PayPalApprovalHandler handler) {
         if (request.getAmount() != null) {
             fragment.sendAnalyticsEvent("paypal.one-time-payment.selected");
-            requestOneTimePayment(fragment, request, false);
+            requestOneTimePayment(fragment, request, false, handler);
         } else {
             fragment.postCallback(new BraintreeException("An amount must be specified for the Single Payment flow."));
         }
     }
 
     /**
-     * Starts the Checkout With PayPal flow. This will launch the PayPal app if installed or switch
+     * Starts the Checkout With PayPal flow with custom PayPal approval handler. This will launch the PayPal app if installed or switch
      * to the browser for user authorization.
      * <p>
      * This requires that the merchant uses a {@link com.braintreepayments.api.models.ClientToken}
@@ -196,9 +221,10 @@ public class PayPal {
      * @param paypalRequest A {@link PayPalRequest} used to customize the request.
      * @param isBillingAgreement A boolean. If true, this will use the Billing Agreement. Otherwise,
      *        PayPal will perform a Single Payment.
+     * @param handler A {@link PayPalApprovalHandler} for custom approval handling.
      */
     private static void requestOneTimePayment(final BraintreeFragment fragment, final PayPalRequest paypalRequest,
-            final boolean isBillingAgreement) {
+            final boolean isBillingAgreement, final PayPalApprovalHandler handler) {
         final HttpResponseCallback callback = new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
@@ -224,7 +250,7 @@ public class PayPal {
                             fragment.getApplicationContext(), fragment.getConfiguration().getPayPal());
                 }
 
-                startPayPal(fragment, request);
+                startPayPal(fragment, request, handler);
             }
 
             @Override
@@ -330,23 +356,51 @@ public class PayPal {
         fragment.getHttpClient().post(versionedPath, parameters.toString(), callback);
     }
 
-    private static void startPayPal(BraintreeFragment fragment, Request request) {
+    private static void startPayPal(final BraintreeFragment fragment, Request request, PayPalApprovalHandler handler) {
         persistRequest(fragment.getApplicationContext(), request);
+        PayPalApprovalCallback callback = null;
 
-        PendingRequest pendingRequest = PayPalOneTouchCore.getStartIntent(fragment.getApplicationContext(), request);
-        if (pendingRequest.isSuccess() && pendingRequest.getRequestTarget() == RequestTarget.wallet) {
-            sendAnalyticsForPayPal(fragment, request, true, RequestTarget.wallet);
-
-            fragment.startActivityForResult(pendingRequest.getIntent(), PAYPAL_REQUEST_CODE);
-        } else if (pendingRequest.isSuccess() && pendingRequest.getRequestTarget() == RequestTarget.browser) {
-            sendAnalyticsForPayPal(fragment, request, true, RequestTarget.browser);
-
-            Intent intent = pendingRequest.getIntent()
-                    .putExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, true);
-            fragment.startActivity(intent);
+        if (handler == null) {
+            handler = getDefaultApprovalHandler(fragment);
         } else {
-            sendAnalyticsForPayPal(fragment, request, false, null);
+            callback = new PayPalApprovalCallback() {
+                @Override
+                public void onComplete(Intent data) {
+                    PayPal.onActivityResult(fragment, Activity.RESULT_OK, data);
+                }
+
+                @Override
+                public void onCancel() {
+                    fragment.postCancelCallback(PAYPAL_REQUEST_CODE);
+                }
+            };
         }
+        handler.handleApproval(request, callback);
+    }
+
+    private static PayPalApprovalHandler getDefaultApprovalHandler(final BraintreeFragment fragment) {
+
+        return new PayPalApprovalHandler() {
+
+            @Override
+            public void handleApproval(Request request, PayPalApprovalCallback paypalApprovalCallback) {
+                PendingRequest pendingRequest =
+                        PayPalOneTouchCore.getStartIntent(fragment.getApplicationContext(), request);
+                if (pendingRequest.isSuccess() && pendingRequest.getRequestTarget() == RequestTarget.wallet) {
+                    sendAnalyticsForPayPal(fragment, request, true, RequestTarget.wallet);
+
+                    fragment.startActivityForResult(pendingRequest.getIntent(), PAYPAL_REQUEST_CODE);
+                } else if (pendingRequest.isSuccess() && pendingRequest.getRequestTarget() == RequestTarget.browser) {
+                    sendAnalyticsForPayPal(fragment, request, true, RequestTarget.browser);
+
+                    Intent intent = pendingRequest.getIntent()
+                            .putExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, true);
+                    fragment.startActivity(intent);
+                } else {
+                    sendAnalyticsForPayPal(fragment, request, false, null);
+                }
+            }
+        };
     }
 
     private static void sendAnalyticsForPayPal(BraintreeFragment fragment, Request request, boolean success,
@@ -595,7 +649,7 @@ public class PayPal {
     @Nullable
     private static Request getPersistedRequest(Context context) {
         SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(context);
-        
+
         try {
             byte[] requestBytes = Base64.decode(prefs.getString(REQUEST_KEY, ""), 0);
             Parcel parcel = Parcel.obtain();

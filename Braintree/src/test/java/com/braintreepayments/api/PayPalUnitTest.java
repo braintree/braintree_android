@@ -8,8 +8,12 @@ import android.net.Uri;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.interfaces.PayPalApprovalCallback;
+import com.braintreepayments.api.interfaces.PayPalApprovalHandler;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.internal.BraintreeSharedPreferences;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
@@ -18,10 +22,12 @@ import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PayPalConfiguration;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestPayPalConfigurationBuilder;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
+import com.paypal.android.sdk.onetouch.core.Request;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
 import com.paypal.android.sdk.onetouch.core.encryption.EncryptionUtils;
 
@@ -395,6 +401,71 @@ public class PayPalUnitTest {
         verify(fragment).postCallback(captor.capture());
         assertTrue(captor.getValue() instanceof BraintreeException);
         assertEquals("An amount must be specified for the Single Payment flow.", captor.getValue().getMessage());
+    }
+
+    @Test(timeout = 1000)
+    public void requestOneTimePayment_customHandlerIsCalledCorrectly() throws InterruptedException {
+        BraintreeFragment fragment = mMockFragmentBuilder
+                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .build();
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"), new PayPalApprovalHandler() {
+            @Override
+            public void handleApproval(Request request, PayPalApprovalCallback paypalApprovalCallback) {
+                latch.countDown();
+            }
+        });
+
+        latch.await();
+    }
+
+    @Test
+    public void requestOneTimePayment_customHandlerCancelCallbackIsInvoked() throws InterruptedException {
+        BraintreeFragment fragment = mMockFragmentBuilder
+                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .build();
+
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"), new PayPalApprovalHandler() {
+            @Override
+            public void handleApproval(Request request, PayPalApprovalCallback paypalApprovalCallback) {
+                paypalApprovalCallback.onCancel();
+            }
+        });
+
+        verify(fragment).postCancelCallback(PayPal.PAYPAL_REQUEST_CODE);
+    }
+
+    @Test
+    public void requestOneTimePayment_customHandlerSuccessCallbackIsInvoked() throws InterruptedException {
+        BraintreeFragment fragment = mMockFragmentBuilder
+                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .build();
+
+        mockStatic(TokenizationClient.class);
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                ((PaymentMethodNonceCallback) invocation.getArguments()[2]).success(new PayPalAccountNonce());
+                return null;
+            }
+        }).when(TokenizationClient.class);
+        TokenizationClient.tokenize(any(BraintreeFragment.class), any(PaymentMethodBuilder.class),
+                any(PaymentMethodNonceCallback.class));
+
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"), new PayPalApprovalHandler() {
+            @Override
+            public void handleApproval(Request request, PayPalApprovalCallback paypalApprovalCallback) {
+                paypalApprovalCallback.onComplete(new Intent()
+                        .setData(Uri.parse("com.braintreepayments.demo.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN"))
+                );
+            }
+        });
+
+        ArgumentCaptor<PaymentMethodNonce> nonceCaptor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
+        verify(fragment).postCallback(nonceCaptor.capture());
+
+        assertTrue(nonceCaptor.getValue() instanceof PayPalAccountNonce);
     }
 
     @Test
