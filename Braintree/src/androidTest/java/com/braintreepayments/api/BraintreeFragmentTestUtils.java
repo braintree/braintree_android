@@ -15,8 +15,9 @@ import org.json.JSONException;
 
 import java.util.concurrent.CountDownLatch;
 
+import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
-import static com.braintreepayments.api.test.SharedPreferencesHelper.writeMockConfiguration;
+import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
 import static junit.framework.Assert.fail;
 import static org.mockito.Mockito.spy;
 
@@ -82,7 +83,7 @@ public class BraintreeFragmentTestUtils {
     public static BraintreeFragment getMockFragment(Activity activity, String authorizationString, String configuration) {
         try {
             Authorization authorization = Authorization.fromString(authorizationString);
-            writeMockConfiguration(authorization.getConfigUrl(), configuration);
+            writeMockConfiguration(getTargetContext(), authorization.getConfigUrl(), configuration);
 
             BraintreeFragment fragment = BraintreeFragment.newInstance(activity, authorizationString);
             fragment.mConfiguration = Configuration.fromJson(configuration);
@@ -112,7 +113,7 @@ public class BraintreeFragmentTestUtils {
         try {
             if (configurationString != null) {
                 Authorization authorization = Authorization.fromString(authorizationString);
-                writeMockConfiguration(authorization.getConfigUrl(), configurationString);
+                writeMockConfiguration(getTargetContext(), authorization.getConfigUrl(), configurationString);
             }
             fragment = BraintreeFragment.newInstance(activity, authorizationString);
 

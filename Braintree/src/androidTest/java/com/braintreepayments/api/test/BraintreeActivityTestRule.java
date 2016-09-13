@@ -9,7 +9,7 @@ import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
-import static com.braintreepayments.api.test.SharedPreferencesHelper.getSharedPreferences;
+import static com.braintreepayments.testutils.SharedPreferencesHelper.getSharedPreferences;
 
 @SuppressWarnings("deprecation")
 public class BraintreeActivityTestRule<T extends Activity> extends ActivityTestRule<T> {
@@ -29,7 +29,7 @@ public class BraintreeActivityTestRule<T extends Activity> extends ActivityTestR
 
     @SuppressLint("MissingPermission")
     private void init() {
-        getSharedPreferences().edit().clear().commit();
+        getSharedPreferences(getTargetContext()).edit().clear().commit();
 
         mKeyguardLock = ((KeyguardManager) getTargetContext().getSystemService(Context.KEYGUARD_SERVICE))
                 .newKeyguardLock("BraintreeActivityTestRule");
@@ -51,7 +51,7 @@ public class BraintreeActivityTestRule<T extends Activity> extends ActivityTestR
             Intents.release();
         } catch (IllegalStateException ignored) {}
 
-        getSharedPreferences().edit().clear().commit();
+        getSharedPreferences(getTargetContext()).edit().clear().commit();
 
         mKeyguardLock.reenableKeyguard();
     }
