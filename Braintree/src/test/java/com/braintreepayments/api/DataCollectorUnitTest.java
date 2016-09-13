@@ -24,10 +24,11 @@ import static junit.framework.Assert.fail;
 public class DataCollectorUnitTest {
 
     @Test
-    public void getDeviceCollectorUrl_returnsCorrectUrl() {
-        assertEquals("https://assets.braintreegateway.com/data/logo.htm", DataCollector.getDeviceCollectorUrl("production"));
-        assertEquals("https://assets.braintreegateway.com/sandbox/data/logo.htm", DataCollector.getDeviceCollectorUrl("sandbox"));
-        assertEquals("https://assets.braintreegateway.com/sandbox/data/logo.htm", DataCollector.getDeviceCollectorUrl(""));
+    public void getDeviceCollectorEnvironment_returnsCorrectEnvironment() {
+        assertEquals(com.kount.api.DataCollector.ENVIRONMENT_PRODUCTION,
+                DataCollector.getDeviceCollectorEnvironment("production"));
+        assertEquals(com.kount.api.DataCollector.ENVIRONMENT_TEST,
+                DataCollector.getDeviceCollectorEnvironment("sandbox"));
     }
 
     @Test
