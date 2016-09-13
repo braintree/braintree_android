@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "authorizationFingerprint": "37eae52b03b54963769b412b97ee6e4783622c3b9090621e1469da1ff20907c6|created_at=2016-09-13T14:20:37.116898032+0000&merchant_id=dcpspy2brwdjr3qn&public_key=9wwrzqk3vr3t4nc8",
+  "configUrl": "https://api.sandbox.braintreegateway.com:443/merchants/dcpspy2brwdjr3qn/client_api/v1/configuration",
+  "environment": "sandbox",
+  "clientApiUrl": "https://api.sandbox.braintreegateway.com:443/merchants/dcpspy2brwdjr3qn/client_api"
+}

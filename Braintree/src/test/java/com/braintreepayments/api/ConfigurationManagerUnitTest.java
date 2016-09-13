@@ -11,6 +11,7 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Authorization;
+import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.TestTokenizationKey;
 
@@ -134,7 +135,7 @@ public class ConfigurationManagerUnitTest {
     @Test(timeout = 1000)
     public void getConfiguration_getsConfigFromCacheWhenTimeoutHasNotExpired() throws InterruptedException {
         writeMockConfiguration(RuntimeEnvironment.application, mTokenizationKey.getConfigUrl(),
-                stringFromFixture("configuration.json"));
+                mTokenizationKey.toString(), stringFromFixture("configuration.json"), System.currentTimeMillis());
 
         ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
             @Override
@@ -219,15 +220,47 @@ public class ConfigurationManagerUnitTest {
     }
 
     @Test(timeout = 1000)
+    public void getConfiguration_takesClientTokenParametersIntoAccountForCache()
+            throws InvalidArgumentException, InterruptedException {
+        ClientToken clientToken = (ClientToken) Authorization.fromString(
+                stringFromFixture("client_token_with_authorization_fingerprint_options.json"));
+        when(mBraintreeFragment.getAuthorization()).thenReturn(clientToken);
+        writeMockConfiguration(RuntimeEnvironment.application, clientToken.getConfigUrl(),
+                "merchant_id=dcpspy2brwdjr3qn&public_key=9wwrzqk3vr3t4nc8", stringFromFixture("configuration.json"),
+                System.currentTimeMillis());
+
+        ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                assertEquals(stringFromFixture("configuration.json"), configuration.toJson());
+                mCountDownLatch.countDown();
+            }
+        }, new BraintreeResponseListener<Exception>() {
+            @Override
+            public void onResponse(Exception e) {
+                fail(e.getMessage());
+            }
+        });
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 1000)
     public void getConfiguration_writesConfigToDiskWithValidTimestampAfterFetch() throws InterruptedException {
         stubConfigurationFromGateway(stringFromFixture("configuration.json"));
 
         ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                String key = Uri.parse(mTokenizationKey.getConfigUrl()).buildUpon()
-                        .appendQueryParameter("configVersion", "3").build().toString();
-                key = Base64.encodeToString(key.getBytes(), 0);
+                String key = Base64.encodeToString(
+                        Uri.parse(mTokenizationKey.getConfigUrl())
+                                .buildUpon()
+                                .appendQueryParameter("configVersion", "3")
+                                .build()
+                                .toString()
+                                .concat(mTokenizationKey.toString())
+                                .getBytes(),
+                        0);
 
                 assertEquals(stringFromFixture("configuration.json"),
                         getSharedPreferences(RuntimeEnvironment.application).getString(key, ""));

@@ -12,7 +12,9 @@ import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.BraintreeSharedPreferences;
+import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.models.TokenizationKey;
 
 import org.json.JSONException;
 
@@ -35,24 +37,35 @@ class ConfigurationManager {
 
     static void getConfiguration(final BraintreeFragment fragment, final @NonNull ConfigurationListener listener,
             final @NonNull BraintreeResponseListener<Exception> errorListener) {
+        String authorization = "";
+        if (fragment.getAuthorization() instanceof ClientToken) {
+            try {
+                authorization = ((ClientToken) fragment.getAuthorization()).getAuthorizationFingerprint()
+                        .split("\\|")[1]
+                        .replaceAll("created_at=.*?&", "");
+            } catch (NullPointerException | ArrayIndexOutOfBoundsException ignored) {}
+        } else if (fragment.getAuthorization() instanceof TokenizationKey) {
+            authorization = fragment.getAuthorization().toString();
+        }
+
         final String configUrl = Uri.parse(fragment.getAuthorization().getConfigUrl())
                 .buildUpon()
                 .appendQueryParameter("configVersion", "3")
                 .build()
                 .toString();
 
-        Configuration cachedConfig = getCachedConfiguration(fragment.getApplicationContext(), configUrl);
-
+        Configuration cachedConfig = getCachedConfiguration(fragment.getApplicationContext(), configUrl + authorization);
         if (cachedConfig != null) {
             listener.onConfigurationFetched(cachedConfig);
         } else {
             sFetchingConfiguration = true;
+            final String finalAuthorization = authorization;
             fragment.getHttpClient().get(configUrl, new HttpResponseCallback() {
                 @Override
                 public void success(String responseBody) {
                     try {
                         Configuration configuration = Configuration.fromJson(responseBody);
-                        cacheConfiguration(fragment.getApplicationContext(), configUrl, configuration);
+                        cacheConfiguration(fragment.getApplicationContext(), configUrl + finalAuthorization, configuration);
 
                         sFetchingConfiguration = false;
                         listener.onConfigurationFetched(configuration);
