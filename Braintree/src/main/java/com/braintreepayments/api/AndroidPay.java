@@ -1,9 +1,15 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.support.annotation.NonNull;
 
+import com.braintreepayments.api.exceptions.AndroidPayException;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
@@ -20,8 +26,6 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.identity.intents.model.CountrySpecification;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
-import com.google.android.gms.wallet.FullWalletRequest;
-import com.google.android.gms.wallet.MaskedWallet;
 import com.google.android.gms.wallet.MaskedWalletRequest;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.PaymentMethodTokenizationType;
@@ -34,14 +38,26 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static com.braintreepayments.api.AndroidPayActivity.CHANGE;
+import static com.braintreepayments.api.AndroidPayActivity.EXTRA_ALLOWED_CARD_NETWORKS;
+import static com.braintreepayments.api.AndroidPayActivity.EXTRA_ALLOWED_COUNTRIES;
+import static com.braintreepayments.api.AndroidPayActivity.EXTRA_CART;
+import static com.braintreepayments.api.AndroidPayActivity.EXTRA_ENVIRONMENT;
+import static com.braintreepayments.api.AndroidPayActivity.EXTRA_ERROR;
+import static com.braintreepayments.api.AndroidPayActivity.EXTRA_GOOGLE_TRANSACTION_ID;
+import static com.braintreepayments.api.AndroidPayActivity.EXTRA_MERCHANT_NAME;
+import static com.braintreepayments.api.AndroidPayActivity.EXTRA_PHONE_NUMBER_REQUIRED;
+import static com.braintreepayments.api.AndroidPayActivity.EXTRA_REQUEST_TYPE;
+import static com.braintreepayments.api.AndroidPayActivity.EXTRA_SHIPPING_ADDRESS_REQUIRED;
+import static com.braintreepayments.api.AndroidPayActivity.EXTRA_TOKENIZATION_PARAMETERS;
+import static com.braintreepayments.api.AndroidPayActivity.REQUEST;
+
 /**
  * Class containing Android Pay specific logic.
  */
 public class AndroidPay {
 
-    protected static final int ANDROID_PAY_MASKED_WALLET_REQUEST_CODE = 13489;
-    protected static final int ANDROID_PAY_FULL_WALLET_REQUEST_CODE = 13590;
-    protected static final int ANDROID_PAY_CHANGE_MASKED_WALLET_REQUEST = 13586;
+    protected static final int ANDROID_PAY_REQUEST_CODE = 13489;
 
     private static final String VISA_NETWORK = "visa";
     private static final String MASTERCARD_NETWORK = "mastercard";
@@ -108,8 +124,7 @@ public class AndroidPay {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                listener.onResult(getTokenizationParameters(fragment),
-                        getAllowedCardNetworks(fragment));
+                listener.onResult(getTokenizationParameters(fragment), getAllowedCardNetworks(fragment));
             }
         });
     }
@@ -136,8 +151,8 @@ public class AndroidPay {
         return parameters.build();
     }
 
-    static Collection<Integer> getAllowedCardNetworks(BraintreeFragment fragment) {
-        Collection<Integer> allowedNetworks = new ArrayList<>();
+    static ArrayList<Integer> getAllowedCardNetworks(BraintreeFragment fragment) {
+        ArrayList<Integer> allowedNetworks = new ArrayList<>();
         for (String network : fragment.getConfiguration().getAndroidPay().getSupportedNetworks()) {
             switch (network) {
                 case VISA_NETWORK:
@@ -191,13 +206,18 @@ public class AndroidPay {
      * @param shippingAddressRequired {@code true} if this request requires a shipping address, {@code false} otherwise.
      * @param phoneNumberRequired {@code true} if this request requires a phone number, {@code false} otherwise.
      * @param allowedCountries ISO 3166-2 country codes that shipping is allowed to.
-     * @param requestCode The requestCode to use with {@link Activity#startActivityForResult(Intent, int)}
      */
-    static void performMaskedWalletRequest(final BraintreeFragment fragment, final @NonNull Cart cart,
+    public static void requestAndroidPay(final BraintreeFragment fragment, final @NonNull Cart cart,
             final boolean shippingAddressRequired, final boolean phoneNumberRequired,
-            final Collection<CountrySpecification> allowedCountries,
-            final int requestCode) {
+            final ArrayList<CountrySpecification> allowedCountries) {
         fragment.sendAnalyticsEvent("android-pay.selected");
+
+        if (!validateManifest(fragment.getApplicationContext())) {
+            fragment.postCallback(new BraintreeException("AndroidPayActivity was not found in the Android manifest, " +
+                    "or did not have a theme of R.style.bt_transparent_activity"));
+            fragment.sendAnalyticsEvent("android-pay.failed");
+            return;
+        }
 
         if (cart == null) {
             fragment.postCallback(new BraintreeException("Cannot pass null cart to performMaskedWalletRequest"));
@@ -208,83 +228,66 @@ public class AndroidPay {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                MaskedWalletRequest.Builder maskedWalletRequestBuilder =
-                        MaskedWalletRequest.newBuilder()
-                                .setMerchantName(getMerchantName(configuration.getAndroidPay()))
-                                .setCurrencyCode(cart.getCurrencyCode())
-                                .setCart(cart)
-                                .setEstimatedTotalPrice(cart.getTotalPrice())
-                                .setShippingAddressRequired(shippingAddressRequired)
-                                .setPhoneNumberRequired(phoneNumberRequired)
-                                .setPaymentMethodTokenizationParameters(
-                                        getTokenizationParameters(fragment))
-                                .addAllowedCardNetworks(getAllowedCardNetworks(fragment))
-                                .addAllowedCountrySpecificationsForShipping(allowedCountries);
-
-                Wallet.Payments.loadMaskedWallet(fragment.getGoogleApiClient(),
-                        maskedWalletRequestBuilder.build(), requestCode);
-
                 fragment.sendAnalyticsEvent("android-pay.started");
+
+                Intent intent = new Intent(fragment.getApplicationContext(), AndroidPayActivity.class)
+                        .putExtra(EXTRA_ENVIRONMENT, getEnvironment(configuration.getAndroidPay()))
+                        .putExtra(EXTRA_MERCHANT_NAME, configuration.getAndroidPay().getDisplayName())
+                        .putExtra(EXTRA_CART, cart)
+                        .putExtra(EXTRA_TOKENIZATION_PARAMETERS, getTokenizationParameters(fragment))
+                        .putIntegerArrayListExtra(EXTRA_ALLOWED_CARD_NETWORKS, getAllowedCardNetworks(fragment))
+                        .putExtra(EXTRA_SHIPPING_ADDRESS_REQUIRED, shippingAddressRequired)
+                        .putExtra(EXTRA_PHONE_NUMBER_REQUIRED, phoneNumberRequired)
+                        .putParcelableArrayListExtra(EXTRA_ALLOWED_COUNTRIES, allowedCountries)
+                        .putExtra(EXTRA_REQUEST_TYPE, REQUEST);
+                fragment.startActivityForResult(intent, ANDROID_PAY_REQUEST_CODE);
             }
         });
     }
 
     /**
-     * Perform a change masked wallet request. This will allow the user to change the backing card and other information
+     * Performs a change masked wallet request. This will allow the user to change the backing card and other information
      * associated with the payment method.
      *
-     * @param fragment The current {@link BraintreeFragment} through which the callbacks should be forwarded
-     * @param androidPayCardNonce the {@link AndroidPayCardNonce} to update
+     * @param fragment The current {@link BraintreeFragment}.
+     * @param androidPayCardNonce the {@link AndroidPayCardNonce} to update.
      */
-    static void performChangeMaskedWalletRequest(final BraintreeFragment fragment,
+    public static void changePaymentMethod(final BraintreeFragment fragment,
             final AndroidPayCardNonce androidPayCardNonce) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                Wallet.Payments.changeMaskedWallet(fragment.getGoogleApiClient(),
-                        androidPayCardNonce.getGoogleTransactionId(), null, ANDROID_PAY_CHANGE_MASKED_WALLET_REQUEST);
+                fragment.sendAnalyticsEvent("android-pay.change-masked-wallet");
+
+                Intent intent = new Intent(fragment.getApplicationContext(), AndroidPayActivity.class)
+                        .putExtra(EXTRA_ENVIRONMENT, getEnvironment(configuration.getAndroidPay()))
+                        .putExtra(EXTRA_GOOGLE_TRANSACTION_ID, androidPayCardNonce.getGoogleTransactionId())
+                        .putExtra(EXTRA_REQUEST_TYPE, CHANGE);
+                fragment.startActivityForResult(intent, ANDROID_PAY_REQUEST_CODE);
             }
         });
     }
 
-    /**
-     * Perform a full wallet request. This can only be done after a masked wallet request has been
-     * made.
-     *
-     * @param fragment The current {@link BraintreeFragment} through which the callbacks should be forwarded
-     * @param cart The {@link Cart} that was used to create the MaskedWalletRequest
-     * @param googleTransactionId The transaction id from the {@link MaskedWallet}.
-     */
-    static void performFullWalletRequest(final BraintreeFragment fragment, final Cart cart,
-            final String googleTransactionId) {
-        fragment.waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                FullWalletRequest.Builder fullWalletRequestBuilder = FullWalletRequest.newBuilder()
-                        .setCart(cart)
-                        .setGoogleTransactionId(googleTransactionId);
-
-                Wallet.Payments.loadFullWallet(fragment.getGoogleApiClient(), fullWalletRequestBuilder.build(),
-                        ANDROID_PAY_FULL_WALLET_REQUEST_CODE);
-            }
-        });
-    }
-
-    static void onActivityResult(BraintreeFragment fragment, Cart cart, int resultCode, Intent data) {
+    static void onActivityResult(BraintreeFragment fragment, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            if (data.hasExtra(WalletConstants.EXTRA_MASKED_WALLET)) {
+            if (data.hasExtra(WalletConstants.EXTRA_FULL_WALLET)) {
                 fragment.sendAnalyticsEvent("android-pay.authorized");
-                String googleTransactionId =
-                        ((MaskedWallet) data.getParcelableExtra(WalletConstants.EXTRA_MASKED_WALLET))
-                        .getGoogleTransactionId();
-                performFullWalletRequest(fragment, cart, googleTransactionId);
-            } else if (data.hasExtra(WalletConstants.EXTRA_FULL_WALLET)) {
-                tokenize(fragment,
-                        (FullWallet) data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET));
+                tokenize(fragment, (FullWallet) data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET));
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
             fragment.sendAnalyticsEvent("android-pay.canceled");
         } else {
+            if (data != null) {
+                if (data.hasExtra(EXTRA_ERROR)) {
+                    fragment.postCallback(new AndroidPayException(data.getStringExtra(EXTRA_ERROR)));
+                } else {
+                    fragment.postCallback(new AndroidPayException("Android Pay error code: " +
+                            data.getIntExtra(WalletConstants.EXTRA_ERROR_CODE, -1) +
+                            " see https://developers.google.com/android/reference/com/google/android/gms/wallet/WalletConstants " +
+                            "for more details"));
+                }
+            }
+
             fragment.sendAnalyticsEvent("android-pay.failed");
         }
     }
@@ -297,11 +300,23 @@ public class AndroidPay {
         }
     }
 
-    private static String getMerchantName(AndroidPayConfiguration configuration) {
-        if (configuration.getDisplayName() != null) {
-            return configuration.getDisplayName();
-        } else {
-            return "";
+    private static boolean validateManifest(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager()
+                    .getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES);
+            ActivityInfo[] activities = packageInfo.activities;
+            if (activities != null) {
+                for (ActivityInfo activityInfo : activities) {
+                    if (activityInfo.name.equals(AndroidPayActivity.class.getName()) &&
+                            activityInfo.getThemeResource() == R.style.bt_transparent_activity) {
+                        return true;
+                    }
+                }
+            }
+        } catch (NameNotFoundException e) {
+            return false;
         }
+
+        return false;
     }
 }

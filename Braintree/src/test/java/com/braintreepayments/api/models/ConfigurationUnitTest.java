@@ -147,7 +147,7 @@ public class ConfigurationUnitTest {
 
         assertNotNull(configuration.getAndroidPay());
         assertFalse(configuration.getAndroidPay().isEnabled(null));
-        assertNull(configuration.getAndroidPay().getDisplayName());
+        assertEquals("", configuration.getAndroidPay().getDisplayName());
         assertNull(configuration.getAndroidPay().getEnvironment());
     }
 

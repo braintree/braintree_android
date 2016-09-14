@@ -43,7 +43,7 @@ public class AndroidPayConfiguration {
         androidPayConfiguration.mGoogleAuthorizationFingerprint = json.optString(
                 GOOGLE_AUTHORIZATION_FINGERPRINT_KEY, null);
         androidPayConfiguration.mEnvironment = json.optString(ENVIRONMENT_KEY, null);
-        androidPayConfiguration.mDisplayName = json.optString(DISPLAY_NAME_KEY, null);
+        androidPayConfiguration.mDisplayName = json.optString(DISPLAY_NAME_KEY, "");
 
         JSONArray supportedNetworks = json.optJSONArray(SUPPORTED_NETWORKS_KEY);
         if (supportedNetworks != null) {
@@ -66,9 +66,8 @@ public class AndroidPayConfiguration {
      */
     public boolean isEnabled(Context context) {
         try {
-            return mEnabled &&
-                    GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) ==
-                            ConnectionResult.SUCCESS;
+            return mEnabled && GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) ==
+                    ConnectionResult.SUCCESS;
         } catch (NoClassDefFoundError e) {
             return false;
         }

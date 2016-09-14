@@ -23,10 +23,9 @@ public class AndroidPayConfigurationTest {
 
     @Test(timeout = 1000)
     public void parsesAndroidPayConfigurationFromToken() throws JSONException {
-        Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_android_pay.json"));
-
         failIfNotGooglePlayServicesDevice();
+
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_android_pay.json"));
 
         AndroidPayConfiguration androidPayConfiguration = configuration.getAndroidPay();
 
@@ -42,10 +41,10 @@ public class AndroidPayConfigurationTest {
 
     @Test(timeout = 1000)
     public void fromJson_parsesConfiguration() throws JSONException {
+        failIfNotGooglePlayServicesDevice();
+
         JSONObject json = new JSONObject(stringFromFixture("configuration_with_android_pay.json"))
                 .getJSONObject("androidPay");
-
-        failIfNotGooglePlayServicesDevice();
 
         AndroidPayConfiguration androidPayConfiguration = AndroidPayConfiguration.fromJson(json);
 
@@ -63,11 +62,9 @@ public class AndroidPayConfigurationTest {
     public void fromJson_returnsNewAndroidPayConfigurationWithDefaultValuesWhenJSONObjectIsNull() {
         AndroidPayConfiguration androidPayConfiguration = AndroidPayConfiguration.fromJson(null);
 
-        failIfNotGooglePlayServicesDevice();
-
         assertFalse(androidPayConfiguration.isEnabled(getTargetContext()));
         assertNull(androidPayConfiguration.getGoogleAuthorizationFingerprint());
-        assertNull(androidPayConfiguration.getDisplayName());
+        assertEquals("", androidPayConfiguration.getDisplayName());
         assertNull(androidPayConfiguration.getEnvironment());
         assertEquals(0, androidPayConfiguration.getSupportedNetworks().length);
     }
@@ -76,18 +73,16 @@ public class AndroidPayConfigurationTest {
     public void fromJson_returnsNewAndroidPayConfigurationWithDefaultValuesWhenNoDataIsPresent() {
         AndroidPayConfiguration androidPayConfiguration = AndroidPayConfiguration.fromJson(new JSONObject());
 
-        failIfNotGooglePlayServicesDevice();
-
         assertFalse(androidPayConfiguration.isEnabled(getTargetContext()));
         assertNull(androidPayConfiguration.getGoogleAuthorizationFingerprint());
-        assertNull(androidPayConfiguration.getDisplayName());
+        assertEquals("", androidPayConfiguration.getDisplayName());
         assertNull(androidPayConfiguration.getEnvironment());
         assertEquals(0, androidPayConfiguration.getSupportedNetworks().length);
     }
 
-    public static void failIfNotGooglePlayServicesDevice(){
-        if(GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getTargetContext()) !=
-                ConnectionResult.SUCCESS){
+    private static void failIfNotGooglePlayServicesDevice(){
+        if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getTargetContext()) !=
+                ConnectionResult.SUCCESS) {
             fail("Not using a Google Play Services device.");
         }
     }

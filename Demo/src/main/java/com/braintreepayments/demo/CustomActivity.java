@@ -22,7 +22,6 @@ import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
-import com.braintreepayments.api.interfaces.TokenizationParametersListener;
 import com.braintreepayments.api.interfaces.UnionPayListener;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.Configuration;
@@ -35,18 +34,10 @@ import com.braintreepayments.cardform.OnCardFormSubmitListener;
 import com.braintreepayments.cardform.utils.CardType;
 import com.braintreepayments.cardform.view.CardEditText;
 import com.braintreepayments.cardform.view.CardForm;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.identity.intents.model.CountrySpecification;
 import com.google.android.gms.wallet.Cart;
-import com.google.android.gms.wallet.FullWallet;
-import com.google.android.gms.wallet.FullWalletRequest;
-import com.google.android.gms.wallet.MaskedWallet;
-import com.google.android.gms.wallet.MaskedWalletRequest;
-import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
-import com.google.android.gms.wallet.Wallet;
-import com.google.android.gms.wallet.WalletConstants;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
 
 import static android.view.View.GONE;
@@ -59,11 +50,7 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     private static final String EXTRA_UNIONPAY = "com.braintreepayments.demo.EXTRA_UNIONPAY";
     private static final String EXTRA_UNIONPAY_ENROLLMENT_ID = "com.braintreepayments.demo.EXTRA_UNIONPAY_ENROLLMENT_ID";
 
-    private static final int ANDROID_PAY_MASKED_WALLET_REQUEST_CODE = 1;
-    private static final int ANDROID_PAY_FULL_WALLET_REQUEST_CODE = 2;
-
     private Configuration mConfiguration;
-    private GoogleApiClient mGoogleApiClient;
     private Cart mCart;
     private String mDeviceData;
     private boolean mIsUnionPay;
@@ -273,40 +260,13 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     public void launchAndroidPay(View v) {
         setProgressBarIndeterminateVisibility(true);
 
-        mBraintreeFragment.getGoogleApiClient(new BraintreeResponseListener<GoogleApiClient>() {
-            @Override
-            public void onResponse(GoogleApiClient googleApiClient) {
-                mGoogleApiClient = googleApiClient;
-                requestAndroidPayMaskedWallet();
-            }
-        });
-    }
+        ArrayList<CountrySpecification> allowedCountries = new ArrayList<>();
+        for (String country : Settings.getAndroidPayAllowedCountriesForShipping(this)) {
+            allowedCountries.add(new CountrySpecification(country));
+        }
 
-    private void requestAndroidPayMaskedWallet() {
-        AndroidPay.getTokenizationParameters(mBraintreeFragment, new TokenizationParametersListener() {
-            @Override
-            public void onResult(PaymentMethodTokenizationParameters parameters,
-                    Collection<Integer> allowedCardNetworks) {
-                MaskedWalletRequest.Builder maskedWalletRequestBuilder =
-                        MaskedWalletRequest.newBuilder()
-                                .setMerchantName("Braintree")
-                                .setCurrencyCode(mCart.getCurrencyCode())
-                                .setCart(mCart)
-                                .setEstimatedTotalPrice(mCart.getTotalPrice())
-                                .setShippingAddressRequired(Settings.isAndroidPayShippingAddressRequired(CustomActivity.this))
-                                .setPhoneNumberRequired(Settings.isAndroidPayPhoneNumberRequired(CustomActivity.this))
-                                .setPaymentMethodTokenizationParameters(parameters)
-                                .addAllowedCardNetworks(allowedCardNetworks);
-
-                for (String country : Settings.getAndroidPayAllowedCountriesForShipping(CustomActivity.this)) {
-                    maskedWalletRequestBuilder.addAllowedCountrySpecificationForShipping(
-                            new CountrySpecification(country));
-                }
-
-                Wallet.Payments.loadMaskedWallet(mGoogleApiClient, maskedWalletRequestBuilder.build(),
-                        ANDROID_PAY_MASKED_WALLET_REQUEST_CODE);
-            }
-        });
+        AndroidPay.requestAndroidPay(mBraintreeFragment, mCart, Settings.isAndroidPayShippingAddressRequired(this),
+                Settings.isAndroidPayPhoneNumberRequired(this), allowedCountries);
     }
 
     public void onPurchase(View v) {
@@ -358,38 +318,5 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     public void onError(Exception error) {
         super.onError(error);
         setProgressBarIndeterminateVisibility(false);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK) {
-            if (requestCode == ANDROID_PAY_MASKED_WALLET_REQUEST_CODE) {
-                String googleTransactionId =
-                        ((MaskedWallet) data.getParcelableExtra(WalletConstants.EXTRA_MASKED_WALLET))
-                                .getGoogleTransactionId();
-                FullWalletRequest fullWalletRequest = FullWalletRequest.newBuilder()
-                        .setGoogleTransactionId(googleTransactionId)
-                        .setCart(mCart)
-                        .build();
-
-                Wallet.Payments.loadFullWallet(mGoogleApiClient, fullWalletRequest,
-                        ANDROID_PAY_FULL_WALLET_REQUEST_CODE);
-            } else if (requestCode == ANDROID_PAY_FULL_WALLET_REQUEST_CODE) {
-                AndroidPay.tokenize(mBraintreeFragment,
-                        (FullWallet) data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET));
-            }
-        } else if (resultCode == RESULT_CANCELED) {
-            onCancel(requestCode);
-        } else {
-            int errorCode = -1;
-            if (data != null) {
-                errorCode = data.getIntExtra(WalletConstants.EXTRA_ERROR_CODE, -1);
-            }
-
-            onError(new Exception("Request Code: " + requestCode + " Result Code: " + resultCode +
-                    " Error Code: " + errorCode));
-        }
     }
 }
