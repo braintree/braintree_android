@@ -14,6 +14,7 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
+import com.braintreepayments.api.interfaces.UnionPayListener;
 import com.braintreepayments.api.internal.AnalyticsDatabase;
 import com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils;
 import com.braintreepayments.api.internal.AnalyticsIntentService;
@@ -23,8 +24,9 @@ import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.test.UnitTestListenerActivity;
+import com.braintreepayments.api.models.UnionPayCapabilities;
 import com.braintreepayments.api.test.FragmentTestActivity;
+import com.braintreepayments.api.test.UnitTestListenerActivity;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 
 import org.json.JSONException;
@@ -509,6 +511,71 @@ public class BraintreeFragmentUnitTest {
 
         fragment.postCallback(new Exception());
         fragment.postCallback(new ErrorWithResponse(400, ""));
+    }
+
+    @Test
+    public void addAndRemoveListenersAddAndRemoveAllListeners() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        ConfigurationListener configurationListener = new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {}
+        };
+        BraintreeErrorListener braintreeErrorListener = new BraintreeErrorListener() {
+            @Override
+            public void onError(Exception error) {}
+        };
+        PaymentMethodNoncesUpdatedListener paymentMethodNoncesUpdatedListener = new PaymentMethodNoncesUpdatedListener() {
+            @Override
+            public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {}
+        };
+        PaymentMethodNonceCreatedListener paymentMethodNonceCreatedListener = new PaymentMethodNonceCreatedListener() {
+            @Override
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {}
+        };
+        BraintreeCancelListener braintreeCancelListener = new BraintreeCancelListener() {
+            @Override
+            public void onCancel(int requestCode) {}
+        };
+        UnionPayListener unionPayListener = new UnionPayListener() {
+            @Override
+            public void onCapabilitiesFetched(UnionPayCapabilities capabilities) {}
+
+            @Override
+            public void onSmsCodeSent(String enrollmentId, boolean smsCodeRequired) {}
+        };
+
+        fragment.addListener(configurationListener);
+        fragment.addListener(braintreeErrorListener);
+        fragment.addListener(paymentMethodNoncesUpdatedListener);
+        fragment.addListener(paymentMethodNonceCreatedListener);
+        fragment.addListener(braintreeCancelListener);
+        fragment.addListener(unionPayListener);
+
+        assertEquals(6, fragment.getListeners().size());
+
+        fragment.removeListener(configurationListener);
+        fragment.removeListener(braintreeErrorListener);
+        fragment.removeListener(paymentMethodNoncesUpdatedListener);
+        fragment.removeListener(paymentMethodNonceCreatedListener);
+        fragment.removeListener(braintreeCancelListener);
+        fragment.removeListener(unionPayListener);
+
+        assertEquals(0, fragment.getListeners().size());
+    }
+
+    @Test
+    public void getListeners_isEmptyWhenNoListenersAreSet() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+
+        assertEquals(0, fragment.getListeners().size());
+    }
+
+    @Test
+    public void getListeners_returnsAllListeners() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(
+                Robolectric.setupActivity(UnitTestListenerActivity.class), TOKENIZATION_KEY);
+
+        assertEquals(6, fragment.getListeners().size());
     }
 
     @Test

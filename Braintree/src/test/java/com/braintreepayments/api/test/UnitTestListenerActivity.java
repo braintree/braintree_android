@@ -2,12 +2,17 @@ package com.braintreepayments.api.test;
 
 import android.app.Activity;
 
+import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
+import com.braintreepayments.api.interfaces.UnionPayListener;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.UnionPayCapabilities;
+
+import org.apache.tools.ant.types.resources.Union;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +22,8 @@ import java.util.List;
  * for testing.
  */
 public class UnitTestListenerActivity extends Activity implements PaymentMethodNonceCreatedListener,
-        PaymentMethodNoncesUpdatedListener, BraintreeErrorListener, ConfigurationListener {
+        PaymentMethodNoncesUpdatedListener, BraintreeErrorListener, ConfigurationListener, BraintreeCancelListener,
+        UnionPayListener {
 
     public final List<Configuration> configurations = new ArrayList<>();
 
@@ -34,4 +40,13 @@ public class UnitTestListenerActivity extends Activity implements PaymentMethodN
 
     @Override
     public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {}
+
+    @Override
+    public void onCancel(int requestCode) {}
+
+    @Override
+    public void onCapabilitiesFetched(UnionPayCapabilities capabilities) {}
+
+    @Override
+    public void onSmsCodeSent(String enrollmentId, boolean smsCodeRequired) {}
 }

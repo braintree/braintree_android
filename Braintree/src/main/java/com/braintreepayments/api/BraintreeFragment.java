@@ -405,6 +405,43 @@ public class BraintreeFragment extends Fragment {
         if (listener instanceof BraintreeErrorListener) {
             mErrorListener = null;
         }
+
+        if (listener instanceof UnionPayListener) {
+            mUnionPayListener = null;
+        }
+    }
+
+    /**
+     * @return {@link ArrayList<BraintreeListener>} of the currently attached listeners
+     */
+    public List<BraintreeListener> getListeners() {
+        List<BraintreeListener> listeners = new ArrayList<>();
+
+        if (mConfigurationListener != null) {
+            listeners.add(mConfigurationListener);
+        }
+
+        if (mCancelListener != null) {
+            listeners.add(mCancelListener);
+        }
+
+        if (mPaymentMethodNoncesUpdatedListener != null) {
+            listeners.add(mPaymentMethodNoncesUpdatedListener);
+        }
+
+        if (mPaymentMethodNonceCreatedListener != null) {
+            listeners.add(mPaymentMethodNonceCreatedListener);
+        }
+
+        if (mErrorListener != null) {
+            listeners.add(mErrorListener);
+        }
+
+        if (mUnionPayListener != null) {
+            listeners.add(mUnionPayListener);
+        }
+
+        return listeners;
     }
 
     /**
