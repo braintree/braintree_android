@@ -220,13 +220,13 @@ public class ConfigurationManagerUnitTest {
     }
 
     @Test(timeout = 1000)
-    public void getConfiguration_takesClientTokenParametersIntoAccountForCache()
+    public void getConfiguration_takesClientTokenIntoAccountForCache()
             throws InvalidArgumentException, InterruptedException {
         ClientToken clientToken = (ClientToken) Authorization.fromString(
                 stringFromFixture("client_token_with_authorization_fingerprint_options.json"));
         when(mBraintreeFragment.getAuthorization()).thenReturn(clientToken);
         writeMockConfiguration(RuntimeEnvironment.application, clientToken.getConfigUrl(),
-                "merchant_id=dcpspy2brwdjr3qn&public_key=9wwrzqk3vr3t4nc8", stringFromFixture("configuration.json"),
+                clientToken.getAuthorizationFingerprint(), stringFromFixture("configuration.json"),
                 System.currentTimeMillis());
 
         ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {

@@ -37,15 +37,13 @@ class ConfigurationManager {
 
     static void getConfiguration(final BraintreeFragment fragment, final @NonNull ConfigurationListener listener,
             final @NonNull BraintreeResponseListener<Exception> errorListener) {
-        String authorization = "";
+        final String authorization;
         if (fragment.getAuthorization() instanceof ClientToken) {
-            try {
-                authorization = ((ClientToken) fragment.getAuthorization()).getAuthorizationFingerprint()
-                        .split("\\|")[1]
-                        .replaceAll("created_at=.*?&", "");
-            } catch (NullPointerException | ArrayIndexOutOfBoundsException ignored) {}
+            authorization = ((ClientToken) fragment.getAuthorization()).getAuthorizationFingerprint();
         } else if (fragment.getAuthorization() instanceof TokenizationKey) {
             authorization = fragment.getAuthorization().toString();
+        } else {
+            authorization = "";
         }
 
         final String configUrl = Uri.parse(fragment.getAuthorization().getConfigUrl())
@@ -59,13 +57,12 @@ class ConfigurationManager {
             listener.onConfigurationFetched(cachedConfig);
         } else {
             sFetchingConfiguration = true;
-            final String finalAuthorization = authorization;
             fragment.getHttpClient().get(configUrl, new HttpResponseCallback() {
                 @Override
                 public void success(String responseBody) {
                     try {
                         Configuration configuration = Configuration.fromJson(responseBody);
-                        cacheConfiguration(fragment.getApplicationContext(), configUrl + finalAuthorization, configuration);
+                        cacheConfiguration(fragment.getApplicationContext(), configUrl + authorization, configuration);
 
                         sFetchingConfiguration = false;
                         listener.onConfigurationFetched(configuration);
