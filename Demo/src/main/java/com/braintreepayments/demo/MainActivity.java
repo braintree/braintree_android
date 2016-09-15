@@ -45,6 +45,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
     private static final int DROP_IN_REQUEST = 100;
     private static final int CUSTOM_REQUEST = 200;
     private static final int PAYPAL_REQUEST = 300;
+    private static final int VISA_CHECKOUT_REQUEST = 400;
 
     private static final String KEY_NONCE = "nonce";
 
@@ -58,6 +59,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
 
     private Button mDropInButton;
     private Button mPayPalButton;
+    private Button mVisaCheckoutButton;
     private Button mCustomButton;
     private Button mCreateTransactionButton;
     private ProgressDialog mLoading;
@@ -74,6 +76,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
 
         mDropInButton = (Button) findViewById(R.id.drop_in);
         mPayPalButton = (Button) findViewById(R.id.paypal);
+        mVisaCheckoutButton = (Button) findViewById(R.id.visa_checkout);
         mCustomButton = (Button) findViewById(R.id.custom);
         mCreateTransactionButton = (Button) findViewById(R.id.create_transaction);
 
@@ -100,6 +103,11 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
         Intent intent = new Intent(this, PayPalActivity.class)
                 .putExtra(EXTRA_COLLECT_DEVICE_DATA, Settings.shouldCollectDeviceData(this));
         startActivityForResult(intent, PAYPAL_REQUEST);
+    }
+
+    public void launchVisaCheckout(View v) {
+        Intent intent = new Intent(this, VisaCheckoutActivity.class);
+        startActivityForResult(intent, VISA_CHECKOUT_REQUEST);
     }
 
     public void launchCustom(View v) {
@@ -293,6 +301,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
     private void enableButtons(boolean enable) {
         mDropInButton.setEnabled(enable);
         mPayPalButton.setEnabled(enable);
+        mVisaCheckoutButton.setEnabled(enable);
         mCustomButton.setEnabled(enable);
     }
 

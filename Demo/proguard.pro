@@ -8,3 +8,6 @@
 
 # Mailable_Log
 -dontwarn ch.qos.logback.core.net.**
+
+# Visa Checkout
+-keepattributes EnclosingMethod

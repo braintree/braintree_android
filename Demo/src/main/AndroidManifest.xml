@@ -6,7 +6,6 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/DemoAppTheme"
-        android:allowBackup="true"
         android:name=".DemoApplication">
 
         <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true" />
@@ -22,6 +21,7 @@
         <activity android:name=".CustomActivity" android:label="@string/buy" />
         <activity android:name=".CreateTransactionActivity" />
         <activity android:name=".PayPalActivity" android:label="@string/paypal" />
+        <activity android:name=".VisaCheckoutActivity" android:label="@string/visa_checkout_button" />
 
         <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
             android:launchMode="singleTask">

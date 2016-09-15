@@ -37,6 +37,14 @@
             android:enabled="false" />
 
         <Button
+            android:id="@+id/visa_checkout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/visa_checkout_button"
+            android:onClick="launchVisaCheckout"
+            android:enabled="false" />
+
+        <Button
             android:id="@+id/create_transaction"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
