@@ -9,6 +9,7 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.visa.checkout.VisaLibrary;
 import com.visa.checkout.VisaMcomLibrary;
 import com.visa.checkout.VisaMerchantInfo;
 import com.visa.checkout.VisaPaymentInfo;
@@ -41,8 +42,7 @@ public class VisaCheckout {
                 }
 
                 visaMerchantInfo.setMerchantApiKey("SNNBESUFWC5EEDCQYAE513SbyYkeVDWiEGSWOnOugTCi96fxY");
-                visaMerchantInfo.setAcceptedBillingRegions(null);
-                visaMerchantInfo.setAcceptedCardBrands(null);
+                visaMerchantInfo.setDisplayName("Braintree");
                 visaPaymentInfo.setVisaMerchantInfo(visaMerchantInfo);
 
                 // Start Visa Payment Activity
@@ -50,8 +50,9 @@ public class VisaCheckout {
 
                 VisaEnvironmentConfig visaEnvironmentConfig = VisaEnvironmentConfig.SANDBOX;
                 visaEnvironmentConfig.setMerchantApiKey("SNNBESUFWC5EEDCQYAE513SbyYkeVDWiEGSWOnOugTCi96fxY");
+                visaEnvironmentConfig.setVisaCheckoutRequestCode(VISA_CHECKOUT_REQUEST_CODE);
 
-                VisaMcomLibrary visaMcomLibrary = VisaMcomLibrary.getLibrary(braintreeFragment.getApplicationContext(),
+                VisaMcomLibrary visaMcomLibrary = VisaMcomLibrary.getLibrary(braintreeFragment.getActivity(),
                         visaEnvironmentConfig);
 
                 // Problem! They start their own activity
@@ -63,7 +64,7 @@ public class VisaCheckout {
 
     protected static void onActivityResult(BraintreeFragment braintreeFragment, int resultCode, Intent data) {
         // Process data
-        VisaPaymentSummary visaPaymentSummary = null;
+        VisaPaymentSummary visaPaymentSummary = data.getParcelableExtra(VisaLibrary.PAYMENT_SUMMARY);
         tokenize(braintreeFragment, visaPaymentSummary);
     }
 

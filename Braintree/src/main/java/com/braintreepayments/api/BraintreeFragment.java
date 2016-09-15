@@ -341,7 +341,7 @@ public class BraintreeFragment extends Fragment {
             case AndroidPay.ANDROID_PAY_REQUEST_CODE:
                 AndroidPay.onActivityResult(this, resultCode, data);
                 break;
-            case 100:
+            case VisaCheckout.VISA_CHECKOUT_REQUEST_CODE:
                 VisaCheckout.onActivityResult(this, resultCode, data);
                 break;
         }
