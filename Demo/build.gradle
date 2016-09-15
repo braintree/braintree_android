@@ -88,3 +88,25 @@ dependencies {
     testCompile project(path: ':TestUtils', configuration: 'unitTestDebug')
     androidTestCompile 'com.github.lkorth:device-automator:a4bdf68dc7'
 }
+
+task demoApkSize<<{
+  def apkDir = fileTree('./build/outputs/apk')
+  def apks = apkDir.matching {
+    include '*.apk'
+    exclude '*unaligned*'
+  }
+  apks.visit { apk ->
+    def apkName = apk.getName()
+    def mb = apk.getSize() / 1024 / 1000
+    mb = mb.setScale(2, BigDecimal.ROUND_UP)
+    println "Size of ${apkName} is ${mb} MB"
+  }
+}
+demoApkSize.group = 'Braintree'
+demoApkSize.description = 'Prints the current size of the Demo apk'
+
+project.tasks.findAll {
+  if (it.name.startsWith('assemble')) {
+    it.finalizedBy demoApkSize
+  }
+}
