@@ -15,6 +15,7 @@ import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.PayPalOverrides;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
+import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.Configuration;
@@ -122,7 +123,12 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
     @Override
     public void onConfigurationFetched(Configuration configuration) {
         if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {
-            mDeviceData = DataCollector.collectDeviceData(mBraintreeFragment);
+            DataCollector.collectDeviceData(mBraintreeFragment, new BraintreeResponseListener<String>() {
+                @Override
+                public void onResponse(String deviceData) {
+                    mDeviceData = deviceData;
+                }
+            });
         }
     }
 

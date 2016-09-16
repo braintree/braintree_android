@@ -89,7 +89,12 @@ public class PaymentButtonActivity extends BaseActivity implements Configuration
     @Override
     public void onConfigurationFetched(Configuration configuration) {
         if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {
-            mDeviceData = DataCollector.collectDeviceData(mBraintreeFragment);
+            DataCollector.collectDeviceData(mBraintreeFragment, new BraintreeResponseListener<String>() {
+                @Override
+                public void onResponse(String deviceData) {
+                    mDeviceData = deviceData;
+                }
+            });
         }
     }
 
