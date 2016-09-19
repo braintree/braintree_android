@@ -87,3 +87,7 @@ allprojects {
         versionName = version
     }
 }
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
