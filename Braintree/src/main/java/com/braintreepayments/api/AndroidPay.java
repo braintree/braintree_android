@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.support.annotation.NonNull;
 
 import com.braintreepayments.api.exceptions.AndroidPayException;
@@ -15,6 +12,7 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.TokenizationParametersListener;
+import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.Configuration;
@@ -301,22 +299,7 @@ public class AndroidPay {
     }
 
     private static boolean validateManifest(Context context) {
-        try {
-            PackageInfo packageInfo = context.getPackageManager()
-                    .getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES);
-            ActivityInfo[] activities = packageInfo.activities;
-            if (activities != null) {
-                for (ActivityInfo activityInfo : activities) {
-                    if (activityInfo.name.equals(AndroidPayActivity.class.getName()) &&
-                            activityInfo.getThemeResource() == R.style.bt_transparent_activity) {
-                        return true;
-                    }
-                }
-            }
-        } catch (NameNotFoundException e) {
-            return false;
-        }
-
-        return false;
+        ActivityInfo activityInfo = ManifestValidator.getActivityInfo(context, AndroidPayActivity.class);
+        return activityInfo != null && activityInfo.getThemeResource() == R.style.bt_transparent_activity;
     }
 }
