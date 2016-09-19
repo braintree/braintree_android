@@ -2,7 +2,6 @@ package com.braintreepayments.lint;
 
 import com.android.annotations.NonNull;
 import com.android.annotations.Nullable;
-import com.android.tools.lint.client.api.JavaParser.ResolvedClass;
 import com.android.tools.lint.detector.api.Category;
 import com.android.tools.lint.detector.api.Detector;
 import com.android.tools.lint.detector.api.Detector.JavaScanner;
@@ -18,7 +17,6 @@ import java.util.Collections;
 import java.util.List;
 
 import lombok.ast.AstVisitor;
-import lombok.ast.ClassDeclaration;
 import lombok.ast.MethodInvocation;
 import lombok.ast.Node;
 
@@ -81,10 +79,5 @@ public class BetaDetector extends Detector implements JavaScanner {
     @Override
     public List<String> applicableSuperClasses() {
         return null;
-    }
-
-    @Override
-    public void checkClass(@NonNull JavaContext context, @NonNull ClassDeclaration node,
-            @NonNull ResolvedClass resolvedClass) {
     }
 }
