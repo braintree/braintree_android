@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.api.AndroidPayActivity.CHANGE;
+import static com.braintreepayments.api.AndroidPayActivity.CHANGE_PAYMENT_METHOD;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_ALLOWED_CARD_NETWORKS;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_ALLOWED_COUNTRIES;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_CART;
@@ -54,7 +54,7 @@ import static com.braintreepayments.api.AndroidPayActivity.EXTRA_PHONE_NUMBER_RE
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_REQUEST_TYPE;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_SHIPPING_ADDRESS_REQUIRED;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_TOKENIZATION_PARAMETERS;
-import static com.braintreepayments.api.AndroidPayActivity.REQUEST;
+import static com.braintreepayments.api.AndroidPayActivity.AUTHORIZE;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
@@ -241,7 +241,7 @@ public class AndroidPayTest {
         verify(fragment).startActivityForResult(captor.capture(), eq(AndroidPay.ANDROID_PAY_REQUEST_CODE));
         Intent intent = captor.getValue();
         assertEquals(AndroidPayActivity.class.getName(), intent.getComponent().getClassName());
-        assertEquals(REQUEST, intent.getIntExtra(EXTRA_REQUEST_TYPE, -1));
+        assertEquals(AUTHORIZE, intent.getIntExtra(EXTRA_REQUEST_TYPE, -1));
         assertEquals(WalletConstants.ENVIRONMENT_TEST, intent.getIntExtra(EXTRA_ENVIRONMENT, -1));
         assertEquals("", intent.getStringExtra(EXTRA_MERCHANT_NAME));
         assertEquals(cart, intent.getParcelableExtra(EXTRA_CART));
@@ -289,7 +289,7 @@ public class AndroidPayTest {
         verify(fragment).startActivityForResult(captor.capture(), eq(AndroidPay.ANDROID_PAY_REQUEST_CODE));
         Intent intent = captor.getValue();
         assertEquals(AndroidPayActivity.class.getName(), intent.getComponent().getClassName());
-        assertEquals(CHANGE, intent.getIntExtra(EXTRA_REQUEST_TYPE, -1));
+        assertEquals(CHANGE_PAYMENT_METHOD, intent.getIntExtra(EXTRA_REQUEST_TYPE, -1));
         assertEquals(WalletConstants.ENVIRONMENT_TEST, intent.getIntExtra(EXTRA_ENVIRONMENT, -1));
         assertEquals("google-transaction-id", intent.getStringExtra(EXTRA_GOOGLE_TRANSACTION_ID));
     }

@@ -36,9 +36,8 @@ public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
     protected static final int RESULT_ERROR = 2;
 
     protected static final String EXTRA_REQUEST_TYPE = "com.braintreepayments.api.EXTRA_REQUEST_TYPE";
-    protected static final int REQUEST = 1;
-    protected static final int CHANGE = 2;
-
+    protected static final int AUTHORIZE = 1;
+    protected static final int CHANGE_PAYMENT_METHOD = 2;
     private static final int FULL_WALLET_REQUEST = 3;
 
     private GoogleApiClient mGoogleApiClient;
@@ -49,11 +48,11 @@ public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
 
         int requestType = getIntent().getIntExtra(EXTRA_REQUEST_TYPE, -1);
         switch (requestType) {
-            case REQUEST:
+            case AUTHORIZE:
                 setupGoogleApiClient();
                 loadMaskedWallet();
                 break;
-            case CHANGE:
+            case CHANGE_PAYMENT_METHOD:
                 setupGoogleApiClient();
                 changeMaskedWallet();
                 break;
@@ -85,12 +84,12 @@ public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
                 .addAllowedCountrySpecificationsForShipping((ArrayList) getIntent()
                         .getParcelableArrayListExtra(EXTRA_ALLOWED_COUNTRIES));
 
-        Wallet.Payments.loadMaskedWallet(mGoogleApiClient, maskedWalletRequestBuilder.build(), REQUEST);
+        Wallet.Payments.loadMaskedWallet(mGoogleApiClient, maskedWalletRequestBuilder.build(), AUTHORIZE);
     }
 
     private void changeMaskedWallet() {
         Wallet.Payments.changeMaskedWallet(mGoogleApiClient, getIntent().getStringExtra(EXTRA_GOOGLE_TRANSACTION_ID),
-                null, CHANGE);
+                null, CHANGE_PAYMENT_METHOD);
     }
 
     private void loadFullWallet(String googleTransactionId) {
@@ -134,7 +133,7 @@ public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == Activity.RESULT_OK && (requestCode == REQUEST || requestCode == CHANGE)) {
+        if (resultCode == Activity.RESULT_OK && (requestCode == AUTHORIZE || requestCode == CHANGE_PAYMENT_METHOD)) {
             String googleTransactionId = ((MaskedWallet) data.getParcelableExtra(WalletConstants.EXTRA_MASKED_WALLET))
                     .getGoogleTransactionId();
             loadFullWallet(googleTransactionId);

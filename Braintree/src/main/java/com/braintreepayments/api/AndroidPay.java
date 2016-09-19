@@ -36,7 +36,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static com.braintreepayments.api.AndroidPayActivity.CHANGE;
+import static com.braintreepayments.api.AndroidPayActivity.CHANGE_PAYMENT_METHOD;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_ALLOWED_CARD_NETWORKS;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_ALLOWED_COUNTRIES;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_CART;
@@ -48,7 +48,7 @@ import static com.braintreepayments.api.AndroidPayActivity.EXTRA_PHONE_NUMBER_RE
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_REQUEST_TYPE;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_SHIPPING_ADDRESS_REQUIRED;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_TOKENIZATION_PARAMETERS;
-import static com.braintreepayments.api.AndroidPayActivity.REQUEST;
+import static com.braintreepayments.api.AndroidPayActivity.AUTHORIZE;
 
 /**
  * Class containing Android Pay specific logic.
@@ -237,7 +237,7 @@ public class AndroidPay {
                         .putExtra(EXTRA_SHIPPING_ADDRESS_REQUIRED, shippingAddressRequired)
                         .putExtra(EXTRA_PHONE_NUMBER_REQUIRED, phoneNumberRequired)
                         .putParcelableArrayListExtra(EXTRA_ALLOWED_COUNTRIES, allowedCountries)
-                        .putExtra(EXTRA_REQUEST_TYPE, REQUEST);
+                        .putExtra(EXTRA_REQUEST_TYPE, AUTHORIZE);
                 fragment.startActivityForResult(intent, ANDROID_PAY_REQUEST_CODE);
             }
         });
@@ -260,7 +260,7 @@ public class AndroidPay {
                 Intent intent = new Intent(fragment.getApplicationContext(), AndroidPayActivity.class)
                         .putExtra(EXTRA_ENVIRONMENT, getEnvironment(configuration.getAndroidPay()))
                         .putExtra(EXTRA_GOOGLE_TRANSACTION_ID, androidPayCardNonce.getGoogleTransactionId())
-                        .putExtra(EXTRA_REQUEST_TYPE, CHANGE);
+                        .putExtra(EXTRA_REQUEST_TYPE, CHANGE_PAYMENT_METHOD);
                 fragment.startActivityForResult(intent, ANDROID_PAY_REQUEST_CODE);
             }
         });
