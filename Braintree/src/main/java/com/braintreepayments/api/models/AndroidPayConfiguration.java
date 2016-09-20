@@ -2,6 +2,8 @@ package com.braintreepayments.api.models;
 
 import android.content.Context;
 
+import com.braintreepayments.api.BraintreeFragment;
+import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -62,7 +64,9 @@ public class AndroidPayConfiguration {
 
     /**
      * @return {@code true} if Android Pay is enabled and supported in the current environment,
-     *         {@code false} otherwise.
+     *         {@code false} otherwise. Note: this value only pertains to the Braintree configuration, to check if
+     *         the user has Android Pay setup use
+     *         {@link com.braintreepayments.api.AndroidPay#isReadyToPay(BraintreeFragment, BraintreeResponseListener)}
      */
     public boolean isEnabled(Context context) {
         try {
