@@ -129,7 +129,7 @@ public class BraintreeFragment extends Fragment {
         } catch (ClassNotFoundException ignored) {}
 
         try {
-            if (Class.forName("com.braintreepayments.api.dropin.BraintreePaymentActivity").isInstance(activity)) {
+            if (Class.forName("com.braintreepayments.api.dropin.DropInActivity").isInstance(activity)) {
                 integrationType = "dropin2";
             }
         } catch (ClassNotFoundException ignored) {}
