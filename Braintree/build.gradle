@@ -11,6 +11,9 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
+
+        consumerProguardFiles 'braintree-proguard-rules.pro'
+
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
