@@ -15,6 +15,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
+import java.util.concurrent.CountDownLatch;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -123,9 +125,10 @@ public class DataCollectorUnitTest {
         latch.await();
     }
 
-    @Test
-    public void collectDeviceData_doesNotCollectKountDataIfKountDisabledInConfiguration() {
+    @Test(timeout = 5000)
+    public void collectDeviceData_doesNotCollectKountDataIfKountDisabledInConfiguration() throws InterruptedException {
         BraintreeFragment fragment = new MockFragmentBuilder().build();
+        final CountDownLatch latch = new CountDownLatch(1);
 
         DataCollector.collectDeviceData(fragment, new BraintreeResponseListener<String>() {
             @Override
@@ -135,10 +138,14 @@ public class DataCollectorUnitTest {
                     assertNull(json.optString("device_session_id", null));
                     assertNull(json.optString("fraud_merchant_id", null));
                     assertNotNull(json.getString("correlation_id"));
-                } catch (JSONException jse) {
-                    fail(jse.getMessage());
+                } catch (JSONException e) {
+                    fail(e.getMessage());
                 }
+
+                latch.countDown();
             }
         });
+
+        latch.await();
     }
 }

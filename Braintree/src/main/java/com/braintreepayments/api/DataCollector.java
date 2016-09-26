@@ -83,6 +83,8 @@ public class DataCollector {
                     } catch (ClassNotFoundException | NoClassDefFoundError | NumberFormatException ignored) {
                         listener.onResponse(deviceData.toString());
                     }
+                } else {
+                    listener.onResponse(deviceData.toString());
                 }
             }
         });
