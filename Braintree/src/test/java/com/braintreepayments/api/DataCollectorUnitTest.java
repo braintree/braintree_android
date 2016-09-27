@@ -26,6 +26,8 @@ import static junit.framework.Assert.fail;
 @RunWith(RobolectricGradleTestRunner.class)
 public class DataCollectorUnitTest {
 
+    private static BraintreeResponseListener<String> sListener;
+
     @Test
     public void getDeviceCollectorEnvironment_returnsCorrectEnvironment() {
         assertEquals(com.kount.api.DataCollector.ENVIRONMENT_PRODUCTION,
@@ -74,8 +76,7 @@ public class DataCollectorUnitTest {
                 .configuration(configuration)
                 .build();
         final RobolectricCountDownLatch latch = new RobolectricCountDownLatch(1);
-
-        DataCollector.collectDeviceData(fragment, new BraintreeResponseListener<String>() {
+        sListener = new BraintreeResponseListener<String>() {
             @Override
             public void onResponse(String deviceData) {
                 try {
@@ -89,7 +90,9 @@ public class DataCollectorUnitTest {
 
                 latch.countDown();
             }
-        });
+        };
+
+        DataCollector.collectDeviceData(fragment, sListener);
 
         latch.await();
     }
@@ -105,8 +108,7 @@ public class DataCollectorUnitTest {
                 .configuration(configuration)
                 .build();
         final RobolectricCountDownLatch latch = new RobolectricCountDownLatch(1);
-
-        DataCollector.collectDeviceData(fragment, "600001", new BraintreeResponseListener<String>() {
+        sListener = new BraintreeResponseListener<String>() {
             @Override
             public void onResponse(String deviceData) {
                 try {
@@ -120,12 +122,14 @@ public class DataCollectorUnitTest {
 
                 latch.countDown();
             }
-        });
+        };
+
+        DataCollector.collectDeviceData(fragment, "600001", sListener);
 
         latch.await();
     }
 
-    @Test(timeout = 5000)
+    @Test(timeout = 1000)
     public void collectDeviceData_doesNotCollectKountDataIfKountDisabledInConfiguration() throws InterruptedException {
         BraintreeFragment fragment = new MockFragmentBuilder().build();
         final CountDownLatch latch = new CountDownLatch(1);
