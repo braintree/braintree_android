@@ -20,7 +20,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Class containing Venmo specific logic.
+ * Used to create and tokenize Venmo accounts. For more information see the
+ * <a href="https://developers.braintreepayments.com/guides/venmo/overview">documentation</a>
  */
 public class Venmo {
 

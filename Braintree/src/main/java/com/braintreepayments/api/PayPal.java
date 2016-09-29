@@ -46,7 +46,8 @@ import org.json.JSONObject;
 import java.util.List;
 
 /**
- * Class containing PayPal specific logic.
+ * Used to create and tokenize PayPal accounts. For more information see the
+ * <a href="https://developers.braintreepayments.com/guides/paypal/overview/android/v2">documentation</a>
  */
 public class PayPal {
 

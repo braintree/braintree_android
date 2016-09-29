@@ -16,7 +16,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Class containing UnionPay specific logic.
+ * Used to check, enroll, and tokenize UnionPay cards. For more information see the
+ * <a href="https://developers.braintreepayments.com/guides/unionpay/overview">documentation</a>
  */
 public class UnionPay {
 

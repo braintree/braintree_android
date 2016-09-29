@@ -19,23 +19,24 @@ import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * 3D Secure is a protocol that enables cardholders and issuers to add a layer of security
+ * to e-commerce transactions via password entry at checkout.
+ *
+ * One of the primary reasons to use 3D Secure is to benefit from a shift in liability from the
+ * merchant to the issuer, which may result in interchange savings. Please read our online
+ * <a href="https://developers.braintreepayments.com/guides/3d-secure/overview">documentation</a>
+ * for a full explanation of 3D Secure.
+ */
 public class ThreeDSecure {
 
     protected static final int THREE_D_SECURE_REQUEST_CODE = 13487;
 
     /**
-     * 3D Secure is a protocol that enables cardholders and issuers to add a layer of security
-     * to e-commerce transactions via password entry at checkout.
-     *
-     * One of the primary reasons to use 3D Secure is to benefit from a shift in liability from the
-     * merchant to the issuer, which may result in interchange savings. Please read our online
-     * documentation (<a href="https://developers.braintreepayments.com">https://developers.braintreepayments.com</a>)
-     * for a full explanation of 3D Secure.
-     *
      * Verification is associated with a transaction amount and your merchant account. To specify a
      * different merchant account (or, in turn, currency), you will need to specify the merchant
-     * account id when generating a client token
-     * (See <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">https://developers.braintreepayments.com/android/sdk/overview/generate-client-token</a>).
+     * account id when <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">
+     *     generating a client token</a>
      *
      * During lookup the original payment method nonce is consumed and a new one is returned,
      * which points to the original payment method, as well as the 3D Secure verification.
@@ -64,18 +65,10 @@ public class ThreeDSecure {
     }
 
     /**
-     * 3D Secure is a protocol that enables cardholders and issuers to add a layer of security
-     * to e-commerce transactions via password entry at checkout.
-     *
-     * One of the primary reasons to use 3D Secure is to benefit from a shift in liability from the
-     * merchant to the issuer, which may result in interchange savings. Please read our online
-     * documentation (<a href="https://developers.braintreepayments.com">https://developers.braintreepayments.com</a>)
-     * for a full explanation of 3D Secure.
-     *
      * Verification is associated with a transaction amount and your merchant account. To specify a
      * different merchant account (or, in turn, currency), you will need to specify the merchant
-     * account id when generating a client token
-     * (See <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">https://developers.braintreepayments.com/android/sdk/overview/generate-client-token</a>).
+     * account id when <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">
+     *     generating a client token</a>
      *
      * During lookup the original payment method nonce is consumed and a new one is returned,
      * which points to the original payment method, as well as the 3D Secure verification.

@@ -5,7 +5,8 @@ import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 
 /**
- * Class used to tokenize a {@link CardBuilder}.
+ * Used to tokenize credit or debit cards using a {@link CardBuilder}. For more information see the
+ * <a href="https://developers.braintreepayments.com/guides/credit-cards/overview">documentation</a>
  */
 public class Card {
 

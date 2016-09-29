@@ -36,6 +36,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static com.braintreepayments.api.AndroidPayActivity.AUTHORIZE;
 import static com.braintreepayments.api.AndroidPayActivity.CHANGE_PAYMENT_METHOD;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_ALLOWED_CARD_NETWORKS;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_ALLOWED_COUNTRIES;
@@ -48,10 +49,10 @@ import static com.braintreepayments.api.AndroidPayActivity.EXTRA_PHONE_NUMBER_RE
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_REQUEST_TYPE;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_SHIPPING_ADDRESS_REQUIRED;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_TOKENIZATION_PARAMETERS;
-import static com.braintreepayments.api.AndroidPayActivity.AUTHORIZE;
 
 /**
- * Class containing Android Pay specific logic.
+ * Used to create and tokenize Android Pay payment methods. For more information see the
+ * <a href="https://developers.braintreepayments.com/guides/android-pay/overview">documentation</a>
  */
 public class AndroidPay {
 
