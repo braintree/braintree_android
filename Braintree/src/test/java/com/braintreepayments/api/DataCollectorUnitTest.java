@@ -139,8 +139,8 @@ public class DataCollectorUnitTest {
             public void onResponse(String deviceData) {
                 try {
                     JSONObject json = new JSONObject(deviceData);
-                    assertNull(json.optString("device_session_id", null));
-                    assertNull(json.optString("fraud_merchant_id", null));
+                    assertNull(Json.optString(json, "device_session_id", null));
+                    assertNull(Json.optString(json, "fraud_merchant_id", null));
                     assertNotNull(json.getString("correlation_id"));
                 } catch (JSONException e) {
                     fail(e.getMessage());

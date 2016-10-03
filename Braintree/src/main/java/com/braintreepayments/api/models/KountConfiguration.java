@@ -2,6 +2,8 @@ package com.braintreepayments.api.models;
 
 import android.text.TextUtils;
 
+import com.braintreepayments.api.Json;
+
 import org.json.JSONObject;
 
 /**
@@ -26,7 +28,7 @@ public class KountConfiguration {
         }
 
         KountConfiguration kountConfiguration = new KountConfiguration();
-        kountConfiguration.mKountMerchantId = json.optString(KOUNT_MERCHANT_ID_KEY, "");
+        kountConfiguration.mKountMerchantId = Json.optString(json, KOUNT_MERCHANT_ID_KEY, "");
 
         return kountConfiguration;
     }

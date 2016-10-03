@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
+import com.braintreepayments.api.Json;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,8 +40,8 @@ public class BraintreeError implements Parcelable {
 
     public static BraintreeError fromJson(JSONObject json) {
         BraintreeError error = new BraintreeError();
-        error.mField = json.optString(FIELD_KEY, null);
-        error.mMessage = json.optString(MESSAGE_KEY, null);
+        error.mField = Json.optString(json, FIELD_KEY, null);
+        error.mMessage = Json.optString(json, MESSAGE_KEY, null);
         error.mFieldErrors = BraintreeError.fromJsonArray(json.optJSONArray(FIELD_ERRORS_KEY));
 
         return error;

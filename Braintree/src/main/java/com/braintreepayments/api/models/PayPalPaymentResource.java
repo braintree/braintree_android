@@ -1,5 +1,7 @@
 package com.braintreepayments.api.models;
 
+import com.braintreepayments.api.Json;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -43,10 +45,10 @@ public class PayPalPaymentResource {
         PayPalPaymentResource payPalPaymentResource = new PayPalPaymentResource();
         JSONObject redirectJson = json.optJSONObject(PAYMENT_RESOURCE_KEY);
         if(redirectJson != null) {
-            payPalPaymentResource.redirectUrl(redirectJson.optString(REDIRECT_URL_KEY));
+            payPalPaymentResource.redirectUrl(Json.optString(redirectJson, REDIRECT_URL_KEY, ""));
         } else {
             redirectJson = json.optJSONObject(AGREEMENT_SETUP_KEY);
-            payPalPaymentResource.redirectUrl(redirectJson.optString(APPROVAL_URL_KEY));
+            payPalPaymentResource.redirectUrl(Json.optString(redirectJson, APPROVAL_URL_KEY, ""));
         }
         return payPalPaymentResource;
     }

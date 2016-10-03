@@ -221,7 +221,7 @@ public class VenmoUnitTest {
         assertEquals("environment", extras.getString(Venmo.EXTRA_ENVIRONMENT));
 
         JSONObject braintreeData = new JSONObject(extras.getString(Venmo.EXTRA_BRAINTREE_DATA));
-        assertNull(braintreeData.optString("authorization_fingerprint", null));
+        assertNull(Json.optString(braintreeData, "authorization_fingerprint", null));
     }
 
     @Test

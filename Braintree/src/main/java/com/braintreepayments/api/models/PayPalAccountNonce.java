@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import com.braintreepayments.api.Json;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -61,8 +63,8 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
         super.fromJson(json);
 
         JSONObject details = json.getJSONObject(DETAILS_KEY);
-        mEmail = details.optString(EMAIL_KEY, null);
-        mClientMetadataId = details.optString(CLIENT_METADATA_ID_KEY, null);
+        mEmail = Json.optString(details, EMAIL_KEY, null);
+        mClientMetadataId = Json.optString(details, CLIENT_METADATA_ID_KEY, null);
 
         try {
             JSONObject payerInfo = details.getJSONObject(PAYER_INFO_KEY);
@@ -79,13 +81,13 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
             mBillingAddress = PostalAddress.fromJson(billingAddress);
             mShippingAddress = PostalAddress.fromJson(shippingAddress);
 
-            mFirstName = payerInfo.optString(FIRST_NAME_KEY);
-            mLastName = payerInfo.optString(LAST_NAME_KEY);
-            mPhone = payerInfo.optString(PHONE_KEY);
-            mPayerId = payerInfo.optString(PAYER_ID_KEY);
+            mFirstName = Json.optString(payerInfo, FIRST_NAME_KEY, "");
+            mLastName = Json.optString(payerInfo, LAST_NAME_KEY, "");
+            mPhone = Json.optString(payerInfo, PHONE_KEY, "");
+            mPayerId = Json.optString(payerInfo, PAYER_ID_KEY, "");
 
             if(mEmail == null) {
-                mEmail = payerInfo.optString(EMAIL_KEY, null);
+                mEmail = Json.optString(payerInfo, EMAIL_KEY, null);
             }
         } catch (JSONException e) {
             mBillingAddress = new PostalAddress();

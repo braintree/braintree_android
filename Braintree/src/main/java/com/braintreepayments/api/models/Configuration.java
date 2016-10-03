@@ -2,6 +2,8 @@ package com.braintreepayments.api.models;
 
 import android.support.annotation.Nullable;
 
+import com.braintreepayments.api.Json;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,7 +69,7 @@ public class Configuration {
         parseJsonChallenges(json.optJSONArray(CHALLENGES_KEY));
         mEnvironment = json.getString(ENVIRONMENT_KEY);
         mMerchantId = json.getString(MERCHANT_ID_KEY);
-        mMerchantAccountId = json.optString(MERCHANT_ACCOUNT_ID_KEY, null);
+        mMerchantAccountId = Json.optString(json, MERCHANT_ACCOUNT_ID_KEY, null);
         mAnalyticsConfiguration = AnalyticsConfiguration.fromJson(json.optJSONObject(ANALYTICS_KEY));
         mCardConfiguration = CardConfiguration.fromJson(json.optJSONObject(CARD_KEY));
         mPaypalEnabled = json.optBoolean(PAYPAL_ENABLED_KEY, false);

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.braintreepayments.api.Json;
 import com.braintreepayments.api.Venmo;
 
 import org.json.JSONObject;
@@ -38,9 +39,9 @@ public class VenmoConfiguration {
         }
 
         VenmoConfiguration venmoConfiguration = new VenmoConfiguration();
-        venmoConfiguration.mAccessToken = json.optString(ACCESS_TOKEN_KEY, "");
-        venmoConfiguration.mEnvironment = json.optString(ENVIRONMENT_KEY, "");
-        venmoConfiguration.mMerchantId = json.optString(MERCHANT_ID_KEY, "");
+        venmoConfiguration.mAccessToken = Json.optString(json, ACCESS_TOKEN_KEY, "");
+        venmoConfiguration.mEnvironment = Json.optString(json, ENVIRONMENT_KEY, "");
+        venmoConfiguration.mMerchantId = Json.optString(json, MERCHANT_ID_KEY, "");
 
         return venmoConfiguration;
     }

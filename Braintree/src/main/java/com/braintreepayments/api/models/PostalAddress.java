@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import com.braintreepayments.api.Json;
+
 import org.json.JSONObject;
 
 /**
@@ -42,27 +44,27 @@ public class PostalAddress implements Parcelable {
             return new PostalAddress();
         }
 
-        String streetAddress = accountAddress.optString(STREET_ADDRESS_KEY, null);
-        String extendedAddress = accountAddress.optString(EXTENDED_ADDRESS_KEY, null);
-        String countryCodeAlpha2 = accountAddress.optString(COUNTRY_CODE_ALPHA_2_KEY, null);
+        String streetAddress = Json.optString(accountAddress, STREET_ADDRESS_KEY, null);
+        String extendedAddress = Json.optString(accountAddress, EXTENDED_ADDRESS_KEY, null);
+        String countryCodeAlpha2 = Json.optString(accountAddress, COUNTRY_CODE_ALPHA_2_KEY, null);
 
         //Check alternate keys
         if (streetAddress == null) {
-            streetAddress = accountAddress.optString(LINE_1_KEY, null);
+            streetAddress = Json.optString(accountAddress, LINE_1_KEY, null);
         }
         if (extendedAddress == null) {
-            extendedAddress = accountAddress.optString(LINE_2_KEY, null);
+            extendedAddress = Json.optString(accountAddress, LINE_2_KEY, null);
         }
         if (countryCodeAlpha2 == null) {
-            countryCodeAlpha2 = accountAddress.optString(COUNTRY_CODE_KEY, null);
+            countryCodeAlpha2 = Json.optString(accountAddress, COUNTRY_CODE_KEY, null);
         }
 
-        return new PostalAddress().recipientName(accountAddress.optString(RECIPIENT_NAME_KEY, null))
+        return new PostalAddress().recipientName(Json.optString(accountAddress, RECIPIENT_NAME_KEY, null))
                 .streetAddress(streetAddress)
                 .extendedAddress(extendedAddress)
-                .locality(accountAddress.optString(LOCALITY_KEY, null))
-                .region(accountAddress.optString(REGION_KEY, null))
-                .postalCode(accountAddress.optString(POSTAL_CODE_KEY, null))
+                .locality(Json.optString(accountAddress, LOCALITY_KEY, null))
+                .region(Json.optString(accountAddress, REGION_KEY, null))
+                .postalCode(Json.optString(accountAddress, POSTAL_CODE_KEY, null))
                 .countryCodeAlpha2(countryCodeAlpha2);
     }
 

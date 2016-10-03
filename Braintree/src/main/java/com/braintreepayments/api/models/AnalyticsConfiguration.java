@@ -2,6 +2,8 @@ package com.braintreepayments.api.models;
 
 import android.text.TextUtils;
 
+import com.braintreepayments.api.Json;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,7 +29,7 @@ public class AnalyticsConfiguration {
         }
 
         AnalyticsConfiguration analyticsConfiguration = new AnalyticsConfiguration();
-        analyticsConfiguration.mUrl = json.optString(URL_KEY, null);
+        analyticsConfiguration.mUrl = Json.optString(json, URL_KEY, null);
 
         return analyticsConfiguration;
     }

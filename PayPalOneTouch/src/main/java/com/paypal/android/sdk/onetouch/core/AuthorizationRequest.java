@@ -9,6 +9,7 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Base64;
 
+import com.braintreepayments.api.Json;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;
 import com.paypal.android.sdk.onetouch.core.config.ConfigEndpoint;
@@ -219,20 +220,20 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
                 return new Result(new ResponseParsingException("Response incomplete"));
             }
 
-            if (TextUtils.isEmpty(payloadEnc) || !isValidResponse(payload.optString("msg_GUID"))) {
+            if (TextUtils.isEmpty(payloadEnc) || !isValidResponse(Json.optString(payload, "msg_GUID", ""))) {
                 return new Result(new ResponseParsingException("Response invalid"));
             }
 
             try {
                 JSONObject decryptedPayloadEnc = getDecryptedPayload(payloadEnc);
 
-                String error = payload.optString("error");
+                String error = Json.optString(payload, "error", "");
                 // the string 'null' is coming back in production
                 if (!TextUtils.isEmpty(error) && !"null".equals(error)) {
                     return new Result(new BrowserSwitchException(error));
                 }
 
-                return new Result(payload.optString("environment"), ResponseType.authorization_code,
+                return new Result(Json.optString(payload, "environment", ""), ResponseType.authorization_code,
                         new JSONObject().put("code", decryptedPayloadEnc.getString("payment_code")),
                         decryptedPayloadEnc.getString("email"));
             } catch (JSONException | InvalidAlgorithmParameterException | NoSuchAlgorithmException
@@ -241,7 +242,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
                 return new Result(new ResponseParsingException(e));
             }
         } else if (Uri.parse(getCancelUrl()).getLastPathSegment().equals(status)) {
-            String error = payload.optString("error");
+            String error = Json.optString(payload, "error", "");
 
             // the string 'null' is coming back in production
             if (!TextUtils.isEmpty(error) && !"null".equals(error)) {

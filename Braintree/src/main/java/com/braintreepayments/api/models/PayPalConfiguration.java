@@ -2,6 +2,8 @@ package com.braintreepayments.api.models;
 
 import android.text.TextUtils;
 
+import com.braintreepayments.api.Json;
+
 import org.json.JSONObject;
 
 /**
@@ -42,14 +44,14 @@ public class PayPalConfiguration {
         }
 
         PayPalConfiguration payPalConfiguration = new PayPalConfiguration();
-        payPalConfiguration.mDisplayName = json.optString(DISPLAY_NAME_KEY, null);
-        payPalConfiguration.mClientId = json.optString(CLIENT_ID_KEY, null);
-        payPalConfiguration.mPrivacyUrl = json.optString(PRIVACY_URL_KEY, null);
-        payPalConfiguration.mUserAgreementUrl = json.optString(USER_AGREEMENT_URL_KEY, null);
-        payPalConfiguration.mDirectBaseUrl = json.optString(DIRECT_BASE_URL_KEY, null);
-        payPalConfiguration.mEnvironment = json.optString(ENVIRONMENT_KEY, null);
+        payPalConfiguration.mDisplayName = Json.optString(json, DISPLAY_NAME_KEY, null);
+        payPalConfiguration.mClientId = Json.optString(json, CLIENT_ID_KEY, null);
+        payPalConfiguration.mPrivacyUrl = Json.optString(json, PRIVACY_URL_KEY, null);
+        payPalConfiguration.mUserAgreementUrl = Json.optString(json, USER_AGREEMENT_URL_KEY, null);
+        payPalConfiguration.mDirectBaseUrl = Json.optString(json, DIRECT_BASE_URL_KEY, null);
+        payPalConfiguration.mEnvironment = Json.optString(json, ENVIRONMENT_KEY, null);
         payPalConfiguration.mTouchDisabled = json.optBoolean(TOUCH_DISABLED_KEY, true);
-        payPalConfiguration.mCurrencyIsoCode = json.optString(CURRENCY_ISO_CODE_KEY, null);
+        payPalConfiguration.mCurrencyIsoCode = Json.optString(json, CURRENCY_ISO_CODE_KEY, null);
         payPalConfiguration.mUseBillingAgreement = json.optBoolean(BILLING_AGREEMENT_KEY, false);
 
         return payPalConfiguration;

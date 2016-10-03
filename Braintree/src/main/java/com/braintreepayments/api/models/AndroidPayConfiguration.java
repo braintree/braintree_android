@@ -3,6 +3,7 @@ package com.braintreepayments.api.models;
 import android.content.Context;
 
 import com.braintreepayments.api.BraintreeFragment;
+import com.braintreepayments.api.Json;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -42,10 +43,10 @@ public class AndroidPayConfiguration {
 
         AndroidPayConfiguration androidPayConfiguration = new AndroidPayConfiguration();
         androidPayConfiguration.mEnabled = json.optBoolean(ENABLED_KEY, false);
-        androidPayConfiguration.mGoogleAuthorizationFingerprint = json.optString(
+        androidPayConfiguration.mGoogleAuthorizationFingerprint = Json.optString(json,
                 GOOGLE_AUTHORIZATION_FINGERPRINT_KEY, null);
-        androidPayConfiguration.mEnvironment = json.optString(ENVIRONMENT_KEY, null);
-        androidPayConfiguration.mDisplayName = json.optString(DISPLAY_NAME_KEY, "");
+        androidPayConfiguration.mEnvironment = Json.optString(json, ENVIRONMENT_KEY, null);
+        androidPayConfiguration.mDisplayName = Json.optString(json, DISPLAY_NAME_KEY, "");
 
         JSONArray supportedNetworks = json.optJSONArray(SUPPORTED_NETWORKS_KEY);
         if (supportedNetworks != null) {
