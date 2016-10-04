@@ -83,7 +83,7 @@ dependencies {
 
     // Visa Checkout
     compile fileTree(dir: "${rootDir}/libs", include:['*.jar'])
-    compile(name: 'VisaCheckout-Android-SDK-4.3', ext: 'aar')
+    compile(name: 'VisaCheckout-Android-SDK', version: '4.3', ext: 'aar')
     compile(name: 'facebook-android-sdk-3.23.1', ext: 'aar')
     compile(name: 'card.io-5.3.0', ext: 'aar')
     compile 'com.google.android.gms:play-services-analytics:9.8.0'
