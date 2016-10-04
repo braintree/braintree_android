@@ -156,22 +156,6 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void onCreate_doesNotCallFetchConfigurationWhenConfigurationIsNotNull() throws InvalidArgumentException {
-        mockStatic(ConfigurationManager.class);
-        Configuration configuration = new TestConfigurationBuilder().withAnalytics().buildConfiguration();
-
-        Robolectric.getForegroundThreadScheduler().pause();
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        fragment.mConfiguration = configuration;
-        Robolectric.getForegroundThreadScheduler().unPause();
-        Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
-
-        verifyStatic(never());
-        ConfigurationManager.getConfiguration(eq(fragment), any(ConfigurationListener.class),
-                any(BraintreeResponseListener.class));
-    }
-
-    @Test
     public void onCreate_restoresConfigurationAndHttpClient() throws InvalidArgumentException, NoSuchFieldException,
             IllegalAccessException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);

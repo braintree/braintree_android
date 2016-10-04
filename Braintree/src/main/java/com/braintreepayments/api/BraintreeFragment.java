@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -152,7 +153,18 @@ public class BraintreeFragment extends Fragment {
             braintreeFragment.setArguments(bundle);
 
             try {
-                fm.beginTransaction().add(braintreeFragment, TAG).commit();
+                if (VERSION.SDK_INT >= VERSION_CODES.N) {
+                    try {
+                        fm.beginTransaction().add(braintreeFragment, TAG).commitNow();
+                    } catch (IllegalStateException e) {
+                        fm.beginTransaction().add(braintreeFragment, TAG).commit();
+                    }
+                } else {
+                    fm.beginTransaction().add(braintreeFragment, TAG).commit();
+                    try {
+                        fm.executePendingTransactions();
+                    } catch (IllegalStateException ignored) {}
+                }
             } catch (IllegalStateException e) {
                 throw new InvalidArgumentException(e.getMessage());
             }
