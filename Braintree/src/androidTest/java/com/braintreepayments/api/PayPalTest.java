@@ -4,9 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
+import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 
 import org.junit.Rule;
@@ -15,7 +14,7 @@ import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragment;
+import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragmentWithConfiguration;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
@@ -30,11 +29,12 @@ public class PayPalTest {
 
     @Test
     public void authorizeAccount_onBackPressed_callsCancelListenerOnlyOnce() {
-        Configuration configuration = new TestConfigurationBuilder()
+        String configuration = new TestConfigurationBuilder()
                 .paypalEnabled(true)
-                .buildConfiguration();
+                .build();
 
-        final BraintreeFragment fragment = getMockFragment(mActivityTestRule.getActivity(), configuration);
+        final BraintreeFragment fragment = getMockFragmentWithConfiguration(mActivityTestRule.getActivity(),
+                configuration);
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {

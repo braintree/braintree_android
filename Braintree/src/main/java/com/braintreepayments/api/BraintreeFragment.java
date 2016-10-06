@@ -79,11 +79,10 @@ public class BraintreeFragment extends Fragment {
     protected BraintreeHttpClient mHttpClient;
     @VisibleForTesting
     protected GoogleApiClient mGoogleApiClient;
-    @VisibleForTesting
-    protected Configuration mConfiguration;
 
     private CrashReporter mCrashReporter;
     private Authorization mAuthorization;
+    private Configuration mConfiguration;
     private final Queue<QueuedCallback> mCallbackQueue = new ArrayDeque<>();
     private final List<PaymentMethodNonce> mCachedPaymentMethodNonces = new ArrayList<>();
     private boolean mHasFetchedPaymentMethodNonces = false;

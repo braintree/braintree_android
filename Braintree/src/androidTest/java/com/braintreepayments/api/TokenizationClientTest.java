@@ -6,8 +6,8 @@ import android.support.test.runner.AndroidJUnit4;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
+import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.FixturesHelper;
 
 import org.json.JSONException;
@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
+import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWithAuthorization;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
@@ -42,7 +42,7 @@ public class TokenizationClientTest {
     @Test(timeout = 10000)
     public void tokenize_tokenizesAPayPalAccountWithATokenizationKey() throws InterruptedException, JSONException {
         final CountDownLatch latch = new CountDownLatch(1);
-        BraintreeFragment fragment = getFragment(mActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = getFragmentWithAuthorization(mActivity, TOKENIZATION_KEY);
 
         JSONObject otcJson = new JSONObject(FixturesHelper.stringFromFixture("paypal_otc_response.json"));
         PayPalAccountBuilder paypalAccountBuilder =

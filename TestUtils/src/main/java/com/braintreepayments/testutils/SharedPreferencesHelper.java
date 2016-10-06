@@ -15,13 +15,10 @@ public class SharedPreferencesHelper {
         getSharedPreferences(context).edit().clear().commit();
     }
 
-    public static void writeMockConfiguration(Context context, String configUrl, String configurationString) {
-        writeMockConfiguration(context, configUrl, configurationString, System.currentTimeMillis());
-    }
-
-    public static void writeMockConfiguration(Context context, String configUrl, String configurationString,
-            long timestamp) {
-        writeMockConfiguration(context, configUrl, null, configurationString, timestamp);
+    public static void writeMockConfiguration(Context context, String configUrl, String appendedAuthorization,
+            String configurationString) {
+        writeMockConfiguration(context, configUrl, appendedAuthorization, configurationString,
+                System.currentTimeMillis());
     }
 
     public static void writeMockConfiguration(Context context, String configUrl, String appendedAuthorization,

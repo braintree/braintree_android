@@ -156,7 +156,8 @@ public class ConfigurationManagerUnitTest {
     @Test(timeout = 1000)
     public void getConfiguration_getsConfigFromGatewayWhenTimeoutExpired() throws InterruptedException {
         writeMockConfiguration(RuntimeEnvironment.application, mTokenizationKey.getConfigUrl(),
-                stringFromFixture("configuration.json"), System.currentTimeMillis() - (ConfigurationManager.TTL + 1));
+                mTokenizationKey.toString(), stringFromFixture("configuration.json"),
+                System.currentTimeMillis() - (ConfigurationManager.TTL + 1));
         stubConfigurationFromGateway(stringFromFixture("configuration_with_analytics.json"));
 
         ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
@@ -200,7 +201,8 @@ public class ConfigurationManagerUnitTest {
     @Test(timeout = 1000)
     public void getConfiguration_fetchesConfigurationFromGatewayWhenCachedConfigIsInvalid()
             throws InterruptedException {
-        writeMockConfiguration(RuntimeEnvironment.application, mTokenizationKey.getConfigUrl(), "not a config");
+        writeMockConfiguration(RuntimeEnvironment.application, mTokenizationKey.getConfigUrl(),
+                mTokenizationKey.toString(), "not a config");
         stubConfigurationFromGateway(stringFromFixture("configuration.json"));
 
         ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {

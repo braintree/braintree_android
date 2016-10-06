@@ -53,6 +53,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.verifyAnalyticsEvent;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.ReflectionHelper.getField;
+import static com.braintreepayments.testutils.ReflectionHelper.setField;
 import static com.braintreepayments.testutils.TestConfigurationBuilder.basicConfig;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
@@ -158,18 +159,17 @@ public class BraintreeFragmentUnitTest {
     @Test
     public void onCreate_restoresConfigurationAndHttpClient() throws InvalidArgumentException, NoSuchFieldException,
             IllegalAccessException {
+        Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
+        mockConfigurationManager(configuration);
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        fragment.mConfiguration = new TestConfigurationBuilder()
-                .clientApiUrl("client_api_url")
-                .buildConfiguration();
         Bundle bundle = new Bundle();
         fragment.onSaveInstanceState(bundle);
-        fragment.mConfiguration = null;
+        setField(BraintreeFragment.class, "mConfiguration", fragment, null);
         fragment.mHttpClient = null;
 
         fragment.onCreate(bundle);
 
-        assertNotNull(fragment.mConfiguration);
+        assertNotNull(fragment.getConfiguration());
         assertNotNull(fragment.mHttpClient);
         assertEquals("client_api_url", getField(HttpClient.class, "mBaseUrl", fragment.mHttpClient));
     }
@@ -241,9 +241,9 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void onSaveInstanceState_savesState() throws InvalidArgumentException, JSONException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
-        fragment.mConfiguration = configuration;
+        mockConfigurationManager(configuration);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         Bundle bundle = new Bundle();
 
         fragment.onSaveInstanceState(bundle);
@@ -258,7 +258,6 @@ public class BraintreeFragmentUnitTest {
     public void onSaveInstanceState_doesNotIncludeConfigurationWhenNull() throws InvalidArgumentException,
             JSONException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        fragment.mConfiguration = null;
         Bundle bundle = new Bundle();
 
         fragment.onSaveInstanceState(bundle);

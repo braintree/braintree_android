@@ -30,6 +30,7 @@ import static android.support.test.espresso.web.sugar.Web.onWebView;
 import static android.support.test.espresso.web.webdriver.DriverAtoms.findElement;
 import static android.support.test.espresso.web.webdriver.DriverAtoms.webClick;
 import static android.support.test.espresso.web.webdriver.DriverAtoms.webKeys;
+import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWithAuthorization;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_AUTHENTICATION_FAILED;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_AUTHENTICATION_UNAVAILABLE;
@@ -418,6 +419,6 @@ public class ThreeDSecureVerificationTest {
     /* helpers */
     private BraintreeFragment getFragment() {
         String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
-        return BraintreeFragmentTestUtils.getFragment(mActivity, clientToken);
+        return getFragmentWithAuthorization(mActivity, clientToken);
     }
 }

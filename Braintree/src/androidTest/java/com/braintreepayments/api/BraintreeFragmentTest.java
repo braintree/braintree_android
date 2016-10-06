@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
+import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWithAuthorization;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -45,7 +45,7 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 10000)
     public void fetchConfiguration_worksWithATokenizationKey() throws InterruptedException {
-        final BraintreeFragment fragment = getFragment(mActivity, TOKENIZATION_KEY);
+        final BraintreeFragment fragment = getFragmentWithAuthorization(mActivity, TOKENIZATION_KEY);
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
@@ -59,7 +59,7 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 10000)
     public void fetchConfiguration_worksWithAClientToken() throws InterruptedException {
-        final BraintreeFragment fragment = getFragment(mActivity, mClientToken);
+        final BraintreeFragment fragment = getFragmentWithAuthorization(mActivity, mClientToken);
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
@@ -96,7 +96,7 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 1000)
     public void getGoogleApiClient_returnsGoogleApiClient() throws InterruptedException {
-        BraintreeFragment fragment = getFragment(mActivity, mClientToken);
+        BraintreeFragment fragment = getFragmentWithAuthorization(mActivity, mClientToken);
 
         fragment.getGoogleApiClient(new BraintreeResponseListener<GoogleApiClient>() {
             @Override
