@@ -215,9 +215,7 @@ public class BraintreeFragment extends Fragment {
             }
         }
 
-        if (getConfiguration() == null) {
-            fetchConfiguration();
-        }
+        fetchConfiguration();
     }
 
     @TargetApi(VERSION_CODES.M)
@@ -637,6 +635,11 @@ public class BraintreeFragment extends Fragment {
 
     @VisibleForTesting
     protected void fetchConfiguration() {
+        if (getConfiguration() != null || ConfigurationManager.isFetchingConfiguration() || mAuthorization == null ||
+                mHttpClient == null) {
+            return;
+        }
+
         if (mConfigurationRequestAttempts >= 3) {
             postCallback(new ConfigurationException("Configuration retry limit has been exceeded. Create a new " +
                     "BraintreeFragment and try again."));
@@ -680,10 +683,7 @@ public class BraintreeFragment extends Fragment {
     }
 
     protected void waitForConfiguration(final ConfigurationListener listener) {
-        if (getConfiguration() == null && !ConfigurationManager.isFetchingConfiguration() && mAuthorization != null &&
-                mHttpClient != null) {
-            fetchConfiguration();
-        }
+        fetchConfiguration();
 
         postOrQueueCallback(new QueuedCallback() {
             @Override
