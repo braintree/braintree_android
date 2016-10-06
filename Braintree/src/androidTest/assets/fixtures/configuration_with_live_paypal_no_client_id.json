@@ -1,0 +1,15 @@
+{
+  "clientApiUrl": "client-api-url",
+  "environment": "test",
+  "paypalEnabled": true,
+  "paypal": {
+    "displayName": "paypal_merchant",
+    "clientId": null,
+    "privacyUrl": "http://www.example.com/privacy",
+    "userAgreementUrl": "http://www.example.com/user_agreement",
+    "baseUrl": "http://localhost:9000",
+    "directBaseUrl": "https://www.paypal.com",
+    "environment": "live"
+  },
+  "merchantId": "merchant-id"
+}

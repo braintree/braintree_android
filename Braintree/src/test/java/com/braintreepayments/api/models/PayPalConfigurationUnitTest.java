@@ -65,7 +65,6 @@ public class PayPalConfigurationUnitTest {
         assertTrue(payPalConfiguration.isTouchDisabled());
     }
 
-
     @Test
     public void reportsPayPalNotEnabledWhenFlagged() throws JSONException {
         Configuration configuration = Configuration.fromJson(
@@ -90,6 +89,24 @@ public class PayPalConfigurationUnitTest {
                 stringFromFixture("configuration_with_paypal_touch_disabled.json"));
 
         assertTrue(configuration.getPayPal().isTouchDisabled());
+    }
+
+    @Test
+    public void reportsPayPalEnabledWhenClientIdAbsentInOfflineMode() throws JSONException {
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_offline_paypal_no_client_id.json"));
+        PayPalConfiguration payPalConfiguration = configuration.getPayPal();
+
+        assertTrue(payPalConfiguration.isEnabled());
+    }
+
+    @Test
+    public void reportsPayPalNotEnabledWhenClientIdAbsentInLiveMode() throws JSONException {
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration_with_live_paypal_no_client_id.json"));
+        PayPalConfiguration payPalConfiguration = configuration.getPayPal();
+
+        assertFalse(payPalConfiguration.isEnabled());
     }
 
     @Test

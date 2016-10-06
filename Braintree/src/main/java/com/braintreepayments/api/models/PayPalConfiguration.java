@@ -61,9 +61,14 @@ public class PayPalConfiguration {
      * @return {@code true} if PayPal is enabled, {@code false} otherwise.
      */
     public boolean isEnabled() {
-        return (!TextUtils.isEmpty(mEnvironment) && !TextUtils.isEmpty(mDisplayName) &&
-                !TextUtils.isEmpty(mClientId) && !TextUtils.isEmpty(mPrivacyUrl) &&
-                !TextUtils.isEmpty(mUserAgreementUrl));
+        boolean enabled = !TextUtils.isEmpty(mEnvironment) && !TextUtils.isEmpty(mDisplayName) &&
+                !TextUtils.isEmpty(mPrivacyUrl) && !TextUtils.isEmpty(mUserAgreementUrl);
+
+        if (!"offline".equals(mEnvironment)) {
+            enabled = enabled && !TextUtils.isEmpty(mClientId);
+        }
+
+        return enabled;
     }
 
     /**
