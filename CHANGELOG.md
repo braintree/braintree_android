@@ -1,5 +1,15 @@
 # Braintree Android SDK Release Notes
 
+## 2.3.10
+
+* Add `BraintreeFragment#getListeners` to get a list of all the registered listeners
+* Upgrade paypal-data-collector to 3.1.3
+* Upgrade Kount DataCollector to 3.1
+* Add `AndroidPay#requestAndroidPay` and `AndroidPay#changePaymentMethod` methods to simplify requesting Android Pay from a user and changing the backing payment method.
+* Include ProGuard directives in the SDK ([#120](https://github.com/braintree/braintree_android/pull/120))
+* Work around bug in `JSONObject#optString`
+* Use `FragmentTransaction#commitNow` and `FragmentManager#executePendingTransactions` in `BraintreeFragment#newInstance` to synchronously set up `BraintreeFragment` and avoid race conditions caused by asynchronous `Fragment` setup.
+
 ## 2.3.9
 
 * Update `AndroidPayCardNonce` description to include card type and last 4
