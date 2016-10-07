@@ -3,6 +3,7 @@ package com.braintreepayments.api.models;
 import android.text.TextUtils;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -173,5 +174,23 @@ public class ConfigurationUnitTest {
 
         assertNotNull(configuration.getCardConfiguration());
         assertEquals(0, configuration.getCardConfiguration().getSupportedCardTypes().size());
+    }
+
+    @Test
+    public void returnsVisaCheckoutConfiguration_whenVisaCheckoutConfigurationIsPresent() throws JSONException {
+        JSONObject jsonObject = new JSONObject(stringFromFixture("configuration.json"));
+        JSONObject visaCheckoutJson = new JSONObject(stringFromFixture("configuration/with_visaCheckout.json"));
+
+        jsonObject.put("visaCheckout", visaCheckoutJson);
+        Configuration configuration = Configuration.fromJson(jsonObject.toString());
+
+        assertTrue(configuration.getVisaCheckout().isEnabled());
+    }
+
+    @Test
+    public void returnsNewVisaCheckoutConfigurationWhenVisaCheckoutConfigurationIsAbsent() throws JSONException {
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
+
+        assertFalse(configuration.getVisaCheckout().isEnabled());
     }
 }

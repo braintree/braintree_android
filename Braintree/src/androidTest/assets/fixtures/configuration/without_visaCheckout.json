@@ -1,0 +1,11 @@
+{
+  "creditCards": {
+    "supportedCardTypes": [
+      "American Express",
+      "Discover",
+      "JCB",
+      "MasterCard",
+      "Visa"
+    ]
+  }
+}

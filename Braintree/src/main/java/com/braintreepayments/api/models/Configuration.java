@@ -30,6 +30,7 @@ public class Configuration {
     private static final String PAY_WITH_VENMO_KEY = "payWithVenmo";
     private static final String UNIONPAY_KEY = "unionPay";
     private static final String CARD_KEY = "creditCards";
+    private static final String VISA_CHECKOUT_KEY = "visaCheckout";
 
     private String mConfigurationString;
     private String mClientApiUrl;
@@ -46,6 +47,7 @@ public class Configuration {
     private VenmoConfiguration mVenmoConfiguration;
     private KountConfiguration mKountConfiguration;
     private UnionPayConfiguration mUnionPayConfiguration;
+    private VisaCheckoutConfiguration mVisaCheckoutConfiguration;
 
     /**
      * Creates a new {@link com.braintreepayments.api.models.Configuration} instance from a json string.
@@ -79,6 +81,7 @@ public class Configuration {
         mVenmoConfiguration = VenmoConfiguration.fromJson(json.optJSONObject(PAY_WITH_VENMO_KEY));
         mKountConfiguration = KountConfiguration.fromJson(json.optJSONObject(KOUNT_KEY));
         mUnionPayConfiguration = UnionPayConfiguration.fromJson(json.optJSONObject(UNIONPAY_KEY));
+        mVisaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(json.optJSONObject(VISA_CHECKOUT_KEY));
     }
 
     public String toJson() {
@@ -183,6 +186,13 @@ public class Configuration {
      */
     public UnionPayConfiguration getUnionPay() {
         return mUnionPayConfiguration;
+    }
+
+    /**
+     * @return instance of {@link VisaCheckoutConfiguration}
+     */
+    public VisaCheckoutConfiguration getVisaCheckout() {
+        return mVisaCheckoutConfiguration;
     }
 
     /**

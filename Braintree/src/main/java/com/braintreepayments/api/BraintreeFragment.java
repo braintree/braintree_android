@@ -26,6 +26,7 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
 import com.braintreepayments.api.interfaces.UnionPayListener;
+import com.braintreepayments.api.interfaces.VisaCheckoutListener;
 import com.braintreepayments.api.internal.AnalyticsDatabase;
 import com.braintreepayments.api.internal.AnalyticsEvent;
 import com.braintreepayments.api.internal.AnalyticsIntentService;
@@ -44,6 +45,7 @@ import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
+import com.visa.checkout.VisaMcomLibrary;
 
 import org.json.JSONException;
 
@@ -101,6 +103,7 @@ public class BraintreeFragment extends Fragment {
     private PaymentMethodNonceCreatedListener mPaymentMethodNonceCreatedListener;
     private BraintreeErrorListener mErrorListener;
     private UnionPayListener mUnionPayListener;
+    private VisaCheckoutListener mVisaCheckoutListener;
 
     public BraintreeFragment() {}
 
@@ -381,6 +384,10 @@ public class BraintreeFragment extends Fragment {
             mUnionPayListener = (UnionPayListener) listener;
         }
 
+        if (listener instanceof VisaCheckoutListener) {
+            mVisaCheckoutListener = (VisaCheckoutListener) listener;
+        }
+
         flushCallbacks();
     }
 
@@ -412,6 +419,10 @@ public class BraintreeFragment extends Fragment {
 
         if (listener instanceof UnionPayListener) {
             mUnionPayListener = null;
+        }
+
+        if (listener instanceof VisaCheckoutListener) {
+            mVisaCheckoutListener = null;
         }
     }
 
@@ -568,6 +579,20 @@ public class BraintreeFragment extends Fragment {
             @Override
             public void run() {
                 mUnionPayListener.onSmsCodeSent(enrollmentId, smsCodeRequired);
+            }
+        });
+    }
+
+    protected void postVisaCheckoutLibraryCallback(final VisaMcomLibrary visaMcomLibrary) {
+        postOrQueueCallback(new QueuedCallback() {
+            @Override
+            public boolean shouldRun() {
+                return mVisaCheckoutListener != null;
+            }
+
+            @Override
+            public void run() {
+                mVisaCheckoutListener.onVisaCheckoutLibraryCreated(visaMcomLibrary);
             }
         });
     }

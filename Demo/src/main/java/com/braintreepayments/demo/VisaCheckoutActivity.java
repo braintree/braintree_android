@@ -1,14 +1,19 @@
 package com.braintreepayments.demo;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.VisaCheckout;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.interfaces.VisaCheckoutListener;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.visa.checkout.VisaMcomLibrary;
 import com.visa.checkout.VisaMerchantInfo;
 import com.visa.checkout.VisaMerchantInfo.AcceptedBillingRegions;
 import com.visa.checkout.VisaMerchantInfo.AcceptedCardBrands;
@@ -21,21 +26,28 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class VisaCheckoutActivity extends BaseActivity implements OnClickListener {
+public class VisaCheckoutActivity extends BaseActivity implements OnClickListener, VisaCheckoutListener {
 
-    private View mVisaCheckoutButton;
+    private LinearLayout mVisaCheckoutLayout;
+
+    private ImageView mVisaPaymentButton;
+    private VisaMcomLibrary mVisaMComLibrary;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.visa_checkout_activity);
-        mVisaCheckoutButton = findViewById(R.id.visa_checkout_button);
-        mVisaCheckoutButton.setOnClickListener(this);
+        mVisaPaymentButton = (ImageView)findViewById(R.id.visa_checkout_button);
+        mVisaCheckoutLayout = (LinearLayout) findViewById(R.id.visa_checkout_layout);
+
+        mVisaPaymentButton.setOnClickListener(this);
     }
 
     @Override
     protected void reset() {
-        mVisaCheckoutButton.setEnabled(false);
+        if (mVisaPaymentButton != null) {
+            mVisaPaymentButton.setEnabled(false);
+        }
     }
 
     @Override
@@ -45,8 +57,9 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
         } catch (InvalidArgumentException e) {
             e.printStackTrace();
         }
-        mVisaCheckoutButton.setEnabled(true);
+        VisaCheckout.createVisaCheckoutLibrary(mBraintreeFragment);
     }
+
 
     @Override
     public void onClick(View view) {
@@ -62,26 +75,25 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
         visaPaymentInfo.setGiftWrap(new BigDecimal("12.34"));
         visaPaymentInfo.setDescription("Work");
         visaPaymentInfo.setOrderId("Order1234567890");
+        visaPaymentInfo.setMerchantRequestId("121");
 
         VisaMerchantInfo visaMerchantInfo = new VisaMerchantInfo();
-        visaMerchantInfo.setDataLevel(VisaMerchantInfo.MerchantDataLevel.SUMMARY);
+        visaMerchantInfo.setDataLevel(VisaMerchantInfo.MerchantDataLevel.FULL);
         visaMerchantInfo.setLogoResourceId(R.drawable.ic_launcher);
-//        visaMerchantInfo.setExternalProfileId("wat");
-        visaMerchantInfo.setMerchantId("121");
         visaMerchantInfo.setAcceptCanadianVisaDebit(false);
 
-        visaMerchantInfo.setAcceptedCardBrands(new ArrayList<AcceptedCardBrands>(
+        visaMerchantInfo.setAcceptedCardBrands(new ArrayList<>(
                 Arrays.asList(AcceptedCardBrands.values())
         ));
-        visaMerchantInfo.setAcceptedShippingRegions(new ArrayList<AcceptedShippingRegions>(
+        visaMerchantInfo.setAcceptedShippingRegions(new ArrayList<>(
                 Arrays.asList(AcceptedShippingRegions.values())
         ));
-        visaMerchantInfo.setAcceptedBillingRegions(new ArrayList<AcceptedBillingRegions>(
+        visaMerchantInfo.setAcceptedBillingRegions(new ArrayList<>(
                 Arrays.asList(AcceptedBillingRegions.values())
         ));
         visaPaymentInfo.setVisaMerchantInfo(visaMerchantInfo);
 
-        VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
+        VisaCheckout.authorize(mBraintreeFragment, mVisaMComLibrary, visaPaymentInfo);
     }
 
     @Override
@@ -92,10 +104,17 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK && requestCode == VisaCheckout.VISA_CHECKOUT_REQUEST_CODE) {
             mBraintreeFragment.onActivityResult(requestCode, resultCode, data);
         } else {
             onError(new Exception("Request Code: " + requestCode + " Result Code: " + resultCode));
         }
+    }
+
+    @Override
+    public void onVisaCheckoutLibraryCreated(VisaMcomLibrary visaMcomLibrary) {
+        mVisaMComLibrary = visaMcomLibrary;
+        Drawable result = VisaMcomLibrary.fetchCardArtImage(this);
+        mVisaPaymentButton.setImageDrawable(result);
     }
 }

@@ -1,0 +1,15 @@
+{
+  "creditCards": {
+    "supportedCardTypes": [
+      "American Express",
+      "Discover",
+      "JCB",
+      "MasterCard",
+      "Visa"
+    ]
+  },
+  "visaCheckout": {
+    "apikey": "gwApikey",
+    "externalClientId": "gwExternalClientId"
+  }
+}

@@ -4,14 +4,17 @@ import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.VisaCheckoutConfiguration;
 import com.visa.checkout.VisaLibrary;
 import com.visa.checkout.VisaMcomLibrary;
 import com.visa.checkout.VisaMerchantInfo;
+import com.visa.checkout.VisaMerchantInfo.MerchantDataLevel;
 import com.visa.checkout.VisaPaymentInfo;
 import com.visa.checkout.VisaPaymentSummary;
 import com.visa.checkout.utils.VisaEnvironmentConfig;
@@ -21,17 +24,37 @@ import org.json.JSONObject;
 
 public class VisaCheckout {
     public static final int VISA_CHECKOUT_REQUEST_CODE = 12345; // TODO better code
-    public static boolean isEnabled() {
-        try {
-            Class.forName("com.visa.checkout.VisaPaymentInfo");
-            VisaPaymentInfo visaPaymentInfo;
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
+
+    public static void createVisaCheckoutLibrary(final BraintreeFragment braintreeFragment) {
+        braintreeFragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                VisaCheckoutConfiguration visaCheckoutConfiguration = configuration.getVisaCheckout();
+
+                if (!visaCheckoutConfiguration.isEnabled()) {
+                    braintreeFragment.postCallback(new ConfigurationException("Visa Checkout is not enabled."));
+                    return;
+                }
+
+                VisaEnvironmentConfig visaEnvironmentConfig = VisaEnvironmentConfig.SANDBOX;
+
+                if ("production".equals(configuration.getEnvironment())) {
+                    visaEnvironmentConfig = VisaEnvironmentConfig.PRODUCTION;
+                }
+
+                visaEnvironmentConfig.setMerchantApiKey(configuration.getVisaCheckout().getApiKey());
+                visaEnvironmentConfig.setVisaCheckoutRequestCode(VISA_CHECKOUT_REQUEST_CODE);
+
+                VisaMcomLibrary visaMcomLibrary = VisaMcomLibrary.getLibrary(braintreeFragment.getActivity(),
+                        visaEnvironmentConfig);
+
+                braintreeFragment.postVisaCheckoutLibraryCallback(visaMcomLibrary);
+            }
+        });
+
     }
 
-    public static void authorize(final BraintreeFragment braintreeFragment, final VisaPaymentInfo visaPaymentInfo) {
+    public static void authorize(final BraintreeFragment braintreeFragment, final VisaMcomLibrary visaMcomLibrary, final VisaPaymentInfo visaPaymentInfo) {
         braintreeFragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
@@ -41,25 +64,15 @@ public class VisaCheckout {
                     visaMerchantInfo = new VisaMerchantInfo();
                 }
 
-                visaMerchantInfo.setMerchantApiKey("SNNBESUFWC5EEDCQYAE513SbyYkeVDWiEGSWOnOugTCi96fxY");
-                visaMerchantInfo.setDisplayName("Braintree");
+                visaMerchantInfo.setMerchantApiKey(configuration.getVisaCheckout().getApiKey());
+                visaMerchantInfo.setDataLevel(MerchantDataLevel.FULL);
                 visaPaymentInfo.setVisaMerchantInfo(visaMerchantInfo);
 
-                // Start Visa Payment Activity
-                // Wait for braintreeFragment.onActivityResult
+                visaPaymentInfo.setExternalClientId(configuration.getVisaCheckout().getExternalClientId());
 
-                VisaEnvironmentConfig visaEnvironmentConfig = VisaEnvironmentConfig.SANDBOX;
-                visaEnvironmentConfig.setMerchantApiKey("SNNBESUFWC5EEDCQYAE513SbyYkeVDWiEGSWOnOugTCi96fxY");
-                visaEnvironmentConfig.setVisaCheckoutRequestCode(VISA_CHECKOUT_REQUEST_CODE);
-
-                VisaMcomLibrary visaMcomLibrary = VisaMcomLibrary.getLibrary(braintreeFragment.getActivity(),
-                        visaEnvironmentConfig);
-
-                // Problem! They start their own activity
                 visaMcomLibrary.checkoutWithPayment(visaPaymentInfo, VISA_CHECKOUT_REQUEST_CODE);
             }
         });
-
     }
 
     protected static void onActivityResult(BraintreeFragment braintreeFragment, int resultCode, Intent data) {
