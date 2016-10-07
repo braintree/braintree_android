@@ -1,16 +1,14 @@
 package com.braintreepayments.api;
 
 import android.content.Intent;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VisaCheckoutConfiguration;
+import com.braintreepayments.api.models.VisaCheckoutPaymentBuilder;
 import com.visa.checkout.VisaLibrary;
 import com.visa.checkout.VisaMcomLibrary;
 import com.visa.checkout.VisaMerchantInfo;
@@ -18,9 +16,6 @@ import com.visa.checkout.VisaMerchantInfo.MerchantDataLevel;
 import com.visa.checkout.VisaPaymentInfo;
 import com.visa.checkout.VisaPaymentSummary;
 import com.visa.checkout.utils.VisaEnvironmentConfig;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class VisaCheckout {
     public static final int VISA_CHECKOUT_REQUEST_CODE = 12345; // TODO better code
@@ -58,7 +53,6 @@ public class VisaCheckout {
         braintreeFragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                // Modify with Braintree configuration
                 VisaMerchantInfo visaMerchantInfo = visaPaymentInfo.getVisaMerchantInfo();
                 if (visaMerchantInfo == null) {
                     visaMerchantInfo = new VisaMerchantInfo();
@@ -81,7 +75,7 @@ public class VisaCheckout {
         tokenize(braintreeFragment, visaPaymentSummary);
     }
 
-    private static void tokenize(final BraintreeFragment braintreeFragment, final VisaPaymentSummary visaPaymentSummary) {
+    public static void tokenize(final BraintreeFragment braintreeFragment, final VisaPaymentSummary visaPaymentSummary) {
         braintreeFragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
@@ -103,60 +97,4 @@ public class VisaCheckout {
         });
     }
 
-    private static class VisaCheckoutPaymentMethodNonce extends PaymentMethodNonce implements Parcelable {
-
-        protected VisaCheckoutPaymentMethodNonce(Parcel in) {
-            super(in);
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            super.writeToParcel(dest, flags);
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        public static final Creator<VisaCheckoutPaymentMethodNonce> CREATOR =
-                new Creator<VisaCheckoutPaymentMethodNonce>() {
-                    @Override
-                    public VisaCheckoutPaymentMethodNonce createFromParcel(Parcel in) {
-                        return new VisaCheckoutPaymentMethodNonce(in);
-                    }
-
-                    @Override
-                    public VisaCheckoutPaymentMethodNonce[] newArray(int size) {
-                        return new VisaCheckoutPaymentMethodNonce[size];
-                    }
-                };
-
-        @Override
-        public String getTypeLabel() {
-            return "Visa Checkout";
-        }
-    }
-
-    private static class VisaCheckoutPaymentBuilder extends PaymentMethodBuilder {
-
-        public VisaCheckoutPaymentBuilder(VisaPaymentSummary visaPaymentSummary) {
-
-        }
-
-        @Override
-        protected void build(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException {
-
-        }
-
-        @Override
-        public String getApiPath() {
-            return null;
-        }
-
-        @Override
-        public String getResponsePaymentMethodType() {
-            return null;
-        }
-    }
 }

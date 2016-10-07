@@ -29,6 +29,7 @@ import com.google.android.gms.identity.intents.model.UserAddress;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.LineItem;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static android.view.View.GONE;
@@ -176,7 +177,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
             if (requestCode == DROP_IN_REQUEST) {
                 DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
                 displayResult(result.getPaymentMethodNonce(), result.getDeviceData());
-            } else if (requestCode == CUSTOM_REQUEST || requestCode == PAYPAL_REQUEST) {
+            } else if (Arrays.asList(VISA_CHECKOUT_REQUEST, CUSTOM_REQUEST, PAYPAL_REQUEST).contains(requestCode)) {
                 displayResult((PaymentMethodNonce) data.getParcelableExtra(EXTRA_PAYMENT_METHOD_NONCE),
                         data.getStringExtra(EXTRA_DEVICE_DATA));
 
