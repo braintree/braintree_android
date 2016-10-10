@@ -12,7 +12,7 @@ android {
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
 
-        consumerProguardFiles 'proguard-rules.cfg'
+        consumerProguardFiles 'proguard.pro'
 
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
