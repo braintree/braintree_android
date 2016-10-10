@@ -75,8 +75,6 @@ public class BraintreeFragment extends Fragment {
             "com.braintreepayments.api.EXTRA_FETCHED_PAYMENT_METHOD_NONCES";
 
     @VisibleForTesting
-    protected String mIntegrationType;
-    @VisibleForTesting
     protected BraintreeHttpClient mHttpClient;
     @VisibleForTesting
     protected GoogleApiClient mGoogleApiClient;
@@ -90,6 +88,7 @@ public class BraintreeFragment extends Fragment {
     private boolean mIsBrowserSwitching = false;
     private boolean mNewActivityNeedsConfiguration;
     private int mConfigurationRequestAttempts = 0;
+    private String mIntegrationType;
     private String mSessionId;
     private AnalyticsDatabase mAnalyticsDatabase;
     private Context mContext;

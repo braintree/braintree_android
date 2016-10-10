@@ -186,10 +186,11 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void newInstance_setsIntegrationTypeToCustomForAllActivities() throws InvalidArgumentException {
+    public void newInstance_setsIntegrationTypeToCustomForAllActivities()
+            throws InvalidArgumentException, NoSuchFieldException, IllegalAccessException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
 
-        assertEquals("custom", fragment.mIntegrationType);
+        assertEquals("custom", getField(BraintreeFragment.class, "mIntegrationType", fragment));
     }
 
     @Test
