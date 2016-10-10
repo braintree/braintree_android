@@ -29,6 +29,7 @@ import com.braintreepayments.api.internal.AnalyticsDatabase;
 import com.braintreepayments.api.internal.AnalyticsEvent;
 import com.braintreepayments.api.internal.AnalyticsIntentService;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
+import com.braintreepayments.api.internal.IntegrationType;
 import com.braintreepayments.api.internal.UUIDHelper;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.Authorization;
@@ -120,21 +121,6 @@ public class BraintreeFragment extends Fragment {
         }
 
         FragmentManager fm = activity.getFragmentManager();
-
-        String integrationType = "custom";
-        try {
-            if (Class.forName("com.braintreepayments.api.BraintreePaymentActivity").isInstance(activity)) {
-                integrationType = "dropin";
-            }
-        } catch (ClassNotFoundException ignored) {}
-
-        try {
-            if (Class.forName("com.braintreepayments.api.dropin.DropInActivity").isInstance(activity)) {
-                integrationType = "dropin2";
-            }
-        } catch (ClassNotFoundException ignored) {}
-
-
         BraintreeFragment braintreeFragment = (BraintreeFragment) fm.findFragmentByTag(TAG);
         if (braintreeFragment == null) {
             braintreeFragment = new BraintreeFragment();
@@ -148,7 +134,7 @@ public class BraintreeFragment extends Fragment {
             }
 
             bundle.putString(EXTRA_SESSION_ID, UUIDHelper.getFormattedUUID());
-            bundle.putString(EXTRA_INTEGRATION_TYPE, integrationType);
+            bundle.putString(EXTRA_INTEGRATION_TYPE, IntegrationType.get(activity));
             braintreeFragment.setArguments(bundle);
 
             try {
