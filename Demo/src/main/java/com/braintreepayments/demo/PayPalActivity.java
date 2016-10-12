@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.braintreepayments.api.BraintreeFragment;
-import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.PayPalOverrides;
@@ -137,8 +136,8 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         Intent intent = new Intent()
-                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce)
-                .putExtra(BraintreePaymentActivity.EXTRA_DEVICE_DATA, mDeviceData);
+                .putExtra(MainActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce)
+                .putExtra(MainActivity.EXTRA_DEVICE_DATA, mDeviceData);
         setResult(RESULT_OK, intent);
         finish();
     }

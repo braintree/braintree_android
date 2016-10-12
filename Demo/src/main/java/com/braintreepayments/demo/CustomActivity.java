@@ -2,17 +2,16 @@ package com.braintreepayments.demo;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.braintreepayments.api.AndroidPay;
 import com.braintreepayments.api.BraintreeFragment;
-import com.braintreepayments.api.BraintreePaymentActivity;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPal;
@@ -59,8 +58,7 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     private ImageButton mPayPalButton;
     private ImageButton mAndroidPayButton;
     private CardForm mCardForm;
-    private EditText mCountryCode;
-    private EditText mMobilePhone;
+    private TextInputLayout mSmsCodeContainer;
     private EditText mSmsCode;
     private Button mSendSmsButton;
     private Button mPurchaseButton;
@@ -84,8 +82,7 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
         mCardForm.setOnFormFieldFocusedListener(this);
         mCardForm.setOnCardFormSubmitListener(this);
 
-        mCountryCode = (EditText) findViewById(R.id.country_code);
-        mMobilePhone = (EditText) findViewById(R.id.mobile_phone);
+        mSmsCodeContainer = (TextInputLayout) findViewById(R.id.sms_code_container);
         mSmsCode = (EditText) findViewById(R.id.sms_code);
         mSendSmsButton = (Button) findViewById(R.id.unionpay_enroll_button);
         mPurchaseButton = (Button) findViewById(R.id.purchase_button);
@@ -95,8 +92,6 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
             mEnrollmentId = onSaveInstanceState.getString(EXTRA_UNIONPAY_ENROLLMENT_ID);
 
             if (mIsUnionPay) {
-                mCountryCode.setVisibility(VISIBLE);
-                mMobilePhone.setVisibility(VISIBLE);
                 mSendSmsButton.setVisibility(VISIBLE);
             }
         }
@@ -135,8 +130,13 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     public void onConfigurationFetched(Configuration configuration) {
         mConfiguration = configuration;
 
-        mCardForm.setRequiredFields(this, true, true, configuration.isCvvChallengePresent(),
-                configuration.isPostalCodeChallengePresent(), getString(R.string.purchase));
+        mCardForm.cardRequired(true)
+                .expirationRequired(true)
+                .cvvRequired(configuration.isCvvChallengePresent())
+                .postalCodeRequired(configuration.isPostalCodeChallengePresent())
+                .mobileNumberRequired(false)
+                .actionLabel(getString(R.string.purchase))
+                .setup(this);
 
         if (configuration.isPayPalEnabled()) {
             mPayPalButton.setVisibility(VISIBLE);
@@ -179,36 +179,40 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
 
     @Override
     public void onCapabilitiesFetched(UnionPayCapabilities capabilities) {
+        mSmsCodeContainer.setVisibility(GONE);
+        mSmsCode.setText("");
+
         if (capabilities.isUnionPay()) {
             if (!capabilities.isSupported()) {
-                mCardForm.setCardNumberError();
-                Toast.makeText(this, "This card is not supported", Toast.LENGTH_SHORT).show();
+                mCardForm.setCardNumberError(getString(R.string.bt_card_not_accepted));
                 return;
             }
             mIsUnionPay = true;
             mEnrollmentId = null;
 
-            mCardForm.setRequiredFields(this, true, true, true, mConfiguration.isPostalCodeChallengePresent(),
-                    getString(R.string.purchase));
+            mCardForm.cardRequired(true)
+                    .expirationRequired(true)
+                    .cvvRequired(true)
+                    .postalCodeRequired(mConfiguration.isPostalCodeChallengePresent())
+                    .mobileNumberRequired(true)
+                    .actionLabel(getString(R.string.purchase))
+                    .setup(this);
 
-            mCountryCode.setVisibility(VISIBLE);
-            mMobilePhone.setVisibility(VISIBLE);
             mSendSmsButton.setVisibility(VISIBLE);
         } else {
             mIsUnionPay = false;
 
-            mCardForm.setRequiredFields(this, true, true, mConfiguration.isCvvChallengePresent(),
-                    mConfiguration.isPostalCodeChallengePresent(), getString(R.string.purchase));
+            mCardForm.cardRequired(true)
+                    .expirationRequired(true)
+                    .cvvRequired(mConfiguration.isCvvChallengePresent())
+                    .postalCodeRequired(mConfiguration.isPostalCodeChallengePresent())
+                    .mobileNumberRequired(false)
+                    .actionLabel(getString(R.string.purchase))
+                    .setup(this);
 
             if (!mConfiguration.isCvvChallengePresent()) {
                 ((EditText) findViewById(R.id.bt_card_form_cvv)).setText("");
             }
-
-            mCountryCode.setVisibility(GONE);
-            mCountryCode.setText("");
-            mMobilePhone.setVisibility(GONE);
-            mMobilePhone.setText("");
-            mSendSmsButton.setVisibility(GONE);
         }
     }
 
@@ -219,8 +223,8 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
                 .expirationYear(mCardForm.getExpirationYear())
                 .cvv(mCardForm.getCvv())
                 .postalCode(mCardForm.getPostalCode())
-                .mobileCountryCode(mCountryCode.getText().toString())
-                .mobilePhoneNumber(mMobilePhone.getText().toString());
+                .mobileCountryCode(mCardForm.getCountryCode())
+                .mobilePhoneNumber(mCardForm.getMobileNumber());
 
         UnionPay.enroll(mBraintreeFragment, unionPayCardBuilder);
     }
@@ -229,7 +233,7 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     public void onSmsCodeSent(String enrollmentId, boolean smsCodeRequired) {
         mEnrollmentId = enrollmentId;
         if (smsCodeRequired) {
-            mSmsCode.setVisibility(VISIBLE);
+            mSmsCodeContainer.setVisibility(VISIBLE);
         } else {
             onCardFormSubmit();
         }
@@ -279,8 +283,8 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
                     .expirationYear(mCardForm.getExpirationYear())
                     .cvv(mCardForm.getCvv())
                     .postalCode(mCardForm.getPostalCode())
-                    .mobileCountryCode(mCountryCode.getText().toString())
-                    .mobilePhoneNumber(mMobilePhone.getText().toString())
+                    .mobileCountryCode(mCardForm.getCountryCode())
+                    .mobilePhoneNumber(mCardForm.getMobileNumber())
                     .smsCode(mSmsCode.getText().toString())
                     .enrollmentId(mEnrollmentId);
 
@@ -308,8 +312,8 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         Intent intent = new Intent()
-                .putExtra(BraintreePaymentActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce)
-                .putExtra(BraintreePaymentActivity.EXTRA_DEVICE_DATA, mDeviceData);
+                .putExtra(MainActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce)
+                .putExtra(MainActivity.EXTRA_DEVICE_DATA, mDeviceData);
         setResult(RESULT_OK, intent);
         finish();
     }

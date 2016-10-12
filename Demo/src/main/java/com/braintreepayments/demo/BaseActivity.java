@@ -1,24 +1,22 @@
 package com.braintreepayments.demo;
 
-import android.app.ActionBar;
-import android.app.ActionBar.OnNavigationListener;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 
 import com.braintreepayments.api.BraintreeFragment;
-import com.braintreepayments.api.PaymentButton;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
@@ -38,8 +36,9 @@ import retrofit.client.Response;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 @SuppressWarnings("deprecation")
-public abstract class BaseActivity extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback,
-        PaymentMethodNonceCreatedListener, BraintreeCancelListener, BraintreeErrorListener, OnNavigationListener {
+public abstract class BaseActivity extends AppCompatActivity implements OnRequestPermissionsResultCallback,
+        PaymentMethodNonceCreatedListener, BraintreeCancelListener, BraintreeErrorListener,
+        ActionBar.OnNavigationListener {
 
     private static final String KEY_AUTHORIZATION = "com.braintreepayments.demo.KEY_AUTHORIZATION";
 
@@ -128,11 +127,6 @@ public abstract class BaseActivity extends Activity implements ActivityCompat.On
         mAuthorization = null;
         mCustomerId = Settings.getCustomerId(this);
 
-        Fragment paymentButton = getFragmentManager().findFragmentByTag(PaymentButton.TAG);
-        if (paymentButton != null) {
-            getFragmentManager().beginTransaction().remove(paymentButton).commit();
-        }
-
         if (mBraintreeFragment != null) {
             getFragmentManager().beginTransaction().remove(mBraintreeFragment).commit();
             mBraintreeFragment = null;
@@ -188,19 +182,19 @@ public abstract class BaseActivity extends Activity implements ActivityCompat.On
     }
 
     protected void setUpAsBack() {
-        if (getActionBar() != null) {
-            getActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
 
     @SuppressWarnings("ConstantConditions")
     private void setupActionBar() {
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.environments, android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.environments,
+                android.R.layout.simple_spinner_dropdown_item);
         actionBar.setListNavigationCallbacks(adapter, this);
         actionBar.setSelectedNavigationItem(Settings.getEnvironment(this));
     }

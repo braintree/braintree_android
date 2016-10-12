@@ -14,7 +14,6 @@
     <string name="create_transaction">Create a Transaction</string>
     <string name="loading">Loading…</string>
     <string name="buy">Buy</string>
-    <string name="cart">Cart</string>
 
     <!-- CustomActivity -->
     <string name="purchase">Purchase</string>
