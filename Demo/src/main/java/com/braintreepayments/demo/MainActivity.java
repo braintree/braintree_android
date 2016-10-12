@@ -24,6 +24,7 @@ import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
+import com.braintreepayments.api.models.VenmoAccountNonce;
 import com.google.android.gms.identity.intents.model.UserAddress;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.LineItem;
@@ -204,24 +205,23 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
     private void displayResult(PaymentMethodNonce paymentMethodNonce, String deviceData) {
         mNonce = paymentMethodNonce;
 
-        mNonceIcon.setImageResource(PaymentMethodType.forType(mNonce.getTypeLabel()).getDrawable());
+        mNonceIcon.setImageResource(PaymentMethodType.forType(mNonce).getDrawable());
         mNonceIcon.setVisibility(VISIBLE);
 
         mNonceString.setText(getString(R.string.nonce) + ": " + mNonce.getNonce());
         mNonceString.setVisibility(VISIBLE);
 
+        String details = "";
         if (mNonce instanceof CardNonce) {
             CardNonce cardNonce = (CardNonce) mNonce;
 
-            String details = "Card Last Two: " + cardNonce.getLastTwo() + "\n";
+            details = "Card Last Two: " + cardNonce.getLastTwo() + "\n";
             details += "3DS isLiabilityShifted: " + cardNonce.getThreeDSecureInfo().isLiabilityShifted() + "\n";
             details += "3DS isLiabilityShiftPossible: " + cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible();
-
-            mNonceDetails.setText(details);
         } else if (mNonce instanceof PayPalAccountNonce) {
             PayPalAccountNonce paypalAccountNonce = (PayPalAccountNonce) mNonce;
 
-            String details = "First name: " + paypalAccountNonce.getFirstName() + "\n";
+            details = "First name: " + paypalAccountNonce.getFirstName() + "\n";
             details += "Last name: " + paypalAccountNonce.getLastName() + "\n";
             details += "Email: " + paypalAccountNonce.getEmail() + "\n";
             details += "Phone: " + paypalAccountNonce.getPhone() + "\n";
@@ -229,19 +229,19 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
             details += "Client metadata id: " + paypalAccountNonce.getClientMetadataId() + "\n";
             details += "Billing address: " + formatAddress(paypalAccountNonce.getBillingAddress()) + "\n";
             details += "Shipping address: " + formatAddress(paypalAccountNonce.getShippingAddress());
-
-            mNonceDetails.setText(details);
         } else if (mNonce instanceof AndroidPayCardNonce) {
             AndroidPayCardNonce androidPayCardNonce = (AndroidPayCardNonce) mNonce;
 
-            String details = "Underlying Card Last Two: " + androidPayCardNonce.getLastTwo() + "\n";
+            details = "Underlying Card Last Two: " + androidPayCardNonce.getLastTwo() + "\n";
             details += "Email: " + androidPayCardNonce.getEmail() + "\n";
             details += "Billing address: " + formatAddress(androidPayCardNonce.getBillingAddress()) + "\n";
             details += "Shipping address: " + formatAddress(androidPayCardNonce.getShippingAddress());
-
-            mNonceDetails.setText(details);
+        } else if (mNonce instanceof VenmoAccountNonce) {
+            VenmoAccountNonce venmoAccountNonce = (VenmoAccountNonce) mNonce;
+            details = "Username: " + venmoAccountNonce.getUsername();
         }
 
+        mNonceDetails.setText(details);
         mNonceDetails.setVisibility(VISIBLE);
 
         mDeviceData.setText("Device Data: " + deviceData);
