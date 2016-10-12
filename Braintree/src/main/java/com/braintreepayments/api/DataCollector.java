@@ -1,7 +1,7 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
@@ -157,7 +157,7 @@ public class DataCollector {
     }
 
     private static void startDeviceCollector(final BraintreeFragment fragment, final String merchantId,
-            final String deviceSessionId, @NonNull final BraintreeResponseListener<String> listener)
+            final String deviceSessionId, @Nullable final BraintreeResponseListener<String> listener)
             throws ClassNotFoundException, NumberFormatException {
         Class.forName(com.kount.api.DataCollector.class.getName());
 
@@ -173,11 +173,15 @@ public class DataCollector {
                 dataCollector.collectForSession(deviceSessionId, new com.kount.api.DataCollector.CompletionHandler() {
                     @Override
                     public void completed(String sessionID) {
-                        listener.onResponse(sessionID);
+                        if (listener != null) {
+                            listener.onResponse(sessionID);
+                        }
                     }
                     @Override
                     public void failed(String sessionID, final com.kount.api.DataCollector.Error error) {
-                        listener.onResponse(sessionID);
+                        if (listener != null) {
+                            listener.onResponse(sessionID);
+                        }
                     }
                 });
             }
