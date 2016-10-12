@@ -178,7 +178,7 @@ public class AppSwitchHelperUnitTest {
 
         JSONObject client = result.getResponse().getJSONObject("client");
         assertEquals("test", client.getString("environment"));
-        assertEquals(BuildConfig.PRODUCT_VERSION, client.getString("paypal_sdk_version"));
+        assertEquals(BuildConfig.VERSION_NAME, client.getString("paypal_sdk_version"));
         assertEquals("Android", client.getString("platform"));
         assertEquals(BuildConfig.PRODUCT_NAME, client.getString("product_name"));
 
@@ -206,7 +206,7 @@ public class AppSwitchHelperUnitTest {
 
         JSONObject client = result.getResponse().getJSONObject("client");
         assertEquals("test", client.getString("environment"));
-        assertEquals(BuildConfig.PRODUCT_VERSION, client.getString("paypal_sdk_version"));
+        assertEquals(BuildConfig.VERSION_NAME, client.getString("paypal_sdk_version"));
         assertEquals("Android", client.getString("platform"));
         assertEquals(BuildConfig.PRODUCT_NAME, client.getString("product_name"));
 

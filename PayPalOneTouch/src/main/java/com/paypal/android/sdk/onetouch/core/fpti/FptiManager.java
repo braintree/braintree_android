@@ -52,7 +52,7 @@ public class FptiManager {
         // params in alphabetical order
         Map<String, String> params = new HashMap<>(fptiDataBundle);
         params.put("apid", DeviceInspector.getApplicationInfoName(mContextInspector.getContext()) +
-                "|" + BuildConfig.PRODUCT_VERSION + "|" +
+                "|" + BuildConfig.VERSION_NAME + "|" +
                 mContextInspector.getContext().getPackageName());
         params.put("bchn", "otc");
         params.put("bzsr", "mobile");
@@ -60,7 +60,7 @@ public class FptiManager {
         params.put("e", "im"); // always say 'impression' for OTC, as opposed to 'cl' click to match iOS
         params.put("g", getGmtOffsetInMinutes());
         params.put("lgin", "out");
-        params.put("mapv", BuildConfig.PRODUCT_VERSION);
+        params.put("mapv", BuildConfig.VERSION_NAME);
         params.put("mcar", DeviceInspector.getSimOperatorName(mContextInspector.getContext()));
         params.put("mdvs", DeviceInspector.getDeviceName());
         params.put("mosv", DeviceInspector.getOs());

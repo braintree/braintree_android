@@ -74,7 +74,7 @@ public final class Result implements Parcelable {
         try {
             JSONObject client = new JSONObject();
             client.put("environment", mEnvironment);
-            client.put("paypal_sdk_version", BuildConfig.PRODUCT_VERSION);
+            client.put("paypal_sdk_version", BuildConfig.VERSION_NAME);
             client.put("platform", "Android");
             client.put("product_name", BuildConfig.PRODUCT_NAME);
 

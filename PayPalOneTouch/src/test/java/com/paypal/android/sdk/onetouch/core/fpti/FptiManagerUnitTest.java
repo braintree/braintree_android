@@ -89,14 +89,14 @@ public class FptiManagerUnitTest {
         assertEquals("mobile", eventParams.getString("sv"));
         assertEquals("installation-guid", eventParams.getString("dsid"));
         assertEquals("im", eventParams.getString("e"));
-        assertEquals("application-name|" + BuildConfig.PRODUCT_VERSION + "|null",
+        assertEquals("application-name|" + BuildConfig.VERSION_NAME + "|null",
                 eventParams.getString("apid"));
         assertEquals(Integer.toString(new GregorianCalendar().getTimeZone().getRawOffset() / 1000 / 60),
                 eventParams.getString("g"));
         assertEquals(DeviceInspector.getDeviceName(), eventParams.getString("mdvs"));
         assertEquals("Android:sandbox:", eventParams.getString("vers"));
         assertEquals("otc", eventParams.getString("bchn"));
-        assertEquals(BuildConfig.PRODUCT_VERSION, eventParams.getString("mapv"));
+        assertEquals(BuildConfig.VERSION_NAME, eventParams.getString("mapv"));
         assertNotNull(eventParams.getString("vid"));
         assertEquals("out", eventParams.getString("lgin"));
         assertEquals("otc", eventParams.getString("srce"));

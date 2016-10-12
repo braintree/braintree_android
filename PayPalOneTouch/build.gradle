@@ -3,13 +3,7 @@ import groovy.json.JsonSlurper
 
 apply plugin: 'com.android.library'
 
-def getBuildVersion = { ->
-    "git describe --match=*[0-9]*.[0-9]*.*[0-9] --tags --dirty --always".execute().text.trim()
-}
-
 ext {
-    product_version = getBuildVersion()
-
     configFileText = new File("${projectDir}/otc-config.android.json").getText('UTF-8')
     config = JsonOutput.toJson(new JsonSlurper().parseText(configFileText)).replaceAll("\"", "\\\\\"")
 }
@@ -25,7 +19,6 @@ android {
         versionName rootProject.ext.versionName
 
         buildConfigField "String", "PRODUCT_NAME", "\"PayPalOneTouch-Android\""
-        buildConfigField "String", "PRODUCT_VERSION", "\"${product_version}\""
         buildConfigField "String", "CONFIGURATION", "\"${config}\""
     }
 
