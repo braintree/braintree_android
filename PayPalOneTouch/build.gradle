@@ -18,7 +18,6 @@ android {
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
 
-        buildConfigField "String", "PRODUCT_NAME", "\"PayPalOneTouch-Android\""
         buildConfigField "String", "CONFIGURATION", "\"${config}\""
     }
 

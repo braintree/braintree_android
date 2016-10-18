@@ -145,7 +145,7 @@ public class AuthorizationRequestUnitTest {
         Result result = mRequest.parseBrowserResponse(mContextInspector, uri);
 
         assertEquals(ResultType.Success, result.getResultType());
-        JSONAssert.assertEquals("{\"response\":{\"code\":\"fake_code\"},\"client\":{\"environment\":\"mock\",\"product_name\":\"PayPalOneTouch-Android\",\"platform\":\"Android\",\"paypal_sdk_version\":\"" + BuildConfig.VERSION_NAME + "\"},\"response_type\":\"authorization_code\",\"user\":{\"display_string\":\"test@test.com\"}}", result.getResponse().toString(), JSONCompareMode.NON_EXTENSIBLE);
+        JSONAssert.assertEquals("{\"response\":{\"code\":\"fake_code\"},\"client\":{\"environment\":\"mock\"},\"response_type\":\"authorization_code\",\"user\":{\"display_string\":\"test@test.com\"}}", result.getResponse().toString(), JSONCompareMode.NON_EXTENSIBLE);
     }
 
     @Test

@@ -10,15 +10,11 @@ public class OtcEnvironment {
     }
 
     public static String getUserAgent() {
-        return String.format("PayPalSDK/%s %s (%s; %s; %s)", BuildConfig.PRODUCT_NAME, BuildConfig.VERSION_NAME,
+        return String.format("PayPalSDK/PayPalOneTouch-Android %s (%s; %s; %s)", BuildConfig.VERSION_NAME,
                 DeviceInspector.getOs(), DeviceInspector.getDeviceName(), getFeatureString());
     }
 
     private static String getFeatureString() {
-        if (BuildConfig.DEBUG) {
-            return "debug;";
-        }
-
-        return "";
+        return BuildConfig.DEBUG ? "debug;" : "";
     }
 }

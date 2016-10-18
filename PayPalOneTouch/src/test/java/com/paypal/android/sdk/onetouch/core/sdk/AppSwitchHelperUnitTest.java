@@ -7,7 +7,6 @@ import android.os.Bundle;
 
 import com.braintreepayments.api.internal.SignatureVerificationOverrides;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
-import com.paypal.android.sdk.onetouch.core.BuildConfig;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
 import com.paypal.android.sdk.onetouch.core.Request;
 import com.paypal.android.sdk.onetouch.core.Result;
@@ -178,9 +177,6 @@ public class AppSwitchHelperUnitTest {
 
         JSONObject client = result.getResponse().getJSONObject("client");
         assertEquals("test", client.getString("environment"));
-        assertEquals(BuildConfig.VERSION_NAME, client.getString("paypal_sdk_version"));
-        assertEquals("Android", client.getString("platform"));
-        assertEquals(BuildConfig.PRODUCT_NAME, client.getString("product_name"));
 
         assertEquals("auth-code", result.getResponse().getJSONObject("response").getString("code"));
 
@@ -206,9 +202,6 @@ public class AppSwitchHelperUnitTest {
 
         JSONObject client = result.getResponse().getJSONObject("client");
         assertEquals("test", client.getString("environment"));
-        assertEquals(BuildConfig.VERSION_NAME, client.getString("paypal_sdk_version"));
-        assertEquals("Android", client.getString("platform"));
-        assertEquals(BuildConfig.PRODUCT_NAME, client.getString("product_name"));
 
         assertEquals("web-url", result.getResponse().getJSONObject("response").getString("webURL"));
     }
