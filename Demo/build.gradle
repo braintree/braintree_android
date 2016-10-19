@@ -86,9 +86,9 @@ dependencies {
     compile(name: 'VisaCheckout-Android-SDK-4.3', ext: 'aar')
     compile(name: 'facebook-android-sdk-3.23.1', ext: 'aar')
     compile(name: 'card.io-5.3.0', ext: 'aar')
-    compile(name: 'play-services-analytics-8.1.0', ext: 'aar')
-    compile(name: 'play-services-ads-8.1.0', ext: 'aar')
-    compile(name: 'play-services-basement-8.1.0', ext: 'aar')
+    compile 'com.google.android.gms:play-services-analytics:9.8.0'
+    compile 'com.google.android.gms:play-services-ads:9.8.0'
+    compile 'com.google.android.gms:play-services-basement:9.8.0'
     compile 'com.parse.bolts:bolts-android:1.4.0'
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
