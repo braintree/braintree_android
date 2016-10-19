@@ -5,6 +5,7 @@ import android.content.Intent;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
+import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VisaCheckoutConfiguration;
@@ -18,8 +19,6 @@ import com.visa.checkout.VisaPaymentSummary;
 import com.visa.checkout.utils.VisaEnvironmentConfig;
 
 public class VisaCheckout {
-    public static final int VISA_CHECKOUT_REQUEST_CODE = 12345; // TODO better code
-
     public static void createVisaCheckoutLibrary(final BraintreeFragment braintreeFragment) {
         braintreeFragment.waitForConfiguration(new ConfigurationListener() {
             @Override
@@ -38,7 +37,7 @@ public class VisaCheckout {
                 }
 
                 visaEnvironmentConfig.setMerchantApiKey(configuration.getVisaCheckout().getApiKey());
-                visaEnvironmentConfig.setVisaCheckoutRequestCode(VISA_CHECKOUT_REQUEST_CODE);
+                visaEnvironmentConfig.setVisaCheckoutRequestCode(BraintreeRequestCodes.VISA_CHECKOUT);
 
                 VisaMcomLibrary visaMcomLibrary = VisaMcomLibrary.getLibrary(braintreeFragment.getActivity(),
                         visaEnvironmentConfig);
@@ -64,7 +63,7 @@ public class VisaCheckout {
 
                 visaPaymentInfo.setExternalClientId(configuration.getVisaCheckout().getExternalClientId());
 
-                visaMcomLibrary.checkoutWithPayment(visaPaymentInfo, VISA_CHECKOUT_REQUEST_CODE);
+                visaMcomLibrary.checkoutWithPayment(visaPaymentInfo, BraintreeRequestCodes.VISA_CHECKOUT);
             }
         });
     }

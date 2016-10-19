@@ -35,6 +35,7 @@ import com.braintreepayments.api.internal.IntegrationType;
 import com.braintreepayments.api.internal.UUIDHelper;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.Authorization;
+import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.TokenizationKey;
@@ -344,7 +345,7 @@ public class BraintreeFragment extends Fragment {
             case AndroidPay.ANDROID_PAY_REQUEST_CODE:
                 AndroidPay.onActivityResult(this, resultCode, data);
                 break;
-            case VisaCheckout.VISA_CHECKOUT_REQUEST_CODE:
+            case BraintreeRequestCodes.VISA_CHECKOUT:
                 VisaCheckout.onActivityResult(this, resultCode, data);
                 break;
         }

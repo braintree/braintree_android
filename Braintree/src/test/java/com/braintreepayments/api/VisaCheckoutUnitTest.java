@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.braintreepayments.api.exceptions.ConfigurationException;
+import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.visa.checkout.VisaMcomLibrary;
 import com.visa.checkout.VisaMerchantInfo.MerchantDataLevel;
@@ -142,7 +143,7 @@ public class VisaCheckoutUnitTest {
         VisaEnvironmentConfig visaEnvironmentConfig = argumentCaptor.getValue();
         assertEquals(VisaEnvironmentConfig.SANDBOX, visaEnvironmentConfig);
         assertEquals("gwApikey", visaEnvironmentConfig.getMerchantApiKey());
-        assertEquals(VisaCheckout.VISA_CHECKOUT_REQUEST_CODE, visaEnvironmentConfig.getVisaCheckoutRequestCode());
+        assertEquals(BraintreeRequestCodes.VISA_CHECKOUT, visaEnvironmentConfig.getVisaCheckoutRequestCode());
     }
 
     @Test
