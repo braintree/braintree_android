@@ -1,11 +1,9 @@
 package com.braintreepayments.demo;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.braintreepayments.api.BraintreeFragment;
@@ -21,6 +19,7 @@ import com.visa.checkout.VisaMerchantInfo.AcceptedShippingRegions;
 import com.visa.checkout.VisaPaymentInfo;
 import com.visa.checkout.VisaPaymentInfo.Currency;
 import com.visa.checkout.VisaPaymentInfo.UserReviewAction;
+import com.visa.checkout.widget.VisaPaymentButton;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -30,17 +29,14 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
 
     private LinearLayout mVisaCheckoutLayout;
 
-    private ImageView mVisaPaymentButton;
     private VisaMcomLibrary mVisaMComLibrary;
+    private View mVisaPaymentButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.visa_checkout_activity);
-        mVisaPaymentButton = (ImageView)findViewById(R.id.visa_checkout_button);
         mVisaCheckoutLayout = (LinearLayout) findViewById(R.id.visa_checkout_layout);
-
-        mVisaPaymentButton.setOnClickListener(this);
     }
 
     @Override
@@ -57,7 +53,6 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
         } catch (InvalidArgumentException e) {
             e.printStackTrace();
         }
-        mVisaPaymentButton.setEnabled(true);
         VisaCheckout.createVisaCheckoutLibrary(mBraintreeFragment);
     }
 
@@ -120,7 +115,12 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
     @Override
     public void onVisaCheckoutLibraryCreated(VisaMcomLibrary visaMcomLibrary) {
         mVisaMComLibrary = visaMcomLibrary;
-        Drawable result = VisaMcomLibrary.fetchCardArtImage(this);
-        mVisaPaymentButton.setImageDrawable(result);
+
+        // Generate the button once.
+        if (mVisaCheckoutLayout.getChildCount() == 0) {
+            mVisaPaymentButton = new VisaPaymentButton(this);
+            mVisaPaymentButton.setOnClickListener(this);
+            mVisaCheckoutLayout.addView(mVisaPaymentButton);
+        }
     }
 }
