@@ -1,5 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## 2.3.11
+
+* Fix ProGuard rules (fixes [#124](https://github.com/braintree/braintree_android/issues/124))
+* Fix `NullPointerException` when using deprecated DataCollector methods
+* Update compile and target SDK versions to 25
+
 ## 2.3.10
 
 * Add `BraintreeFragment#getListeners` to get a list of all the registered listeners
