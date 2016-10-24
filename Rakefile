@@ -70,7 +70,7 @@ task :release_paypal do
 end
 
 def prompt_for_change_log(version)
-  last_version = `git tag | tail -1`.chomp
+  last_version = `git tag --sort=version:refname | tail -1`.chomp
   tmp_change_log = "#{version}"
   tmp_change_log += "\n\n# Please enter a summary of the changes below."
   tmp_change_log += "\n# Lines starting with '# ' will be ignored."
