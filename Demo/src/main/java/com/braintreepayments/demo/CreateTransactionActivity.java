@@ -1,8 +1,10 @@
 package com.braintreepayments.demo;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -15,7 +17,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class CreateTransactionActivity extends Activity {
+public class CreateTransactionActivity extends AppCompatActivity {
 
     public static final String EXTRA_PAYMENT_METHOD_NONCE = "nonce";
 
@@ -25,6 +27,12 @@ public class CreateTransactionActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.create_transaction_activity);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         mLoadingSpinner = (ProgressBar) findViewById(R.id.loading_spinner);
         setTitle(R.string.processing_transaction);
 
@@ -86,5 +94,15 @@ public class CreateTransactionActivity extends Activity {
         TextView textView = (TextView) findViewById(R.id.transaction_message);
         textView.setText(message);
         textView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+
+        return false;
     }
 }
