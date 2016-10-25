@@ -110,7 +110,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
     }
 
     private DropInRequest getDropInRequest() {
-        DropInRequest paymentRequest = new DropInRequest()
+        DropInRequest dropInRequest = new DropInRequest()
                 .clientToken(mAuthorization)
                 .collectDeviceData(Settings.shouldCollectDeviceData(this))
                 .androidPayCart(getAndroidPayCart())
@@ -119,10 +119,10 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
                 .androidPayAllowedCountriesForShipping(Settings.getAndroidPayAllowedCountriesForShipping(this));
 
         if (Settings.isPayPalAddressScopeRequested(this)) {
-            paymentRequest.paypalAdditionalScopes(Collections.singletonList(PayPal.SCOPE_ADDRESS));
+            dropInRequest.paypalAdditionalScopes(Collections.singletonList(PayPal.SCOPE_ADDRESS));
         }
 
-        return paymentRequest;
+        return dropInRequest;
     }
 
     public void createTransaction(View v) {
@@ -180,7 +180,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
             }
         } else if (resultCode != RESULT_CANCELED) {
             safelyCloseLoadingView();
-            showDialog(((Exception) data.getParcelableExtra(DropInActivity.EXTRA_ERROR)).getMessage());
+            showDialog(((Exception) data.getSerializableExtra(DropInActivity.EXTRA_ERROR)).getMessage());
         }
     }
 
