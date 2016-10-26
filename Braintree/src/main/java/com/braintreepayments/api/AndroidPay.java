@@ -67,7 +67,7 @@ public class AndroidPay {
      * Before starting the Android Pay flow, use
      * {@link #isReadyToPay(BraintreeFragment, BraintreeResponseListener)} to check whether the
      * user has the Android Pay app installed and is ready to pay. When the listener is called with
-     * {@code true}, show the Android Pay button. When it called with {@code false}, display other
+     * {@code true}, show the Android Pay button. When it is called with {@code false}, display other
      * checkout options along with text notifying the user to set up the Android Pay app.
      *
      * @param fragment {@link BraintreeFragment}
