@@ -309,7 +309,7 @@ public class PayPal {
             experienceProfile.put(LOCALE_CODE_KEY, request.getLocaleCode());
         }
 
-        if (request.getShippingAddressOverride() != null && !request.getShippingAddressOverride().isEmpty()) {
+        if (request.getShippingAddressOverride() != null) {
             experienceProfile.put(ADDRESS_OVERRIDE_KEY, true);
             PostalAddress shippingAddress = request.getShippingAddressOverride();
             parameters.put(PostalAddress.LINE_1_KEY, shippingAddress.getStreetAddress());

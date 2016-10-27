@@ -103,25 +103,4 @@ public class PostalAddressUnitTest {
         assertEquals("US", postSerialized.getCountryCodeAlpha2());
         assertEquals("John Fakerson", postSerialized.getRecipientName());
     }
-
-    @Test
-    public void isEmpty_returnsTrueIfCountryCodeIsNotSet(){
-        PostalAddress postalAddress = new PostalAddress()
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. 3")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("94602")
-                .recipientName("John Fakerson");
-
-        assertTrue(postalAddress.isEmpty());
-    }
-
-    @Test
-    public void isEmpty_returnsFalseIfCountryCodeIsSet(){
-        PostalAddress postalAddress = new PostalAddress()
-                .countryCodeAlpha2("US");
-
-        assertFalse(postalAddress.isEmpty());
-    }
 }
