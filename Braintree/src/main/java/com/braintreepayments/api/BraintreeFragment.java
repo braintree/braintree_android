@@ -140,8 +140,11 @@ public class BraintreeFragment extends Fragment {
                 if (VERSION.SDK_INT >= VERSION_CODES.N) {
                     try {
                         fm.beginTransaction().add(braintreeFragment, TAG).commitNow();
-                    } catch (IllegalStateException e) {
+                    } catch (IllegalStateException | NullPointerException e) {
                         fm.beginTransaction().add(braintreeFragment, TAG).commit();
+                        try {
+                            fm.executePendingTransactions();
+                        } catch (IllegalStateException ignored) {}
                     }
                 } else {
                     fm.beginTransaction().add(braintreeFragment, TAG).commit();
