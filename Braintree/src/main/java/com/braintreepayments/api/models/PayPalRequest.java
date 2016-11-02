@@ -107,6 +107,36 @@ public class PayPalRequest implements Parcelable {
 
     /**
      * Whether to use a custom locale code.
+     * <br>
+     * Supported locales are:
+     * <br>
+     * <code>da_DK</code>,
+     * <code>de_DE</code>,
+     * <code>en_AU</code>,
+     * <code>en_GB</code>,
+     * <code>en_US</code>,
+     * <code>es_ES</code>,
+     * <code>es_XC</code>,
+     * <code>fr_CA</code>,
+     * <code>fr_FR</code>,
+     * <code>fr_XC</code>,
+     * <code>id_ID</code>,
+     * <code>it_IT</code>,
+     * <code>ja_JP</code>,
+     * <code>ko_KR</code>,
+     * <code>nl_NL</code>,
+     * <code>no_NO</code>,
+     * <code>pl_PL</code>,
+     * <code>pt_BR</code>,
+     * <code>pt_PT</code>,
+     * <code>ru_RU</code>,
+     * <code>sv_SE</code>,
+     * <code>th_TH</code>,
+     * <code>tr_TR</code>,
+     * <code>zh_CN</code>,
+     * <code>zh_HK</code>,
+     * <code>zh_TW</code>,
+     * <code>zh_XC</code>.
      *
      * @param localeCode Whether to use a custom locale code.
      */
