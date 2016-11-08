@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 import com.braintreepayments.api.Venmo;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
@@ -49,8 +50,9 @@ public class AnalyticsEvent {
         String networkType = null;
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connectivityManager.getActiveNetworkInfo() != null) {
-            networkType = connectivityManager.getActiveNetworkInfo().getTypeName();
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if (networkInfo != null) {
+            networkType = networkInfo.getTypeName();
         }
         if (networkType == null) {
             networkType = "none";
