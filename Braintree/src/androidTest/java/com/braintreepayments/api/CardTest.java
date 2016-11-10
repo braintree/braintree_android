@@ -3,14 +3,15 @@ package com.braintreepayments.api;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.exceptions.AuthorizationException;
+import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
+import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
 
 import org.junit.Rule;
@@ -33,12 +34,21 @@ public class CardTest {
             new BraintreeActivityTestRule<>(TestActivity.class);
 
     @Test(timeout = 10000)
-    public void tokenize_tokenizesACard() throws InvalidArgumentException, InterruptedException {
+    public void tokenize_tokenizesACardWithACustomer() throws InvalidArgumentException, InterruptedException {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
                 .expirationDate("08/20");
 
         assertTokenizationSuccessful(new TestClientTokenBuilder().build(), cardBuilder);
+    }
+
+    @Test
+    public void tokenize_tokenizesACardWithoutACustomer() throws InvalidArgumentException, InterruptedException {
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber(VISA)
+                .expirationDate("08/20");
+
+        assertTokenizationSuccessful(new TestClientTokenBuilder().withoutCustomer().build(), cardBuilder);
     }
 
     @Test(timeout = 10000)
@@ -98,6 +108,75 @@ public class CardTest {
                 .cardNumber(VISA)
                 .expirationDate("08/20")
                 .validate(true);
+
+        Card.tokenize(fragment, cardBuilder);
+
+        countDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    public void tokenize_tokenizesACardWithCvv() throws InvalidArgumentException, InterruptedException {
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber(VISA)
+                .expirationDate("08/20")
+                .cvv("123");
+
+        assertTokenizationSuccessful(new TestClientTokenBuilder().withCvvVerification().build(), cardBuilder);
+    }
+
+    @Test(timeout = 10000)
+    public void tokenize_callsErrorCallbackForInvalidCvv() throws InvalidArgumentException, InterruptedException {
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber(VISA)
+                .expirationDate("08/20")
+                .cvv("200");
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivityTestRule.getActivity(),
+                new TestClientTokenBuilder().withCvvVerification().build());
+        fragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onError(Exception error) {
+                assertEquals("CVV verification failed",
+                        ((ErrorWithResponse) error).errorFor("creditCard").getFieldErrors().get(0).getMessage());
+                countDownLatch.countDown();
+            }
+        });
+
+        Card.tokenize(fragment, cardBuilder);
+
+        countDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    public void tokenize_tokenizesACardWithPostalCode() throws InvalidArgumentException, InterruptedException {
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber(VISA)
+                .expirationDate("08/20")
+                .cvv("123");
+
+        assertTokenizationSuccessful(new TestClientTokenBuilder().withPostalCodeVerification().build(), cardBuilder);
+    }
+
+    @Test(timeout = 10000)
+    public void tokenize_callsErrorCallbackForInvalidPostalCode() throws InvalidArgumentException, InterruptedException {
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber(VISA)
+                .expirationDate("08/20")
+                .postalCode("20000");
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivityTestRule.getActivity(),
+                new TestClientTokenBuilder().withPostalCodeVerification().build());
+        fragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onError(Exception error) {
+                assertEquals("Postal code verification failed",
+                        ((ErrorWithResponse) error).errorFor("creditCard").errorFor("billingAddress")
+                                .getFieldErrors().get(0).getMessage());
+                countDownLatch.countDown();
+            }
+        });
 
         Card.tokenize(fragment, cardBuilder);
 
