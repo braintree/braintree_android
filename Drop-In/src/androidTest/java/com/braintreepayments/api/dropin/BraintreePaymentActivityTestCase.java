@@ -28,7 +28,7 @@ public class BraintreePaymentActivityTestCase extends
         super(BraintreePaymentActivity.class);
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({"deprecation", "MissingPermission"})
     @Override
     public void setUp() throws Exception {
         HttpRequest.DEBUG = true;
