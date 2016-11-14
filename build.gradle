@@ -91,10 +91,10 @@ allprojects {
 
     version = '1.7.9-SNAPSHOT'
     ext {
-        compileSdkVersion = 23
-        buildToolsVersion = '23.0.1'
+        compileSdkVersion = 25
+        buildToolsVersion = '25.0.0'
         minSdkVersion = 16
-        targetSdkVersion = 23
+        targetSdkVersion = 25
         versionCode = 38
         versionName = version
     }
