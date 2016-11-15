@@ -105,7 +105,6 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
     public void onVisaCheckoutLibraryCreated(VisaMcomLibrary visaMcomLibrary) {
         mVisaMComLibrary = visaMcomLibrary;
 
-        // Generate the button once.
         if (mVisaCheckoutLayout.getChildCount() == 0) {
             mVisaPaymentButton = new VisaPaymentButton(this);
             mVisaPaymentButton.setOnClickListener(this);
