@@ -367,9 +367,7 @@ public class PayPal {
     }
 
     private static PayPalApprovalHandler getDefaultApprovalHandler(final BraintreeFragment fragment) {
-
         return new PayPalApprovalHandler() {
-
             @Override
             public void handleApproval(Request request, PayPalApprovalCallback paypalApprovalCallback) {
                 PendingRequest pendingRequest =
