@@ -8,7 +8,7 @@ import com.paypal.android.sdk.onetouch.core.Request;
 public interface PayPalApprovalHandler {
 
     /**
-     * Handle approval request for paypal and carry out custom authentication and authorization.
+     * Handle approval request for PayPal and carry out custom authentication and authorization.
      * On successful completion, {@link PayPalApprovalHandler}`s onComplete() is called.
      * On cancel, {@link PayPalApprovalHandler}'s onCancel() is called.
      *
