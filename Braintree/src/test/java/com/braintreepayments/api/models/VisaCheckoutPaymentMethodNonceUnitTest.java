@@ -30,6 +30,9 @@ public class VisaCheckoutPaymentMethodNonceUnitTest {
 
         assertNotNull(paymentMethodNonce.getShippingAddress());
         assertEquals("BT", paymentMethodNonce.getShippingAddress().getFirstName());
+
+        assertNotNull(paymentMethodNonce.getUserData());
+        assertEquals("BT", paymentMethodNonce.getUserData().getUserFirstName());
     }
 
     @Test
@@ -48,5 +51,11 @@ public class VisaCheckoutPaymentMethodNonceUnitTest {
 
         assertEquals(expected.getLastTwo(), actual.getLastTwo());
         assertEquals(expected.getCardType(), actual.getCardType());
+
+        assertEquals(expected.getShippingAddress().getFirstName(), actual.getShippingAddress().getFirstName());
+        assertEquals(expected.getShippingAddress().getLastName(), actual.getShippingAddress().getLastName());
+
+        assertEquals(expected.getUserData().getUserFirstName(), actual.getUserData().getUserFirstName());
+        assertEquals(expected.getUserData().getUserLastName(), actual.getUserData().getUserLastName());
     }
 }

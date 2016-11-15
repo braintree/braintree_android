@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class VisaCheckoutPaymentMethodNonce extends PaymentMethodNonce implements Parcelable {
+
     public static final String TYPE = "VisaCheckoutCard";
     protected static final String API_RESOURCE_KEY = "visaCheckoutCards";
 
@@ -14,10 +15,12 @@ public class VisaCheckoutPaymentMethodNonce extends PaymentMethodNonce implement
     private static final String CARD_TYPE_KEY = "cardType";
     private static final String LAST_TWO_KEY = "lastTwo";
     private static final String SHIPPING_ADDRESS = "shippingAddress";
+    private static final String USER_DATA = "userData";
 
     private String mLastTwo;
     private String mCardType;
     private VisaCheckoutShippingAddress mShippingAddress;
+    private VisaCheckoutUserData mUserData;
 
     public String getLastTwo() {
         return mLastTwo;
@@ -29,6 +32,10 @@ public class VisaCheckoutPaymentMethodNonce extends PaymentMethodNonce implement
 
     public VisaCheckoutShippingAddress getShippingAddress() {
         return mShippingAddress;
+    }
+
+    public VisaCheckoutUserData getUserData() {
+        return mUserData;
     }
 
     @Override
@@ -46,11 +53,12 @@ public class VisaCheckoutPaymentMethodNonce extends PaymentMethodNonce implement
     protected void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
 
-        mShippingAddress = new VisaCheckoutShippingAddress(json.getJSONObject(SHIPPING_ADDRESS));
-
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
         mLastTwo = details.getString(LAST_TWO_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
+
+        mShippingAddress = new VisaCheckoutShippingAddress(json.getJSONObject(SHIPPING_ADDRESS));
+        mUserData = new VisaCheckoutUserData(json.getJSONObject(USER_DATA));
     }
 
     private VisaCheckoutPaymentMethodNonce() {}
@@ -60,12 +68,16 @@ public class VisaCheckoutPaymentMethodNonce extends PaymentMethodNonce implement
         super.writeToParcel(dest, flags);
         dest.writeString(mLastTwo);
         dest.writeString(mCardType);
+        dest.writeParcelable(mShippingAddress, flags);
+        dest.writeParcelable(mUserData, flags);
     }
 
     protected VisaCheckoutPaymentMethodNonce(Parcel in) {
         super(in);
         mLastTwo = in.readString();
         mCardType = in.readString();
+        mShippingAddress = in.readParcelable(VisaCheckoutShippingAddress.class.getClassLoader());
+        mUserData = in.readParcelable(VisaCheckoutUserData.class.getClassLoader());
     }
 
     public static final Creator<VisaCheckoutPaymentMethodNonce> CREATOR =

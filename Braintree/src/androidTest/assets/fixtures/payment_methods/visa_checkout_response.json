@@ -17,6 +17,13 @@
       "region": "CA",
       "postalCode": "94107",
       "countryCode": "US"
+    },
+    "userData": {
+      "userFirstName": "BT",
+      "userLastName": "Test",
+      "userFullName": "BT Test",
+      "userName": "test@bt.com",
+      "userEmail": "test@bt.com"
     }
   }]
 }
