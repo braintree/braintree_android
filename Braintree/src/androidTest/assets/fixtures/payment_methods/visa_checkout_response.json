@@ -8,6 +8,15 @@
     {
       "cardType": "Visa",
       "lastTwo": "11"
+    },
+    "shippingAddress": {
+      "firstName": "BT",
+      "lastName": "Test",
+      "streetAddress": "123 Townsend St Fl 6",
+      "locality": "San Francisco",
+      "region": "CA",
+      "postalCode": "94107",
+      "countryCode": "US"
     }
   }]
 }

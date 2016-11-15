@@ -6,12 +6,14 @@ import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class VisaCheckoutPaymentMethodNonceUnitTest {
 
     @Test
@@ -25,6 +27,9 @@ public class VisaCheckoutPaymentMethodNonceUnitTest {
         assertEquals("ending in ••11", paymentMethodNonce.getDescription());
         assertFalse(paymentMethodNonce.isDefault());
         assertEquals("Visa Checkout", paymentMethodNonce.getTypeLabel());
+
+        assertNotNull(paymentMethodNonce.getShippingAddress());
+        assertEquals("BT", paymentMethodNonce.getShippingAddress().getFirstName());
     }
 
     @Test

@@ -13,9 +13,11 @@ public class VisaCheckoutPaymentMethodNonce extends PaymentMethodNonce implement
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
     private static final String LAST_TWO_KEY = "lastTwo";
+    private static final String SHIPPING_ADDRESS = "shippingAddress";
 
     private String mLastTwo;
     private String mCardType;
+    private VisaCheckoutShippingAddress mShippingAddress;
 
     public String getLastTwo() {
         return mLastTwo;
@@ -23,6 +25,10 @@ public class VisaCheckoutPaymentMethodNonce extends PaymentMethodNonce implement
 
     public String getCardType() {
         return mCardType;
+    }
+
+    public VisaCheckoutShippingAddress getShippingAddress() {
+        return mShippingAddress;
     }
 
     @Override
@@ -39,6 +45,8 @@ public class VisaCheckoutPaymentMethodNonce extends PaymentMethodNonce implement
     @Override
     protected void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
+
+        mShippingAddress = new VisaCheckoutShippingAddress(json.getJSONObject(SHIPPING_ADDRESS));
 
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
         mLastTwo = details.getString(LAST_TWO_KEY);
