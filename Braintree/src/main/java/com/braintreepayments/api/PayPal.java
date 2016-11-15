@@ -211,18 +211,6 @@ public class PayPal {
         }
     }
 
-    /**
-     * Starts the Checkout With PayPal flow with custom PayPal approval handler. This will launch the PayPal app if installed or switch
-     * to the browser for user authorization.
-     * <p>
-     * This requires that the merchant uses a {@link com.braintreepayments.api.models.ClientToken}
-     *
-     * @param fragment A {@link BraintreeFragment} used to process the request.
-     * @param paypalRequest A {@link PayPalRequest} used to customize the request.
-     * @param isBillingAgreement A boolean. If true, this will use the Billing Agreement. Otherwise,
-     *        PayPal will perform a Single Payment.
-     * @param handler A {@link PayPalApprovalHandler} for custom approval handling.
-     */
     private static void requestOneTimePayment(final BraintreeFragment fragment, final PayPalRequest paypalRequest,
             final boolean isBillingAgreement, final PayPalApprovalHandler handler) {
         final HttpResponseCallback callback = new HttpResponseCallback() {
