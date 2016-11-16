@@ -1,5 +1,19 @@
 # Braintree Android SDK Release Notes
 
+## 2.3.12
+
+* Improve PayPal address validations
+* Work around `NullPointerException` in `BraintreeFragment#newInstance` (fixes [#125](https://github.com/braintree/braintree_android/issues/125))
+* Document supported locales for PayPal
+* Fix rare `NullPointerException` ([#128](https://github.com/braintree/braintree_android/pull/128))
+
+## 2.3.12
+
+* Improve PayPal address validations
+* Work around `NullPointerException` in `BraintreeFragment#newInstance` (fixes [#125](https://github.com/braintree/braintree_android/issues/125))
+* Document supported locales for PayPal
+* Fix rare `NullPointerException` ([#128](https://github.com/braintree/braintree_android/pull/128))
+
 ## 2.3.11
 
 * Fix ProGuard rules (fixes [#124](https://github.com/braintree/braintree_android/issues/124))
