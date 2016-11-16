@@ -131,6 +131,15 @@ public class PostalAddress implements Parcelable {
         return mCountryCodeAlpha2;
     }
 
+    /**
+     * A {@link PostalAddress} is considered empty if it does not have a country code.
+     *
+     * @return {@code true} if the country code is {@code null} or empty, {@code false} otherwise.
+     */
+    public boolean isEmpty() {
+        return TextUtils.isEmpty(mCountryCodeAlpha2);
+    }
+
     @Override
     public String toString() {
         return String.format("%s\n%s\n%s\n%s, %s\n%s %s", mRecipientName, mStreetAddress,
