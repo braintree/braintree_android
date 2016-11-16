@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import android.app.Activity;
 import android.content.Intent;
 
 import com.braintreepayments.api.exceptions.ConfigurationException;
@@ -19,6 +20,8 @@ import com.visa.checkout.VisaPaymentSummary;
 import com.visa.checkout.utils.VisaEnvironmentConfig;
 
 public class VisaCheckout {
+    public static int VISA_CHECKOUT_REQUEST_CODE = 100;
+
     public static void createVisaCheckoutLibrary(final BraintreeFragment braintreeFragment) {
         braintreeFragment.waitForConfiguration(new ConfigurationListener() {
             @Override
@@ -41,7 +44,7 @@ public class VisaCheckout {
 
                 VisaMcomLibrary visaMcomLibrary = VisaMcomLibrary.getLibrary(braintreeFragment.getActivity(),
                         visaEnvironmentConfig);
-
+                BraintreeVisaCheckoutResultActivity.sVisaEnvironmentConfig = visaEnvironmentConfig;
                 braintreeFragment.postVisaCheckoutLibraryCallback(visaMcomLibrary);
             }
         });
@@ -50,6 +53,7 @@ public class VisaCheckout {
 
     public static void authorize(final BraintreeFragment braintreeFragment, final VisaMcomLibrary visaMcomLibrary, final VisaPaymentInfo visaPaymentInfo) {
         braintreeFragment.waitForConfiguration(new ConfigurationListener() {
+
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 VisaMerchantInfo visaMerchantInfo = visaPaymentInfo.getVisaMerchantInfo();
@@ -59,22 +63,32 @@ public class VisaCheckout {
 
                 visaMerchantInfo.setMerchantApiKey(configuration.getVisaCheckout().getApiKey());
                 visaMerchantInfo.setDataLevel(MerchantDataLevel.FULL);
-                visaPaymentInfo.setVisaMerchantInfo(visaMerchantInfo);
 
+                visaPaymentInfo.setVisaMerchantInfo(visaMerchantInfo);
                 visaPaymentInfo.setExternalClientId(configuration.getVisaCheckout().getExternalClientId());
 
-                visaMcomLibrary.checkoutWithPayment(visaPaymentInfo, BraintreeRequestCodes.VISA_CHECKOUT);
+                BraintreeVisaCheckoutResultActivity.sVisaPaymentInfo = visaPaymentInfo;
+
+                Intent visaCheckoutResultActivity = new Intent(braintreeFragment.getActivity(),
+                        BraintreeVisaCheckoutResultActivity.class);
+                braintreeFragment.startActivityForResult(visaCheckoutResultActivity,
+                        BraintreeRequestCodes.VISA_CHECKOUT);
             }
         });
     }
 
-    protected static void onActivityResult(BraintreeFragment braintreeFragment, int resultCode, Intent data) {
-        // Process data
-        VisaPaymentSummary visaPaymentSummary = data.getParcelableExtra(VisaLibrary.PAYMENT_SUMMARY);
-        tokenize(braintreeFragment, visaPaymentSummary);
+    static void onActivityResult(BraintreeFragment braintreeFragment, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            // TODO anayltics
+            VisaPaymentSummary visaPaymentSummary = data.getParcelableExtra(VisaLibrary.PAYMENT_SUMMARY);
+            tokenize(braintreeFragment, visaPaymentSummary);
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            //TODO analytics
+           braintreeFragment.postCancelCallback(BraintreeRequestCodes.VISA_CHECKOUT);
+        }
     }
 
-    public static void tokenize(final BraintreeFragment braintreeFragment, final VisaPaymentSummary visaPaymentSummary) {
+    static void tokenize(final BraintreeFragment braintreeFragment, final VisaPaymentSummary visaPaymentSummary) {
         braintreeFragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
@@ -95,5 +109,4 @@ public class VisaCheckout {
             }
         });
     }
-
 }

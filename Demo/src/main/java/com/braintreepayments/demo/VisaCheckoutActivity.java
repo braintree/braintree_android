@@ -56,7 +56,6 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
         VisaCheckout.createVisaCheckoutLibrary(mBraintreeFragment);
     }
 
-
     @Override
     public void onClick(View view) {
         VisaPaymentInfo visaPaymentInfo = new VisaPaymentInfo();
@@ -100,16 +99,6 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
                 .putExtra(MainActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce);
         setResult(RESULT_OK, intent);
         finish();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == VisaCheckout.VISA_CHECKOUT_REQUEST_CODE) {
-            mBraintreeFragment.onActivityResult(requestCode, resultCode, data);
-        } else {
-            onError(new Exception("Request Code: " + requestCode + " Result Code: " + resultCode));
-        }
     }
 
     @Override

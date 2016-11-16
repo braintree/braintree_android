@@ -8,5 +8,6 @@
             android:theme="@style/bt_transparent_activity"/>
         <activity android:name="com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity"/>
         <service android:name="com.braintreepayments.api.internal.AnalyticsIntentService"/>
+        <activity android:name="com.braintreepayments.api.BraintreeVisaCheckoutResultActivity"/>
     </application>
 </manifest>
