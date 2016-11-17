@@ -8,55 +8,55 @@ import org.json.JSONObject;
 public class VisaCheckoutUserData implements Parcelable {
 
 
-    private final String userFirstName;
-    private final String userLastName;
-    private final String userFullName;
-    private final String userName;
-    private final String userEmail;
+    private final String mUserFirstName;
+    private final String mUserLastName;
+    private final String mUserFullName;
+    private final String mUserName;
+    private final String mUserEmail;
 
     public VisaCheckoutUserData(JSONObject json) {
-        userFirstName = json.optString("userFirstName");
-        userLastName = json.optString("userLastName");
-        userFullName = json.optString("userFullName");
-        userName = json.optString("userName");
-        userEmail = json.optString("userEmail");
+        mUserFirstName = json.optString("userFirstName");
+        mUserLastName = json.optString("userLastName");
+        mUserFullName = json.optString("userFullName");
+        mUserName = json.optString("userName");
+        mUserEmail = json.optString("userEmail");
     }
 
     public VisaCheckoutUserData(Parcel in) {
-        userFirstName = in.readString();
-        userLastName = in.readString();
-        userFullName = in.readString();
-        userName = in.readString();
-        userEmail = in.readString();
+        mUserFirstName = in.readString();
+        mUserLastName = in.readString();
+        mUserFullName = in.readString();
+        mUserName = in.readString();
+        mUserEmail = in.readString();
     }
 
     public String getUserFirstName() {
-        return userFirstName;
+        return mUserFirstName;
     }
 
     public String getUserLastName() {
-        return userLastName;
+        return mUserLastName;
     }
 
     public String getUserFullName() {
-        return userFullName;
+        return mUserFullName;
     }
 
     public String getUserName() {
-        return userName;
+        return mUserName;
     }
 
     public String getUserEmail() {
-        return userEmail;
+        return mUserEmail;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(userFirstName);
-        dest.writeString(userLastName);
-        dest.writeString(userFullName);
-        dest.writeString(userName);
-        dest.writeString(userEmail);
+        dest.writeString(mUserFirstName);
+        dest.writeString(mUserLastName);
+        dest.writeString(mUserFullName);
+        dest.writeString(mUserName);
+        dest.writeString(mUserEmail);
     }
 
     @Override
@@ -76,4 +76,14 @@ public class VisaCheckoutUserData implements Parcelable {
         }
     };
 
+    @Override
+    public String toString() {
+        return "VisaCheckoutUserData{" +
+                "mUserFirstName='" + mUserFirstName + '\'' +
+                ", mUserLastName='" + mUserLastName + '\'' +
+                ", mUserFullName='" + mUserFullName + '\'' +
+                ", mUserName='" + mUserName + '\'' +
+                ", mUserEmail='" + mUserEmail + '\'' +
+                '}';
+    }
 }

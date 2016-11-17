@@ -7,7 +7,6 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RobolectricTestRunner;
 
 import static junit.framework.Assert.assertEquals;
@@ -56,5 +55,20 @@ public class VisaCheckoutShippingAddressUnitTest {
         assertEquals(mVisaCheckoutShippingAddress.getRegion(), actual.getRegion());
         assertEquals(mVisaCheckoutShippingAddress.getPostalCode(), actual.getPostalCode());
         assertEquals(mVisaCheckoutShippingAddress.getCountryCode(), actual.getCountryCode());
+    }
+
+    @Test
+    public void toStringIsCorrect() {
+        String expected = "VisaCheckoutShippingAddress{";
+        expected += "mFirstName='firstName', ";
+        expected += "mLastName='lastName', ";
+        expected += "mStreetAddress='streetAddress', ";
+        expected += "mLocality='locality', ";
+        expected += "mRegion='region', ";
+        expected += "mPostalCode='postalCode', ";
+        expected += "mCountryCode='countryCode'";
+        expected += "}";
+
+        assertEquals(expected, mVisaCheckoutShippingAddress.toString());
     }
 }

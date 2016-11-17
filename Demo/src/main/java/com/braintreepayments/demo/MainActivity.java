@@ -25,6 +25,7 @@ import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.models.VenmoAccountNonce;
+import com.braintreepayments.api.models.VisaCheckoutPaymentMethodNonce;
 import com.google.android.gms.identity.intents.model.UserAddress;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.LineItem;
@@ -250,6 +251,8 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
         } else if (mNonce instanceof VenmoAccountNonce) {
             VenmoAccountNonce venmoAccountNonce = (VenmoAccountNonce) mNonce;
             details = "Username: " + venmoAccountNonce.getUsername();
+        } else if (mNonce instanceof VisaCheckoutPaymentMethodNonce) {
+            mNonceDetails.setText(mNonce.toString());
         }
 
         mNonceDetails.setText(details);

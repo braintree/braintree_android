@@ -61,6 +61,16 @@ public class VisaCheckoutPaymentMethodNonce extends PaymentMethodNonce implement
         mUserData = new VisaCheckoutUserData(json.getJSONObject(USER_DATA));
     }
 
+    @Override
+    public String toString() {
+        return "VisaCheckoutPaymentMethodNonce{" +
+                "mLastTwo='" + mLastTwo + '\'' +
+                ", mCardType='" + mCardType + '\'' +
+                ", mShippingAddress=" + mShippingAddress +
+                ", mUserData=" + mUserData +
+                '}';
+    }
+
     private VisaCheckoutPaymentMethodNonce() {}
 
     @Override
@@ -92,5 +102,4 @@ public class VisaCheckoutPaymentMethodNonce extends PaymentMethodNonce implement
                     return new VisaCheckoutPaymentMethodNonce[size];
                 }
             };
-
 }

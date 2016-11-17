@@ -6,71 +6,71 @@ import android.os.Parcelable;
 import org.json.JSONObject;
 
 public class VisaCheckoutShippingAddress implements Parcelable {
-    private final String firstName;
-    private final String lastName;
-    private final String streetAddress;
-    private final String locality;
-    private final String region;
-    private final String postalCode;
-    private final String countryCode;
+    private final String mFirstName;
+    private final String mLastName;
+    private final String mStreetAddress;
+    private final String mLocality;
+    private final String mRegion;
+    private final String mPostalCode;
+    private final String mCountryCode;
 
     public VisaCheckoutShippingAddress(JSONObject json) {
-        firstName = json.optString("firstName");
-        lastName = json.optString("lastName");
-        streetAddress = json.optString("streetAddress");
-        locality = json.optString("locality");
-        region = json.optString("region");
-        postalCode = json.optString("postalCode");
-        countryCode = json.optString("countryCode");
+        mFirstName = json.optString("firstName");
+        mLastName = json.optString("lastName");
+        mStreetAddress = json.optString("streetAddress");
+        mLocality = json.optString("locality");
+        mRegion = json.optString("region");
+        mPostalCode = json.optString("postalCode");
+        mCountryCode = json.optString("countryCode");
     }
 
     public String getFirstName() {
-        return firstName;
+        return mFirstName;
     }
 
     public String getLastName() {
-        return lastName;
+        return mLastName;
     }
 
     public String getStreetAddress() {
-        return streetAddress;
+        return mStreetAddress;
     }
 
     public String getLocality() {
-        return locality;
+        return mLocality;
     }
 
     public String getRegion() {
-        return region;
+        return mRegion;
     }
 
     public String getPostalCode() {
-        return postalCode;
+        return mPostalCode;
     }
 
     public String getCountryCode() {
-        return countryCode;
+        return mCountryCode;
     }
 
     public VisaCheckoutShippingAddress(Parcel in) {
-        firstName = in.readString();
-        lastName = in.readString();
-        streetAddress = in.readString();
-        locality = in.readString();
-        region = in.readString();
-        postalCode = in.readString();
-        countryCode = in.readString();
+        mFirstName = in.readString();
+        mLastName = in.readString();
+        mStreetAddress = in.readString();
+        mLocality = in.readString();
+        mRegion = in.readString();
+        mPostalCode = in.readString();
+        mCountryCode = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(firstName);
-        dest.writeString(lastName);
-        dest.writeString(streetAddress);
-        dest.writeString(locality);
-        dest.writeString(region);
-        dest.writeString(postalCode);
-        dest.writeString(countryCode);
+        dest.writeString(mFirstName);
+        dest.writeString(mLastName);
+        dest.writeString(mStreetAddress);
+        dest.writeString(mLocality);
+        dest.writeString(mRegion);
+        dest.writeString(mPostalCode);
+        dest.writeString(mCountryCode);
     }
 
     @Override
@@ -90,4 +90,16 @@ public class VisaCheckoutShippingAddress implements Parcelable {
         }
     };
 
+    @Override
+    public String toString() {
+        return "VisaCheckoutShippingAddress{" +
+                "mFirstName='" + mFirstName + '\'' +
+                ", mLastName='" + mLastName + '\'' +
+                ", mStreetAddress='" + mStreetAddress + '\'' +
+                ", mLocality='" + mLocality + '\'' +
+                ", mRegion='" + mRegion + '\'' +
+                ", mPostalCode='" + mPostalCode + '\'' +
+                ", mCountryCode='" + mCountryCode + '\'' +
+                '}';
+    }
 }

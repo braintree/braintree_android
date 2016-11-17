@@ -3,9 +3,9 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 
 import org.json.JSONException;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RobolectricTestRunner;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
@@ -15,47 +15,64 @@ import static junit.framework.Assert.assertNotNull;
 
 @RunWith(RobolectricTestRunner.class)
 public class VisaCheckoutPaymentMethodNonceUnitTest {
+    VisaCheckoutPaymentMethodNonce  mVisaCheckoutPaymentMethodNonce;
 
-    @Test
-    public void fromJson_createsVisaCheckoutPaymentMethodNonce() throws JSONException {
-        VisaCheckoutPaymentMethodNonce paymentMethodNonce = VisaCheckoutPaymentMethodNonce.fromJson(
+    @Before
+    public void setup() throws JSONException {
+        mVisaCheckoutPaymentMethodNonce = VisaCheckoutPaymentMethodNonce.fromJson(
                 stringFromFixture("payment_methods/visa_checkout_response.json"));
-
-        assertEquals("11", paymentMethodNonce.getLastTwo());
-        assertEquals("Visa", paymentMethodNonce.getCardType());
-        assertEquals("123456-12345-12345-a-adfa", paymentMethodNonce.getNonce());
-        assertEquals("ending in ••11", paymentMethodNonce.getDescription());
-        assertFalse(paymentMethodNonce.isDefault());
-        assertEquals("Visa Checkout", paymentMethodNonce.getTypeLabel());
-
-        assertNotNull(paymentMethodNonce.getShippingAddress());
-        assertEquals("BT", paymentMethodNonce.getShippingAddress().getFirstName());
-
-        assertNotNull(paymentMethodNonce.getUserData());
-        assertEquals("BT", paymentMethodNonce.getUserData().getUserFirstName());
     }
 
     @Test
-    public void parcelsCorrectly() throws JSONException {
-        VisaCheckoutPaymentMethodNonce expected = VisaCheckoutPaymentMethodNonce.fromJson(
-                stringFromFixture("payment_methods/visa_checkout_response.json"));
+    public void fromJson_createsVisaCheckoutPaymentMethodNonce() {
+        assertEquals("11", mVisaCheckoutPaymentMethodNonce.getLastTwo());
+        assertEquals("Visa", mVisaCheckoutPaymentMethodNonce.getCardType());
+        assertEquals("123456-12345-12345-a-adfa", mVisaCheckoutPaymentMethodNonce.getNonce());
+        assertEquals("ending in ••11", mVisaCheckoutPaymentMethodNonce.getDescription());
+        assertFalse(mVisaCheckoutPaymentMethodNonce.isDefault());
+        assertEquals("Visa Checkout", mVisaCheckoutPaymentMethodNonce.getTypeLabel());
 
+        assertNotNull(mVisaCheckoutPaymentMethodNonce.getShippingAddress());
+        assertEquals("BT", mVisaCheckoutPaymentMethodNonce.getShippingAddress().getFirstName());
+
+        assertNotNull(mVisaCheckoutPaymentMethodNonce.getUserData());
+        assertEquals("BT", mVisaCheckoutPaymentMethodNonce.getUserData().getUserFirstName());
+    }
+
+    @Test
+    public void parcelsCorrectly() {
         Parcel parcel = Parcel.obtain();
-        expected.writeToParcel(parcel, 0);
+        mVisaCheckoutPaymentMethodNonce.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         VisaCheckoutPaymentMethodNonce actual = VisaCheckoutPaymentMethodNonce.CREATOR.createFromParcel(parcel);
 
-        assertEquals(expected.getNonce(), actual.getNonce());
-        assertEquals(expected.getDescription(), actual.getDescription());
-        assertEquals(expected.isDefault(), actual.isDefault());
+        assertEquals(mVisaCheckoutPaymentMethodNonce.getNonce(), actual.getNonce());
+        assertEquals(mVisaCheckoutPaymentMethodNonce.getDescription(), actual.getDescription());
+        assertEquals(mVisaCheckoutPaymentMethodNonce.isDefault(), actual.isDefault());
 
-        assertEquals(expected.getLastTwo(), actual.getLastTwo());
-        assertEquals(expected.getCardType(), actual.getCardType());
+        assertEquals(mVisaCheckoutPaymentMethodNonce.getLastTwo(), actual.getLastTwo());
+        assertEquals(mVisaCheckoutPaymentMethodNonce.getCardType(), actual.getCardType());
 
-        assertEquals(expected.getShippingAddress().getFirstName(), actual.getShippingAddress().getFirstName());
-        assertEquals(expected.getShippingAddress().getLastName(), actual.getShippingAddress().getLastName());
+        assertEquals(mVisaCheckoutPaymentMethodNonce.getShippingAddress().getFirstName(),
+                actual.getShippingAddress().getFirstName());
+        assertEquals(mVisaCheckoutPaymentMethodNonce.getShippingAddress().getLastName(),
+                actual.getShippingAddress().getLastName());
 
-        assertEquals(expected.getUserData().getUserFirstName(), actual.getUserData().getUserFirstName());
-        assertEquals(expected.getUserData().getUserLastName(), actual.getUserData().getUserLastName());
+        assertEquals(mVisaCheckoutPaymentMethodNonce.getUserData().getUserFirstName(),
+                actual.getUserData().getUserFirstName());
+        assertEquals(mVisaCheckoutPaymentMethodNonce.getUserData().getUserLastName(),
+                actual.getUserData().getUserLastName());
+    }
+
+    @Test
+    public void toStringIsCorrect() {
+        String expected = "VisaCheckoutPaymentMethodNonce{";
+        expected += "mLastTwo='11', ";
+        expected += "mCardType='Visa', ";
+        expected += String.format("mShippingAddress=%s, ", mVisaCheckoutPaymentMethodNonce.getShippingAddress());
+        expected += String.format("mUserData=%s", mVisaCheckoutPaymentMethodNonce.getUserData());
+        expected += '}';
+
+        assertEquals(expected, mVisaCheckoutPaymentMethodNonce.toString());
     }
 }

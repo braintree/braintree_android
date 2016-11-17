@@ -50,4 +50,17 @@ public class VisaCheckoutUserDataUnitTest {
         assertEquals(mVisaCheckoutUserData.getUserName(), actual.getUserName());
         assertEquals(mVisaCheckoutUserData.getUserEmail(), actual.getUserEmail());
     }
+
+    @Test
+    public void toStringIsCorrect() {
+        String expected = "VisaCheckoutUserData{";
+        expected += "mUserFirstName='userFirstName', ";
+        expected += "mUserLastName='userLastName', ";
+        expected += "mUserFullName='userFullName', ";
+        expected += "mUserName='userName', ";
+        expected += "mUserEmail='userEmail'";
+        expected += "}";
+
+        assertEquals(expected, mVisaCheckoutUserData.toString());
+    }
 }
