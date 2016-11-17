@@ -64,4 +64,10 @@ public class TestHelper {
             } catch (RuntimeException ignored) {}
         }
     }
+
+    protected static void useTokenizationKey() {
+        onDevice(withText("Settings")).perform(click());
+        onDevice(withText("Use Tokenization Key")).perform(click());
+        onDevice().pressBack();
+    }
 }
