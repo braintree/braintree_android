@@ -101,6 +101,11 @@ public class TestClientTokenBuilder {
         return this;
     }
 
+    public TestClientTokenBuilder withVisaCheckout() {
+        withCvvVerification();
+        return this;
+    }
+
     public String build() {
         switch (mMerchantType) {
             case MERCHANT_WITHOUT_PAYPAL:
