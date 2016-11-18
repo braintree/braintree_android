@@ -26,6 +26,16 @@ android {
         textReport true
         textOutput 'stdout'
     }
+
+    sourceSets {
+        String sharedTestDir = 'src/sharedTest/java'
+        androidTest {
+            java.srcDir sharedTestDir
+        }
+        test {
+            java.srcDir sharedTestDir
+        }
+    }
 }
 
 configurations {
@@ -42,8 +52,20 @@ dependencies {
 
     lintChecks project(path: ":Lint", configuration: "lintChecks")
 
-    androidTestCompile project(path: ':TestUtils', configuration: 'instrumentationTestDebug')
-    testCompile project(path: ':TestUtils', configuration: 'unitTestDebug')
+    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-web:2.2.2'
+    androidTestCompile 'com.android.support.test:rules:0.5'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile project(':TestUtils')
+
+    testCompile 'org.robolectric:robolectric:3.0'
+    testCompile 'org.powermock:powermock-module-junit4:1.6.4'
+    testCompile 'org.powermock:powermock-module-junit4-rule:1.6.4'
+    testCompile 'org.powermock:powermock-api-mockito:1.6.4'
+    testCompile 'org.powermock:powermock-classloading-xstream:1.6.4'
+    testCompile 'org.skyscreamer:jsonassert:1.3.0'
+    testCompile project(':TestUtils')
 }
 
 android.buildTypes.each { type ->

@@ -30,7 +30,7 @@ dependencies {
 
     compile files('libs/' + dataCollectorVersion)
 
-    androidTestCompile project(path: ':TestUtils', configuration: 'instrumentationTestDebug')
+    androidTestCompile 'com.android.support.test:runner:0.5'
 }
 
 /* maven deploy + signing */
