@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Parcel;
 
+import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
@@ -251,12 +252,22 @@ public class VisaCheckoutUnitTest {
         assertEquals("stubbedEncPaymentData", visaCheckoutCard.getString("encryptedPaymentData"));
         assertEquals("stubbedEncKey", visaCheckoutCard.getString("encryptedKey"));
         assertEquals("stubbedCallId", visaCheckoutCard.getString("callId"));
-
     }
 
     @Test
     public void onActivityResult_whenCancelled_callsCancelCallback() {
         VisaCheckout.onActivityResult(mBraintreeFragment, Activity.RESULT_CANCELED, null);
         verify(mBraintreeFragment).postCancelCallback(eq(BraintreeRequestCodes.VISA_CHECKOUT));
+    }
+
+    @Test
+    public void onActivityResult_whenFailure_postsException() {
+        VisaCheckout.onActivityResult(mBraintreeFragment, -100, null);
+
+        ArgumentCaptor exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
+        verify(mBraintreeFragment).postCallback((Exception) exceptionCaptor.capture());
+
+        assertEquals("Visa Checkout responded with resultCode=-100", ((BraintreeException)exceptionCaptor.getValue())
+                .getMessage());
     }
 }

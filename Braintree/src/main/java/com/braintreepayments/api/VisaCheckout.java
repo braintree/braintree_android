@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Intent;
 
+import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
@@ -20,8 +21,6 @@ import com.visa.checkout.VisaPaymentSummary;
 import com.visa.checkout.utils.VisaEnvironmentConfig;
 
 public class VisaCheckout {
-    public static int VISA_CHECKOUT_REQUEST_CODE = 100;
-
     public static void createVisaCheckoutLibrary(final BraintreeFragment braintreeFragment) {
         braintreeFragment.waitForConfiguration(new ConfigurationListener() {
             @Override
@@ -78,13 +77,15 @@ public class VisaCheckout {
     }
 
     static void onActivityResult(BraintreeFragment braintreeFragment, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK && data != null) {
-            // TODO anayltics
+        if (resultCode == Activity.RESULT_CANCELED) {
+            braintreeFragment.sendAnalyticsEvent("visacheckout.activityresult.canceled");
+        } else if (resultCode == Activity.RESULT_OK && data != null) {
             VisaPaymentSummary visaPaymentSummary = data.getParcelableExtra(VisaLibrary.PAYMENT_SUMMARY);
             tokenize(braintreeFragment, visaPaymentSummary);
-        } else if (resultCode == Activity.RESULT_CANCELED) {
-            //TODO analytics
-           braintreeFragment.postCancelCallback(BraintreeRequestCodes.VISA_CHECKOUT);
+            braintreeFragment.sendAnalyticsEvent("visacheckout.activityresult.ok");
+        } else {
+            braintreeFragment.postCallback(new BraintreeException("Visa Checkout responded with resultCode=" + resultCode));
+            braintreeFragment.sendAnalyticsEvent("visacheckout.activityresult.failed");
         }
     }
 
@@ -96,14 +97,14 @@ public class VisaCheckout {
                         new PaymentMethodNonceCallback() {
                             @Override
                             public void success(PaymentMethodNonce paymentMethodNonce) {
-                                // TODO analytics
                                 braintreeFragment.postCallback(paymentMethodNonce);
+                                braintreeFragment.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
                             }
 
                             @Override
                             public void failure(Exception exception) {
-                                // TODO analytics
                                 braintreeFragment.postCallback(exception);
+                                braintreeFragment.sendAnalyticsEvent("visacheckout.tokenize.failed");
                             }
                         });
             }
