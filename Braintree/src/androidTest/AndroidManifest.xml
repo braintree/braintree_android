@@ -1,10 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.braintreepayments.api">
 
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
-    <application android:label="Braintree Test" tools:replace="android:label">
+    <application>
 
         <!--suppress AndroidDomInspection -->
         <activity android:name=".test.TestActivity" />
