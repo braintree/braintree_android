@@ -72,7 +72,7 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.lukekorth:mailable_log:0.1.4'
 
-    compile 'com.google.android.gms:play-services-wallet:9.6.1'
+    compile 'com.google.android.gms:play-services-wallet:9.8.0'
 
     compile project(':Braintree')
     compile 'io.card:android-sdk:5.4.0'
