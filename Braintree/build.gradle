@@ -52,7 +52,7 @@ dependencies {
 
     lintChecks project(path: ":Lint", configuration: "lintChecks")
 
-    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.1'
+    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     androidTestCompile 'com.android.support.test.espresso:espresso-web:2.2.2'
     androidTestCompile 'com.android.support.test:rules:0.5'
