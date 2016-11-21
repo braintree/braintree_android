@@ -18,7 +18,7 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 
 import static com.paypal.android.sdk.onetouch.core.test.TestSetupHelper.getMockContextInspector;
 import static junit.framework.Assert.assertEquals;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class BrowserSwitchHelperUnitTest {
 
     private ContextInspector mContextInspector;
