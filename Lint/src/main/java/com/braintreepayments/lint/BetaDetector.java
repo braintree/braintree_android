@@ -16,35 +16,35 @@ import java.util.Collections;
 import java.util.List;
 
 public class BetaDetector extends Detector implements Detector.JavaPsiScanner {
-  // This would normally be private final, but has exposed here for testing purposes, since there
-  // seems to be no way to inject it via the Detector constructor using LintDetectorTest
-  static List<String> METHODS = Collections.emptyList();
-  private static final Implementation IMPLEMENTATION = new Implementation(BetaDetector.class,
-      Scope.JAVA_FILE_SCOPE);
-  static final Issue ISSUE = Issue.create(
-      "com.braintreepayments.beta",
-      "API is in beta",
-      "This API is currently in beta and subject to change. Braintree makes no guarantees about " +
-          "future compatibility or existence of this API.",
-      Category.CORRECTNESS,
-      6,
-      Severity.ERROR,
-      IMPLEMENTATION);
+    // This would normally be private final, but has exposed here for testing purposes, since there
+    // seems to be no way to inject it via the Detector constructor using LintDetectorTest
+    static List<String> METHODS = Collections.emptyList();
+    private static final Implementation IMPLEMENTATION = new Implementation(BetaDetector.class,
+            Scope.JAVA_FILE_SCOPE);
+    static final Issue ISSUE = Issue.create(
+            "com.braintreepayments.beta",
+            "API is in beta",
+            "This API is currently in beta and subject to change. Braintree makes no guarantees about " +
+                    "future compatibility or existence of this API.",
+            Category.CORRECTNESS,
+            6,
+            Severity.ERROR,
+            IMPLEMENTATION);
 
-  public BetaDetector() {
-  }
-
-  @Override
-  public List<String> getApplicableMethodNames() {
-    return METHODS;
-  }
-
-  @Override
-  public void visitMethod(JavaContext context, JavaElementVisitor visitor,
-      PsiMethodCallExpression node, PsiMethod method) {
-    if (METHODS.contains(method.getName())) {
-      context.report(ISSUE, node, context.getLocation(node), ISSUE.getBriefDescription(
-          TextFormat.TEXT));
+    public BetaDetector() {
     }
-  }
+
+    @Override
+    public List<String> getApplicableMethodNames() {
+        return METHODS;
+    }
+
+    @Override
+    public void visitMethod(JavaContext context, JavaElementVisitor visitor,
+            PsiMethodCallExpression node, PsiMethod method) {
+        if (METHODS.contains(method.getName())) {
+            context.report(ISSUE, node, context.getLocation(node), ISSUE.getBriefDescription(
+                    TextFormat.TEXT));
+        }
+    }
 }
