@@ -16,8 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class BetaDetector extends Detector implements Detector.JavaPsiScanner {
-    // This would normally be private final, but has exposed here for testing purposes, since there
-    // seems to be no way to inject it via the Detector constructor using LintDetectorTest
+
     static List<String> METHODS = Collections.emptyList();
     private static final Implementation IMPLEMENTATION = new Implementation(BetaDetector.class,
             Scope.JAVA_FILE_SCOPE);
