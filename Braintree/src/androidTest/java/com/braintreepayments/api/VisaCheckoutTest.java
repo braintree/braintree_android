@@ -89,7 +89,7 @@ public class VisaCheckoutTest {
     public void setUp() throws InvalidArgumentException {
         mCountDownLatch = new CountDownLatch(1);
         mBraintreeFragment = BraintreeFragmentTestUtils.getFragment(mActivityTestRule.getActivity(),
-                new TestClientTokenBuilder().withVisaCheckout().build());
+                new TestClientTokenBuilder().withVisaCheckout().build(), null);
     }
 
     @Test(timeout = 10000)

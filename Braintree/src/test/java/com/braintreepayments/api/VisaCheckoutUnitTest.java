@@ -11,6 +11,7 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
+import com.braintreepayments.api.models.VisaCheckoutPaymentMethodNonce;
 import com.visa.checkout.VisaLibrary;
 import com.visa.checkout.VisaMcomLibrary;
 import com.visa.checkout.VisaMerchantInfo;
@@ -37,7 +38,6 @@ import org.robolectric.RobolectricTestRunner;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -58,6 +58,22 @@ public class VisaCheckoutUnitTest {
 
     private Configuration mConfigurationWithVisaCheckout;
     private BraintreeFragment mBraintreeFragment;
+
+    private VisaPaymentSummary sampleVisaPaymentSummary() {
+        Parcel in = Parcel.obtain();
+        in.writeLong(1);
+        in.writeString("US");
+        in.writeString("90210");
+        in.writeString("1234");
+        in.writeString("VISA");
+        in.writeString("Credit");
+        in.writeString("stubbedEncPaymentData");
+        in.writeString("stubbedEncKey");
+        in.writeString("stubbedCallId");
+        in.setDataPosition(0);
+
+        return VisaPaymentSummary.CREATOR.createFromParcel(in);
+    }
 
     @Before
     public void setup() throws JSONException {
@@ -264,14 +280,105 @@ public class VisaCheckoutUnitTest {
         VisaPaymentInfo actual = BraintreeVisaCheckoutResultActivity.sVisaPaymentInfo;
         assertEquals(MerchantDataLevel.FULL, actual.getVisaMerchantInfo().getDataLevel());
     }
+
     @Test
-    public void tokenize_whenSuccessful_postsVisaPaymentMethodNonce() {
-        fail("Not implemented");
+    @PrepareForTest({ TokenizationClient.class })
+    public void tokenize_whenSuccessful_postsVisaPaymentMethodNonce() throws Exception {
+        mockStatic(TokenizationClient.class);
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                PaymentMethodNonceCallback paymentMethodNonceCallback = (PaymentMethodNonceCallback)invocation
+                        .getArguments()[2];
+
+
+                VisaCheckoutPaymentMethodNonce visaCheckoutPaymentMethodNonce = VisaCheckoutPaymentMethodNonce.fromJson(
+                        stringFromFixture("payment_methods/visa_checkout_response.json"));
+
+                paymentMethodNonceCallback.success(visaCheckoutPaymentMethodNonce);
+                return null;
+            }
+        }).when(TokenizationClient.class, "tokenize", any(BraintreeFragment.class), any(PaymentMethodBuilder.class),
+                any(PaymentMethodNonceCallback.class));
+        ArgumentCaptor paymentMethodNonceCaptor = ArgumentCaptor.forClass(VisaCheckoutPaymentMethodNonce.class);
+
+        VisaCheckout.tokenize(mBraintreeFragment, sampleVisaPaymentSummary());
+        verify(mBraintreeFragment).postCallback((VisaCheckoutPaymentMethodNonce) paymentMethodNonceCaptor.capture());
+        VisaCheckoutPaymentMethodNonce visaCheckoutPaymentMethodNonce =
+                (VisaCheckoutPaymentMethodNonce) paymentMethodNonceCaptor.getValue();
+        assertEquals("123456-12345-12345-a-adfa", visaCheckoutPaymentMethodNonce.getNonce());
     }
 
     @Test
-    public void tokenize_whenFailure_postsException() {
-        fail("Not implemented");
+    @PrepareForTest({ TokenizationClient.class })
+    public void tokenize_whenSuccessful_sendsAnalyticEvent() throws Exception {
+        mockStatic(TokenizationClient.class);
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                PaymentMethodNonceCallback paymentMethodNonceCallback = (PaymentMethodNonceCallback)invocation
+                        .getArguments()[2];
+
+
+                VisaCheckoutPaymentMethodNonce visaCheckoutPaymentMethodNonce = VisaCheckoutPaymentMethodNonce.fromJson(
+                        stringFromFixture("payment_methods/visa_checkout_response.json"));
+
+                paymentMethodNonceCallback.success(visaCheckoutPaymentMethodNonce);
+                return null;
+            }
+        }).when(TokenizationClient.class, "tokenize", any(BraintreeFragment.class), any(PaymentMethodBuilder.class),
+                any(PaymentMethodNonceCallback.class));
+        ArgumentCaptor paymentMethodNonceCaptor = ArgumentCaptor.forClass(VisaCheckoutPaymentMethodNonce.class);
+
+        VisaCheckout.tokenize(mBraintreeFragment, sampleVisaPaymentSummary());
+        verify(mBraintreeFragment).postCallback((VisaCheckoutPaymentMethodNonce) paymentMethodNonceCaptor.capture());
+        VisaCheckoutPaymentMethodNonce visaCheckoutPaymentMethodNonce =
+                (VisaCheckoutPaymentMethodNonce) paymentMethodNonceCaptor.getValue();
+        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.tokenize.succeeded"));
+    }
+
+    @Test
+    @PrepareForTest({ TokenizationClient.class })
+    public void tokenize_whenFailure_postsException() throws Exception {
+        mockStatic(TokenizationClient.class);
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                PaymentMethodNonceCallback paymentMethodNonceCallback = (PaymentMethodNonceCallback)invocation
+                        .getArguments()[2];
+
+                paymentMethodNonceCallback.failure(new Exception("Mock Failure"));
+                return null;
+            }
+        }).when(TokenizationClient.class, "tokenize", any(BraintreeFragment.class), any(PaymentMethodBuilder.class),
+                any(PaymentMethodNonceCallback.class));
+        ArgumentCaptor exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
+
+        VisaCheckout.tokenize(mBraintreeFragment, sampleVisaPaymentSummary());
+        verify(mBraintreeFragment).postCallback((Exception) exceptionCaptor.capture());
+        assertEquals("Mock Failure", ((Exception)exceptionCaptor.getValue()).getMessage());
+    }
+
+    @Test
+    @PrepareForTest({ TokenizationClient.class })
+    public void tokenize_whenFailure_sendsAnalyticEvent() throws Exception {
+        mockStatic(TokenizationClient.class);
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                PaymentMethodNonceCallback paymentMethodNonceCallback = (PaymentMethodNonceCallback)invocation
+                        .getArguments()[2];
+
+                paymentMethodNonceCallback.failure(new Exception("Mock Failure"));
+                return null;
+            }
+        }).when(TokenizationClient.class, "tokenize", any(BraintreeFragment.class), any(PaymentMethodBuilder.class),
+                any(PaymentMethodNonceCallback.class));
+        ArgumentCaptor exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
+
+        VisaCheckout.tokenize(mBraintreeFragment, sampleVisaPaymentSummary());
+        verify(mBraintreeFragment).postCallback((Exception) exceptionCaptor.capture());
+        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.tokenize.failed"));
     }
 
     @Test
@@ -279,19 +386,7 @@ public class VisaCheckoutUnitTest {
     public void onActivityResult_whenComingBackSuccessfully_callsTokenize() throws JSONException {
         mockStatic(TokenizationClient.class);
 
-        Parcel in = Parcel.obtain();
-        in.writeLong(1);
-        in.writeString("US");
-        in.writeString("90210");
-        in.writeString("1234");
-        in.writeString("VISA");
-        in.writeString("Credit");
-        in.writeString("stubbedEncPaymentData");
-        in.writeString("stubbedEncKey");
-        in.writeString("stubbedCallId");
-        in.setDataPosition(0);
-
-        VisaPaymentSummary visaPaymentSummary = VisaPaymentSummary.CREATOR.createFromParcel(in);
+        VisaPaymentSummary visaPaymentSummary = sampleVisaPaymentSummary();
 
         Intent data = new Intent();
         data.putExtra(VisaLibrary.PAYMENT_SUMMARY, visaPaymentSummary);
