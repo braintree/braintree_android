@@ -95,8 +95,6 @@ dependencies {
     compile 'com.squareup.okio:okio:1.6.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile(name: 'eventbus-2.4.0')
-    compile(name: 'Samsung-pass-v1.1.4')
-    compile(name: 'Samsung-sdk-v1.0.0')
 
     androidTestCompile 'com.lukekorth:device-automator:0.1.1'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
