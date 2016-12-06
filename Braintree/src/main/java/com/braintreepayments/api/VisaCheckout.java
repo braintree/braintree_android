@@ -23,6 +23,10 @@ import com.visa.checkout.utils.VisaEnvironmentConfig;
 
 public class VisaCheckout {
     public static void createVisaCheckoutLibrary(final BraintreeFragment braintreeFragment) {
+        if (!VisaCheckoutConfiguration.isVisaPackageAvailable()) {
+            braintreeFragment.postCallback(new ConfigurationException("Visa Checkout SDK is not available"));
+            return;
+        }
         braintreeFragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {

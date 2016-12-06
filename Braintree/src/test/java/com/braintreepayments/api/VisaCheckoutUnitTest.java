@@ -11,6 +11,7 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
+import com.braintreepayments.api.models.VisaCheckoutConfiguration;
 import com.braintreepayments.api.models.VisaCheckoutPaymentMethodNonce;
 import com.visa.checkout.VisaLibrary;
 import com.visa.checkout.VisaMcomLibrary;
@@ -47,6 +48,8 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
+import static org.powermock.api.support.membermodification.MemberMatcher.method;
+import static org.powermock.api.support.membermodification.MemberModifier.stub;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "com.visa.*" })
@@ -175,6 +178,17 @@ public class VisaCheckoutUnitTest {
         assertEquals(VisaEnvironmentConfig.SANDBOX, visaEnvironmentConfig);
         assertEquals("gwApikey", visaEnvironmentConfig.getMerchantApiKey());
         assertEquals(BraintreeRequestCodes.VISA_CHECKOUT, visaEnvironmentConfig.getVisaCheckoutRequestCode());
+    }
+
+    @Test
+    @PrepareForTest(VisaCheckoutConfiguration.class)
+    public void createVisaCheckoutLibrary_whenVisaCheckoutSDKUnavailable_postsException () {
+        stub(method(VisaCheckoutConfiguration.class, "isVisaPackageAvailable")).toReturn(false);
+        ArgumentCaptor<Exception> argumentCaptor = ArgumentCaptor.forClass(Exception.class);
+        VisaCheckout.createVisaCheckoutLibrary(mBraintreeFragment);
+        verify(mBraintreeFragment).postCallback(argumentCaptor.capture());
+
+        assertEquals("Visa Checkout SDK is not available", argumentCaptor.getValue().getMessage());
     }
 
     @Test
