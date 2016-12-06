@@ -13,6 +13,8 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.visa.checkout.VisaLibrary;
 import com.visa.checkout.VisaMcomLibrary;
+import com.visa.checkout.VisaMerchantInfo;
+import com.visa.checkout.VisaMerchantInfo.MerchantDataLevel;
 import com.visa.checkout.VisaPaymentInfo;
 import com.visa.checkout.VisaPaymentSummary;
 import com.visa.checkout.VisaUserInfo;
@@ -206,6 +208,62 @@ public class VisaCheckoutUnitTest {
         assertEquals("visaUserInfoFirstName", actual.getVisaUserInfo().getFirstName());
     }
 
+    @Test
+    public void authorize_whenMerchantFilledOutVisaPaymentInfo_doesNotOverwriteApiKey() {
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        ArgumentCaptor<Integer> requestCodeCaptor = ArgumentCaptor.forClass(Integer.class);
+        PowerMockito.doNothing().when(mBraintreeFragment).startActivityForResult(
+                intentCaptor.capture(),
+                requestCodeCaptor.capture()
+        );
+
+        VisaPaymentInfo visaPaymentInfo = new VisaPaymentInfo();
+        VisaMerchantInfo visaMerchantInfo = new VisaMerchantInfo();
+        visaMerchantInfo.setMerchantApiKey("merchantSetApiKey");
+        visaPaymentInfo.setVisaMerchantInfo(visaMerchantInfo);
+
+        VisaCheckout.authorize(mBraintreeFragment, null, visaPaymentInfo);
+
+        VisaPaymentInfo actual = BraintreeVisaCheckoutResultActivity.sVisaPaymentInfo;
+        assertEquals("merchantSetApiKey", actual.getVisaMerchantInfo().getMerchantApiKey());
+    }
+
+    @Test
+    public void authorize_whenMerchantFilledOutVisaPaymentInfo_doesNotOverwriteExternalClientId() {
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        ArgumentCaptor<Integer> requestCodeCaptor = ArgumentCaptor.forClass(Integer.class);
+        PowerMockito.doNothing().when(mBraintreeFragment).startActivityForResult(
+                intentCaptor.capture(),
+                requestCodeCaptor.capture()
+        );
+
+        VisaPaymentInfo visaPaymentInfo = new VisaPaymentInfo();
+        visaPaymentInfo.setExternalClientId("merchantSetExternalClientId");
+
+        VisaCheckout.authorize(mBraintreeFragment, null, visaPaymentInfo);
+
+        VisaPaymentInfo actual = BraintreeVisaCheckoutResultActivity.sVisaPaymentInfo;
+        assertEquals("merchantSetExternalClientId", actual.getExternalClientId());
+    }
+
+    @Test
+    public void authorize_whenMerchantFilledOutVisaPaymentInfo_doesOverwriteDataLevel() {
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        ArgumentCaptor<Integer> requestCodeCaptor = ArgumentCaptor.forClass(Integer.class);
+        PowerMockito.doNothing().when(mBraintreeFragment).startActivityForResult(
+                intentCaptor.capture(),
+                requestCodeCaptor.capture()
+        );
+
+        VisaPaymentInfo visaPaymentInfo = new VisaPaymentInfo();
+        visaPaymentInfo.setVisaMerchantInfo(new VisaMerchantInfo());
+        visaPaymentInfo.getVisaMerchantInfo().setDataLevel(MerchantDataLevel.SUMMARY);
+
+        VisaCheckout.authorize(mBraintreeFragment, null, visaPaymentInfo);
+
+        VisaPaymentInfo actual = BraintreeVisaCheckoutResultActivity.sVisaPaymentInfo;
+        assertEquals(MerchantDataLevel.FULL, actual.getVisaMerchantInfo().getDataLevel());
+    }
     @Test
     public void tokenize_whenSuccessful_postsVisaPaymentMethodNonce() {
         fail("Not implemented");

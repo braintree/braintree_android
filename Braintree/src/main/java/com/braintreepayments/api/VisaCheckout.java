@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.text.TextUtils;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
@@ -60,12 +61,17 @@ public class VisaCheckout {
                     visaMerchantInfo = new VisaMerchantInfo();
                 }
 
-                visaMerchantInfo.setMerchantApiKey(configuration.getVisaCheckout().getApiKey());
+                if (TextUtils.isEmpty(visaMerchantInfo.getMerchantApiKey())) {
+                    visaMerchantInfo.setMerchantApiKey(configuration.getVisaCheckout().getApiKey());
+                }
+
+                if (TextUtils.isEmpty(visaPaymentInfo.getExternalClientId())) {
+                    visaPaymentInfo.setExternalClientId(configuration.getVisaCheckout().getExternalClientId());
+                }
+
                 visaMerchantInfo.setDataLevel(MerchantDataLevel.FULL);
 
                 visaPaymentInfo.setVisaMerchantInfo(visaMerchantInfo);
-                visaPaymentInfo.setExternalClientId(configuration.getVisaCheckout().getExternalClientId());
-
                 BraintreeVisaCheckoutResultActivity.sVisaPaymentInfo = visaPaymentInfo;
 
                 Intent visaCheckoutResultActivity = new Intent(braintreeFragment.getActivity(),
