@@ -78,6 +78,7 @@ public class VisaCheckout {
 
     static void onActivityResult(BraintreeFragment braintreeFragment, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_CANCELED) {
+            braintreeFragment.postCancelCallback(BraintreeRequestCodes.VISA_CHECKOUT);
             braintreeFragment.sendAnalyticsEvent("visacheckout.activityresult.canceled");
         } else if (resultCode == Activity.RESULT_OK && data != null) {
             VisaPaymentSummary visaPaymentSummary = data.getParcelableExtra(VisaLibrary.PAYMENT_SUMMARY);
