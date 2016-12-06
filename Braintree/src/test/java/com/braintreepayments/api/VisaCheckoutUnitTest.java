@@ -408,6 +408,31 @@ public class VisaCheckoutUnitTest {
     }
 
     @Test
+    @PrepareForTest({ TokenizationClient.class })
+    public void onActivityResult_whenOk_sendAnalyticsEvent() {
+        mockStatic(TokenizationClient.class);
+
+        VisaPaymentSummary visaPaymentSummary = sampleVisaPaymentSummary();
+
+        Intent data = new Intent();
+        data.putExtra(VisaLibrary.PAYMENT_SUMMARY, visaPaymentSummary);
+        VisaCheckout.onActivityResult(mBraintreeFragment, Activity.RESULT_OK, data);
+
+        verifyStatic();
+        TokenizationClient.tokenize(eq(mBraintreeFragment), any(PaymentMethodBuilder.class),
+                any(PaymentMethodNonceCallback.class));
+
+        verify(mBraintreeFragment).sendAnalyticsEvent("visacheckout.activityresult.ok");
+
+    }
+
+    @Test
+    public void onActivityResult_whenCancelled_sendAnalyticsEvent() {
+        VisaCheckout.onActivityResult(mBraintreeFragment, Activity.RESULT_CANCELED, null);
+        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.activityresult.canceled"));
+    }
+
+    @Test
     public void onActivityResult_whenCancelled_callsCancelCallback() {
         VisaCheckout.onActivityResult(mBraintreeFragment, Activity.RESULT_CANCELED, null);
         verify(mBraintreeFragment).postCancelCallback(eq(BraintreeRequestCodes.VISA_CHECKOUT));
@@ -422,5 +447,11 @@ public class VisaCheckoutUnitTest {
 
         assertEquals("Visa Checkout responded with resultCode=-100", ((BraintreeException)exceptionCaptor.getValue())
                 .getMessage());
+    }
+
+    @Test
+    public void onActivityResult_whenFailure_sendAnalyticsevent() {
+        VisaCheckout.onActivityResult(mBraintreeFragment, -100, null);
+        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.activityresult.failed"));
     }
 }
