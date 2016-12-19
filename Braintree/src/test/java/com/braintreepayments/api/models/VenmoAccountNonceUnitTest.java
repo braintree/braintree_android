@@ -20,11 +20,11 @@ public class VenmoAccountNonceUnitTest {
 
     @Test
     public void fromJson_parsesResponse() throws JSONException {
-        VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.fromJson(
-                stringFromFixture("payment_methods/venmo_account.json"));
+        VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.
+                fromJson(stringFromFixture("payment_methods/venmo_account_response.json"));
 
-        assertEquals("happy-venmo-joe", venmoAccountNonce.getDescription());
-        assertEquals("happy-venmo-joe", venmoAccountNonce.getUsername());
+        assertEquals("venmojoe", venmoAccountNonce.getDescription());
+        assertEquals("venmojoe", venmoAccountNonce.getUsername());
         assertEquals("fake-venmo-nonce", venmoAccountNonce.getNonce());
         assertEquals("Venmo", venmoAccountNonce.getTypeLabel());
     }

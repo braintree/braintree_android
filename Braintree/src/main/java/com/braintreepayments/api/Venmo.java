@@ -8,11 +8,15 @@ import android.text.TextUtils;
 
 import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.internal.AppHelper;
+import com.braintreepayments.api.internal.BraintreeSharedPreferences;
 import com.braintreepayments.api.internal.SignatureVerification;
-import com.braintreepayments.api.models.MetadataBuilder;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.models.MetadataBuilder;
+import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.VenmoAccountBuilder;
 import com.braintreepayments.api.models.VenmoAccountNonce;
 import com.braintreepayments.api.models.VenmoConfiguration;
 
@@ -20,13 +24,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Used to create and tokenize Venmo accounts. For more information see the
- * <a href="https://developers.braintreepayments.com/guides/venmo/overview">documentation</a>
+ * Used to create and tokenize Venmo accounts. For more information see the <a href="https://developers.braintreepayments.com/guides/venmo/overview">documentation</a>
  */
 public class Venmo {
 
-    private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
-    private static final String VALIDATE_KEY = "validate";
+    private static final String VAULT_VENMO_KEY = "com.braintreepayments.api.Venmo.VAULT_VENMO_KEY";
+
     private static final String META_KEY = "_meta";
 
     static final String EXTRA_MERCHANT_ID = "com.braintreepayments.api.MERCHANT_ID";
@@ -58,20 +61,14 @@ public class Venmo {
         return new Intent().setComponent(new ComponentName(PACKAGE_NAME, PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
     }
 
-    static Intent getLaunchIntent(VenmoConfiguration venmoConfiguration, BraintreeFragment fragment, boolean validate) {
+    static Intent getLaunchIntent(VenmoConfiguration venmoConfiguration, BraintreeFragment fragment) {
         Intent venmoIntent = getVenmoIntent()
                 .putExtra(EXTRA_MERCHANT_ID, venmoConfiguration.getMerchantId())
                 .putExtra(EXTRA_ACCESS_TOKEN, venmoConfiguration.getAccessToken())
                 .putExtra(EXTRA_ENVIRONMENT, venmoConfiguration.getEnvironment());
 
         try {
-            JSONObject braintreeData = new JSONObject()
-                    .put(VALIDATE_KEY, validate);
-
-            if (fragment.getAuthorization() instanceof ClientToken) {
-                braintreeData.put(AUTHORIZATION_FINGERPRINT_KEY,
-                        ((ClientToken) fragment.getAuthorization()).getAuthorizationFingerprint());
-            }
+            JSONObject braintreeData = new JSONObject();
 
             JSONObject meta = new MetadataBuilder()
                     .sessionId(fragment.getSessionId())
@@ -89,13 +86,13 @@ public class Venmo {
     /**
      * Start the Pay With Venmo flow. This will app switch to the Venmo app.
      * <p/>
-     * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to
-     * {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}.
+     * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to {@link
+     * com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}.
      *
      * @param fragment {@link BraintreeFragment}
-     * @param vault If true, and you are using Client Token authorization with a customer ID, this payment
-     *  method will be added to your customer's vault. @see <a href="https://developers.braintreepayments.com/guides/authorization/overview">our docs on client authorization</a>
-     *  for more info.
+     * @param vault If true, and you are using Client Token authorization with a customer ID, this payment method will
+     * be added to your customer's vault. @see <a href="https://developers.braintreepayments.com/guides/authorization/overview">our
+     * docs on client authorization</a> for more info.
      */
     public static void authorizeAccount(final BraintreeFragment fragment, final boolean vault) {
         fragment.waitForConfiguration(new ConfigurationListener() {
@@ -104,18 +101,20 @@ public class Venmo {
                 fragment.sendAnalyticsEvent("pay-with-venmo.selected");
 
                 String exceptionMessage = "";
-                if(!configuration.getPayWithVenmo().isAccessTokenValid()) {
+                if (!configuration.getPayWithVenmo().isAccessTokenValid()) {
                     exceptionMessage = "Venmo is not enabled";
                 } else if (!Venmo.isVenmoInstalled(fragment.getApplicationContext())) {
                     exceptionMessage = "Venmo is not installed";
                 }
 
-                if(!TextUtils.isEmpty(exceptionMessage)) {
+                if (!TextUtils.isEmpty(exceptionMessage)) {
                     fragment.postCallback(new AppSwitchNotAvailableException(exceptionMessage));
                     fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
                 } else {
-                    fragment.startActivityForResult(
-                            Venmo.getLaunchIntent(configuration.getPayWithVenmo(), fragment, vault),
+                    persistVenmoVaultOption(vault && fragment.getAuthorization() instanceof ClientToken,
+                            fragment.getApplicationContext());
+
+                    fragment.startActivityForResult(getLaunchIntent(configuration.getPayWithVenmo(), fragment),
                             VENMO_REQUEST_CODE);
                     fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
                 }
@@ -127,15 +126,49 @@ public class Venmo {
         authorizeAccount(fragment, false);
     }
 
+    private static void persistVenmoVaultOption(boolean shouldVault, Context context) {
+        BraintreeSharedPreferences.getSharedPreferences(context).edit()
+                .putBoolean(VAULT_VENMO_KEY, shouldVault)
+                .apply();
+    }
+
+    private static boolean shouldVault(Context context) {
+        return BraintreeSharedPreferences.getSharedPreferences(context)
+                .getBoolean(VAULT_VENMO_KEY, false);
+    }
+
     static void onActivityResult(final BraintreeFragment fragment, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            String nonce = data.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
-            String venmoUsername = data.getStringExtra(EXTRA_USERNAME);
-            VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(nonce, venmoUsername, venmoUsername);
-            fragment.postCallback(venmoAccountNonce);
             fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.success");
+            String nonce = data.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
+
+            if (shouldVault(fragment.getApplicationContext()) && fragment.getAuthorization() instanceof ClientToken) {
+                vault(fragment, nonce);
+            } else {
+                String venmoUsername = data.getStringExtra(EXTRA_USERNAME);
+                VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(nonce, venmoUsername, venmoUsername);
+                fragment.postCallback(venmoAccountNonce);
+            }
         } else if (resultCode == Activity.RESULT_CANCELED) {
             fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.canceled");
         }
+    }
+
+    private static void vault(final BraintreeFragment fragment, String nonce) {
+        VenmoAccountBuilder vaultBuilder = new VenmoAccountBuilder()
+                .nonce(nonce);
+        TokenizationClient.tokenize(fragment, vaultBuilder, new PaymentMethodNonceCallback() {
+            @Override
+            public void success(PaymentMethodNonce paymentMethodNonce) {
+                fragment.postCallback(paymentMethodNonce);
+                fragment.sendAnalyticsEvent("pay-with-venmo.vault.success");
+            }
+
+            @Override
+            public void failure(Exception exception) {
+                fragment.postCallback(exception);
+                fragment.sendAnalyticsEvent("pay-with-venmo.vault.failed");
+            }
+        });
     }
 }

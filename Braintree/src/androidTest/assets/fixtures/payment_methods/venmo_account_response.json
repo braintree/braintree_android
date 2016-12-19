@@ -1,0 +1,13 @@
+{
+  "venmoAccounts": [{
+    "type": "VenmoAccount",
+    "nonce": "fake-venmo-nonce",
+    "description": "VenmoAccount",
+    "consumed": false,
+    "default": true,
+    "details": {
+      "cardType": "Discover",
+      "username": "venmojoe"
+    }
+  }]
+}
