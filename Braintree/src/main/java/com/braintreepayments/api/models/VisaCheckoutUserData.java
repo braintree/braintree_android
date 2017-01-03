@@ -21,14 +21,6 @@ public class VisaCheckoutUserData implements Parcelable {
         mUserEmail = json.optString("userEmail");
     }
 
-    public VisaCheckoutUserData(Parcel in) {
-        mUserFirstName = in.readString();
-        mUserLastName = in.readString();
-        mUserFullName = in.readString();
-        mUserName = in.readString();
-        mUserEmail = in.readString();
-    }
-
     public String getUserFirstName() {
         return mUserFirstName;
     }
@@ -47,6 +39,14 @@ public class VisaCheckoutUserData implements Parcelable {
 
     public String getUserEmail() {
         return mUserEmail;
+    }
+
+    public VisaCheckoutUserData(Parcel in) {
+        mUserFirstName = in.readString();
+        mUserLastName = in.readString();
+        mUserFullName = in.readString();
+        mUserName = in.readString();
+        mUserEmail = in.readString();
     }
 
     @Override
