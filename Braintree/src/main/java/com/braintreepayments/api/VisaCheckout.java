@@ -55,7 +55,7 @@ public class VisaCheckout {
         });
     }
 
-    public static void authorize(final BraintreeFragment braintreeFragment, final VisaMcomLibrary visaMcomLibrary, final VisaPaymentInfo visaPaymentInfo) {
+    public static void authorize(final BraintreeFragment braintreeFragment, final VisaPaymentInfo visaPaymentInfo) {
         braintreeFragment.waitForConfiguration(new ConfigurationListener() {
 
             @Override
@@ -101,24 +101,19 @@ public class VisaCheckout {
     }
 
     static void tokenize(final BraintreeFragment braintreeFragment, final VisaPaymentSummary visaPaymentSummary) {
-        braintreeFragment.waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                TokenizationClient.tokenize(braintreeFragment, new VisaCheckoutPaymentBuilder(visaPaymentSummary),
-                        new PaymentMethodNonceCallback() {
-                            @Override
-                            public void success(PaymentMethodNonce paymentMethodNonce) {
-                                braintreeFragment.postCallback(paymentMethodNonce);
-                                braintreeFragment.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
-                            }
+        TokenizationClient.tokenize(braintreeFragment, new VisaCheckoutPaymentBuilder(visaPaymentSummary),
+                new PaymentMethodNonceCallback() {
+                    @Override
+                    public void success(PaymentMethodNonce paymentMethodNonce) {
+                        braintreeFragment.postCallback(paymentMethodNonce);
+                        braintreeFragment.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
+                    }
 
-                            @Override
-                            public void failure(Exception exception) {
-                                braintreeFragment.postCallback(exception);
-                                braintreeFragment.sendAnalyticsEvent("visacheckout.tokenize.failed");
-                            }
-                        });
-            }
-        });
+                    @Override
+                    public void failure(Exception exception) {
+                        braintreeFragment.postCallback(exception);
+                        braintreeFragment.sendAnalyticsEvent("visacheckout.tokenize.failed");
+                    }
+                });
     }
 }
