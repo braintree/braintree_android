@@ -7,7 +7,6 @@ import org.json.JSONObject;
 
 public class VisaCheckoutUserData implements Parcelable {
 
-
     private final String mUserFirstName;
     private final String mUserLastName;
     private final String mUserFullName;

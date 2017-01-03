@@ -28,7 +28,6 @@ public class VisaCheckoutConfiguration {
         visaCheckoutConfiguration.mApiKey = json.optString("apikey");
         visaCheckoutConfiguration.mExternalClientId = json.optString("externalClientId");
 
-
         return visaCheckoutConfiguration;
     }
 

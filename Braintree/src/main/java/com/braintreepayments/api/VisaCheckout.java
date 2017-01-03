@@ -22,6 +22,7 @@ import com.visa.checkout.VisaPaymentSummary;
 import com.visa.checkout.utils.VisaEnvironmentConfig;
 
 public class VisaCheckout {
+
     public static void createVisaCheckoutLibrary(final BraintreeFragment braintreeFragment) {
         if (!VisaCheckoutConfiguration.isVisaPackageAvailable()) {
             braintreeFragment.postCallback(new ConfigurationException("Visa Checkout SDK is not available"));
@@ -52,7 +53,6 @@ public class VisaCheckout {
                 braintreeFragment.postVisaCheckoutLibraryCallback(visaMcomLibrary);
             }
         });
-
     }
 
     public static void authorize(final BraintreeFragment braintreeFragment, final VisaMcomLibrary visaMcomLibrary, final VisaPaymentInfo visaPaymentInfo) {

@@ -49,6 +49,7 @@ public class VisaCheckoutConfigurationUnitTest {
 
         assertEquals("gwApikey", visaCheckoutConfiguration.getApiKey());
     }
+
     @Test
     public void getExternalClientId_returnsExternalClientIdWhenConfigurationExists() throws JSONException {
         VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(mVisaCheckoutConfiguration);
