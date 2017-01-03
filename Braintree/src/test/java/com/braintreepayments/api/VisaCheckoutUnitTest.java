@@ -225,7 +225,7 @@ public class VisaCheckoutUnitTest {
                 requestCodeCaptor.capture()
         );
 
-        VisaCheckout.authorize(mBraintreeFragment, null, visaPaymentInfo);
+        VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
 
         VisaPaymentInfo actual = BraintreeVisaCheckoutResultActivity.sVisaPaymentInfo;
 
@@ -252,7 +252,7 @@ public class VisaCheckoutUnitTest {
         visaMerchantInfo.setMerchantApiKey("merchantSetApiKey");
         visaPaymentInfo.setVisaMerchantInfo(visaMerchantInfo);
 
-        VisaCheckout.authorize(mBraintreeFragment, null, visaPaymentInfo);
+        VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
 
         VisaPaymentInfo actual = BraintreeVisaCheckoutResultActivity.sVisaPaymentInfo;
         assertEquals("merchantSetApiKey", actual.getVisaMerchantInfo().getMerchantApiKey());
@@ -270,7 +270,7 @@ public class VisaCheckoutUnitTest {
         VisaPaymentInfo visaPaymentInfo = new VisaPaymentInfo();
         visaPaymentInfo.setExternalClientId("merchantSetExternalClientId");
 
-        VisaCheckout.authorize(mBraintreeFragment, null, visaPaymentInfo);
+        VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
 
         VisaPaymentInfo actual = BraintreeVisaCheckoutResultActivity.sVisaPaymentInfo;
         assertEquals("merchantSetExternalClientId", actual.getExternalClientId());
@@ -289,7 +289,7 @@ public class VisaCheckoutUnitTest {
         visaPaymentInfo.setVisaMerchantInfo(new VisaMerchantInfo());
         visaPaymentInfo.getVisaMerchantInfo().setDataLevel(MerchantDataLevel.SUMMARY);
 
-        VisaCheckout.authorize(mBraintreeFragment, null, visaPaymentInfo);
+        VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
 
         VisaPaymentInfo actual = BraintreeVisaCheckoutResultActivity.sVisaPaymentInfo;
         assertEquals(MerchantDataLevel.FULL, actual.getVisaMerchantInfo().getDataLevel());

@@ -139,7 +139,7 @@ public class VisaCheckoutTest {
             @Override
             public void onVisaCheckoutLibraryCreated(VisaMcomLibrary visaMcomLibrary) {
                 VisaPaymentInfo visaPaymentInfo = new VisaPaymentInfo();
-                VisaCheckout.authorize(mBraintreeFragment, visaMcomLibrary, visaPaymentInfo);
+                VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
             }
         });
 
@@ -183,7 +183,7 @@ public class VisaCheckoutTest {
             @Override
             public void onVisaCheckoutLibraryCreated(VisaMcomLibrary visaMcomLibrary) {
                 VisaPaymentInfo visaPaymentInfo = new VisaPaymentInfo();
-                VisaCheckout.authorize(mBraintreeFragment, visaMcomLibrary, visaPaymentInfo);
+                VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
             }
         });
 
@@ -215,7 +215,7 @@ public class VisaCheckoutTest {
             @Override
             public void onVisaCheckoutLibraryCreated(VisaMcomLibrary visaMcomLibrary) {
                 VisaPaymentInfo visaPaymentInfo = new VisaPaymentInfo();
-                VisaCheckout.authorize(mBraintreeFragment, visaMcomLibrary, visaPaymentInfo);
+                VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
             }
         });
 

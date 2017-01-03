@@ -88,7 +88,7 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
         ));
         visaPaymentInfo.setVisaMerchantInfo(visaMerchantInfo);
 
-        VisaCheckout.authorize(mBraintreeFragment, mVisaMComLibrary, visaPaymentInfo);
+        VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
     }
 
     @Override
