@@ -42,8 +42,8 @@ public class PayPalRequest implements Parcelable {
 
     /**
      * Shows a deterministic call-to-action. This option indicates to the user that their payment method will be charged
-     * when the click the call-to-action button on the PayPal Checkout page, and that no final confirmation page will
-     * be shown on the merchant's checkout page.
+     * when they click the call-to-action button on the PayPal Checkout page, and that no final confirmation page will
+     * be shown on the merchant's checkout page. This option works for both checkout and vault flows.
      */
     public static final String USER_ACTION_COMMIT = "commit";
 
