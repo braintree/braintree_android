@@ -3,6 +3,8 @@ apply plugin: 'com.android.library'
 def LOCALHOST_IP = System.properties['LOCALHOST_IP'] ?: '"10.0.2.2"';
 def GATEWAY_IP = System.properties['GATEWAY_IP'] ?: '"10.0.2.2"';
 def GATEWAY_PORT = System.properties['GATEWAY_PORT'] ?: '"3000"';
+def VISA_CHECKOUT_PASSWORD = System.properties['VISA_CHECKOUT_PASSWORD'] ?: '""';
+def VISA_CHECKOUT_USERNAME = System.properties['VISA_CHECKOUT_USERNAME'] ?: '""';
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -24,23 +26,12 @@ android {
 
 dependencies {
     compile 'com.android.support.test:runner:0.5'
-
-    // Visa Checkout
-    compile fileTree(dir: "${rootDir}/libs", include:['*.jar'])
-    compile(name: 'VisaCheckout-Android-SDK', version: '[4.3, 5.0)', ext: 'aar')
-    compile 'com.google.android.gms:play-services-analytics:9.8.0'
-    compile 'com.google.android.gms:play-services-ads:9.8.0'
-    compile 'com.google.android.gms:play-services-basement:9.8.0'
-    compile 'com.parse.bolts:bolts-android:1.4.0'
-    compile 'com.google.code.gson:gson:2.3.1'
-    compile 'com.squareup.okhttp:okhttp:2.5.0'
-    compile 'com.squareup.okio:okio:1.6.0'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile(name: 'eventbus-2.4.0')
 }
 
 android.buildTypes.each { type ->
     type.buildConfigField 'String', 'LOCALHOST_IP', LOCALHOST_IP
     type.buildConfigField 'String', 'GATEWAY_IP', GATEWAY_IP
     type.buildConfigField 'String', 'GATEWAY_PORT', GATEWAY_PORT
+    type.buildConfigField 'String', 'VISA_CHECKOUT_PASSWORD', VISA_CHECKOUT_PASSWORD
+    type.buildConfigField 'String', 'VISA_CHECKOUT_USERNAME', VISA_CHECKOUT_USERNAME
 }
