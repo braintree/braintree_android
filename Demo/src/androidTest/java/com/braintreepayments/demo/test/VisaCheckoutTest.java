@@ -35,8 +35,11 @@ public class VisaCheckoutTest extends TestHelper {
     }
 
     @Test(timeout = 60000)
-    @Ignore("unimplemented")
     public void cancelsVisaCheckout_whenClickingUpButton() {
+        onDevice(withContentDescription("Visa Checkout")).perform(click());
+        onDevice(withContentDescription("Back")).perform(click());
+        onDevice(withText("OK")).perform(click());
+        onDevice(withText("Reset")).waitForExists();
     }
 
     @Test(timeout = 60000)
