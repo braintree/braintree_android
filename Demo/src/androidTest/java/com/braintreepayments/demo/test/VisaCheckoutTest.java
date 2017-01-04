@@ -1,6 +1,9 @@
 package com.braintreepayments.demo.test;
 
 import android.support.test.runner.AndroidJUnit4;
+import android.support.test.uiautomator.UiObject;
+import android.support.test.uiautomator.UiObjectNotFoundException;
+import android.support.test.uiautomator.UiSelector;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
 
@@ -11,11 +14,9 @@ import org.junit.runner.RunWith;
 import static com.braintreepayments.api.testutils.BuildConfig.VISA_CHECKOUT_PASSWORD;
 import static com.braintreepayments.api.testutils.BuildConfig.VISA_CHECKOUT_USERNAME;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
-import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
-import static org.hamcrest.core.StringContains.containsString;
 
 @RunWith(AndroidJUnit4.class)
 public class VisaCheckoutTest extends TestHelper {
@@ -46,17 +47,21 @@ public class VisaCheckoutTest extends TestHelper {
     }
 
     @Test(timeout = 60000)
-    public void tokenizesVisaCheckout() {
+    public void tokenizesVisaCheckout() throws UiObjectNotFoundException {
         onDevice(withContentDescription("Visa Checkout")).perform(click());
         onDevice(withContentDescription("Email or Mobile Number")).perform(click());
         for (int i=0; i<VISA_CHECKOUT_USERNAME.length(); i++) {
             onDevice(withContentDescription("Email or Mobile Number")).pressDelete();
         }
-        onDevice().typeText(VISA_CHECKOUT_USERNAME);
+        // TODO bug in DeviceAutomator does not print symbols.
+        new UiObject(new UiSelector().descriptionStartsWith("Email or Mobile Number"))
+                .setText(VISA_CHECKOUT_USERNAME);
         onDevice(withContentDescription("Password")).perform(click());
         onDevice().typeText(VISA_CHECKOUT_PASSWORD);
         onDevice(withText("Sign In")).perform(click());
+        onDevice(withText("Pay with")).waitForExists();
         onDevice(withText("Continue")).perform(click());
-        getNonceDetails().check(text(containsString("Nonce:")));
+        onDevice(withText("Create a Transaction")).waitForExists();
+        onDevice(withText("Nonce:")).waitForExists();
     }
 }
