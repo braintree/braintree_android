@@ -16,6 +16,7 @@ import com.braintreepayments.api.models.VisaCheckoutPaymentMethodNonce;
 import com.visa.checkout.VisaLibrary;
 import com.visa.checkout.VisaMcomLibrary;
 import com.visa.checkout.VisaMerchantInfo;
+import com.visa.checkout.VisaMerchantInfo.AcceptedCardBrands;
 import com.visa.checkout.VisaMerchantInfo.MerchantDataLevel;
 import com.visa.checkout.VisaPaymentInfo;
 import com.visa.checkout.VisaPaymentSummary;
@@ -37,8 +38,12 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -82,6 +87,7 @@ public class VisaCheckoutUnitTest {
     public void setup() throws JSONException {
         JSONObject configurationJSON = new JSONObject(stringFromFixture("configuration.json"));
         JSONObject visaConfiguration = new JSONObject(stringFromFixture("configuration/with_visaCheckout.json"));
+        configurationJSON.put("creditCards", visaConfiguration.get("creditCards"));
         configurationJSON.put("visaCheckout", visaConfiguration.get("visaCheckout"));
         mConfigurationWithVisaCheckout = Configuration.fromJson(configurationJSON.toString());
 
@@ -216,6 +222,13 @@ public class VisaCheckoutUnitTest {
         VisaUserInfo visaUserInfo = new VisaUserInfo();
         visaUserInfo.setFirstName("visaUserInfoFirstName");
         visaPaymentInfo.setVisaUserInfo(visaUserInfo);
+        List<AcceptedCardBrands> acceptedCardBrands = Arrays.asList(
+                AcceptedCardBrands.ELECTRON,
+                AcceptedCardBrands.VISA,
+                AcceptedCardBrands.MASTERCARD,
+                AcceptedCardBrands.DISCOVER,
+                AcceptedCardBrands.AMEX
+        );
 
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         ArgumentCaptor<Integer> requestCodeCaptor = ArgumentCaptor.forClass(Integer.class);
@@ -236,6 +249,7 @@ public class VisaCheckoutUnitTest {
         assertEquals("gwExternalClientId", actual.getExternalClientId());
         assertEquals("merchantDescription", actual.getDescription());
         assertEquals("visaUserInfoFirstName", actual.getVisaUserInfo().getFirstName());
+        assertTrue(actual.getVisaMerchantInfo().getAcceptedCardBrands().containsAll(acceptedCardBrands));
     }
 
     @Test
@@ -293,6 +307,29 @@ public class VisaCheckoutUnitTest {
 
         VisaPaymentInfo actual = BraintreeVisaCheckoutResultActivity.sVisaPaymentInfo;
         assertEquals(MerchantDataLevel.FULL, actual.getVisaMerchantInfo().getDataLevel());
+    }
+
+    @Test
+    public void authorize_whenMerchantFilledOutVisaPaymentInfo_doesNotOverwriteCardBrands() {
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        ArgumentCaptor<Integer> requestCodeCaptor = ArgumentCaptor.forClass(Integer.class);
+        PowerMockito.doNothing().when(mBraintreeFragment).startActivityForResult(
+                intentCaptor.capture(),
+                requestCodeCaptor.capture()
+        );
+
+        VisaPaymentInfo visaPaymentInfo = new VisaPaymentInfo();
+        VisaMerchantInfo visaMerchantInfo = new VisaMerchantInfo();
+        visaMerchantInfo.setAcceptedCardBrands(Arrays.asList(AcceptedCardBrands.ELO));
+
+        visaPaymentInfo.setVisaMerchantInfo(visaMerchantInfo);
+
+        VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
+
+        VisaPaymentInfo actual = BraintreeVisaCheckoutResultActivity.sVisaPaymentInfo;
+        List<AcceptedCardBrands> acceptedCardBrands = actual.getVisaMerchantInfo().getAcceptedCardBrands();
+        assertEquals(1, acceptedCardBrands.size());
+        assertEquals(AcceptedCardBrands.ELO, acceptedCardBrands.get(0));
     }
 
     @Test

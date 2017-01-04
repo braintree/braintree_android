@@ -16,10 +16,15 @@ import com.braintreepayments.api.models.VisaCheckoutPaymentBuilder;
 import com.visa.checkout.VisaLibrary;
 import com.visa.checkout.VisaMcomLibrary;
 import com.visa.checkout.VisaMerchantInfo;
+import com.visa.checkout.VisaMerchantInfo.AcceptedCardBrands;
 import com.visa.checkout.VisaMerchantInfo.MerchantDataLevel;
 import com.visa.checkout.VisaPaymentInfo;
 import com.visa.checkout.VisaPaymentSummary;
 import com.visa.checkout.utils.VisaEnvironmentConfig;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class VisaCheckout {
 
@@ -74,6 +79,29 @@ public class VisaCheckout {
                 }
 
                 visaMerchantInfo.setDataLevel(MerchantDataLevel.FULL);
+
+                if (visaMerchantInfo.getAcceptedCardBrands() == null || visaMerchantInfo.getAcceptedCardBrands().isEmpty()) {
+                    Set<String> supportedCardTypes = configuration.getCardConfiguration().getSupportedCardTypes();
+                    List<AcceptedCardBrands> acceptedCardBrands = new ArrayList<>();
+                    for (String supportedCardType : supportedCardTypes) {
+                        switch (supportedCardType) {
+                            case "Visa":
+                                acceptedCardBrands.add(AcceptedCardBrands.ELECTRON);
+                                acceptedCardBrands.add(AcceptedCardBrands.VISA);
+                                break;
+                            case "MasterCard":
+                                acceptedCardBrands.add(AcceptedCardBrands.MASTERCARD);
+                                break;
+                            case "Discover":
+                                acceptedCardBrands.add(AcceptedCardBrands.DISCOVER);
+                                break;
+                            case "American Express":
+                                acceptedCardBrands.add(AcceptedCardBrands.AMEX);
+                                break;
+                        }
+                    }
+                    visaMerchantInfo.setAcceptedCardBrands(acceptedCardBrands);
+                }
 
                 visaPaymentInfo.setVisaMerchantInfo(visaMerchantInfo);
                 BraintreeVisaCheckoutResultActivity.sVisaPaymentInfo = visaPaymentInfo;
