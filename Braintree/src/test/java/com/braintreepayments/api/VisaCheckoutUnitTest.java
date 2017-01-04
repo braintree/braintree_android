@@ -58,7 +58,8 @@ import static org.powermock.api.support.membermodification.MemberModifier.stub;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "com.visa.*" })
-@PrepareForTest({ VisaMcomLibrary.class, VisaPaymentInfo.class })
+@PrepareForTest({
+        TokenizationClient.class, VisaMcomLibrary.class, VisaPaymentInfo.class, VisaCheckoutConfiguration.class })
 public class VisaCheckoutUnitTest {
 
     @Rule
@@ -187,7 +188,6 @@ public class VisaCheckoutUnitTest {
     }
 
     @Test
-    @PrepareForTest(VisaCheckoutConfiguration.class)
     public void createVisaCheckoutLibrary_whenVisaCheckoutSDKUnavailable_postsException () {
         stub(method(VisaCheckoutConfiguration.class, "isVisaPackageAvailable")).toReturn(false);
         ArgumentCaptor<Exception> argumentCaptor = ArgumentCaptor.forClass(Exception.class);
@@ -333,7 +333,6 @@ public class VisaCheckoutUnitTest {
     }
 
     @Test
-    @PrepareForTest({ TokenizationClient.class })
     public void tokenize_whenSuccessful_postsVisaPaymentMethodNonce() throws Exception {
         mockStatic(TokenizationClient.class);
         doAnswer(new Answer<Object>() {
@@ -361,7 +360,6 @@ public class VisaCheckoutUnitTest {
     }
 
     @Test
-    @PrepareForTest({ TokenizationClient.class })
     public void tokenize_whenSuccessful_sendsAnalyticEvent() throws Exception {
         mockStatic(TokenizationClient.class);
         doAnswer(new Answer<Object>() {
@@ -389,7 +387,6 @@ public class VisaCheckoutUnitTest {
     }
 
     @Test
-    @PrepareForTest({ TokenizationClient.class })
     public void tokenize_whenFailure_postsException() throws Exception {
         mockStatic(TokenizationClient.class);
         doAnswer(new Answer<Object>() {
@@ -411,7 +408,6 @@ public class VisaCheckoutUnitTest {
     }
 
     @Test
-    @PrepareForTest({ TokenizationClient.class })
     public void tokenize_whenFailure_sendsAnalyticEvent() throws Exception {
         mockStatic(TokenizationClient.class);
         doAnswer(new Answer<Object>() {
@@ -433,7 +429,6 @@ public class VisaCheckoutUnitTest {
     }
 
     @Test
-    @PrepareForTest({ TokenizationClient.class })
     public void onActivityResult_whenComingBackSuccessfully_callsTokenize() throws JSONException {
         mockStatic(TokenizationClient.class);
 
@@ -459,7 +454,6 @@ public class VisaCheckoutUnitTest {
     }
 
     @Test
-    @PrepareForTest({ TokenizationClient.class })
     public void onActivityResult_whenOk_sendAnalyticsEvent() {
         mockStatic(TokenizationClient.class);
 
