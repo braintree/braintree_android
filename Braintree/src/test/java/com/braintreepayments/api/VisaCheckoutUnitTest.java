@@ -87,7 +87,7 @@ public class VisaCheckoutUnitTest {
     @Before
     public void setup() throws JSONException {
         JSONObject configurationJSON = new JSONObject(stringFromFixture("configuration.json"));
-        JSONObject visaConfiguration = new JSONObject(stringFromFixture("configuration/with_visaCheckout.json"));
+        JSONObject visaConfiguration = new JSONObject(stringFromFixture("configuration/with_visa_checkout.json"));
         configurationJSON.put("creditCards", visaConfiguration.get("creditCards"));
         configurationJSON.put("visaCheckout", visaConfiguration.get("visaCheckout"));
         mConfigurationWithVisaCheckout = Configuration.fromJson(configurationJSON.toString());
@@ -126,7 +126,7 @@ public class VisaCheckoutUnitTest {
         }).when(VisaMcomLibrary.class, "getLibrary", any(Activity.class), any(VisaEnvironmentConfig.class));
 
         JSONObject configurationJSON = new JSONObject(stringFromFixture("configuration.json"));
-        JSONObject visaConfiguration = new JSONObject(stringFromFixture("configuration/with_visaCheckout.json"));
+        JSONObject visaConfiguration = new JSONObject(stringFromFixture("configuration/with_visa_checkout.json"));
         configurationJSON.put("visaCheckout", visaConfiguration.get("visaCheckout"));
         configurationJSON.put("environment", "production");
         Configuration configuration = Configuration.fromJson(configurationJSON.toString());
@@ -161,7 +161,7 @@ public class VisaCheckoutUnitTest {
         }).when(VisaMcomLibrary.class, "getLibrary", any(Activity.class), any(VisaEnvironmentConfig.class));
 
         JSONObject configurationJSON = new JSONObject(stringFromFixture("configuration.json"));
-        JSONObject visaConfiguration = new JSONObject(stringFromFixture("configuration/with_visaCheckout.json"));
+        JSONObject visaConfiguration = new JSONObject(stringFromFixture("configuration/with_visa_checkout.json"));
         configurationJSON.put("visaCheckout", visaConfiguration.get("visaCheckout"));
         Configuration configuration = Configuration.fromJson(configurationJSON.toString());
 

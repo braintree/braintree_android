@@ -179,7 +179,7 @@ public class ConfigurationUnitTest {
     @Test
     public void returnsVisaCheckoutConfiguration_whenVisaCheckoutConfigurationIsPresent() throws JSONException {
         JSONObject jsonObject = new JSONObject(stringFromFixture("configuration.json"));
-        JSONObject visaCheckoutJson = new JSONObject(stringFromFixture("configuration/with_visaCheckout.json"));
+        JSONObject visaCheckoutJson = new JSONObject(stringFromFixture("configuration/with_visa_checkout.json"));
 
         jsonObject.put("visaCheckout", visaCheckoutJson);
         Configuration configuration = Configuration.fromJson(jsonObject.toString());

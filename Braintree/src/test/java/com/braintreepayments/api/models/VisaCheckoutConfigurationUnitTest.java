@@ -23,7 +23,7 @@ public class VisaCheckoutConfigurationUnitTest {
 
     @Before
     public void setup() throws JSONException {
-        JSONObject configuration = new JSONObject(stringFromFixture("configuration/with_visaCheckout.json"));
+        JSONObject configuration = new JSONObject(stringFromFixture("configuration/with_visa_checkout.json"));
         mVisaCheckoutConfiguration = configuration.getJSONObject("visaCheckout");
     }
 
