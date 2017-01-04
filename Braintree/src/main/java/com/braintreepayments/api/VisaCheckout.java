@@ -28,54 +28,55 @@ import java.util.Set;
 
 public class VisaCheckout {
 
-    public static void createVisaCheckoutLibrary(final BraintreeFragment braintreeFragment) {
+    public static void createVisaCheckoutLibrary(final BraintreeFragment fragment) {
         if (!VisaCheckoutConfiguration.isVisaPackageAvailable()) {
-            braintreeFragment.postCallback(new ConfigurationException("Visa Checkout SDK is not available"));
+            fragment.postCallback(new ConfigurationException("Visa Checkout SDK is not available"));
             return;
         }
-        braintreeFragment.waitForConfiguration(new ConfigurationListener() {
+
+        fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 VisaCheckoutConfiguration visaCheckoutConfiguration = configuration.getVisaCheckout();
 
                 if (!visaCheckoutConfiguration.isEnabled()) {
-                    braintreeFragment.postCallback(new ConfigurationException("Visa Checkout is not enabled."));
+                    fragment.postCallback(new ConfigurationException("Visa Checkout is not enabled."));
                     return;
                 }
 
                 VisaEnvironmentConfig visaEnvironmentConfig = VisaEnvironmentConfig.SANDBOX;
-
                 if ("production".equals(configuration.getEnvironment())) {
                     visaEnvironmentConfig = VisaEnvironmentConfig.PRODUCTION;
                 }
 
-                visaEnvironmentConfig.setMerchantApiKey(configuration.getVisaCheckout().getApiKey());
+                visaEnvironmentConfig.setMerchantApiKey(visaCheckoutConfiguration.getApiKey());
                 visaEnvironmentConfig.setVisaCheckoutRequestCode(BraintreeRequestCodes.VISA_CHECKOUT);
 
-                VisaMcomLibrary visaMcomLibrary = VisaMcomLibrary.getLibrary(braintreeFragment.getActivity(),
+                VisaMcomLibrary visaMcomLibrary = VisaMcomLibrary.getLibrary(fragment.getActivity(),
                         visaEnvironmentConfig);
                 BraintreeVisaCheckoutResultActivity.sVisaEnvironmentConfig = visaEnvironmentConfig;
-                braintreeFragment.postVisaCheckoutLibraryCallback(visaMcomLibrary);
+                fragment.postVisaCheckoutLibraryCallback(visaMcomLibrary);
             }
         });
     }
 
-    public static void authorize(final BraintreeFragment braintreeFragment, final VisaPaymentInfo visaPaymentInfo) {
-        braintreeFragment.waitForConfiguration(new ConfigurationListener() {
+    public static void authorize(final BraintreeFragment fragment, final VisaPaymentInfo visaPaymentInfo) {
+        fragment.waitForConfiguration(new ConfigurationListener() {
 
             @Override
             public void onConfigurationFetched(Configuration configuration) {
+                VisaCheckoutConfiguration visaCheckoutConfiguration = configuration.getVisaCheckout();
                 VisaMerchantInfo visaMerchantInfo = visaPaymentInfo.getVisaMerchantInfo();
                 if (visaMerchantInfo == null) {
                     visaMerchantInfo = new VisaMerchantInfo();
                 }
 
                 if (TextUtils.isEmpty(visaMerchantInfo.getMerchantApiKey())) {
-                    visaMerchantInfo.setMerchantApiKey(configuration.getVisaCheckout().getApiKey());
+                    visaMerchantInfo.setMerchantApiKey(visaCheckoutConfiguration.getApiKey());
                 }
 
                 if (TextUtils.isEmpty(visaPaymentInfo.getExternalClientId())) {
-                    visaPaymentInfo.setExternalClientId(configuration.getVisaCheckout().getExternalClientId());
+                    visaPaymentInfo.setExternalClientId(visaCheckoutConfiguration.getExternalClientId());
                 }
 
                 visaMerchantInfo.setDataLevel(MerchantDataLevel.FULL);
@@ -106,41 +107,41 @@ public class VisaCheckout {
                 visaPaymentInfo.setVisaMerchantInfo(visaMerchantInfo);
                 BraintreeVisaCheckoutResultActivity.sVisaPaymentInfo = visaPaymentInfo;
 
-                Intent visaCheckoutResultActivity = new Intent(braintreeFragment.getActivity(),
+                Intent visaCheckoutResultActivity = new Intent(fragment.getActivity(),
                         BraintreeVisaCheckoutResultActivity.class);
-                braintreeFragment.startActivityForResult(visaCheckoutResultActivity,
+                fragment.startActivityForResult(visaCheckoutResultActivity,
                         BraintreeRequestCodes.VISA_CHECKOUT);
             }
         });
     }
 
-    static void onActivityResult(BraintreeFragment braintreeFragment, int resultCode, Intent data) {
+    static void onActivityResult(BraintreeFragment fragment, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_CANCELED) {
-            braintreeFragment.postCancelCallback(BraintreeRequestCodes.VISA_CHECKOUT);
-            braintreeFragment.sendAnalyticsEvent("visacheckout.activityresult.canceled");
+            fragment.postCancelCallback(BraintreeRequestCodes.VISA_CHECKOUT);
+            fragment.sendAnalyticsEvent("visacheckout.activityresult.canceled");
         } else if (resultCode == Activity.RESULT_OK && data != null) {
             VisaPaymentSummary visaPaymentSummary = data.getParcelableExtra(VisaLibrary.PAYMENT_SUMMARY);
-            tokenize(braintreeFragment, visaPaymentSummary);
-            braintreeFragment.sendAnalyticsEvent("visacheckout.activityresult.ok");
+            tokenize(fragment, visaPaymentSummary);
+            fragment.sendAnalyticsEvent("visacheckout.activityresult.ok");
         } else {
-            braintreeFragment.postCallback(new BraintreeException("Visa Checkout responded with resultCode=" + resultCode));
-            braintreeFragment.sendAnalyticsEvent("visacheckout.activityresult.failed");
+            fragment.postCallback(new BraintreeException("Visa Checkout responded with resultCode=" + resultCode));
+            fragment.sendAnalyticsEvent("visacheckout.activityresult.failed");
         }
     }
 
-    static void tokenize(final BraintreeFragment braintreeFragment, final VisaPaymentSummary visaPaymentSummary) {
-        TokenizationClient.tokenize(braintreeFragment, new VisaCheckoutPaymentBuilder(visaPaymentSummary),
+    static void tokenize(final BraintreeFragment fragment, final VisaPaymentSummary visaPaymentSummary) {
+        TokenizationClient.tokenize(fragment, new VisaCheckoutPaymentBuilder(visaPaymentSummary),
                 new PaymentMethodNonceCallback() {
                     @Override
                     public void success(PaymentMethodNonce paymentMethodNonce) {
-                        braintreeFragment.postCallback(paymentMethodNonce);
-                        braintreeFragment.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
+                        fragment.postCallback(paymentMethodNonce);
+                        fragment.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
                     }
 
                     @Override
                     public void failure(Exception exception) {
-                        braintreeFragment.postCallback(exception);
-                        braintreeFragment.sendAnalyticsEvent("visacheckout.tokenize.failed");
+                        fragment.postCallback(exception);
+                        fragment.sendAnalyticsEvent("visacheckout.tokenize.failed");
                     }
                 });
     }
