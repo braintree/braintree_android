@@ -55,8 +55,6 @@ dependencies {
     compile project(':PayPalOneTouch')
 
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-    androidTestCompile 'com.android.support.test.espresso:espresso-web:2.2.2'
     androidTestCompile 'com.android.support.test:rules:0.5'
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile project(':TestUtils')
@@ -68,6 +66,26 @@ dependencies {
     testCompile 'org.powermock:powermock-classloading-xstream:1.6.6'
     testCompile 'org.skyscreamer:jsonassert:1.4.0'
     testCompile project(':TestUtils')
+
+    // Visa Checkout
+    androidTestCompile fileTree(dir: "${rootDir}/libs", include:['*.jar'])
+    androidTestCompile 'com.google.android.gms:play-services-basement:9.8.0'
+    androidTestCompile 'com.google.code.gson:gson:2.3.1'
+    androidTestCompile 'com.squareup.okhttp:okhttp:2.5.0'
+    androidTestCompile 'com.squareup.okio:okio:1.6.0'
+    androidTestCompile 'com.squareup.retrofit:retrofit:1.9.0'
+    androidTestCompile(name: 'eventbus-2.4.0')
+
+    // Visa Checkout
+    testCompile fileTree(dir: "${rootDir}/libs", include:['*.jar'])
+    testCompile 'com.google.android.gms:play-services-analytics:9.8.0'
+    testCompile 'com.google.android.gms:play-services-ads:9.8.0'
+    testCompile 'com.google.android.gms:play-services-basement:9.8.0'
+    testCompile 'com.parse.bolts:bolts-android:1.4.0'
+    testCompile 'com.google.code.gson:gson:2.3.1'
+    testCompile 'com.squareup.okhttp:okhttp:2.5.0'
+    testCompile 'com.squareup.okio:okio:1.6.0'
+    testCompile(name: 'eventbus-2.4.0')
 }
 
 android.buildTypes.each { type ->
@@ -139,6 +157,10 @@ uploadArchives {
                     }
 
                     if (it.artifactId == 'data-collector') {
+                        it.optional = true
+                    }
+
+                    if (it.artifactId == 'VisaCheckout-Android-SDK') {
                         it.optional = true
                     }
                 }

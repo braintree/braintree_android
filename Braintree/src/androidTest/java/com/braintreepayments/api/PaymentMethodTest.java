@@ -10,8 +10,8 @@ import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
+import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
 
 import org.junit.Before;

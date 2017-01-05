@@ -6,10 +6,8 @@ import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
-import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
-import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.VisaCheckoutListener;
@@ -90,20 +88,6 @@ public class VisaCheckoutTest {
         mCountDownLatch = new CountDownLatch(1);
         mBraintreeFragment = BraintreeFragmentTestUtils.getFragment(mActivityTestRule.getActivity(),
                 new TestClientTokenBuilder().withVisaCheckout().build(), null);
-    }
-
-    @Test(timeout = 10000)
-    public void createVisaCheckoutLibrary_whenVisaCheckoutConfigurationDisabled_postsConfigurationException() {
-        mBraintreeFragment.addListener(new BraintreeErrorListener() {
-            @Override
-            public void onError(Exception error) {
-                assertTrue(error instanceof ConfigurationException);
-                assertEquals("Visa Checkout is not enabled.", error.getMessage());
-                mCountDownLatch.countDown();
-            }
-        });
-
-        VisaCheckout.createVisaCheckoutLibrary(mBraintreeFragment);
     }
 
     @Test(timeout = 10000)

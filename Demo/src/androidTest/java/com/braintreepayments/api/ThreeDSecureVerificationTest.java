@@ -5,14 +5,15 @@ import android.support.test.espresso.web.webdriver.Locator;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.exceptions.AuthorizationException;
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
+import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
 
 import org.junit.Before;
@@ -30,8 +31,9 @@ import static android.support.test.espresso.web.sugar.Web.onWebView;
 import static android.support.test.espresso.web.webdriver.DriverAtoms.findElement;
 import static android.support.test.espresso.web.webdriver.DriverAtoms.webClick;
 import static android.support.test.espresso.web.webdriver.DriverAtoms.webKeys;
-import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWithAuthorization;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
+import static com.braintreepayments.api.test.Matchers.withId;
+import static com.braintreepayments.api.test.ViewHelper.waitForView;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_AUTHENTICATION_FAILED;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_AUTHENTICATION_UNAVAILABLE;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_ISSUER_DOES_NOT_PARTICIPATE;
@@ -44,11 +46,10 @@ import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_SIGNATUR
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON_NOT_REQUIRED;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
-import static com.braintreepayments.api.test.Matchers.withId;
-import static com.braintreepayments.api.test.ViewHelper.waitForView;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
 public class ThreeDSecureVerificationTest {
@@ -189,8 +190,7 @@ public class ThreeDSecureVerificationTest {
 
     @Test(timeout = 10000)
     public void performVerification_failsWithATokenizationKey() throws InterruptedException {
-        BraintreeFragment fragment = BraintreeFragmentTestUtils.getFragment(mActivity,
-                TOKENIZATION_KEY, new TestClientTokenBuilder().withThreeDSecure().build());
+        BraintreeFragment fragment = getFragment(TOKENIZATION_KEY);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
@@ -418,7 +418,23 @@ public class ThreeDSecureVerificationTest {
 
     /* helpers */
     private BraintreeFragment getFragment() {
-        String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
-        return getFragmentWithAuthorization(mActivity, clientToken);
+        return getFragment(new TestClientTokenBuilder().withThreeDSecure().build());
+    }
+
+    private BraintreeFragment getFragment(String authorization) {
+        try {
+            BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, authorization);
+
+            while (!fragment.isAdded()) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ignored) {}
+            }
+
+            return fragment;
+        } catch (InvalidArgumentException e) {
+            fail(e.getMessage());
+            return new BraintreeFragment();
+        }
     }
 }

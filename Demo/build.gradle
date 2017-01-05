@@ -98,6 +98,7 @@ dependencies {
 
     androidTestCompile 'com.lukekorth:device-automator:0.1.1'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-web:2.2.2'
     androidTestCompile project(':TestUtils')
 
     testCompile 'junit:junit:4.12'
