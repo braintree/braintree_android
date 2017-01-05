@@ -3,8 +3,6 @@ apply plugin: 'com.android.library'
 def LOCALHOST_IP = System.properties['LOCALHOST_IP'] ?: '"10.0.2.2"';
 def GATEWAY_IP = System.properties['GATEWAY_IP'] ?: '"10.0.2.2"';
 def GATEWAY_PORT = System.properties['GATEWAY_PORT'] ?: '"3000"';
-def VISA_CHECKOUT_PASSWORD = System.properties['VISA_CHECKOUT_PASSWORD'] ?: '""';
-def VISA_CHECKOUT_USERNAME = System.properties['VISA_CHECKOUT_USERNAME'] ?: '""';
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -33,6 +31,4 @@ android.buildTypes.each { type ->
     type.buildConfigField 'String', 'LOCALHOST_IP', LOCALHOST_IP
     type.buildConfigField 'String', 'GATEWAY_IP', GATEWAY_IP
     type.buildConfigField 'String', 'GATEWAY_PORT', GATEWAY_PORT
-    type.buildConfigField 'String', 'VISA_CHECKOUT_PASSWORD', VISA_CHECKOUT_PASSWORD
-    type.buildConfigField 'String', 'VISA_CHECKOUT_USERNAME', VISA_CHECKOUT_USERNAME
 }

@@ -11,8 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static com.braintreepayments.api.testutils.BuildConfig.VISA_CHECKOUT_PASSWORD;
-import static com.braintreepayments.api.testutils.BuildConfig.VISA_CHECKOUT_USERNAME;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
@@ -20,6 +18,9 @@ import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 
 @RunWith(AndroidJUnit4.class)
 public class VisaCheckoutTest extends TestHelper {
+
+    private static final String VISA_CHECKOUT_USERNAME = "test@bt.com";
+    private static final String VISA_CHECKOUT_PASSWORD = "12345678";
 
     @Before
     public void setup() {
