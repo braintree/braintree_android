@@ -19,42 +19,12 @@ import static org.powermock.api.support.membermodification.MemberModifier.stub;
 @PrepareForTest(VisaCheckoutConfiguration.class)
 public class VisaCheckoutConfigurationUnitTest {
 
-    private JSONObject mVisaCheckoutConfiguration;
+    private JSONObject mVisaCheckoutConfigurationJson;
 
     @Before
     public void setup() throws JSONException {
         JSONObject configuration = new JSONObject(stringFromFixture("configuration/with_visa_checkout.json"));
-        mVisaCheckoutConfiguration = configuration.getJSONObject("visaCheckout");
-    }
-
-    @Test
-    public void isEnabled_returnsFalseWhenConfigurationExistsButVisaPackageUnavailable() throws JSONException {
-        stub(method(VisaCheckoutConfiguration.class, "isVisaPackageAvailable")).toReturn(false);
-
-        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(mVisaCheckoutConfiguration);
-
-        assertFalse(visaCheckoutConfiguration.isEnabled());
-    }
-
-    @Test
-    public void isEnabled_returnsTrueWhenConfigurationExists() throws JSONException {
-        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(mVisaCheckoutConfiguration);
-
-        assertTrue(visaCheckoutConfiguration.isEnabled());
-    }
-
-    @Test
-    public void getApiKey_returnsApiKeyWhenConfigurationExists() throws JSONException {
-        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(mVisaCheckoutConfiguration);
-
-        assertEquals("gwApikey", visaCheckoutConfiguration.getApiKey());
-    }
-
-    @Test
-    public void getExternalClientId_returnsExternalClientIdWhenConfigurationExists() throws JSONException {
-        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(mVisaCheckoutConfiguration);
-
-        assertEquals("gwExternalClientId", visaCheckoutConfiguration.getExternalClientId());
+        mVisaCheckoutConfigurationJson = configuration.getJSONObject("visaCheckout");
     }
 
     @Test
@@ -62,6 +32,40 @@ public class VisaCheckoutConfigurationUnitTest {
         VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(null);
 
         assertFalse(visaCheckoutConfiguration.isEnabled());
+    }
+
+    @Test
+    public void isEnabled_returnsFalseWhenConfigurationExistsButVisaPackageUnavailable() throws JSONException {
+        stub(method(VisaCheckoutConfiguration.class, "isVisaCheckoutSDKAvailable")).toReturn(false);
+
+        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
+                mVisaCheckoutConfigurationJson);
+
+        assertFalse(visaCheckoutConfiguration.isEnabled());
+    }
+
+    @Test
+    public void isEnabled_returnsTrueWhenConfigurationExists() throws JSONException {
+        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
+                mVisaCheckoutConfigurationJson);
+
+        assertTrue(visaCheckoutConfiguration.isEnabled());
+    }
+
+    @Test
+    public void getApiKey_returnsApiKeyWhenConfigurationExists() throws JSONException {
+        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
+                mVisaCheckoutConfigurationJson);
+
+        assertEquals("gwApikey", visaCheckoutConfiguration.getApiKey());
+    }
+
+    @Test
+    public void getExternalClientId_returnsExternalClientIdWhenConfigurationExists() throws JSONException {
+        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
+                mVisaCheckoutConfigurationJson);
+
+        assertEquals("gwExternalClientId", visaCheckoutConfiguration.getExternalClientId());
     }
 
     @Test

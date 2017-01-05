@@ -37,7 +37,7 @@ public class VisaCheckout {
      * @param fragment {@link BraintreeFragment}
      */
     public static void createVisaCheckoutLibrary(final BraintreeFragment fragment) {
-        if (!VisaCheckoutConfiguration.isVisaPackageAvailable()) {
+        if (!VisaCheckoutConfiguration.isVisaCheckoutSDKAvailable()) {
             fragment.postCallback(new ConfigurationException("Visa Checkout SDK is not available"));
             return;
         }

@@ -167,7 +167,7 @@ public class VisaCheckoutUnitTest {
 
     @Test
     public void createVisaCheckoutLibrary_whenVisaCheckoutSDKUnavailable_postsException () {
-        stub(method(VisaCheckoutConfiguration.class, "isVisaPackageAvailable")).toReturn(false);
+        stub(method(VisaCheckoutConfiguration.class, "isVisaCheckoutSDKAvailable")).toReturn(false);
         ArgumentCaptor<Exception> argumentCaptor = ArgumentCaptor.forClass(Exception.class);
         VisaCheckout.createVisaCheckoutLibrary(mBraintreeFragment);
 
