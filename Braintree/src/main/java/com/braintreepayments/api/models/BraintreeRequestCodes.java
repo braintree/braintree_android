@@ -9,6 +9,9 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({
         BraintreeRequestCodes.VISA_CHECKOUT
 })
+/**
+ * Request codes that Braintree uses when communicating between Activities, and Fragments.
+ */
 public @interface BraintreeRequestCodes {
     int VISA_CHECKOUT = 13592;
 }
