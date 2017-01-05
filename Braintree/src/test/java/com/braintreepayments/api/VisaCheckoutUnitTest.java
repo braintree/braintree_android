@@ -429,8 +429,8 @@ public class VisaCheckoutUnitTest {
         ArgumentCaptor exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
         verify(mBraintreeFragment).postCallback((Exception) exceptionCaptor.capture());
 
-        assertEquals("Visa Checkout responded with resultCode=-100", ((BraintreeException)exceptionCaptor.getValue())
-                .getMessage());
+        assertEquals("Visa Checkout responded with and invalid resultCode: -100",
+                ((BraintreeException)exceptionCaptor.getValue()).getMessage());
     }
 
     @Test

@@ -149,7 +149,8 @@ public class VisaCheckout {
             tokenize(fragment, visaPaymentSummary);
             fragment.sendAnalyticsEvent("visacheckout.success");
         } else {
-            fragment.postCallback(new BraintreeException("Visa Checkout responded with resultCode=" + resultCode));
+            fragment.postCallback(
+                    new BraintreeException("Visa Checkout responded with an invalid resultCode: " + resultCode));
             fragment.sendAnalyticsEvent("visacheckout.failed");
         }
     }
