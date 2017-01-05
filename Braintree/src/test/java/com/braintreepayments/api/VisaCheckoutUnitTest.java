@@ -12,7 +12,7 @@ import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.VisaCheckoutConfiguration;
-import com.braintreepayments.api.models.VisaCheckoutPaymentMethodNonce;
+import com.braintreepayments.api.models.VisaCheckoutNonce;
 import com.visa.checkout.VisaLibrary;
 import com.visa.checkout.VisaMcomLibrary;
 import com.visa.checkout.VisaMerchantInfo;
@@ -292,18 +292,18 @@ public class VisaCheckoutUnitTest {
                 PaymentMethodNonceCallback paymentMethodNonceCallback = (PaymentMethodNonceCallback)invocation
                         .getArguments()[2];
 
-                paymentMethodNonceCallback.success(VisaCheckoutPaymentMethodNonce.fromJson(
+                paymentMethodNonceCallback.success(VisaCheckoutNonce.fromJson(
                         stringFromFixture("payment_methods/visa_checkout_response.json")));
                 return null;
             }
         }).when(TokenizationClient.class, "tokenize", any(BraintreeFragment.class), any(PaymentMethodBuilder.class),
                 any(PaymentMethodNonceCallback.class));
-        ArgumentCaptor paymentMethodNonceCaptor = ArgumentCaptor.forClass(VisaCheckoutPaymentMethodNonce.class);
+        ArgumentCaptor paymentMethodNonceCaptor = ArgumentCaptor.forClass(VisaCheckoutNonce.class);
 
         VisaCheckout.tokenize(mBraintreeFragment, sampleVisaPaymentSummary());
 
-        verify(mBraintreeFragment).postCallback((VisaCheckoutPaymentMethodNonce) paymentMethodNonceCaptor.capture());
-        assertEquals("123456-12345-12345-a-adfa", ((VisaCheckoutPaymentMethodNonce) paymentMethodNonceCaptor.getValue())
+        verify(mBraintreeFragment).postCallback((VisaCheckoutNonce) paymentMethodNonceCaptor.capture());
+        assertEquals("123456-12345-12345-a-adfa", ((VisaCheckoutNonce) paymentMethodNonceCaptor.getValue())
                 .getNonce());
     }
 
@@ -316,17 +316,17 @@ public class VisaCheckoutUnitTest {
                 PaymentMethodNonceCallback paymentMethodNonceCallback = (PaymentMethodNonceCallback)invocation
                         .getArguments()[2];
 
-                paymentMethodNonceCallback.success(VisaCheckoutPaymentMethodNonce.fromJson(
+                paymentMethodNonceCallback.success(VisaCheckoutNonce.fromJson(
                         stringFromFixture("payment_methods/visa_checkout_response.json")));
                 return null;
             }
         }).when(TokenizationClient.class, "tokenize", any(BraintreeFragment.class), any(PaymentMethodBuilder.class),
                 any(PaymentMethodNonceCallback.class));
-        ArgumentCaptor paymentMethodNonceCaptor = ArgumentCaptor.forClass(VisaCheckoutPaymentMethodNonce.class);
+        ArgumentCaptor paymentMethodNonceCaptor = ArgumentCaptor.forClass(VisaCheckoutNonce.class);
 
         VisaCheckout.tokenize(mBraintreeFragment, sampleVisaPaymentSummary());
 
-        verify(mBraintreeFragment).postCallback((VisaCheckoutPaymentMethodNonce) paymentMethodNonceCaptor.capture());
+        verify(mBraintreeFragment).postCallback((VisaCheckoutNonce) paymentMethodNonceCaptor.capture());
         verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.nonce-recieved"));
     }
 

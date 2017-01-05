@@ -47,6 +47,6 @@ public class VisaCheckoutBuilder extends PaymentMethodBuilder<VisaCheckoutBuilde
 
     @Override
     public String getResponsePaymentMethodType() {
-        return VisaCheckoutPaymentMethodNonce.TYPE;
+        return VisaCheckoutNonce.TYPE;
     }
 }

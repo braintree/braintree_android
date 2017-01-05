@@ -14,7 +14,7 @@ import com.braintreepayments.api.interfaces.VisaCheckoutListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.VisaCheckoutPaymentMethodNonce;
+import com.braintreepayments.api.models.VisaCheckoutNonce;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
@@ -175,7 +175,7 @@ public class VisaCheckoutTest {
         mBraintreeFragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
-                VisaCheckoutPaymentMethodNonce visaCheckoutPayment = (VisaCheckoutPaymentMethodNonce) paymentMethodNonce;
+                VisaCheckoutNonce visaCheckoutPayment = (VisaCheckoutNonce) paymentMethodNonce;
                 assertIsANonce(visaCheckoutPayment.getNonce());
                 assertEquals("44", visaCheckoutPayment.getLastTwo());
                 assertEquals("MasterCard", visaCheckoutPayment.getCardType());

@@ -74,7 +74,7 @@ public class VisaCheckoutBuilderUnitTest {
 
     @Test
     public void getResponsePaymentMethodType_returnsCorrectPaymentMethodType() {
-        assertEquals(VisaCheckoutPaymentMethodNonce.TYPE,
+        assertEquals(VisaCheckoutNonce.TYPE,
                 new VisaCheckoutBuilder(null).getResponsePaymentMethodType());
     }
 }
