@@ -198,24 +198,6 @@ public class VisaCheckoutUnitTest {
     }
 
     @Test
-    public void createVisaCheckoutLibrary_setsStaticEnvironmentConfigOnBraintreeVisaCheckoutResultActivity()
-            throws Exception {
-        spy(VisaMcomLibrary.class);
-        doAnswer(new Answer<VisaMcomLibrary>() {
-            @Override
-            public VisaMcomLibrary answer(InvocationOnMock invocation) throws Throwable {
-                return mock(VisaMcomLibrary.class);
-            }
-        }).when(VisaMcomLibrary.class, "getLibrary", any(Activity.class), any(VisaEnvironmentConfig.class));
-
-        VisaCheckout.createVisaCheckoutLibrary(mBraintreeFragment);
-
-        VisaEnvironmentConfig visaEnvironmentConfig = BraintreeVisaCheckoutResultActivity.sVisaEnvironmentConfig;
-        assertEquals(VisaEnvironmentConfig.SANDBOX, visaEnvironmentConfig);
-        assertEquals("gwApikey", visaEnvironmentConfig.getMerchantApiKey());
-    }
-
-    @Test
     public void authorize_whenVisaMerchantInfo_setsBraintreePropertiesOnVisaMerchantInfo() throws Exception {
         VisaPaymentInfo visaPaymentInfo = new VisaPaymentInfo();
         visaPaymentInfo.setDescription("merchantDescription");
@@ -241,7 +223,10 @@ public class VisaCheckoutUnitTest {
         VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
 
         VisaPaymentInfo actual = BraintreeVisaCheckoutResultActivity.sVisaPaymentInfo;
+        VisaEnvironmentConfig visaEnvironmentConfig = BraintreeVisaCheckoutResultActivity.sVisaEnvironmentConfig;
 
+        assertEquals(VisaEnvironmentConfig.SANDBOX, visaEnvironmentConfig);
+        assertEquals("gwApikey", visaEnvironmentConfig.getMerchantApiKey());
         assertEquals(BraintreeVisaCheckoutResultActivity.class.getName(),
                 intentCaptor.getValue().getComponent().getClassName());
         assertEquals(BraintreeRequestCodes.VISA_CHECKOUT, requestCodeCaptor.getValue().intValue());

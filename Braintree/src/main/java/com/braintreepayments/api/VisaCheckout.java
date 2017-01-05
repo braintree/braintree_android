@@ -26,8 +26,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Used to create and tokenize Visa Checkout. For more information see the
+ * <a href="https://developers.braintreepayments.com/guides/visa-checkout/overview">documentation</a>
+ */
 public class VisaCheckout {
 
+    /**
+     * Creates the Visa Checkout library.
+     * @param fragment {@link BraintreeFragment}
+     */
     public static void createVisaCheckoutLibrary(final BraintreeFragment fragment) {
         if (!VisaCheckoutConfiguration.isVisaPackageAvailable()) {
             fragment.postCallback(new ConfigurationException("Visa Checkout SDK is not available"));
@@ -38,28 +46,34 @@ public class VisaCheckout {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 VisaCheckoutConfiguration visaCheckoutConfiguration = configuration.getVisaCheckout();
-
                 if (!visaCheckoutConfiguration.isEnabled()) {
                     fragment.postCallback(new ConfigurationException("Visa Checkout is not enabled."));
                     return;
                 }
 
-                VisaEnvironmentConfig visaEnvironmentConfig = VisaEnvironmentConfig.SANDBOX;
-                if ("production".equals(configuration.getEnvironment())) {
-                    visaEnvironmentConfig = VisaEnvironmentConfig.PRODUCTION;
-                }
-
-                visaEnvironmentConfig.setMerchantApiKey(visaCheckoutConfiguration.getApiKey());
-                visaEnvironmentConfig.setVisaCheckoutRequestCode(BraintreeRequestCodes.VISA_CHECKOUT);
+                VisaEnvironmentConfig visaEnvironmentConfig = createVisaEnvironmentConfig(configuration);
 
                 VisaMcomLibrary visaMcomLibrary = VisaMcomLibrary.getLibrary(fragment.getActivity(),
                         visaEnvironmentConfig);
-                BraintreeVisaCheckoutResultActivity.sVisaEnvironmentConfig = visaEnvironmentConfig;
                 fragment.postVisaCheckoutLibraryCallback(visaMcomLibrary);
             }
         });
     }
 
+    /**
+     * Starts Visa Checkout to authorize a payment from the customer.
+     * @param fragment {@link BraintreeFragment}
+     * @param visaPaymentInfo {@link VisaPaymentInfo} Used to customize the authorization process. Braintree
+     * requires some properties set, and will set those properties if they are empty.
+     * </p>
+     * The properties Braintree will fill in are:
+     * <ul>
+     *     <li>{@link VisaMerchantInfo#setMerchantApiKey(String)}</li>
+     *     <li>{@link VisaMerchantInfo#setAcceptedCardBrands(List)}</li>
+     *     <li>{@link VisaPaymentInfo#setExternalClientId(String)} </li>
+     * </ul>
+     * Braintree will also overwrite {@link VisaMerchantInfo#setDataLevel(MerchantDataLevel)} to {@link MerchantDataLevel#FULL}.
+     */
     public static void authorize(final BraintreeFragment fragment, final VisaPaymentInfo visaPaymentInfo) {
         fragment.waitForConfiguration(new ConfigurationListener() {
 
@@ -105,6 +119,7 @@ public class VisaCheckout {
                 }
 
                 visaPaymentInfo.setVisaMerchantInfo(visaMerchantInfo);
+                BraintreeVisaCheckoutResultActivity.sVisaEnvironmentConfig = createVisaEnvironmentConfig(configuration);
                 BraintreeVisaCheckoutResultActivity.sVisaPaymentInfo = visaPaymentInfo;
 
                 Intent visaCheckoutResultActivity = new Intent(fragment.getActivity(),
@@ -113,6 +128,18 @@ public class VisaCheckout {
                         BraintreeRequestCodes.VISA_CHECKOUT);
             }
         });
+    }
+
+    static VisaEnvironmentConfig createVisaEnvironmentConfig(Configuration configuration) {
+        VisaEnvironmentConfig visaEnvironmentConfig = VisaEnvironmentConfig.SANDBOX;
+        if ("production".equals(configuration.getEnvironment())) {
+            visaEnvironmentConfig = VisaEnvironmentConfig.PRODUCTION;
+        }
+
+        visaEnvironmentConfig.setMerchantApiKey(configuration.getVisaCheckout().getApiKey());
+        visaEnvironmentConfig.setVisaCheckoutRequestCode(BraintreeRequestCodes.VISA_CHECKOUT);
+        return visaEnvironmentConfig;
+
     }
 
     static void onActivityResult(BraintreeFragment fragment, int resultCode, Intent data) {
