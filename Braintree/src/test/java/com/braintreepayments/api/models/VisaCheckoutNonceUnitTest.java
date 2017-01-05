@@ -16,7 +16,7 @@ import static junit.framework.Assert.assertNotNull;
 public class VisaCheckoutNonceUnitTest {
 
     @Test
-    public void fromJson_createsVisaCheckoutPaymentMethodNonce() throws JSONException {
+    public void fromJson_createsVisaCheckoutNonce() throws JSONException {
         VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJson(
                 stringFromFixture("payment_methods/visa_checkout_response.json"));
 

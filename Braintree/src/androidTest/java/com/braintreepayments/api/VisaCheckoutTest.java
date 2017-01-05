@@ -150,7 +150,7 @@ public class VisaCheckoutTest {
     }
 
     @Test(timeout = 10000)
-    public void authorize_whenActivityResultOkAndTokenizationSuccess_postsVisaCheckoutPaymentMethodNonce()
+    public void authorize_whenActivityResultOkAndTokenizationSuccess_postsVisaCheckoutNonce()
             throws InterruptedException {
         mBraintreeFragment = spy(mBraintreeFragment);
         doAnswer(new Answer() {
