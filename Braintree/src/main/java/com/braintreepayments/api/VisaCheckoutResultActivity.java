@@ -9,7 +9,10 @@ import com.visa.checkout.VisaMcomLibrary;
 import com.visa.checkout.VisaPaymentInfo;
 import com.visa.checkout.utils.VisaEnvironmentConfig;
 
-public class BraintreeVisaCheckoutResultActivity extends Activity {
+/**
+ * Helper Activity that captures the response when Visa Checkout completes.
+ */
+public class VisaCheckoutResultActivity extends Activity {
 
     static VisaPaymentInfo sVisaPaymentInfo;
     static VisaEnvironmentConfig sVisaEnvironmentConfig;
@@ -19,8 +22,6 @@ public class BraintreeVisaCheckoutResultActivity extends Activity {
         super.onCreate(savedInstanceState);
         VisaMcomLibrary visaMcomLibrary = VisaMcomLibrary.getLibrary(this, sVisaEnvironmentConfig);
         visaMcomLibrary.checkoutWithPayment(sVisaPaymentInfo, BraintreeRequestCodes.VISA_CHECKOUT);
-        sVisaPaymentInfo = null;
-        sVisaEnvironmentConfig = null;
     }
 
     @Override

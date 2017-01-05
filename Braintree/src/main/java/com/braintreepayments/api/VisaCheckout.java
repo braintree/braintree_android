@@ -118,11 +118,11 @@ public class VisaCheckout {
                 }
 
                 visaPaymentInfo.setVisaMerchantInfo(visaMerchantInfo);
-                BraintreeVisaCheckoutResultActivity.sVisaEnvironmentConfig = createVisaEnvironmentConfig(configuration);
-                BraintreeVisaCheckoutResultActivity.sVisaPaymentInfo = visaPaymentInfo;
+                VisaCheckoutResultActivity.sVisaEnvironmentConfig = createVisaEnvironmentConfig(configuration);
+                VisaCheckoutResultActivity.sVisaPaymentInfo = visaPaymentInfo;
 
                 Intent visaCheckoutResultActivity = new Intent(fragment.getActivity(),
-                        BraintreeVisaCheckoutResultActivity.class);
+                        VisaCheckoutResultActivity.class);
                 fragment.startActivityForResult(visaCheckoutResultActivity,
                         BraintreeRequestCodes.VISA_CHECKOUT);
             }
