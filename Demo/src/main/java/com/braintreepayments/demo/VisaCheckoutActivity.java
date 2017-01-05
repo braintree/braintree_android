@@ -29,7 +29,6 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
 
     private LinearLayout mVisaCheckoutLayout;
 
-    private VisaMcomLibrary mVisaMComLibrary;
     private View mVisaPaymentButton;
 
     @Override
@@ -41,9 +40,7 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
 
     @Override
     protected void reset() {
-        if (mVisaPaymentButton != null) {
-            mVisaPaymentButton.setEnabled(false);
-        }
+        mVisaCheckoutLayout.removeAllViews();
     }
 
     @Override
@@ -103,8 +100,6 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
 
     @Override
     public void onVisaCheckoutLibraryCreated(VisaMcomLibrary visaMcomLibrary) {
-        mVisaMComLibrary = visaMcomLibrary;
-
         if (mVisaCheckoutLayout.getChildCount() == 0) {
             mVisaPaymentButton = new VisaPaymentButton(this);
             mVisaPaymentButton.setOnClickListener(this);

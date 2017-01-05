@@ -248,11 +248,17 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
             details += "Email: " + androidPayCardNonce.getEmail() + "\n";
             details += "Billing address: " + formatAddress(androidPayCardNonce.getBillingAddress()) + "\n";
             details += "Shipping address: " + formatAddress(androidPayCardNonce.getShippingAddress());
+        } else if (mNonce instanceof VisaCheckoutNonce) {
+            VisaCheckoutNonce visaCheckoutNonce = (VisaCheckoutNonce) mNonce;
+            details = "User data\n";
+            details += "First name: " + visaCheckoutNonce.getUserData().getUserFirstName() + "\n";
+            details += "Last name: " + visaCheckoutNonce.getUserData().getUserLastName() + "\n";
+            details += "Full name: " + visaCheckoutNonce.getUserData().getUserFullName() + "\n";
+            details += "User name: " + visaCheckoutNonce.getUserData().getUserName() + "\n";
+            details += "Email: " + visaCheckoutNonce.getUserData().getUserEmail() + "\n";
         } else if (mNonce instanceof VenmoAccountNonce) {
             VenmoAccountNonce venmoAccountNonce = (VenmoAccountNonce) mNonce;
             details = "Username: " + venmoAccountNonce.getUsername();
-        } else if (mNonce instanceof VisaCheckoutPaymentMethodNonce) {
-            mNonceDetails.setText(mNonce.toString());
         }
 
         mNonceDetails.setText(details);
