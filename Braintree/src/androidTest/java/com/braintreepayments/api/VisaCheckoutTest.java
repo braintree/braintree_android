@@ -14,7 +14,6 @@ import com.braintreepayments.api.interfaces.VisaCheckoutListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.VisaCheckoutConfiguration;
 import com.braintreepayments.api.models.VisaCheckoutPaymentMethodNonce;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
@@ -60,29 +59,6 @@ public class VisaCheckoutTest {
     private BraintreeFragment mBraintreeFragment;
     private CountDownLatch mCountDownLatch;
 
-    private VisaPaymentSummary sampleVisaPaymentSummary() {
-        JSONObject visaPaymentJson;
-        try {
-            visaPaymentJson = new JSONObject(stringFromFixture("response/visa_checkout_payment.json"));
-        } catch (JSONException e) {
-            throw new RuntimeException("Cannot convert visa_checkout_payment to JSON.");
-        }
-
-        Parcel in = Parcel.obtain();
-        in.writeLong(1);
-        in.writeString("US");
-        in.writeString("90210");
-        in.writeString("1234");
-        in.writeString("VISA");
-        in.writeString("Credit");
-        in.writeString(visaPaymentJson.optString("encPaymentData"));
-        in.writeString(visaPaymentJson.optString("encKey"));
-        in.writeString(visaPaymentJson.optString("callid"));
-        in.setDataPosition(0);
-
-        return VisaPaymentSummary.CREATOR.createFromParcel(in);
-    }
-
     @Before
     public void setUp() throws InvalidArgumentException {
         mCountDownLatch = new CountDownLatch(1);
@@ -91,24 +67,21 @@ public class VisaCheckoutTest {
     }
 
     @Test(timeout = 10000)
-    public void createVisaCheckoutLibrary_whenSuccessful_returnsVisaMComLibrary() {
+    public void createVisaCheckoutLibrary_whenSuccessful_returnsVisaMComLibrary() throws InterruptedException {
         mBraintreeFragment.addListener(new VisaCheckoutListener() {
             @Override
             public void onVisaCheckoutLibraryCreated(VisaMcomLibrary visaMcomLibrary) {
-                VisaCheckoutConfiguration visaCheckoutConfiguration = mBraintreeFragment.getConfiguration()
-                        .getVisaCheckout();
                 assertNotNull(visaMcomLibrary);
-                assertEquals(visaCheckoutConfiguration.getApiKey(), visaMcomLibrary.getMerchantApiKey());
-                assertEquals(visaCheckoutConfiguration.getExternalClientId(), visaMcomLibrary.getExternalClientId());
                 mCountDownLatch.countDown();
             }
         });
 
         VisaCheckout.createVisaCheckoutLibrary(mBraintreeFragment);
+        mCountDownLatch.await();
     }
 
     @Test(timeout = 10000)
-    public void authorize_whenActivityCancels_postsCancel() {
+    public void authorize_whenActivityCancels_postsCancel() throws InterruptedException {
         mBraintreeFragment = spy(mBraintreeFragment);
         doAnswer(new Answer() {
             @Override
@@ -119,14 +92,6 @@ public class VisaCheckoutTest {
             }
         }).when(mBraintreeFragment).startActivityForResult(any(Intent.class), eq(BraintreeRequestCodes.VISA_CHECKOUT));
 
-        mBraintreeFragment.addListener(new VisaCheckoutListener() {
-            @Override
-            public void onVisaCheckoutLibraryCreated(VisaMcomLibrary visaMcomLibrary) {
-                VisaPaymentInfo visaPaymentInfo = new VisaPaymentInfo();
-                VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
-            }
-        });
-
         mBraintreeFragment.addListener(new BraintreeCancelListener() {
             @Override
             public void onCancel(int requestCode) {
@@ -135,11 +100,13 @@ public class VisaCheckoutTest {
             }
         });
 
-        VisaCheckout.createVisaCheckoutLibrary(mBraintreeFragment);
+        VisaCheckout.authorize(mBraintreeFragment, new VisaPaymentInfo());
+        mCountDownLatch.await();
     }
 
     @Test(timeout = 10000)
-    public void authorize_whenActivityResultOkAndTokenizationFails_postsTokenizationException() {
+    public void authorize_whenActivityResultOkAndTokenizationFails_postsTokenizationException()
+            throws InterruptedException {
         mBraintreeFragment = spy(mBraintreeFragment);
         BraintreeHttpClient httpClient = spy(mBraintreeFragment.getHttpClient());
         doAnswer(new Answer() {
@@ -172,17 +139,19 @@ public class VisaCheckoutTest {
         });
 
         VisaCheckout.createVisaCheckoutLibrary(mBraintreeFragment);
+        mCountDownLatch.await();
+
         ArgumentCaptor exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
         verify(mBraintreeFragment).postCallback((Exception) exceptionCaptor.capture());
 
         BraintreeException error = (BraintreeException) exceptionCaptor.getValue();
         assertTrue(error instanceof BraintreeException);
         assertEquals("Tokenization Failure", error.getMessage());
-
     }
 
     @Test(timeout = 10000)
-    public void authorize_whenActivityResultOkAndTokenizationSuccess_postsVisaCheckoutPaymentMethodNonce() {
+    public void authorize_whenActivityResultOkAndTokenizationSuccess_postsVisaCheckoutPaymentMethodNonce()
+            throws InterruptedException {
         mBraintreeFragment = spy(mBraintreeFragment);
         doAnswer(new Answer() {
             @Override
@@ -217,5 +186,29 @@ public class VisaCheckoutTest {
         });
 
         VisaCheckout.createVisaCheckoutLibrary(mBraintreeFragment);
+        mCountDownLatch.await();
+    }
+
+    private VisaPaymentSummary sampleVisaPaymentSummary() {
+        JSONObject visaPaymentJson;
+        try {
+            visaPaymentJson = new JSONObject(stringFromFixture("response/visa_checkout_payment.json"));
+        } catch (JSONException e) {
+            throw new RuntimeException("Cannot convert visa_checkout_payment to JSON.");
+        }
+
+        Parcel in = Parcel.obtain();
+        in.writeLong(1);
+        in.writeString("US");
+        in.writeString("90210");
+        in.writeString("1234");
+        in.writeString("VISA");
+        in.writeString("Credit");
+        in.writeString(Json.optString(visaPaymentJson, "encPaymentData", ""));
+        in.writeString(Json.optString(visaPaymentJson, "encKey", ""));
+        in.writeString(Json.optString(visaPaymentJson, "callid", ""));
+        in.setDataPosition(0);
+
+        return VisaPaymentSummary.CREATOR.createFromParcel(in);
     }
 }

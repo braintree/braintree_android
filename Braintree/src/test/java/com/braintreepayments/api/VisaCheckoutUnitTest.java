@@ -49,6 +49,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.doAnswer;
+import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
@@ -68,36 +69,16 @@ public class VisaCheckoutUnitTest {
     private Configuration mConfigurationWithVisaCheckout;
     private BraintreeFragment mBraintreeFragment;
 
-    private VisaPaymentSummary sampleVisaPaymentSummary() {
-        Parcel in = Parcel.obtain();
-        in.writeLong(1);
-        in.writeString("US");
-        in.writeString("90210");
-        in.writeString("1234");
-        in.writeString("VISA");
-        in.writeString("Credit");
-        in.writeString("stubbedEncPaymentData");
-        in.writeString("stubbedEncKey");
-        in.writeString("stubbedCallId");
-        in.setDataPosition(0);
-
-        return VisaPaymentSummary.CREATOR.createFromParcel(in);
-    }
-
     @Before
     public void setup() throws JSONException {
-        JSONObject configurationJSON = new JSONObject(stringFromFixture("configuration.json"));
         JSONObject visaConfiguration = new JSONObject(stringFromFixture("configuration/with_visa_checkout.json"));
-        configurationJSON.put("creditCards", visaConfiguration.get("creditCards"));
-        configurationJSON.put("visaCheckout", visaConfiguration.get("visaCheckout"));
-        mConfigurationWithVisaCheckout = Configuration.fromJson(configurationJSON.toString());
+        mConfigurationWithVisaCheckout = Configuration.fromJson(visaConfiguration.toString());
 
         mBraintreeFragment = new MockFragmentBuilder()
                 .configuration(mConfigurationWithVisaCheckout)
                 .build();
 
-        Activity activity = mock(Activity.class);
-        when(mBraintreeFragment.getActivity()).thenReturn(activity);
+        when(mBraintreeFragment.getActivity()).thenReturn(mock(Activity.class));
     }
 
     @Test
@@ -116,7 +97,7 @@ public class VisaCheckoutUnitTest {
     }
 
     @Test
-    public void createVisaCheckoutLibrary_whenProduction_usesProductionConfig () throws Exception {
+    public void createVisaCheckoutLibrary_whenProduction_usesProductionConfig() throws Exception {
         spy(VisaMcomLibrary.class);
         doAnswer(new Answer<VisaMcomLibrary>() {
             @Override
@@ -135,8 +116,7 @@ public class VisaCheckoutUnitTest {
                 .configuration(configuration)
                 .build();
 
-        Activity activity = mock(Activity.class);
-        when(braintreeFragment.getActivity()).thenReturn(activity);
+        when(braintreeFragment.getActivity()).thenReturn(mock(Activity.class));
 
         VisaCheckout.createVisaCheckoutLibrary(braintreeFragment);
 
@@ -150,8 +130,7 @@ public class VisaCheckoutUnitTest {
     }
 
     @Test
-    public void createVisaCheckoutLibrary_setsVisaEnvironmentConfig()
-            throws Exception {
+    public void createVisaCheckoutLibrary_setsVisaEnvironmentConfig() throws Exception {
         spy(VisaMcomLibrary.class);
         doAnswer(new Answer<VisaMcomLibrary>() {
             @Override
@@ -169,8 +148,7 @@ public class VisaCheckoutUnitTest {
                 .configuration(configuration)
                 .build();
 
-        Activity activity = mock(Activity.class);
-        when(braintreeFragment.getActivity()).thenReturn(activity);
+        when(braintreeFragment.getActivity()).thenReturn(mock(Activity.class));
 
         VisaCheckout.createVisaCheckoutLibrary(braintreeFragment);
 
@@ -192,8 +170,8 @@ public class VisaCheckoutUnitTest {
         stub(method(VisaCheckoutConfiguration.class, "isVisaPackageAvailable")).toReturn(false);
         ArgumentCaptor<Exception> argumentCaptor = ArgumentCaptor.forClass(Exception.class);
         VisaCheckout.createVisaCheckoutLibrary(mBraintreeFragment);
-        verify(mBraintreeFragment).postCallback(argumentCaptor.capture());
 
+        verify(mBraintreeFragment).postCallback(argumentCaptor.capture());
         assertEquals("Visa Checkout SDK is not available", argumentCaptor.getValue().getMessage());
     }
 
@@ -205,20 +183,14 @@ public class VisaCheckoutUnitTest {
         visaUserInfo.setFirstName("visaUserInfoFirstName");
         visaPaymentInfo.setVisaUserInfo(visaUserInfo);
         List<AcceptedCardBrands> acceptedCardBrands = Arrays.asList(
-                AcceptedCardBrands.ELECTRON,
-                AcceptedCardBrands.VISA,
-                AcceptedCardBrands.MASTERCARD,
-                AcceptedCardBrands.DISCOVER,
-                AcceptedCardBrands.AMEX
+                AcceptedCardBrands.ELECTRON
         );
 
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         ArgumentCaptor<Integer> requestCodeCaptor = ArgumentCaptor.forClass(Integer.class);
 
-        PowerMockito.doNothing().when(mBraintreeFragment).startActivityForResult(
-                intentCaptor.capture(),
-                requestCodeCaptor.capture()
-        );
+        doNothing().when(mBraintreeFragment).startActivityForResult(intentCaptor.capture(),
+                requestCodeCaptor.capture());
 
         VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
 
@@ -241,7 +213,7 @@ public class VisaCheckoutUnitTest {
     public void authorize_whenMerchantFilledOutVisaPaymentInfo_doesNotOverwriteApiKey() {
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         ArgumentCaptor<Integer> requestCodeCaptor = ArgumentCaptor.forClass(Integer.class);
-        PowerMockito.doNothing().when(mBraintreeFragment).startActivityForResult(
+        doNothing().when(mBraintreeFragment).startActivityForResult(
                 intentCaptor.capture(),
                 requestCodeCaptor.capture()
         );
@@ -261,10 +233,8 @@ public class VisaCheckoutUnitTest {
     public void authorize_whenMerchantFilledOutVisaPaymentInfo_doesNotOverwriteExternalClientId() {
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         ArgumentCaptor<Integer> requestCodeCaptor = ArgumentCaptor.forClass(Integer.class);
-        PowerMockito.doNothing().when(mBraintreeFragment).startActivityForResult(
-                intentCaptor.capture(),
-                requestCodeCaptor.capture()
-        );
+        doNothing().when(mBraintreeFragment).startActivityForResult(intentCaptor.capture(),
+                requestCodeCaptor.capture());
 
         VisaPaymentInfo visaPaymentInfo = new VisaPaymentInfo();
         visaPaymentInfo.setExternalClientId("merchantSetExternalClientId");
@@ -279,10 +249,8 @@ public class VisaCheckoutUnitTest {
     public void authorize_whenMerchantFilledOutVisaPaymentInfo_doesOverwriteDataLevel() {
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         ArgumentCaptor<Integer> requestCodeCaptor = ArgumentCaptor.forClass(Integer.class);
-        PowerMockito.doNothing().when(mBraintreeFragment).startActivityForResult(
-                intentCaptor.capture(),
-                requestCodeCaptor.capture()
-        );
+        doNothing().when(mBraintreeFragment).startActivityForResult(intentCaptor.capture(),
+                requestCodeCaptor.capture());
 
         VisaPaymentInfo visaPaymentInfo = new VisaPaymentInfo();
         visaPaymentInfo.setVisaMerchantInfo(new VisaMerchantInfo());
@@ -298,10 +266,8 @@ public class VisaCheckoutUnitTest {
     public void authorize_whenMerchantFilledOutVisaPaymentInfo_doesNotOverwriteCardBrands() {
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         ArgumentCaptor<Integer> requestCodeCaptor = ArgumentCaptor.forClass(Integer.class);
-        PowerMockito.doNothing().when(mBraintreeFragment).startActivityForResult(
-                intentCaptor.capture(),
-                requestCodeCaptor.capture()
-        );
+        doNothing().when(mBraintreeFragment).startActivityForResult(intentCaptor.capture(),
+                requestCodeCaptor.capture());
 
         VisaPaymentInfo visaPaymentInfo = new VisaPaymentInfo();
         VisaMerchantInfo visaMerchantInfo = new VisaMerchantInfo();
@@ -326,11 +292,8 @@ public class VisaCheckoutUnitTest {
                 PaymentMethodNonceCallback paymentMethodNonceCallback = (PaymentMethodNonceCallback)invocation
                         .getArguments()[2];
 
-
-                VisaCheckoutPaymentMethodNonce visaCheckoutPaymentMethodNonce = VisaCheckoutPaymentMethodNonce.fromJson(
-                        stringFromFixture("payment_methods/visa_checkout_response.json"));
-
-                paymentMethodNonceCallback.success(visaCheckoutPaymentMethodNonce);
+                paymentMethodNonceCallback.success(VisaCheckoutPaymentMethodNonce.fromJson(
+                        stringFromFixture("payment_methods/visa_checkout_response.json")));
                 return null;
             }
         }).when(TokenizationClient.class, "tokenize", any(BraintreeFragment.class), any(PaymentMethodBuilder.class),
@@ -338,10 +301,10 @@ public class VisaCheckoutUnitTest {
         ArgumentCaptor paymentMethodNonceCaptor = ArgumentCaptor.forClass(VisaCheckoutPaymentMethodNonce.class);
 
         VisaCheckout.tokenize(mBraintreeFragment, sampleVisaPaymentSummary());
+
         verify(mBraintreeFragment).postCallback((VisaCheckoutPaymentMethodNonce) paymentMethodNonceCaptor.capture());
-        VisaCheckoutPaymentMethodNonce visaCheckoutPaymentMethodNonce =
-                (VisaCheckoutPaymentMethodNonce) paymentMethodNonceCaptor.getValue();
-        assertEquals("123456-12345-12345-a-adfa", visaCheckoutPaymentMethodNonce.getNonce());
+        assertEquals("123456-12345-12345-a-adfa", ((VisaCheckoutPaymentMethodNonce) paymentMethodNonceCaptor.getValue())
+                .getNonce());
     }
 
     @Test
@@ -353,11 +316,8 @@ public class VisaCheckoutUnitTest {
                 PaymentMethodNonceCallback paymentMethodNonceCallback = (PaymentMethodNonceCallback)invocation
                         .getArguments()[2];
 
-
-                VisaCheckoutPaymentMethodNonce visaCheckoutPaymentMethodNonce = VisaCheckoutPaymentMethodNonce.fromJson(
-                        stringFromFixture("payment_methods/visa_checkout_response.json"));
-
-                paymentMethodNonceCallback.success(visaCheckoutPaymentMethodNonce);
+                paymentMethodNonceCallback.success(VisaCheckoutPaymentMethodNonce.fromJson(
+                        stringFromFixture("payment_methods/visa_checkout_response.json")));
                 return null;
             }
         }).when(TokenizationClient.class, "tokenize", any(BraintreeFragment.class), any(PaymentMethodBuilder.class),
@@ -365,10 +325,9 @@ public class VisaCheckoutUnitTest {
         ArgumentCaptor paymentMethodNonceCaptor = ArgumentCaptor.forClass(VisaCheckoutPaymentMethodNonce.class);
 
         VisaCheckout.tokenize(mBraintreeFragment, sampleVisaPaymentSummary());
+
         verify(mBraintreeFragment).postCallback((VisaCheckoutPaymentMethodNonce) paymentMethodNonceCaptor.capture());
-        VisaCheckoutPaymentMethodNonce visaCheckoutPaymentMethodNonce =
-                (VisaCheckoutPaymentMethodNonce) paymentMethodNonceCaptor.getValue();
-        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.tokenize.succeeded"));
+        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.nonce-recieved"));
     }
 
     @Test
@@ -388,6 +347,7 @@ public class VisaCheckoutUnitTest {
         ArgumentCaptor exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
 
         VisaCheckout.tokenize(mBraintreeFragment, sampleVisaPaymentSummary());
+
         verify(mBraintreeFragment).postCallback((Exception) exceptionCaptor.capture());
         assertEquals("Mock Failure", ((Exception)exceptionCaptor.getValue()).getMessage());
     }
@@ -409,8 +369,9 @@ public class VisaCheckoutUnitTest {
         ArgumentCaptor exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
 
         VisaCheckout.tokenize(mBraintreeFragment, sampleVisaPaymentSummary());
+
         verify(mBraintreeFragment).postCallback((Exception) exceptionCaptor.capture());
-        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.tokenize.failed"));
+        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.nonce-failed"));
     }
 
     @Test
@@ -452,20 +413,13 @@ public class VisaCheckoutUnitTest {
         TokenizationClient.tokenize(eq(mBraintreeFragment), any(PaymentMethodBuilder.class),
                 any(PaymentMethodNonceCallback.class));
 
-        verify(mBraintreeFragment).sendAnalyticsEvent("visacheckout.activityresult.ok");
-
+        verify(mBraintreeFragment).sendAnalyticsEvent("visacheckout.success");
     }
 
     @Test
     public void onActivityResult_whenCancelled_sendAnalyticsEvent() {
         VisaCheckout.onActivityResult(mBraintreeFragment, Activity.RESULT_CANCELED, null);
-        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.activityresult.canceled"));
-    }
-
-    @Test
-    public void onActivityResult_whenCancelled_callsCancelCallback() {
-        VisaCheckout.onActivityResult(mBraintreeFragment, Activity.RESULT_CANCELED, null);
-        verify(mBraintreeFragment).postCancelCallback(eq(BraintreeRequestCodes.VISA_CHECKOUT));
+        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.canceled"));
     }
 
     @Test
@@ -482,6 +436,22 @@ public class VisaCheckoutUnitTest {
     @Test
     public void onActivityResult_whenFailure_sendAnalyticsevent() {
         VisaCheckout.onActivityResult(mBraintreeFragment, -100, null);
-        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.activityresult.failed"));
+        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.failed"));
+    }
+
+    private VisaPaymentSummary sampleVisaPaymentSummary() {
+        Parcel in = Parcel.obtain();
+        in.writeLong(1);
+        in.writeString("US");
+        in.writeString("90210");
+        in.writeString("1234");
+        in.writeString("VISA");
+        in.writeString("Credit");
+        in.writeString("stubbedEncPaymentData");
+        in.writeString("stubbedEncKey");
+        in.writeString("stubbedCallId");
+        in.setDataPosition(0);
+
+        return VisaPaymentSummary.CREATOR.createFromParcel(in);
     }
 }

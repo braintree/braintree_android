@@ -342,11 +342,11 @@ public class BraintreeFragment extends Fragment {
             case Venmo.VENMO_REQUEST_CODE:
                 Venmo.onActivityResult(this, resultCode, data);
                 break;
-            case AndroidPay.ANDROID_PAY_REQUEST_CODE:
-                AndroidPay.onActivityResult(this, resultCode, data);
-                break;
             case BraintreeRequestCodes.VISA_CHECKOUT:
                 VisaCheckout.onActivityResult(this, resultCode, data);
+                break;
+            case AndroidPay.ANDROID_PAY_REQUEST_CODE:
+                AndroidPay.onActivityResult(this, resultCode, data);
                 break;
         }
 

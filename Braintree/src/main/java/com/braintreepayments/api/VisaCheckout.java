@@ -76,7 +76,6 @@ public class VisaCheckout {
      */
     public static void authorize(final BraintreeFragment fragment, final VisaPaymentInfo visaPaymentInfo) {
         fragment.waitForConfiguration(new ConfigurationListener() {
-
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 VisaCheckoutConfiguration visaCheckoutConfiguration = configuration.getVisaCheckout();
@@ -99,18 +98,18 @@ public class VisaCheckout {
                     Set<String> supportedCardTypes = configuration.getCardConfiguration().getSupportedCardTypes();
                     List<AcceptedCardBrands> acceptedCardBrands = new ArrayList<>();
                     for (String supportedCardType : supportedCardTypes) {
-                        switch (supportedCardType) {
-                            case "Visa":
+                        switch (supportedCardType.toLowerCase()) {
+                            case "visa":
                                 acceptedCardBrands.add(AcceptedCardBrands.ELECTRON);
                                 acceptedCardBrands.add(AcceptedCardBrands.VISA);
                                 break;
-                            case "MasterCard":
+                            case "mastercard":
                                 acceptedCardBrands.add(AcceptedCardBrands.MASTERCARD);
                                 break;
-                            case "Discover":
+                            case "discover":
                                 acceptedCardBrands.add(AcceptedCardBrands.DISCOVER);
                                 break;
-                            case "American Express":
+                            case "american express":
                                 acceptedCardBrands.add(AcceptedCardBrands.AMEX);
                                 break;
                         }
@@ -144,15 +143,14 @@ public class VisaCheckout {
 
     static void onActivityResult(BraintreeFragment fragment, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_CANCELED) {
-            fragment.postCancelCallback(BraintreeRequestCodes.VISA_CHECKOUT);
-            fragment.sendAnalyticsEvent("visacheckout.activityresult.canceled");
+            fragment.sendAnalyticsEvent("visacheckout.canceled");
         } else if (resultCode == Activity.RESULT_OK && data != null) {
             VisaPaymentSummary visaPaymentSummary = data.getParcelableExtra(VisaLibrary.PAYMENT_SUMMARY);
             tokenize(fragment, visaPaymentSummary);
-            fragment.sendAnalyticsEvent("visacheckout.activityresult.ok");
+            fragment.sendAnalyticsEvent("visacheckout.success");
         } else {
             fragment.postCallback(new BraintreeException("Visa Checkout responded with resultCode=" + resultCode));
-            fragment.sendAnalyticsEvent("visacheckout.activityresult.failed");
+            fragment.sendAnalyticsEvent("visacheckout.failed");
         }
     }
 
@@ -162,13 +160,13 @@ public class VisaCheckout {
                     @Override
                     public void success(PaymentMethodNonce paymentMethodNonce) {
                         fragment.postCallback(paymentMethodNonce);
-                        fragment.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
+                        fragment.sendAnalyticsEvent("visacheckout.nonce-recieved");
                     }
 
                     @Override
                     public void failure(Exception exception) {
                         fragment.postCallback(exception);
-                        fragment.sendAnalyticsEvent("visacheckout.tokenize.failed");
+                        fragment.sendAnalyticsEvent("visacheckout.nonce-failed");
                     }
                 });
     }
