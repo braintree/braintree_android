@@ -15,7 +15,7 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(RobolectricGradleTestRunner.class)
-public class VisaCheckoutPaymentBuilderUnitTest {
+public class VisaCheckoutBuilderUnitTest {
 
     @Test
     public void build_withNullVisaPaymentSummary_buildsEmptyPaymentMethod() throws JSONException {
@@ -24,13 +24,13 @@ public class VisaCheckoutPaymentBuilderUnitTest {
 
         JSONObject expectedBase = new JSONObject();
         JSONObject expectedPaymentMethodNonce = new JSONObject();
-        expectedPaymentMethodNonce.put("callId", "");
-        expectedPaymentMethodNonce.put("encryptedKey", "");
-        expectedPaymentMethodNonce.put("encryptedPaymentData", "");
-        expectedBase.put("visaCheckout", expectedPaymentMethodNonce);
+        expectedPaymentMethodNonce.put("callId", null);
+        expectedPaymentMethodNonce.put("encryptedKey", null);
+        expectedPaymentMethodNonce.put("encryptedPaymentData", null);
+        expectedBase.put("visaCheckoutCard", expectedPaymentMethodNonce);
 
-        VisaCheckoutPaymentBuilder visaCheckoutPaymentBuilder = new VisaCheckoutPaymentBuilder(null);
-        visaCheckoutPaymentBuilder.build(base, paymentMethodNonceJson);
+        VisaCheckoutBuilder visaCheckoutBuilder = new VisaCheckoutBuilder(null);
+        visaCheckoutBuilder.build(base, paymentMethodNonceJson);
 
         JSONAssert.assertEquals(expectedBase, base, JSONCompareMode.STRICT);
     }
@@ -59,22 +59,22 @@ public class VisaCheckoutPaymentBuilderUnitTest {
         expectedPaymentMethodNonce.put("callId", "stubbedCallId");
         expectedPaymentMethodNonce.put("encryptedKey", "stubbedEncKey");
         expectedPaymentMethodNonce.put("encryptedPaymentData", "stubbedEncPaymentData");
-        expectedBase.put("visaCheckout", expectedPaymentMethodNonce);
+        expectedBase.put("visaCheckoutCard", expectedPaymentMethodNonce);
 
-        VisaCheckoutPaymentBuilder visaCheckoutPaymentBuilder = new VisaCheckoutPaymentBuilder(visaPaymentSummary);
-        visaCheckoutPaymentBuilder.build(base, paymentMethodNonceJson);
+        VisaCheckoutBuilder visaCheckoutBuilder = new VisaCheckoutBuilder(visaPaymentSummary);
+        visaCheckoutBuilder.build(base, paymentMethodNonceJson);
 
         JSONAssert.assertEquals(expectedBase, base, JSONCompareMode.STRICT);
     }
 
     @Test
     public void getApiPath_returnsCorrectApiPath() {
-        assertEquals("visa_checkout_cards", new VisaCheckoutPaymentBuilder(null).getApiPath());
+        assertEquals("visa_checkout_cards", new VisaCheckoutBuilder(null).getApiPath());
     }
 
     @Test
     public void getResponsePaymentMethodType_returnsCorrectPaymentMethodType() {
         assertEquals(VisaCheckoutPaymentMethodNonce.TYPE,
-                new VisaCheckoutPaymentBuilder(null).getResponsePaymentMethodType());
+                new VisaCheckoutBuilder(null).getResponsePaymentMethodType());
     }
 }

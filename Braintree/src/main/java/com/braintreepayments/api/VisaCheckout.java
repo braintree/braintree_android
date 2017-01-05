@@ -11,8 +11,8 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.VisaCheckoutBuilder;
 import com.braintreepayments.api.models.VisaCheckoutConfiguration;
-import com.braintreepayments.api.models.VisaCheckoutPaymentBuilder;
 import com.visa.checkout.VisaLibrary;
 import com.visa.checkout.VisaMcomLibrary;
 import com.visa.checkout.VisaMerchantInfo;
@@ -130,7 +130,7 @@ public class VisaCheckout {
     }
 
     static void tokenize(final BraintreeFragment fragment, final VisaPaymentSummary visaPaymentSummary) {
-        TokenizationClient.tokenize(fragment, new VisaCheckoutPaymentBuilder(visaPaymentSummary),
+        TokenizationClient.tokenize(fragment, new VisaCheckoutBuilder(visaPaymentSummary),
                 new PaymentMethodNonceCallback() {
                     @Override
                     public void success(PaymentMethodNonce paymentMethodNonce) {

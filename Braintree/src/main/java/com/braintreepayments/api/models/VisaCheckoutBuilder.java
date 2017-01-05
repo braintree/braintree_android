@@ -5,18 +5,24 @@ import com.visa.checkout.VisaPaymentSummary;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class VisaCheckoutPaymentBuilder extends PaymentMethodBuilder<VisaCheckoutPaymentBuilder> {
+/**
+ * Builder used to construct a Visa Checkout tokenization request.
+ */
+public class VisaCheckoutBuilder extends PaymentMethodBuilder<VisaCheckoutBuilder> {
 
     private static final String VISA_CHECKOUT_KEY = "visaCheckoutCard";
     private static final String CALL_ID = "callId";
     private static final String ENCRYPTED_KEY = "encryptedKey";
     private static final String ENCRYPTED_PAYMENT_DATA = "encryptedPaymentData";
 
-    private String mCallId = "";
-    private String mEncryptedKey = "";
-    private String mEncryptedPaymentData = "";
+    private String mCallId;
+    private String mEncryptedKey;
+    private String mEncryptedPaymentData;
 
-    public VisaCheckoutPaymentBuilder(VisaPaymentSummary visaPaymentSummary) {
+    /**
+     * @param visaPaymentSummary returned from Visa Checkout after a successful payment.
+     */
+    public VisaCheckoutBuilder(VisaPaymentSummary visaPaymentSummary) {
         if (visaPaymentSummary == null) {
             return;
         }
