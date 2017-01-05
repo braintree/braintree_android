@@ -110,6 +110,13 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return this;
     }
 
+    public TestConfigurationBuilder visaCheckout(TestVisaCheckoutConfigurationBuilder visaCheckoutConfigurationBuilder) {
+        try {
+            put(new JSONObject(visaCheckoutConfigurationBuilder.build()));
+        } catch (JSONException ignored) {}
+        return this;
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T buildConfiguration() {
         try {
@@ -150,6 +157,13 @@ public class TestConfigurationBuilder extends JSONBuilder {
             return new TestKountConfigurationBuilder(mJsonBody.getJSONObject("kount"));
         } catch (JSONException ignored) {}
         return new TestKountConfigurationBuilder();
+    }
+
+    public TestVisaCheckoutConfigurationBuilder visaCheckout() {
+        try {
+            return new TestVisaCheckoutConfigurationBuilder(mJsonBody.getJSONObject("visaCheckout"));
+        } catch (JSONException ignored) {}
+        return new TestVisaCheckoutConfigurationBuilder();
     }
 
     public static class TestVenmoConfigurationBuilder extends JSONBuilder {
@@ -290,6 +304,27 @@ public class TestConfigurationBuilder extends JSONBuilder {
 
         public TestKountConfigurationBuilder kountMerchantId(String kountMerchantid) {
             put(kountMerchantid);
+            return this;
+        }
+    }
+
+    public static class TestVisaCheckoutConfigurationBuilder extends JSONBuilder {
+
+        public TestVisaCheckoutConfigurationBuilder() {
+            super();
+        }
+
+        protected TestVisaCheckoutConfigurationBuilder(JSONObject json) {
+            super(json);
+        }
+
+        public TestVisaCheckoutConfigurationBuilder apikey(String apikey) {
+            put(apikey);
+            return this;
+        }
+
+        public TestVisaCheckoutConfigurationBuilder externalClientId(String externalClientId) {
+            put(externalClientId);
             return this;
         }
     }

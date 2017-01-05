@@ -3,7 +3,6 @@ package com.braintreepayments.api.models;
 import android.text.TextUtils;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -178,11 +177,8 @@ public class ConfigurationUnitTest {
 
     @Test
     public void returnsVisaCheckoutConfiguration_whenVisaCheckoutConfigurationIsPresent() throws JSONException {
-        JSONObject jsonObject = new JSONObject(stringFromFixture("configuration.json"));
-        JSONObject visaCheckoutJson = new JSONObject(stringFromFixture("configuration/with_visa_checkout.json"));
-
-        jsonObject.put("visaCheckout", visaCheckoutJson);
-        Configuration configuration = Configuration.fromJson(jsonObject.toString());
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration/with_visa_checkout.json"));
 
         assertTrue(configuration.getVisaCheckout().isEnabled());
     }

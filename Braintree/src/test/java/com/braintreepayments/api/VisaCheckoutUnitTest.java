@@ -13,6 +13,8 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.VisaCheckoutConfiguration;
 import com.braintreepayments.api.models.VisaCheckoutNonce;
+import com.braintreepayments.testutils.TestConfigurationBuilder;
+import com.braintreepayments.testutils.TestConfigurationBuilder.TestVisaCheckoutConfigurationBuilder;
 import com.visa.checkout.VisaLibrary;
 import com.visa.checkout.VisaMcomLibrary;
 import com.visa.checkout.VisaMerchantInfo;
@@ -106,14 +108,13 @@ public class VisaCheckoutUnitTest {
             }
         }).when(VisaMcomLibrary.class, "getLibrary", any(Activity.class), any(VisaEnvironmentConfig.class));
 
-        JSONObject configurationJSON = new JSONObject(stringFromFixture("configuration.json"));
-        JSONObject visaConfiguration = new JSONObject(stringFromFixture("configuration/with_visa_checkout.json"));
-        configurationJSON.put("visaCheckout", visaConfiguration.get("visaCheckout"));
-        configurationJSON.put("environment", "production");
-        Configuration configuration = Configuration.fromJson(configurationJSON.toString());
-
         BraintreeFragment braintreeFragment = new MockFragmentBuilder()
-                .configuration(configuration)
+                .configuration(new TestConfigurationBuilder()
+                        .environment("production")
+                        .visaCheckout(new TestVisaCheckoutConfigurationBuilder()
+                                .apikey("gwApiKey")
+                                .externalClientId("gwExternalClientId"))
+                        .build())
                 .build();
 
         when(braintreeFragment.getActivity()).thenReturn(mock(Activity.class));
@@ -139,22 +140,13 @@ public class VisaCheckoutUnitTest {
             }
         }).when(VisaMcomLibrary.class, "getLibrary", any(Activity.class), any(VisaEnvironmentConfig.class));
 
-        JSONObject configurationJSON = new JSONObject(stringFromFixture("configuration.json"));
-        JSONObject visaConfiguration = new JSONObject(stringFromFixture("configuration/with_visa_checkout.json"));
-        configurationJSON.put("visaCheckout", visaConfiguration.get("visaCheckout"));
-        Configuration configuration = Configuration.fromJson(configurationJSON.toString());
+        when(mBraintreeFragment.getActivity()).thenReturn(mock(Activity.class));
 
-        BraintreeFragment braintreeFragment = new MockFragmentBuilder()
-                .configuration(configuration)
-                .build();
-
-        when(braintreeFragment.getActivity()).thenReturn(mock(Activity.class));
-
-        VisaCheckout.createVisaCheckoutLibrary(braintreeFragment);
+        VisaCheckout.createVisaCheckoutLibrary(mBraintreeFragment);
 
         ArgumentCaptor<VisaEnvironmentConfig> argumentCaptor = ArgumentCaptor.forClass(VisaEnvironmentConfig.class);
 
-        verify(braintreeFragment).postVisaCheckoutLibraryCallback(any(VisaMcomLibrary.class));
+        verify(mBraintreeFragment).postVisaCheckoutLibraryCallback(any(VisaMcomLibrary.class));
 
         PowerMockito.verifyStatic();
         VisaMcomLibrary.getLibrary(any(Context.class), argumentCaptor.capture());
