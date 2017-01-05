@@ -2,11 +2,11 @@ package com.braintreepayments.api.models;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.junit.runners.JUnit4;
 
 import static junit.framework.Assert.assertEquals;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(JUnit4.class)
 public class BraintreeRequestCodesUnitTest {
 
     @Test

@@ -74,7 +74,6 @@ dependencies {
     androidTestCompile 'com.squareup.okhttp:okhttp:2.5.0'
     androidTestCompile 'com.squareup.okio:okio:1.6.0'
     androidTestCompile 'com.squareup.retrofit:retrofit:1.9.0'
-    androidTestCompile(name: 'eventbus-2.4.0')
 
     // Visa Checkout
     testCompile fileTree(dir: "${rootDir}/libs", include:['*.jar'])
@@ -85,7 +84,6 @@ dependencies {
     testCompile 'com.google.code.gson:gson:2.3.1'
     testCompile 'com.squareup.okhttp:okhttp:2.5.0'
     testCompile 'com.squareup.okio:okio:1.6.0'
-    testCompile(name: 'eventbus-2.4.0')
 }
 
 android.buildTypes.each { type ->
