@@ -3,40 +3,70 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.braintreepayments.api.Json;
+
 import org.json.JSONObject;
 
+/**
+ * A class containing Visa Checkout information about the user.
+ */
 public class VisaCheckoutUserData implements Parcelable {
 
-    private final String mUserFirstName;
-    private final String mUserLastName;
-    private final String mUserFullName;
-    private final String mUserName;
-    private final String mUserEmail;
+    private String mUserFirstName;
+    private String mUserLastName;
+    private String mUserFullName;
+    private String mUserName;
+    private String mUserEmail;
 
-    public VisaCheckoutUserData(JSONObject json) {
-        mUserFirstName = json.optString("userFirstName");
-        mUserLastName = json.optString("userLastName");
-        mUserFullName = json.optString("userFullName");
-        mUserName = json.optString("userName");
-        mUserEmail = json.optString("userEmail");
+    public static VisaCheckoutUserData fromJson(JSONObject json) {
+        if (json == null) {
+            json = new JSONObject();
+        }
+
+        VisaCheckoutUserData visaCheckoutUserData = new VisaCheckoutUserData();
+
+        visaCheckoutUserData.mUserFirstName = Json.optString(json, "userFirstName", "");
+        visaCheckoutUserData.mUserLastName = Json.optString(json, "userLastName", "");
+        visaCheckoutUserData.mUserFullName = Json.optString(json, "userFullName", "");
+        visaCheckoutUserData.mUserName = Json.optString(json, "userName", "");
+        visaCheckoutUserData.mUserEmail = Json.optString(json, "userEmail", "");
+
+        return visaCheckoutUserData;
     }
 
+    public VisaCheckoutUserData() {}
+
+    /**
+     * @return The user's first name.
+     */
     public String getUserFirstName() {
         return mUserFirstName;
     }
 
+    /**
+     * @return The user's last name.
+     */
     public String getUserLastName() {
         return mUserLastName;
     }
 
+    /**
+     * @return The user's full name.
+     */
     public String getUserFullName() {
         return mUserFullName;
     }
 
+    /**
+     * @return The user's user name.
+     */
     public String getUserName() {
         return mUserName;
     }
 
+    /**
+     * @return The user's email.
+     */
     public String getUserEmail() {
         return mUserEmail;
     }
@@ -74,15 +104,4 @@ public class VisaCheckoutUserData implements Parcelable {
             return new VisaCheckoutUserData[size];
         }
     };
-
-    @Override
-    public String toString() {
-        return "VisaCheckoutUserData{" +
-                "mUserFirstName='" + mUserFirstName + '\'' +
-                ", mUserLastName='" + mUserLastName + '\'' +
-                ", mUserFullName='" + mUserFullName + '\'' +
-                ", mUserName='" + mUserName + '\'' +
-                ", mUserEmail='" + mUserEmail + '\'' +
-                '}';
-    }
 }

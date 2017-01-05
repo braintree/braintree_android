@@ -14,53 +14,42 @@ import static junit.framework.Assert.assertEquals;
 @RunWith(RobolectricTestRunner.class)
 public class VisaCheckoutUserDataUnitTest {
 
-    private VisaCheckoutUserData mVisaCheckoutUserData;
+    private JSONObject mSampleUserData;
 
     @Before
     public void setup() throws JSONException {
-       JSONObject sampleUserData = new JSONObject()
+       mSampleUserData = new JSONObject()
                .put("userFirstName", "userFirstName")
                .put("userLastName", "userLastName")
                .put("userFullName", "userFullName")
                .put("userName", "userName")
                .put("userEmail", "userEmail");
-
-        mVisaCheckoutUserData = new VisaCheckoutUserData(sampleUserData);
     }
 
     @Test
     public void fillsOutFromJson() {
-        assertEquals("userFirstName", mVisaCheckoutUserData.getUserFirstName());
-        assertEquals("userLastName", mVisaCheckoutUserData.getUserLastName());
-        assertEquals("userFullName", mVisaCheckoutUserData.getUserFullName());
-        assertEquals("userName", mVisaCheckoutUserData.getUserName());
-        assertEquals("userEmail", mVisaCheckoutUserData.getUserEmail());
+        VisaCheckoutUserData visaCheckoutUserData = VisaCheckoutUserData.fromJson(mSampleUserData);
+
+        assertEquals("userFirstName", visaCheckoutUserData.getUserFirstName());
+        assertEquals("userLastName", visaCheckoutUserData.getUserLastName());
+        assertEquals("userFullName", visaCheckoutUserData.getUserFullName());
+        assertEquals("userName", visaCheckoutUserData.getUserName());
+        assertEquals("userEmail", visaCheckoutUserData.getUserEmail());
     }
 
     @Test
     public void parcelsCorrectly() {
+        VisaCheckoutUserData visaCheckoutUserData = VisaCheckoutUserData.fromJson(mSampleUserData);
+
         Parcel parcel = Parcel.obtain();
-        mVisaCheckoutUserData.writeToParcel(parcel, 0);
+        visaCheckoutUserData.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         VisaCheckoutUserData actual = VisaCheckoutUserData.CREATOR.createFromParcel(parcel);
 
-        assertEquals(mVisaCheckoutUserData.getUserFirstName(), actual.getUserFirstName());
-        assertEquals(mVisaCheckoutUserData.getUserLastName(), actual.getUserLastName());
-        assertEquals(mVisaCheckoutUserData.getUserFullName(), actual.getUserFullName());
-        assertEquals(mVisaCheckoutUserData.getUserName(), actual.getUserName());
-        assertEquals(mVisaCheckoutUserData.getUserEmail(), actual.getUserEmail());
-    }
-
-    @Test
-    public void toStringIsCorrect() {
-        String expected = "VisaCheckoutUserData{";
-        expected += "mUserFirstName='userFirstName', ";
-        expected += "mUserLastName='userLastName', ";
-        expected += "mUserFullName='userFullName', ";
-        expected += "mUserName='userName', ";
-        expected += "mUserEmail='userEmail'";
-        expected += "}";
-
-        assertEquals(expected, mVisaCheckoutUserData.toString());
+        assertEquals(visaCheckoutUserData.getUserFirstName(), actual.getUserFirstName());
+        assertEquals(visaCheckoutUserData.getUserLastName(), actual.getUserLastName());
+        assertEquals(visaCheckoutUserData.getUserFullName(), actual.getUserFullName());
+        assertEquals(visaCheckoutUserData.getUserName(), actual.getUserName());
+        assertEquals(visaCheckoutUserData.getUserEmail(), actual.getUserEmail());
     }
 }
