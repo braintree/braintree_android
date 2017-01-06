@@ -54,6 +54,11 @@ android {
         exclude 'META-INF/maven/com.google.guava/guava/pom.properties'
         exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
     }
+    sourceSets {
+        main {
+            manifest.srcFile 'src/androidTest/AndroidManifest.xml'
+        }
+    }
 }
 
 configurations.all {
