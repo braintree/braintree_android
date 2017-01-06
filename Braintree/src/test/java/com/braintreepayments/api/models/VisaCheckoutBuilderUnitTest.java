@@ -22,12 +22,7 @@ public class VisaCheckoutBuilderUnitTest {
         JSONObject base = new JSONObject();
         JSONObject paymentMethodNonceJson = new JSONObject();
 
-        JSONObject expectedBase = new JSONObject();
-        JSONObject expectedPaymentMethodNonce = new JSONObject();
-        expectedPaymentMethodNonce.put("callId", null);
-        expectedPaymentMethodNonce.put("encryptedKey", null);
-        expectedPaymentMethodNonce.put("encryptedPaymentData", null);
-        expectedBase.put("visaCheckoutCard", expectedPaymentMethodNonce);
+        JSONObject expectedBase = new JSONObject("{\"visaCheckoutCard\":{}}");
 
         VisaCheckoutBuilder visaCheckoutBuilder = new VisaCheckoutBuilder(null);
         visaCheckoutBuilder.build(base, paymentMethodNonceJson);

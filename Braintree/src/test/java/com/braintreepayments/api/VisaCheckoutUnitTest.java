@@ -100,13 +100,7 @@ public class VisaCheckoutUnitTest {
 
     @Test
     public void createVisaCheckoutLibrary_whenProduction_usesProductionConfig() throws Exception {
-        spy(VisaMcomLibrary.class);
-        doAnswer(new Answer<VisaMcomLibrary>() {
-            @Override
-            public VisaMcomLibrary answer(InvocationOnMock invocation) throws Throwable {
-                return null;
-            }
-        }).when(VisaMcomLibrary.class, "getLibrary", any(Activity.class), any(VisaEnvironmentConfig.class));
+        doNothingWhenAccessingVisaMcomLibrary();
 
         BraintreeFragment braintreeFragment = new MockFragmentBuilder()
                 .configuration(new TestConfigurationBuilder()
@@ -126,19 +120,12 @@ public class VisaCheckoutUnitTest {
         PowerMockito.verifyStatic();
         VisaMcomLibrary.getLibrary(any(Context.class), argumentCaptor.capture());
 
-        VisaEnvironmentConfig visaEnvironmentConfig = argumentCaptor.getValue();
-        assertEquals(VisaEnvironmentConfig.PRODUCTION, visaEnvironmentConfig);
+        assertEquals(VisaEnvironmentConfig.PRODUCTION, argumentCaptor.getValue());
     }
 
     @Test
     public void createVisaCheckoutLibrary_setsVisaEnvironmentConfig() throws Exception {
-        spy(VisaMcomLibrary.class);
-        doAnswer(new Answer<VisaMcomLibrary>() {
-            @Override
-            public VisaMcomLibrary answer(InvocationOnMock invocation) throws Throwable {
-                return mock(VisaMcomLibrary.class);
-            }
-        }).when(VisaMcomLibrary.class, "getLibrary", any(Activity.class), any(VisaEnvironmentConfig.class));
+        doNothingWhenAccessingVisaMcomLibrary();
 
         when(mBraintreeFragment.getActivity()).thenReturn(mock(Activity.class));
 
@@ -185,9 +172,9 @@ public class VisaCheckoutUnitTest {
         doNothing().when(mBraintreeFragment).startActivityForResult(intentCaptor.capture(),
                 requestCodeCaptor.capture());
 
-        VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
+        VisaCheckout.authorize(mBraintreeFragment, new VisaPaymentInfo());
 
-        VisaPaymentInfo actual = VisaCheckoutResultActivity.sVisaPaymentInfo;
+        VisaPaymentInfo actualVisaPaymentInfo = VisaCheckoutResultActivity.sVisaPaymentInfo;
         VisaEnvironmentConfig visaEnvironmentConfig = VisaCheckoutResultActivity.sVisaEnvironmentConfig;
 
         assertEquals(VisaEnvironmentConfig.SANDBOX, visaEnvironmentConfig);
@@ -195,21 +182,19 @@ public class VisaCheckoutUnitTest {
         assertEquals(VisaCheckoutResultActivity.class.getName(),
                 intentCaptor.getValue().getComponent().getClassName());
         assertEquals(BraintreeRequestCodes.VISA_CHECKOUT, requestCodeCaptor.getValue().intValue());
-        assertEquals("gwApikey", actual.getVisaMerchantInfo().getMerchantApiKey());
-        assertEquals("gwExternalClientId", actual.getExternalClientId());
-        assertEquals("merchantDescription", actual.getDescription());
-        assertEquals("visaUserInfoFirstName", actual.getVisaUserInfo().getFirstName());
-        assertTrue(actual.getVisaMerchantInfo().getAcceptedCardBrands().containsAll(acceptedCardBrands));
+        assertEquals("gwApikey", actualVisaPaymentInfo.getVisaMerchantInfo().getMerchantApiKey());
+        assertEquals("gwExternalClientId", actualVisaPaymentInfo.getExternalClientId());
+        assertEquals("merchantDescription", actualVisaPaymentInfo.getDescription());
+        assertEquals("visaUserInfoFirstName", actualVisaPaymentInfo.getVisaUserInfo().getFirstName());
+        assertTrue(actualVisaPaymentInfo.getVisaMerchantInfo().getAcceptedCardBrands().containsAll(acceptedCardBrands));
     }
 
     @Test
     public void authorize_whenMerchantFilledOutVisaPaymentInfo_doesNotOverwriteApiKey() {
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         ArgumentCaptor<Integer> requestCodeCaptor = ArgumentCaptor.forClass(Integer.class);
-        doNothing().when(mBraintreeFragment).startActivityForResult(
-                intentCaptor.capture(),
-                requestCodeCaptor.capture()
-        );
+        doNothing().when(mBraintreeFragment).startActivityForResult(intentCaptor.capture(),
+                requestCodeCaptor.capture());
 
         VisaPaymentInfo visaPaymentInfo = new VisaPaymentInfo();
         VisaMerchantInfo visaMerchantInfo = new VisaMerchantInfo();
@@ -218,8 +203,8 @@ public class VisaCheckoutUnitTest {
 
         VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
 
-        VisaPaymentInfo actual = VisaCheckoutResultActivity.sVisaPaymentInfo;
-        assertEquals("merchantSetApiKey", actual.getVisaMerchantInfo().getMerchantApiKey());
+        assertEquals("merchantSetApiKey", VisaCheckoutResultActivity.sVisaPaymentInfo.getVisaMerchantInfo()
+                .getMerchantApiKey());
     }
 
     @Test
@@ -234,8 +219,7 @@ public class VisaCheckoutUnitTest {
 
         VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
 
-        VisaPaymentInfo actual = VisaCheckoutResultActivity.sVisaPaymentInfo;
-        assertEquals("merchantSetExternalClientId", actual.getExternalClientId());
+        assertEquals("merchantSetExternalClientId", VisaCheckoutResultActivity.sVisaPaymentInfo.getExternalClientId());
     }
 
     @Test
@@ -251,8 +235,8 @@ public class VisaCheckoutUnitTest {
 
         VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
 
-        VisaPaymentInfo actual = VisaCheckoutResultActivity.sVisaPaymentInfo;
-        assertEquals(MerchantDataLevel.FULL, actual.getVisaMerchantInfo().getDataLevel());
+        assertEquals(MerchantDataLevel.FULL, VisaCheckoutResultActivity.sVisaPaymentInfo.getVisaMerchantInfo()
+                .getDataLevel());
     }
 
     @Test
@@ -270,8 +254,8 @@ public class VisaCheckoutUnitTest {
 
         VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
 
-        VisaPaymentInfo actual = VisaCheckoutResultActivity.sVisaPaymentInfo;
-        List<AcceptedCardBrands> acceptedCardBrands = actual.getVisaMerchantInfo().getAcceptedCardBrands();
+        List<AcceptedCardBrands> acceptedCardBrands = VisaCheckoutResultActivity.sVisaPaymentInfo.getVisaMerchantInfo()
+                .getAcceptedCardBrands();
         assertEquals(1, acceptedCardBrands.size());
         assertEquals(AcceptedCardBrands.ELO, acceptedCardBrands.get(0));
     }
@@ -430,6 +414,17 @@ public class VisaCheckoutUnitTest {
     public void onActivityResult_whenFailure_sendAnalyticsevent() {
         VisaCheckout.onActivityResult(mBraintreeFragment, -100, null);
         verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.failed"));
+    }
+
+    private void doNothingWhenAccessingVisaMcomLibrary() throws Exception {
+        spy(VisaMcomLibrary.class);
+        doAnswer(new Answer<VisaMcomLibrary>() {
+            @Override
+            public VisaMcomLibrary answer(InvocationOnMock invocation) throws Throwable {
+                return mock(VisaMcomLibrary.class);
+            }
+        }).when(VisaMcomLibrary.class, "getLibrary", any(Activity.class), any(VisaEnvironmentConfig.class));
+
     }
 
     private VisaPaymentSummary sampleVisaPaymentSummary() {
