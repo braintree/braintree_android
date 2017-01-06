@@ -68,7 +68,10 @@ dependencies {
     testCompile project(':TestUtils')
 
     // Visa Checkout
-    androidTestCompile fileTree(dir: "${rootDir}/libs", include:['*.jar'])
+    androidTestCompile fileTree(dir: "${rootDir}/libs", include: [
+            'Samsung-sdk-v1.0.0.jar',
+            'Samsung-pass-v1.1.4.jar',
+            'eventbus-2.4.0.jar'])
     androidTestCompile 'com.google.android.gms:play-services-basement:9.8.0'
     androidTestCompile 'com.google.code.gson:gson:2.3.1'
     androidTestCompile 'com.squareup.okhttp:okhttp:2.5.0'
@@ -76,7 +79,10 @@ dependencies {
     androidTestCompile 'com.squareup.retrofit:retrofit:1.9.0'
 
     // Visa Checkout
-    testCompile fileTree(dir: "${rootDir}/libs", include:['*.jar'])
+    testCompile fileTree(dir: "${rootDir}/libs", include: [
+            'Samsung-sdk-v1.0.0.jar',
+            'Samsung-pass-v1.1.4.jar',
+            'eventbus-2.4.0.jar'])
     testCompile 'com.google.android.gms:play-services-analytics:9.8.0'
     testCompile 'com.google.android.gms:play-services-ads:9.8.0'
     testCompile 'com.google.android.gms:play-services-basement:9.8.0'
