@@ -56,8 +56,6 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
-import static org.powermock.api.support.membermodification.MemberMatcher.method;
-import static org.powermock.api.support.membermodification.MemberModifier.stub;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "com.visa.*" })
@@ -84,12 +82,12 @@ public class VisaCheckoutUnitTest {
     }
 
     @Test
-    public void createVisaCheckoutLibrary_throwsConfigurationExceptionWhenVisaCheckoutNotEnabled()
+    public void getVisaCheckoutLibrary_whenNotEnabled_throwsConfigurationException()
             throws JSONException {
         BraintreeFragment braintreeFragment = new MockFragmentBuilder()
                 .build();
 
-        VisaCheckout.createVisaCheckoutLibrary(braintreeFragment);
+        VisaCheckout.getVisaCheckoutLibrary(braintreeFragment);
 
         ArgumentCaptor<ConfigurationException> argumentCaptor = ArgumentCaptor.forClass(ConfigurationException.class);
         verify(braintreeFragment).postCallback(argumentCaptor.capture());
@@ -99,7 +97,7 @@ public class VisaCheckoutUnitTest {
     }
 
     @Test
-    public void createVisaCheckoutLibrary_whenProduction_usesProductionConfig() throws Exception {
+    public void getVisaCheckoutLibrary_whenProduction_usesProductionConfig() throws Exception {
         doNothingWhenAccessingVisaMcomLibrary();
 
         BraintreeFragment braintreeFragment = new MockFragmentBuilder()
@@ -113,7 +111,7 @@ public class VisaCheckoutUnitTest {
 
         when(braintreeFragment.getActivity()).thenReturn(mock(Activity.class));
 
-        VisaCheckout.createVisaCheckoutLibrary(braintreeFragment);
+        VisaCheckout.getVisaCheckoutLibrary(braintreeFragment);
 
         ArgumentCaptor<VisaEnvironmentConfig> argumentCaptor = ArgumentCaptor.forClass(VisaEnvironmentConfig.class);
 
@@ -124,16 +122,14 @@ public class VisaCheckoutUnitTest {
     }
 
     @Test
-    public void createVisaCheckoutLibrary_setsVisaEnvironmentConfig() throws Exception {
+    public void getVisaCheckoutLibrary_setsVisaEnvironmentConfig() throws Exception {
         doNothingWhenAccessingVisaMcomLibrary();
 
         when(mBraintreeFragment.getActivity()).thenReturn(mock(Activity.class));
 
-        VisaCheckout.createVisaCheckoutLibrary(mBraintreeFragment);
+        VisaCheckout.getVisaCheckoutLibrary(mBraintreeFragment);
 
         ArgumentCaptor<VisaEnvironmentConfig> argumentCaptor = ArgumentCaptor.forClass(VisaEnvironmentConfig.class);
-
-        verify(mBraintreeFragment).postVisaCheckoutLibraryCallback(any(VisaMcomLibrary.class));
 
         PowerMockito.verifyStatic();
         VisaMcomLibrary.getLibrary(any(Context.class), argumentCaptor.capture());
@@ -142,17 +138,6 @@ public class VisaCheckoutUnitTest {
         assertEquals(VisaEnvironmentConfig.SANDBOX, visaEnvironmentConfig);
         assertEquals("gwApikey", visaEnvironmentConfig.getMerchantApiKey());
         assertEquals(BraintreeRequestCodes.VISA_CHECKOUT, visaEnvironmentConfig.getVisaCheckoutRequestCode());
-    }
-
-    @Test
-    public void createVisaCheckoutLibrary_whenVisaCheckoutSDKUnavailable_postsException () {
-        stub(method(VisaCheckoutConfiguration.class, "isVisaCheckoutSDKAvailable")).toReturn(false);
-        ArgumentCaptor<Exception> argumentCaptor = ArgumentCaptor.forClass(Exception.class);
-
-        VisaCheckout.createVisaCheckoutLibrary(mBraintreeFragment);
-
-        verify(mBraintreeFragment).postCallback(argumentCaptor.capture());
-        assertEquals("Visa Checkout SDK is not available", argumentCaptor.getValue().getMessage());
     }
 
     @Test
@@ -172,7 +157,7 @@ public class VisaCheckoutUnitTest {
         doNothing().when(mBraintreeFragment).startActivityForResult(intentCaptor.capture(),
                 requestCodeCaptor.capture());
 
-        VisaCheckout.authorize(mBraintreeFragment, new VisaPaymentInfo());
+        VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
 
         VisaPaymentInfo actualVisaPaymentInfo = VisaCheckoutResultActivity.sVisaPaymentInfo;
         VisaEnvironmentConfig visaEnvironmentConfig = VisaCheckoutResultActivity.sVisaEnvironmentConfig;

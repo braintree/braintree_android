@@ -10,6 +10,7 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
@@ -26,7 +27,6 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
 import com.braintreepayments.api.interfaces.UnionPayListener;
-import com.braintreepayments.api.interfaces.VisaCheckoutListener;
 import com.braintreepayments.api.internal.AnalyticsDatabase;
 import com.braintreepayments.api.internal.AnalyticsEvent;
 import com.braintreepayments.api.internal.AnalyticsIntentService;
@@ -40,6 +40,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.models.UnionPayCapabilities;
+import com.braintreepayments.api.models.VisaCheckoutConfiguration;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -104,7 +105,6 @@ public class BraintreeFragment extends Fragment {
     private PaymentMethodNonceCreatedListener mPaymentMethodNonceCreatedListener;
     private BraintreeErrorListener mErrorListener;
     private UnionPayListener mUnionPayListener;
-    private VisaCheckoutListener mVisaCheckoutListener;
 
     public BraintreeFragment() {}
 
@@ -385,10 +385,6 @@ public class BraintreeFragment extends Fragment {
             mUnionPayListener = (UnionPayListener) listener;
         }
 
-        if (listener instanceof VisaCheckoutListener) {
-            mVisaCheckoutListener = (VisaCheckoutListener) listener;
-        }
-
         flushCallbacks();
     }
 
@@ -420,10 +416,6 @@ public class BraintreeFragment extends Fragment {
 
         if (listener instanceof UnionPayListener) {
             mUnionPayListener = null;
-        }
-
-        if (listener instanceof VisaCheckoutListener) {
-            mVisaCheckoutListener = null;
         }
     }
 
@@ -580,20 +572,6 @@ public class BraintreeFragment extends Fragment {
             @Override
             public void run() {
                 mUnionPayListener.onSmsCodeSent(enrollmentId, smsCodeRequired);
-            }
-        });
-    }
-
-    protected void postVisaCheckoutLibraryCallback(final VisaMcomLibrary visaMcomLibrary) {
-        postOrQueueCallback(new QueuedCallback() {
-            @Override
-            public boolean shouldRun() {
-                return mVisaCheckoutListener != null;
-            }
-
-            @Override
-            public void run() {
-                mVisaCheckoutListener.onVisaCheckoutLibraryCreated(visaMcomLibrary);
             }
         });
     }
@@ -806,5 +784,29 @@ public class BraintreeFragment extends Fragment {
         }
 
         return mGoogleApiClient;
+    }
+
+    /**
+     * Obtain an instance of a {@link VisaMcomLibrary} for Visa Checkout.
+     *
+     * @param listener {@link BraintreeResponseListener<VisaMcomLibrary>} to receive the
+     *                 {@link VisaMcomLibrary} in
+     *                 {@link BraintreeResponseListener<VisaMcomLibrary>#onResponse(VisaMcomLibrary)}.
+     */
+    public void getVisaCheckoutLibrary(@NonNull final BraintreeResponseListener<VisaMcomLibrary> listener) {
+        if (!VisaCheckoutConfiguration.isVisaCheckoutSDKAvailable()) {
+            postCallback(new ConfigurationException("Visa Checkout SDK is not available."));
+            return;
+        }
+
+        waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                VisaMcomLibrary visaMcomLibrary = VisaCheckout.getVisaCheckoutLibrary(BraintreeFragment.this);
+                if (visaMcomLibrary != null) {
+                    listener.onResponse(VisaCheckout.getVisaCheckoutLibrary(BraintreeFragment.this));
+                }
+            }
+        });
     }
 }

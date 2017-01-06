@@ -10,7 +10,6 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
-import com.braintreepayments.api.interfaces.VisaCheckoutListener;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VisaCheckoutNonce;
@@ -20,7 +19,6 @@ import com.braintreepayments.api.test.TestClientTokenBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestVisaCheckoutConfigurationBuilder;
 import com.visa.checkout.VisaLibrary;
-import com.visa.checkout.VisaMcomLibrary;
 import com.visa.checkout.VisaPaymentInfo;
 import com.visa.checkout.VisaPaymentSummary;
 
@@ -40,7 +38,6 @@ import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragme
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -64,23 +61,6 @@ public class VisaCheckoutTest {
                         .externalClientId("externalClientId"))
                 .build();
         mCountDownLatch = new CountDownLatch(1);
-    }
-
-    @Test(timeout = 10000)
-    public void createVisaCheckoutLibrary_whenSuccessful_returnsVisaMComLibrary() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
-        BraintreeFragment fragment = getMockFragmentWithConfiguration(mActivityTestRule.getActivity(),
-                mVisaCheckoutConfiguration);
-        fragment.addListener(new VisaCheckoutListener() {
-            @Override
-            public void onVisaCheckoutLibraryCreated(VisaMcomLibrary visaMcomLibrary) {
-                assertNotNull(visaMcomLibrary);
-                latch.countDown();
-            }
-        });
-
-        VisaCheckout.createVisaCheckoutLibrary(fragment);
-        latch.await();
     }
 
     @Test(timeout = 10000)

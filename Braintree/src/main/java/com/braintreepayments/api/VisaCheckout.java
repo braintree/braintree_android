@@ -32,32 +32,19 @@ import java.util.Set;
  */
 public class VisaCheckout {
 
-    /**
-     * Creates the Visa Checkout library.
-     * @param fragment {@link BraintreeFragment}
-     */
-    public static void createVisaCheckoutLibrary(final BraintreeFragment fragment) {
-        if (!VisaCheckoutConfiguration.isVisaCheckoutSDKAvailable()) {
-            fragment.postCallback(new ConfigurationException("Visa Checkout SDK is not available"));
-            return;
+    static VisaMcomLibrary getVisaCheckoutLibrary(BraintreeFragment fragment) {
+        Configuration configuration = fragment.getConfiguration();
+        if (!configuration.getVisaCheckout().isEnabled()) {
+            fragment.postCallback(new ConfigurationException("Visa Checkout is not enabled."));
+            return null;
         }
 
-        fragment.waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                VisaCheckoutConfiguration visaCheckoutConfiguration = configuration.getVisaCheckout();
-                if (!visaCheckoutConfiguration.isEnabled()) {
-                    fragment.postCallback(new ConfigurationException("Visa Checkout is not enabled."));
-                    return;
-                }
+        VisaEnvironmentConfig visaEnvironmentConfig = createVisaEnvironmentConfig(configuration);
 
-                VisaEnvironmentConfig visaEnvironmentConfig = createVisaEnvironmentConfig(configuration);
+        VisaMcomLibrary visaMcomLibrary = VisaMcomLibrary.getLibrary(fragment.getActivity(),
+                visaEnvironmentConfig);
 
-                VisaMcomLibrary visaMcomLibrary = VisaMcomLibrary.getLibrary(fragment.getActivity(),
-                        visaEnvironmentConfig);
-                fragment.postVisaCheckoutLibraryCallback(visaMcomLibrary);
-            }
-        });
+        return visaMcomLibrary;
     }
 
     /**

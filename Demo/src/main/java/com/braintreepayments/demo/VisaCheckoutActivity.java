@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.VisaCheckout;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.VisaCheckoutListener;
+import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.visa.checkout.VisaMcomLibrary;
 import com.visa.checkout.VisaMerchantInfo;
@@ -25,7 +25,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class VisaCheckoutActivity extends BaseActivity implements OnClickListener, VisaCheckoutListener {
+public class VisaCheckoutActivity extends BaseActivity implements OnClickListener,
+        BraintreeResponseListener<VisaMcomLibrary> {
 
     private LinearLayout mVisaCheckoutLayout;
 
@@ -50,7 +51,7 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
         } catch (InvalidArgumentException e) {
             e.printStackTrace();
         }
-        VisaCheckout.createVisaCheckoutLibrary(mBraintreeFragment);
+        mBraintreeFragment.getVisaCheckoutLibrary(this);
     }
 
     @Override
@@ -99,7 +100,7 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
     }
 
     @Override
-    public void onVisaCheckoutLibraryCreated(VisaMcomLibrary visaMcomLibrary) {
+    public void onResponse(VisaMcomLibrary visaMcomLibrary) {
         if (mVisaCheckoutLayout.getChildCount() == 0) {
             mVisaPaymentButton = new VisaPaymentButton(this);
             mVisaPaymentButton.setOnClickListener(this);
