@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static com.lukekorth.deviceautomator.AutomatorAction.clearTextField;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
@@ -50,10 +51,8 @@ public class VisaCheckoutTest extends TestHelper {
     @Test(timeout = 60000)
     public void tokenizesVisaCheckout() throws UiObjectNotFoundException {
         onDevice(withContentDescription("Visa Checkout")).perform(click());
-        onDevice(withContentDescription("Email or Mobile Number")).perform(click());
-        for (int i=0; i<VISA_CHECKOUT_USERNAME.length(); i++) {
-            onDevice(withContentDescription("Email or Mobile Number")).pressDelete();
-        }
+        onDevice(withContentDescription("Email or Mobile Number")).perform(click(), clearTextField());
+
         // TODO bug in DeviceAutomator does not print symbols.
         new UiObject(new UiSelector().descriptionStartsWith("Email or Mobile Number"))
                 .setText(VISA_CHECKOUT_USERNAME);
