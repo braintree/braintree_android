@@ -124,7 +124,7 @@ public abstract class Recipe<T extends Recipe<T>> {
             extras.putBinder("android.support.customtabs.extra.SESSION", null);
             intent.putExtras(extras);
             intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS |
-                    Intent.FLAG_ACTIVITY_NO_HISTORY);
+                    Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         }
 
         return intent;
