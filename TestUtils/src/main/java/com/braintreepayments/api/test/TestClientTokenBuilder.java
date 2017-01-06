@@ -114,9 +114,9 @@ public class TestClientTokenBuilder {
             case MERCHANT_WITH_PAYPAL:
             case MERCHANT_WITH_THREE_D_SECURE_ENABLED:
             case MERCHANT_WITH_UNIONPAY:
-            case MERCHANT_WITH_VISA_CHECKOUT:
                 return getClientTokenFromGateway("integration_merchant_id", "integration_public_key");
             case MERCHANT_WITH_CVV_VERIFICATION:
+            case MERCHANT_WITH_VISA_CHECKOUT:
                 return getClientTokenFromGateway("client_api_cvv_verification_merchant_id", "client_api_cvv_verification_public_key");
             case MERCHANT_WITH_POSTAL_CODE_VERIFICATION:
                 return getClientTokenFromGateway("client_api_postal_code_verification_merchant_id", "client_api_postal_code_verification_public_key");
