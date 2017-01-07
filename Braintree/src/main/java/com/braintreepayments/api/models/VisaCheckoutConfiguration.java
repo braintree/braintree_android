@@ -1,8 +1,13 @@
 package com.braintreepayments.api.models;
 
 import com.braintreepayments.api.Json;
+import com.visa.checkout.VisaMerchantInfo.AcceptedCardBrands;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Contains the remote Visa Checkout configuration for the Braintree SDK.
@@ -12,6 +17,7 @@ public class VisaCheckoutConfiguration {
     private boolean mIsEnabled;
     private String mApiKey;
     private String mExternalClientId;
+    private List<AcceptedCardBrands> mAcceptedCardBrands;
 
     /**
      * Determines if the Visa Checkout SDK is available.
@@ -37,6 +43,8 @@ public class VisaCheckoutConfiguration {
 
         visaCheckoutConfiguration.mApiKey = Json.optString(json, "apikey", "");
         visaCheckoutConfiguration.mExternalClientId = Json.optString(json, "externalClientId", "");
+        visaCheckoutConfiguration.mAcceptedCardBrands = supportedCardTypesToAcceptedCardBrands(
+                CardConfiguration.fromJson(json).getSupportedCardTypes());
 
         return visaCheckoutConfiguration;
     }
@@ -63,5 +71,35 @@ public class VisaCheckoutConfiguration {
      */
     public String getApiKey() {
         return mApiKey;
+    }
+
+    /**
+     * @return The accepted card brands for Visa Checkout.
+     */
+    public List<AcceptedCardBrands> getAcceptedCardBrands() {
+        return mAcceptedCardBrands;
+    }
+
+    private static List<AcceptedCardBrands> supportedCardTypesToAcceptedCardBrands(
+            Set<String> supportedCardTypes) {
+        List<AcceptedCardBrands> acceptedCardBrands = new ArrayList<>();
+        for (String supportedCardType : supportedCardTypes) {
+            switch (supportedCardType.toLowerCase()) {
+                case "visa":
+                    acceptedCardBrands.add(AcceptedCardBrands.ELECTRON);
+                    acceptedCardBrands.add(AcceptedCardBrands.VISA);
+                    break;
+                case "mastercard":
+                    acceptedCardBrands.add(AcceptedCardBrands.MASTERCARD);
+                    break;
+                case "discover":
+                    acceptedCardBrands.add(AcceptedCardBrands.DISCOVER);
+                    break;
+                case "american express":
+                    acceptedCardBrands.add(AcceptedCardBrands.AMEX);
+                    break;
+            }
+        }
+        return acceptedCardBrands;
     }
 }

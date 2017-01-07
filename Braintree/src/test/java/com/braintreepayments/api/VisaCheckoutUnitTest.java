@@ -147,9 +147,9 @@ public class VisaCheckoutUnitTest {
         VisaUserInfo visaUserInfo = new VisaUserInfo();
         visaUserInfo.setFirstName("visaUserInfoFirstName");
         visaPaymentInfo.setVisaUserInfo(visaUserInfo);
-        List<AcceptedCardBrands> acceptedCardBrands = Arrays.asList(
-                AcceptedCardBrands.ELECTRON
-        );
+        List<AcceptedCardBrands> acceptedCardBrands = Arrays.asList(AcceptedCardBrands.ELECTRON,
+                AcceptedCardBrands.VISA, AcceptedCardBrands.DISCOVER, AcceptedCardBrands.MASTERCARD,
+                AcceptedCardBrands.AMEX);
 
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         ArgumentCaptor<Integer> requestCodeCaptor = ArgumentCaptor.forClass(Integer.class);
