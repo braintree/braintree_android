@@ -14,11 +14,11 @@ import static junit.framework.Assert.assertEquals;
 @RunWith(RobolectricTestRunner.class)
 public class VisaCheckoutAddressUnitTest {
 
-    private VisaCheckoutAddress mVisaCheckoutAddress;
+    private JSONObject mSampleAddress;
 
     @Before
     public void setup() throws JSONException {
-       JSONObject sampleShippingAddress = new JSONObject()
+       mSampleAddress = new JSONObject()
                .put("firstName", "firstName")
                .put("lastName", "lastName")
                .put("streetAddress", "streetAddress")
@@ -26,49 +26,49 @@ public class VisaCheckoutAddressUnitTest {
                .put("region", "region")
                .put("postalCode", "postalCode")
                .put("countryCode", "countryCode");
-
-        mVisaCheckoutAddress = new VisaCheckoutAddress(sampleShippingAddress);
     }
 
     @Test
-    public void fillsOutFromJson() {
-        assertEquals("firstName", mVisaCheckoutAddress.getFirstName());
-        assertEquals("lastName", mVisaCheckoutAddress.getLastName());
-        assertEquals("streetAddress", mVisaCheckoutAddress.getStreetAddress());
-        assertEquals("locality", mVisaCheckoutAddress.getLocality());
-        assertEquals("region", mVisaCheckoutAddress.getRegion());
-        assertEquals("postalCode", mVisaCheckoutAddress.getPostalCode());
-        assertEquals("countryCode", mVisaCheckoutAddress.getCountryCode());
+    public void fromJson_whenValid_returnsPopulatedObject() {
+        VisaCheckoutAddress visaCheckoutAddress = VisaCheckoutAddress.fromJson(mSampleAddress);
+
+        assertEquals("firstName", visaCheckoutAddress.getFirstName());
+        assertEquals("lastName", visaCheckoutAddress.getLastName());
+        assertEquals("streetAddress", visaCheckoutAddress.getStreetAddress());
+        assertEquals("locality", visaCheckoutAddress.getLocality());
+        assertEquals("region", visaCheckoutAddress.getRegion());
+        assertEquals("postalCode", visaCheckoutAddress.getPostalCode());
+        assertEquals("countryCode", visaCheckoutAddress.getCountryCode());
+    }
+
+    @Test
+    public void fromJson_whenNull_returnsEmptyObject() {
+        VisaCheckoutAddress visaCheckoutAddress = VisaCheckoutAddress.fromJson(null);
+
+        assertEquals("", visaCheckoutAddress.getFirstName());
+        assertEquals("", visaCheckoutAddress.getLastName());
+        assertEquals("", visaCheckoutAddress.getStreetAddress());
+        assertEquals("", visaCheckoutAddress.getLocality());
+        assertEquals("", visaCheckoutAddress.getRegion());
+        assertEquals("", visaCheckoutAddress.getPostalCode());
+        assertEquals("", visaCheckoutAddress.getCountryCode());
     }
 
     @Test
     public void parcelsCorrectly() {
+        VisaCheckoutAddress visaCheckoutAddress = VisaCheckoutAddress.fromJson(mSampleAddress);
+
         Parcel parcel = Parcel.obtain();
-        mVisaCheckoutAddress.writeToParcel(parcel, 0);
+        visaCheckoutAddress.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         VisaCheckoutAddress actual = VisaCheckoutAddress.CREATOR.createFromParcel(parcel);
 
-        assertEquals(mVisaCheckoutAddress.getFirstName(), actual.getFirstName());
-        assertEquals(mVisaCheckoutAddress.getLastName(), actual.getLastName());
-        assertEquals(mVisaCheckoutAddress.getStreetAddress(), actual.getStreetAddress());
-        assertEquals(mVisaCheckoutAddress.getLocality(), actual.getLocality());
-        assertEquals(mVisaCheckoutAddress.getRegion(), actual.getRegion());
-        assertEquals(mVisaCheckoutAddress.getPostalCode(), actual.getPostalCode());
-        assertEquals(mVisaCheckoutAddress.getCountryCode(), actual.getCountryCode());
-    }
-
-    @Test
-    public void toStringIsCorrect() {
-        String expected = "VisaCheckoutAddress{";
-        expected += "mFirstName='firstName', ";
-        expected += "mLastName='lastName', ";
-        expected += "mStreetAddress='streetAddress', ";
-        expected += "mLocality='locality', ";
-        expected += "mRegion='region', ";
-        expected += "mPostalCode='postalCode', ";
-        expected += "mCountryCode='countryCode'";
-        expected += "}";
-
-        assertEquals(expected, mVisaCheckoutAddress.toString());
+        assertEquals(visaCheckoutAddress.getFirstName(), actual.getFirstName());
+        assertEquals(visaCheckoutAddress.getLastName(), actual.getLastName());
+        assertEquals(visaCheckoutAddress.getStreetAddress(), actual.getStreetAddress());
+        assertEquals(visaCheckoutAddress.getLocality(), actual.getLocality());
+        assertEquals(visaCheckoutAddress.getRegion(), actual.getRegion());
+        assertEquals(visaCheckoutAddress.getPostalCode(), actual.getPostalCode());
+        assertEquals(visaCheckoutAddress.getCountryCode(), actual.getCountryCode());
     }
 }

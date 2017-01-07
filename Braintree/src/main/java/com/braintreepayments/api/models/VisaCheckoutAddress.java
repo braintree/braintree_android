@@ -3,51 +3,88 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.braintreepayments.api.Json;
+
 import org.json.JSONObject;
 
+/**
+ * A class containing Visa Checkout information about the user's address.
+ */
 public class VisaCheckoutAddress implements Parcelable {
-    private final String mFirstName;
-    private final String mLastName;
-    private final String mStreetAddress;
-    private final String mLocality;
-    private final String mRegion;
-    private final String mPostalCode;
-    private final String mCountryCode;
 
-    public VisaCheckoutAddress(JSONObject json) {
-        mFirstName = json.optString("firstName");
-        mLastName = json.optString("lastName");
-        mStreetAddress = json.optString("streetAddress");
-        mLocality = json.optString("locality");
-        mRegion = json.optString("region");
-        mPostalCode = json.optString("postalCode");
-        mCountryCode = json.optString("countryCode");
+    private String mFirstName;
+    private String mLastName;
+    private String mStreetAddress;
+    private String mLocality;
+    private String mRegion;
+    private String mPostalCode;
+    private String mCountryCode;
+
+    public static VisaCheckoutAddress fromJson(JSONObject json) {
+        if (json == null) {
+            json = new JSONObject();
+        }
+
+        VisaCheckoutAddress visaCheckoutAddress = new VisaCheckoutAddress();
+
+        visaCheckoutAddress.mFirstName = Json.optString(json, "firstName", "");
+        visaCheckoutAddress.mLastName = Json.optString(json, "lastName", "");
+        visaCheckoutAddress.mStreetAddress = Json.optString(json, "streetAddress", "");
+        visaCheckoutAddress.mLocality = Json.optString(json, "locality", "");
+        visaCheckoutAddress.mRegion = Json.optString(json, "region", "");
+        visaCheckoutAddress.mPostalCode = Json.optString(json, "postalCode", "");
+        visaCheckoutAddress.mCountryCode = Json.optString(json, "countryCode", "");
+
+        return visaCheckoutAddress;
     }
 
+    public VisaCheckoutAddress() {}
+
+    /**
+     * @return The user's first name.
+     */
     public String getFirstName() {
         return mFirstName;
     }
 
+    /**
+     * @return The user's last name.
+     */
     public String getLastName() {
         return mLastName;
     }
 
+    /**
+     * @return The user's street address.
+     */
     public String getStreetAddress() {
         return mStreetAddress;
     }
 
+    /**
+     * @return The user's locality.
+     */
     public String getLocality() {
         return mLocality;
     }
 
+    /**
+     * @return The user's region.
+     */
     public String getRegion() {
         return mRegion;
     }
 
+    /**
+     * @return The user's postal code.
+     */
     public String getPostalCode() {
         return mPostalCode;
     }
 
+    /**
+     * @return The user's country code.
+     */
     public String getCountryCode() {
         return mCountryCode;
     }
@@ -89,17 +126,4 @@ public class VisaCheckoutAddress implements Parcelable {
             return new VisaCheckoutAddress[size];
         }
     };
-
-    @Override
-    public String toString() {
-        return "VisaCheckoutAddress{" +
-                "mFirstName='" + mFirstName + '\'' +
-                ", mLastName='" + mLastName + '\'' +
-                ", mStreetAddress='" + mStreetAddress + '\'' +
-                ", mLocality='" + mLocality + '\'' +
-                ", mRegion='" + mRegion + '\'' +
-                ", mPostalCode='" + mPostalCode + '\'' +
-                ", mCountryCode='" + mCountryCode + '\'' +
-                '}';
-    }
 }

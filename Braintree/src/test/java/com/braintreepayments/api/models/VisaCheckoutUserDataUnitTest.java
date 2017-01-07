@@ -27,7 +27,7 @@ public class VisaCheckoutUserDataUnitTest {
     }
 
     @Test
-    public void fillsOutFromJson() {
+    public void fromJson_whenValid_returnsPopulatedObject() {
         VisaCheckoutUserData visaCheckoutUserData = VisaCheckoutUserData.fromJson(mSampleUserData);
 
         assertEquals("userFirstName", visaCheckoutUserData.getUserFirstName());
@@ -35,6 +35,17 @@ public class VisaCheckoutUserDataUnitTest {
         assertEquals("userFullName", visaCheckoutUserData.getUserFullName());
         assertEquals("userName", visaCheckoutUserData.getUserName());
         assertEquals("userEmail", visaCheckoutUserData.getUserEmail());
+    }
+
+    @Test
+    public void fromJson_whenNull_returnsEmptyObject() {
+        VisaCheckoutUserData visaCheckoutUserData = VisaCheckoutUserData.fromJson(null);
+
+        assertEquals("", visaCheckoutUserData.getUserFirstName());
+        assertEquals("", visaCheckoutUserData.getUserLastName());
+        assertEquals("", visaCheckoutUserData.getUserFullName());
+        assertEquals("", visaCheckoutUserData.getUserName());
+        assertEquals("", visaCheckoutUserData.getUserEmail());
     }
 
     @Test
