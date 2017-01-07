@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import org.json.JSONObject;
 
-public class VisaCheckoutShippingAddress implements Parcelable {
+public class VisaCheckoutAddress implements Parcelable {
     private final String mFirstName;
     private final String mLastName;
     private final String mStreetAddress;
@@ -14,7 +14,7 @@ public class VisaCheckoutShippingAddress implements Parcelable {
     private final String mPostalCode;
     private final String mCountryCode;
 
-    public VisaCheckoutShippingAddress(JSONObject json) {
+    public VisaCheckoutAddress(JSONObject json) {
         mFirstName = json.optString("firstName");
         mLastName = json.optString("lastName");
         mStreetAddress = json.optString("streetAddress");
@@ -52,7 +52,7 @@ public class VisaCheckoutShippingAddress implements Parcelable {
         return mCountryCode;
     }
 
-    public VisaCheckoutShippingAddress(Parcel in) {
+    public VisaCheckoutAddress(Parcel in) {
         mFirstName = in.readString();
         mLastName = in.readString();
         mStreetAddress = in.readString();
@@ -78,21 +78,21 @@ public class VisaCheckoutShippingAddress implements Parcelable {
         return 0;
     }
 
-    public static final Creator<VisaCheckoutShippingAddress> CREATOR = new Creator<VisaCheckoutShippingAddress>() {
+    public static final Creator<VisaCheckoutAddress> CREATOR = new Creator<VisaCheckoutAddress>() {
         @Override
-        public VisaCheckoutShippingAddress createFromParcel(Parcel in) {
-            return new VisaCheckoutShippingAddress(in);
+        public VisaCheckoutAddress createFromParcel(Parcel in) {
+            return new VisaCheckoutAddress(in);
         }
 
         @Override
-        public VisaCheckoutShippingAddress[] newArray(int size) {
-            return new VisaCheckoutShippingAddress[size];
+        public VisaCheckoutAddress[] newArray(int size) {
+            return new VisaCheckoutAddress[size];
         }
     };
 
     @Override
     public String toString() {
-        return "VisaCheckoutShippingAddress{" +
+        return "VisaCheckoutAddress{" +
                 "mFirstName='" + mFirstName + '\'' +
                 ", mLastName='" + mLastName + '\'' +
                 ", mStreetAddress='" + mStreetAddress + '\'' +

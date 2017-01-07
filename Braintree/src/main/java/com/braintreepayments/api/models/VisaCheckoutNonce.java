@@ -23,7 +23,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
 
     private String mLastTwo;
     private String mCardType;
-    private VisaCheckoutShippingAddress mShippingAddress;
+    private VisaCheckoutAddress mShippingAddress;
     private VisaCheckoutUserData mUserData;
 
     /**
@@ -47,7 +47,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         mLastTwo = details.getString(LAST_TWO_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
 
-        mShippingAddress = new VisaCheckoutShippingAddress(json.getJSONObject(SHIPPING_ADDRESS));
+        mShippingAddress = new VisaCheckoutAddress(json.getJSONObject(SHIPPING_ADDRESS));
         mUserData = VisaCheckoutUserData.fromJson(json.getJSONObject(USER_DATA));
     }
 
@@ -68,7 +68,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
     /**
      * @return The user's shipping address.
      */
-    public VisaCheckoutShippingAddress getShippingAddress() {
+    public VisaCheckoutAddress getShippingAddress() {
         return mShippingAddress;
     }
 
@@ -99,7 +99,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         super(in);
         mLastTwo = in.readString();
         mCardType = in.readString();
-        mShippingAddress = in.readParcelable(VisaCheckoutShippingAddress.class.getClassLoader());
+        mShippingAddress = in.readParcelable(VisaCheckoutAddress.class.getClassLoader());
         mUserData = in.readParcelable(VisaCheckoutUserData.class.getClassLoader());
     }
 
