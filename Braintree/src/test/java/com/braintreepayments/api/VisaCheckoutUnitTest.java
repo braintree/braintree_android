@@ -147,9 +147,8 @@ public class VisaCheckoutUnitTest {
         VisaUserInfo visaUserInfo = new VisaUserInfo();
         visaUserInfo.setFirstName("visaUserInfoFirstName");
         visaPaymentInfo.setVisaUserInfo(visaUserInfo);
-        List<AcceptedCardBrands> acceptedCardBrands = Arrays.asList(AcceptedCardBrands.ELECTRON,
-                AcceptedCardBrands.VISA, AcceptedCardBrands.DISCOVER, AcceptedCardBrands.MASTERCARD,
-                AcceptedCardBrands.AMEX);
+        List<AcceptedCardBrands> acceptedCardBrands = Arrays.asList(AcceptedCardBrands.VISA,
+                AcceptedCardBrands.DISCOVER, AcceptedCardBrands.MASTERCARD, AcceptedCardBrands.AMEX);
 
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         ArgumentCaptor<Integer> requestCodeCaptor = ArgumentCaptor.forClass(Integer.class);
@@ -409,7 +408,6 @@ public class VisaCheckoutUnitTest {
                 return mock(VisaMcomLibrary.class);
             }
         }).when(VisaMcomLibrary.class, "getLibrary", any(Activity.class), any(VisaEnvironmentConfig.class));
-
     }
 
     private VisaPaymentSummary sampleVisaPaymentSummary() {

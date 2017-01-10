@@ -90,7 +90,7 @@ public class VisaCheckoutConfigurationUnitTest {
 
     @Test
     public void getAcceptedCardBrands_whenVisa_returnsElectronAndVisa() throws JSONException {
-        List<AcceptedCardBrands> expected = Arrays.asList(AcceptedCardBrands.ELECTRON, AcceptedCardBrands.VISA);
+        List<AcceptedCardBrands> expected = Arrays.asList(AcceptedCardBrands.VISA);
         String visaCheckoutConfigurationJson = new TestVisaCheckoutConfigurationBuilder()
                 .supportedCardTypes("Visa")
                 .build();

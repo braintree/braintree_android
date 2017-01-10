@@ -86,7 +86,6 @@ public class VisaCheckoutConfiguration {
         for (String supportedCardType : supportedCardTypes) {
             switch (supportedCardType.toLowerCase()) {
                 case "visa":
-                    acceptedCardBrands.add(AcceptedCardBrands.ELECTRON);
                     acceptedCardBrands.add(AcceptedCardBrands.VISA);
                     break;
                 case "mastercard":
