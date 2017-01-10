@@ -505,6 +505,23 @@ public class PayPalUnitTest {
     }
 
     @Test
+    public void requestOneTimePayment_intent_canBeSetToOrder() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").intent(PayPalRequest.INTENT_ORDER));
+
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/create_payment_resource"), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        assertEquals("1", json.get("amount"));
+        assertEquals(true, json.getJSONObject("experience_profile").get("no_shipping"));
+        assertEquals(false, json.getJSONObject("experience_profile").get("address_override"));
+        assertEquals(PayPalRequest.INTENT_ORDER, json.get("intent"));
+    }
+
+    @Test
     public void requestOneTimePayment_userAction_setsUserActionToBlankStringonDefault() throws JSONException {
         BraintreeFragment fragment = mMockFragmentBuilder
                 .successResponse(stringFromFixture("paypal_hermes_billing_agreement_response.json"))

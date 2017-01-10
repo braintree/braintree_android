@@ -21,8 +21,9 @@ import java.lang.annotation.RetentionPolicy;
 public class PayPalRequest implements Parcelable {
 
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({PayPalRequest.INTENT_SALE, PayPalRequest.INTENT_AUTHORIZE})
+    @StringDef({PayPalRequest.INTENT_ORDER, PayPalRequest.INTENT_SALE, PayPalRequest.INTENT_AUTHORIZE})
     @interface PayPalPaymentIntent {}
+    public static final String INTENT_ORDER = "order";
     public static final String INTENT_SALE = "sale";
     public static final String INTENT_AUTHORIZE = "authorize";
 
