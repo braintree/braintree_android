@@ -55,7 +55,7 @@ android {
         exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
     }
     sourceSets {
-        main {
+        androidTest {
             manifest.srcFile 'src/androidTest/AndroidManifest.xml'
         }
     }
