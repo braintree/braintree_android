@@ -84,7 +84,7 @@ public class AnalyticsEvent {
         try {
             Class.forName(PayPalOneTouchCore.class.getName());
             return PayPalOneTouchCore.isWalletAppInstalled(context);
-        } catch (ClassNotFoundException ignored) {
+        } catch (ClassNotFoundException | NoClassDefFoundError ignored) {
             return false;
         }
     }
