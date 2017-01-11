@@ -28,7 +28,7 @@ public class AnalyticsEvent {
                     .put(AnalyticsIntentService.DEVICE_NETWORK_TYPE_KEY, getNetworkType(context))
                     .put(AnalyticsIntentService.USER_INTERFACE_ORIENTATION_KEY, getUserOrientation(context))
                     .put(AnalyticsIntentService.MERCHANT_APP_VERSION_KEY, getAppVersion(context))
-                    .put(AnalyticsIntentService.PAYPAL_INSTALLED_KEY, PayPalOneTouchCore.isWalletAppInstalled(context))
+                    .put(AnalyticsIntentService.PAYPAL_INSTALLED_KEY, isPayPalInstalled(context))
                     .put(AnalyticsIntentService.VENMO_INSTALLED_KEY, Venmo.isVenmoInstalled(context));
         } catch (JSONException ignored) {}
     }
@@ -77,6 +77,15 @@ public class AnalyticsEvent {
             return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
         } catch (NameNotFoundException e) {
             return "VersionUnknown";
+        }
+    }
+
+    private boolean isPayPalInstalled(Context context) {
+        try {
+            Class.forName(PayPalOneTouchCore.class.getName());
+            return PayPalOneTouchCore.isWalletAppInstalled(context);
+        } catch (ClassNotFoundException ignored) {
+            return false;
         }
     }
 }
