@@ -16,4 +16,16 @@
         <item name="future_payment">@string/paypal_future_payment</item>
         <item name="billing_agreement">@string/paypal_billing_agreement</item>
     </string-array>
+
+    <string-array name="paypal_intent_types">
+        <item name="authorize">@string/paypal_intent_authorize</item>
+        <item name="order">@string/paypal_intent_order</item>
+        <item name="sale">@string/paypal_intent_sale</item>
+    </string-array>
+
+    <string-array name="paypal_intent_types_values">
+        <item name="authorize">@string/paypal_intent_authorize</item>
+        <item name="order">@string/paypal_intent_order</item>
+        <item name="sale">@string/paypal_intent_sale</item>
+    </string-array>
 </resources>

@@ -150,7 +150,12 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
 
     private PayPalRequest getPayPalRequest(@Nullable String amount) {
         PayPalRequest request = new PayPalRequest(amount);
-        if (Settings.isPayPalIntentSaleEnabled(this)) {
+        String intentType = Settings.getPayPalIntentType(this);
+        if (intentType.equals(getString(R.string.paypal_intent_authorize))) {
+            request.intent(PayPalRequest.INTENT_AUTHORIZE);
+        } else if (intentType.equals(getString(R.string.paypal_intent_order))) {
+            request.intent(PayPalRequest.INTENT_ORDER);
+        } else if (intentType.equals(getString(R.string.paypal_intent_sale))) {
             request.intent(PayPalRequest.INTENT_SALE);
         }
 

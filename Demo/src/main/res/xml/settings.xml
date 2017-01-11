@@ -91,16 +91,17 @@
             android:defaultValue="false" />
 
         <CheckBoxPreference
-            android:key="paypal_intent_sale"
-            android:title="@string/paypal_intent_sale_title"
-            android:summary="@string/paypal_intent_sale_summary"
-            android:defaultValue="false" />
-
-        <CheckBoxPreference
             android:key="paypal_useraction_commit"
             android:title="@string/paypal_useraction_commit_title"
             android:summary="@string/paypal_useraction_commit_summary"
             android:defaultValue="false" />
+
+        <ListPreference
+            android:key="paypal_intent_type"
+            android:title="@string/paypal_intent_type"
+            android:entries="@array/paypal_intent_types"
+            android:entryValues="@array/paypal_intent_types_values"
+            android:defaultValue="@string/paypal_intent_authorize"/>
 
         <ListPreference
             android:key="paypal_payment_type"

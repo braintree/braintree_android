@@ -20,6 +20,15 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class PayPalRequest implements Parcelable {
 
+    /**
+     * Payment intent. Must be set to sale for immediate payment, authorize to authorize a payment for capture later, or
+     * order to create an order. Defaults to authorize. Only works in the Single Payment flow.
+     *
+     * @see <a href="https://developer.paypal.com/docs/integration/direct/payments/capture-payment/">Capture payments later</a>
+     * and
+     * <a href="https://developer.paypal.com/docs/integration/direct/payments/create-process-order/">Create and process orders</a>
+     * for more information
+     */
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalRequest.INTENT_ORDER, PayPalRequest.INTENT_SALE, PayPalRequest.INTENT_AUTHORIZE})
     @interface PayPalPaymentIntent {}

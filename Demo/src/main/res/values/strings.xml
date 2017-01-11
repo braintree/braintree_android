@@ -72,6 +72,10 @@
     <string name="paypal_single_payment">Single Payment</string>
     <string name="paypal_billing_agreement">Billing Agreement</string>
     <string name="paypal_payment_type">Payment Type</string>
+    <string name="paypal_intent_type">Intent Type</string>
+    <string name="paypal_intent_authorize">Authorize</string>
+    <string name="paypal_intent_order">Order</string>
+    <string name="paypal_intent_sale">Sale</string>
 
     <!-- PayPalActivity -->
     <string name="paypal_wallet_available">PayPal Wallet app available for app switch: %b</string>
@@ -79,6 +83,4 @@
     <string name="paypal_useraction_commit_summary">Sets the Payment User Action to Commit for Express Checkout
         Transactions
     </string>
-    <string name="paypal_intent_sale_title">Set Intent to Sale</string>
-    <string name="paypal_intent_sale_summary">Sets the Payment Intent to Sale for Express Checkout Transactions</string>
 </resources>
