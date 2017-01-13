@@ -161,9 +161,13 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
 
                         @Override
                         public void failure(RetrofitError error) {
-                            showDialog("Unable to get a client token. Response Code: " +
-                                    error.getResponse().getStatus() + " Response body: " +
-                                    error.getResponse().getBody());
+                            if (error.getResponse() == null) {
+                                showDialog(error.getCause().getMessage());
+                            } else {
+                                showDialog("Unable to get a client token. Response Code: " +
+                                        error.getResponse().getStatus() + " Response body: " +
+                                        error.getResponse().getBody());
+                            }
                         }
                     });
         }
