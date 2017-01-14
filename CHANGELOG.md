@@ -1,5 +1,13 @@
 # Braintree Android SDK Release Notes
 
+## 2.4.0
+
+* Fix back button during PayPal browser switch on Samsung devices (fixes [#137](https://github.com/braintree/braintree_android/issues/137))
+* Add new intent option to `PayPalRequest`
+* Fix crash when excluding the PayPal dependency
+* Increase `minSdkVersion` to 16
+  * API 16 is the first version of Android that supports TLSv1.2. For more information on Braintree's upgrade to TLSv1.2 see [the blog post](https://www.braintreepayments.com/blog/updating-your-production-environment-to-support-tlsv1-2/).
+
 ## 2.3.12
 
 * Improve PayPal address validations
