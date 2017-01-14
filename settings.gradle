@@ -5,5 +5,4 @@ include ':PayPalOneTouch'
 include ':Core'
 
 include ':TestUtils'
-include ':Lint'
 include ':Demo'
