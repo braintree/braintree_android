@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.android.gms.identity.intents.model.UserAddress;
+import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
 
 import org.json.JSONException;
@@ -28,15 +29,25 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
     private UserAddress mBillingAddress;
     private UserAddress mShippingAddress;
     private String mGoogleTransactionId;
+    private Cart mCart;
+
+    /**
+     * @deprecated Use {@link #fromFullWallet(FullWallet, Cart)} instead.
+     */
+    @Deprecated
+    public static AndroidPayCardNonce fromFullWallet(FullWallet wallet) throws JSONException {
+        return fromFullWallet(wallet, null);
+    }
 
     /**
      * Convert a {@link FullWallet} to an {@link AndroidPayCardNonce}.
      *
-     * @param wallet the {@link FullWallet} from an Android Pay response
+     * @param wallet the {@link FullWallet} from an Android Pay response.
+     * @param cart the {@link Cart} used to create the {@link FullWallet}.
      * @return {@link AndroidPayCardNonce}.
      * @throws JSONException when parsing the response fails.
      */
-    public static AndroidPayCardNonce fromFullWallet(FullWallet wallet) throws JSONException {
+    public static AndroidPayCardNonce fromFullWallet(FullWallet wallet, Cart cart) throws JSONException {
         AndroidPayCardNonce androidPayCardNonce =
                 AndroidPayCardNonce.fromJson(wallet.getPaymentMethodToken().getToken());
         androidPayCardNonce.mDescription = wallet.getPaymentDescriptions()[0];
@@ -44,6 +55,7 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
         androidPayCardNonce.mBillingAddress = wallet.getBuyerBillingAddress();
         androidPayCardNonce.mShippingAddress = wallet.getBuyerShippingAddress();
         androidPayCardNonce.mGoogleTransactionId = wallet.getGoogleTransactionId();
+        androidPayCardNonce.mCart = cart;
 
         return androidPayCardNonce;
     }
@@ -117,6 +129,13 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
         return mGoogleTransactionId;
     }
 
+    /**
+     * @return The {@link Cart} used to create this {@link AndroidPayCardNonce}.
+     */
+    public Cart getCart() {
+        return mCart;
+    }
+
     public AndroidPayCardNonce() {}
 
     @Override
@@ -128,6 +147,7 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
         dest.writeParcelable(mBillingAddress, flags);
         dest.writeParcelable(mShippingAddress, flags);
         dest.writeString(mGoogleTransactionId);
+        dest.writeParcelable(mCart, flags);
     }
 
     private AndroidPayCardNonce(Parcel in) {
@@ -138,6 +158,7 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
         mBillingAddress = in.readParcelable(UserAddress.class.getClassLoader());
         mShippingAddress = in.readParcelable(UserAddress.class.getClassLoader());
         mGoogleTransactionId = in.readString();
+        mCart = in.readParcelable(Cart.class.getClassLoader());
     }
 
     public static final Creator<AndroidPayCardNonce> CREATOR = new Creator<AndroidPayCardNonce>() {

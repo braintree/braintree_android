@@ -138,6 +138,7 @@ public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
                     .getGoogleTransactionId();
             loadFullWallet(googleTransactionId);
         } else {
+            data.putExtra(EXTRA_CART, getCart());
             setResult(resultCode, data);
             finish();
         }

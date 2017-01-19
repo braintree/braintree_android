@@ -284,6 +284,8 @@ public class AndroidPayTest {
         doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
         AndroidPayCardNonce androidPayCardNonce = mock(AndroidPayCardNonce.class);
         when(androidPayCardNonce.getGoogleTransactionId()).thenReturn("google-transaction-id");
+        Cart cart = Cart.newBuilder().build();
+        when(androidPayCardNonce.getCart()).thenReturn(cart);
 
         AndroidPay.changePaymentMethod(fragment, androidPayCardNonce);
 
@@ -294,6 +296,7 @@ public class AndroidPayTest {
         assertEquals(CHANGE_PAYMENT_METHOD, intent.getIntExtra(EXTRA_REQUEST_TYPE, -1));
         assertEquals(WalletConstants.ENVIRONMENT_TEST, intent.getIntExtra(EXTRA_ENVIRONMENT, -1));
         assertEquals("google-transaction-id", intent.getStringExtra(EXTRA_GOOGLE_TRANSACTION_ID));
+        assertEquals(cart, intent.getParcelableExtra(EXTRA_CART));
     }
 
     @Test(timeout = 1000)

@@ -173,17 +173,25 @@ public class AndroidPay {
     }
 
     /**
+     * @deprecated Use {@link #tokenize(BraintreeFragment, FullWallet, Cart)} instead.
+     */
+    @Deprecated
+    public static void tokenize(BraintreeFragment fragment, FullWallet wallet) {
+        tokenize(fragment, wallet, null);
+    }
+
+    /**
      * Call this method when you've received a successful FullWallet request in your activity's
      * {@link Activity#onActivityResult(int, int, Intent)} to get an {@link AndroidPayCardNonce} from a
      * {@link FullWallet}.
      *
      * @param fragment An instance of {@link BraintreeFragment}.
-     * @param wallet a {@link FullWallet} from the Intent in
-     *          {@link Activity#onActivityResult(int, int, Intent)}
+     * @param wallet a {@link FullWallet} from the Intent in {@link Activity#onActivityResult(int, int, Intent)}.
+     * @param cart the {@link Cart} used when creating the {@link FullWallet}.
      */
-    public static void tokenize(BraintreeFragment fragment, FullWallet wallet) {
+    public static void tokenize(BraintreeFragment fragment, FullWallet wallet, Cart cart) {
         try {
-            fragment.postCallback(AndroidPayCardNonce.fromFullWallet(wallet));
+            fragment.postCallback(AndroidPayCardNonce.fromFullWallet(wallet, cart));
             fragment.sendAnalyticsEvent("android-pay.nonce-received");
         } catch (JSONException e) {
             fragment.sendAnalyticsEvent("android-pay.failed");
@@ -261,6 +269,7 @@ public class AndroidPay {
                 Intent intent = new Intent(fragment.getApplicationContext(), AndroidPayActivity.class)
                         .putExtra(EXTRA_ENVIRONMENT, getEnvironment(configuration.getAndroidPay()))
                         .putExtra(EXTRA_GOOGLE_TRANSACTION_ID, androidPayCardNonce.getGoogleTransactionId())
+                        .putExtra(EXTRA_CART, androidPayCardNonce.getCart())
                         .putExtra(EXTRA_REQUEST_TYPE, CHANGE_PAYMENT_METHOD);
                 fragment.startActivityForResult(intent, ANDROID_PAY_REQUEST_CODE);
             }
@@ -271,7 +280,8 @@ public class AndroidPay {
         if (resultCode == Activity.RESULT_OK) {
             if (data.hasExtra(WalletConstants.EXTRA_FULL_WALLET)) {
                 fragment.sendAnalyticsEvent("android-pay.authorized");
-                tokenize(fragment, (FullWallet) data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET));
+                tokenize(fragment, (FullWallet) data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET),
+                        (Cart) data.getParcelableExtra(EXTRA_CART));
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
             fragment.sendAnalyticsEvent("android-pay.canceled");
