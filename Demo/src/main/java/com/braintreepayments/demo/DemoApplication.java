@@ -28,12 +28,10 @@ public class DemoApplication extends Application implements UncaughtExceptionHan
                     .detectCustomSlowCalls()
                     .detectNetwork()
                     .penaltyLog()
-                    .penaltyDeath()
                     .build());
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
                     .detectAll()
                     .penaltyLog()
-                    .penaltyDeath()
                     .build());
         }
 
