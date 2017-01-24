@@ -1,6 +1,8 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
@@ -164,24 +166,29 @@ public class DataCollector {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                com.kount.api.DataCollector dataCollector = com.kount.api.DataCollector.getInstance();
+                final com.kount.api.DataCollector dataCollector = com.kount.api.DataCollector.getInstance();
                 dataCollector.setContext(fragment.getApplicationContext());
                 dataCollector.setMerchantID(Integer.parseInt(merchantId));
                 dataCollector.setLocationCollectorConfig(com.kount.api.DataCollector.LocationConfig.COLLECT);
                 dataCollector.setEnvironment(getDeviceCollectorEnvironment(configuration.getEnvironment()));
 
-                dataCollector.collectForSession(deviceSessionId, new com.kount.api.DataCollector.CompletionHandler() {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
-                    public void completed(String sessionID) {
-                        if (listener != null) {
-                            listener.onResponse(sessionID);
-                        }
-                    }
-                    @Override
-                    public void failed(String sessionID, final com.kount.api.DataCollector.Error error) {
-                        if (listener != null) {
-                            listener.onResponse(sessionID);
-                        }
+                    public void run() {
+                        dataCollector.collectForSession(deviceSessionId, new com.kount.api.DataCollector.CompletionHandler() {
+                            @Override
+                            public void completed(String sessionID) {
+                                if (listener != null) {
+                                    listener.onResponse(sessionID);
+                                }
+                            }
+                            @Override
+                            public void failed(String sessionID, final com.kount.api.DataCollector.Error error) {
+                                if (listener != null) {
+                                    listener.onResponse(sessionID);
+                                }
+                            }
+                        });
                     }
                 });
             }
