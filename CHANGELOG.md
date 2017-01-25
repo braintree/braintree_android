@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 2.4.1
+
+* Add workaround for [Kount/kount-android-sdk#2](https://github.com/Kount/kount-android-sdk/issues/2)
+* Fix error returned by `AndroidPay#changePaymentMethod`
+
 ## 2.4.0
 
 * Fix back button during PayPal browser switch on Samsung devices (fixes [#137](https://github.com/braintree/braintree_android/issues/137))
