@@ -27,11 +27,30 @@ public class VisaCheckoutNonceUnitTest {
         assertFalse(visaCheckoutNonce.isDefault());
         assertEquals("Visa Checkout", visaCheckoutNonce.getTypeLabel());
 
+        assertNotNull(visaCheckoutNonce.getBillingAddress());
+        assertEquals("billingFirstName", visaCheckoutNonce.getBillingAddress().getFirstName());
+        assertEquals("billingLastName", visaCheckoutNonce.getBillingAddress().getLastName());
+        assertEquals("billingStreetAddress", visaCheckoutNonce.getBillingAddress().getStreetAddress());
+        assertEquals("billingLocality", visaCheckoutNonce.getBillingAddress().getLocality());
+        assertEquals("billingRegion", visaCheckoutNonce.getBillingAddress().getRegion());
+        assertEquals("billingPostalCode", visaCheckoutNonce.getBillingAddress().getPostalCode());
+        assertEquals("billingCountryCode", visaCheckoutNonce.getBillingAddress().getCountryCode());
+
         assertNotNull(visaCheckoutNonce.getShippingAddress());
-        assertEquals("BT", visaCheckoutNonce.getShippingAddress().getFirstName());
+        assertEquals("shippingFirstName", visaCheckoutNonce.getShippingAddress().getFirstName());
+        assertEquals("shippingLastName", visaCheckoutNonce.getShippingAddress().getLastName());
+        assertEquals("shippingStreetAddress", visaCheckoutNonce.getShippingAddress().getStreetAddress());
+        assertEquals("shippingLocality", visaCheckoutNonce.getShippingAddress().getLocality());
+        assertEquals("shippingRegion", visaCheckoutNonce.getShippingAddress().getRegion());
+        assertEquals("shippingPostalCode", visaCheckoutNonce.getShippingAddress().getPostalCode());
+        assertEquals("shippingCountryCode", visaCheckoutNonce.getShippingAddress().getCountryCode());
 
         assertNotNull(visaCheckoutNonce.getUserData());
-        assertEquals("BT", visaCheckoutNonce.getUserData().getUserFirstName());
+        assertEquals("userFirstName", visaCheckoutNonce.getUserData().getUserFirstName());
+        assertEquals("userLastName", visaCheckoutNonce.getUserData().getUserLastName());
+        assertEquals("userFullName", visaCheckoutNonce.getUserData().getUserFullName());
+        assertEquals("userUserName", visaCheckoutNonce.getUserData().getUserName());
+        assertEquals("userEmail", visaCheckoutNonce.getUserData().getUserEmail());
     }
 
     @Test
@@ -51,14 +70,25 @@ public class VisaCheckoutNonceUnitTest {
         assertEquals(visaCheckoutNonce.getLastTwo(), actual.getLastTwo());
         assertEquals(visaCheckoutNonce.getCardType(), actual.getCardType());
 
-        assertEquals(visaCheckoutNonce.getShippingAddress().getFirstName(),
-                actual.getShippingAddress().getFirstName());
-        assertEquals(visaCheckoutNonce.getShippingAddress().getLastName(),
-                actual.getShippingAddress().getLastName());
+        assertVisaCheckoutAddress(visaCheckoutNonce.getBillingAddress(), actual.getBillingAddress());
+        assertVisaCheckoutAddress(visaCheckoutNonce.getShippingAddress(), actual.getShippingAddress());
 
-        assertEquals(visaCheckoutNonce.getUserData().getUserFirstName(),
-                actual.getUserData().getUserFirstName());
-        assertEquals(visaCheckoutNonce.getUserData().getUserLastName(),
-                actual.getUserData().getUserLastName());
+        VisaCheckoutUserData expectedUserData = visaCheckoutNonce.getUserData();
+        VisaCheckoutUserData actualUserData = visaCheckoutNonce.getUserData();
+
+        assertEquals(expectedUserData.getUserFirstName(), actualUserData.getUserFirstName());
+        assertEquals(expectedUserData.getUserLastName(), actualUserData.getUserLastName());
+        assertEquals(expectedUserData.getUserFullName(), actualUserData.getUserFullName());
+        assertEquals(expectedUserData.getUserEmail(), actualUserData.getUserEmail());
+    }
+
+    private void assertVisaCheckoutAddress(VisaCheckoutAddress expected, VisaCheckoutAddress actual) {
+        assertEquals(expected.getFirstName(), actual.getFirstName());
+        assertEquals(expected.getLastName(), actual.getLastName());
+        assertEquals(expected.getStreetAddress(), actual.getStreetAddress());
+        assertEquals(expected.getLocality(), actual.getLocality());
+        assertEquals(expected.getRegion(), actual.getRegion());
+        assertEquals(expected.getPostalCode(), actual.getPostalCode());
+        assertEquals(expected.getCountryCode(), actual.getCountryCode());
     }
 }

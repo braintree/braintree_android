@@ -9,21 +9,30 @@
       "cardType": "Visa",
       "lastTwo": "11"
     },
+    "billingAddress": {
+      "firstName": "billingFirstName",
+      "lastName": "billingLastName",
+      "streetAddress": "billingStreetAddress",
+      "locality": "billingLocality",
+      "region": "billingRegion",
+      "postalCode": "billingPostalCode",
+      "countryCode": "billingCountryCode"
+    },
     "shippingAddress": {
-      "firstName": "BT",
-      "lastName": "Test",
-      "streetAddress": "123 Townsend St Fl 6",
-      "locality": "San Francisco",
-      "region": "CA",
-      "postalCode": "94107",
-      "countryCode": "US"
+      "firstName": "shippingFirstName",
+      "lastName": "shippingLastName",
+      "streetAddress": "shippingStreetAddress",
+      "locality": "shippingLocality",
+      "region": "shippingRegion",
+      "postalCode": "shippingPostalCode",
+      "countryCode": "shippingCountryCode"
     },
     "userData": {
-      "userFirstName": "BT",
-      "userLastName": "Test",
-      "userFullName": "BT Test",
-      "userName": "test@bt.com",
-      "userEmail": "test@bt.com"
+      "userFirstName": "userFirstName",
+      "userLastName": "userLastName",
+      "userFullName": "userFullName",
+      "userName": "userUserName",
+      "userEmail": "userEmail"
     }
   }]
 }

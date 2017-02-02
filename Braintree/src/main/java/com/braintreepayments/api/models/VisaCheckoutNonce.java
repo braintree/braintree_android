@@ -18,11 +18,13 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
     private static final String LAST_TWO_KEY = "lastTwo";
+    private static final String BILLING_ADDRESS = "billingAddress";
     private static final String SHIPPING_ADDRESS = "shippingAddress";
     private static final String USER_DATA = "userData";
 
     private String mLastTwo;
     private String mCardType;
+    private VisaCheckoutAddress mBillingAddress;
     private VisaCheckoutAddress mShippingAddress;
     private VisaCheckoutUserData mUserData;
 
@@ -46,7 +48,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
         mLastTwo = details.getString(LAST_TWO_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
-
+        mBillingAddress = VisaCheckoutAddress.fromJson(json.getJSONObject(BILLING_ADDRESS));
         mShippingAddress = VisaCheckoutAddress.fromJson(json.getJSONObject(SHIPPING_ADDRESS));
         mUserData = VisaCheckoutUserData.fromJson(json.getJSONObject(USER_DATA));
     }
@@ -63,6 +65,13 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
      */
     public String getCardType() {
         return mCardType;
+    }
+
+    /**
+     * @return The user's billing address.
+     */
+    public VisaCheckoutAddress getBillingAddress() {
+        return mBillingAddress;
     }
 
     /**
@@ -91,6 +100,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         super.writeToParcel(dest, flags);
         dest.writeString(mLastTwo);
         dest.writeString(mCardType);
+        dest.writeParcelable(mBillingAddress, flags);
         dest.writeParcelable(mShippingAddress, flags);
         dest.writeParcelable(mUserData, flags);
     }
@@ -99,6 +109,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         super(in);
         mLastTwo = in.readString();
         mCardType = in.readString();
+        mBillingAddress = in.readParcelable(VisaCheckoutAddress.class.getClassLoader());
         mShippingAddress = in.readParcelable(VisaCheckoutAddress.class.getClassLoader());
         mUserData = in.readParcelable(VisaCheckoutUserData.class.getClassLoader());
     }

@@ -25,6 +25,7 @@ import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.models.VenmoAccountNonce;
+import com.braintreepayments.api.models.VisaCheckoutAddress;
 import com.braintreepayments.api.models.VisaCheckoutNonce;
 import com.google.android.gms.identity.intents.model.UserAddress;
 import com.google.android.gms.wallet.Cart;
@@ -256,6 +257,8 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
             details += "Full name: " + visaCheckoutNonce.getUserData().getUserFullName() + "\n";
             details += "User name: " + visaCheckoutNonce.getUserData().getUserName() + "\n";
             details += "Email: " + visaCheckoutNonce.getUserData().getUserEmail() + "\n";
+            details += "Billing Address: " + formatAddress(visaCheckoutNonce.getBillingAddress()) + "\n";
+            details += "Shipping Address: " + formatAddress(visaCheckoutNonce.getShippingAddress()) + "\n";
         } else if (mNonce instanceof VenmoAccountNonce) {
             VenmoAccountNonce venmoAccountNonce = (VenmoAccountNonce) mNonce;
             details = "Username: " + venmoAccountNonce.getUsername();
@@ -276,6 +279,12 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
         mNonceDetails.setVisibility(GONE);
         mDeviceData.setVisibility(GONE);
         mCreateTransactionButton.setEnabled(false);
+    }
+
+    private String formatAddress(VisaCheckoutAddress address) {
+        return address.getFirstName() + " " + address.getLastName() + " " + address.getStreetAddress() + " " +
+                address.getLocality() + " " + address.getPostalCode() + " " + address.getRegion() + " " +
+                address.getCountryCode();
     }
 
     private String formatAddress(PostalAddress address) {
