@@ -44,7 +44,7 @@ class TokenizationClient {
                             @Override
                             public void success(String responseBody) {
                                 try {
-                                    PaymentMethodNonce paymentMethodNonce = parsePaymentMethodNonces(responseBody,
+                                   PaymentMethodNonce paymentMethodNonce = parsePaymentMethodNonces(responseBody,
                                             paymentMethodBuilder.getResponsePaymentMethodType());
                                     callback.success(paymentMethodNonce);
                                 } catch (JSONException e) {

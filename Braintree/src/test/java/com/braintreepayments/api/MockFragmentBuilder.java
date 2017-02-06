@@ -26,6 +26,7 @@ public class MockFragmentBuilder {
     private Authorization mAuthorization;
     private Configuration mConfiguration;
     private String mSuccessResponse;
+    private String mSessionId;
     private Exception mErrorResponse;
 
     public MockFragmentBuilder() {
@@ -60,6 +61,11 @@ public class MockFragmentBuilder {
         return this;
     }
 
+    public MockFragmentBuilder sessionId(String sessionId) {
+        mSessionId = sessionId;
+        return this;
+    }
+
     public MockFragmentBuilder errorResponse(Exception exception) {
         mErrorResponse = exception;
         return this;
@@ -69,6 +75,7 @@ public class MockFragmentBuilder {
         BraintreeFragment fragment = mock(BraintreeFragment.class);
         when(fragment.getApplicationContext()).thenReturn(mContext);
         when(fragment.getAuthorization()).thenReturn(mAuthorization);
+        when(fragment.getSessionId()).thenReturn(mSessionId);
 
         doAnswer(new Answer() {
             @Override
