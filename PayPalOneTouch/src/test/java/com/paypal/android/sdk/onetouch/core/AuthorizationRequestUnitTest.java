@@ -21,6 +21,7 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import static com.braintreepayments.testutils.ReflectionHelper.setField;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -38,6 +39,11 @@ public class AuthorizationRequestUnitTest {
         mRequest.successUrl("com.braintreepayments.demo.braintree", "success");
         mRequest.cancelUrl("com.braintreepayments.demo.braintree", "cancel");
         mContextInspector = mock(ContextInspector.class);
+    }
+
+    @Test
+    public void constructor_setsClientMetadataId() {
+        assertNotNull(new AuthorizationRequest(RuntimeEnvironment.application).getClientMetadataId());
     }
 
     @Test
