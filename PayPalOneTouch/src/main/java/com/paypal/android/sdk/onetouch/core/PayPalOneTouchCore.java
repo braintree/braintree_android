@@ -128,17 +128,15 @@ public class PayPalOneTouchCore {
     }
 
     /**
-     * Gets a Client Metadata ID at the time of future payment activity. Once a user has consented
-     * to future payments, when the user subsequently initiates a PayPal payment from their device
-     * to be completed by your server, PayPal uses a Correlation ID to verify that the payment is
-     * originating from a valid, user-consented device+application. This helps reduce fraud and
+     * Gets a Client Metadata ID at the time of payment activity. Once a user initiates a PayPal payment
+     * from their device, PayPal uses the Client Metadata ID to verify that the payment is
+     * originating from a valid, user-consented device and application. This helps reduce fraud and
      * decrease declines. This method MUST be called prior to initiating a pre-consented payment (a
      * "future payment") from a mobile device. Pass the result to your server, to include in the
      * payment request sent to PayPal. Do not otherwise cache or store this value.
      *
      * @param context The application context
-     * @return The applicationCorrelationID - Your server will send this to PayPal in a
-     * 'PayPal-Client-Metadata-Id' header.
+     * @return clientMetadataId Your server will send this to PayPal
      */
     @MainThread
     public static String getClientMetadataId(Context context) {
@@ -146,18 +144,16 @@ public class PayPalOneTouchCore {
     }
 
     /**
-     * Gets a Client Metadata ID at the time of future payment activity. Once a user has consented
-     * to future payments, when the user subsequently initiates a PayPal payment from their device
-     * to be completed by your server, PayPal uses a Correlation ID to verify that the payment is
-     * originating from a valid, user-consented device+application. This helps reduce fraud and
+     * Gets a Client Metadata ID at the time of payment activity. Once a user initiates a PayPal payment
+     * from their device, PayPal uses the Client Metadata ID to verify that the payment is
+     * originating from a valid, user-consented device and application. This helps reduce fraud and
      * decrease declines. This method MUST be called prior to initiating a pre-consented payment (a
      * "future payment") from a mobile device. Pass the result to your server, to include in the
      * payment request sent to PayPal. Do not otherwise cache or store this value.
      *
      * @param context The application context
      * @param pairingId The desired pairing id
-     * @return The applicationCorrelationID - Your server will send this to PayPal in a
-     * 'PayPal-Client-Metadata-Id' header.
+     * @return clientMetadataId Your server will send this to PayPal
      */
     @MainThread
     public static String getClientMetadataId(Context context, String pairingId) {
