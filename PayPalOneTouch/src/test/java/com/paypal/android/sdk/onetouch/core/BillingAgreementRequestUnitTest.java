@@ -5,6 +5,7 @@ import android.os.Parcel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -12,12 +13,20 @@ import static junit.framework.Assert.assertEquals;
 public class BillingAgreementRequestUnitTest {
 
     @Test
+    public void pairingId_setsClientMetadataId() {
+        BillingAgreementRequest request = new BillingAgreementRequest()
+                .pairingId(RuntimeEnvironment.application, "pairing-id");
+
+        assertEquals("pairing-id", request.getClientMetadataId());
+    }
+
+    @Test
     public void parcels() {
         BillingAgreementRequest request = new BillingAgreementRequest();
         request.environment("test");
         request.clientId("client-id");
+        request.pairingId(RuntimeEnvironment.application, "pairing-id");
         request.clientMetadataId("client-metadata-id");
-        request.pairingId("pairing-id");
         request.cancelUrl("com.braintreepayments.demo.braintree.cancel", "cancel");
         request.successUrl("com.braintreepayments.demo.braintree.success", "success");
         request.approvalURL("com.braintreepayments.demo.braintree.approval-url://?ba_token=TOKEN");

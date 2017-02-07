@@ -5,6 +5,7 @@ import android.os.Parcel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -12,15 +13,23 @@ import static junit.framework.Assert.assertEquals;
 public class CheckoutRequestUnitTest {
 
     @Test
+    public void pairingId_setsClientMetadataId() {
+        CheckoutRequest request = new CheckoutRequest()
+                .pairingId(RuntimeEnvironment.application, "pairing-id");
+
+        assertEquals("pairing-id", request.getClientMetadataId());
+    }
+
+    @Test
     public void parcels() {
-        CheckoutRequest request = new CheckoutRequest();
-        request.environment("test");
-        request.clientId("client-id");
-        request.clientMetadataId("client-metadata-id");
-        request.pairingId("pairing-id");
-        request.cancelUrl("com.braintreepayments.demo.braintree.cancel", "cancel");
-        request.successUrl("com.braintreepayments.demo.braintree.success", "success");
-        request.approvalURL("com.braintreepayments.demo.braintree.approval-url");
+        CheckoutRequest request = new CheckoutRequest()
+                .environment("test")
+                .clientId("client-id")
+                .pairingId(RuntimeEnvironment.application, "pairing-id")
+                .clientMetadataId("client-metadata-id")
+                .cancelUrl("com.braintreepayments.demo.braintree.cancel", "cancel")
+                .successUrl("com.braintreepayments.demo.braintree.success", "success")
+                .approvalURL("com.braintreepayments.demo.braintree.approval-url");
 
         Parcel parcel = Parcel.obtain();
         request.writeToParcel(parcel, 0);

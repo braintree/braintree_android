@@ -528,8 +528,8 @@ public class PayPal {
         CheckoutRequest request = populateRequestData(new CheckoutRequest(), context, configuration)
                 .approvalURL(redirectUrl);
 
-        if (redirectUrl!= null) {
-            request.pairingId(Uri.parse(redirectUrl).getQueryParameter("token"));
+        if (redirectUrl != null) {
+            request.pairingId(context, Uri.parse(redirectUrl).getQueryParameter("token"));
         }
 
         return request;
@@ -542,7 +542,7 @@ public class PayPal {
                 .approvalURL(redirectUrl);
 
         if (redirectUrl != null) {
-            request.pairingId(Uri.parse(redirectUrl).getQueryParameter("ba_token"));
+            request.pairingId(context, Uri.parse(redirectUrl).getQueryParameter("ba_token"));
         }
 
         return request;

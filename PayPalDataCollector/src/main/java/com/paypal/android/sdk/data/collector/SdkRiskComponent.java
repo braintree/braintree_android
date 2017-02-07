@@ -24,6 +24,10 @@ public final class SdkRiskComponent {
     @MainThread
     public static String getClientMetadataId(Context context, String applicationGuid, String pairingId) {
         if (sMetadataIdProvider == null) {
+            if (context == null) {
+                return null;
+            }
+
             sMetadataIdProvider = new MetadataIdProviderImpl();
 
             Map<String, Object> params;

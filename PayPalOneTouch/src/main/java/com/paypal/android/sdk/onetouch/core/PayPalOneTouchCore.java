@@ -75,31 +75,16 @@ public class PayPalOneTouchCore {
             return new PendingRequest(false, null, null, null);
         }
 
-        // Set CMID for Single Payment and Billing Agreements
-        if (request instanceof BillingAgreementRequest) {
-            request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(context,
-                    ((BillingAgreementRequest) request).getPairingId()));
-        } else if (request instanceof CheckoutRequest) {
-            request.clientMetadataId(PayPalOneTouchCore.getClientMetadataId(context,
-                    ((CheckoutRequest) request).getPairingId()));
-        }
-
         if (RequestTarget.wallet == recipe.getTarget()) {
             request.trackFpti(context, TrackingPoint.SwitchToWallet, recipe.getProtocol());
-            return new PendingRequest(true, RequestTarget.wallet,
-                    request.getClientMetadataId(),
-                    AppSwitchHelper.getAppSwitchIntent(sContextInspector, sConfigManager, request,
-                            recipe));
+            return new PendingRequest(true, RequestTarget.wallet, request.getClientMetadataId(),
+                    AppSwitchHelper.getAppSwitchIntent(sContextInspector, sConfigManager, request, recipe));
         } else {
-            Intent intent = BrowserSwitchHelper
-                    .getBrowserSwitchIntent(sContextInspector, sConfigManager,
-                    request);
+            Intent intent = BrowserSwitchHelper.getBrowserSwitchIntent(sContextInspector, sConfigManager, request);
             if (intent != null) {
-                return new PendingRequest(true, RequestTarget.browser,
-                        request.getClientMetadataId(), intent);
+                return new PendingRequest(true, RequestTarget.browser, request.getClientMetadataId(), intent);
             } else {
-                return new PendingRequest(false, RequestTarget.browser,
-                        request.getClientMetadataId(), null);
+                return new PendingRequest(false, RequestTarget.browser, request.getClientMetadataId(), null);
             }
         }
     }
@@ -117,8 +102,7 @@ public class PayPalOneTouchCore {
         initService(context);
 
         if (data != null && data.getData() != null) {
-            return BrowserSwitchHelper.parseBrowserSwitchResponse(sContextInspector, request,
-                    data.getData());
+            return BrowserSwitchHelper.parseBrowserSwitchResponse(sContextInspector, request, data.getData());
         } else if (data != null && data.getExtras() != null && !data.getExtras().isEmpty()) {
             return AppSwitchHelper.parseAppSwitchResponse(sContextInspector, request, data);
         } else {
@@ -157,8 +141,8 @@ public class PayPalOneTouchCore {
      */
     @MainThread
     public static String getClientMetadataId(Context context, String pairingId) {
-        return SdkRiskComponent.getClientMetadataId(context,
-                getContextInspector(context).getInstallationGUID(), pairingId);
+        return SdkRiskComponent.getClientMetadataId(context, getContextInspector(context).getInstallationGUID(),
+                pairingId);
     }
 
     public static void useHardcodedConfig(Context context, boolean useHardcodedConfig) {
