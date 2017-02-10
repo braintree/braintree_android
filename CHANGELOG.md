@@ -1,5 +1,12 @@
 # Braintree Android SDK Release Notes
 
+## 2.4.2
+
+* Fix NPE in `AndroidPay#changePaymentMethod` (fixes [#139](https://github.com/braintree/braintree_android/issues/139))
+* `Venmo#authorizeAccount` will now correctly vault the payment method when the vault option is true
+* Fix missing client metadata ids in `PayPalAccountNonce`s
+* Update paypal-data-collector to 3.1.4
+
 ## 2.4.1
 
 * Add workaround for [Kount/kount-android-sdk#2](https://github.com/Kount/kount-android-sdk/issues/2)
