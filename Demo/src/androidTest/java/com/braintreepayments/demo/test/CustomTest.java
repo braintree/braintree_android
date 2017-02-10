@@ -125,7 +125,7 @@ public class CustomTest extends TestHelper {
 
     private void fillInExpiration() {
         try {
-            onDevice(withText("Expiration")).perform(click());
+            onDevice(withText("Expiration Date")).perform(click());
             onDevice(withText("12")).perform(click());
             onDevice(withText("2019")).perform(click());
             onDevice().pressBack();
