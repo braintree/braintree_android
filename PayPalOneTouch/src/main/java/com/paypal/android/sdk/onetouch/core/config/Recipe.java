@@ -1,16 +1,11 @@
 package com.paypal.android.sdk.onetouch.core.config;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.net.Uri;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
-import android.os.Bundle;
-import android.os.IBinder;
 
 import com.braintreepayments.api.internal.AppHelper;
+import com.braintreepayments.browserswitch.ChromeCustomTabs;
 import com.paypal.android.sdk.onetouch.core.enums.Protocol;
 import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
 import com.paypal.android.sdk.onetouch.core.sdk.AppSwitchHelper;
@@ -111,44 +106,17 @@ public abstract class Recipe<T extends Recipe<T>> {
     }
 
     public static Intent getBrowserIntent(Context context, String browserSwitchUrl, String allowedBrowserPackage) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(browserSwitchUrl));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(browserSwitchUrl))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         if (!"*".equals(allowedBrowserPackage)) {
             intent.setPackage(allowedBrowserPackage);
         }
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN_MR2 && isChromeCustomTabsAvailable(context)) {
-            Bundle extras = new Bundle();
-            extras.putBinder("android.support.customtabs.extra.SESSION", null);
-            intent.putExtras(extras);
-            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS |
-                    Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        }
-
-        return intent;
+        return ChromeCustomTabs.addChromeCustomTabsExtras(context, intent);
     }
 
     public Protocol getProtocol() {
         return mProtocol;
-    }
-
-    private static boolean isChromeCustomTabsAvailable(Context context) {
-        Intent serviceIntent = new Intent("android.support.customtabs.action.CustomTabsService")
-                .setPackage("com.android.chrome");
-        ServiceConnection connection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {}
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {}
-        };
-
-        boolean chromeCustomTabsAvailable = context.bindService(serviceIntent, connection,
-                Context.BIND_AUTO_CREATE | Context.BIND_WAIVE_PRIORITY);
-        context.unbindService(connection);
-
-        return chromeCustomTabsAvailable;
     }
 }

@@ -18,7 +18,6 @@ import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PayPalAccountNonce;
-import com.braintreepayments.api.models.PayPalConfiguration;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
@@ -58,6 +57,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.contains;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -128,7 +128,7 @@ public class PayPalUnitTest {
         PayPal.authorizeAccount(fragment);
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivity(captor.capture());
+        verify(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), captor.capture());
         Intent intent = captor.getValue();
 
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
@@ -138,7 +138,6 @@ public class PayPalUnitTest {
         assertNotNull(intent.getData().getQueryParameter("payloadEnc"));
         assertEquals("com.braintreepayments.api.braintree://onetouch/v1/success", intent.getData().getQueryParameter("x-success"));
         assertEquals("com.braintreepayments.api.braintree://onetouch/v1/cancel", intent.getData().getQueryParameter("x-cancel"));
-        assertTrue(intent.getBooleanExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, false));
     }
 
     @Test
@@ -154,7 +153,7 @@ public class PayPalUnitTest {
             public AuthorizationRequest answer(InvocationOnMock invocation) throws Throwable {
                 return request;
             }
-        }).when(PayPal.class, "getAuthorizationRequest", any(Context.class), any(PayPalConfiguration.class), anyString());
+        }).when(PayPal.class, "getAuthorizationRequest", any(BraintreeFragment.class));
 
         final BraintreeFragment fragment = mMockFragmentBuilder.build();
         doAnswer(new Answer() {
@@ -165,7 +164,7 @@ public class PayPalUnitTest {
                 PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
-        }).when(fragment).startActivity(any(Intent.class));
+        }).when(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), any(Intent.class));
 
         mockStatic(TokenizationClient.class);
         doAnswer(new Answer<Void>() {
@@ -196,7 +195,7 @@ public class PayPalUnitTest {
             public AuthorizationRequest answer(InvocationOnMock invocation) throws Throwable {
                 return request;
             }
-        }).when(PayPal.class, "getAuthorizationRequest", any(Context.class), any(PayPalConfiguration.class), anyString());
+        }).when(PayPal.class, "getAuthorizationRequest", any(BraintreeFragment.class));
 
         final BraintreeFragment fragment = mMockFragmentBuilder.build();
         doAnswer(new Answer() {
@@ -236,7 +235,7 @@ public class PayPalUnitTest {
                 PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
-        }).when(fragment).startActivity(any(Intent.class));
+        }).when(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), any(Intent.class));
 
         PayPal.authorizeAccount(fragment);
 
@@ -264,7 +263,7 @@ public class PayPalUnitTest {
         PayPal.requestBillingAgreement(fragment, new PayPalRequest());
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivity(captor.capture());
+        verify(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), captor.capture());
         Intent intent = captor.getValue();
 
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
@@ -280,7 +279,6 @@ public class PayPalUnitTest {
         assertEquals("dcpspy2brwdjr3qn", intent.getData().getQueryParameter("merchant_id"));
         assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success", intent.getData().getQueryParameter("return_url"));
         assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/cancel", intent.getData().getQueryParameter("cancel_url"));
-        assertTrue(intent.getBooleanExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, false));
     }
 
     @Test
@@ -311,7 +309,7 @@ public class PayPalUnitTest {
                 PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
-        }).when(fragment).startActivity(any(Intent.class));
+        }).when(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), any(Intent.class));
 
         mockStatic(TokenizationClient.class);
         doAnswer(new Answer<Void>() {
@@ -373,7 +371,7 @@ public class PayPalUnitTest {
                 PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
-        }).when(fragment).startActivity(any(Intent.class));
+        }).when(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), any(Intent.class));
 
         PayPal.requestBillingAgreement(fragment, new PayPalRequest());
 
@@ -639,7 +637,7 @@ public class PayPalUnitTest {
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").userAction(PayPalRequest.USER_ACTION_DEFAULT));
 
         ArgumentCaptor<Intent> dataCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivity(dataCaptor.capture());
+        verify(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), dataCaptor.capture());
 
         Uri uri = dataCaptor.getValue().getData();
         assertEquals("", uri.getQueryParameter("useraction"));
@@ -654,7 +652,7 @@ public class PayPalUnitTest {
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").userAction(PayPalRequest.USER_ACTION_COMMIT));
 
         ArgumentCaptor<Intent> dataCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivity(dataCaptor.capture());
+        verify(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), dataCaptor.capture());
 
         Uri uri = dataCaptor.getValue().getData();
         assertEquals("commit", uri.getQueryParameter("useraction"));
@@ -757,7 +755,7 @@ public class PayPalUnitTest {
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1.00"));
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivity(captor.capture());
+        verify(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), captor.capture());
         Intent intent = captor.getValue();
 
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
@@ -772,7 +770,6 @@ public class PayPalUnitTest {
         assertEquals("dcpspy2brwdjr3qn", intent.getData().getQueryParameter("merchant_id"));
         assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success", intent.getData().getQueryParameter("return_url"));
         assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/cancel", intent.getData().getQueryParameter("cancel_url"));
-        assertTrue(intent.getBooleanExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, false));
     }
 
     @Test
@@ -784,7 +781,7 @@ public class PayPalUnitTest {
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1.00").offerCredit(true));
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivity(captor.capture());
+        verify(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), captor.capture());
         Intent intent = captor.getValue();
 
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
@@ -800,7 +797,6 @@ public class PayPalUnitTest {
         assertEquals("dcpspy2brwdjr3qn", intent.getData().getQueryParameter("merchant_id"));
         assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success", intent.getData().getQueryParameter("return_url"));
         assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/cancel", intent.getData().getQueryParameter("cancel_url"));
-        assertTrue(intent.getBooleanExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, false));
     }
 
     @Test
@@ -816,7 +812,7 @@ public class PayPalUnitTest {
                 PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
-        }).when(fragment).startActivity(any(Intent.class));
+        }).when(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), any(Intent.class));
 
         mockStatic(TokenizationClient.class);
         doAnswer(new Answer<Void>() {
@@ -852,7 +848,7 @@ public class PayPalUnitTest {
                 PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
-        }).when(fragment).startActivity(any(Intent.class));
+        }).when(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), any(Intent.class));
 
         mockStatic(TokenizationClient.class);
         doAnswer(new Answer<Void>() {
@@ -929,7 +925,7 @@ public class PayPalUnitTest {
                 PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
-        }).when(fragment).startActivity(any(Intent.class));
+        }).when(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), any(Intent.class));
 
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
 

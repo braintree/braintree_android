@@ -17,6 +17,7 @@ import org.mockito.stubbing.Answer;
 
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragmentWithConfiguration;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -42,7 +43,7 @@ public class PayPalTest {
                 fragment.onActivityResult(BraintreeRequestCodes.PAYPAL, Activity.RESULT_CANCELED, new Intent());
                 return null;
             }
-        }).when(fragment).startActivity(any(Intent.class));
+        }).when(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), any(Intent.class));
 
         PayPal.authorizeAccount(fragment);
 

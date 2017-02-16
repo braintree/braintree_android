@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
@@ -28,6 +29,7 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.UnionPayCapabilities;
 import com.braintreepayments.api.test.FragmentTestActivity;
 import com.braintreepayments.api.test.UnitTestListenerActivity;
+import com.braintreepayments.browserswitch.BrowserSwitchFragment.BrowserSwitchResult;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 
 import org.json.JSONException;
@@ -60,13 +62,10 @@ import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_K
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -252,7 +251,6 @@ public class BraintreeFragmentUnitTest {
 
         assertTrue(bundle.getParcelableArrayList(BraintreeFragment.EXTRA_CACHED_PAYMENT_METHOD_NONCES).isEmpty());
         assertFalse(bundle.getBoolean(BraintreeFragment.EXTRA_FETCHED_PAYMENT_METHOD_NONCES));
-        assertFalse(bundle.getBoolean(BraintreeFragment.EXTRA_BROWSER_SWITCHING));
         assertEquals(configuration.toJson(), bundle.getString(BraintreeFragment.EXTRA_CONFIGURATION));
     }
 
@@ -266,7 +264,6 @@ public class BraintreeFragmentUnitTest {
 
         assertTrue(bundle.getParcelableArrayList(BraintreeFragment.EXTRA_CACHED_PAYMENT_METHOD_NONCES).isEmpty());
         assertFalse(bundle.getBoolean(BraintreeFragment.EXTRA_FETCHED_PAYMENT_METHOD_NONCES));
-        assertFalse(bundle.getBoolean(BraintreeFragment.EXTRA_BROWSER_SWITCHING));
         assertFalse(bundle.containsKey(BraintreeFragment.EXTRA_CONFIGURATION));
     }
 
@@ -786,6 +783,39 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
+    public void onBrowserSwitchResult_callsOnActivityResultForOkResult() throws InvalidArgumentException {
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY));
+
+        fragment.onBrowserSwitchResult(42, BrowserSwitchResult.OK, Uri.parse("http://example.com"));
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(fragment).onActivityResult(eq(42), eq(Activity.RESULT_OK), captor.capture());
+        assertEquals("http://example.com", captor.getValue().getData().toString());
+    }
+
+    @Test
+    public void onBrowserSwitchResult_callsOnActivityResultForCancelResult() throws InvalidArgumentException {
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY));
+
+        fragment.onBrowserSwitchResult(42, BrowserSwitchResult.CANCELED, Uri.parse("http://example.com"));
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(fragment).onActivityResult(eq(42), eq(Activity.RESULT_CANCELED), captor.capture());
+        assertEquals("http://example.com", captor.getValue().getData().toString());
+    }
+
+    @Test
+    public void onBrowserSwitchResult_callsOnActivityResultForErrorResult() throws InvalidArgumentException {
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY));
+
+        fragment.onBrowserSwitchResult(42, BrowserSwitchResult.ERROR, Uri.parse("http://example.com"));
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(fragment).onActivityResult(eq(42), eq(Activity.RESULT_FIRST_USER), captor.capture());
+        assertEquals("http://example.com", captor.getValue().getData().toString());
+    }
+
+    @Test
     public void onActivityResult_handlesPayPalResult() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         mockStatic(PayPal.class);
@@ -850,16 +880,6 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void startActivity_clearsLastBrowserSwitchResponseWhenBrowserSwitching() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = new Intent();
-
-        fragment.startActivity(new Intent().putExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, true));
-
-        assertNull(BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse);
-    }
-
-    @Test
     public void startActivityForResult_postsExceptionWhenNotAttached() throws JSONException,
             InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
@@ -920,34 +940,6 @@ public class BraintreeFragmentUnitTest {
         assertEquals(2, activity.configurations.size());
         assertEquals(configuration, activity.configurations.get(0));
         assertEquals(configuration, activity.configurations.get(1));
-    }
-
-    @Test
-    public void onResume_doesNothingIfNotBrowserSwitching() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        mockStatic(PayPal.class);
-
-        fragment.onResume();
-
-        verifyStatic(never());
-        PayPal.onActivityResult(any(BraintreeFragment.class), anyInt(), any(Intent.class));
-    }
-
-    @Test
-    public void onResume_handlesBrowserSwitch() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        mockStatic(PayPal.class);
-        fragment.startActivity(new Intent().putExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, true));
-        Intent intent = new Intent();
-        BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = intent;
-
-        fragment.onResume();
-
-        assertNull(BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse);
-        fragment.onResume();
-
-        verifyStatic(times(1));
-        PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
     }
 
     /* helpers */

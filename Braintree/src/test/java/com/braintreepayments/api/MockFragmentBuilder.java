@@ -76,6 +76,7 @@ public class MockFragmentBuilder {
         when(fragment.getApplicationContext()).thenReturn(mContext);
         when(fragment.getAuthorization()).thenReturn(mAuthorization);
         when(fragment.getSessionId()).thenReturn(mSessionId);
+        when(fragment.getReturnUrlScheme()).thenReturn("com.braintreepayments.api.braintree");
 
         doAnswer(new Answer() {
             @Override

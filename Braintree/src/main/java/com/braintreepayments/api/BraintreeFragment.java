@@ -6,10 +6,12 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
@@ -39,6 +41,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.models.UnionPayCapabilities;
+import com.braintreepayments.browserswitch.BrowserSwitchFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -57,7 +60,7 @@ import java.util.Queue;
 /**
  * Core Braintree class that handles network requests and managing callbacks.
  */
-public class BraintreeFragment extends Fragment {
+public class BraintreeFragment extends BrowserSwitchFragment {
 
     public static final String TAG = "com.braintreepayments.api.BraintreeFragment";
 
@@ -68,13 +71,9 @@ public class BraintreeFragment extends Fragment {
     @VisibleForTesting
     static final String EXTRA_CONFIGURATION = "com.braintreepayments.api.EXTRA_CONFIGURATION";
     @VisibleForTesting
-    static final String EXTRA_BROWSER_SWITCHING = "com.braintreepayments.api.EXTRA_BROWSER_SWITCHING";
+    static final String EXTRA_CACHED_PAYMENT_METHOD_NONCES = "com.braintreepayments.api.EXTRA_CACHED_PAYMENT_METHOD_NONCES";
     @VisibleForTesting
-    static final String EXTRA_CACHED_PAYMENT_METHOD_NONCES =
-            "com.braintreepayments.api.EXTRA_CACHED_PAYMENT_METHOD_NONCES";
-    @VisibleForTesting
-    static final String EXTRA_FETCHED_PAYMENT_METHOD_NONCES =
-            "com.braintreepayments.api.EXTRA_FETCHED_PAYMENT_METHOD_NONCES";
+    static final String EXTRA_FETCHED_PAYMENT_METHOD_NONCES = "com.braintreepayments.api.EXTRA_FETCHED_PAYMENT_METHOD_NONCES";
 
     @VisibleForTesting
     protected BraintreeHttpClient mHttpClient;
@@ -87,13 +86,11 @@ public class BraintreeFragment extends Fragment {
     private final Queue<QueuedCallback> mCallbackQueue = new ArrayDeque<>();
     private final List<PaymentMethodNonce> mCachedPaymentMethodNonces = new ArrayList<>();
     private boolean mHasFetchedPaymentMethodNonces = false;
-    private boolean mIsBrowserSwitching = false;
     private boolean mNewActivityNeedsConfiguration;
     private int mConfigurationRequestAttempts = 0;
     private String mIntegrationType;
     private String mSessionId;
     private AnalyticsDatabase mAnalyticsDatabase;
-    private Context mContext;
 
     private ConfigurationListener mConfigurationListener;
     private BraintreeResponseListener<Exception> mConfigurationErrorListener;
@@ -192,7 +189,6 @@ public class BraintreeFragment extends Fragment {
             }
 
             mHasFetchedPaymentMethodNonces = savedInstanceState.getBoolean(EXTRA_FETCHED_PAYMENT_METHOD_NONCES);
-            mIsBrowserSwitching = savedInstanceState.getBoolean(EXTRA_BROWSER_SWITCHING);
             try {
                 setConfiguration(Configuration.fromJson(savedInstanceState.getString(EXTRA_CONFIGURATION)));
             } catch (JSONException ignored) {}
@@ -239,19 +235,6 @@ public class BraintreeFragment extends Fragment {
                 !mGoogleApiClient.isConnecting()) {
             mGoogleApiClient.connect();
         }
-
-        if (mIsBrowserSwitching) {
-            int resultCode = Activity.RESULT_CANCELED;
-            if (BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse != null) {
-                resultCode = Activity.RESULT_OK;
-            }
-
-            onActivityResult(BraintreeRequestCodes.PAYPAL, resultCode,
-                    BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse);
-
-            BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = null;
-            mIsBrowserSwitching = false;
-        }
     }
 
     @Override
@@ -269,7 +252,6 @@ public class BraintreeFragment extends Fragment {
         outState.putParcelableArrayList(EXTRA_CACHED_PAYMENT_METHOD_NONCES,
                 (ArrayList<? extends Parcelable>) mCachedPaymentMethodNonces);
         outState.putBoolean(EXTRA_FETCHED_PAYMENT_METHOD_NONCES, mHasFetchedPaymentMethodNonces);
-        outState.putBoolean(EXTRA_BROWSER_SWITCHING, mIsBrowserSwitching);
 
         if (mConfiguration != null) {
             outState.putString(EXTRA_CONFIGURATION, mConfiguration.toJson());
@@ -305,17 +287,6 @@ public class BraintreeFragment extends Fragment {
     }
 
     @Override
-    public void startActivity(Intent intent) {
-        if (intent.hasExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH)) {
-            BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = null;
-            mIsBrowserSwitching = true;
-            getApplicationContext().startActivity(intent);
-        } else {
-            super.startActivity(intent);
-        }
-    }
-
-    @Override
     public void startActivityForResult(Intent intent, int requestCode) {
         if (!isAdded()) {
             postCallback(new BraintreeException("BraintreeFragment is not attached to an Activity. Please ensure it " +
@@ -326,9 +297,24 @@ public class BraintreeFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(final int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    public String getReturnUrlScheme() {
+        return getApplicationContext().getPackageName().toLowerCase().replace("_", "") + ".braintree";
+    }
 
+    @Override
+    public void onBrowserSwitchResult(int requestCode, BrowserSwitchResult browserSwitchResult, @Nullable Uri uri) {
+        int resultCode = Activity.RESULT_FIRST_USER;
+        if (browserSwitchResult == BrowserSwitchResult.OK) {
+            resultCode = Activity.RESULT_OK;
+        } else if (browserSwitchResult == BrowserSwitchResult.CANCELED) {
+            resultCode = Activity.RESULT_CANCELED;
+        }
+
+        onActivityResult(requestCode, resultCode, new Intent().setData(uri));
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case BraintreeRequestCodes.PAYPAL:
                 PayPal.onActivityResult(this, resultCode, data);
