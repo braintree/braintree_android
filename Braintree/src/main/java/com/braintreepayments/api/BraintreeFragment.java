@@ -15,6 +15,7 @@ import android.support.annotation.VisibleForTesting;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.GoogleApiClientException;
+import com.braintreepayments.api.exceptions.GoogleApiClientException.ErrorType;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
@@ -741,7 +742,7 @@ public class BraintreeFragment extends Fragment {
 
     protected GoogleApiClient getGoogleApiClient() {
         if (getActivity() == null) {
-            postCallback(new GoogleApiClientException("BraintreeFragment is not attached to an Activity"));
+            postCallback(new GoogleApiClientException(ErrorType.NotAttachedToActivity, 1));
             return null;
         }
 
@@ -761,14 +762,14 @@ public class BraintreeFragment extends Fragment {
 
                 @Override
                 public void onConnectionSuspended(int i) {
-                    postCallback(new GoogleApiClientException("Connection suspended: " + i));
+                    postCallback(new GoogleApiClientException(ErrorType.ConnectionSuspended, i));
                 }
             });
 
             mGoogleApiClient.registerConnectionFailedListener(new OnConnectionFailedListener() {
                 @Override
                 public void onConnectionFailed(ConnectionResult connectionResult) {
-                    postCallback(new GoogleApiClientException("Connection failed: " + connectionResult.getErrorCode()));
+                    postCallback(new GoogleApiClientException(ErrorType.ConnectionFailed, connectionResult.getErrorCode()));
                 }
             });
 
