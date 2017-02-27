@@ -84,9 +84,9 @@ dependencies {
     androidTestCompile 'com.squareup.retrofit:retrofit:1.9.0'
 
     // Visa Checkout
-    compile 'com.android.support:support-v4:[25.0.0, 26.0.0)' //TODO Visa Checkout: Avoid packaging this
-    compile 'com.android.support:appcompat-v7:[25.0.0, 26.0.0)' //TODO Visa Checkout: Avoid packaging this
-    compile 'com.android.support:design:[25.0.0, 26.0.0)' //TODO Visa Checkout: Avoid packaging this
+    compile 'com.android.support:support-v4:[25.0.0, 26.0.0)'
+    compile 'com.android.support:appcompat-v7:[25.0.0, 26.0.0)'
+    compile 'com.android.support:design:[25.0.0, 26.0.0)'
 
     testCompile fileTree(dir: "${rootDir}/libs", include: [
             'Samsung-sdk-v1.0.0.jar',
@@ -160,21 +160,18 @@ uploadArchives {
             }
 
             pom.whenConfigured { MavenPom pom ->
-                pom.dependencies.each {
-                    if (it.artifactId == 'play-services-wallet') {
-                        it.optional = true
-                    }
-
-                    if (it.artifactId == 'support-annotations') {
-                        it.optional = true
-                    }
-
-                    if (it.artifactId == 'data-collector') {
-                        it.optional = true
-                    }
-
-                    if (it.artifactId == 'VisaCheckout-Android-SDK') {
-                        it.optional = true
+                ignoredArtifactIds = [
+                        'play-services-wallet',
+                        'support-annotations',
+                        'data-collector',
+                        'VisaCheckout-Android-SDK',
+                        'support-v4', // Visa Checkout dependency
+                        'appcompat-v7', // Visa Checkout dependency
+                        'design' // Visa Checkout dependency
+                ]
+                pom.dependencies.each { dep ->
+                    ignoredArtifactId.each {
+                        it.optional = it.artifactId == ignoredArtifactId
                     }
                 }
             }
