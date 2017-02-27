@@ -1,7 +1,7 @@
 package com.braintreepayments.api.models;
 
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestVisaCheckoutConfigurationBuilder;
-import com.visa.checkout.VisaMerchantInfo.AcceptedCardBrands;
+import com.visa.checkout.Profile.CardBrand;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -90,7 +90,7 @@ public class VisaCheckoutConfigurationUnitTest {
 
     @Test
     public void getAcceptedCardBrands_whenVisa_returnsElectronAndVisa() throws JSONException {
-        List<AcceptedCardBrands> expected = Arrays.asList(AcceptedCardBrands.VISA);
+        List<String> expected = Arrays.asList(CardBrand.VISA);
         String visaCheckoutConfigurationJson = new TestVisaCheckoutConfigurationBuilder()
                 .supportedCardTypes("Visa")
                 .build();
@@ -103,7 +103,7 @@ public class VisaCheckoutConfigurationUnitTest {
 
     @Test
     public void getAcceptedCardBrands_whenMastercard_returnsMastercard() throws JSONException {
-        List<AcceptedCardBrands> expected = Arrays.asList(AcceptedCardBrands.MASTERCARD);
+        List<String> expected = Arrays.asList(CardBrand.MASTERCARD);
         String visaCheckoutConfigurationJson = new TestVisaCheckoutConfigurationBuilder()
                 .supportedCardTypes("MasterCard")
                 .build();
@@ -116,7 +116,7 @@ public class VisaCheckoutConfigurationUnitTest {
 
     @Test
     public void getAcceptedCardBrands_whenDiscover_returnsDiscover() throws JSONException {
-        List<AcceptedCardBrands> expected = Arrays.asList(AcceptedCardBrands.DISCOVER);
+        List<String> expected = Arrays.asList(CardBrand.DISCOVER);
         String visaCheckoutConfigurationJson = new TestVisaCheckoutConfigurationBuilder()
                 .supportedCardTypes("Discover")
                 .build();
@@ -129,7 +129,7 @@ public class VisaCheckoutConfigurationUnitTest {
 
     @Test
     public void getAcceptedCardBrands_whenAmericanExpress_returnsAmex() throws JSONException {
-        List<AcceptedCardBrands> expected = Arrays.asList(AcceptedCardBrands.AMEX);
+        List<String> expected = Arrays.asList(CardBrand.AMEX);
         String visaCheckoutConfigurationJson = new TestVisaCheckoutConfigurationBuilder()
                 .supportedCardTypes("American Express")
                 .build();

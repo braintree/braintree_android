@@ -54,10 +54,15 @@ android {
         exclude 'META-INF/maven/com.google.guava/guava/pom.properties'
         exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
     }
+
     sourceSets {
         androidTest {
             manifest.srcFile 'src/androidTest/AndroidManifest.xml'
         }
+    }
+
+    dataBinding {
+        enabled = true
     }
 }
 
@@ -77,20 +82,17 @@ dependencies {
     compile 'com.lukekorth:mailable_log:0.1.4'
 
     // Visa Checkout
-    compile fileTree(dir: "${rootDir}/libs", include: [
-            'Samsung-sdk-v1.0.0.jar',
-            'Samsung-pass-v1.1.4.jar',
-            'eventbus-2.4.0.jar'])
-    compile(name: 'VisaCheckout-Android-SDK', version: '4.3', ext: 'aar')
+    compile(name: 'VisaCheckout-Android-SDK', version: '4.6.0', ext: 'aar')
     compile 'com.google.android.gms:play-services-analytics:9.8.0'
     compile 'com.google.android.gms:play-services-ads:9.8.0'
     compile 'com.google.android.gms:play-services-basement:9.8.0'
     compile 'com.parse.bolts:bolts-android:1.4.0'
-    compile 'com.google.code.gson:gson:2.3.1'
-    compile 'com.squareup.okhttp:okhttp:2.5.0'
-    compile 'com.squareup.okio:okio:1.6.0'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-
+    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.squareup.okhttp3:okhttp:3.5.0'
+    compile 'com.squareup.okio:okio:1.11.0'
+    compile 'de.greenrobot:eventbus:2.4.1'
+    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile 'com.android.support:design:25.1.0'
     compile 'com.google.android.gms:play-services-wallet:10.0.1'
 
     compile project(':Braintree')

@@ -1,25 +1,16 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Parcel;
-import android.support.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
-import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VisaCheckoutNonce;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
-import com.braintreepayments.testutils.TestConfigurationBuilder;
-import com.braintreepayments.testutils.TestConfigurationBuilder.TestVisaCheckoutConfigurationBuilder;
-import com.visa.checkout.VisaLibrary;
-import com.visa.checkout.VisaPaymentInfo;
 import com.visa.checkout.VisaPaymentSummary;
 
 import org.json.JSONException;
@@ -28,73 +19,62 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragmentWithAuthorization;
-import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragmentWithConfiguration;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doAnswer;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(Parameterized.class)
 public class VisaCheckoutTest {
+
+    private static final String CLIENT_TOKEN = new TestClientTokenBuilder()
+            .withVisaCheckout()
+            .build();
+
+    @Parameters(name="{1}")
+    public static Collection authorizationStrings() {
+        return Arrays.asList(new String[][] {
+                { CLIENT_TOKEN, "Client Token" },
+                { TOKENIZATION_KEY, "Tokenization Key" }
+        });
+    }
 
     @Rule
     public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
 
+    public final String mAuthorization;
+
+    private BraintreeFragment mBraintreeFragment;
     private CountDownLatch mCountDownLatch;
-    private String mVisaCheckoutConfiguration;
 
     @Before
     public void setUp() throws InvalidArgumentException {
-        mVisaCheckoutConfiguration = new TestConfigurationBuilder()
-                .visaCheckout(new TestVisaCheckoutConfigurationBuilder()
-                        .apikey("apikey")
-                        .externalClientId("externalClientId"))
-                .build();
         mCountDownLatch = new CountDownLatch(1);
-    }
-
-    @Test(timeout = 10000)
-    public void authorize_whenActivityCancels_postsCancel() throws InterruptedException {
-        final BraintreeFragment fragment = getMockFragmentWithConfiguration(mActivityTestRule.getActivity(),
-                mVisaCheckoutConfiguration);
-        doAnswer(new Answer() {
+        mBraintreeFragment = BraintreeFragment.newInstance(mActivityTestRule.getActivity(), mAuthorization);
+        mBraintreeFragment.addListener(new BraintreeErrorListener() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                fragment.onActivityResult(BraintreeRequestCodes.VISA_CHECKOUT,
-                        Activity.RESULT_CANCELED, new Intent());
-                return null;
-            }
-        }).when(fragment).startActivityForResult(any(Intent.class), eq(BraintreeRequestCodes.VISA_CHECKOUT));
-
-        fragment.addListener(new BraintreeCancelListener() {
-            @Override
-            public void onCancel(int requestCode) {
-                assertEquals(BraintreeRequestCodes.VISA_CHECKOUT, requestCode);
-                mCountDownLatch.countDown();
+            public void onError(Exception error) {
+                throw new RuntimeException("onError was not expected: ", error);
             }
         });
+    }
 
-        VisaCheckout.authorize(fragment, new VisaPaymentInfo());
-        mCountDownLatch.await();
+    public VisaCheckoutTest(String authorization, String authorizationType) {
+        mAuthorization = authorization;
     }
 
     @Test(timeout = 10000)
-    public void onActivityResult_whenActivityResultOkAndTokenizationFails_postsTokenizationException()
-            throws InterruptedException {
-        final BraintreeFragment fragment = getMockFragmentWithAuthorization(mActivityTestRule.getActivity(),
-                new TestClientTokenBuilder().withVisaCheckout().build());
-
-        fragment.addListener(new BraintreeErrorListener() {
+    public void tokenize_whenFailed_postsTokenizationException() throws InterruptedException {
+        mBraintreeFragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
                 assertTrue(error instanceof ErrorWithResponse);
@@ -103,18 +83,14 @@ public class VisaCheckoutTest {
             }
         });
 
-        VisaCheckout.onActivityResult(fragment, Activity.RESULT_OK, new Intent()
-                .putExtra(VisaLibrary.PAYMENT_SUMMARY, malformedVisaPaymentSummary()));
+        VisaCheckout.tokenize(mBraintreeFragment, malformedVisaPaymentSummary());
         mCountDownLatch.await();
     }
 
-    @Test(timeout = 10000)
-    public void onActivityResult_whenActivityResultOkAndTokenizationSuccess_postsVisaCheckoutNonce()
+    @Test(timeout = 100000)
+    public void tokenize_whenSuccess_postsVisaCheckoutNonce()
             throws InterruptedException {
-        final BraintreeFragment fragment = getMockFragmentWithAuthorization(mActivityTestRule.getActivity(),
-                new TestClientTokenBuilder().withVisaCheckout().build());
-
-        fragment.addListener(new PaymentMethodNonceCreatedListener() {
+        mBraintreeFragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
                 VisaCheckoutNonce visaCheckoutPayment = (VisaCheckoutNonce) paymentMethodNonce;
@@ -127,8 +103,7 @@ public class VisaCheckoutTest {
             }
         });
 
-        VisaCheckout.onActivityResult(fragment, Activity.RESULT_OK, new Intent().putExtra(VisaLibrary.PAYMENT_SUMMARY,
-                sampleVisaPaymentSummary()));
+        VisaCheckout.tokenize(mBraintreeFragment, sampleVisaPaymentSummary());
         mCountDownLatch.await();
     }
 
@@ -140,9 +115,9 @@ public class VisaCheckoutTest {
         in.writeString("1234");
         in.writeString("VISA");
         in.writeString("Credit");
-        in.writeString("encPaymentData");
-        in.writeString("encKey");
-        in.writeString("callid");
+        in.writeString("-1");
+        in.writeString("-1");
+        in.writeString("-1");
         in.setDataPosition(0);
 
         return VisaPaymentSummary.CREATOR.createFromParcel(in);
@@ -153,7 +128,7 @@ public class VisaCheckoutTest {
         try {
             visaPaymentJson = new JSONObject(stringFromFixture("response/visa_checkout_payment.json"));
         } catch (JSONException e) {
-            throw new RuntimeException("Cannot convert visa_checkout_payment to JSON.");
+            throw new RuntimeException("Cannot convert visa_checkout_payment to JSON.", e);
         }
 
         Parcel in = Parcel.obtain();

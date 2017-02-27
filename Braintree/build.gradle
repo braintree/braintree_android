@@ -22,6 +22,11 @@ android {
                 jvmArgs '-noverify'
             }
         }
+
+        // Visa Checkout
+        dataBinding {
+            enabled = true
+        }
     }
 
     packagingOptions {
@@ -48,7 +53,7 @@ android {
 dependencies {
     compile 'com.google.android.gms:play-services-wallet:[9.0.0,10.0.0)'
     compile 'com.android.support:support-annotations:[25.0.0,26.0.0)'
-    compile(name: 'VisaCheckout-Android-SDK', version: '4.3', ext: 'aar')
+    compile(name: 'VisaCheckout-Android-SDK', version: '4.6.0', ext: 'aar')
 
     compile project(':Core')
     compile project(':BraintreeDataCollector')
@@ -79,6 +84,10 @@ dependencies {
     androidTestCompile 'com.squareup.retrofit:retrofit:1.9.0'
 
     // Visa Checkout
+    compile 'com.android.support:support-v4:[25.0.0, 26.0.0)' //TODO Visa Checkout: Avoid packaging this
+    compile 'com.android.support:appcompat-v7:[25.0.0, 26.0.0)' //TODO Visa Checkout: Avoid packaging this
+    compile 'com.android.support:design:[25.0.0, 26.0.0)' //TODO Visa Checkout: Avoid packaging this
+
     testCompile fileTree(dir: "${rootDir}/libs", include: [
             'Samsung-sdk-v1.0.0.jar',
             'Samsung-pass-v1.1.4.jar',

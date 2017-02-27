@@ -2,46 +2,39 @@ package com.braintreepayments.demo;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.LinearLayout;
 
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.VisaCheckout;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.visa.checkout.VisaMcomLibrary;
-import com.visa.checkout.VisaMerchantInfo;
-import com.visa.checkout.VisaMerchantInfo.AcceptedBillingRegions;
-import com.visa.checkout.VisaMerchantInfo.AcceptedCardBrands;
-import com.visa.checkout.VisaMerchantInfo.AcceptedShippingRegions;
-import com.visa.checkout.VisaPaymentInfo;
-import com.visa.checkout.VisaPaymentInfo.Currency;
-import com.visa.checkout.VisaPaymentInfo.UserReviewAction;
-import com.visa.checkout.widget.VisaPaymentButton;
+import com.visa.checkout.Profile.ProfileBuilder;
+import com.visa.checkout.PurchaseInfo;
+import com.visa.checkout.PurchaseInfo.PurchaseInfoBuilder;
+import com.visa.checkout.PurchaseInfo.UserReviewAction;
+import com.visa.checkout.VisaCheckoutSdk;
+import com.visa.checkout.VisaCheckoutSdkInitListener;
 
+import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class VisaCheckoutActivity extends BaseActivity implements OnClickListener,
-        BraintreeResponseListener<VisaMcomLibrary> {
-
-    private LinearLayout mVisaCheckoutLayout;
+        BraintreeResponseListener<ProfileBuilder>, VisaCheckoutSdkInitListener {
 
     private View mVisaPaymentButton;
+
+    private WeakReference<VisaCheckoutSdkInitListener> sdkInitListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.visa_checkout_activity);
-        mVisaCheckoutLayout = (LinearLayout) findViewById(R.id.visa_checkout_layout);
-    }
-
-    @Override
-    protected void reset() {
-        mVisaCheckoutLayout.removeAllViews();
+        mVisaPaymentButton = findViewById(R.id.visa_checkout_button);
+        mVisaPaymentButton.setOnClickListener(this);
+        sdkInitListener = new WeakReference<VisaCheckoutSdkInitListener>(this);
     }
 
     @Override
@@ -51,42 +44,20 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
         } catch (InvalidArgumentException e) {
             e.printStackTrace();
         }
-        mBraintreeFragment.getVisaCheckoutLibrary(this);
+
+        VisaCheckout.createProfileBuilder(mBraintreeFragment, this);
     }
 
     @Override
     public void onClick(View view) {
-        VisaPaymentInfo visaPaymentInfo = new VisaPaymentInfo();
-        visaPaymentInfo.setUsingShippingAddress(true);
-        visaPaymentInfo.setCurrency(Currency.USD);
-        visaPaymentInfo.setTotal(new BigDecimal("12.34"));
-        visaPaymentInfo.setUserReviewAction(UserReviewAction.CONTINUE);
-        visaPaymentInfo.setSubtotal(new BigDecimal("12.34"));
-        visaPaymentInfo.setTax(new BigDecimal("12.34"));
-        visaPaymentInfo.setMisc(new BigDecimal("12.34"));
-        visaPaymentInfo.setDiscount(new BigDecimal("12.34"));
-        visaPaymentInfo.setGiftWrap(new BigDecimal("12.34"));
-        visaPaymentInfo.setDescription("Work");
-        visaPaymentInfo.setOrderId("Order1234567890");
-        visaPaymentInfo.setMerchantRequestId("121");
+        PurchaseInfoBuilder purchaseInfo= new PurchaseInfoBuilder(new BigDecimal("12.34"),
+                PurchaseInfo.Currency.USD)
+                .setUserReviewAction(UserReviewAction.PAY)
+                .setDescription("Description")
+                .setOrderId("order-id")
+                .setMerchantRequestId("merchant-request-id");
 
-        VisaMerchantInfo visaMerchantInfo = new VisaMerchantInfo();
-        visaMerchantInfo.setDataLevel(VisaMerchantInfo.MerchantDataLevel.FULL);
-        visaMerchantInfo.setLogoResourceId(R.drawable.ic_launcher);
-        visaMerchantInfo.setAcceptCanadianVisaDebit(false);
-
-        visaMerchantInfo.setAcceptedCardBrands(new ArrayList<>(
-                Arrays.asList(AcceptedCardBrands.values())
-        ));
-        visaMerchantInfo.setAcceptedShippingRegions(new ArrayList<>(
-                Arrays.asList(AcceptedShippingRegions.values())
-        ));
-        visaMerchantInfo.setAcceptedBillingRegions(new ArrayList<>(
-                Arrays.asList(AcceptedBillingRegions.values())
-        ));
-        visaPaymentInfo.setVisaMerchantInfo(visaMerchantInfo);
-
-        VisaCheckout.authorize(mBraintreeFragment, visaPaymentInfo);
+        VisaCheckout.authorize(mBraintreeFragment, purchaseInfo);
     }
 
     @Override
@@ -100,11 +71,18 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
     }
 
     @Override
-    public void onResponse(VisaMcomLibrary visaMcomLibrary) {
-        if (mVisaCheckoutLayout.getChildCount() == 0) {
-            mVisaPaymentButton = new VisaPaymentButton(this);
-            mVisaPaymentButton.setOnClickListener(this);
-            mVisaCheckoutLayout.addView(mVisaPaymentButton);
-        }
+    protected void reset() {}
+
+    @Override
+    public void onResponse(ProfileBuilder profileBuilder) {
+        profileBuilder.setDisplayName("My app");
+
+        VisaCheckoutSdk.init(VisaCheckoutActivity.this.getApplicationContext(), profileBuilder.build(),
+                sdkInitListener.get());
+    }
+
+    @Override
+    public void status(int code, String message) {
+        Log.d("Visa Checkout", code + " " + message);
     }
 }

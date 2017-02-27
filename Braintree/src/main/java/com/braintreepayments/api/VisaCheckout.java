@@ -2,10 +2,10 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.text.TextUtils;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
+import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
@@ -13,13 +13,12 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VisaCheckoutBuilder;
 import com.braintreepayments.api.models.VisaCheckoutConfiguration;
-import com.visa.checkout.VisaLibrary;
-import com.visa.checkout.VisaMcomLibrary;
-import com.visa.checkout.VisaMerchantInfo;
-import com.visa.checkout.VisaMerchantInfo.MerchantDataLevel;
-import com.visa.checkout.VisaPaymentInfo;
+import com.visa.checkout.Environment;
+import com.visa.checkout.Profile.DataLevel;
+import com.visa.checkout.Profile.ProfileBuilder;
+import com.visa.checkout.PurchaseInfo.PurchaseInfoBuilder;
+import com.visa.checkout.VisaCheckoutSdk;
 import com.visa.checkout.VisaPaymentSummary;
-import com.visa.checkout.utils.VisaEnvironmentConfig;
 
 import java.util.List;
 
@@ -29,89 +28,83 @@ import java.util.List;
  */
 public class VisaCheckout {
 
-    static VisaMcomLibrary getVisaCheckoutLibrary(BraintreeFragment fragment) {
-        Configuration configuration = fragment.getConfiguration();
-        if (!configuration.getVisaCheckout().isEnabled()) {
-            fragment.postCallback(new ConfigurationException("Visa Checkout is not enabled."));
-            return null;
-        }
+    /**
+     * Creates a {@link ProfileBuilder} with the merchant API key, environment, and other properties to be used with
+     * Visa Checkout.
+     *
+     * In addition to setting the `merchantApiKey` and `environment` the other properties that Braintree will fill in
+     * on the ProfileBuilder are:
+     * <ul>
+     *     <li>
+     *         {@link ProfileBuilder#setCardBrands(String[])} A list of Card brands that your merchant account can
+     *         transact.
+     *     </li>
+     *     <li>
+     *         {@link ProfileBuilder#setDateLevel(String)} - Required to be {@link DataLevel#FULL} for Braintree to
+     *     access card details
+     *     </li>
+     *     <li>
+     *         {@link ProfileBuilder#setExternalClientId(String)} -  Allows the encrypted payload to be processable
+     *         by Braintree.
+     *     </li>
+     * </ul>
+     *
+     * The properties can be overwritten, but exercise extreme caution on doing so.
+     *
+     * @param fragment - {@link BraintreeFragment}
+     * @param profileBuilderResponseListener {@link BraintreeResponseListener<ProfileBuilder>} - listens for the
+     * Braintree flavored {@link ProfileBuilder}.
+     */
+    public static void createProfileBuilder(final BraintreeFragment fragment, final BraintreeResponseListener<ProfileBuilder>
+            profileBuilderResponseListener) {
 
-        VisaEnvironmentConfig visaEnvironmentConfig = createVisaEnvironmentConfig(configuration);
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched (Configuration configuration){
+                VisaCheckoutConfiguration visaCheckoutConfiguration = configuration.getVisaCheckout();
 
-        VisaMcomLibrary visaMcomLibrary = VisaMcomLibrary.getLibrary(fragment.getActivity(),
-                visaEnvironmentConfig);
+                if (!configuration.getVisaCheckout().isEnabled()) {
+                    fragment.postCallback(new ConfigurationException("Visa Checkout is not enabled."));
+                    return;
+                }
 
-        return visaMcomLibrary;
+                String environment = Environment.SANDBOX;
+                String merchantApiKey = visaCheckoutConfiguration.getApiKey();
+                List<String> acceptedCardBrands = visaCheckoutConfiguration.getAcceptedCardBrands();
+
+                if ("production".equals(configuration.getEnvironment())) {
+                    environment = Environment.PRODUCTION;
+                }
+
+                ProfileBuilder profileBuilder = new ProfileBuilder(merchantApiKey, environment);
+                profileBuilder.setCardBrands(acceptedCardBrands.toArray(new String[acceptedCardBrands.size()]));
+                profileBuilder.setDateLevel(DataLevel.FULL);
+                profileBuilder.setExternalClientId(visaCheckoutConfiguration.getExternalClientId());
+
+                profileBuilderResponseListener.onResponse(profileBuilder);
+            }
+        });
     }
 
     /**
      * Starts Visa Checkout to authorize a payment from the customer.
      * @param fragment {@link BraintreeFragment}
-     * @param visaPaymentInfo {@link VisaPaymentInfo} Used to customize the authorization process. Braintree
-     * requires some properties set, and will set those properties if they are empty.
+     * @param purchaseInfoBuilder {@link PurchaseInfoBuilder} Used to customize the authorization process.
      * </p>
-     * The properties Braintree will fill in are:
-     * <ul>
-     *     <li>{@link VisaMerchantInfo#setMerchantApiKey(String)}</li>
-     *     <li>{@link VisaMerchantInfo#setAcceptedCardBrands(List)}</li>
-     *     <li>{@link VisaPaymentInfo#setExternalClientId(String)} </li>
-     * </ul>
-     * Braintree will also overwrite {@link VisaMerchantInfo#setDataLevel(MerchantDataLevel)} to {@link MerchantDataLevel#FULL}.
      */
-    public static void authorize(final BraintreeFragment fragment, final VisaPaymentInfo visaPaymentInfo) {
-        fragment.waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                VisaCheckoutConfiguration visaCheckoutConfiguration = configuration.getVisaCheckout();
-                VisaMerchantInfo visaMerchantInfo = visaPaymentInfo.getVisaMerchantInfo();
-                if (visaMerchantInfo == null) {
-                    visaMerchantInfo = new VisaMerchantInfo();
-                }
+    public static void authorize(final BraintreeFragment fragment, final PurchaseInfoBuilder purchaseInfoBuilder) {
+        Intent intent = VisaCheckoutSdk.getCheckoutIntent(fragment.getActivity(),
+                purchaseInfoBuilder.build());
 
-                if (TextUtils.isEmpty(visaMerchantInfo.getMerchantApiKey())) {
-                    visaMerchantInfo.setMerchantApiKey(visaCheckoutConfiguration.getApiKey());
-                }
-
-                if (TextUtils.isEmpty(visaPaymentInfo.getExternalClientId())) {
-                    visaPaymentInfo.setExternalClientId(visaCheckoutConfiguration.getExternalClientId());
-                }
-
-                visaMerchantInfo.setDataLevel(MerchantDataLevel.FULL);
-
-                if (visaMerchantInfo.getAcceptedCardBrands() == null ||
-                        visaMerchantInfo.getAcceptedCardBrands().isEmpty()) {
-                    visaMerchantInfo.setAcceptedCardBrands(visaCheckoutConfiguration.getAcceptedCardBrands());
-                }
-
-                visaPaymentInfo.setVisaMerchantInfo(visaMerchantInfo);
-                VisaCheckoutResultActivity.sVisaEnvironmentConfig = createVisaEnvironmentConfig(configuration);
-                VisaCheckoutResultActivity.sVisaPaymentInfo = visaPaymentInfo;
-
-                Intent visaCheckoutResultActivity = new Intent(fragment.getActivity(),
-                        VisaCheckoutResultActivity.class);
-                fragment.startActivityForResult(visaCheckoutResultActivity,
-                        BraintreeRequestCodes.VISA_CHECKOUT);
-            }
-        });
-    }
-
-    static VisaEnvironmentConfig createVisaEnvironmentConfig(Configuration configuration) {
-        VisaEnvironmentConfig visaEnvironmentConfig = VisaEnvironmentConfig.SANDBOX;
-        if ("production".equals(configuration.getEnvironment())) {
-            visaEnvironmentConfig = VisaEnvironmentConfig.PRODUCTION;
-        }
-
-        visaEnvironmentConfig.setMerchantApiKey(configuration.getVisaCheckout().getApiKey());
-        visaEnvironmentConfig.setVisaCheckoutRequestCode(BraintreeRequestCodes.VISA_CHECKOUT);
-        return visaEnvironmentConfig;
-
+        fragment.startActivityForResult(intent, BraintreeRequestCodes.VISA_CHECKOUT);
     }
 
     static void onActivityResult(BraintreeFragment fragment, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_CANCELED) {
             fragment.sendAnalyticsEvent("visacheckout.canceled");
         } else if (resultCode == Activity.RESULT_OK && data != null) {
-            VisaPaymentSummary visaPaymentSummary = data.getParcelableExtra(VisaLibrary.PAYMENT_SUMMARY);
+            VisaPaymentSummary visaPaymentSummary = data.getParcelableExtra(
+                    VisaCheckoutSdk.INTENT_PAYMENT_SUMMARY);
             tokenize(fragment, visaPaymentSummary);
             fragment.sendAnalyticsEvent("visacheckout.success");
         } else {

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
@@ -30,7 +29,6 @@ import com.braintreepayments.api.models.VisaCheckoutConfiguration;
 import com.braintreepayments.api.test.FragmentTestActivity;
 import com.braintreepayments.api.test.UnitTestListenerActivity;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
-import com.visa.checkout.VisaMcomLibrary;
 
 import org.json.JSONException;
 import org.junit.Before;
@@ -50,7 +48,6 @@ import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -78,8 +75,6 @@ import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
-import static org.powermock.api.support.membermodification.MemberMatcher.method;
-import static org.powermock.api.support.membermodification.MemberModifier.stub;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*" })
@@ -954,32 +949,6 @@ public class BraintreeFragmentUnitTest {
 
         verifyStatic(times(1));
         PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
-    }
-
-    @Test
-    public void getVisaCheckoutLibrary_whenVisaCheckoutSDKUnavailable_postsException()
-            throws InvalidArgumentException, InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
-        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY));
-
-        stub(method(VisaCheckoutConfiguration.class, "isVisaCheckoutSDKAvailable")).toReturn(false);
-
-        fragment.addListener(new BraintreeErrorListener() {
-            @Override
-            public void onError(Exception error) {
-                assertTrue(error instanceof ConfigurationException);
-                assertEquals("Visa Checkout SDK is not available.", error.getMessage());
-                latch.countDown();
-            }
-        });
-
-        fragment.getVisaCheckoutLibrary(new BraintreeResponseListener<VisaMcomLibrary>() {
-            @Override
-            public void onResponse(VisaMcomLibrary visaMcomLibrary) {
-                fail("Not expected VisaMcomLibrary");
-            }
-        });
-        latch.await();
     }
 
     /* helpers */

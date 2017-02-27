@@ -10,7 +10,6 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
@@ -40,14 +39,12 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.models.UnionPayCapabilities;
-import com.braintreepayments.api.models.VisaCheckoutConfiguration;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
-import com.visa.checkout.VisaMcomLibrary;
 
 import org.json.JSONException;
 
@@ -784,29 +781,5 @@ public class BraintreeFragment extends Fragment {
         }
 
         return mGoogleApiClient;
-    }
-
-    /**
-     * Obtain an instance of a {@link VisaMcomLibrary} for Visa Checkout.
-     *
-     * @param listener {@link BraintreeResponseListener<VisaMcomLibrary>} to receive the
-     *                 {@link VisaMcomLibrary} in
-     *                 {@link BraintreeResponseListener<VisaMcomLibrary>#onResponse(VisaMcomLibrary)}.
-     */
-    public void getVisaCheckoutLibrary(@NonNull final BraintreeResponseListener<VisaMcomLibrary> listener) {
-        if (!VisaCheckoutConfiguration.isVisaCheckoutSDKAvailable()) {
-            postCallback(new ConfigurationException("Visa Checkout SDK is not available."));
-            return;
-        }
-
-        waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                VisaMcomLibrary visaMcomLibrary = VisaCheckout.getVisaCheckoutLibrary(BraintreeFragment.this);
-                if (visaMcomLibrary != null) {
-                    listener.onResponse(VisaCheckout.getVisaCheckoutLibrary(BraintreeFragment.this));
-                }
-            }
-        });
     }
 }
