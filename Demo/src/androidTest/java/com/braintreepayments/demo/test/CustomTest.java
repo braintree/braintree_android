@@ -57,6 +57,8 @@ public class CustomTest extends TestHelper {
         onDevice(withContentDescription("Country Code")).perform(setText("1"));
         onDevice(withContentDescription("Mobile Number")).perform(setText("5555555555"));
         onDevice(withText("Send SMS")).perform(click());
+
+        onDevice(withClass(ScrollView.class)).perform(scrollTextIntoView("SMS Auth Code"));
         onDevice(withContentDescription("SMS Auth Code")).perform(setText("12345"));
 
         onDevice(withClass(ScrollView.class)).perform(scrollTextIntoView("Purchase"));
@@ -87,7 +89,7 @@ public class CustomTest extends TestHelper {
     @RequiresDevice
     @Test(timeout = 60000)
     public void tokenizesAndroidPay() {
-        onDevice(withContentDescription("Pay with Android Pay")).perform(click());
+        onDevice(withContentDescription("Android Pay")).perform(click());
         onDevice(withText("CONTINUE")).perform(click());
 
         getNonceDetails().check(text(containsString("Underlying Card Last Two")));
