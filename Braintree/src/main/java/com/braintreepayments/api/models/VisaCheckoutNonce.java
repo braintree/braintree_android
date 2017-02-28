@@ -93,7 +93,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         return "Visa Checkout";
     }
 
-    private VisaCheckoutNonce() {}
+    public VisaCheckoutNonce() {}
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
