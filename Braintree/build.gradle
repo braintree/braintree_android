@@ -53,7 +53,6 @@ android {
 dependencies {
     compile 'com.google.android.gms:play-services-wallet:[9.0.0,10.0.0)'
     compile 'com.android.support:support-annotations:[25.0.0,26.0.0)'
-    compile(name: 'VisaCheckout-Android-SDK', version: '4.6.0', ext: 'aar')
 
     compile project(':Core')
     compile project(':BraintreeDataCollector')
@@ -72,33 +71,10 @@ dependencies {
     testCompile 'org.skyscreamer:jsonassert:1.4.0'
     testCompile project(':TestUtils')
 
-    // Visa Checkout
-    androidTestCompile fileTree(dir: "${rootDir}/libs", include: [
-            'Samsung-sdk-v1.0.0.jar',
-            'Samsung-pass-v1.1.4.jar',
-            'eventbus-2.4.0.jar'])
-    androidTestCompile 'com.google.android.gms:play-services-basement:9.8.0'
-    androidTestCompile 'com.google.code.gson:gson:2.3.1'
-    androidTestCompile 'com.squareup.okhttp:okhttp:2.5.0'
-    androidTestCompile 'com.squareup.okio:okio:1.6.0'
-    androidTestCompile 'com.squareup.retrofit:retrofit:1.9.0'
-
-    // Visa Checkout
+    compile(name: 'VisaCheckout-Android-SDK', version: '4.6.0', ext: 'aar')
     compile 'com.android.support:support-v4:[25.0.0, 26.0.0)'
     compile 'com.android.support:appcompat-v7:[25.0.0, 26.0.0)'
     compile 'com.android.support:design:[25.0.0, 26.0.0)'
-
-    testCompile fileTree(dir: "${rootDir}/libs", include: [
-            'Samsung-sdk-v1.0.0.jar',
-            'Samsung-pass-v1.1.4.jar',
-            'eventbus-2.4.0.jar'])
-    testCompile 'com.google.android.gms:play-services-analytics:9.8.0'
-    testCompile 'com.google.android.gms:play-services-ads:9.8.0'
-    testCompile 'com.google.android.gms:play-services-basement:9.8.0'
-    testCompile 'com.parse.bolts:bolts-android:1.4.0'
-    testCompile 'com.google.code.gson:gson:2.3.1'
-    testCompile 'com.squareup.okhttp:okhttp:2.5.0'
-    testCompile 'com.squareup.okio:okio:1.6.0'
 }
 
 android.buildTypes.each { type ->
