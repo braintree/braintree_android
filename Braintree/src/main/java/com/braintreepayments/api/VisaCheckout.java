@@ -13,6 +13,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VisaCheckoutBuilder;
 import com.braintreepayments.api.models.VisaCheckoutConfiguration;
+import com.braintreepayments.api.models.VisaCheckoutNonce;
 import com.visa.checkout.Environment;
 import com.visa.checkout.Profile.DataLevel;
 import com.visa.checkout.Profile.ProfileBuilder;
@@ -119,6 +120,8 @@ public class VisaCheckout {
                 new PaymentMethodNonceCallback() {
                     @Override
                     public void success(PaymentMethodNonce paymentMethodNonce) {
+                        VisaCheckoutNonce visaCheckoutNonce = (VisaCheckoutNonce) paymentMethodNonce;
+                        visaCheckoutNonce.setCallId(visaPaymentSummary.getCallId());
                         fragment.postCallback(paymentMethodNonce);
                         fragment.sendAnalyticsEvent("visacheckout.nonce-recieved");
                     }

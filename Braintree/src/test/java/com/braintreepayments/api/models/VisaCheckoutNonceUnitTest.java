@@ -58,6 +58,8 @@ public class VisaCheckoutNonceUnitTest {
         VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJson(
                 stringFromFixture("payment_methods/visa_checkout_response.json"));
 
+        visaCheckoutNonce.setCallId("callId");
+
         Parcel parcel = Parcel.obtain();
         visaCheckoutNonce.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -72,6 +74,8 @@ public class VisaCheckoutNonceUnitTest {
 
         assertVisaCheckoutAddress(visaCheckoutNonce.getBillingAddress(), actual.getBillingAddress());
         assertVisaCheckoutAddress(visaCheckoutNonce.getShippingAddress(), actual.getShippingAddress());
+
+        assertEquals("callId", visaCheckoutNonce.getCallId());
 
         VisaCheckoutUserData expectedUserData = visaCheckoutNonce.getUserData();
         VisaCheckoutUserData actualUserData = visaCheckoutNonce.getUserData();

@@ -27,6 +27,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
     private VisaCheckoutAddress mBillingAddress;
     private VisaCheckoutAddress mShippingAddress;
     private VisaCheckoutUserData mUserData;
+    private String mCallId;
 
     /**
      * Convert an API response to a {@link VisaCheckoutNonce}.
@@ -88,6 +89,21 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         return mUserData;
     }
 
+    /**
+     * @return The Call ID from the {@link com.visa.checkout.VisaPaymentSummary}.
+     */
+    public String getCallId() {
+        return mCallId;
+    }
+
+    /**
+     * Sets the Call ID from the {@link com.visa.checkout.VisaPaymentSummary}
+     * @param callId The Call ID from the {@link com.visa.checkout.VisaPaymentSummary}
+     */
+    public void setCallId(String callId) {
+        mCallId = callId;
+    }
+
     @Override
     public String getTypeLabel() {
         return "Visa Checkout";
@@ -103,6 +119,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         dest.writeParcelable(mBillingAddress, flags);
         dest.writeParcelable(mShippingAddress, flags);
         dest.writeParcelable(mUserData, flags);
+        dest.writeString(mCallId);
     }
 
     protected VisaCheckoutNonce(Parcel in) {
@@ -112,6 +129,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         mBillingAddress = in.readParcelable(VisaCheckoutAddress.class.getClassLoader());
         mShippingAddress = in.readParcelable(VisaCheckoutAddress.class.getClassLoader());
         mUserData = in.readParcelable(VisaCheckoutUserData.class.getClassLoader());
+        mCallId = in.readString();
     }
 
     public static final Creator<VisaCheckoutNonce> CREATOR =
