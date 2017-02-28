@@ -13,9 +13,13 @@ import org.junit.runner.RunWith;
 
 import static com.lukekorth.deviceautomator.AutomatorAction.clearTextField;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
+import static com.lukekorth.deviceautomator.AutomatorAction.setText;
+import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
+import static com.lukekorth.deviceautomator.UiObjectMatcher.withResourceId;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
+import static org.hamcrest.Matchers.containsString;
 
 @RunWith(AndroidJUnit4.class)
 public class VisaCheckoutTest extends TestHelper {
@@ -26,14 +30,12 @@ public class VisaCheckoutTest extends TestHelper {
     @Before
     public void setup() {
         super.setup();
-        useTokenizationKey();
         onDevice(withText("Visa Checkout")).waitForEnabled().perform(click());
-        onDevice(withContentDescription("Visa Checkout")).waitForExists();
+        onDevice(withContentDescription("Visa Checkout")).waitForExists().perform(click());
     }
 
     @Test(timeout = 60000)
     public void cancelsVisaCheckout_whenPressingBack() {
-        onDevice(withContentDescription("Visa Checkout")).perform(click());
         onDevice().pressBack(); // Dismiss keyboard
         onDevice().pressBack();
         onDevice(withText("OK")).perform(click());
@@ -42,26 +44,37 @@ public class VisaCheckoutTest extends TestHelper {
 
     @Test(timeout = 60000)
     public void cancelsVisaCheckout_whenClickingUpButton() {
-        onDevice(withContentDescription("Visa Checkout")).perform(click());
-        onDevice(withContentDescription("Back")).perform(click());
+        onDevice(withResourceId("com.braintreepayments.demo:id/vco_header_right_btn")).perform(click());
         onDevice(withText("OK")).perform(click());
         onDevice(withText("Reset")).waitForExists();
     }
 
     @Test(timeout = 60000)
     public void tokenizesVisaCheckout() throws UiObjectNotFoundException {
-        onDevice(withContentDescription("Visa Checkout")).perform(click());
-        onDevice(withContentDescription("Email or Mobile Number")).perform(click(), clearTextField());
+        String rememberMeResourceId = "com.braintreepayments.demo:id/com_visa_checkout_cbSignInUsernamePreferences";
 
-        // TODO bug in DeviceAutomator does not print symbols.
-        new UiObject(new UiSelector().descriptionStartsWith("Email or Mobile Number"))
-                .setText(VISA_CHECKOUT_USERNAME);
+        // TODO Device Automator doesn't check for checked inputs
+        if (new UiObject(new UiSelector().resourceId(rememberMeResourceId)).isChecked()) {
+            onDevice(withResourceId(rememberMeResourceId)).perform(click());
+        }
+
+        onDevice(withContentDescription("Email or Mobile Number")).perform(click(), clearTextField(),
+                setText(VISA_CHECKOUT_USERNAME));
         onDevice(withContentDescription("Password")).perform(click());
         onDevice().typeText(VISA_CHECKOUT_PASSWORD);
+        onDevice().pressBack(); // Dismiss keyboard
         onDevice(withText("Sign In")).perform(click());
         onDevice(withText("Pay with")).waitForExists();
-        onDevice(withText("Continue")).perform(click());
+        onDevice(withText("Pay")).perform(click());
         onDevice(withText("Create a Transaction")).waitForExists();
         onDevice(withText("Nonce:")).waitForExists();
+        getNonceDetails().check(text(containsString("First name: BT")));
+        getNonceDetails().check(text(containsString("Last name: Test")));
+        getNonceDetails().check(text(containsString("User name: test@bt.com")));
+        getNonceDetails().check(text(containsString("Email: test@bt.com")));
+        getNonceDetails().check(text(containsString(
+                "Billing Address: BT Test 123 Townsend St Fl 6 San Francisco 94107 CA US")));
+        getNonceDetails().check(text(containsString(
+                "Shipping Address: BT Test 123 Townsend St Fl 6 San Francisco 94107 CA US")));
     }
 }

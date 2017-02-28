@@ -18,7 +18,6 @@ import com.visa.checkout.PurchaseInfo.UserReviewAction;
 import com.visa.checkout.VisaCheckoutSdk;
 import com.visa.checkout.VisaCheckoutSdkInitListener;
 
-import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 
 public class VisaCheckoutActivity extends BaseActivity implements OnClickListener,
@@ -26,15 +25,12 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
 
     private View mVisaPaymentButton;
 
-    private WeakReference<VisaCheckoutSdkInitListener> sdkInitListener;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.visa_checkout_activity);
         mVisaPaymentButton = findViewById(R.id.visa_checkout_button);
         mVisaPaymentButton.setOnClickListener(this);
-        sdkInitListener = new WeakReference<VisaCheckoutSdkInitListener>(this);
     }
 
     @Override
@@ -77,8 +73,7 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
     public void onResponse(ProfileBuilder profileBuilder) {
         profileBuilder.setDisplayName("My app");
 
-        VisaCheckoutSdk.init(VisaCheckoutActivity.this.getApplicationContext(), profileBuilder.build(),
-                sdkInitListener.get());
+        VisaCheckoutSdk.init(VisaCheckoutActivity.this.getApplicationContext(), profileBuilder.build(), this);
     }
 
     @Override
