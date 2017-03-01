@@ -61,7 +61,7 @@ public class VisaCheckout {
 
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
-            public void onConfigurationFetched (Configuration configuration){
+            public void onConfigurationFetched(Configuration configuration) {
                 VisaCheckoutConfiguration visaCheckoutConfiguration = configuration.getVisaCheckout();
 
                 if (!configuration.getVisaCheckout().isEnabled()) {

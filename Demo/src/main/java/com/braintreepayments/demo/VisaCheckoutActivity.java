@@ -46,8 +46,7 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
 
     @Override
     public void onClick(View view) {
-        PurchaseInfoBuilder purchaseInfo= new PurchaseInfoBuilder(new BigDecimal("12.34"),
-                PurchaseInfo.Currency.USD)
+        PurchaseInfoBuilder purchaseInfo = new PurchaseInfoBuilder(new BigDecimal("12.34"), PurchaseInfo.Currency.USD)
                 .setUserReviewAction(UserReviewAction.PAY)
                 .setDescription("Description")
                 .setOrderId("order-id")
