@@ -33,4 +33,14 @@ public class GoogleApiClientException extends Exception {
     public int getErrorCode() {
         return mErrorCode;
     }
+
+    @Override
+    public String getMessage() {
+        return toString();
+    }
+
+    @Override
+    public String toString() {
+        return getErrorType().name() + ": " + getErrorCode();
+    }
 }
