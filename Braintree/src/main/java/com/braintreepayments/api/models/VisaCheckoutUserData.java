@@ -15,7 +15,7 @@ public class VisaCheckoutUserData implements Parcelable {
     private String mUserFirstName;
     private String mUserLastName;
     private String mUserFullName;
-    private String mUserName;
+    private String mUsername;
     private String mUserEmail;
 
     public static VisaCheckoutUserData fromJson(JSONObject json) {
@@ -28,7 +28,7 @@ public class VisaCheckoutUserData implements Parcelable {
         visaCheckoutUserData.mUserFirstName = Json.optString(json, "userFirstName", "");
         visaCheckoutUserData.mUserLastName = Json.optString(json, "userLastName", "");
         visaCheckoutUserData.mUserFullName = Json.optString(json, "userFullName", "");
-        visaCheckoutUserData.mUserName = Json.optString(json, "userName", "");
+        visaCheckoutUserData.mUsername = Json.optString(json, "userName", "");
         visaCheckoutUserData.mUserEmail = Json.optString(json, "userEmail", "");
 
         return visaCheckoutUserData;
@@ -58,10 +58,10 @@ public class VisaCheckoutUserData implements Parcelable {
     }
 
     /**
-     * @return The user's user name.
+     * @return The user's username.
      */
-    public String getUserName() {
-        return mUserName;
+    public String getUsername() {
+        return mUsername;
     }
 
     /**
@@ -75,7 +75,7 @@ public class VisaCheckoutUserData implements Parcelable {
         mUserFirstName = in.readString();
         mUserLastName = in.readString();
         mUserFullName = in.readString();
-        mUserName = in.readString();
+        mUsername = in.readString();
         mUserEmail = in.readString();
     }
 
@@ -84,7 +84,7 @@ public class VisaCheckoutUserData implements Parcelable {
         dest.writeString(mUserFirstName);
         dest.writeString(mUserLastName);
         dest.writeString(mUserFullName);
-        dest.writeString(mUserName);
+        dest.writeString(mUsername);
         dest.writeString(mUserEmail);
     }
 

@@ -49,7 +49,7 @@ public class VisaCheckoutNonceUnitTest {
         assertEquals("userFirstName", visaCheckoutNonce.getUserData().getUserFirstName());
         assertEquals("userLastName", visaCheckoutNonce.getUserData().getUserLastName());
         assertEquals("userFullName", visaCheckoutNonce.getUserData().getUserFullName());
-        assertEquals("userUserName", visaCheckoutNonce.getUserData().getUserName());
+        assertEquals("userUserName", visaCheckoutNonce.getUserData().getUsername());
         assertEquals("userEmail", visaCheckoutNonce.getUserData().getUserEmail());
     }
 

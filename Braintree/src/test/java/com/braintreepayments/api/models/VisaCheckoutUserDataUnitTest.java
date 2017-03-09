@@ -33,7 +33,7 @@ public class VisaCheckoutUserDataUnitTest {
         assertEquals("userFirstName", visaCheckoutUserData.getUserFirstName());
         assertEquals("userLastName", visaCheckoutUserData.getUserLastName());
         assertEquals("userFullName", visaCheckoutUserData.getUserFullName());
-        assertEquals("userName", visaCheckoutUserData.getUserName());
+        assertEquals("userName", visaCheckoutUserData.getUsername());
         assertEquals("userEmail", visaCheckoutUserData.getUserEmail());
     }
 
@@ -44,7 +44,7 @@ public class VisaCheckoutUserDataUnitTest {
         assertEquals("", visaCheckoutUserData.getUserFirstName());
         assertEquals("", visaCheckoutUserData.getUserLastName());
         assertEquals("", visaCheckoutUserData.getUserFullName());
-        assertEquals("", visaCheckoutUserData.getUserName());
+        assertEquals("", visaCheckoutUserData.getUsername());
         assertEquals("", visaCheckoutUserData.getUserEmail());
     }
 
@@ -60,7 +60,7 @@ public class VisaCheckoutUserDataUnitTest {
         assertEquals(visaCheckoutUserData.getUserFirstName(), actual.getUserFirstName());
         assertEquals(visaCheckoutUserData.getUserLastName(), actual.getUserLastName());
         assertEquals(visaCheckoutUserData.getUserFullName(), actual.getUserFullName());
-        assertEquals(visaCheckoutUserData.getUserName(), actual.getUserName());
+        assertEquals(visaCheckoutUserData.getUsername(), actual.getUsername());
         assertEquals(visaCheckoutUserData.getUserEmail(), actual.getUserEmail());
     }
 }

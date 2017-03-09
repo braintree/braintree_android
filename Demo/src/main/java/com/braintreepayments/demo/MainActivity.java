@@ -255,7 +255,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
             details += "First name: " + visaCheckoutNonce.getUserData().getUserFirstName() + "\n";
             details += "Last name: " + visaCheckoutNonce.getUserData().getUserLastName() + "\n";
             details += "Full name: " + visaCheckoutNonce.getUserData().getUserFullName() + "\n";
-            details += "User name: " + visaCheckoutNonce.getUserData().getUserName() + "\n";
+            details += "User name: " + visaCheckoutNonce.getUserData().getUsername() + "\n";
             details += "Email: " + visaCheckoutNonce.getUserData().getUserEmail() + "\n";
             details += "Billing Address: " + formatAddress(visaCheckoutNonce.getBillingAddress()) + "\n";
             details += "Shipping Address: " + formatAddress(visaCheckoutNonce.getShippingAddress()) + "\n";
