@@ -102,16 +102,16 @@ public class VisaCheckout {
 
     static void onActivityResult(BraintreeFragment fragment, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_CANCELED) {
-            fragment.sendAnalyticsEvent("visacheckout.canceled");
+            fragment.sendAnalyticsEvent("visacheckout.result.cancelled");
         } else if (resultCode == Activity.RESULT_OK && data != null) {
             VisaPaymentSummary visaPaymentSummary = data.getParcelableExtra(
                     VisaCheckoutSdk.INTENT_PAYMENT_SUMMARY);
             tokenize(fragment, visaPaymentSummary);
-            fragment.sendAnalyticsEvent("visacheckout.success");
+            fragment.sendAnalyticsEvent("visacheckout.result.succeeded");
         } else {
             fragment.postCallback(
                     new BraintreeException("Visa Checkout responded with an invalid resultCode: " + resultCode));
-            fragment.sendAnalyticsEvent("visacheckout.failed");
+            fragment.sendAnalyticsEvent("visacheckout.result.failed");
         }
     }
 
@@ -123,13 +123,13 @@ public class VisaCheckout {
                         VisaCheckoutNonce visaCheckoutNonce = (VisaCheckoutNonce) paymentMethodNonce;
                         visaCheckoutNonce.setCallId(visaPaymentSummary.getCallId());
                         fragment.postCallback(paymentMethodNonce);
-                        fragment.sendAnalyticsEvent("visacheckout.nonce-recieved");
+                        fragment.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
                     }
 
                     @Override
                     public void failure(Exception exception) {
                         fragment.postCallback(exception);
-                        fragment.sendAnalyticsEvent("visacheckout.nonce-failed");
+                        fragment.sendAnalyticsEvent("visacheckout.tokenize.failed");
                     }
                 });
     }

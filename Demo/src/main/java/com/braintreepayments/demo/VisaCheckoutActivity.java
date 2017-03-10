@@ -11,11 +11,13 @@ import com.braintreepayments.api.VisaCheckout;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.VisaCheckoutAddress;
+import com.braintreepayments.api.models.VisaCheckoutNonce;
 import com.visa.checkout.Profile.ProfileBuilder;
 import com.visa.checkout.PurchaseInfo;
 import com.visa.checkout.PurchaseInfo.PurchaseInfoBuilder;
-import com.visa.checkout.PurchaseInfo.UserReviewAction;
 import com.visa.checkout.VisaCheckoutSdk;
+import com.visa.checkout.VisaCheckoutSdk.Status;
 import com.visa.checkout.VisaCheckoutSdkInitListener;
 
 import java.math.BigDecimal;
@@ -46,11 +48,9 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
 
     @Override
     public void onClick(View view) {
-        PurchaseInfoBuilder purchaseInfo = new PurchaseInfoBuilder(new BigDecimal("12.34"), PurchaseInfo.Currency.USD)
-                .setUserReviewAction(UserReviewAction.PAY)
-                .setDescription("Description")
-                .setOrderId("order-id")
-                .setMerchantRequestId("merchant-request-id");
+        PurchaseInfoBuilder purchaseInfo = new PurchaseInfoBuilder(new BigDecimal("1.00"),
+                PurchaseInfo.Currency.USD)
+                .setDescription("Description");
 
         VisaCheckout.authorize(mBraintreeFragment, purchaseInfo);
     }
@@ -58,11 +58,14 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
     @Override
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
+        VisaCheckoutNonce visaCheckoutNonce = (VisaCheckoutNonce) paymentMethodNonce;
+        VisaCheckoutAddress shippingAddress = visaCheckoutNonce.getShippingAddress();
 
         Intent intent = new Intent()
                 .putExtra(MainActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce);
         setResult(RESULT_OK, intent);
         finish();
+
     }
 
     @Override
@@ -70,9 +73,15 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
 
     @Override
     public void onResponse(ProfileBuilder profileBuilder) {
-        profileBuilder.setDisplayName("My app");
-
-        VisaCheckoutSdk.init(VisaCheckoutActivity.this.getApplicationContext(), profileBuilder.build(), this);
+        VisaCheckoutSdk.init(getApplicationContext(), profileBuilder.build(),
+                new VisaCheckoutSdkInitListener() {
+                    @Override
+                    public void status(int code, String message) {
+                        if (code != Status.SUCCESS) {
+                            Log.d("Visa Checkout", "error " + message);
+                        }
+                    }
+                });
     }
 
     @Override
