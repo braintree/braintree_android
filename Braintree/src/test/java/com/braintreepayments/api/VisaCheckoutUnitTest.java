@@ -224,7 +224,7 @@ public class VisaCheckoutUnitTest {
         VisaCheckout.tokenize(mBraintreeFragment, sampleVisaPaymentSummary());
 
         verify(mBraintreeFragment).postCallback((VisaCheckoutNonce) paymentMethodNonceCaptor.capture());
-        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.nonce-recieved"));
+        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.tokenize.succeeded"));
     }
 
     @Test
@@ -268,7 +268,7 @@ public class VisaCheckoutUnitTest {
         VisaCheckout.tokenize(mBraintreeFragment, sampleVisaPaymentSummary());
 
         verify(mBraintreeFragment).postCallback((Exception) exceptionCaptor.capture());
-        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.nonce-failed"));
+        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.tokenize.failed"));
     }
 
     @Test
@@ -317,13 +317,13 @@ public class VisaCheckoutUnitTest {
         TokenizationClient.tokenize(eq(mBraintreeFragment), any(PaymentMethodBuilder.class),
                 any(PaymentMethodNonceCallback.class));
 
-        verify(mBraintreeFragment).sendAnalyticsEvent("visacheckout.success");
+        verify(mBraintreeFragment).sendAnalyticsEvent("visacheckout.result.succeeded");
     }
 
     @Test
     public void onActivityResult_whenCanceled_sendAnalyticsEvent() {
         VisaCheckout.onActivityResult(mBraintreeFragment, Activity.RESULT_CANCELED, null);
-        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.canceled"));
+        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.result.cancelled"));
     }
 
     @Test
@@ -340,7 +340,7 @@ public class VisaCheckoutUnitTest {
     @Test
     public void onActivityResult_whenFailed_sendAnalyticsEvent() {
         VisaCheckout.onActivityResult(mBraintreeFragment, -100, null);
-        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.failed"));
+        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.result.failed"));
     }
 
     private VisaPaymentSummary sampleVisaPaymentSummary() {
