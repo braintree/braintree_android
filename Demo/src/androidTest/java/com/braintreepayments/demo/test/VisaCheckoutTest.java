@@ -24,7 +24,7 @@ import static org.hamcrest.Matchers.containsString;
 @RunWith(AndroidJUnit4.class)
 public class VisaCheckoutTest extends TestHelper {
 
-    private static final String VISA_CHECKOUT_USERNAME = "test@bt.com";
+    private static final String VISA_CHECKOUT_USERNAME = "no-reply-visa-checkout@getbraintree.com";
     private static final String VISA_CHECKOUT_PASSWORD = "12345678";
 
     @Before
@@ -65,16 +65,16 @@ public class VisaCheckoutTest extends TestHelper {
         onDevice().pressBack(); // Dismiss keyboard
         onDevice(withText("Sign In")).perform(click());
         onDevice(withText("Pay with")).waitForExists();
-        onDevice(withText("Pay")).perform(click());
+        onDevice(withText("Continue")).perform(click());
         onDevice(withText("Create a Transaction")).waitForExists();
         onDevice(withText("Nonce:")).waitForExists();
-        getNonceDetails().check(text(containsString("First name: BT")));
-        getNonceDetails().check(text(containsString("Last name: Test")));
-        getNonceDetails().check(text(containsString("User name: test@bt.com")));
-        getNonceDetails().check(text(containsString("Email: test@bt.com")));
+        getNonceDetails().check(text(containsString("First name: NoReply")));
+        getNonceDetails().check(text(containsString("Last name: VisaCheckout")));
+        getNonceDetails().check(text(containsString("User name: no-reply-visa-checkout@getbraintree.com")));
+        getNonceDetails().check(text(containsString("Email: no-reply-visa-checkout@getbraintree.com")));
         getNonceDetails().check(text(containsString(
-                "Billing Address: BT Test 123 Townsend St Fl 6 San Francisco 94107 CA US")));
+                "Billing Address: NoReply VisaCheckout 123 Townsend Street San Francisco 94107 CA US")));
         getNonceDetails().check(text(containsString(
-                "Shipping Address: BT Test 123 Townsend St Fl 6 San Francisco 94107 CA US")));
+                "Shipping Address: NoReply VisaCheckout 123 Townsend Street San Francisco 94107 CA US")));
     }
 }

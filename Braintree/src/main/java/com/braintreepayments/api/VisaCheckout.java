@@ -50,8 +50,6 @@ public class VisaCheckout {
      *     </li>
      * </ul>
      *
-     * The properties can be overwritten, but exercise extreme caution on doing so.
-     *
      * @param fragment - {@link BraintreeFragment}
      * @param profileBuilderResponseListener {@link BraintreeResponseListener<ProfileBuilder>} - listens for the
      * Braintree flavored {@link ProfileBuilder}.
