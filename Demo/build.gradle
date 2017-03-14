@@ -77,7 +77,7 @@ dependencies {
     debugCompile 'com.facebook.stetho:stetho:1.4.1'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4'
 
-    androidTestCompile 'com.lukekorth:device-automator:0.1.0'
+    androidTestCompile 'com.lukekorth:device-automator:0.1.1'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     androidTestCompile project(':TestUtils')
 

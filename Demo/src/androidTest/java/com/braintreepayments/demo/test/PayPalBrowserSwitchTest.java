@@ -11,7 +11,6 @@ import org.junit.runner.RunWith;
 
 import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.uninstallPayPalWallet;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
-import static com.lukekorth.deviceautomator.AutomatorAction.setText;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
@@ -45,7 +44,12 @@ public class PayPalBrowserSwitchTest extends TestHelper {
     @Test(timeout = 60000)
     public void browserSwitch_makesAFuturePayment() {
         onDevice(withText("Future Payment")).waitForEnabled().perform(click());
-        onDevice(withContentDescription("Email")).perform(click(), setText("test@paypal.com"));
+
+        try {
+            onDevice(withContentDescription("Email")).perform(click());
+        } catch (RuntimeException ignored) {}
+
+        onDevice().typeText("test@paypal.com");
         onDevice().pressTab().typeText("password");
         onDevice(withContentDescription("Log In")).perform(click());
         onDevice(withContentDescription("Agree")).perform(click());
@@ -59,7 +63,12 @@ public class PayPalBrowserSwitchTest extends TestHelper {
     @Test(timeout = 60000)
     public void browserSwitch_makesAFuturePaymentWithAddressScope() {
         onDevice(withText("Future Payment (Address Scope)")).waitForEnabled().perform(click());
-        onDevice(withContentDescription("Email")).perform(click(), setText("test@paypal.com"));
+
+        try {
+            onDevice(withContentDescription("Email")).perform(click());
+        } catch (RuntimeException ignored) {}
+
+        onDevice().typeText("test@paypal.com");
         onDevice().pressTab().typeText("password");
         onDevice(withContentDescription("Log In")).perform(click());
         onDevice(withContentDescription("Agree")).perform(click());
