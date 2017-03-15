@@ -2,7 +2,9 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -26,6 +28,7 @@ public class VisaCheckoutNonceUnitTest {
         assertEquals("ending in ••11", visaCheckoutNonce.getDescription());
         assertFalse(visaCheckoutNonce.isDefault());
         assertEquals("Visa Checkout", visaCheckoutNonce.getTypeLabel());
+        assertEquals("callId", visaCheckoutNonce.getCallId());
 
         assertNotNull(visaCheckoutNonce.getBillingAddress());
         assertEquals("billingFirstName", visaCheckoutNonce.getBillingAddress().getFirstName());
@@ -54,11 +57,26 @@ public class VisaCheckoutNonceUnitTest {
     }
 
     @Test
+    public void fromJson_whenNoCallId_createsVisaCheckoutNonceWithEmptyCallId() throws JSONException {
+        JSONObject visaCheckoutResponseJson = new JSONObject(stringFromFixture(
+                "payment_methods/visa_checkout_response.json"));
+
+        JSONArray visaCheckoutCardsJson = visaCheckoutResponseJson.getJSONArray("visaCheckoutCards");
+        JSONObject visaCheckoutNonceJson = visaCheckoutCardsJson.getJSONObject(0);
+        visaCheckoutNonceJson.remove("callId");
+
+        visaCheckoutCardsJson.put(0, visaCheckoutNonceJson);
+        visaCheckoutResponseJson.put("visaCheckoutCards", visaCheckoutCardsJson);
+
+        VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJson(visaCheckoutResponseJson.toString());
+
+        assertEquals("", visaCheckoutNonce.getCallId());
+    }
+
+    @Test
     public void parcelsCorrectly() throws JSONException {
         VisaCheckoutNonce visaCheckoutNonce = VisaCheckoutNonce.fromJson(
                 stringFromFixture("payment_methods/visa_checkout_response.json"));
-
-        visaCheckoutNonce.setCallId("callId");
 
         Parcel parcel = Parcel.obtain();
         visaCheckoutNonce.writeToParcel(parcel, 0);
@@ -75,7 +93,7 @@ public class VisaCheckoutNonceUnitTest {
         assertVisaCheckoutAddress(visaCheckoutNonce.getBillingAddress(), actual.getBillingAddress());
         assertVisaCheckoutAddress(visaCheckoutNonce.getShippingAddress(), actual.getShippingAddress());
 
-        assertEquals("callId", visaCheckoutNonce.getCallId());
+        assertEquals(visaCheckoutNonce.getCallId(), actual.getCallId());
 
         VisaCheckoutUserData expectedUserData = visaCheckoutNonce.getUserData();
         VisaCheckoutUserData actualUserData = visaCheckoutNonce.getUserData();

@@ -3,6 +3,8 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.braintreepayments.api.Json;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,6 +23,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
     private static final String BILLING_ADDRESS_KEY = "billingAddress";
     private static final String SHIPPING_ADDRESS_KEY = "shippingAddress";
     private static final String USER_DATA_KEY = "userData";
+    private static final String CALL_ID_KEY = "callId";
 
     private String mLastTwo;
     private String mCardType;
@@ -52,6 +55,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         mBillingAddress = VisaCheckoutAddress.fromJson(json.getJSONObject(BILLING_ADDRESS_KEY));
         mShippingAddress = VisaCheckoutAddress.fromJson(json.getJSONObject(SHIPPING_ADDRESS_KEY));
         mUserData = VisaCheckoutUserData.fromJson(json.getJSONObject(USER_DATA_KEY));
+        mCallId = Json.optString(json, CALL_ID_KEY, "");
     }
 
     /**
@@ -94,14 +98,6 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
      */
     public String getCallId() {
         return mCallId;
-    }
-
-    /**
-     * Sets the Call ID from the {@link com.visa.checkout.VisaPaymentSummary}
-     * @param callId The Call ID from the {@link com.visa.checkout.VisaPaymentSummary}
-     */
-    public void setCallId(String callId) {
-        mCallId = callId;
     }
 
     @Override

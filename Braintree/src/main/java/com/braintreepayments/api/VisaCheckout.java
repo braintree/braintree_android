@@ -119,7 +119,6 @@ public class VisaCheckout {
                     @Override
                     public void success(PaymentMethodNonce paymentMethodNonce) {
                         VisaCheckoutNonce visaCheckoutNonce = (VisaCheckoutNonce) paymentMethodNonce;
-                        visaCheckoutNonce.setCallId(visaPaymentSummary.getCallId());
                         fragment.postCallback(paymentMethodNonce);
                         fragment.sendAnalyticsEvent("visacheckout.tokenize.succeeded");
                     }
