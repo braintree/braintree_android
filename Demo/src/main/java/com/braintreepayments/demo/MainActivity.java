@@ -111,8 +111,10 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
 
     private DropInRequest getDropInRequest() {
         DropInRequest dropInRequest = new DropInRequest()
+                .amount("1.00")
                 .clientToken(mAuthorization)
                 .collectDeviceData(Settings.shouldCollectDeviceData(this))
+                .requestThreeDSecureVerification(Settings.isThreeDSecureEnabled(this))
                 .androidPayCart(getAndroidPayCart())
                 .androidPayShippingAddressRequired(Settings.isAndroidPayShippingAddressRequired(this))
                 .androidPayPhoneNumberRequired(Settings.isAndroidPayPhoneNumberRequired(this))
@@ -169,14 +171,14 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
             } else if (requestCode == CUSTOM_REQUEST || requestCode == PAYPAL_REQUEST) {
                 displayResult((PaymentMethodNonce) data.getParcelableExtra(EXTRA_PAYMENT_METHOD_NONCE),
                         data.getStringExtra(EXTRA_DEVICE_DATA));
-            }
 
-            if (mNonce instanceof CardNonce && Settings.isThreeDSecureEnabled(this)) {
-                mLoading = ProgressDialog.show(this, getString(R.string.loading),
-                        getString(R.string.loading), true, false);
-                ThreeDSecure.performVerification(mBraintreeFragment, mNonce.getNonce(), "1");
-            } else {
-                mCreateTransactionButton.setEnabled(true);
+                if (mNonce instanceof CardNonce && Settings.isThreeDSecureEnabled(this)) {
+                    mLoading = ProgressDialog.show(this, getString(R.string.loading),
+                            getString(R.string.loading), true, false);
+                    ThreeDSecure.performVerification(mBraintreeFragment, mNonce.getNonce(), "1");
+                } else {
+                    mCreateTransactionButton.setEnabled(true);
+                }
             }
         } else if (resultCode != RESULT_CANCELED) {
             safelyCloseLoadingView();
