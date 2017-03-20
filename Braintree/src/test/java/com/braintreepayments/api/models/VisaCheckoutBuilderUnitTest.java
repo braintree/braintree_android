@@ -21,7 +21,6 @@ public class VisaCheckoutBuilderUnitTest {
     public void build_withNullVisaPaymentSummary_buildsEmptyPaymentMethod() throws JSONException {
         JSONObject base = new JSONObject();
         JSONObject paymentMethodNonceJson = new JSONObject();
-
         JSONObject expectedBase = new JSONObject("{\"visaCheckoutCard\":{}}");
 
         VisaCheckoutBuilder visaCheckoutBuilder = new VisaCheckoutBuilder(null);

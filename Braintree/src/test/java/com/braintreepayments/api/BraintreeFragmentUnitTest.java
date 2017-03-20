@@ -25,7 +25,6 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.UnionPayCapabilities;
-import com.braintreepayments.api.models.VisaCheckoutConfiguration;
 import com.braintreepayments.api.test.FragmentTestActivity;
 import com.braintreepayments.api.test.UnitTestListenerActivity;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
@@ -78,8 +77,7 @@ import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*" })
-@PrepareForTest({ ConfigurationManager.class, PayPal.class, ThreeDSecure.class, Venmo.class, AndroidPay.class,
-        VisaCheckout.class, VisaCheckoutConfiguration.class })
+@PrepareForTest({ ConfigurationManager.class, PayPal.class, ThreeDSecure.class, Venmo.class, AndroidPay.class})
 public class BraintreeFragmentUnitTest {
 
     @Rule

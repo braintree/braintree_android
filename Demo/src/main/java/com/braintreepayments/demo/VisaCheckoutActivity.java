@@ -73,19 +73,13 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
 
     @Override
     public void onResponse(ProfileBuilder profileBuilder) {
-        VisaCheckoutSdk.init(getApplicationContext(), profileBuilder.build(),
-                new VisaCheckoutSdkInitListener() {
-                    @Override
-                    public void status(int code, String message) {
-                        if (code != Status.SUCCESS) {
-                            Log.d("Visa Checkout", "error " + message);
-                        }
-                    }
-                });
+        VisaCheckoutSdk.init(getApplicationContext(), profileBuilder.build(), this);
     }
 
     @Override
     public void status(int code, String message) {
-        Log.d("Visa Checkout", code + " " + message);
+        if (code != Status.SUCCESS) {
+            Log.d("Visa Checkout", code + " " + message);
+        }
     }
 }
