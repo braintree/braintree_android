@@ -3,6 +3,5 @@ include ':PayPalDataCollector'
 include ':BraintreeDataCollector'
 include ':PayPalOneTouch'
 include ':Core'
-
 include ':TestUtils'
 include ':Demo'
