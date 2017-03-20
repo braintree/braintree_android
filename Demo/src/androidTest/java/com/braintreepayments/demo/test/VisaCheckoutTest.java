@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 
 import static com.lukekorth.deviceautomator.AutomatorAction.clearTextField;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
-import static com.lukekorth.deviceautomator.AutomatorAction.setText;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
@@ -53,13 +52,18 @@ public class VisaCheckoutTest extends TestHelper {
     public void tokenizesVisaCheckout() throws UiObjectNotFoundException {
         String rememberMeResourceId = "com.braintreepayments.demo:id/com_visa_checkout_cbSignInUsernamePreferences";
 
+        if (new UiObject(new UiSelector().text("New To Visa Checkout?")).exists()) {
+            // If we land in the sign up page, move to the login page.
+            onDevice(withText("Sign In")).perform(click());
+        }
+
         // TODO Device Automator doesn't check for checked inputs
         if (new UiObject(new UiSelector().resourceId(rememberMeResourceId)).isChecked()) {
             onDevice(withResourceId(rememberMeResourceId)).perform(click());
         }
 
-        onDevice(withContentDescription("Email or Mobile Number")).perform(click(), clearTextField(),
-                setText(VISA_CHECKOUT_USERNAME));
+        onDevice(withContentDescription("Email or Mobile Number")).perform(click(), clearTextField());
+        onDevice(withContentDescription("Email or Mobile Number")).typeText(VISA_CHECKOUT_USERNAME);
         onDevice(withContentDescription("Password")).perform(click());
         onDevice().typeText(VISA_CHECKOUT_PASSWORD);
         onDevice().pressBack(); // Dismiss keyboard
