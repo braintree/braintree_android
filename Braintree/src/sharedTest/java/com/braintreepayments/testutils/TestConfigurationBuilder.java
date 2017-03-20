@@ -288,11 +288,6 @@ public class TestConfigurationBuilder extends JSONBuilder {
             super(json);
         }
 
-        public TestKountConfigurationBuilder enabled(boolean enabled) {
-            put(enabled);
-            return this;
-        }
-
         public TestKountConfigurationBuilder kountMerchantId(String kountMerchantid) {
             put(kountMerchantid);
             return this;

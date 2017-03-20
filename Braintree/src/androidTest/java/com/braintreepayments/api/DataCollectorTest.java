@@ -46,7 +46,6 @@ public class DataCollectorTest {
     public void collectDeviceData_withListener() throws InterruptedException {
         String configuration = new TestConfigurationBuilder()
                 .kount(new TestKountConfigurationBuilder()
-                        .enabled(true)
                         .kountMerchantId("500000"))
                 .build();
         BraintreeFragment fragment = getFragmentWithConfiguration(mActivity, configuration);
@@ -74,7 +73,6 @@ public class DataCollectorTest {
     public void collectDeviceData_withListener_usesDirectMerchantId() throws InterruptedException {
         String configuration = new TestConfigurationBuilder()
                 .kount(new TestKountConfigurationBuilder()
-                        .enabled(true)
                         .kountMerchantId("600000"))
                 .build();
         BraintreeFragment fragment = getFragmentWithConfiguration(mActivity, configuration);

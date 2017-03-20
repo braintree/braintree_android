@@ -161,6 +161,8 @@ public class DataCollector {
     private static void startDeviceCollector(final BraintreeFragment fragment, final String merchantId,
             final String deviceSessionId, @Nullable final BraintreeResponseListener<String> listener)
             throws ClassNotFoundException, NumberFormatException {
+        fragment.sendAnalyticsEvent("data-collector.kount.started");
+
         Class.forName(com.kount.api.DataCollector.class.getName());
 
         fragment.waitForConfiguration(new ConfigurationListener() {
@@ -178,12 +180,17 @@ public class DataCollector {
                         dataCollector.collectForSession(deviceSessionId, new com.kount.api.DataCollector.CompletionHandler() {
                             @Override
                             public void completed(String sessionID) {
+                                fragment.sendAnalyticsEvent("data-collector.kount.succeeded");
+
                                 if (listener != null) {
                                     listener.onResponse(sessionID);
                                 }
                             }
+
                             @Override
                             public void failed(String sessionID, final com.kount.api.DataCollector.Error error) {
+                                fragment.sendAnalyticsEvent("data-collector.kount.failed");
+
                                 if (listener != null) {
                                     listener.onResponse(sessionID);
                                 }
