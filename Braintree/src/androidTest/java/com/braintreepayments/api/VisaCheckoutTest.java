@@ -99,6 +99,7 @@ public class VisaCheckoutTest {
                 assertEquals("MasterCard", visaCheckoutPayment.getCardType());
                 assertEquals("US", visaCheckoutPayment.getShippingAddress().getCountryCode());
                 assertEquals("BT", visaCheckoutPayment.getUserData().getUserFirstName());
+                assertEquals("2303628416778663701", visaCheckoutPayment.getCallId());
                 mCountDownLatch.countDown();
             }
         });
