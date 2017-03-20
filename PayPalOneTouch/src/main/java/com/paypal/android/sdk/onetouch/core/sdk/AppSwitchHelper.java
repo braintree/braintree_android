@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.braintreepayments.api.internal.SignatureVerification;
+import com.paypal.android.sdk.data.collector.InstallationIdentifier;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
 import com.paypal.android.sdk.onetouch.core.Request;
@@ -38,44 +39,38 @@ public class AppSwitchHelper {
     }
 
     public static Intent createBaseIntent(String action, String packageName) {
-        return new Intent(action)
-                .setPackage(packageName);
+        return new Intent(action).setPackage(packageName);
     }
 
     public static Intent getAppSwitchIntent(ContextInspector contextInspector, ConfigManager configManager,
             Request request, Recipe recipe) {
-        Intent intent = createBaseIntent(recipe.getTargetIntentAction(), WALLET_APP_PACKAGE);
-        intent.putExtra("version", recipe.getProtocol().getVersion());
-        // app_guid now present on all v1/v2 requests.  Deemed not sensitive.
-        intent.putExtra("app_guid", contextInspector.getInstallationGUID());
-        intent.putExtra("client_metadata_id", request.getClientMetadataId());
-        intent.putExtra("client_id", request.getClientId());
-        // Roman confirmed this is correct, but is not ever read from the app.
-        intent.putExtra("app_name",
-                DeviceInspector.getApplicationInfoName(contextInspector.getContext()));
-        intent.putExtra("environment", request.getEnvironment());
-        intent.putExtra("environment_url",
-                EnvironmentManager.getEnvironmentUrl(request.getEnvironment()));
+        Intent intent = createBaseIntent(recipe.getTargetIntentAction(), WALLET_APP_PACKAGE)
+                .putExtra("version", recipe.getProtocol().getVersion())
+                .putExtra("app_guid", InstallationIdentifier.getInstallationGUID(contextInspector.getContext()))
+                .putExtra("client_metadata_id", request.getClientMetadataId())
+                .putExtra("client_id", request.getClientId())
+                .putExtra("app_name", DeviceInspector.getApplicationInfoName(contextInspector.getContext()))
+                .putExtra("environment", request.getEnvironment())
+                .putExtra("environment_url", EnvironmentManager.getEnvironmentUrl(request.getEnvironment()));
 
         if (request instanceof AuthorizationRequest) {
             AuthorizationRequest authorizationRequest = (AuthorizationRequest) request;
-            intent.putExtra("scope", authorizationRequest.getScopeString());
-            intent.putExtra("response_type", "code");
-            intent.putExtra("privacy_url", authorizationRequest.getPrivacyUrl());
-            intent.putExtra("agreement_url", authorizationRequest.getUserAgreementUrl());
+            intent.putExtra("scope", authorizationRequest.getScopeString())
+                    .putExtra("response_type", "code")
+                    .putExtra("privacy_url", authorizationRequest.getPrivacyUrl())
+                    .putExtra("agreement_url", authorizationRequest.getUserAgreementUrl());
         } else {
             CheckoutRequest checkoutRequest = (CheckoutRequest) request;
-            intent.putExtra("response_type", "web");
             String webURL = checkoutRequest.getBrowserSwitchUrl(contextInspector.getContext(),
                     configManager.getConfig());
-            intent.putExtra("webURL", webURL);
+            intent.putExtra("response_type", "web")
+                    .putExtra("webURL", webURL);
         }
 
         return intent;
     }
 
-    public static Result parseAppSwitchResponse(ContextInspector contextInspector, Request request,
-            Intent data) {
+    public static Result parseAppSwitchResponse(ContextInspector contextInspector, Request request, Intent data) {
         Bundle bundle = data.getExtras();
         if (request.validateV1V2Response(contextInspector, bundle)) {
             request.trackFpti(contextInspector.getContext(), TrackingPoint.Return, null);

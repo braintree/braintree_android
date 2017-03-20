@@ -33,15 +33,13 @@ import static org.mockito.Mockito.verify;
 @RunWith(RobolectricTestRunner.class)
 public class FptiManagerUnitTest {
 
-    private ContextInspector mContextInspector;
-    private PayPalHttpClient mHttpClient;
     private FptiManager mFptiManager;
 
     @Before
     public void setup() throws NameNotFoundException {
-        mContextInspector = getMockContextInspector();
-        mHttpClient = mock(PayPalHttpClient.class);
-        mFptiManager = spy(new FptiManager(mContextInspector, mHttpClient));
+        ContextInspector contextInspector = getMockContextInspector();
+        PayPalHttpClient httpClient = mock(PayPalHttpClient.class);
+        mFptiManager = spy(new FptiManager(contextInspector, httpClient));
     }
 
     @Test
@@ -89,7 +87,7 @@ public class FptiManagerUnitTest {
         assertEquals("mobile", eventParams.getString("sv"));
         assertEquals("installation-guid", eventParams.getString("dsid"));
         assertEquals("im", eventParams.getString("e"));
-        assertEquals("application-name|" + BuildConfig.VERSION_NAME + "|null",
+        assertEquals("application-name|" + BuildConfig.VERSION_NAME + "|com.paypal.android.sdk.onetouch.core",
                 eventParams.getString("apid"));
         assertEquals(Integer.toString(new GregorianCalendar().getTimeZone().getRawOffset() / 1000 / 60),
                 eventParams.getString("g"));

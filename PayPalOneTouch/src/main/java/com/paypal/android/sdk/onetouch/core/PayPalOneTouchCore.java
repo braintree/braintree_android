@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.MainThread;
 
-import com.paypal.android.sdk.data.collector.SdkRiskComponent;
+import com.paypal.android.sdk.data.collector.PayPalDataCollector;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.config.ConfigManager;
 import com.paypal.android.sdk.onetouch.core.config.OAuth2Recipe;
@@ -124,7 +124,7 @@ public class PayPalOneTouchCore {
      */
     @MainThread
     public static String getClientMetadataId(Context context) {
-        return getClientMetadataId(context, null);
+        return PayPalDataCollector.getClientMetadataId(context);
     }
 
     /**
@@ -141,8 +141,7 @@ public class PayPalOneTouchCore {
      */
     @MainThread
     public static String getClientMetadataId(Context context, String pairingId) {
-        return SdkRiskComponent.getClientMetadataId(context, getContextInspector(context).getInstallationGUID(),
-                pairingId);
+        return PayPalDataCollector.getClientMetadataId(context, pairingId);
     }
 
     public static void useHardcodedConfig(Context context, boolean useHardcodedConfig) {

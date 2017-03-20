@@ -4,6 +4,8 @@ import android.support.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.internal.HttpClient;
 import com.braintreepayments.api.internal.TLSSocketFactory;
+import com.paypal.android.sdk.onetouch.core.BuildConfig;
+import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -14,7 +16,8 @@ import javax.net.ssl.SSLException;
 public class PayPalHttpClient extends HttpClient<PayPalHttpClient> {
 
     public PayPalHttpClient() {
-        setUserAgent(OtcEnvironment.getUserAgent());
+        setUserAgent(String.format("PayPalSDK/PayPalOneTouch-Android %s (%s; %s; %s)", BuildConfig.VERSION_NAME,
+                DeviceInspector.getOs(), DeviceInspector.getDeviceName(), BuildConfig.DEBUG ? "debug;" : ""));
         setConnectTimeout((int) TimeUnit.SECONDS.toMillis(90));
 
         try {

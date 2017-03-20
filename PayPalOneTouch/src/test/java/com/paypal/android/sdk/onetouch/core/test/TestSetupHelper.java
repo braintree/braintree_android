@@ -2,21 +2,26 @@ package com.paypal.android.sdk.onetouch.core.test;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
+import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
+
+import org.robolectric.RuntimeEnvironment;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 public class TestSetupHelper {
@@ -39,13 +44,17 @@ public class TestSetupHelper {
                 .thenReturn(resolveInfo);
         TelephonyManager telephonyManager = mock(TelephonyManager.class);
         when(telephonyManager.getSimOperator()).thenReturn("12345");
-        Context context = mock(Context.class);
+        Context context = spy(RuntimeEnvironment.application);
         when(context.getPackageManager()).thenReturn(packageManager);
         when(context.getSystemService(Context.TELEPHONY_SERVICE)).thenReturn(telephonyManager);
 
         ContextInspector contextInspector = mock(ContextInspector.class);
         when(contextInspector.getContext()).thenReturn(context);
-        when(contextInspector.getInstallationGUID()).thenReturn("installation-guid");
+
+        RuntimeEnvironment.application.getSharedPreferences("PayPalOTC", Context.MODE_PRIVATE)
+                .edit()
+                .putString("InstallationGUID", "installation-guid")
+                .apply();
 
         return contextInspector;
     }

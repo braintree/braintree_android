@@ -6,28 +6,23 @@ import android.text.TextUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.UUID;
-
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 
-@SuppressWarnings("deprecation")
 @RunWith(AndroidJUnit4.class)
-public class SdkRiskComponentTest {
-
-    private static final String GUID = UUID.randomUUID().toString();
+public class PayPalDataCollectorTest {
 
     @Test
     public void getClientMetadataId_returnsClientMetadataId() {
-        String clientMetadataId = SdkRiskComponent.getClientMetadataId(getTargetContext(), GUID, null);
+        String clientMetadataId = PayPalDataCollector.getClientMetadataId(getTargetContext());
 
         assertFalse(TextUtils.isEmpty(clientMetadataId));
     }
 
     @Test
     public void getClientMetadataId_returnsPairingId() {
-        String clientMetadataId = SdkRiskComponent.getClientMetadataId(getTargetContext(), GUID, "pairing-id");
+        String clientMetadataId = PayPalDataCollector.getClientMetadataId(getTargetContext(), "pairing-id");
 
         assertEquals("pairing-id", clientMetadataId);
     }

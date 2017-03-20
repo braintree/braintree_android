@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.VisibleForTesting;
 
+import com.paypal.android.sdk.data.collector.InstallationIdentifier;
 import com.paypal.android.sdk.onetouch.core.BuildConfig;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.base.DeviceInspector;
@@ -43,17 +44,15 @@ public class FptiManager {
         }
 
         long currentTimeInMillis = System.currentTimeMillis();
-        String deviceId = URLEncoderHelper.encode(mContextInspector.getInstallationGUID());
-        String abcde = "mobile:otc:" + point.getCd() + ":" +
-                (null != protocol ? protocol.name() : "");  // also known as 'pagename'
+        String deviceId = URLEncoderHelper.encode(InstallationIdentifier.getInstallationGUID(mContextInspector.getContext()));
+        String abcde = "mobile:otc:" + point.getCd() + ":" + (null != protocol ? protocol.name() : "");  // also known as 'pagename'
         String xyz = "Android:" + environmentName + ":";
         String abcdexyz_error = abcde + ":" + xyz + (point.hasError() ? "|error" : ""); //also known as 'pageName2'
 
         // params in alphabetical order
         Map<String, String> params = new HashMap<>(fptiDataBundle);
         params.put("apid", DeviceInspector.getApplicationInfoName(mContextInspector.getContext()) +
-                "|" + BuildConfig.VERSION_NAME + "|" +
-                mContextInspector.getContext().getPackageName());
+                "|" + BuildConfig.VERSION_NAME + "|" + mContextInspector.getContext().getPackageName());
         params.put("bchn", "otc");
         params.put("bzsr", "mobile");
         params.put("dsid", deviceId);

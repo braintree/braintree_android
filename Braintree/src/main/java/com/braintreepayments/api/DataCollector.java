@@ -11,7 +11,7 @@ import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.internal.UUIDHelper;
 import com.braintreepayments.api.models.Configuration;
-import com.paypal.android.sdk.data.collector.SdkRiskComponent;
+import com.paypal.android.sdk.data.collector.PayPalDataCollector;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import org.json.JSONException;
@@ -152,7 +152,7 @@ public class DataCollector {
         } catch (NoClassDefFoundError ignored) {}
 
         try {
-            return SdkRiskComponent.getClientMetadataId(context, UUIDHelper.getPersistentUUID(context), null);
+            return PayPalDataCollector.getClientMetadataId(context);
         } catch (NoClassDefFoundError ignored) {}
 
         return "";
