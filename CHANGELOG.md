@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 2.4.3
+
+* Improve `GoogleApiClientException` to include error type as well as reason code
+* Changes to PayPalDataCollector to make it easier to use
+
 ## 2.4.2
 
 * Fix NPE in `AndroidPay#changePaymentMethod` (fixes [#139](https://github.com/braintree/braintree_android/issues/139))
