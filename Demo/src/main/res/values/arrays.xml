@@ -28,4 +28,16 @@
         <item name="order">@string/paypal_intent_order</item>
         <item name="sale">@string/paypal_intent_sale</item>
     </string-array>
+
+    <string-array name="paypal_landing_page_types">
+        <item name="none">@string/none</item>
+        <item name="billing">@string/paypal_landing_page_type_billing</item>
+        <item name="login">@string/paypal_landing_page_type_login</item>
+    </string-array>
+
+    <string-array name="paypal_landing_page_types_values">
+        <item name="none">@string/none</item>
+        <item name="billing">@string/paypal_landing_page_type_billing</item>
+        <item name="login">@string/paypal_landing_page_type_login</item>
+    </string-array>
 </resources>

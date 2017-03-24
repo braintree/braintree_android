@@ -97,6 +97,13 @@
             android:defaultValue="false" />
 
         <ListPreference
+            android:key="paypal_landing_page_type"
+            android:title="@string/paypal_landing_page_type"
+            android:entries="@array/paypal_landing_page_types"
+            android:entryValues="@array/paypal_landing_page_types_values"
+            android:defaultValue="@string/none" />
+
+        <ListPreference
             android:key="paypal_intent_type"
             android:title="@string/paypal_intent_type"
             android:entries="@array/paypal_intent_types"

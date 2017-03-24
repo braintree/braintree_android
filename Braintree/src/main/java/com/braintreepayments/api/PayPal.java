@@ -92,6 +92,7 @@ public class PayPal {
     private static final String CURRENCY_ISO_CODE_KEY = "currency_iso_code";
     private static final String PAYLOAD_CLIENT_TOKEN_KEY = "client_token";
     private static final String INTENT_KEY = "intent";
+    private static final String LANDING_PAGE_TYPE_KEY = "landing_page_type";
     private static final String USER_ACTION_KEY = "useraction";
 
     /**
@@ -318,6 +319,7 @@ public class PayPal {
 
         JSONObject experienceProfile = new JSONObject();
         experienceProfile.put(NO_SHIPPING_KEY, !request.isShippingAddressRequired());
+        experienceProfile.put(LANDING_PAGE_TYPE_KEY, request.getLandingPageType());
 
         if (request.getLocaleCode() != null) {
             experienceProfile.put(LOCALE_CODE_KEY, request.getLocaleCode());

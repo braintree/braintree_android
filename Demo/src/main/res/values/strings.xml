@@ -31,6 +31,7 @@
     <string name="purchase_complete">Purchase Complete</string>
 
     <!-- Settings -->
+    <string name="none">None</string>
     <string name="options">Options</string>
     <string name="sandbox">Sandbox</string>
     <string name="production">Production</string>
@@ -73,9 +74,12 @@
     <string name="paypal_billing_agreement">Billing Agreement</string>
     <string name="paypal_payment_type">Payment Type</string>
     <string name="paypal_intent_type">Intent Type</string>
+    <string name="paypal_landing_page_type">Landing Page Type</string>
     <string name="paypal_intent_authorize">Authorize</string>
     <string name="paypal_intent_order">Order</string>
     <string name="paypal_intent_sale">Sale</string>
+    <string name="paypal_landing_page_type_billing">Billing</string>
+    <string name="paypal_landing_page_type_login">Login</string>
 
     <!-- PayPalActivity -->
     <string name="paypal_wallet_available">PayPal Wallet app available for app switch: %b</string>

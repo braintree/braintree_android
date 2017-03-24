@@ -37,6 +37,23 @@ public class PayPalRequest implements Parcelable {
     public static final String INTENT_AUTHORIZE = "authorize";
 
     /**
+     * Use this option to specify the PayPal page to display when a user lands on the PayPal site to complete the payment.
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({PayPalRequest.LANDING_PAGE_TYPE_BILLING, PayPalRequest.LANDING_PAGE_TYPE_LOGIN})
+    @interface PayPalLandingPageType {}
+
+    /**
+     * A non-PayPal account landing page is used.
+     */
+    public static final String LANDING_PAGE_TYPE_BILLING = "billing";
+
+    /**
+     * A PayPal account login page is used.
+     */
+    public static final String LANDING_PAGE_TYPE_LOGIN = "login";
+
+    /**
      * @see <a href="https://developer.paypal.com/docs/classic/express-checkout/integration-guide/ECCustomizing/#allowing-buyers-to-complete-their-purchases-on-paypal">PayPal Express Checkout Guide</a>
      * for more information
      */
@@ -64,6 +81,7 @@ public class PayPalRequest implements Parcelable {
     private boolean mShippingAddressRequired;
     private PostalAddress mShippingAddressOverride;
     private String mIntent = INTENT_AUTHORIZE;
+    private String mLandingPageType;
     private String mUserAction = USER_ACTION_DEFAULT;
 
     /**
@@ -179,10 +197,20 @@ public class PayPalRequest implements Parcelable {
      * Payment intent. Only applies when calling
      * {@link com.braintreepayments.api.PayPal#requestOneTimePayment(BraintreeFragment, PayPalRequest)}.
      *
-     * @param intent Can be either {@link PayPalRequest#INTENT_AUTHORIZE} or {@link PayPalRequest#INTENT_SALE}.
+     * @param intent Can be either {@link PayPalRequest#INTENT_AUTHORIZE}, {@link PayPalRequest#INTENT_ORDER}, or {@link PayPalRequest#INTENT_SALE}.
      */
     public PayPalRequest intent(@PayPalPaymentIntent String intent) {
         mIntent = intent;
+        return this;
+    }
+
+    /**
+     * Use this option to specify the PayPal page to display when a user lands on the PayPal site to complete the payment.
+     *
+     * @param landingPageType Can be either {@link PayPalRequest#LANDING_PAGE_TYPE_BILLING} or {@link PayPalRequest#LANDING_PAGE_TYPE_LOGIN}.
+     */
+    public PayPalRequest landingPageType(@PayPalLandingPageType String landingPageType) {
+        mLandingPageType = landingPageType;
         return this;
     }
 
@@ -225,6 +253,11 @@ public class PayPalRequest implements Parcelable {
         return mIntent;
     }
 
+    @PayPalLandingPageType
+    public String getLandingPageType() {
+        return mLandingPageType;
+    }
+
     @PayPalPaymentUserAction
     public String getUserAction() {
         return mUserAction;
@@ -244,6 +277,7 @@ public class PayPalRequest implements Parcelable {
         parcel.writeByte(mShippingAddressRequired ? (byte) 1:0);
         parcel.writeParcelable(mShippingAddressOverride, i);
         parcel.writeString(mIntent);
+        parcel.writeString(mLandingPageType);
         parcel.writeString(mUserAction);
     }
 
@@ -255,6 +289,7 @@ public class PayPalRequest implements Parcelable {
         mShippingAddressRequired = in.readByte() > 0;
         mShippingAddressOverride = in.readParcelable(PostalAddress.class.getClassLoader());
         mIntent = in.readString();
+        mLandingPageType = in.readString();
         mUserAction = in.readString();
     }
 

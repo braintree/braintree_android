@@ -482,6 +482,7 @@ public class PayPalUnitTest {
         assertEquals("1", json.get("amount"));
         assertEquals(true, json.getJSONObject("experience_profile").get("no_shipping"));
         assertEquals(false, json.getJSONObject("experience_profile").get("address_override"));
+        assertFalse(json.getJSONObject("experience_profile").has("landing_page_type"));
         assertEquals(PayPalRequest.INTENT_AUTHORIZE, json.get("intent"));
     }
 
@@ -517,6 +518,40 @@ public class PayPalUnitTest {
         assertEquals(true, json.getJSONObject("experience_profile").get("no_shipping"));
         assertEquals(false, json.getJSONObject("experience_profile").get("address_override"));
         assertEquals(PayPalRequest.INTENT_ORDER, json.get("intent"));
+    }
+
+    @Test
+    public void requestOneTimePayment_landingPageType_canBeSetToBilling() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").landingPageType(PayPalRequest.LANDING_PAGE_TYPE_BILLING));
+
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/create_payment_resource"), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        assertEquals("1", json.get("amount"));
+        assertEquals(true, json.getJSONObject("experience_profile").get("no_shipping"));
+        assertEquals(false, json.getJSONObject("experience_profile").get("address_override"));
+        assertEquals(PayPalRequest.LANDING_PAGE_TYPE_BILLING, json.getJSONObject("experience_profile").get("landing_page_type"));
+    }
+
+    @Test
+    public void requestOneTimePayment_landingPageType_canBeSetToLogin() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").landingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN));
+
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/create_payment_resource"), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        assertEquals("1", json.get("amount"));
+        assertEquals(true, json.getJSONObject("experience_profile").get("no_shipping"));
+        assertEquals(false, json.getJSONObject("experience_profile").get("address_override"));
+        assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, json.getJSONObject("experience_profile").get("landing_page_type"));
     }
 
     @Test
