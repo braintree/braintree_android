@@ -138,6 +138,10 @@ public class Settings {
         return getPreferences(context).getString("paypal_intent_type", context.getString(R.string.paypal_intent_authorize));
     }
 
+    public static String getPayPalDisplayName(Context context) {
+        return getPreferences(context).getString("paypal_display_name", null);
+    }
+
     public static String getPayPalLandingPageType(Context context) {
         return getPreferences(context).getString("paypal_landing_page_type", context.getString(R.string.none));
     }

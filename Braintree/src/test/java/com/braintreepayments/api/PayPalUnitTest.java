@@ -482,8 +482,23 @@ public class PayPalUnitTest {
         assertEquals("1", json.get("amount"));
         assertEquals(true, json.getJSONObject("experience_profile").get("no_shipping"));
         assertEquals(false, json.getJSONObject("experience_profile").get("address_override"));
+        assertEquals("displayName", json.getJSONObject("experience_profile").get("brand_name"));
         assertFalse(json.getJSONObject("experience_profile").has("landing_page_type"));
         assertEquals(PayPalRequest.INTENT_AUTHORIZE, json.get("intent"));
+    }
+
+    @Test
+    public void requestOneTimePayment_displayName_canBeSet() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").displayName("Test Name"));
+
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/create_payment_resource"), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        assertEquals("Test Name", json.getJSONObject("experience_profile").get("brand_name"));
     }
 
     @Test

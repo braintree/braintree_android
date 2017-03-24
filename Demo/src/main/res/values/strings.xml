@@ -78,6 +78,8 @@
     <string name="paypal_intent_authorize">Authorize</string>
     <string name="paypal_intent_order">Order</string>
     <string name="paypal_intent_sale">Sale</string>
+    <string name="paypal_display_name">Display Name</string>
+    <string name="paypal_display_name_summary">Name to be displayed in the PayPal flow</string>
     <string name="paypal_landing_page_type_billing">Billing</string>
     <string name="paypal_landing_page_type_login">Login</string>
 

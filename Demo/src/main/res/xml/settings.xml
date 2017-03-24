@@ -117,6 +117,11 @@
             android:entryValues="@array/paypal_payment_types_values"
             android:defaultValue="@string/paypal_billing_agreement" />
 
+        <EditTextPreference
+            android:key="paypal_display_name"
+            android:title="@string/paypal_display_name"
+            android:summary="@string/paypal_display_name_summary" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

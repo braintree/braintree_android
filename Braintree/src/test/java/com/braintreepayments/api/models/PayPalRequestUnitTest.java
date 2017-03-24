@@ -24,6 +24,7 @@ public class PayPalRequestUnitTest {
         assertNull(request.getLocaleCode());
         assertFalse(request.isShippingAddressRequired());
         assertNull(request.getShippingAddressOverride());
+        assertNull(request.getDisplayName());
         assertEquals(PayPalRequest.INTENT_AUTHORIZE, request.getIntent());
         assertNull(request.getLandingPageType());
     }
@@ -39,6 +40,7 @@ public class PayPalRequestUnitTest {
                 .shippingAddressOverride(postalAddress)
                 .intent(PayPalRequest.INTENT_SALE)
                 .userAction(PayPalRequest.USER_ACTION_COMMIT)
+                .displayName("Display Name")
                 .landingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
 
         assertEquals("1.00", request.getAmount());
@@ -49,6 +51,7 @@ public class PayPalRequestUnitTest {
         assertEquals(postalAddress, request.getShippingAddressOverride());
         assertEquals(PayPalRequest.INTENT_SALE, request.getIntent());
         assertEquals(PayPalRequest.USER_ACTION_COMMIT, request.getUserAction());
+        assertEquals("Display Name", request.getDisplayName());
         assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
     }
 
@@ -63,6 +66,7 @@ public class PayPalRequestUnitTest {
                 .shippingAddressOverride(postalAddress)
                 .intent(PayPalRequest.INTENT_SALE)
                 .userAction(PayPalRequest.USER_ACTION_COMMIT)
+                .displayName("Display Name")
                 .landingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
 
         Parcel parcel = Parcel.obtain();
@@ -79,6 +83,7 @@ public class PayPalRequestUnitTest {
         assertEquals(expected.getShippingAddressOverride().toString(), actual.getShippingAddressOverride().toString());
         assertEquals(expected.isShippingAddressRequired(), actual.isShippingAddressRequired());
         assertEquals(expected.getUserAction(), actual.getUserAction());
+        assertEquals(expected.getDisplayName(), actual.getDisplayName());
         assertEquals(expected.getLandingPageType(), actual.getLandingPageType());
     }
 }

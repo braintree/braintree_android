@@ -83,6 +83,7 @@ public class PayPalRequest implements Parcelable {
     private String mIntent = INTENT_AUTHORIZE;
     private String mLandingPageType;
     private String mUserAction = USER_ACTION_DEFAULT;
+    private String mDisplayName;
 
     /**
      * Constructs a description of a PayPal checkout for Single Payment and Billing Agreements.
@@ -174,6 +175,16 @@ public class PayPalRequest implements Parcelable {
     }
 
     /**
+     * The merchant name displayed in the PayPal flow; defaults to the company name on your Braintree account.
+     *
+     * @param displayName The name to be displayed in the PayPal flow.
+     */
+    public PayPalRequest displayName(String displayName) {
+        mDisplayName = displayName;
+        return this;
+    }
+
+    /**
      * Display a custom description to the user for a billing agreement.
      *
      * @param description The description to display.
@@ -248,6 +259,10 @@ public class PayPalRequest implements Parcelable {
         return mShippingAddressOverride;
     }
 
+    public String getDisplayName() {
+        return mDisplayName;
+    }
+
     @PayPalPaymentIntent
     public String getIntent() {
         return mIntent;
@@ -279,6 +294,7 @@ public class PayPalRequest implements Parcelable {
         parcel.writeString(mIntent);
         parcel.writeString(mLandingPageType);
         parcel.writeString(mUserAction);
+        parcel.writeString(mDisplayName);
     }
 
     public PayPalRequest(Parcel in) {
@@ -291,6 +307,7 @@ public class PayPalRequest implements Parcelable {
         mIntent = in.readString();
         mLandingPageType = in.readString();
         mUserAction = in.readString();
+        mDisplayName = in.readString();
     }
 
     public static final Creator<PayPalRequest> CREATOR = new Creator<PayPalRequest>() {

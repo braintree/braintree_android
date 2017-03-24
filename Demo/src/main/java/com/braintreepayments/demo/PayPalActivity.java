@@ -151,6 +151,8 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
     private PayPalRequest getPayPalRequest(@Nullable String amount) {
         PayPalRequest request = new PayPalRequest(amount);
 
+        request.displayName(Settings.getPayPalDisplayName(this));
+
         String landingPageType = Settings.getPayPalLandingPageType(this);
         if (getString(R.string.paypal_landing_page_type_billing).equals(landingPageType)) {
             request.landingPageType(PayPalRequest.LANDING_PAGE_TYPE_BILLING);

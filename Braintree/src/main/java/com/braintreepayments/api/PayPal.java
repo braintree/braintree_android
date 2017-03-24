@@ -94,6 +94,7 @@ public class PayPal {
     private static final String INTENT_KEY = "intent";
     private static final String LANDING_PAGE_TYPE_KEY = "landing_page_type";
     private static final String USER_ACTION_KEY = "useraction";
+    private static final String DISPLAY_NAME_KEY = "brand_name";
 
     /**
      * Starts the Pay With PayPal flow. This will launch the PayPal app if installed or switch to
@@ -320,6 +321,11 @@ public class PayPal {
         JSONObject experienceProfile = new JSONObject();
         experienceProfile.put(NO_SHIPPING_KEY, !request.isShippingAddressRequired());
         experienceProfile.put(LANDING_PAGE_TYPE_KEY, request.getLandingPageType());
+        String displayName = request.getDisplayName();
+        if (TextUtils.isEmpty(displayName)) {
+            displayName = fragment.getConfiguration().getPayPal().getDisplayName();
+        }
+        experienceProfile.put(DISPLAY_NAME_KEY, displayName);
 
         if (request.getLocaleCode() != null) {
             experienceProfile.put(LOCALE_CODE_KEY, request.getLocaleCode());
