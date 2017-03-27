@@ -181,6 +181,13 @@ public class VisaCheckoutUnitTest {
     }
 
     @Test
+    public void authorize_sendsAnalyticEvent() {
+        VisaCheckout.authorize(mBraintreeFragment, new PurchaseInfoBuilder(new BigDecimal("1.00"), "test"));
+
+        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.initiate.started"));
+    }
+
+    @Test
     public void tokenize_whenSuccessful_postsVisaPaymentMethodNonce() throws Exception {
         mockStatic(TokenizationClient.class);
         doAnswer(new Answer<Object>() {

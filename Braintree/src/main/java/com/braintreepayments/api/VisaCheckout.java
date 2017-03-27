@@ -95,6 +95,7 @@ public class VisaCheckout {
         Intent intent = VisaCheckoutSdk.getCheckoutIntent(fragment.getActivity(),
                 purchaseInfoBuilder.build());
 
+        fragment.sendAnalyticsEvent("visacheckout.initiate.started");
         fragment.startActivityForResult(intent, BraintreeRequestCodes.VISA_CHECKOUT);
     }
 
