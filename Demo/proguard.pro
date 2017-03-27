@@ -10,38 +10,38 @@
 -dontwarn ch.qos.logback.core.net.**
 
 # Visa Checkout
--keepattributes EnclosingMethod
--dontwarn android.support.**
--dontwarn javax.**
--dontwarn io.card.payment.**
--dontwarn com.squareup.**
--dontwarn retrofit.**
--dontwarn okio.**
--dontwarn com.google.gson.**
--dontwarn com.samsung.**
--dontwarn com.threatmetrix.**
--dontwarn com.google.appengine.**
--dontwarn rx.*
--dontwarn java.nio.**
--dontwarn org.apache.**
--dontwarn org.codehaus.**
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+}
+# to keep all activity classes
+-keep public class * extends android.app.Activity
 -dontwarn com.visa.**
-# Visa checkout
+-dontwarn com.google.gson.**
+-dontwarn com.threatmetrix.**
+-dontwarn com.google.**
+#threatmetrix support library
+-dontwarn okhttp3.**
+-dontwarn okio.**
 -keep class com.visa.** { *; }
-# APIGuard.
-#-keep class com.apiguard.** { *; }
-# TrustDefender
 -keep class com.threatmetrix.** { *; }
--keep class android.support.** { *; }
-#GreenRobot Event Bus
--keep class de.greenrobot.** { *; }
-#Card IO
--keep class io.card.**
--keepclassmembers class io.card.** { *;}
-#Retrofit
--keep class retrofit.** { *; }
--keep class com.squareup.** { *; }
 -keep class okio.** { *; }
+-keep class okhttp3.** { *; }
 -keep class com.google.gson.** { *; }
-#Samsung Pass SDK
--keep class com.samsung.** {*;}
+# For Eventbus
+-keep class de.greenrobot.** { *; }
+# Gson specific classes
+-keep class sun.misc.Unsafe { *; }
+-keepattributes Signature
+-keepattributes Exceptions
+# For Gson
+# For using GSON @Expose annotation
+-keepattributes *Annotation*
+-keepnames class * implements android.os.Parcelable {
+    public static final ** CREATOR;
+  }
+-keepclassmembers class * {
+public void onEvent(...);
+public void onEventMainThread(...);
+public void onEventAsync(...);
+}
