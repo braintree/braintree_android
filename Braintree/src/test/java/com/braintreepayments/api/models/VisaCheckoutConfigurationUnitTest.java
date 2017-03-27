@@ -34,8 +34,9 @@ public class VisaCheckoutConfigurationUnitTest {
     }
 
     @Test
-    public void isEnabled_returnsFalseWhenConfigurationDoesntExist() {
-        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(null);
+    public void isEnabled_returnsFalseWhenConfigurationApiKeyDoesntExist() throws JSONException {
+        JSONObject blankVisaCheckoutJson = new JSONObject("{\"visaCheckout\":{}}");
+        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(blankVisaCheckoutJson);
 
         assertFalse(visaCheckoutConfiguration.isEnabled());
     }
@@ -51,7 +52,7 @@ public class VisaCheckoutConfigurationUnitTest {
     }
 
     @Test
-    public void isEnabled_returnsTrueWhenConfigurationExists() throws JSONException {
+    public void isEnabled_returnsTrueWhenVisaCheckoutAvailableAndConfigurationApiKeyExists() throws JSONException {
         VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
                 mVisaCheckoutConfigurationJson);
 

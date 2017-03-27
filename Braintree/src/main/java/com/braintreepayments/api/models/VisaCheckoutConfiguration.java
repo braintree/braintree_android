@@ -23,7 +23,7 @@ public class VisaCheckoutConfiguration {
      * Determines if the Visa Checkout SDK is available.
      * @return true when the class can be found, false otherwise.
      */
-    public static boolean isVisaCheckoutSDKAvailable() {
+    private static boolean isVisaCheckoutSDKAvailable() {
         try {
             Class.forName("com.visa.checkout.VisaCheckoutSdk");
             return true;
@@ -37,11 +37,10 @@ public class VisaCheckoutConfiguration {
 
         if (json == null) {
             json = new JSONObject();
-        } else {
-            visaCheckoutConfiguration.mIsEnabled = isVisaCheckoutSDKAvailable();
         }
 
         visaCheckoutConfiguration.mApiKey = Json.optString(json, "apikey", "");
+        visaCheckoutConfiguration.mIsEnabled = isVisaCheckoutSDKAvailable() && visaCheckoutConfiguration.mApiKey != "";
         visaCheckoutConfiguration.mExternalClientId = Json.optString(json, "externalClientId", "");
         visaCheckoutConfiguration.mCardBrands = supportedCardTypesToAcceptedCardBrands(
                 CardConfiguration.fromJson(json).getSupportedCardTypes());
