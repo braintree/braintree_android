@@ -435,6 +435,41 @@ public class PayPalUnitTest {
     }
 
     @Test
+    public void requestOneTimePayment_paypalCreditReturnedInResponse() throws InterruptedException {
+        BraintreeFragment fragment = mMockFragmentBuilder
+                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .build();
+
+        mockStatic(TokenizationClient.class);
+        doAnswer(new Answer<Void>() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                ((PaymentMethodNonceCallback) invocation.getArguments()[2]).success(PayPalAccountNonce.fromJson(stringFromFixture("payment_methods/paypal_account_response.json")));
+                return null;
+            }
+        }).when(TokenizationClient.class);
+        TokenizationClient.tokenize(any(BraintreeFragment.class), any(PaymentMethodBuilder.class),
+                any(PaymentMethodNonceCallback.class));
+
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"), new PayPalApprovalHandler() {
+            @Override
+            public void handleApproval(Request request, PayPalApprovalCallback paypalApprovalCallback) {
+                paypalApprovalCallback.onComplete(new Intent()
+                        .setData(Uri.parse("com.braintreepayments.demo.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN"))
+                );
+            }
+        });
+
+        ArgumentCaptor<PaymentMethodNonce> nonceCaptor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
+        verify(fragment).postCallback(nonceCaptor.capture());
+
+        assertTrue(nonceCaptor.getValue() instanceof PayPalAccountNonce);
+
+        PayPalAccountNonce payPalAccountNonce = (PayPalAccountNonce) nonceCaptor.getValue();
+        assertNotNull(payPalAccountNonce.getCreditFinancing());
+        assertEquals(18, payPalAccountNonce.getCreditFinancing().getTerm());
+    }
+    @Test
     public void requestOneTimePayment_customHandlerSuccessCallbackIsInvoked() throws InterruptedException {
         BraintreeFragment fragment = mMockFragmentBuilder
                 .successResponse(stringFromFixture("paypal_hermes_response.json"))
@@ -467,6 +502,14 @@ public class PayPalUnitTest {
     }
 
     @Test
+    public void requestOneTimePayment_sendsPayPalCreditOfferedAnalyticsEvent() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").offerCredit(true));
+
+        verify(fragment).sendAnalyticsEvent("paypal-single-payment.credit.offered");
+    }
+    @Test
     public void requestOneTimePayment_defaultPostParamsIncludeCorrectValues() throws JSONException {
         BraintreeFragment fragment = mMockFragmentBuilder.build();
 
@@ -485,6 +528,23 @@ public class PayPalUnitTest {
         assertEquals("displayName", json.getJSONObject("experience_profile").get("brand_name"));
         assertFalse(json.getJSONObject("experience_profile").has("landing_page_type"));
         assertEquals(PayPalRequest.INTENT_AUTHORIZE, json.get("intent"));
+        assertFalse(json.getBoolean("offer_paypal_credit"));
+    }
+
+    @Test
+    public void requestOneTimePayment_containsOfferPayPalCreditParam() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").offerCredit(true));
+
+        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        assertTrue(json.getBoolean("offer_paypal_credit"));
     }
 
     @Test
@@ -706,6 +766,34 @@ public class PayPalUnitTest {
         assertEquals("63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06|created_at=2015-10-13T18:49:48.371382792+0000&merchant_id=dcpspy2brwdjr3qn&public_key=9wwrzqk3vr3t4nc8",
                 intent.getData().getQueryParameter("authorization_fingerprint"));
         assertEquals("USD", intent.getData().getQueryParameter("currency_iso_code"));
+        assertEquals("false", intent.getData().getQueryParameter("experience_profile[address_override]"));
+        assertEquals("false", intent.getData().getQueryParameter("experience_profile[no_shipping]"));
+        assertEquals("dcpspy2brwdjr3qn", intent.getData().getQueryParameter("merchant_id"));
+        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success", intent.getData().getQueryParameter("return_url"));
+        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/cancel", intent.getData().getQueryParameter("cancel_url"));
+        assertTrue(intent.getBooleanExtra(BraintreeBrowserSwitchActivity.EXTRA_BROWSER_SWITCH, false));
+    }
+
+    @Test
+    public void requestOneTimePayment_startsBrowserWithPayPalCredit() {
+        BraintreeFragment fragment = mMockFragmentBuilder
+                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .build();
+
+        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1.00").offerCredit(true));
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(fragment).startActivity(captor.capture());
+        Intent intent = captor.getValue();
+
+        assertEquals(Intent.ACTION_VIEW, intent.getAction());
+        assertEquals("checkout.paypal.com", intent.getData().getHost());
+        assertEquals("/one-touch-login-sandbox/index.html", intent.getData().getPath());
+        assertEquals("create_payment_resource", intent.getData().getQueryParameter("action"));
+        assertEquals("63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06|created_at=2015-10-13T18:49:48.371382792+0000&merchant_id=dcpspy2brwdjr3qn&public_key=9wwrzqk3vr3t4nc8",
+                intent.getData().getQueryParameter("authorization_fingerprint"));
+        assertEquals("USD", intent.getData().getQueryParameter("currency_iso_code"));
+        assertEquals("true", intent.getData().getQueryParameter("offer_paypal_credit"));
         assertEquals("false", intent.getData().getQueryParameter("experience_profile[address_override]"));
         assertEquals("false", intent.getData().getQueryParameter("experience_profile[no_shipping]"));
         assertEquals("dcpspy2brwdjr3qn", intent.getData().getQueryParameter("merchant_id"));

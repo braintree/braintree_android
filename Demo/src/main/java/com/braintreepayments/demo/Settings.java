@@ -150,6 +150,10 @@ public class Settings {
         return getPreferences(context).getBoolean("paypal_useraction_commit", false);
     }
 
+    public static boolean isPayPalCreditOffered(Context context) {
+        return getPreferences(context).getBoolean("paypal_credit_offered", false);
+    }
+
     public static boolean isPayPalSignatureVerificationDisabled(Context context) {
         return getPreferences(context).getBoolean("paypal_disable_signature_verification", true);
     }

@@ -26,6 +26,7 @@ import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
+import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PayPalConfiguration;
 import com.braintreepayments.api.models.PayPalPaymentResource;
 import com.braintreepayments.api.models.PayPalRequest;
@@ -86,6 +87,7 @@ public class PayPal {
     private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
     private static final String TOKENIZATION_KEY = "client_key";
     private static final String RETURN_URL_KEY = "return_url";
+    private static final String OFFER_CREDIT_KEY = "offer_paypal_credit";
     private static final String CANCEL_URL_KEY = "cancel_url";
     private static final String EXPERIENCE_PROFILE_KEY = "experience_profile";
     private static final String AMOUNT_KEY = "amount";
@@ -207,6 +209,9 @@ public class PayPal {
             PayPalApprovalHandler handler) {
         if (request.getAmount() != null) {
             fragment.sendAnalyticsEvent("paypal.one-time-payment.selected");
+            if (request.shouldOfferCredit()) {
+                fragment.sendAnalyticsEvent("paypal-single-payment.credit.offered");
+            }
             requestOneTimePayment(fragment, request, false, handler);
         } else {
             fragment.postCallback(new BraintreeException("An amount must be specified for the Single Payment flow."));
@@ -310,8 +315,9 @@ public class PayPal {
 
         if (!isBillingAgreement) {
             parameters.put(AMOUNT_KEY, request.getAmount())
-                    .put(CURRENCY_ISO_CODE_KEY, currencyCode);
-            parameters.put(INTENT_KEY, request.getIntent());
+                    .put(CURRENCY_ISO_CODE_KEY, currencyCode)
+                    .put(INTENT_KEY, request.getIntent())
+                    .put(OFFER_CREDIT_KEY, request.shouldOfferCredit());
         } else {
             if (!TextUtils.isEmpty(request.getBillingAgreementDescription())) {
                 parameters.put(DESCRIPTION_KEY, request.getBillingAgreementDescription());
@@ -466,6 +472,9 @@ public class PayPal {
         TokenizationClient.tokenize(fragment, parseResponse(paypalRequest, request, result, data), new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
+                if (paymentMethodNonce instanceof PayPalAccountNonce && ((PayPalAccountNonce) paymentMethodNonce).getCreditFinancing() != null) {
+                    fragment.sendAnalyticsEvent("paypal-single-payment.credit.accepted");
+                }
                 fragment.postCallback(paymentMethodNonce);
             }
 

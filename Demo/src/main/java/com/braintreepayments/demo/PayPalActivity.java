@@ -173,6 +173,10 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
             request.userAction(PayPalRequest.USER_ACTION_COMMIT);
         }
 
+        if (Settings.isPayPalCreditOffered(this)) {
+            request.offerCredit(true);
+        }
+
         return request;
     }
 }

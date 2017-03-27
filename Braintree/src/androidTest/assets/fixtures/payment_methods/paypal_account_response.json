@@ -18,6 +18,23 @@
             "postalCode": "94602",
             "country": "US"
           }
+        },
+        "creditFinancingOffered": {
+          "cardAmountImmutable": false,
+          "monthlyPayment": {
+            "currency": "USD",
+            "value": "13.88"
+          },
+          "payerAcceptance": true,
+          "term": 18,
+          "totalCost": {
+            "currency": "USD",
+            "value": "250.00"
+          },
+          "totalInterest": {
+            "currency": "USD",
+            "value": "0.00"
+          }
         }
       }
     }

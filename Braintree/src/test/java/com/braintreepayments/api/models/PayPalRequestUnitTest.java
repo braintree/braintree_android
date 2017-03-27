@@ -27,6 +27,7 @@ public class PayPalRequestUnitTest {
         assertNull(request.getDisplayName());
         assertEquals(PayPalRequest.INTENT_AUTHORIZE, request.getIntent());
         assertNull(request.getLandingPageType());
+        assertFalse(request.shouldOfferCredit());
     }
 
     @Test
@@ -41,7 +42,8 @@ public class PayPalRequestUnitTest {
                 .intent(PayPalRequest.INTENT_SALE)
                 .userAction(PayPalRequest.USER_ACTION_COMMIT)
                 .displayName("Display Name")
-                .landingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+                .landingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN)
+                .offerCredit(true);
 
         assertEquals("1.00", request.getAmount());
         assertEquals("USD", request.getCurrencyCode());
@@ -53,6 +55,7 @@ public class PayPalRequestUnitTest {
         assertEquals(PayPalRequest.USER_ACTION_COMMIT, request.getUserAction());
         assertEquals("Display Name", request.getDisplayName());
         assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, request.getLandingPageType());
+        assertTrue(request.shouldOfferCredit());
     }
 
     @Test
@@ -67,7 +70,8 @@ public class PayPalRequestUnitTest {
                 .intent(PayPalRequest.INTENT_SALE)
                 .userAction(PayPalRequest.USER_ACTION_COMMIT)
                 .displayName("Display Name")
-                .landingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN);
+                .landingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN)
+                .offerCredit(true);
 
         Parcel parcel = Parcel.obtain();
         expected.writeToParcel(parcel, 0);
@@ -85,5 +89,6 @@ public class PayPalRequestUnitTest {
         assertEquals(expected.getUserAction(), actual.getUserAction());
         assertEquals(expected.getDisplayName(), actual.getDisplayName());
         assertEquals(expected.getLandingPageType(), actual.getLandingPageType());
+        assertTrue(actual.shouldOfferCredit());
     }
 }

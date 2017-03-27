@@ -84,6 +84,7 @@ public class PayPalRequest implements Parcelable {
     private String mLandingPageType;
     private String mUserAction = USER_ACTION_DEFAULT;
     private String mDisplayName;
+    private boolean mOfferCredit;
 
     /**
      * Constructs a description of a PayPal checkout for Single Payment and Billing Agreements.
@@ -100,6 +101,7 @@ public class PayPalRequest implements Parcelable {
     public PayPalRequest(String amount) {
         mAmount = amount;
         mShippingAddressRequired = false;
+        mOfferCredit = false;
     }
 
     /**
@@ -108,6 +110,7 @@ public class PayPalRequest implements Parcelable {
     public PayPalRequest() {
         mAmount = null;
         mShippingAddressRequired = false;
+        mOfferCredit = false;
     }
 
     /**
@@ -235,6 +238,16 @@ public class PayPalRequest implements Parcelable {
         return this;
     }
 
+    /**
+     * Offers PayPal Credit prominently in the payment flow. Defaults to false. Only available with PayPal Checkout.
+     *
+     * @param offerCredit Whether to offer PayPal Credit.
+     */
+    public PayPalRequest offerCredit(boolean offerCredit) {
+        mOfferCredit = offerCredit;
+        return this;
+    }
+
     public String getAmount() {
         return mAmount;
     }
@@ -261,6 +274,10 @@ public class PayPalRequest implements Parcelable {
 
     public String getDisplayName() {
         return mDisplayName;
+    }
+
+    public boolean shouldOfferCredit() {
+        return mOfferCredit;
     }
 
     @PayPalPaymentIntent
@@ -295,6 +312,7 @@ public class PayPalRequest implements Parcelable {
         parcel.writeString(mLandingPageType);
         parcel.writeString(mUserAction);
         parcel.writeString(mDisplayName);
+        parcel.writeByte(mOfferCredit ? (byte) 1:0);
     }
 
     public PayPalRequest(Parcel in) {
@@ -308,6 +326,7 @@ public class PayPalRequest implements Parcelable {
         mLandingPageType = in.readString();
         mUserAction = in.readString();
         mDisplayName = in.readString();
+        mOfferCredit = in.readByte() > 0;
     }
 
     public static final Creator<PayPalRequest> CREATOR = new Creator<PayPalRequest>() {

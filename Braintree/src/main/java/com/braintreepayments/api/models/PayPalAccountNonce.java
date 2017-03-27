@@ -2,6 +2,7 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.braintreepayments.api.Json;
@@ -20,6 +21,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
     protected static final String TYPE = "PayPalAccount";
     protected static final String API_RESOURCE_KEY = "paypalAccounts";
 
+    private static final String CREDIT_FINANCING_KEY = "creditFinancingOffered";
     private static final String DETAILS_KEY = "details";
     private static final String EMAIL_KEY = "email";
     private static final String PAYER_INFO_KEY = "payerInfo";
@@ -40,6 +42,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
     private String mPhone;
     private String mEmail;
     private String mPayerId;
+    private PayPalCreditFinancing mCreditFinancing;
 
     /**
      * Convert an API response to a {@link PayPalAccountNonce}.
@@ -67,6 +70,11 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
         mClientMetadataId = Json.optString(details, CLIENT_METADATA_ID_KEY, null);
 
         try {
+            if (details.has(CREDIT_FINANCING_KEY)) {
+                JSONObject creditFinancing = details.getJSONObject(CREDIT_FINANCING_KEY);
+                mCreditFinancing = PayPalCreditFinancing.fromJson(creditFinancing);
+            }
+
             JSONObject payerInfo = details.getJSONObject(PAYER_INFO_KEY);
 
             JSONObject billingAddress;
@@ -172,6 +180,14 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
         return mPayerId;
     }
 
+    /**
+     * @return The credit financing details. This property will only be present when the customer pays with PayPal Credit.
+     */
+    @Nullable
+    public PayPalCreditFinancing getCreditFinancing() {
+        return mCreditFinancing;
+    }
+
     public PayPalAccountNonce() {}
 
     @Override
@@ -185,6 +201,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
         dest.writeString(mEmail);
         dest.writeString(mPhone);
         dest.writeString(mPayerId);
+        dest.writeParcelable(mCreditFinancing, flags);
     }
 
     private PayPalAccountNonce(Parcel in) {
@@ -197,6 +214,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
         mEmail = in.readString();
         mPhone = in.readString();
         mPayerId = in.readString();
+        mCreditFinancing = in.readParcelable(PayPalCreditFinancing.class.getClassLoader());
     }
 
     public static final Creator<PayPalAccountNonce> CREATOR = new Creator<PayPalAccountNonce>() {
