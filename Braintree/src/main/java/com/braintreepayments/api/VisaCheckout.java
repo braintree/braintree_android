@@ -67,9 +67,9 @@ public class VisaCheckout {
                     return;
                 }
 
-                String environment = Environment.SANDBOX;
                 String merchantApiKey = visaCheckoutConfiguration.getApiKey();
                 List<String> acceptedCardBrands = visaCheckoutConfiguration.getAcceptedCardBrands();
+                String environment = Environment.SANDBOX;
 
                 if ("production".equals(configuration.getEnvironment())) {
                     environment = Environment.PRODUCTION;
