@@ -25,7 +25,8 @@ public class VisaCheckoutAddressUnitTest {
                .put("locality", "locality")
                .put("region", "region")
                .put("postalCode", "postalCode")
-               .put("countryCode", "countryCode");
+               .put("countryCode", "countryCode")
+               .put("phoneNumber", "phoneNumber");
     }
 
     @Test
@@ -39,6 +40,7 @@ public class VisaCheckoutAddressUnitTest {
         assertEquals("region", visaCheckoutAddress.getRegion());
         assertEquals("postalCode", visaCheckoutAddress.getPostalCode());
         assertEquals("countryCode", visaCheckoutAddress.getCountryCode());
+        assertEquals("phoneNumber", visaCheckoutAddress.getPhoneNumber());
     }
 
     @Test
@@ -52,6 +54,7 @@ public class VisaCheckoutAddressUnitTest {
         assertEquals("", visaCheckoutAddress.getRegion());
         assertEquals("", visaCheckoutAddress.getPostalCode());
         assertEquals("", visaCheckoutAddress.getCountryCode());
+        assertEquals("", visaCheckoutAddress.getPhoneNumber());
     }
 
     @Test
@@ -70,5 +73,6 @@ public class VisaCheckoutAddressUnitTest {
         assertEquals(visaCheckoutAddress.getRegion(), actual.getRegion());
         assertEquals(visaCheckoutAddress.getPostalCode(), actual.getPostalCode());
         assertEquals(visaCheckoutAddress.getCountryCode(), actual.getCountryCode());
+        assertEquals(visaCheckoutAddress.getPhoneNumber(), actual.getPhoneNumber());
     }
 }

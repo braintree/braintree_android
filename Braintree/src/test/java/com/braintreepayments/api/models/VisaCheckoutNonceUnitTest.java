@@ -112,5 +112,6 @@ public class VisaCheckoutNonceUnitTest {
         assertEquals(expected.getRegion(), actual.getRegion());
         assertEquals(expected.getPostalCode(), actual.getPostalCode());
         assertEquals(expected.getCountryCode(), actual.getCountryCode());
+        assertEquals(expected.getPhoneNumber(), actual.getPhoneNumber());
     }
 }
