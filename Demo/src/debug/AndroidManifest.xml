@@ -24,10 +24,6 @@
         <activity android:name=".CreateTransactionActivity" />
         <activity android:name=".PayPalActivity" android:label="@string/paypal" />
         <activity android:name=".VisaCheckoutActivity" android:label="@string/visa_checkout_button" />
-        <activity
-            android:name="com.visa.checkout.VisaMcomActivity"
-            android:configChanges="layoutDirection"/>
-
         <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
             android:launchMode="singleTask">
             <intent-filter>

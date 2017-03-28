@@ -38,7 +38,7 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
         try {
             mBraintreeFragment = BraintreeFragment.newInstance(this, mAuthorization);
         } catch (InvalidArgumentException e) {
-            e.printStackTrace();
+            onError(e);
         }
 
         VisaCheckout.createProfileBuilder(mBraintreeFragment, this);
@@ -64,7 +64,9 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
     }
 
     @Override
-    protected void reset() {}
+    protected void reset() {
+        mVisaPaymentButton.setEnabled(false);
+    }
 
     @Override
     public void onResponse(ProfileBuilder profileBuilder) {
@@ -74,7 +76,10 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
     @Override
     public void status(int code, String message) {
         if (code != Status.SUCCESS) {
+            mVisaPaymentButton.setEnabled(false);
             Log.d("Visa Checkout", code + " " + message);
+        } else {
+            mVisaPaymentButton.setEnabled(true);
         }
     }
 }
