@@ -11,8 +11,6 @@ import com.braintreepayments.api.VisaCheckout;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.VisaCheckoutAddress;
-import com.braintreepayments.api.models.VisaCheckoutNonce;
 import com.visa.checkout.Profile.ProfileBuilder;
 import com.visa.checkout.PurchaseInfo;
 import com.visa.checkout.PurchaseInfo.PurchaseInfoBuilder;
@@ -58,14 +56,11 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
     @Override
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
-        VisaCheckoutNonce visaCheckoutNonce = (VisaCheckoutNonce) paymentMethodNonce;
-        VisaCheckoutAddress shippingAddress = visaCheckoutNonce.getShippingAddress();
 
         Intent intent = new Intent()
                 .putExtra(MainActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce);
         setResult(RESULT_OK, intent);
         finish();
-
     }
 
     @Override
