@@ -50,6 +50,14 @@ android {
     }
 }
 
+android.buildTypes.debug {
+    dependencies {
+        compile 'com.android.support:support-v4:[25.0.0, 26.0.0)'
+        compile 'com.android.support:appcompat-v7:[25.0.0, 26.0.0)'
+        compile 'com.android.support:design:[25.0.0, 26.0.0)'
+    }
+}
+
 dependencies {
     compile 'com.google.android.gms:play-services-wallet:[9.0.0,10.0.0)'
     compile 'com.android.support:support-annotations:[25.0.0,26.0.0)'
@@ -72,9 +80,6 @@ dependencies {
     testCompile project(':TestUtils')
 
     compile(name: 'VisaCheckout-Android-SDK', version: '4.6.0', ext: 'aar')
-    compile 'com.android.support:support-v4:[25.0.0, 26.0.0)'
-    compile 'com.android.support:appcompat-v7:[25.0.0, 26.0.0)'
-    compile 'com.android.support:design:[25.0.0, 26.0.0)'
 }
 
 android.buildTypes.each { type ->
@@ -136,19 +141,22 @@ uploadArchives {
             }
 
             pom.whenConfigured { MavenPom pom ->
-                ignoredArtifactIds = [
-                        'play-services-wallet',
-                        'support-annotations',
-                        'data-collector',
-                        'VisaCheckout-Android-SDK',
-                        'support-v4', // Visa Checkout dependency
-                        'appcompat-v7', // Visa Checkout dependency
-                        'design' // Visa Checkout dependency
+                def ignoredDependencies = [
+                        'com.android.support:support-v4',
+                        'com.android.support:appcompat-v7',
+                        'com.android.support:design',
+                        'com.google.android.gms:play-services-wallet',
+                        'com.android.support:support-annotations',
+                        'null:VisaCheckout-Android-SDK',
+                        'com.android.databinding:library',
+                        'com.android.databinding:baseLibrary',
+                        'com.android.databinding:adapters'
                 ]
-                pom.dependencies.each { dep ->
-                    ignoredArtifactId.each {
-                        it.optional = it.artifactId == ignoredArtifactId
-                    }
+                pom.dependencies.each { dependency ->
+                    def dependencyNotation = dependency.groupId + ':' + dependency.artifactId
+                    dependency.optional = ignoredDependencies.contains(dependencyNotation)
+
+                    logger.warn(dependency.toString() + ' optional? ' + dependency.optional)
                 }
             }
         }
