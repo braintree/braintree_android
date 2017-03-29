@@ -19,6 +19,7 @@ public class VisaCheckoutAddress implements Parcelable {
     private String mRegion;
     private String mPostalCode;
     private String mCountryCode;
+    private String mPhoneNumber;
 
     public static VisaCheckoutAddress fromJson(JSONObject json) {
         if (json == null) {
@@ -34,6 +35,7 @@ public class VisaCheckoutAddress implements Parcelable {
         visaCheckoutAddress.mRegion = Json.optString(json, "region", "");
         visaCheckoutAddress.mPostalCode = Json.optString(json, "postalCode", "");
         visaCheckoutAddress.mCountryCode = Json.optString(json, "countryCode", "");
+        visaCheckoutAddress.mPhoneNumber = Json.optString(json, "phoneNumber", "");
 
         return visaCheckoutAddress;
     }
@@ -89,6 +91,13 @@ public class VisaCheckoutAddress implements Parcelable {
         return mCountryCode;
     }
 
+    /**
+     * @return The user's phone number.
+     */
+    public String getPhoneNumber() {
+        return mPhoneNumber;
+    }
+
     public VisaCheckoutAddress(Parcel in) {
         mFirstName = in.readString();
         mLastName = in.readString();
@@ -97,6 +106,7 @@ public class VisaCheckoutAddress implements Parcelable {
         mRegion = in.readString();
         mPostalCode = in.readString();
         mCountryCode = in.readString();
+        mPhoneNumber = in.readString();
     }
 
     @Override
@@ -108,6 +118,7 @@ public class VisaCheckoutAddress implements Parcelable {
         dest.writeString(mRegion);
         dest.writeString(mPostalCode);
         dest.writeString(mCountryCode);
+        dest.writeString(mPhoneNumber);
     }
 
     @Override

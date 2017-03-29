@@ -16,7 +16,8 @@
       "locality": "billingLocality",
       "region": "billingRegion",
       "postalCode": "billingPostalCode",
-      "countryCode": "billingCountryCode"
+      "countryCode": "billingCountryCode",
+      "phoneNumber": "phoneNumber"
     },
     "shippingAddress": {
       "firstName": "shippingFirstName",
@@ -25,7 +26,8 @@
       "locality": "shippingLocality",
       "region": "shippingRegion",
       "postalCode": "shippingPostalCode",
-      "countryCode": "shippingCountryCode"
+      "countryCode": "shippingCountryCode",
+      "phoneNumber": "phoneNumber"
     },
     "userData": {
       "userFirstName": "userFirstName",
