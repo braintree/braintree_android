@@ -73,7 +73,9 @@ dependencies {
     compile('com.squareup.retrofit:retrofit:1.9.0') {
         exclude module: 'com.google.gson'
     }
-    compile 'com.lukekorth:mailable_log:0.1.4'
+    compile('com.lukekorth:mailable_log:0.1.4') {
+        exclude module: 'com.android.support'
+    }
 
     // Visa Checkout
     compile(group: 'com.visa.checkout', name: 'VisaCheckout-Android-SDK', version: '4.6.0', ext: 'aar')
