@@ -87,7 +87,7 @@ dependencies {
 
     compile project(':Braintree')
     compile 'io.card:android-sdk:5.5.0'
-    compile('com.braintreepayments.api:drop-in:3.0.5') {
+    compile('com.braintreepayments.api:drop-in:3.0.8') {
         exclude group: 'com.braintreepayments.api', module: 'braintree'
     }
 
