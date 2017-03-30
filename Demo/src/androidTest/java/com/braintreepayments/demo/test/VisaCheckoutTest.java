@@ -72,13 +72,11 @@ public class VisaCheckoutTest extends TestHelper {
         onDevice(withText("Continue")).perform(click());
         onDevice(withText("Create a Transaction")).waitForExists();
         onDevice(withText("Nonce:")).waitForExists();
-        getNonceDetails().check(text(containsString("First name: NoReply")));
-        getNonceDetails().check(text(containsString("Last name: VisaCheckout")));
-        getNonceDetails().check(text(containsString("User name: no-reply-visa-checkout@getbraintree.com")));
-        getNonceDetails().check(text(containsString("Email: no-reply-visa-checkout@getbraintree.com")));
-        getNonceDetails().check(text(containsString(
-                "Billing Address: NoReply VisaCheckout 123 Townsend Street San Francisco 94107 CA US")));
-        getNonceDetails().check(text(containsString(
-                "Shipping Address: NoReply VisaCheckout 123 Townsend Street San Francisco 94107 CA US")));
+        getNonceDetails().check(text(containsString("First name: NoReply")),
+                text(containsString("Last name: VisaCheckout")),
+                text(containsString("User name: no-reply-visa-checkout@getbraintree.com")),
+                text(containsString("Email: no-reply-visa-checkout@getbraintree.com")),
+                text(containsString("Billing Address: NoReply VisaCheckout 123 Townsend Street  San Francisco 94107 CA US")),
+                text(containsString("Shipping Address: NoReply VisaCheckout 123 Townsend Street  San Francisco 94107 CA US")));
     }
 }
