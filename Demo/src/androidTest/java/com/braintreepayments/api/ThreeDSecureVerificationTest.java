@@ -13,7 +13,7 @@ import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
-import com.braintreepayments.api.test.TestActivity;
+import com.braintreepayments.demo.test.DemoTestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
 
 import org.junit.Before;
@@ -57,8 +57,8 @@ public class ThreeDSecureVerificationTest {
     private static final String TEST_AMOUNT = "1";
 
     @Rule
-    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
-            new BraintreeActivityTestRule<>(TestActivity.class);
+    public final BraintreeActivityTestRule<DemoTestActivity> mActivityTestRule =
+            new BraintreeActivityTestRule<>(DemoTestActivity.class);
 
     private Activity mActivity;
     private CountDownLatch mCountDownLatch;

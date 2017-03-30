@@ -55,12 +55,6 @@ android {
         exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
     }
 
-    sourceSets {
-        androidTest {
-            manifest.srcFile 'src/androidTest/AndroidManifest.xml'
-        }
-    }
-
     dataBinding {
         enabled = true
     }
