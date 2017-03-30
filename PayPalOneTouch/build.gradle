@@ -28,7 +28,7 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:[25.0.0,26.0.0)'
+    compile 'com.android.support:support-annotations:[25.0.0,25.99.0)'
 
     compile project(':Core')
     compile project(':PayPalDataCollector')

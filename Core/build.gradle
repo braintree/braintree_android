@@ -24,7 +24,7 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:[25.0.0,26.0.0)'
+    compile 'com.android.support:support-annotations:[25.0.0,25.99.0)'
 
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
