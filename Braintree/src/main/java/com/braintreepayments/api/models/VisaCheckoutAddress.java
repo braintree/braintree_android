@@ -15,6 +15,7 @@ public class VisaCheckoutAddress implements Parcelable {
     private String mFirstName;
     private String mLastName;
     private String mStreetAddress;
+    private String mExtendedAddress;
     private String mLocality;
     private String mRegion;
     private String mPostalCode;
@@ -31,6 +32,7 @@ public class VisaCheckoutAddress implements Parcelable {
         visaCheckoutAddress.mFirstName = Json.optString(json, "firstName", "");
         visaCheckoutAddress.mLastName = Json.optString(json, "lastName", "");
         visaCheckoutAddress.mStreetAddress = Json.optString(json, "streetAddress", "");
+        visaCheckoutAddress.mExtendedAddress = Json.optString(json, "extendedAddress", "");
         visaCheckoutAddress.mLocality = Json.optString(json, "locality", "");
         visaCheckoutAddress.mRegion = Json.optString(json, "region", "");
         visaCheckoutAddress.mPostalCode = Json.optString(json, "postalCode", "");
@@ -61,6 +63,13 @@ public class VisaCheckoutAddress implements Parcelable {
      */
     public String getStreetAddress() {
         return mStreetAddress;
+    }
+
+    /**
+     * @return The user's extended address.
+     */
+    public String getExtendedAddress() {
+        return mExtendedAddress;
     }
 
     /**
@@ -102,6 +111,7 @@ public class VisaCheckoutAddress implements Parcelable {
         mFirstName = in.readString();
         mLastName = in.readString();
         mStreetAddress = in.readString();
+        mExtendedAddress = in.readString();
         mLocality = in.readString();
         mRegion = in.readString();
         mPostalCode = in.readString();
@@ -114,6 +124,7 @@ public class VisaCheckoutAddress implements Parcelable {
         dest.writeString(mFirstName);
         dest.writeString(mLastName);
         dest.writeString(mStreetAddress);
+        dest.writeString(mExtendedAddress);
         dest.writeString(mLocality);
         dest.writeString(mRegion);
         dest.writeString(mPostalCode);

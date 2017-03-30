@@ -283,8 +283,8 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
 
     private String formatAddress(VisaCheckoutAddress address) {
         return address.getFirstName() + " " + address.getLastName() + " " + address.getStreetAddress() + " " +
-                address.getLocality() + " " + address.getPostalCode() + " " + address.getRegion() + " " +
-                address.getCountryCode() + " " + address.getPhoneNumber();
+                address.getExtendedAddress() + " " + address.getLocality() + " " + address.getPostalCode() + " " +
+                address.getRegion() + " " + address.getCountryCode() + " " + address.getPhoneNumber();
     }
 
     private String formatAddress(PostalAddress address) {

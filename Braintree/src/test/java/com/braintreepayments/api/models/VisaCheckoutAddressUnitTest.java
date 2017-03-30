@@ -22,6 +22,7 @@ public class VisaCheckoutAddressUnitTest {
                .put("firstName", "firstName")
                .put("lastName", "lastName")
                .put("streetAddress", "streetAddress")
+               .put("extendedAddress", "extendedAddress")
                .put("locality", "locality")
                .put("region", "region")
                .put("postalCode", "postalCode")
@@ -36,6 +37,7 @@ public class VisaCheckoutAddressUnitTest {
         assertEquals("firstName", visaCheckoutAddress.getFirstName());
         assertEquals("lastName", visaCheckoutAddress.getLastName());
         assertEquals("streetAddress", visaCheckoutAddress.getStreetAddress());
+        assertEquals("extendedAddress", visaCheckoutAddress.getExtendedAddress());
         assertEquals("locality", visaCheckoutAddress.getLocality());
         assertEquals("region", visaCheckoutAddress.getRegion());
         assertEquals("postalCode", visaCheckoutAddress.getPostalCode());
@@ -50,6 +52,7 @@ public class VisaCheckoutAddressUnitTest {
         assertEquals("", visaCheckoutAddress.getFirstName());
         assertEquals("", visaCheckoutAddress.getLastName());
         assertEquals("", visaCheckoutAddress.getStreetAddress());
+        assertEquals("", visaCheckoutAddress.getExtendedAddress());
         assertEquals("", visaCheckoutAddress.getLocality());
         assertEquals("", visaCheckoutAddress.getRegion());
         assertEquals("", visaCheckoutAddress.getPostalCode());
@@ -69,6 +72,7 @@ public class VisaCheckoutAddressUnitTest {
         assertEquals(visaCheckoutAddress.getFirstName(), actual.getFirstName());
         assertEquals(visaCheckoutAddress.getLastName(), actual.getLastName());
         assertEquals(visaCheckoutAddress.getStreetAddress(), actual.getStreetAddress());
+        assertEquals(visaCheckoutAddress.getExtendedAddress(), actual.getExtendedAddress());
         assertEquals(visaCheckoutAddress.getLocality(), actual.getLocality());
         assertEquals(visaCheckoutAddress.getRegion(), actual.getRegion());
         assertEquals(visaCheckoutAddress.getPostalCode(), actual.getPostalCode());

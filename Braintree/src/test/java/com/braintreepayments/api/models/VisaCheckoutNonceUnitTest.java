@@ -34,6 +34,7 @@ public class VisaCheckoutNonceUnitTest {
         assertEquals("billingFirstName", visaCheckoutNonce.getBillingAddress().getFirstName());
         assertEquals("billingLastName", visaCheckoutNonce.getBillingAddress().getLastName());
         assertEquals("billingStreetAddress", visaCheckoutNonce.getBillingAddress().getStreetAddress());
+        assertEquals("billingExtendedAddress", visaCheckoutNonce.getBillingAddress().getExtendedAddress());
         assertEquals("billingLocality", visaCheckoutNonce.getBillingAddress().getLocality());
         assertEquals("billingRegion", visaCheckoutNonce.getBillingAddress().getRegion());
         assertEquals("billingPostalCode", visaCheckoutNonce.getBillingAddress().getPostalCode());
@@ -43,6 +44,7 @@ public class VisaCheckoutNonceUnitTest {
         assertEquals("shippingFirstName", visaCheckoutNonce.getShippingAddress().getFirstName());
         assertEquals("shippingLastName", visaCheckoutNonce.getShippingAddress().getLastName());
         assertEquals("shippingStreetAddress", visaCheckoutNonce.getShippingAddress().getStreetAddress());
+        assertEquals("shippingExtendedAddress", visaCheckoutNonce.getShippingAddress().getExtendedAddress());
         assertEquals("shippingLocality", visaCheckoutNonce.getShippingAddress().getLocality());
         assertEquals("shippingRegion", visaCheckoutNonce.getShippingAddress().getRegion());
         assertEquals("shippingPostalCode", visaCheckoutNonce.getShippingAddress().getPostalCode());
@@ -108,6 +110,7 @@ public class VisaCheckoutNonceUnitTest {
         assertEquals(expected.getFirstName(), actual.getFirstName());
         assertEquals(expected.getLastName(), actual.getLastName());
         assertEquals(expected.getStreetAddress(), actual.getStreetAddress());
+        assertEquals(expected.getExtendedAddress(), actual.getExtendedAddress());
         assertEquals(expected.getLocality(), actual.getLocality());
         assertEquals(expected.getRegion(), actual.getRegion());
         assertEquals(expected.getPostalCode(), actual.getPostalCode());
