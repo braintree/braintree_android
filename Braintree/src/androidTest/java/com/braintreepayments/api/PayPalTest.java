@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
@@ -38,13 +39,13 @@ public class PayPalTest {
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                fragment.onActivityResult(PayPal.PAYPAL_REQUEST_CODE, Activity.RESULT_CANCELED, new Intent());
+                fragment.onActivityResult(BraintreeRequestCodes.PAYPAL, Activity.RESULT_CANCELED, new Intent());
                 return null;
             }
         }).when(fragment).startActivity(any(Intent.class));
 
         PayPal.authorizeAccount(fragment);
 
-        verify(fragment, times(1)).postCancelCallback(PayPal.PAYPAL_REQUEST_CODE);
+        verify(fragment, times(1)).postCancelCallback(BraintreeRequestCodes.PAYPAL);
     }
 }

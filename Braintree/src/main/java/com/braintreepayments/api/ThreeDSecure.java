@@ -9,6 +9,7 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.internal.ManifestValidator;
+import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
@@ -29,8 +30,6 @@ import org.json.JSONObject;
  * for a full explanation of 3D Secure.
  */
 public class ThreeDSecure {
-
-    protected static final int THREE_D_SECURE_REQUEST_CODE = 13487;
 
     /**
      * Verification is associated with a transaction amount and your merchant account. To specify a
@@ -112,11 +111,9 @@ public class ThreeDSecure {
                                 if (threeDSecureLookup.getAcsUrl() != null) {
                                     Intent intent = new Intent(fragment.getApplicationContext(),
                                             ThreeDSecureWebViewActivity.class)
-                                            .putExtra(
-                                                    ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_LOOKUP,
+                                            .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_LOOKUP,
                                                     threeDSecureLookup);
-                                    fragment.startActivityForResult(intent,
-                                            THREE_D_SECURE_REQUEST_CODE);
+                                    fragment.startActivityForResult(intent, BraintreeRequestCodes.THREE_D_SECURE);
                                 } else {
                                     fragment.postCallback(threeDSecureLookup.getCardNonce());
                                 }

@@ -11,6 +11,7 @@ import com.braintreepayments.api.interfaces.TokenizationParametersListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.Authorization;
+import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
@@ -240,7 +241,7 @@ public class AndroidPayTest {
         AndroidPay.requestAndroidPay(fragment, cart, true, true, allowedCountries);
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivityForResult(captor.capture(), eq(AndroidPay.ANDROID_PAY_REQUEST_CODE));
+        verify(fragment).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.ANDROID_PAY));
         Intent intent = captor.getValue();
         assertEquals(AndroidPayActivity.class.getName(), intent.getComponent().getClassName());
         assertEquals(AUTHORIZE, intent.getIntExtra(EXTRA_REQUEST_TYPE, -1));
@@ -290,7 +291,7 @@ public class AndroidPayTest {
         AndroidPay.changePaymentMethod(fragment, androidPayCardNonce);
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivityForResult(captor.capture(), eq(AndroidPay.ANDROID_PAY_REQUEST_CODE));
+        verify(fragment).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.ANDROID_PAY));
         Intent intent = captor.getValue();
         assertEquals(AndroidPayActivity.class.getName(), intent.getComponent().getClassName());
         assertEquals(CHANGE_PAYMENT_METHOD, intent.getIntExtra(EXTRA_REQUEST_TYPE, -1));

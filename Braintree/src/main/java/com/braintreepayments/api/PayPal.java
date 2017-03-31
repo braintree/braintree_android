@@ -23,6 +23,7 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.internal.AppHelper;
 import com.braintreepayments.api.internal.BraintreeSharedPreferences;
 import com.braintreepayments.api.internal.ManifestValidator;
+import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
@@ -53,8 +54,6 @@ import java.util.List;
  * <a href="https://developers.braintreepayments.com/guides/paypal/overview/android/v2">documentation</a>
  */
 public class PayPal {
-
-    public static final int PAYPAL_REQUEST_CODE = 13591;
 
     /**
      * PayPal Scope for Future Payments. Always enabled for the future payments flow.
@@ -373,7 +372,7 @@ public class PayPal {
 
                 @Override
                 public void onCancel() {
-                    fragment.postCancelCallback(PAYPAL_REQUEST_CODE);
+                    fragment.postCancelCallback(BraintreeRequestCodes.PAYPAL);
                 }
             };
         }
@@ -389,7 +388,7 @@ public class PayPal {
                 if (pendingRequest.isSuccess() && pendingRequest.getRequestTarget() == RequestTarget.wallet) {
                     sendAnalyticsForPayPal(fragment, request, true, RequestTarget.wallet);
 
-                    fragment.startActivityForResult(pendingRequest.getIntent(), PAYPAL_REQUEST_CODE);
+                    fragment.startActivityForResult(pendingRequest.getIntent(), BraintreeRequestCodes.PAYPAL);
                 } else if (pendingRequest.isSuccess() && pendingRequest.getRequestTarget() == RequestTarget.browser) {
                     sendAnalyticsForPayPal(fragment, request, true, RequestTarget.browser);
 
@@ -445,7 +444,7 @@ public class PayPal {
                     break;
                 case Cancel:
                     sendAnalyticsEventForSwitchResult(fragment, request, isAppSwitch, "canceled");
-                    fragment.postCancelCallback(PAYPAL_REQUEST_CODE);
+                    fragment.postCancelCallback(BraintreeRequestCodes.PAYPAL);
                     break;
                 case Success:
                     onSuccess(fragment, data, request, result);
@@ -462,7 +461,7 @@ public class PayPal {
             fragment.sendAnalyticsEvent("paypal." + type + ".canceled");
 
             if (resultCode != Activity.RESULT_CANCELED) {
-                fragment.postCancelCallback(PAYPAL_REQUEST_CODE);
+                fragment.postCancelCallback(BraintreeRequestCodes.PAYPAL);
             }
         }
     }

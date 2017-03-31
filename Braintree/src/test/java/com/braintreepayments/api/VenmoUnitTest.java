@@ -11,6 +11,7 @@ import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.Authorization;
+import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VenmoAccountBuilder;
@@ -193,7 +194,7 @@ public class VenmoUnitTest {
         Venmo.authorizeAccount(fragment, false);
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivityForResult(captor.capture(), eq(Venmo.VENMO_REQUEST_CODE));
+        verify(fragment).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.VENMO));
         assertEquals("com.venmo/com.venmo.controller.SetupMerchantActivity",
                 captor.getValue().getComponent().flattenToString());
         Bundle extras = captor.getValue().getExtras();
@@ -236,7 +237,7 @@ public class VenmoUnitTest {
         Venmo.authorizeAccount(fragment,  false);
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivityForResult(captor.capture(), eq(Venmo.VENMO_REQUEST_CODE));
+        verify(fragment).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.VENMO));
         assertEquals("com.venmo/com.venmo.controller.SetupMerchantActivity",
                 captor.getValue().getComponent().flattenToString());
         Bundle extras = captor.getValue().getExtras();

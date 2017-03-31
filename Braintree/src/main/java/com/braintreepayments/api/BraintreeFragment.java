@@ -246,7 +246,7 @@ public class BraintreeFragment extends Fragment {
                 resultCode = Activity.RESULT_OK;
             }
 
-            onActivityResult(PayPal.PAYPAL_REQUEST_CODE, resultCode,
+            onActivityResult(BraintreeRequestCodes.PAYPAL, resultCode,
                     BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse);
 
             BraintreeBrowserSwitchActivity.sLastBrowserSwitchResponse = null;
@@ -330,19 +330,19 @@ public class BraintreeFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
-            case PayPal.PAYPAL_REQUEST_CODE:
+            case BraintreeRequestCodes.PAYPAL:
                 PayPal.onActivityResult(this, resultCode, data);
                 break;
-            case ThreeDSecure.THREE_D_SECURE_REQUEST_CODE:
+            case BraintreeRequestCodes.THREE_D_SECURE:
                 ThreeDSecure.onActivityResult(this, resultCode, data);
                 break;
-            case Venmo.VENMO_REQUEST_CODE:
+            case BraintreeRequestCodes.VENMO:
                 Venmo.onActivityResult(this, resultCode, data);
                 break;
             case BraintreeRequestCodes.VISA_CHECKOUT:
                 VisaCheckout.onActivityResult(this, resultCode, data);
                 break;
-            case AndroidPay.ANDROID_PAY_REQUEST_CODE:
+            case BraintreeRequestCodes.ANDROID_PAY:
                 AndroidPay.onActivityResult(this, resultCode, data);
                 break;
         }

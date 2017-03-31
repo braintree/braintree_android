@@ -10,7 +10,27 @@ import static junit.framework.Assert.assertEquals;
 public class BraintreeRequestCodesUnitTest {
 
     @Test
-    public void visaCheckout_expectedValue() {
+    public void threeDSecure() {
+        assertEquals(13487, BraintreeRequestCodes.THREE_D_SECURE);
+    }
+
+    @Test
+    public void venmo() {
+        assertEquals(13488, BraintreeRequestCodes.VENMO);
+    }
+
+    @Test
+    public void androidPay() {
+        assertEquals(13489, BraintreeRequestCodes.ANDROID_PAY);
+    }
+
+    @Test
+    public void paypal() {
+        assertEquals(13591, BraintreeRequestCodes.PAYPAL);
+    }
+
+    @Test
+    public void visaCheckout() {
         assertEquals(13592, BraintreeRequestCodes.VISA_CHECKOUT);
     }
 }

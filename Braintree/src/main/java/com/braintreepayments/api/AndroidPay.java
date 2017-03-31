@@ -15,6 +15,7 @@ import com.braintreepayments.api.interfaces.TokenizationParametersListener;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
+import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.MetadataBuilder;
 import com.braintreepayments.api.models.TokenizationKey;
@@ -55,8 +56,6 @@ import static com.braintreepayments.api.AndroidPayActivity.EXTRA_TOKENIZATION_PA
  * <a href="https://developers.braintreepayments.com/guides/android-pay/overview">documentation</a>
  */
 public class AndroidPay {
-
-    protected static final int ANDROID_PAY_REQUEST_CODE = 13489;
 
     private static final String VISA_NETWORK = "visa";
     private static final String MASTERCARD_NETWORK = "mastercard";
@@ -247,7 +246,7 @@ public class AndroidPay {
                         .putExtra(EXTRA_PHONE_NUMBER_REQUIRED, phoneNumberRequired)
                         .putParcelableArrayListExtra(EXTRA_ALLOWED_COUNTRIES, allowedCountries)
                         .putExtra(EXTRA_REQUEST_TYPE, AUTHORIZE);
-                fragment.startActivityForResult(intent, ANDROID_PAY_REQUEST_CODE);
+                fragment.startActivityForResult(intent, BraintreeRequestCodes.ANDROID_PAY);
             }
         });
     }
@@ -271,7 +270,7 @@ public class AndroidPay {
                         .putExtra(EXTRA_GOOGLE_TRANSACTION_ID, androidPayCardNonce.getGoogleTransactionId())
                         .putExtra(EXTRA_CART, androidPayCardNonce.getCart())
                         .putExtra(EXTRA_REQUEST_TYPE, CHANGE_PAYMENT_METHOD);
-                fragment.startActivityForResult(intent, ANDROID_PAY_REQUEST_CODE);
+                fragment.startActivityForResult(intent, BraintreeRequestCodes.ANDROID_PAY);
             }
         });
     }

@@ -14,6 +14,7 @@ import com.braintreepayments.api.interfaces.PayPalApprovalHandler;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.internal.BraintreeSharedPreferences;
 import com.braintreepayments.api.models.Authorization;
+import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PayPalAccountNonce;
@@ -239,7 +240,7 @@ public class PayPalUnitTest {
 
         PayPal.authorizeAccount(fragment);
 
-        verify(fragment).postCancelCallback(PayPal.PAYPAL_REQUEST_CODE);
+        verify(fragment).postCancelCallback(BraintreeRequestCodes.PAYPAL);
     }
 
     @Test
@@ -376,7 +377,7 @@ public class PayPalUnitTest {
 
         PayPal.requestBillingAgreement(fragment, new PayPalRequest());
 
-        verify(fragment).postCancelCallback(PayPal.PAYPAL_REQUEST_CODE);
+        verify(fragment).postCancelCallback(BraintreeRequestCodes.PAYPAL);
     }
 
     @Test
@@ -431,7 +432,7 @@ public class PayPalUnitTest {
             }
         });
 
-        verify(fragment).postCancelCallback(PayPal.PAYPAL_REQUEST_CODE);
+        verify(fragment).postCancelCallback(BraintreeRequestCodes.PAYPAL);
     }
 
     @Test
@@ -932,7 +933,7 @@ public class PayPalUnitTest {
 
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
 
-        verify(fragment).postCancelCallback(PayPal.PAYPAL_REQUEST_CODE);
+        verify(fragment).postCancelCallback(BraintreeRequestCodes.PAYPAL);
     }
 
     @Test
@@ -943,7 +944,7 @@ public class PayPalUnitTest {
 
         PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
 
-        verify(fragment).postCancelCallback(PayPal.PAYPAL_REQUEST_CODE);
+        verify(fragment).postCancelCallback(BraintreeRequestCodes.PAYPAL);
     }
 
     @Test
@@ -952,6 +953,6 @@ public class PayPalUnitTest {
 
         PayPal.onActivityResult(fragment, Activity.RESULT_OK, null);
 
-        verify(fragment).postCancelCallback(PayPal.PAYPAL_REQUEST_CODE);
+        verify(fragment).postCancelCallback(BraintreeRequestCodes.PAYPAL);
     }
 }

@@ -20,6 +20,7 @@ import com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils;
 import com.braintreepayments.api.internal.AnalyticsIntentService;
 import com.braintreepayments.api.internal.HttpClient;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
+import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
@@ -790,7 +791,7 @@ public class BraintreeFragmentUnitTest {
         mockStatic(PayPal.class);
         Intent intent = new Intent();
 
-        fragment.onActivityResult(PayPal.PAYPAL_REQUEST_CODE, Activity.RESULT_FIRST_USER, intent);
+        fragment.onActivityResult(BraintreeRequestCodes.PAYPAL, Activity.RESULT_FIRST_USER, intent);
 
         verifyStatic();
         PayPal.onActivityResult(fragment, Activity.RESULT_FIRST_USER, intent);
@@ -802,7 +803,7 @@ public class BraintreeFragmentUnitTest {
         mockStatic(ThreeDSecure.class);
         Intent intent = new Intent();
 
-        fragment.onActivityResult(ThreeDSecure.THREE_D_SECURE_REQUEST_CODE, Activity.RESULT_OK, intent);
+        fragment.onActivityResult(BraintreeRequestCodes.THREE_D_SECURE, Activity.RESULT_OK, intent);
 
         verifyStatic();
         ThreeDSecure.onActivityResult(fragment, Activity.RESULT_OK, intent);
@@ -814,7 +815,7 @@ public class BraintreeFragmentUnitTest {
         mockStatic(Venmo.class);
         Intent intent = new Intent();
 
-        fragment.onActivityResult(Venmo.VENMO_REQUEST_CODE, Activity.RESULT_OK, intent);
+        fragment.onActivityResult(BraintreeRequestCodes.VENMO, Activity.RESULT_OK, intent);
 
         verifyStatic();
         Venmo.onActivityResult(fragment, Activity.RESULT_OK, intent);
@@ -826,7 +827,7 @@ public class BraintreeFragmentUnitTest {
         mockStatic(AndroidPay.class);
         Intent intent = new Intent();
 
-        fragment.onActivityResult(AndroidPay.ANDROID_PAY_REQUEST_CODE, Activity.RESULT_OK, intent);
+        fragment.onActivityResult(BraintreeRequestCodes.ANDROID_PAY, Activity.RESULT_OK, intent);
 
         verifyStatic();
         AndroidPay.onActivityResult(fragment, Activity.RESULT_OK, intent);

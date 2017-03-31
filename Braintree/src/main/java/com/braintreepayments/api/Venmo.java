@@ -12,6 +12,7 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.internal.AppHelper;
 import com.braintreepayments.api.internal.BraintreeSharedPreferences;
 import com.braintreepayments.api.internal.SignatureVerification;
+import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.MetadataBuilder;
@@ -44,8 +45,6 @@ public class Venmo {
     static final String CERTIFICATE_SUBJECT = "CN=Andrew Kortina,OU=Engineering,O=Venmo,L=Philadelphia,ST=PA,C=US";
     static final String CERTIFICATE_ISSUER = "CN=Andrew Kortina,OU=Engineering,O=Venmo,L=Philadelphia,ST=PA,C=US";
     static final int PUBLIC_KEY_HASH_CODE = -129711843;
-
-    static final int VENMO_REQUEST_CODE = 13488;
 
     /**
      * @param context A context to access the installed packages.
@@ -115,7 +114,7 @@ public class Venmo {
                             fragment.getApplicationContext());
 
                     fragment.startActivityForResult(getLaunchIntent(configuration.getPayWithVenmo(), fragment),
-                            VENMO_REQUEST_CODE);
+                            BraintreeRequestCodes.VENMO);
                     fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
                 }
             }
