@@ -9,12 +9,13 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
-import com.braintreepayments.demo.test.DemoTestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
+import com.braintreepayments.demo.test.DemoTestActivity;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -78,7 +79,7 @@ public class ThreeDSecureVerificationTest {
         fragment.addListener(new BraintreeCancelListener() {
             @Override
             public void onCancel(int requestCode) {
-                assertEquals(ThreeDSecure.THREE_D_SECURE_REQUEST_CODE, requestCode);
+                assertEquals(BraintreeRequestCodes.THREE_D_SECURE, requestCode);
                 mCountDownLatch.countDown();
             }
         });
@@ -99,7 +100,7 @@ public class ThreeDSecureVerificationTest {
         fragment.addListener(new BraintreeCancelListener() {
             @Override
             public void onCancel(int requestCode) {
-                assertEquals(ThreeDSecure.THREE_D_SECURE_REQUEST_CODE, requestCode);
+                assertEquals(BraintreeRequestCodes.THREE_D_SECURE, requestCode);
                 mCountDownLatch.countDown();
             }
         });
