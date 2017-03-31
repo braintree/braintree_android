@@ -1,5 +1,13 @@
 # Braintree Android SDK Release Notes
 
+## 2.5.0
+
+* Add option to set display name in `PayPalRequest`
+* Add option to set landing page type in `PayPalRequest`
+* Add option to enable PayPal Credit in `PayPalRequest`
+* Add Visa Checkout as a payment method
+* Prevent dependency resolution of alpha major versions of support libraries
+
 ## 2.4.3
 
 * Improve `GoogleApiClientException` to include error type as well as reason code
