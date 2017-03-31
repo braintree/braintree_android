@@ -142,6 +142,7 @@ uploadArchives {
 
             pom.whenConfigured { MavenPom pom ->
                 def ignoredDependencies = [
+                        'com.braintreepayments.api:data-collector',
                         'com.android.support:support-v4',
                         'com.android.support:appcompat-v7',
                         'com.android.support:design',
