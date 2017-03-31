@@ -1,5 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## 2.5.1
+
+* Fix non-optional `data-collector` dependency in Braintree
+* Create `BraintreeRequestCodes` for use with `BraintreeCancelListener#onCancel`
+* Move PayPal browser switches to use [browser-switch-android](https://github.com/braintree/browser-switch-android)
+
 ## 2.5.0
 
 * Add option to set display name in `PayPalRequest`
