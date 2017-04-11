@@ -40,20 +40,26 @@ public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
     protected static final int CHANGE_PAYMENT_METHOD = 2;
     private static final int FULL_WALLET_REQUEST = 3;
 
+    private static final String EXTRA_RECREATING = "com.braintreepayments.api.EXTRA_RECREATING";
+
     private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setupGoogleApiClient();
+
+        if (savedInstanceState != null && savedInstanceState.getBoolean(EXTRA_RECREATING)) {
+            return;
+        }
+
         int requestType = getIntent().getIntExtra(EXTRA_REQUEST_TYPE, -1);
         switch (requestType) {
             case AUTHORIZE:
-                setupGoogleApiClient();
                 loadMaskedWallet();
                 break;
             case CHANGE_PAYMENT_METHOD:
-                setupGoogleApiClient();
                 changeMaskedWallet();
                 break;
             default:
@@ -62,6 +68,12 @@ public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
                 finish();
                 break;
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(EXTRA_RECREATING, true);
     }
 
     @Override
