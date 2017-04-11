@@ -40,7 +40,8 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
         PaymentMethodNonceCreatedListener, BraintreeCancelListener, BraintreeErrorListener,
         ActionBar.OnNavigationListener {
 
-    private static final String KEY_AUTHORIZATION = "com.braintreepayments.demo.KEY_AUTHORIZATION";
+    private static final String EXTRA_AUTHORIZATION = "com.braintreepayments.demo.EXTRA_AUTHORIZATION";
+    private static final String EXTRA_CUSTOMER_ID = "com.braintreepayments.demo.EXTRA_CUSTOMER_ID";
 
     protected String mAuthorization;
     protected String mCustomerId;
@@ -55,8 +56,9 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
 
         mLogger = LoggerFactory.getLogger(getClass().getSimpleName());
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_AUTHORIZATION)) {
-            mAuthorization = savedInstanceState.getString(KEY_AUTHORIZATION);
+        if (savedInstanceState != null) {
+            mAuthorization = savedInstanceState.getString(EXTRA_AUTHORIZATION);
+            mCustomerId = savedInstanceState.getString(EXTRA_CUSTOMER_ID);
         }
     }
 
@@ -101,7 +103,8 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mAuthorization != null) {
-            outState.putString(KEY_AUTHORIZATION, mAuthorization);
+            outState.putString(EXTRA_AUTHORIZATION, mAuthorization);
+            outState.putString(EXTRA_CUSTOMER_ID, mCustomerId);
         }
     }
 
