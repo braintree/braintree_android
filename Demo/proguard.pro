@@ -8,6 +8,7 @@
 
 ## Mailable_Log
 -dontwarn ch.qos.logback.core.net.**
+-dontwarn org.slf4j.**
 
 ## Visa Checkout
 -assumenosideeffects class android.util.Log {
