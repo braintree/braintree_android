@@ -19,7 +19,6 @@
     public static final ** CREATOR;
 }
 -keep public class * extends android.app.Activity
--dontwarn com.visa.**
 -dontwarn com.google.gson.**
 -dontwarn com.threatmetrix.**
 -dontwarn com.google.**
