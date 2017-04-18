@@ -83,7 +83,6 @@ dependencies {
     compile 'de.greenrobot:eventbus:2.4.1'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
-    compile 'com.google.android.gms:play-services-wallet:10.0.1'
 
     compile project(':Braintree')
     compile 'io.card:android-sdk:5.5.0'
