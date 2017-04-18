@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -39,7 +38,6 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.paypal_activity);
         setUpAsBack();
 
@@ -48,8 +46,6 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
         mFuturePaymentAddressScopeButton = (Button) findViewById(R.id.paypal_future_payment_address_scope_button);
         mFuturePaymentButton = (Button) findViewById(R.id.paypal_future_payment_button);
         mSinglePaymentButton = (Button) findViewById(R.id.paypal_single_payment_button);
-
-        setProgressBarIndeterminateVisibility(true);
     }
 
     @Override
@@ -63,12 +59,12 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         PayPalOverrides.setFuturePaymentsOverride(false);
     }
 
     @Override
     protected void reset() {
-        setProgressBarIndeterminateVisibility(true);
         enableButtons(false);
     }
 
@@ -81,7 +77,6 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
         }
 
         enableButtons(true);
-        setProgressBarIndeterminateVisibility(false);
     }
 
     private void enableButtons(boolean enabled) {
@@ -92,31 +87,29 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
     }
 
     public void launchFuturePayment(View v) {
-        PayPalOverrides.setFuturePaymentsOverride(true);
         setProgressBarIndeterminateVisibility(true);
+
+        PayPalOverrides.setFuturePaymentsOverride(true);
         PayPal.authorizeAccount(mBraintreeFragment);
     }
 
     public void launchFuturePaymentAddressScope(View v) {
-        PayPalOverrides.setFuturePaymentsOverride(true);
         setProgressBarIndeterminateVisibility(true);
+
+        PayPalOverrides.setFuturePaymentsOverride(true);
         PayPal.authorizeAccount(mBraintreeFragment, Collections.singletonList(PayPal.SCOPE_ADDRESS));
     }
 
     public void launchSinglePayment(View v) {
         setProgressBarIndeterminateVisibility(true);
+
         PayPal.requestOneTimePayment(mBraintreeFragment, getPayPalRequest("1.00"));
     }
 
     public void launchBillingAgreement(View v) {
         setProgressBarIndeterminateVisibility(true);
-        PayPal.requestBillingAgreement(mBraintreeFragment, getPayPalRequest(null));
-    }
 
-    @Override
-    public void onCancel(int requestCode) {
-        super.onCancel(requestCode);
-        setProgressBarIndeterminateVisibility(false);
+        PayPal.requestBillingAgreement(mBraintreeFragment, getPayPalRequest(null));
     }
 
     @Override
@@ -140,12 +133,6 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
                 .putExtra(MainActivity.EXTRA_DEVICE_DATA, mDeviceData);
         setResult(RESULT_OK, intent);
         finish();
-    }
-
-    @Override
-    public void onError(Exception error) {
-        super.onError(error);
-        setProgressBarIndeterminateVisibility(false);
     }
 
     private PayPalRequest getPayPalRequest(@Nullable String amount) {

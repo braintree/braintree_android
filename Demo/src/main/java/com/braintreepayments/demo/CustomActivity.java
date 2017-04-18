@@ -95,8 +95,6 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
                 mSendSmsButton.setVisibility(VISIBLE);
             }
         }
-
-        setProgressBarIndeterminateVisibility(true);
     }
 
     @Override
@@ -108,7 +106,6 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
 
     @Override
     protected void reset() {
-        setProgressBarIndeterminateVisibility(true);
         mPayPalButton.setVisibility(GONE);
         mAndroidPayButton.setVisibility(GONE);
         mPurchaseButton.setEnabled(false);
@@ -122,7 +119,6 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
             onError(e);
         }
 
-        setProgressBarIndeterminateVisibility(false);
         mPurchaseButton.setEnabled(true);
     }
 
@@ -302,12 +298,6 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     }
 
     @Override
-    public void onCancel(int requestCode) {
-        super.onCancel(requestCode);
-        setProgressBarIndeterminateVisibility(false);
-    }
-
-    @Override
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
@@ -316,11 +306,5 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
                 .putExtra(MainActivity.EXTRA_DEVICE_DATA, mDeviceData);
         setResult(RESULT_OK, intent);
         finish();
-    }
-
-    @Override
-    public void onError(Exception error) {
-        super.onError(error);
-        setProgressBarIndeterminateVisibility(false);
     }
 }

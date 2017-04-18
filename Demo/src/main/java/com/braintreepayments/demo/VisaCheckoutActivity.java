@@ -2,7 +2,6 @@ package com.braintreepayments.demo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -28,7 +27,10 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.visa_checkout_activity);
+        setUpAsBack();
+
         mVisaPaymentButton = findViewById(R.id.visa_checkout_button);
         mVisaPaymentButton.setOnClickListener(this);
     }
@@ -46,10 +48,10 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
 
     @Override
     public void onClick(View view) {
-        PurchaseInfoBuilder purchaseInfo = new PurchaseInfoBuilder(new BigDecimal("1.00"),
-                PurchaseInfo.Currency.USD)
-                .setDescription("Description");
+        setProgressBarIndeterminateVisibility(true);
 
+        PurchaseInfoBuilder purchaseInfo = new PurchaseInfoBuilder(new BigDecimal("1.00"), PurchaseInfo.Currency.USD)
+                .setDescription("Description");
         VisaCheckout.authorize(mBraintreeFragment, purchaseInfo);
     }
 
@@ -76,8 +78,8 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
     @Override
     public void status(int code, String message) {
         if (code != Status.SUCCESS) {
+            onError(new Exception("Visa Checkout: " + code + " " + message));
             mVisaPaymentButton.setEnabled(false);
-            Log.d("Visa Checkout", code + " " + message);
         } else {
             mVisaPaymentButton.setEnabled(true);
         }

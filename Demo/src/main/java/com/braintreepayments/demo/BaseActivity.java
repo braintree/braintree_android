@@ -6,6 +6,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import android.support.v4.content.ContextCompat;
@@ -14,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 
 import com.braintreepayments.api.BraintreeFragment;
@@ -53,6 +55,9 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        setProgressBarIndeterminateVisibility(true);
 
         mLogger = LoggerFactory.getLogger(getClass().getSimpleName());
 
@@ -108,18 +113,25 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
         }
     }
 
+    @CallSuper
     @Override
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         mLogger.debug("Payment Method Nonce received: " + paymentMethodNonce.getTypeLabel());
     }
 
+    @CallSuper
     @Override
     public void onCancel(int requestCode) {
+        setProgressBarIndeterminateVisibility(false);
+
         mLogger.debug("Cancel received: " + requestCode);
     }
 
+    @CallSuper
     @Override
     public void onError(Exception error) {
+        setProgressBarIndeterminateVisibility(false);
+
         mLogger.debug("Error received (" + error.getClass() + "): "  + error.getMessage());
         mLogger.debug(error.toString());
 
@@ -127,6 +139,8 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
     }
 
     private void performReset() {
+        setProgressBarIndeterminateVisibility(true);
+
         mAuthorization = null;
         mCustomerId = Settings.getCustomerId(this);
 
@@ -145,15 +159,19 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
 
     protected void fetchAuthorization() {
         if (mAuthorization != null) {
+            setProgressBarIndeterminateVisibility(false);
             onAuthorizationFetched();
         } else if (Settings.useTokenizationKey(this)) {
             mAuthorization = Settings.getEnvironmentTokenizationKey(this);
+            setProgressBarIndeterminateVisibility(false);
             onAuthorizationFetched();
         } else {
             DemoApplication.getApiClient(this).getClientToken(Settings.getCustomerId(this),
                     Settings.getThreeDSecureMerchantAccountId(this), new Callback<ClientToken>() {
                         @Override
                         public void success(ClientToken clientToken, Response response) {
+                            setProgressBarIndeterminateVisibility(false);
+
                             if (TextUtils.isEmpty(clientToken.getClientToken())) {
                                 showDialog("Client token was empty");
                             } else {
@@ -164,6 +182,8 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
 
                         @Override
                         public void failure(RetrofitError error) {
+                            setProgressBarIndeterminateVisibility(false);
+
                             if (error.getResponse() == null) {
                                 showDialog(error.getCause().getMessage());
                             } else {
