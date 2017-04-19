@@ -281,4 +281,10 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
             mLoading.dismiss();
         }
     }
+
+    public static String getDisplayString(CardNonce nonce) {
+        return "Card Last Two: " + nonce.getLastTwo() + "\n" +
+                "3DS isLiabilityShifted: " + nonce.getThreeDSecureInfo().isLiabilityShifted() + "\n" +
+                "3DS isLiabilityShiftPossible: " + nonce.getThreeDSecureInfo().isLiabilityShiftPossible();
+    }
 }

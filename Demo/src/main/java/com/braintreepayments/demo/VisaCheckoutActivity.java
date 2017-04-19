@@ -10,6 +10,8 @@ import com.braintreepayments.api.VisaCheckout;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.VisaCheckoutAddress;
+import com.braintreepayments.api.models.VisaCheckoutNonce;
 import com.visa.checkout.Profile.ProfileBuilder;
 import com.visa.checkout.PurchaseInfo;
 import com.visa.checkout.PurchaseInfo.PurchaseInfoBuilder;
@@ -83,5 +85,28 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
         } else {
             mVisaPaymentButton.setEnabled(true);
         }
+    }
+
+    public static String getDisplayString(VisaCheckoutNonce nonce) {
+        return "User data\n" +
+                "First name: " + nonce.getUserData().getUserFirstName() + "\n" +
+                "Last name: " + nonce.getUserData().getUserLastName() + "\n" +
+                "Full name: " + nonce.getUserData().getUserFullName() + "\n" +
+                "User name: " + nonce.getUserData().getUsername() + "\n" +
+                "Email: " + nonce.getUserData().getUserEmail() + "\n" +
+                "Billing Address: " + formatAddress(nonce.getBillingAddress()) + "\n" +
+                "Shipping Address: " + formatAddress(nonce.getShippingAddress()) + "\n";
+    }
+
+    private static String formatAddress(VisaCheckoutAddress address) {
+        return address.getFirstName() + " " +
+                address.getLastName() + " " +
+                address.getStreetAddress() + " " +
+                address.getExtendedAddress() + " " +
+                address.getLocality() + " " +
+                address.getPostalCode() + " " +
+                address.getRegion() + " " +
+                address.getCountryCode() + " " +
+                address.getPhoneNumber();
     }
 }

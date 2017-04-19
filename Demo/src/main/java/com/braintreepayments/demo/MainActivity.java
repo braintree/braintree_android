@@ -16,11 +16,8 @@ import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.models.VenmoAccountNonce;
-import com.braintreepayments.api.models.VisaCheckoutAddress;
 import com.braintreepayments.api.models.VisaCheckoutNonce;
-import com.google.android.gms.identity.intents.model.UserAddress;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.LineItem;
 
@@ -186,39 +183,13 @@ public class MainActivity extends BaseActivity {
 
         String details = "";
         if (mNonce instanceof CardNonce) {
-            CardNonce cardNonce = (CardNonce) mNonce;
-
-            details = "Card Last Two: " + cardNonce.getLastTwo() + "\n";
-            details += "3DS isLiabilityShifted: " + cardNonce.getThreeDSecureInfo().isLiabilityShifted() + "\n";
-            details += "3DS isLiabilityShiftPossible: " + cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible();
+            details = CardActivity.getDisplayString((CardNonce) mNonce);
         } else if (mNonce instanceof PayPalAccountNonce) {
-            PayPalAccountNonce paypalAccountNonce = (PayPalAccountNonce) mNonce;
-
-            details = "First name: " + paypalAccountNonce.getFirstName() + "\n";
-            details += "Last name: " + paypalAccountNonce.getLastName() + "\n";
-            details += "Email: " + paypalAccountNonce.getEmail() + "\n";
-            details += "Phone: " + paypalAccountNonce.getPhone() + "\n";
-            details += "Payer id: " + paypalAccountNonce.getPayerId() + "\n";
-            details += "Client metadata id: " + paypalAccountNonce.getClientMetadataId() + "\n";
-            details += "Billing address: " + formatAddress(paypalAccountNonce.getBillingAddress()) + "\n";
-            details += "Shipping address: " + formatAddress(paypalAccountNonce.getShippingAddress());
+            details = PayPalActivity.getDisplayString((PayPalAccountNonce) mNonce);
         } else if (mNonce instanceof AndroidPayCardNonce) {
-            AndroidPayCardNonce androidPayCardNonce = (AndroidPayCardNonce) mNonce;
-
-            details = "Underlying Card Last Two: " + androidPayCardNonce.getLastTwo() + "\n";
-            details += "Email: " + androidPayCardNonce.getEmail() + "\n";
-            details += "Billing address: " + formatAddress(androidPayCardNonce.getBillingAddress()) + "\n";
-            details += "Shipping address: " + formatAddress(androidPayCardNonce.getShippingAddress());
+            details = AndroidPayActivity.getDisplayString((AndroidPayCardNonce) mNonce);
         } else if (mNonce instanceof VisaCheckoutNonce) {
-            VisaCheckoutNonce visaCheckoutNonce = (VisaCheckoutNonce) mNonce;
-            details = "User data\n";
-            details += "First name: " + visaCheckoutNonce.getUserData().getUserFirstName() + "\n";
-            details += "Last name: " + visaCheckoutNonce.getUserData().getUserLastName() + "\n";
-            details += "Full name: " + visaCheckoutNonce.getUserData().getUserFullName() + "\n";
-            details += "User name: " + visaCheckoutNonce.getUserData().getUsername() + "\n";
-            details += "Email: " + visaCheckoutNonce.getUserData().getUserEmail() + "\n";
-            details += "Billing Address: " + formatAddress(visaCheckoutNonce.getBillingAddress()) + "\n";
-            details += "Shipping Address: " + formatAddress(visaCheckoutNonce.getShippingAddress()) + "\n";
+            details = VisaCheckoutActivity.getDisplayString((VisaCheckoutNonce) mNonce);
         } else if (mNonce instanceof VenmoAccountNonce) {
             VenmoAccountNonce venmoAccountNonce = (VenmoAccountNonce) mNonce;
             details = "Username: " + venmoAccountNonce.getUsername();
@@ -239,28 +210,6 @@ public class MainActivity extends BaseActivity {
         mNonceDetails.setVisibility(GONE);
         mDeviceData.setVisibility(GONE);
         mCreateTransactionButton.setEnabled(false);
-    }
-
-    private String formatAddress(VisaCheckoutAddress address) {
-        return address.getFirstName() + " " + address.getLastName() + " " + address.getStreetAddress() + " " +
-                address.getExtendedAddress() + " " + address.getLocality() + " " + address.getPostalCode() + " " +
-                address.getRegion() + " " + address.getCountryCode() + " " + address.getPhoneNumber();
-    }
-
-    private String formatAddress(PostalAddress address) {
-        return address.getRecipientName() + " " + address.getStreetAddress() + " " +
-            address.getExtendedAddress() + " " + address.getLocality() + " " + address.getRegion() +
-                " " + address.getPostalCode() + " " + address.getCountryCodeAlpha2();
-    }
-
-    private String formatAddress(UserAddress address) {
-        if(address == null) {
-            return "null";
-        }
-        return address.getName() + " " + address.getAddress1() + " " + address.getAddress2() + " " +
-                address.getAddress3() + " " + address.getAddress4() + " " + address.getAddress5() + " " +
-                address.getLocality() + " " + address.getAdministrativeArea() + " " + address.getPostalCode() + " " +
-                address.getSortingCode() + " " + address.getCountryCode();
     }
 
     private Cart getAndroidPayCart() {

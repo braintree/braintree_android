@@ -17,8 +17,10 @@ import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.PostalAddress;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import java.util.Collections;
@@ -165,5 +167,26 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
         }
 
         return request;
+    }
+
+    public static String getDisplayString(PayPalAccountNonce nonce) {
+        return "First name: " + nonce.getFirstName() + "\n" +
+                "Last name: " + nonce.getLastName() + "\n" +
+                "Email: " + nonce.getEmail() + "\n" +
+                "Phone: " + nonce.getPhone() + "\n" +
+                "Payer id: " + nonce.getPayerId() + "\n" +
+                "Client metadata id: " + nonce.getClientMetadataId() + "\n" +
+                "Billing address: " + formatAddress(nonce.getBillingAddress()) + "\n" +
+                "Shipping address: " + formatAddress(nonce.getShippingAddress());
+    }
+
+    private static String formatAddress(PostalAddress address) {
+        return address.getRecipientName() + " " +
+                address.getStreetAddress() + " " +
+                address.getExtendedAddress() + " " +
+                address.getLocality() + " " +
+                address.getRegion() + " " +
+                address.getPostalCode() + " " +
+                address.getCountryCodeAlpha2();
     }
 }

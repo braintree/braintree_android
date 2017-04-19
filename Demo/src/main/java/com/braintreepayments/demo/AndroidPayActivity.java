@@ -9,8 +9,10 @@ import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.google.android.gms.identity.intents.model.CountrySpecification;
+import com.google.android.gms.identity.intents.model.UserAddress;
 import com.google.android.gms.wallet.Cart;
 
 import java.util.ArrayList;
@@ -80,5 +82,30 @@ public class AndroidPayActivity extends BaseActivity implements ConfigurationLis
 
         AndroidPay.requestAndroidPay(mBraintreeFragment, mCart, Settings.isAndroidPayShippingAddressRequired(this),
                 Settings.isAndroidPayPhoneNumberRequired(this), allowedCountries);
+    }
+
+    public static String getDisplayString(AndroidPayCardNonce nonce) {
+        return "Underlying Card Last Two: " + nonce.getLastTwo() + "\n" +
+                "Email: " + nonce.getEmail() + "\n" +
+                "Billing address: " + formatAddress(nonce.getBillingAddress()) + "\n" +
+                "Shipping address: " + formatAddress(nonce.getShippingAddress());
+    }
+
+    private static String formatAddress(UserAddress address) {
+        if (address == null) {
+            return "null";
+        }
+
+        return address.getName() + " " +
+                address.getAddress1() + " " +
+                address.getAddress2() + " " +
+                address.getAddress3() + " " +
+                address.getAddress4() + " " +
+                address.getAddress5() + " " +
+                address.getLocality() + " " +
+                address.getAdministrativeArea() + " " +
+                address.getPostalCode() + " " +
+                address.getSortingCode() + " " +
+                address.getCountryCode();
     }
 }
