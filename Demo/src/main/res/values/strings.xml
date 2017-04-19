@@ -10,18 +10,13 @@
     <string name="drop_in">Drop-In</string>
     <string name="paypal_button">@string/paypal</string>
     <string name="visa_checkout_button">Visa Checkout</string>
-    <string name="payment_button">Payment Button</string>
-    <string name="custom">Custom</string>
+    <string name="cards">Credit or Debit Cards</string>
     <string name="create_transaction">Create a Transaction</string>
     <string name="loading">Loading…</string>
     <string name="buy">Buy</string>
 
-    <!-- CustomActivity -->
+    <!-- CardActivity -->
     <string name="purchase">Purchase</string>
-    <string name="card_number">Card Number</string>
-    <string name="expiration_date">Expiration Date</string>
-    <string name="country_code">Country Code</string>
-    <string name="mobile_phone">Mobile Phone</string>
     <string name="send_sms">Send SMS</string>
     <string name="sms_auth_code">SMS Auth Code</string>
 
@@ -29,9 +24,9 @@
     <string name="processing_transaction">Processing Transaction</string>
     <string name="transaction_failed">Transaction Failed</string>
     <string name="transaction_complete">Transaction Complete</string>
-    <string name="purchase_complete">Purchase Complete</string>
 
     <!-- Settings -->
+    <string name="empty"></string>
     <string name="none">None</string>
     <string name="options">Options</string>
     <string name="sandbox">Sandbox</string>
@@ -45,10 +40,9 @@
     <string name="empty_merchant_account">Not specifying a merchant account will use the default merchant account. \n\nMerchant Account: %s</string>
     <string name="collect_device_data">Collect Device Data</string>
     <string name="collect_device_data_summary">Collects device data for fraud purposes</string>
-    <string name="environment">Environment</string>
     <string name="android_pay">Android Pay</string>
-    <string name="android_pay_is_billing_agreement">isBillingAgreement</string>
-    <string name="android_pay_is_billing_agreement_summary">Use Android Pay with a billing agreement</string>
+    <string name="usd">USD</string>
+    <string name="us">US</string>
     <string name="android_pay_require_shipping_address">Require Shipping Address</string>
     <string name="android_pay_require_shipping_address_summary">Require shipping address from the user</string>
     <string name="android_pay_require_phone_number">Require Phone Number</string>
@@ -73,7 +67,6 @@
     <string name="paypal_future_payment_address_scope">Future Payment (Address Scope)</string>
     <string name="paypal_single_payment">Single Payment</string>
     <string name="paypal_billing_agreement">Billing Agreement</string>
-    <string name="paypal_payment_type">Payment Type</string>
     <string name="paypal_intent_type">Intent Type</string>
     <string name="paypal_landing_page_type">Landing Page Type</string>
     <string name="paypal_intent_authorize">Authorize</string>
@@ -89,7 +82,5 @@
     <string name="paypal_credit_offered">Offer PayPal Credit</string>
     <string name="paypal_credit_offered_summary">Offers PayPal Credit prominently in the payment flow</string>
     <string name="paypal_useraction_commit_title">Set Useraction to Commit</string>
-    <string name="paypal_useraction_commit_summary">Sets the Payment User Action to Commit for Express Checkout
-        Transactions
-    </string>
+    <string name="paypal_useraction_commit_summary">Sets the Payment User Action to Commit for Express Checkout Transactions</string>
 </resources>

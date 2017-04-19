@@ -19,7 +19,7 @@
             android:key="customer"
             android:title="@string/customer"
             android:summary="@string/customer_summary"
-            android:defaultValue="" />
+            android:defaultValue="@string/empty" />
 
     </PreferenceCategory>
 
@@ -30,7 +30,7 @@
             android:key="merchant_account"
             android:title="@string/merchant_account"
             android:summary="@string/empty_merchant_account"
-            android:defaultValue=""/>
+            android:defaultValue="@string/empty"/>
 
         <CheckBoxPreference
             android:key="collect_device_data"
@@ -59,13 +59,13 @@
             android:key="android_pay_currency"
             android:title="@string/android_pay_currency_title"
             android:summary="@string/android_pay_currency_summary"
-            android:defaultValue="USD" />
+            android:defaultValue="@string/usd" />
 
         <com.braintreepayments.demo.views.SummaryEditTestPreference
             android:key="android_pay_allowed_countries_for_shipping"
             android:title="@string/android_pay_allowed_countries_for_shipping_title"
             android:summary="@string/android_pay_allowed_countries_for_shipping_summary"
-            android:defaultValue="US" />
+            android:defaultValue="@string/us" />
 
     </PreferenceCategory>
 
@@ -115,13 +115,6 @@
             android:entries="@array/paypal_intent_types"
             android:entryValues="@array/paypal_intent_types_values"
             android:defaultValue="@string/paypal_intent_authorize"/>
-
-        <ListPreference
-            android:key="paypal_payment_type"
-            android:title="@string/paypal_payment_type"
-            android:entries="@array/paypal_payment_types"
-            android:entryValues="@array/paypal_payment_types_values"
-            android:defaultValue="@string/paypal_billing_agreement" />
 
         <EditTextPreference
             android:key="paypal_display_name"

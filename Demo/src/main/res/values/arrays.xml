@@ -5,18 +5,6 @@
         <item name="production">@string/production</item>
     </string-array>
 
-    <string-array name="paypal_payment_types">
-        <item name="checkout">@string/paypal_single_payment</item>
-        <item name="future_payment">@string/paypal_future_payment</item>
-        <item name="billing_agreement">@string/paypal_billing_agreement</item>
-    </string-array>
-
-    <string-array name="paypal_payment_types_values">
-        <item name="checkout">@string/paypal_single_payment</item>
-        <item name="future_payment">@string/paypal_future_payment</item>
-        <item name="billing_agreement">@string/paypal_billing_agreement</item>
-    </string-array>
-
     <string-array name="paypal_intent_types">
         <item name="authorize">@string/paypal_intent_authorize</item>
         <item name="order">@string/paypal_intent_order</item>

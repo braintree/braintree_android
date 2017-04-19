@@ -9,36 +9,6 @@
         android:layout_height="match_parent"
         android:paddingTop="40dp">
 
-        <ImageButton
-            android:id="@+id/paypal_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_gravity="center"
-            android:src="@drawable/logo_paypal"
-            android:background="@color/bt_white"
-            android:contentDescription="@string/bt_descriptor_paypal"
-            android:visibility="gone"
-            android:onClick="launchPayPal" />
-
-        <ImageButton
-            android:id="@+id/android_pay_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:layout_gravity="center"
-            android:src="@drawable/logo_android_pay"
-            android:background="@color/bt_white"
-            android:contentDescription="@string/bt_descriptor_android_pay"
-            android:visibility="gone"
-            android:onClick="launchAndroidPay" />
-
         <com.braintreepayments.cardform.view.CardForm
             android:id="@+id/card_form"
             android:layout_width="match_parent"

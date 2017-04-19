@@ -21,11 +21,19 @@
             android:enabled="false" />
 
         <Button
-            android:id="@+id/custom"
+            android:id="@+id/android_pay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/custom"
-            android:onClick="launchCustom"
+            android:text="@string/android_pay"
+            android:onClick="launchAndroidPay"
+            android:enabled="false" />
+
+        <Button
+            android:id="@+id/card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/cards"
+            android:onClick="launchCards"
             android:enabled="false" />
 
         <Button

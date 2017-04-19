@@ -17,11 +17,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".SettingsActivity" android:label="@string/options" />
-        <activity android:name=".CustomActivity" android:label="@string/buy" />
+        <activity android:name=".AndroidPayActivity" android:label="@string/buy" />
+        <activity android:name=".CardActivity" android:label="@string/buy" />
         <activity android:name=".CreateTransactionActivity" />
         <activity android:name=".PayPalActivity" android:label="@string/paypal" />
         <activity android:name=".VisaCheckoutActivity" android:label="@string/visa_checkout_button" />
+
         <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
             android:launchMode="singleTask">
             <intent-filter>

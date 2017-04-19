@@ -5,16 +5,12 @@ import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 
-import com.braintreepayments.api.AndroidPay;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.DataCollector;
-import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.UnionPay;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
@@ -24,7 +20,6 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.UnionPayListener;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.UnionPayCapabilities;
 import com.braintreepayments.api.models.UnionPayCardBuilder;
@@ -33,16 +28,11 @@ import com.braintreepayments.cardform.OnCardFormSubmitListener;
 import com.braintreepayments.cardform.utils.CardType;
 import com.braintreepayments.cardform.view.CardEditText;
 import com.braintreepayments.cardform.view.CardForm;
-import com.google.android.gms.identity.intents.model.CountrySpecification;
-import com.google.android.gms.wallet.Cart;
-
-import java.util.ArrayList;
-import java.util.Collections;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class CustomActivity extends BaseActivity implements ConfigurationListener, UnionPayListener,
+public class CardActivity extends BaseActivity implements ConfigurationListener, UnionPayListener,
         PaymentMethodNonceCreatedListener, BraintreeErrorListener, OnCardFormSubmitListener,
         OnCardFormFieldFocusedListener {
 
@@ -50,13 +40,10 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     private static final String EXTRA_UNIONPAY_ENROLLMENT_ID = "com.braintreepayments.demo.EXTRA_UNIONPAY_ENROLLMENT_ID";
 
     private Configuration mConfiguration;
-    private Cart mCart;
     private String mDeviceData;
     private boolean mIsUnionPay;
     private String mEnrollmentId;
 
-    private ImageButton mPayPalButton;
-    private ImageButton mAndroidPayButton;
     private CardForm mCardForm;
     private TextInputLayout mSmsCodeContainer;
     private EditText mSmsCode;
@@ -69,14 +56,8 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     protected void onCreate(Bundle onSaveInstanceState) {
         super.onCreate(onSaveInstanceState);
 
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.custom_activity);
         setUpAsBack();
-
-        mCart = getIntent().getParcelableExtra(MainActivity.EXTRA_ANDROID_PAY_CART);
-
-        mPayPalButton = (ImageButton) findViewById(R.id.paypal_button);
-        mAndroidPayButton = (ImageButton) findViewById(R.id.android_pay_button);
 
         mCardForm = (CardForm) findViewById(R.id.card_form);
         mCardForm.setOnFormFieldFocusedListener(this);
@@ -106,8 +87,6 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
 
     @Override
     protected void reset() {
-        mPayPalButton.setVisibility(GONE);
-        mAndroidPayButton.setVisibility(GONE);
         mPurchaseButton.setEnabled(false);
     }
 
@@ -133,21 +112,6 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
                 .mobileNumberRequired(false)
                 .actionLabel(getString(R.string.purchase))
                 .setup(this);
-
-        if (configuration.isPayPalEnabled()) {
-            mPayPalButton.setVisibility(VISIBLE);
-        }
-
-        if (configuration.getAndroidPay().isEnabled(this)) {
-            AndroidPay.isReadyToPay(mBraintreeFragment, new BraintreeResponseListener<Boolean>() {
-                @Override
-                public void onResponse(Boolean isReadyToPay) {
-                    if (isReadyToPay) {
-                        mAndroidPayButton.setVisibility(VISIBLE);
-                    }
-                }
-            });
-        }
 
         if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {
             DataCollector.collectDeviceData(mBraintreeFragment, new BraintreeResponseListener<String>() {
@@ -238,35 +202,6 @@ public class CustomActivity extends BaseActivity implements ConfigurationListene
     @Override
     public void onCardFormSubmit() {
         onPurchase(null);
-    }
-
-    public void launchPayPal(View v) {
-        setProgressBarIndeterminateVisibility(true);
-
-        String paymentType = Settings.getPayPalPaymentType(this);
-        if (paymentType.equals(getString(R.string.paypal_billing_agreement))) {
-            PayPal.requestBillingAgreement(mBraintreeFragment, new PayPalRequest());
-        } else if (paymentType.equals(getString(R.string.paypal_future_payment))) {
-            if (Settings.isPayPalAddressScopeRequested(this)) {
-                PayPal.authorizeAccount(mBraintreeFragment, Collections.singletonList(PayPal.SCOPE_ADDRESS));
-            } else {
-                PayPal.authorizeAccount(mBraintreeFragment);
-            }
-        } else if (paymentType.equals(getString(R.string.paypal_single_payment))) {
-            PayPal.requestOneTimePayment(mBraintreeFragment, new PayPalRequest("1.00"));
-        }
-    }
-
-    public void launchAndroidPay(View v) {
-        setProgressBarIndeterminateVisibility(true);
-
-        ArrayList<CountrySpecification> allowedCountries = new ArrayList<>();
-        for (String country : Settings.getAndroidPayAllowedCountriesForShipping(this)) {
-            allowedCountries.add(new CountrySpecification(country));
-        }
-
-        AndroidPay.requestAndroidPay(mBraintreeFragment, mCart, Settings.isAndroidPayShippingAddressRequired(this),
-                Settings.isAndroidPayPhoneNumberRequired(this), allowedCountries);
     }
 
     public void onPurchase(View v) {

@@ -1,7 +1,6 @@
 package com.braintreepayments.demo.test;
 
 import android.preference.PreferenceManager;
-import android.support.test.filters.RequiresDevice;
 import android.support.test.runner.AndroidJUnit4;
 import android.widget.ScrollView;
 
@@ -26,12 +25,12 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
 @RunWith(AndroidJUnit4.class)
-public class CustomTest extends TestHelper {
+public class CardTest extends TestHelper {
 
     @Before
     public void setup() {
         super.setup();
-        onDevice(withText("Custom")).waitForEnabled().perform(click());
+        onDevice(withText("Credit or Debit Cards")).waitForEnabled().perform(click());
     }
 
     @Test(timeout = 60000)
@@ -81,18 +80,6 @@ public class CustomTest extends TestHelper {
         onDevice(withText("Send SMS")).perform(click());
 
         getNonceDetails().check(text(containsString("Card Last Two: 85")));
-
-        onDevice(withText("Create a Transaction")).perform(click());
-        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
-    }
-
-    @RequiresDevice
-    @Test(timeout = 60000)
-    public void tokenizesAndroidPay() {
-        onDevice(withContentDescription("Android Pay")).perform(click());
-        onDevice(withText("CONTINUE")).perform(click());
-
-        getNonceDetails().check(text(containsString("Underlying Card Last Two")));
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
