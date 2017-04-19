@@ -1,6 +1,5 @@
 package com.braintreepayments.demo;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -8,15 +7,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.braintreepayments.api.*;
+import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.dropin.DropInActivity;
 import com.braintreepayments.api.dropin.DropInRequest;
 import com.braintreepayments.api.dropin.DropInResult;
 import com.braintreepayments.api.dropin.utils.PaymentMethodType;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.BraintreeCancelListener;
-import com.braintreepayments.api.interfaces.BraintreeErrorListener;
-import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PayPalAccountNonce;
@@ -29,14 +24,12 @@ import com.google.android.gms.identity.intents.model.UserAddress;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.LineItem;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class MainActivity extends BaseActivity implements PaymentMethodNonceCreatedListener,
-        BraintreeCancelListener, BraintreeErrorListener {
+public class MainActivity extends BaseActivity {
 
     static final String EXTRA_PAYMENT_METHOD_NONCE = "payment_method_nonce";
     static final String EXTRA_DEVICE_DATA = "device_data";
@@ -51,7 +44,6 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
 
     private static final String KEY_NONCE = "nonce";
 
-    private BraintreeFragment mBraintreeFragment;
     private PaymentMethodNonce mNonce;
 
     private ImageView mNonceIcon;
@@ -65,7 +57,6 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
     private Button mPayPalButton;
     private Button mVisaCheckoutButton;
     private Button mCreateTransactionButton;
-    private ProgressDialog mLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,51 +145,19 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
     }
 
     @Override
-    public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
-        super.onPaymentMethodNonceCreated(paymentMethodNonce);
-
-        displayResult(paymentMethodNonce, null);
-        safelyCloseLoadingView();
-    }
-
-    @Override
-    public void onCancel(int requestCode) {
-        super.onCancel(requestCode);
-
-        safelyCloseLoadingView();
-    }
-
-    @Override
-    public void onError(Exception error) {
-        super.onError(error);
-
-        safelyCloseLoadingView();
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        safelyCloseLoadingView();
 
         if (resultCode == RESULT_OK) {
             if (requestCode == DROP_IN_REQUEST) {
                 DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
                 displayResult(result.getPaymentMethodNonce(), result.getDeviceData());
-            } else if (Arrays.asList(VISA_CHECKOUT_REQUEST, CARDS_REQUEST, PAYPAL_REQUEST).contains(requestCode)) {
+            } else {
                 displayResult((PaymentMethodNonce) data.getParcelableExtra(EXTRA_PAYMENT_METHOD_NONCE),
                         data.getStringExtra(EXTRA_DEVICE_DATA));
-
-                if (mNonce instanceof CardNonce && Settings.isThreeDSecureEnabled(this)) {
-                    mLoading = ProgressDialog.show(this, getString(R.string.loading),
-                            getString(R.string.loading), true, false);
-                    ThreeDSecure.performVerification(mBraintreeFragment, mNonce.getNonce(), "1");
-                } else {
-                    mCreateTransactionButton.setEnabled(true);
-                }
+                mCreateTransactionButton.setEnabled(true);
             }
         } else if (resultCode != RESULT_CANCELED) {
-            safelyCloseLoadingView();
             showDialog(((Exception) data.getSerializableExtra(DropInActivity.EXTRA_ERROR)).getMessage());
         }
     }
@@ -213,12 +172,7 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
 
     @Override
     protected void onAuthorizationFetched() {
-        try {
-            mBraintreeFragment = BraintreeFragment.newInstance(this, mAuthorization);
-            enableButtons(true);
-        } catch (InvalidArgumentException e) {
-            showDialog(e.getMessage());
-        }
+        enableButtons(true);
     }
 
     private void displayResult(PaymentMethodNonce paymentMethodNonce, String deviceData) {
@@ -329,11 +283,5 @@ public class MainActivity extends BaseActivity implements PaymentMethodNonceCrea
         mCardsButton.setEnabled(enable);
         mPayPalButton.setEnabled(enable);
         mVisaCheckoutButton.setEnabled(enable);
-    }
-
-    private void safelyCloseLoadingView() {
-        if (mLoading != null && mLoading.isShowing()) {
-            mLoading.dismiss();
-        }
     }
 }

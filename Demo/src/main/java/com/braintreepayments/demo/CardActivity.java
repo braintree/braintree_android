@@ -1,5 +1,6 @@
 package com.braintreepayments.demo;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
@@ -11,6 +12,7 @@ import android.widget.EditText;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.DataCollector;
+import com.braintreepayments.api.ThreeDSecure;
 import com.braintreepayments.api.UnionPay;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
@@ -19,6 +21,7 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.UnionPayListener;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.UnionPayCapabilities;
@@ -43,7 +46,9 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
     private String mDeviceData;
     private boolean mIsUnionPay;
     private String mEnrollmentId;
+    private boolean mThreeDSecureRequested;
 
+    private ProgressDialog mLoading;
     private CardForm mCardForm;
     private TextInputLayout mSmsCodeContainer;
     private EditText mSmsCode;
@@ -79,6 +84,13 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        safelyCloseLoadingView();
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(EXTRA_UNIONPAY, mIsUnionPay);
@@ -87,6 +99,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
 
     @Override
     protected void reset() {
+        mThreeDSecureRequested = false;
         mPurchaseButton.setEnabled(false);
     }
 
@@ -121,6 +134,20 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
                 }
             });
         }
+    }
+
+    @Override
+    public void onError(Exception error) {
+        super.onError(error);
+
+        mThreeDSecureRequested = false;
+    }
+
+    @Override
+    public void onCancel(int requestCode) {
+        super.onCancel(requestCode);
+
+        mThreeDSecureRequested = false;
     }
 
     @Override
@@ -236,10 +263,22 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
-        Intent intent = new Intent()
-                .putExtra(MainActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce)
-                .putExtra(MainActivity.EXTRA_DEVICE_DATA, mDeviceData);
-        setResult(RESULT_OK, intent);
-        finish();
+        if (!mThreeDSecureRequested && paymentMethodNonce instanceof CardNonce && Settings.isThreeDSecureEnabled(this)) {
+            mThreeDSecureRequested = true;
+            mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
+            ThreeDSecure.performVerification(mBraintreeFragment, paymentMethodNonce.getNonce(), "1");
+        } else {
+            Intent intent = new Intent()
+                    .putExtra(MainActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce)
+                    .putExtra(MainActivity.EXTRA_DEVICE_DATA, mDeviceData);
+            setResult(RESULT_OK, intent);
+            finish();
+        }
+    }
+
+    private void safelyCloseLoadingView() {
+        if (mLoading != null && mLoading.isShowing()) {
+            mLoading.dismiss();
+        }
     }
 }
