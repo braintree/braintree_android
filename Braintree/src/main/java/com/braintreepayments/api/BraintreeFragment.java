@@ -638,7 +638,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             public void onResponse(final Exception e) {
                 final ConfigurationException exception =
                         new ConfigurationException("Request for configuration has failed: " + e.getMessage() + ". " +
-                                "Future requests will retry up to 3 times");
+                                "Future requests will retry up to 3 times", e);
                 postCallback(exception);
                 postOrQueueCallback(new QueuedCallback() {
                     @Override
