@@ -140,4 +140,15 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/venmo">
+
+        <CheckBoxPreference
+            android:key="vault_venmo"
+            android:title="@string/vault_venmo"
+            android:summary="@string/vault_venmo_summary"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

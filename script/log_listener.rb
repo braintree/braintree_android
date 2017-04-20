@@ -25,11 +25,13 @@ def run
   end
 end
 
-def handle_command_request(command)
-  if command == 'install paypal wallet'
-    `adb install -r #{__dir__}/../vendor/com.paypal.android.p2pmobile.apk > /dev/null`
-  elsif command == 'uninstall paypal wallet'
-    `adb uninstall com.paypal.android.p2pmobile > /dev/null`
+def handle_command_request(raw_command)
+  command = raw_command.split(' ')[0].strip
+  options = raw_command.split(' ')[1].strip
+  if command == "install"
+    `adb install -r #{__dir__}/../vendor/#{options}.apk > /dev/null`
+  elsif command == "uninstall"
+    `adb uninstall #{options} > /dev/null`
   end
 end
 

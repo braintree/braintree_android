@@ -1,5 +1,6 @@
 package com.braintreepayments.demo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -11,6 +12,7 @@ import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.google.android.gms.identity.intents.model.CountrySpecification;
 import com.google.android.gms.identity.intents.model.UserAddress;
 import com.google.android.gms.wallet.Cart;
@@ -70,6 +72,15 @@ public class AndroidPayActivity extends BaseActivity implements ConfigurationLis
                     "Android Pay is not enabled for the current merchant.\n\n" +
                     "Google Play Services is missing or out of date.");
         }
+    }
+
+    @Override
+    public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+        super.onPaymentMethodNonceCreated(paymentMethodNonce);
+
+        Intent intent = new Intent().putExtra(MainActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     public void launchAndroidPay(View v) {

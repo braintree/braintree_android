@@ -45,6 +45,14 @@
             android:enabled="false" />
 
         <Button
+            android:id="@+id/venmo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/venmo"
+            android:onClick="launchVenmo"
+            android:enabled="false" />
+
+        <Button
             android:id="@+id/visa_checkout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

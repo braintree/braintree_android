@@ -17,49 +17,13 @@ public class AppInstallationHelper {
 
     public static void installPayPalWallet() {
         if (!isAppInstalled(PAYPAL_WALLET_PACKAGE_NAME)) {
-            Log.d("request_command", "install paypal wallet");
-
-            final CountDownLatch lock = new CountDownLatch(1);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while(true) {
-                        if(isAppInstalled(PAYPAL_WALLET_PACKAGE_NAME)) {
-                            lock.countDown();
-                            break;
-                        }
-                    }
-                }
-            });
-            try {
-                lock.await(90, TimeUnit.SECONDS);
-            } catch (InterruptedException ignored) {}
-
-            assertTrue(isAppInstalled(PAYPAL_WALLET_PACKAGE_NAME));
+            installApp(PAYPAL_WALLET_PACKAGE_NAME);
         }
     }
 
     public static void uninstallPayPalWallet() {
         if (isAppInstalled(PAYPAL_WALLET_PACKAGE_NAME)) {
-            Log.d("request_command", "uninstall paypal wallet");
-
-            final CountDownLatch lock = new CountDownLatch(1);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while(true) {
-                        if(!isAppInstalled(PAYPAL_WALLET_PACKAGE_NAME)) {
-                            lock.countDown();
-                            break;
-                        }
-                    }
-                }
-            });
-            try {
-                lock.await(30, TimeUnit.SECONDS);
-            } catch (InterruptedException ignored) {}
-
-            assertFalse(isAppInstalled(PAYPAL_WALLET_PACKAGE_NAME));
+            uninstallApp(PAYPAL_WALLET_PACKAGE_NAME);
         }
     }
 
@@ -71,5 +35,49 @@ public class AppInstallationHelper {
         } catch (NameNotFoundException e) {
             return false;
         }
+    }
+
+    public static void installApp(final String packageName) {
+        Log.d("request_command", "install " + packageName);
+
+        final CountDownLatch lock = new CountDownLatch(1);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    if(isAppInstalled(packageName)) {
+                        lock.countDown();
+                        break;
+                    }
+                }
+            }
+        });
+        try {
+            lock.await(90, TimeUnit.SECONDS);
+        } catch (InterruptedException ignored) {}
+
+        assertTrue(packageName + " is not installed.", isAppInstalled(packageName));
+    }
+
+    public static void uninstallApp(final String packageName) {
+        Log.d("request_command", "uninstall " + packageName);
+
+        final CountDownLatch lock = new CountDownLatch(1);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    if(!isAppInstalled(packageName)) {
+                        lock.countDown();
+                        break;
+                    }
+                }
+            }
+        });
+        try {
+            lock.await(30, TimeUnit.SECONDS);
+        } catch (InterruptedException ignored) {}
+
+        assertFalse(packageName + " is installed.", isAppInstalled(packageName));
     }
 }

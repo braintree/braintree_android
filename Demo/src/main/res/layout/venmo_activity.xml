@@ -7,15 +7,15 @@
     android:gravity="center">
 
     <ImageButton
-        android:id="@+id/android_pay_button"
+        android:id="@+id/venmo_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:layout_gravity="center"
-        android:src="@drawable/logo_android_pay"
+        android:src="@drawable/logo_venmo"
         android:background="@color/bt_white"
-        android:contentDescription="@string/bt_descriptor_android_pay"
+        android:contentDescription="@string/bt_descriptor_pay_with_venmo"
         android:visibility="gone"
-        android:onClick="launchAndroidPay" />
+        android:onClick="launchVenmo" />
 
 </LinearLayout>

@@ -165,4 +165,8 @@ public class Settings {
     public static boolean isThreeDSecureRequired(Context context) {
         return getPreferences(context).getBoolean("require_three_d_secure", true);
     }
+
+    public static boolean vaultVenmo(Context context) {
+        return getPreferences(context).getBoolean("vault_venmo", true);
+    }
 }

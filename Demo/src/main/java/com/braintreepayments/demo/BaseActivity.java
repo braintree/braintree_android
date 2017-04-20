@@ -116,6 +116,8 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
     @CallSuper
     @Override
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+        setProgressBarIndeterminateVisibility(true);
+
         mLogger.debug("Payment Method Nonce received: " + paymentMethodNonce.getTypeLabel());
     }
 

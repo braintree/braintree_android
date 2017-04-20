@@ -37,7 +37,8 @@ public class MainActivity extends BaseActivity {
     private static final int ANDROID_PAY_REQUEST = 2;
     private static final int CARDS_REQUEST = 3;
     private static final int PAYPAL_REQUEST = 4;
-    private static final int VISA_CHECKOUT_REQUEST = 5;
+    private static final int VENMO_REQUEST = 5;
+    private static final int VISA_CHECKOUT_REQUEST = 6;
 
     private static final String KEY_NONCE = "nonce";
 
@@ -52,6 +53,7 @@ public class MainActivity extends BaseActivity {
     private Button mAndroidPayButton;
     private Button mCardsButton;
     private Button mPayPalButton;
+    private Button mVenmoButton;
     private Button mVisaCheckoutButton;
     private Button mCreateTransactionButton;
 
@@ -69,6 +71,7 @@ public class MainActivity extends BaseActivity {
         mAndroidPayButton = (Button) findViewById(R.id.android_pay);
         mCardsButton = (Button) findViewById(R.id.card);
         mPayPalButton = (Button) findViewById(R.id.paypal);
+        mVenmoButton = (Button) findViewById(R.id.venmo);
         mVisaCheckoutButton = (Button) findViewById(R.id.visa_checkout);
         mCreateTransactionButton = (Button) findViewById(R.id.create_transaction);
 
@@ -107,6 +110,11 @@ public class MainActivity extends BaseActivity {
         Intent intent = new Intent(this, PayPalActivity.class)
                 .putExtra(EXTRA_COLLECT_DEVICE_DATA, Settings.shouldCollectDeviceData(this));
         startActivityForResult(intent, PAYPAL_REQUEST);
+    }
+
+    public void launchVenmo(View v) {
+        Intent intent = new Intent(this, VenmoActivity.class);
+        startActivityForResult(intent, VENMO_REQUEST);
     }
 
     public void launchVisaCheckout(View v) {
@@ -191,8 +199,7 @@ public class MainActivity extends BaseActivity {
         } else if (mNonce instanceof VisaCheckoutNonce) {
             details = VisaCheckoutActivity.getDisplayString((VisaCheckoutNonce) mNonce);
         } else if (mNonce instanceof VenmoAccountNonce) {
-            VenmoAccountNonce venmoAccountNonce = (VenmoAccountNonce) mNonce;
-            details = "Username: " + venmoAccountNonce.getUsername();
+            details = VenmoActivity.getDisplayString((VenmoAccountNonce) mNonce);
         }
 
         mNonceDetails.setText(details);
@@ -231,6 +238,7 @@ public class MainActivity extends BaseActivity {
         mAndroidPayButton.setEnabled(enable);
         mCardsButton.setEnabled(enable);
         mPayPalButton.setEnabled(enable);
+        mVenmoButton.setEnabled(enable);
         mVisaCheckoutButton.setEnabled(enable);
     }
 }
