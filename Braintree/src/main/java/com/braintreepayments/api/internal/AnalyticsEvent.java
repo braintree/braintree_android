@@ -14,6 +14,13 @@ import org.json.JSONObject;
 
 public class AnalyticsEvent {
 
+    private static final String SESSION_ID_KEY = "sessionId";
+    private static final String DEVICE_NETWORK_TYPE_KEY = "deviceNetworkType";
+    private static final String USER_INTERFACE_ORIENTATION_KEY = "userInterfaceOrientation";
+    private static final String MERCHANT_APP_VERSION_KEY = "merchantAppVersion";
+    private static final String PAYPAL_INSTALLED_KEY = "paypalInstalled";
+    private static final String VENMO_INSTALLED_KEY = "venmoInstalled";
+
     int id;
     String event;
     long timestamp;
@@ -24,12 +31,12 @@ public class AnalyticsEvent {
         this.timestamp = System.currentTimeMillis() / 1000;
         metadata = new JSONObject();
         try {
-            metadata.put(AnalyticsIntentService.SESSION_ID_KEY, sessionId)
-                    .put(AnalyticsIntentService.DEVICE_NETWORK_TYPE_KEY, getNetworkType(context))
-                    .put(AnalyticsIntentService.USER_INTERFACE_ORIENTATION_KEY, getUserOrientation(context))
-                    .put(AnalyticsIntentService.MERCHANT_APP_VERSION_KEY, getAppVersion(context))
-                    .put(AnalyticsIntentService.PAYPAL_INSTALLED_KEY, isPayPalInstalled(context))
-                    .put(AnalyticsIntentService.VENMO_INSTALLED_KEY, Venmo.isVenmoInstalled(context));
+            metadata.put(SESSION_ID_KEY, sessionId)
+                    .put(DEVICE_NETWORK_TYPE_KEY, getNetworkType(context))
+                    .put(USER_INTERFACE_ORIENTATION_KEY, getUserOrientation(context))
+                    .put(MERCHANT_APP_VERSION_KEY, getAppVersion(context))
+                    .put(PAYPAL_INSTALLED_KEY, isPayPalInstalled(context))
+                    .put(VENMO_INSTALLED_KEY, Venmo.isVenmoInstalled(context));
         } catch (JSONException ignored) {}
     }
 

@@ -19,8 +19,11 @@ import com.braintreepayments.api.interfaces.UnionPayListener;
 import com.braintreepayments.api.internal.AnalyticsDatabase;
 import com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils;
 import com.braintreepayments.api.internal.AnalyticsIntentService;
+import com.braintreepayments.api.internal.AnalyticsSender;
+import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.internal.HttpClient;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
+import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
@@ -65,6 +68,7 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -73,10 +77,12 @@ import static org.powermock.api.mockito.PowerMockito.doAnswer;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
+import static org.powermock.api.mockito.PowerMockito.verifyZeroInteractions;
 
 @RunWith(RobolectricGradleTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*" })
-@PrepareForTest({ ConfigurationManager.class, PayPal.class, ThreeDSecure.class, Venmo.class, AndroidPay.class })
+@PrepareForTest({ AnalyticsSender.class, AndroidPay.class, ConfigurationManager.class, PayPal.class, ThreeDSecure.class,
+        Venmo.class })
 public class BraintreeFragmentUnitTest {
 
     @Rule
@@ -779,6 +785,49 @@ public class BraintreeFragmentUnitTest {
         Intent serviceIntent = intentCaptor.getValue();
         assertEquals(TOKENIZATION_KEY, serviceIntent.getStringExtra(AnalyticsIntentService.EXTRA_AUTHORIZATION));
         assertEquals(configuration, serviceIntent.getStringExtra(AnalyticsIntentService.EXTRA_CONFIGURATION));
+    }
+
+    @Test
+    public void flushAnalyticsEvents_doesNotSendAnalyticsIfNotEnabled() throws JSONException, InvalidArgumentException {
+        String configuration = new TestConfigurationBuilder().build();
+        mockConfigurationManager(Configuration.fromJson(configuration));
+
+        Robolectric.getForegroundThreadScheduler().pause();
+        Context context = spy(RuntimeEnvironment.application);
+        when(mActivity.getApplicationContext()).thenReturn(context);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        Robolectric.getForegroundThreadScheduler().unPause();
+        Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
+
+        fragment.onStop();
+
+        verify(context, times(0)).startService(any(Intent.class));
+        verifyZeroInteractions(AnalyticsSender.class);
+    }
+
+    @Test
+    public void flushAnalyticsEvents_fallsBackToSenderIfStartingServiceThrows()
+            throws JSONException, InvalidArgumentException {
+        mockStatic(AnalyticsSender.class);
+        String configuration = new TestConfigurationBuilder().withAnalytics().build();
+        mockConfigurationManager(Configuration.fromJson(configuration));
+
+        Robolectric.getForegroundThreadScheduler().pause();
+
+        Context context = spy(RuntimeEnvironment.application);
+        doThrow(new RuntimeException()).when(context).startService(any(Intent.class));
+        when(mActivity.getApplicationContext()).thenReturn(context);
+
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+
+        Robolectric.getForegroundThreadScheduler().unPause();
+        Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
+
+        fragment.onStop();
+
+        verifyStatic();
+        AnalyticsSender.send(eq(context), any(Authorization.class), any(BraintreeHttpClient.class),
+                eq(Configuration.fromJson(configuration).getAnalytics().getUrl()), eq(false));
     }
 
     @Test

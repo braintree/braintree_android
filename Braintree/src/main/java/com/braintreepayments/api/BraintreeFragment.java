@@ -31,6 +31,7 @@ import com.braintreepayments.api.interfaces.UnionPayListener;
 import com.braintreepayments.api.internal.AnalyticsDatabase;
 import com.braintreepayments.api.internal.AnalyticsEvent;
 import com.braintreepayments.api.internal.AnalyticsIntentService;
+import com.braintreepayments.api.internal.AnalyticsSender;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.internal.IntegrationType;
 import com.braintreepayments.api.internal.UUIDHelper;
@@ -470,12 +471,19 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     }
 
     private void flushAnalyticsEvents() {
-        if (getConfiguration() != null && getConfiguration().toJson() != null) {
-            Intent intent = new Intent(mContext, AnalyticsIntentService.class)
-                    .putExtra(AnalyticsIntentService.EXTRA_AUTHORIZATION, getAuthorization().toString())
-                    .putExtra(AnalyticsIntentService.EXTRA_CONFIGURATION, getConfiguration().toJson());
+        if (getConfiguration() != null && getConfiguration().getAnalytics().isEnabled()) {
+            if (getConfiguration().toJson() != null) {
+                Intent intent = new Intent(mContext, AnalyticsIntentService.class)
+                        .putExtra(AnalyticsIntentService.EXTRA_AUTHORIZATION, getAuthorization().toString())
+                        .putExtra(AnalyticsIntentService.EXTRA_CONFIGURATION, getConfiguration().toJson());
 
-            getApplicationContext().startService(intent);
+                try {
+                    getApplicationContext().startService(intent);
+                } catch (RuntimeException e) {
+                    AnalyticsSender.send(getApplicationContext(), mAuthorization, getHttpClient(),
+                            getConfiguration().getAnalytics().getUrl(), false);
+                }
+            }
         }
     }
 
