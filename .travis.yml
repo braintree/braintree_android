@@ -4,9 +4,6 @@ notifications:
   email:
     - external-ci-notifications+braintree-android@getbraintree.com
 sudo: true
-env:
-  global:
-    - TERM=dumb
 android:
   components:
     - tools
@@ -19,4 +16,4 @@ before_script:
   - ./gradlew assembleDebug || true
   - ./gradlew assembleDebug || true
 script: ./gradlew --stacktrace --info lint test :Demo:assembleDebug :Demo:assembleRelease
-
+after_success: ./script/deploy_snapshot.sh

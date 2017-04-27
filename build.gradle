@@ -35,8 +35,10 @@ allprojects {
     apply plugin: 'android-sdk-manager'
 
     apply plugin: 'maven'
-    def sonatypeUsername = System.properties.containsKey('sonatypeUsername') ? System.properties['sonatypeUsername'] : ''
-    def sonatypePassword = System.properties.containsKey('sonatypePassword') ? System.properties['sonatypePassword'] : ''
+
+    def sonatypeUsername = System.env['SONATYPE_USERNAME']
+    def sonatypePassword = System.env['SONATYPE_PASSWORD']
+
     uploadArchives {
         repositories {
             mavenDeployer {
@@ -80,6 +82,7 @@ allprojects {
 
     apply plugin: 'signing'
     signing {
+        required { !version.endsWith("SNAPSHOT") }
         sign configurations.archives
     }
 
