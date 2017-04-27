@@ -471,18 +471,17 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     }
 
     private void flushAnalyticsEvents() {
-        if (getConfiguration() != null && getConfiguration().getAnalytics().isEnabled()) {
-            if (getConfiguration().toJson() != null) {
-                Intent intent = new Intent(mContext, AnalyticsIntentService.class)
-                        .putExtra(AnalyticsIntentService.EXTRA_AUTHORIZATION, getAuthorization().toString())
-                        .putExtra(AnalyticsIntentService.EXTRA_CONFIGURATION, getConfiguration().toJson());
+        if (getConfiguration() != null && getConfiguration().toJson() != null &&
+                getConfiguration().getAnalytics().isEnabled()) {
+            Intent intent = new Intent(mContext, AnalyticsIntentService.class)
+                    .putExtra(AnalyticsIntentService.EXTRA_AUTHORIZATION, getAuthorization().toString())
+                    .putExtra(AnalyticsIntentService.EXTRA_CONFIGURATION, getConfiguration().toJson());
 
-                try {
-                    getApplicationContext().startService(intent);
-                } catch (RuntimeException e) {
-                    AnalyticsSender.send(getApplicationContext(), mAuthorization, getHttpClient(),
-                            getConfiguration().getAnalytics().getUrl(), false);
-                }
+            try {
+                getApplicationContext().startService(intent);
+            } catch (RuntimeException e) {
+                AnalyticsSender.send(getApplicationContext(), mAuthorization, getHttpClient(),
+                        getConfiguration().getAnalytics().getUrl(), false);
             }
         }
     }
