@@ -1,5 +1,12 @@
 # Braintree Android SDK Release Notes
 
+## 2.5.2
+
+* Include cause in `ConfigurationException` ([#143](https://github.com/braintree/braintree_android/pull/143))
+* Ignore ProGuard warnings for Visa Checkout (fixes [#144](https://github.com/braintree/braintree_android/issues/144))
+* Fix Android Pay behavior during configuration changes (fixes [#145](https://github.com/braintree/braintree_android/issues/145), [#146](https://github.com/braintree/braintree_android/issues/146), [#147](https://github.com/braintree/braintree_android/issues/147))
+* Fix crash when run in an Android Instant App
+
 ## 2.5.1
 
 * Fix non-optional `data-collector` dependency in Braintree
