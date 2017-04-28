@@ -9,10 +9,13 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
+import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
 import com.braintreepayments.demo.test.DemoTestActivity;
@@ -24,6 +27,7 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
 
+import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -46,6 +50,7 @@ import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_MPI_SERV
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_SIGNATURE_VERIFICATION_FAILURE;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON_NOT_REQUIRED;
+import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -191,7 +196,8 @@ public class ThreeDSecureVerificationTest {
 
     @Test(timeout = 10000)
     public void performVerification_failsWithATokenizationKey() throws InterruptedException {
-        BraintreeFragment fragment = getFragment(TOKENIZATION_KEY);
+        String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
+        BraintreeFragment fragment = getFragment(TOKENIZATION_KEY, clientToken);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
@@ -419,11 +425,22 @@ public class ThreeDSecureVerificationTest {
 
     /* helpers */
     private BraintreeFragment getFragment() {
-        return getFragment(new TestClientTokenBuilder().withThreeDSecure().build());
+        String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
+        return getFragment(clientToken, clientToken);
     }
 
-    private BraintreeFragment getFragment(String authorization) {
+    private BraintreeFragment getFragment(String authorization, String configuration) {
         try {
+            Authorization auth = Authorization.fromString(authorization);
+            String appendedAuthorization = "";
+            if (auth instanceof ClientToken) {
+                appendedAuthorization = ((ClientToken) auth).getAuthorizationFingerprint();
+            } else if (auth instanceof TokenizationKey) {
+                appendedAuthorization = auth.toString();
+            }
+
+            writeMockConfiguration(getTargetContext(), auth.getConfigUrl(), appendedAuthorization, configuration);
+
             BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, authorization);
 
             while (!fragment.isAdded()) {
