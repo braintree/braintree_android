@@ -16,9 +16,11 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class SignatureVerificationTest {
 
+    private static final String PAYPAL_WALLET_PACKAGE_NAME = "com.paypal.android.p2pmobile";
+
     @Test(timeout = 20000)
     public void isSignatureValid_returnsFalseWhenAppNotInstalled() {
-        Log.d("request_command", "uninstall paypal wallet");
+        Log.d("request_command", "uninstall " + PAYPAL_WALLET_PACKAGE_NAME);
         SystemClock.sleep(15000);
         assertFalse(isAppInstalled());
 
@@ -27,7 +29,7 @@ public class SignatureVerificationTest {
 
     @Test(timeout = 85000)
     public void isSignatureValid_returnsTrueWhenAppIsInstalled() {
-        Log.d("request_command", "install paypal wallet");
+        Log.d("request_command", "install " + PAYPAL_WALLET_PACKAGE_NAME);
         SystemClock.sleep(80000);
         assertTrue(isAppInstalled());
 
