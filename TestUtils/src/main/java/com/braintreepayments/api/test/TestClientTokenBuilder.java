@@ -14,6 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class TestClientTokenBuilder {
 
@@ -192,6 +193,8 @@ public class TestClientTokenBuilder {
             URL url = new URL(EnvironmentHelper.getGatewayPath() + path);
 
             connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout((int) TimeUnit.SECONDS.toMillis(5));
+            connection.setReadTimeout((int) TimeUnit.SECONDS.toMillis(5));
             connection.setRequestMethod(requestMethod);
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoInput(true);
