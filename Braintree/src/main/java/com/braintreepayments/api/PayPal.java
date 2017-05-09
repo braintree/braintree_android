@@ -212,7 +212,7 @@ public class PayPal {
         if (request.getAmount() != null) {
             fragment.sendAnalyticsEvent("paypal.one-time-payment.selected");
             if (request.shouldOfferCredit()) {
-                fragment.sendAnalyticsEvent("paypal.one-time-payment.credit.offered");
+                fragment.sendAnalyticsEvent("paypal.single-payment.credit.offered");
             }
 
             requestOneTimePayment(fragment, request, false, handler);

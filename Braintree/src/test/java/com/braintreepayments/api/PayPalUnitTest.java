@@ -605,7 +605,7 @@ public class PayPalUnitTest {
 
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").offerCredit(true));
 
-        verify(fragment).sendAnalyticsEvent("paypal.one-time-payment.credit.offered");
+        verify(fragment).sendAnalyticsEvent("paypal.single-payment.credit.offered");
     }
 
     @Test
