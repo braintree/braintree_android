@@ -239,7 +239,8 @@ public class PayPalRequest implements Parcelable {
     }
 
     /**
-     * Offers PayPal Credit prominently in the payment flow. Defaults to false. Only available with PayPal Checkout.
+     * Offers PayPal Credit prominently in the payment flow. Defaults to false. Only available with Billing Agreements
+     * and PayPal Checkout.
      *
      * @param offerCredit Whether to offer PayPal Credit.
      */
