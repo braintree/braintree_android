@@ -1,5 +1,8 @@
 # Braintree Android SDK Release Notes
 
+## 2.5.3
+* Add PayPal Credit for Billing Agreements
+
 ## 2.5.2
 
 * Include cause in `ConfigurationException` ([#143](https://github.com/braintree/braintree_android/pull/143))
