@@ -22,6 +22,9 @@ allprojects {
         }
         jcenter()
         maven {
+            url 'https://maven.google.com'
+        }
+        maven {
             url 'https://oss.sonatype.org/content/repositories/releases/'
         }
         maven {
