@@ -94,6 +94,7 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
+task cleanRootBuildDir(type: Delete) {
     delete rootProject.buildDir
 }
+clean.dependsOn cleanRootBuildDir
