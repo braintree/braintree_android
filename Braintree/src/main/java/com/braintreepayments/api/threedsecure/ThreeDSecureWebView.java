@@ -3,8 +3,10 @@ package com.braintreepayments.api.threedsecure;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.AttributeSet;
+import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -44,6 +46,10 @@ public class ThreeDSecureWebView extends WebView {
         settings.setJavaScriptEnabled(true);
         settings.setBuiltInZoomControls(true);
         settings.setDisplayZoomControls(false);
+
+       if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+          CookieManager.getInstance().setAcceptThirdPartyCookies(ThreeDSecureWebView.this, true);
+       }
 
         setWebChromeClient(new ThreeDSecureWebChromeClient(activity));
         setWebViewClient(new ThreeDSecureWebViewClient(activity));
