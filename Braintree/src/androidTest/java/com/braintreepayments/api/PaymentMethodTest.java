@@ -19,6 +19,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -64,7 +66,7 @@ public class PaymentMethodTest {
         tokenize(fragment, new CardBuilder()
                 .cardNumber(VISA)
                 .expirationMonth("04")
-                .expirationYear("17"));
+                .expirationYear(nextYear()));
 
         PaymentMethod.getPaymentMethodNonces(fragment);
 
@@ -95,10 +97,18 @@ public class PaymentMethodTest {
         tokenize(fragment, new CardBuilder()
                 .cardNumber(VISA)
                 .expirationMonth("04")
-                .expirationYear("17"));
+                .expirationYear(nextYear()));
 
         PaymentMethod.getPaymentMethodNonces(fragment);
 
         latch.await();
+    }
+
+    private String nextYear() {
+        SimpleDateFormat twoDigitYear = new SimpleDateFormat("yy");
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.YEAR, 1);
+
+        return twoDigitYear.format(cal.getTime());
     }
 }
