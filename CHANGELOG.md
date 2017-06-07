@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 2.5.4
+
+* Use custom task instead of overriding the clean task (fixes [#153](https://github.com/braintree/braintree_android/issues/153))
+* Accept third party cookies in ThreeDSecureWebView for Lollipop and above
+
 ## 2.5.3
 * Add PayPal Credit for Billing Agreements
 
