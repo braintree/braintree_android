@@ -48,7 +48,7 @@ public class ThreeDSecureWebView extends WebView {
         settings.setDisplayZoomControls(false);
 
        if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-          CookieManager.getInstance().setAcceptThirdPartyCookies(ThreeDSecureWebView.this, true);
+          CookieManager.getInstance().setAcceptThirdPartyCookies(this, true);
        }
 
         setWebChromeClient(new ThreeDSecureWebChromeClient(activity));
