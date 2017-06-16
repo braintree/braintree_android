@@ -93,8 +93,3 @@ allprojects {
         versionName = version
     }
 }
-
-task cleanRootBuildDir(type: Delete) {
-    delete rootProject.buildDir
-}
-clean.dependsOn cleanRootBuildDir
