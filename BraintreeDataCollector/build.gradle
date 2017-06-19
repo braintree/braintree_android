@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 
-def deviceCollectorVersion = 'kount-data-collector-3.1.jar'
+def deviceCollectorVersion = 'kount-data-collector-3.2.jar'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
