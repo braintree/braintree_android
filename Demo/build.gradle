@@ -61,8 +61,6 @@ android {
 }
 
 configurations.all {
-    resolutionStrategy.force 'com.android.support:support-annotations:23.0.1'
-
     // Force remove dependency from play-services-wallet
     exclude group: 'com.google.android.gms', module: 'play-services-maps'
 }
