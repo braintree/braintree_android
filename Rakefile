@@ -41,7 +41,6 @@ task :release do
   version = $stdin.gets.chomp
 
   prompt_for_change_log(version)
-  increment_version_code
   update_version(version)
 
   Rake::Task["release_braintree"].invoke
@@ -113,7 +112,10 @@ def post_release(version)
   sh "git commit -am 'Release #{version}'"
   sh "git tag -aF #{TMP_CHANGELOG_FILE} #{version}"
 
-  update_version("#{version}-SNAPSHOT")
+  version_values = version.split('.')
+  version_values[2] = version_values[2].to_i + 1
+  update_version("#{version_values.join('.')}-SNAPSHOT")
+  increment_version_code
   sh "git commit -am 'Prepare for development'"
 
   puts "\nDone. Commits and tags have been created. If everything appears to be in order, hit ENTER to push."
