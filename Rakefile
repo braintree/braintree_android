@@ -42,6 +42,7 @@ task :release do
 
   prompt_for_change_log(version)
   update_version(version)
+  update_readme_version(version)
 
   Rake::Task["release_braintree"].invoke
   Rake::Task["release_paypal"].invoke
@@ -115,6 +116,7 @@ def post_release(version)
   version_values = version.split('.')
   version_values[2] = version_values[2].to_i + 1
   update_version("#{version_values.join('.')}-SNAPSHOT")
+  update_readme_snapshot_version(version_values.join('.'))
   increment_version_code
   sh "git commit -am 'Prepare for development'"
 
@@ -159,6 +161,22 @@ def update_version(version)
   IO.write("build.gradle",
     File.open("build.gradle") do |file|
       file.read.gsub(/version = '\d+\.\d+\.\d+(-SNAPSHOT)?'/, "version = '#{version}'")
+    end
+  )
+end
+
+def update_readme_version(version)
+  IO.write("README.md",
+    File.open("README.md") do |file|
+      file.read.gsub(/:braintree:\d+\.\d+\.\d+'/, ":braintree:#{version}'")
+    end
+  )
+end
+
+def update_readme_snapshot_version(snapshot_version)
+  IO.write("README.md",
+    File.open("README.md") do |file|
+      file.read.gsub(/:braintree:\d+\.\d+\.\d+-SNAPSHOT'/, ":braintree:#{snapshot_version}-SNAPSHOT'")
     end
   )
 end

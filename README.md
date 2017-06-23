@@ -4,6 +4,24 @@
 
 Welcome to Braintree's Android SDK. This library will help you accept card and alternative payments in your Android app.
 
+## Adding It To Your Project
+
+Add the dependency in your `build.gradle`:
+
+```groovy
+dependencies {
+  compile 'com.braintreepayments.api:braintree:2.5.4'
+}
+```
+
+To use the latest build from the `master` branch use:
+
+```groovy
+dependencies {
+  compile 'com.braintreepayments.api:braintree:2.5.5-SNAPSHOT'
+}
+```
+
 ## Documentation
 
 Start with [**'Hello, Client!'**](https://developers.braintreepayments.com/start/hello-client/android/v2) for instructions on basic setup and usage.
