@@ -1,4 +1,5 @@
 require 'rake'
+require 'io/console'
 
 TMP_CHANGELOG_FILE = "/tmp/braintree-android-release.md"
 
@@ -32,6 +33,8 @@ desc "Publish current version as a SNAPSHOT"
 task :publish_snapshot => :tests do
   abort("Version must contain '-SNAPSHOT'!") unless get_current_version.end_with?('-SNAPSHOT')
 
+  prompt_for_sonatype_username_and_password
+
   sh "./gradlew clean :Core:uploadArchives :BraintreeDataCollector:uploadArchives :PayPalDataCollector:uploadArchives :PayPalOneTouch:uploadArchives :Braintree:uploadArchives"
 end
 
@@ -43,6 +46,8 @@ task :release do
   prompt_for_change_log(version)
   update_version(version)
   update_readme_version(version)
+
+  prompt_for_sonatype_username_and_password
 
   Rake::Task["release_braintree"].invoke
   Rake::Task["release_paypal"].invoke
@@ -68,6 +73,14 @@ task :release_paypal do
   sleep 60
   sh "./gradlew :PayPalOneTouch:promoteRepository"
   puts "PayPal modules have been released"
+end
+
+def prompt_for_sonatype_username_and_password
+  puts "Enter Sonatype username:"
+  ENV["SONATYPE_USERNAME"] = $stdin.gets.chomp
+
+  puts "Enter Sonatype password:"
+  ENV["SONATYPE_PASSWORD"] = $stdin.noecho(&:gets).chomp
 end
 
 def prompt_for_change_log(version)
