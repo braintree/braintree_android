@@ -10,15 +10,20 @@ task :lint do
   sh "./gradlew clean lint"
 end
 
-desc "Run all Android tests"
-task :tests => :lint do
+desc "Run Android unit tests"
+task :unit_tests => :lint do
+  sh "./gradlew --continue test"
+end
+
+desc "Run Android tests on a device or emulator"
+task :tests => :unit_tests do
   output = `adb devices`
   if output.match(/device$/)
     begin
       `adb uninstall com.paypal.android.p2pmobile > /dev/null`
       log_listener_pid = fork { exec 'ruby', 'script/log_listener.rb' }
       sh "ruby script/httpsd.rb /tmp/httpsd.pid"
-      sh "./gradlew --continue runAllTests test connectedAndroidTest -x :TestUtils:connectedAndroidTest"
+      sh "./gradlew --continue runAllTests connectedAndroidTest -x :TestUtils:connectedAndroidTest"
     ensure
       `kill -9 \`cat /tmp/httpsd.pid\``
       `kill -9 #{log_listener_pid}`
@@ -30,8 +35,11 @@ task :tests => :lint do
 end
 
 desc "Publish current version as a SNAPSHOT"
-task :publish_snapshot => :tests do
+task :publish_snapshot => :unit_tests do
   abort("Version must contain '-SNAPSHOT'!") unless get_current_version.end_with?('-SNAPSHOT')
+
+  puts "Ensure all tests are passing (`rake tests`)."
+  $stdin.gets
 
   prompt_for_sonatype_username_and_password
 
@@ -39,7 +47,10 @@ task :publish_snapshot => :tests do
 end
 
 desc "Interactive release to publish new version"
-task :release do
+task :release => :unit_tests do
+  puts "Ensure all tests are passing (`rake tests`)."
+  $stdin.gets
+
   puts "What version are you releasing? (x.x.x format)"
   version = $stdin.gets.chomp
 
