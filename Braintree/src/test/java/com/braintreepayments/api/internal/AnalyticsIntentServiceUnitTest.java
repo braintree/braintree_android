@@ -2,9 +2,9 @@ package com.braintreepayments.api.internal;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class AnalyticsIntentServiceUnitTest {
 
     @Test

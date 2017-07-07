@@ -7,17 +7,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.*;
+import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.clearAllEvents;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class AnalyticsDatabaseUnitTest {
 
     private AnalyticsDatabase mAnalyticsDatabase;

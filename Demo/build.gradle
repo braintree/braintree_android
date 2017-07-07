@@ -46,6 +46,7 @@ android {
 
     lintOptions {
         warning 'InvalidPackage'
+        warning 'GradleCompatible'
         textReport true
         textOutput 'stdout'
     }

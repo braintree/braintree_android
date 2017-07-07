@@ -4,14 +4,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 
 import static com.braintreepayments.api.models.BaseCardBuilder.BILLING_ADDRESS_KEY;
 import static com.braintreepayments.api.models.BaseCardBuilder.CREDIT_CARD_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 
-@RunWith(RobolectricGradleTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class UnionPayCardBuilderUnitTest {
 
     @Test
