@@ -54,8 +54,7 @@ public class HttpClientTest {
 
         HttpURLConnection connection = httpClient.init("http://example.com/");
 
-        assertEquals("braintree/core/" + BuildConfig.VERSION_NAME,
-                connection.getRequestProperty("User-Agent"));
+        assertEquals("braintree/core/" + BuildConfig.VERSION_NAME, connection.getRequestProperty("User-Agent"));
     }
 
     @Test(timeout = 1000)
@@ -69,8 +68,7 @@ public class HttpClientTest {
     }
 
     @Test(timeout = 1000)
-    public void usesDefaultSSLSocketFactoryWhenNoFactoryIsSet()
-            throws IOException, NoSuchFieldException, IllegalAccessException {
+    public void usesDefaultSSLSocketFactoryWhenNoFactoryIsSet() throws Exception {
         HttpClient httpClient = new HttpClient();
 
         Field sslSocketFactory = httpClient.getClass().getDeclaredField("mSSLSocketFactory");
@@ -79,14 +77,12 @@ public class HttpClientTest {
     }
 
     @Test(timeout = 1000)
-    public void postsErrorForHttpsRequestsWhenSSLSocketFactoryIsNull()
-            throws IOException, InterruptedException {
+    public void postsErrorForHttpsRequestsWhenSSLSocketFactoryIsNull() throws IOException, InterruptedException {
         HttpClient httpClient = new HttpClient()
                 .setBaseUrl("https://example.com")
                 .setSSLSocketFactory(null);
 
-        assertExceptionIsPosted(httpClient, SSLException.class,
-                "SSLSocketFactory was not set or failed to initialize");
+        assertExceptionIsPosted(httpClient, SSLException.class, "SSLSocketFactory was not set or failed to initialize");
     }
 
     @Test(timeout = 1000)
@@ -110,22 +106,16 @@ public class HttpClientTest {
     }
 
     @Test(timeout = 1000)
-    public void sendsAcceptLanguageHeader() throws IOException {
+    public void setsDefaultHeaders() throws IOException {
         HttpClient httpClient = new HttpClient();
 
         HttpURLConnection connection = httpClient.init("http://example.com/");
 
-        assertEquals(Locale.getDefault().getLanguage(),
-                connection.getRequestProperty("Accept-Language"));
-    }
-
-    @Test(timeout = 1000)
-    public void sendsContentType() throws IOException {
-        HttpClient httpClient = new HttpClient();
-
-        HttpURLConnection connection = httpClient.init("http://example.com/");
-
-        assertEquals("application/json", connection.getRequestProperty("Content-Type"));
+        assertEquals(4, connection.getRequestProperties().size());
+        assertEquals("braintree/core/" + BuildConfig.VERSION_NAME, connection.getRequestProperty("User-Agent"));
+        assertEquals("application/json", connection.getRequestProperty("Accept"));
+        assertEquals(Locale.getDefault().getLanguage(), connection.getRequestProperty("Accept-Language"));
+        assertEquals("gzip", connection.getRequestProperty("Accept-Encoding"));
     }
 
     @Test(timeout = 1000)

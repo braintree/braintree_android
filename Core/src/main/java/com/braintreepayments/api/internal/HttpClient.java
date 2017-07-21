@@ -209,6 +209,7 @@ public class HttpClient<T extends HttpClient> {
                 connection = init(mBaseUrl + path);
             }
 
+            connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestMethod(METHOD_POST);
             connection.setDoOutput(true);
 
@@ -233,8 +234,8 @@ public class HttpClient<T extends HttpClient> {
             ((HttpsURLConnection) connection).setSSLSocketFactory(mSSLSocketFactory);
         }
 
-        connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("User-Agent", mUserAgent);
+        connection.setRequestProperty("Accept", "application/json");
         connection.setRequestProperty("Accept-Language", Locale.getDefault().getLanguage());
         connection.setRequestProperty("Accept-Encoding", "gzip");
         connection.setConnectTimeout(mConnectTimeout);
