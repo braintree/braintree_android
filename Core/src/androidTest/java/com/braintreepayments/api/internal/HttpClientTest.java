@@ -111,9 +111,8 @@ public class HttpClientTest {
 
         HttpURLConnection connection = httpClient.init("http://example.com/");
 
-        assertEquals(4, connection.getRequestProperties().size());
+        assertEquals(3, connection.getRequestProperties().size());
         assertEquals("braintree/core/" + BuildConfig.VERSION_NAME, connection.getRequestProperty("User-Agent"));
-        assertEquals("application/json", connection.getRequestProperty("Accept"));
         assertEquals(Locale.getDefault().getLanguage(), connection.getRequestProperty("Accept-Language"));
         assertEquals("gzip", connection.getRequestProperty("Accept-Encoding"));
     }

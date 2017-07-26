@@ -235,7 +235,6 @@ public class HttpClient<T extends HttpClient> {
         }
 
         connection.setRequestProperty("User-Agent", mUserAgent);
-        connection.setRequestProperty("Accept", "application/json");
         connection.setRequestProperty("Accept-Language", Locale.getDefault().getLanguage());
         connection.setRequestProperty("Accept-Encoding", "gzip");
         connection.setConnectTimeout(mConnectTimeout);
