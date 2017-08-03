@@ -72,6 +72,16 @@ public class VenmoActivity extends BaseActivity implements ConfigurationListener
     }
 
     public static String getDisplayString(VenmoAccountNonce nonce) {
-        return "Username: " + nonce.getUsername();
+        return "Username: " + nonce.getUsername() + "\n" +
+                "Bin Data: \n"  +
+                "         - Prepaid: " + nonce.getBinData().getHealthcare() + "\n" +
+                "         - Healthcare: " + nonce.getBinData().getHealthcare() + "\n" +
+                "         - Debit: " + nonce.getBinData().getDebit() + "\n" +
+                "         - Durbin Regulated: " + nonce.getBinData().getDurbinRegulated() + "\n" +
+                "         - Commercial: " + nonce.getBinData().getCommercial() + "\n" +
+                "         - Payroll: " + nonce.getBinData().getPayroll() + "\n" +
+                "         - Issuing Bank: " + nonce.getBinData().getIssuingBank() + "\n" +
+                "         - Country of Issuance: " + nonce.getBinData().getCountryOfIssuance() + "\n" +
+                "         - Product Id: " + nonce.getBinData().getProductId();
     }
 }

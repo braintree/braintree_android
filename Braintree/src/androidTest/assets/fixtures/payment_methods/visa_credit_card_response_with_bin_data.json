@@ -1,13 +1,13 @@
 {
-  "venmoAccounts": [{
-    "type": "VenmoAccount",
-    "nonce": "fake-venmo-nonce",
-    "description": "VenmoAccount",
+  "creditCards": [{
+    "type": "CreditCard",
+    "nonce": "e7d30570-08da-0293-2d4f-02868a245bf2",
+    "description": "ending in 11",
     "consumed": false,
-    "default": true,
+    "threeDSecureInfo": null,
     "details": {
-      "cardType": "Discover",
-      "username": "venmojoe"
+      "lastTwo": "11",
+      "cardType": "Visa"
     },
     "binData": {
       "prepaid": "Unknown",

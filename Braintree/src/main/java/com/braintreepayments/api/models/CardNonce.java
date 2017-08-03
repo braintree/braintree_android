@@ -6,6 +6,8 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.braintreepayments.api.models.BinData.BIN_DATA_KEY;
+
 /**
  * {@link PaymentMethodNonce} representing a credit or debit card.
  */
@@ -19,6 +21,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     private static final String CARD_TYPE_KEY = "cardType";
     private static final String LAST_TWO_KEY = "lastTwo";
 
+    private BinData mBinData;
     private ThreeDSecureInfo mThreeDSecureInfo;
     private String mCardType;
     private String mLastTwo;
@@ -45,6 +48,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     protected void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
 
+        mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
         mThreeDSecureInfo =
                 ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY));
 
@@ -76,6 +80,14 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     }
 
     /**
+     * @return The BIN data for the card number associated with {@link CardNonce} or
+     * {@code null}
+     */
+    public BinData getBinData() {
+        return mBinData;
+    }
+
+    /**
      * @return The 3D Secure info for the current {@link CardNonce} or
      * {@code null}
      */
@@ -88,6 +100,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
+        dest.writeParcelable(mBinData, flags);
         dest.writeParcelable(mThreeDSecureInfo, flags);
         dest.writeString(mCardType);
         dest.writeString(mLastTwo);
@@ -95,6 +108,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
 
     protected CardNonce(Parcel in) {
         super(in);
+        mBinData = in.readParcelable(BinData.class.getClassLoader());
         mThreeDSecureInfo = in.readParcelable(ThreeDSecureInfo.class.getClassLoader());
         mCardType = in.readString();
         mLastTwo = in.readString();

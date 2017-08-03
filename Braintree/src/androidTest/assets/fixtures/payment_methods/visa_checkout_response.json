@@ -38,6 +38,17 @@
       "userName": "userUserName",
       "userEmail": "userEmail"
     },
-    "callId": "callId"
+    "callId": "callId",
+    "binData": {
+      "prepaid": "Unknown",
+      "healthcare": "Yes",
+      "debit": "No",
+      "durbinRegulated": "Unknown",
+      "commercial": "Unknown",
+      "payroll": "Unknown",
+      "issuingBank": "Unknown",
+      "countryOfIssuance": "Something",
+      "productId": "123"
+    }
   }]
 }

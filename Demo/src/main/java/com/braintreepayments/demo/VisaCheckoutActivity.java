@@ -95,7 +95,17 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
                 "User name: " + nonce.getUserData().getUsername() + "\n" +
                 "Email: " + nonce.getUserData().getUserEmail() + "\n" +
                 "Billing Address: " + formatAddress(nonce.getBillingAddress()) + "\n" +
-                "Shipping Address: " + formatAddress(nonce.getShippingAddress()) + "\n";
+                "Shipping Address: " + formatAddress(nonce.getShippingAddress()) + "\n" +
+                "Bin Data: \n"  +
+                "         - Prepaid: " + nonce.getBinData().getHealthcare() + "\n" +
+                "         - Healthcare: " + nonce.getBinData().getHealthcare() + "\n" +
+                "         - Debit: " + nonce.getBinData().getDebit() + "\n" +
+                "         - Durbin Regulated: " + nonce.getBinData().getDurbinRegulated() + "\n" +
+                "         - Commercial: " + nonce.getBinData().getCommercial() + "\n" +
+                "         - Payroll: " + nonce.getBinData().getPayroll() + "\n" +
+                "         - Issuing Bank: " + nonce.getBinData().getIssuingBank() + "\n" +
+                "         - Country of Issuance: " + nonce.getBinData().getCountryOfIssuance() + "\n" +
+                "         - Product Id: " + nonce.getBinData().getProductId();
     }
 
     private static String formatAddress(VisaCheckoutAddress address) {

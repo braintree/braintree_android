@@ -10,6 +10,8 @@ import com.google.android.gms.wallet.FullWallet;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.braintreepayments.api.models.BinData.BIN_DATA_KEY;
+
 /**
  * {@link PaymentMethodNonce} representing an Android Pay card.
  * @see PaymentMethodNonce
@@ -30,6 +32,7 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
     private UserAddress mShippingAddress;
     private String mGoogleTransactionId;
     private Cart mCart;
+    private BinData mBinData;
 
     /**
      * @deprecated Use {@link #fromFullWallet(FullWallet, Cart)} instead.
@@ -77,6 +80,7 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
     protected void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
 
+        mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
         mLastTwo = details.getString(LAST_TWO_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
@@ -136,6 +140,14 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
         return mCart;
     }
 
+    /**
+     * @return The BIN data for the card number associated with {@link AndroidPayCardNonce} or
+     * {@code null}
+     */
+    public BinData getBinData() {
+        return mBinData;
+    }
+
     public AndroidPayCardNonce() {}
 
     @Override
@@ -148,6 +160,7 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
         dest.writeParcelable(mShippingAddress, flags);
         dest.writeString(mGoogleTransactionId);
         dest.writeParcelable(mCart, flags);
+        dest.writeParcelable(mBinData, flags);
     }
 
     private AndroidPayCardNonce(Parcel in) {
@@ -159,6 +172,7 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
         mShippingAddress = in.readParcelable(UserAddress.class.getClassLoader());
         mGoogleTransactionId = in.readString();
         mCart = in.readParcelable(Cart.class.getClassLoader());
+        mBinData = in.readParcelable(BinData.class.getClassLoader());
     }
 
     public static final Creator<AndroidPayCardNonce> CREATOR = new Creator<AndroidPayCardNonce>() {

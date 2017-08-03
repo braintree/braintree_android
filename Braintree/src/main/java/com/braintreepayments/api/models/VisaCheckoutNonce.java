@@ -8,6 +8,8 @@ import com.braintreepayments.api.Json;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.braintreepayments.api.models.BinData.BIN_DATA_KEY;
+
 /**
  * {@link PaymentMethodNonce} representing a Visa Checkout card.
  * @see PaymentMethodNonce
@@ -31,6 +33,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
     private VisaCheckoutAddress mShippingAddress;
     private VisaCheckoutUserData mUserData;
     private String mCallId;
+    private BinData mBinData;
 
     /**
      * Convert an API response to a {@link VisaCheckoutNonce}.
@@ -49,6 +52,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
     protected void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
 
+        mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
         mLastTwo = details.getString(LAST_TWO_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
@@ -105,6 +109,14 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         return "Visa Checkout";
     }
 
+    /**
+     * @return The BIN data for the card number associated with {@link VisaCheckoutNonce} or
+     * {@code null}
+     */
+    public BinData getBinData() {
+        return mBinData;
+    }
+
     public VisaCheckoutNonce() {}
 
     @Override
@@ -116,6 +128,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         dest.writeParcelable(mShippingAddress, flags);
         dest.writeParcelable(mUserData, flags);
         dest.writeString(mCallId);
+        dest.writeParcelable(mBinData, flags);
     }
 
     protected VisaCheckoutNonce(Parcel in) {
@@ -126,6 +139,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         mShippingAddress = in.readParcelable(VisaCheckoutAddress.class.getClassLoader());
         mUserData = in.readParcelable(VisaCheckoutUserData.class.getClassLoader());
         mCallId = in.readString();
+        mBinData = in.readParcelable(BinData.class.getClassLoader());
     }
 
     public static final Creator<VisaCheckoutNonce> CREATOR =

@@ -19,6 +19,9 @@ import org.robolectric.RobolectricTestRunner;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import static com.braintreepayments.api.models.BinData.NO;
+import static com.braintreepayments.api.models.BinData.UNKNOWN;
+import static com.braintreepayments.api.models.BinData.YES;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -101,6 +104,17 @@ public class AndroidPayCardNonceUnitTest {
         assertEquals("Android Pay", androidPayCardNonce.getDescription());
         assertEquals("Visa", androidPayCardNonce.getCardType());
         assertEquals("11", androidPayCardNonce.getLastTwo());
+        assertNotNull(androidPayCardNonce.getBinData());
+        BinData binData = androidPayCardNonce.getBinData();
+        assertEquals(UNKNOWN, binData.getPrepaid());
+        assertEquals(YES, binData.getHealthcare());
+        assertEquals(NO, binData.getDebit());
+        assertEquals(UNKNOWN, binData.getDurbinRegulated());
+        assertEquals(UNKNOWN, binData.getCommercial());
+        assertEquals(UNKNOWN, binData.getPayroll());
+        assertEquals(UNKNOWN, binData.getIssuingBank());
+        assertEquals("Something", binData.getCountryOfIssuance());
+        assertEquals("123", binData.getProductId());
     }
 
     @Test
