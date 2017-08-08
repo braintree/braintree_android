@@ -13,7 +13,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * A class to contain BIN data for the card number associated with this
- * {@link CardNonce}, {@link AndroidPayCardNonce}, {@link VenmoAccountNonce} and {@link VisaCheckoutNonce}
+ * {@link CardNonce}, {@link AndroidPayCardNonce}, and {@link VisaCheckoutNonce}
  */
 public class BinData implements Parcelable {
 
