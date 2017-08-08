@@ -27,28 +27,16 @@ public class CardNonceUnitTest {
         assertEquals("123456-12345-12345-a-adfa", cardNonce.getNonce());
         assertEquals("ending in ••11", cardNonce.getDescription());
         assertEquals("11", cardNonce.getLastTwo());
-    }
-
-    @Test
-    public void canCreateCardFromJsonWithBinData() throws JSONException {
-        CardNonce cardNonce = CardNonce.fromJson(stringFromFixture("payment_methods/visa_credit_card_response_with_bin_data.json"));
-
-        assertEquals("Visa", cardNonce.getTypeLabel());
-        assertEquals("Visa", cardNonce.getCardType());
-        assertEquals("123456-12345-12345-a-adfa", cardNonce.getNonce());
-        assertEquals("ending in ••11", cardNonce.getDescription());
-        assertEquals("11", cardNonce.getLastTwo());
         assertNotNull(cardNonce.getBinData());
-        BinData binData = cardNonce.getBinData();
-        assertEquals(UNKNOWN, binData.getPrepaid());
-        assertEquals(YES, binData.getHealthcare());
-        assertEquals(NO, binData.getDebit());
-        assertEquals(UNKNOWN, binData.getDurbinRegulated());
-        assertEquals(UNKNOWN, binData.getCommercial());
-        assertEquals(UNKNOWN, binData.getPayroll());
-        assertEquals(UNKNOWN, binData.getIssuingBank());
-        assertEquals("Something", binData.getCountryOfIssuance());
-        assertEquals("123", binData.getProductId());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getPrepaid());
+        assertEquals(YES, cardNonce.getBinData().getHealthcare());
+        assertEquals(NO, cardNonce.getBinData().getDebit());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getDurbinRegulated());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getCommercial());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getPayroll());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getIssuingBank());
+        assertEquals("Something", cardNonce.getBinData().getCountryOfIssuance());
+        assertEquals("123", cardNonce.getBinData().getProductId());
     }
 
     @Test
@@ -66,5 +54,15 @@ public class CardNonceUnitTest {
         assertEquals("ending in ••11", parceled.getDescription());
         assertEquals("11", parceled.getLastTwo());
         assertFalse(parceled.isDefault());
+        assertNotNull(parceled.getBinData());
+        assertEquals(UNKNOWN, parceled.getBinData().getPrepaid());
+        assertEquals(YES, parceled.getBinData().getHealthcare());
+        assertEquals(NO, parceled.getBinData().getDebit());
+        assertEquals(UNKNOWN, parceled.getBinData().getDurbinRegulated());
+        assertEquals(UNKNOWN, parceled.getBinData().getCommercial());
+        assertEquals(UNKNOWN, parceled.getBinData().getPayroll());
+        assertEquals(UNKNOWN, parceled.getBinData().getIssuingBank());
+        assertEquals("Something", parceled.getBinData().getCountryOfIssuance());
+        assertEquals("123", parceled.getBinData().getProductId());
     }
 }

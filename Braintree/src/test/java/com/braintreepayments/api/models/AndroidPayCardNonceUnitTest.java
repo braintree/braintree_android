@@ -105,16 +105,15 @@ public class AndroidPayCardNonceUnitTest {
         assertEquals("Visa", androidPayCardNonce.getCardType());
         assertEquals("11", androidPayCardNonce.getLastTwo());
         assertNotNull(androidPayCardNonce.getBinData());
-        BinData binData = androidPayCardNonce.getBinData();
-        assertEquals(UNKNOWN, binData.getPrepaid());
-        assertEquals(YES, binData.getHealthcare());
-        assertEquals(NO, binData.getDebit());
-        assertEquals(UNKNOWN, binData.getDurbinRegulated());
-        assertEquals(UNKNOWN, binData.getCommercial());
-        assertEquals(UNKNOWN, binData.getPayroll());
-        assertEquals(UNKNOWN, binData.getIssuingBank());
-        assertEquals("Something", binData.getCountryOfIssuance());
-        assertEquals("123", binData.getProductId());
+        assertEquals(UNKNOWN, androidPayCardNonce.getBinData().getPrepaid());
+        assertEquals(YES, androidPayCardNonce.getBinData().getHealthcare());
+        assertEquals(NO, androidPayCardNonce.getBinData().getDebit());
+        assertEquals(UNKNOWN, androidPayCardNonce.getBinData().getDurbinRegulated());
+        assertEquals(UNKNOWN, androidPayCardNonce.getBinData().getCommercial());
+        assertEquals(UNKNOWN, androidPayCardNonce.getBinData().getPayroll());
+        assertEquals(UNKNOWN, androidPayCardNonce.getBinData().getIssuingBank());
+        assertEquals("Something", androidPayCardNonce.getBinData().getCountryOfIssuance());
+        assertEquals("123", androidPayCardNonce.getBinData().getProductId());
     }
 
     @Test
@@ -149,6 +148,17 @@ public class AndroidPayCardNonceUnitTest {
         assertNotNull(parceled.getShippingAddress());
         assertEquals("google-transaction-id", parceled.getGoogleTransactionId());
         assertNotNull(parceled.getCart());
+
+        assertNotNull(parceled.getBinData());
+        assertEquals(UNKNOWN, parceled.getBinData().getPrepaid());
+        assertEquals(YES, parceled.getBinData().getHealthcare());
+        assertEquals(NO, parceled.getBinData().getDebit());
+        assertEquals(UNKNOWN, parceled.getBinData().getDurbinRegulated());
+        assertEquals(UNKNOWN, parceled.getBinData().getCommercial());
+        assertEquals(UNKNOWN, parceled.getBinData().getPayroll());
+        assertEquals(UNKNOWN, parceled.getBinData().getIssuingBank());
+        assertEquals("Something", parceled.getBinData().getCountryOfIssuance());
+        assertEquals("123", parceled.getBinData().getProductId());
     }
 
     /* helpers */

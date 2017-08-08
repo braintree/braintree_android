@@ -7,12 +7,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import static com.braintreepayments.api.models.BinData.NO;
-import static com.braintreepayments.api.models.BinData.UNKNOWN;
-import static com.braintreepayments.api.models.BinData.YES;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 
 @RunWith(RobolectricTestRunner.class)
 public class VenmoAccountNonceUnitTest {
@@ -31,17 +27,6 @@ public class VenmoAccountNonceUnitTest {
         assertEquals("venmojoe", venmoAccountNonce.getUsername());
         assertEquals("fake-venmo-nonce", venmoAccountNonce.getNonce());
         assertEquals("Venmo", venmoAccountNonce.getTypeLabel());
-        assertNotNull(venmoAccountNonce.getBinData());
-        BinData binData = venmoAccountNonce.getBinData();
-        assertEquals(UNKNOWN, binData.getPrepaid());
-        assertEquals(YES, binData.getHealthcare());
-        assertEquals(NO, binData.getDebit());
-        assertEquals(UNKNOWN, binData.getDurbinRegulated());
-        assertEquals(UNKNOWN, binData.getCommercial());
-        assertEquals(UNKNOWN, binData.getPayroll());
-        assertEquals(UNKNOWN, binData.getIssuingBank());
-        assertEquals("Something", binData.getCountryOfIssuance());
-        assertEquals("123", binData.getProductId());
     }
 
     @Test
@@ -65,30 +50,15 @@ public class VenmoAccountNonceUnitTest {
     }
 
     @Test
-    public void parcelsCorrectly() throws JSONException {
-        VenmoAccountNonce venmoAccountNonce = VenmoAccountNonce.fromJson(
-                stringFromFixture("payment_methods/venmo_account_response.json"));
+    public void parcelsCorrectly() {
         Parcel parcel = Parcel.obtain();
-        venmoAccountNonce.writeToParcel(parcel, 0);
+        VENMO_NONCE.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
         VenmoAccountNonce parceled = VenmoAccountNonce.CREATOR.createFromParcel(parcel);
 
-        assertEquals(venmoAccountNonce.getNonce(), parceled.getNonce());
-        assertEquals(venmoAccountNonce.getDescription(), parceled.getDescription());
-        assertEquals(venmoAccountNonce.getUsername(), parceled.getUsername());
-        assertBinData(venmoAccountNonce.getBinData(), parceled.getBinData());
-    }
-
-    private void assertBinData(BinData expected, BinData actual) {
-        assertEquals(expected.getPrepaid(), actual.getPrepaid());
-        assertEquals(expected.getHealthcare(), actual.getHealthcare());
-        assertEquals(expected.getDebit(), actual.getDebit());
-        assertEquals(expected.getDurbinRegulated(), actual.getDurbinRegulated());
-        assertEquals(expected.getCommercial(), actual.getCommercial());
-        assertEquals(expected.getPayroll(), actual.getPayroll());
-        assertEquals(expected.getIssuingBank(), actual.getIssuingBank());
-        assertEquals(expected.getCountryOfIssuance(), actual.getCountryOfIssuance());
-        assertEquals(expected.getProductId(), actual.getProductId());
+        assertEquals(NONCE, parceled.getNonce());
+        assertEquals(DESCRIPTION, parceled.getDescription());
+        assertEquals(USERNAME, parceled.getUsername());
     }
 }

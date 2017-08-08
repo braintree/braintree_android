@@ -141,8 +141,7 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
     }
 
     /**
-     * @return The BIN data for the card number associated with {@link AndroidPayCardNonce} or
-     * {@code null}
+     * @return The BIN data for the card number associated with {@link AndroidPayCardNonce}
      */
     public BinData getBinData() {
         return mBinData;

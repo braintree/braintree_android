@@ -23,6 +23,7 @@ import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.internal.SignatureVerificationOverrides;
+import com.braintreepayments.api.models.BinData;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.demo.internal.LogReporting;
 import com.braintreepayments.demo.models.ClientToken;
@@ -260,5 +261,18 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
             default:
                 return false;
         }
+    }
+
+    public static String getDisplayString(BinData binData) {
+        return "Bin Data: \n"  +
+                "         - Prepaid: " + binData.getHealthcare() + "\n" +
+                "         - Healthcare: " + binData.getHealthcare() + "\n" +
+                "         - Debit: " + binData.getDebit() + "\n" +
+                "         - Durbin Regulated: " + binData.getDurbinRegulated() + "\n" +
+                "         - Commercial: " + binData.getCommercial() + "\n" +
+                "         - Payroll: " + binData.getPayroll() + "\n" +
+                "         - Issuing Bank: " + binData.getIssuingBank() + "\n" +
+                "         - Country of Issuance: " + binData.getCountryOfIssuance() + "\n" +
+                "         - Product Id: " + binData.getProductId();
     }
 }

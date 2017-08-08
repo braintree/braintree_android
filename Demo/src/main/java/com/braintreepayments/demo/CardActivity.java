@@ -34,6 +34,7 @@ import com.braintreepayments.cardform.view.CardForm;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static android.view.View.combineMeasuredStates;
 
 public class CardActivity extends BaseActivity implements ConfigurationListener, UnionPayListener,
         PaymentMethodNonceCreatedListener, BraintreeErrorListener, OnCardFormSubmitListener,
@@ -284,16 +285,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
 
     public static String getDisplayString(CardNonce nonce) {
         return "Card Last Two: " + nonce.getLastTwo() + "\n" +
-                "Bin Data: \n"  +
-                "         - Prepaid: " + nonce.getBinData().getHealthcare() + "\n" +
-                "         - Healthcare: " + nonce.getBinData().getHealthcare() + "\n" +
-                "         - Debit: " + nonce.getBinData().getDebit() + "\n" +
-                "         - Durbin Regulated: " + nonce.getBinData().getDurbinRegulated() + "\n" +
-                "         - Commercial: " + nonce.getBinData().getCommercial() + "\n" +
-                "         - Payroll: " + nonce.getBinData().getPayroll() + "\n" +
-                "         - Issuing Bank: " + nonce.getBinData().getIssuingBank() + "\n" +
-                "         - Country of Issuance: " + nonce.getBinData().getCountryOfIssuance() + "\n" +
-                "         - Product Id: " + nonce.getBinData().getProductId() + "\n" +
+                getDisplayString(nonce.getBinData()) + "\n" +
                 "3DS: \n" +
                 "         - isLiabilityShifted: " + nonce.getThreeDSecureInfo().isLiabilityShifted() + "\n" +
                 "         - isLiabilityShiftPossible: " + nonce.getThreeDSecureInfo().isLiabilityShiftPossible();

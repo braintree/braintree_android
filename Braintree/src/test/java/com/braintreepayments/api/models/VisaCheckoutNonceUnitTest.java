@@ -12,6 +12,7 @@ import org.robolectric.RobolectricTestRunner;
 import static com.braintreepayments.api.models.BinData.NO;
 import static com.braintreepayments.api.models.BinData.UNKNOWN;
 import static com.braintreepayments.api.models.BinData.YES;
+import static com.braintreepayments.api.models.BinDataUnitTest.assertBinData;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -61,16 +62,15 @@ public class VisaCheckoutNonceUnitTest {
         assertEquals("userEmail", visaCheckoutNonce.getUserData().getUserEmail());
 
         assertNotNull(visaCheckoutNonce.getBinData());
-        BinData binData = visaCheckoutNonce.getBinData();
-        assertEquals(UNKNOWN, binData.getPrepaid());
-        assertEquals(YES, binData.getHealthcare());
-        assertEquals(NO, binData.getDebit());
-        assertEquals(UNKNOWN, binData.getDurbinRegulated());
-        assertEquals(UNKNOWN, binData.getCommercial());
-        assertEquals(UNKNOWN, binData.getPayroll());
-        assertEquals(UNKNOWN, binData.getIssuingBank());
-        assertEquals("Something", binData.getCountryOfIssuance());
-        assertEquals("123", binData.getProductId());
+        assertEquals(UNKNOWN, visaCheckoutNonce.getBinData().getPrepaid());
+        assertEquals(YES, visaCheckoutNonce.getBinData().getHealthcare());
+        assertEquals(NO, visaCheckoutNonce.getBinData().getDebit());
+        assertEquals(UNKNOWN, visaCheckoutNonce.getBinData().getDurbinRegulated());
+        assertEquals(UNKNOWN, visaCheckoutNonce.getBinData().getCommercial());
+        assertEquals(UNKNOWN, visaCheckoutNonce.getBinData().getPayroll());
+        assertEquals(UNKNOWN, visaCheckoutNonce.getBinData().getIssuingBank());
+        assertEquals("Something", visaCheckoutNonce.getBinData().getCountryOfIssuance());
+        assertEquals("123", visaCheckoutNonce.getBinData().getProductId());
     }
 
     @Test
@@ -120,18 +120,6 @@ public class VisaCheckoutNonceUnitTest {
         assertEquals(expectedUserData.getUserLastName(), actualUserData.getUserLastName());
         assertEquals(expectedUserData.getUserFullName(), actualUserData.getUserFullName());
         assertEquals(expectedUserData.getUserEmail(), actualUserData.getUserEmail());
-    }
-
-    private void assertBinData(BinData expected, BinData actual) {
-        assertEquals(expected.getPrepaid(), actual.getPrepaid());
-        assertEquals(expected.getHealthcare(), actual.getHealthcare());
-        assertEquals(expected.getDebit(), actual.getDebit());
-        assertEquals(expected.getDurbinRegulated(), actual.getDurbinRegulated());
-        assertEquals(expected.getCommercial(), actual.getCommercial());
-        assertEquals(expected.getPayroll(), actual.getPayroll());
-        assertEquals(expected.getIssuingBank(), actual.getIssuingBank());
-        assertEquals(expected.getCountryOfIssuance(), actual.getCountryOfIssuance());
-        assertEquals(expected.getProductId(), actual.getProductId());
     }
 
     private void assertVisaCheckoutAddress(VisaCheckoutAddress expected, VisaCheckoutAddress actual) {

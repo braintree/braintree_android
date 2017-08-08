@@ -11,6 +11,17 @@
       {
         "cardType": "Visa",
         "lastTwo": "11"
+      },
+      "binData": {
+        "prepaid": "Unknown",
+        "healthcare": "Yes",
+        "debit": "No",
+        "durbinRegulated": "Unknown",
+        "commercial": "Unknown",
+        "payroll": "Unknown",
+        "issuingBank": "Unknown",
+        "countryOfIssuance": "Something",
+        "productId": "123"
       }
     }
   ]

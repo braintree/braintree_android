@@ -6,8 +6,6 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.braintreepayments.api.models.BinData.BIN_DATA_KEY;
-
 /**
  * {@link PaymentMethodNonce} representing a {@link VenmoAccountNonce}
  * @see PaymentMethodNonce
@@ -20,7 +18,6 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
     private static final String VENMO_USERNAME_KEY = "username";
 
     private String mUsername;
-    private BinData mBinData;
 
     public VenmoAccountNonce(String nonce, String description, String username) {
         mNonce = nonce;
@@ -44,7 +41,6 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
     protected void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
 
-        mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
         JSONObject details = json.getJSONObject(VENMO_DETAILS_KEY);
         mUsername = details.getString(VENMO_USERNAME_KEY);
         mDescription = mUsername;
@@ -57,14 +53,6 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
         return mUsername;
     }
 
-    /**
-     * @return The BIN data for the card number associated with {@link VenmoAccountNonce} or
-     * {@code null}
-     */
-    public BinData getBinData() {
-        return mBinData;
-    }
-
     @Override
     public String getTypeLabel() {
         return "Venmo";
@@ -74,7 +62,6 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(mUsername);
-        dest.writeParcelable(mBinData, flags);
     }
 
     public VenmoAccountNonce() {}
@@ -82,7 +69,6 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
     protected VenmoAccountNonce(Parcel in) {
         super(in);
         mUsername = in.readString();
-        mBinData = in.readParcelable(BinData.class.getClassLoader());
     }
 
     public static final Creator<VenmoAccountNonce> CREATOR = new Creator<VenmoAccountNonce>() {

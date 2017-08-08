@@ -52,7 +52,6 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
     protected void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
 
-        mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
         mLastTwo = details.getString(LAST_TWO_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
@@ -60,6 +59,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         mShippingAddress = VisaCheckoutAddress.fromJson(json.getJSONObject(SHIPPING_ADDRESS_KEY));
         mUserData = VisaCheckoutUserData.fromJson(json.getJSONObject(USER_DATA_KEY));
         mCallId = Json.optString(json, CALL_ID_KEY, "");
+        mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
     }
 
     /**
@@ -110,8 +110,7 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
     }
 
     /**
-     * @return The BIN data for the card number associated with {@link VisaCheckoutNonce} or
-     * {@code null}
+     * @return The BIN data for the card number associated with {@link VisaCheckoutNonce}
      */
     public BinData getBinData() {
         return mBinData;

@@ -100,16 +100,7 @@ public class AndroidPayActivity extends BaseActivity implements ConfigurationLis
                 "Email: " + nonce.getEmail() + "\n" +
                 "Billing address: " + formatAddress(nonce.getBillingAddress()) + "\n" +
                 "Shipping address: " + formatAddress(nonce.getShippingAddress()) + "\n" +
-                "Bin Data: \n"  +
-                "         - Prepaid: " + nonce.getBinData().getHealthcare() + "\n" +
-                "         - Healthcare: " + nonce.getBinData().getHealthcare() + "\n" +
-                "         - Debit: " + nonce.getBinData().getDebit() + "\n" +
-                "         - Durbin Regulated: " + nonce.getBinData().getDurbinRegulated() + "\n" +
-                "         - Commercial: " + nonce.getBinData().getCommercial() + "\n" +
-                "         - Payroll: " + nonce.getBinData().getPayroll() + "\n" +
-                "         - Issuing Bank: " + nonce.getBinData().getIssuingBank() + "\n" +
-                "         - Country of Issuance: " + nonce.getBinData().getCountryOfIssuance() + "\n" +
-                "         - Product Id: " + nonce.getBinData().getProductId();
+                getDisplayString(nonce.getBinData());
     }
 
     private static String formatAddress(UserAddress address) {

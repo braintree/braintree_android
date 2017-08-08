@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.StringDef;
 
-import com.braintreepayments.api.models.BinData.DurbinRequired;
+import com.braintreepayments.api.Json;
 
 import org.json.JSONObject;
 
@@ -13,7 +13,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * A class to contain BIN data for the card number associated with this
- * {@link CardNonce}
+ * {@link CardNonce}, {@link AndroidPayCardNonce}, {@link VenmoAccountNonce} and {@link VisaCheckoutNonce}
  */
 public class BinData implements Parcelable {
 
@@ -24,27 +24,7 @@ public class BinData implements Parcelable {
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({BinData.YES, BinData.NO, BinData.UNKNOWN})
-    @interface Prepaid {}
-
-    @Retention(RetentionPolicy.SOURCE)
-    @StringDef({BinData.YES, BinData.NO, BinData.UNKNOWN})
-    @interface Healthcare {}
-
-    @Retention(RetentionPolicy.SOURCE)
-    @StringDef({BinData.YES, BinData.NO, BinData.UNKNOWN})
-    @interface Debit {}
-
-    @Retention(RetentionPolicy.SOURCE)
-    @StringDef({BinData.YES, BinData.NO, BinData.UNKNOWN})
-    @interface DurbinRequired {}
-
-    @Retention(RetentionPolicy.SOURCE)
-    @StringDef({BinData.YES, BinData.NO, BinData.UNKNOWN})
-    @interface Commercial {}
-
-    @Retention(RetentionPolicy.SOURCE)
-    @StringDef({BinData.YES, BinData.NO, BinData.UNKNOWN})
-    @interface Payroll {}
+    @interface BinType {}
 
     private static final String PREPAID_KEY = "prepaid";
     private static final String HEALTHCARE_KEY = "healthcare";
@@ -72,57 +52,102 @@ public class BinData implements Parcelable {
         }
 
         BinData binData = new BinData();
-        binData.mPrepaid = json.optString(PREPAID_KEY);
-        binData.mHealthcare = json.optString(HEALTHCARE_KEY);
-        binData.mDebit = json.optString(DEBIT_KEY);
-        binData.mDurbinRegulated = json.optString(DURBIN_REGULATED_KEY);
-        binData.mCommercial = json.optString(COMMERCIAL_KEY);
-        binData.mPayroll = json.optString(PAYROLL_KEY);
-        binData.mIssuingBank = json.optString(ISSUING_BANK_KEY);
-        binData.mCountryOfIssuance = json.optString(COUNTRY_OF_ISSUANCE_KEY);
-        binData.mProductId = json.optString(PRODUCT_ID_KEY);
+        binData.mPrepaid = Json.optString(json, PREPAID_KEY, UNKNOWN);
+        binData.mHealthcare = Json.optString(json, HEALTHCARE_KEY, UNKNOWN);
+        binData.mDebit = Json.optString(json, DEBIT_KEY, UNKNOWN);
+        binData.mDurbinRegulated = Json.optString(json, DURBIN_REGULATED_KEY, UNKNOWN);
+        binData.mCommercial = Json.optString(json, COMMERCIAL_KEY, UNKNOWN);
+        binData.mPayroll = Json.optString(json, PAYROLL_KEY, UNKNOWN);
+        binData.mIssuingBank = Json.optString(json, ISSUING_BANK_KEY, UNKNOWN);
+        binData.mCountryOfIssuance = Json.optString(json, COUNTRY_OF_ISSUANCE_KEY, UNKNOWN);
+        binData.mProductId = Json.optString(json, PRODUCT_ID_KEY, UNKNOWN);
 
         return binData;
     }
 
-    @Prepaid
+    /**
+     * @return Whether the card is a prepaid card. Possible values:
+     *  - Yes
+     *  - No
+     *  - Unknown
+     */
+    @BinType
     public String getPrepaid() {
         return mPrepaid;
     }
 
-    @Healthcare
+    /**
+     * @return Whether the card is a healthcare card. Possible values:
+     *  - Yes
+     *  - No
+     *  - Unknown
+     */
+    @BinType
     public String getHealthcare() {
         return mHealthcare;
     }
 
-    @Debit
+    /**
+     * @return Whether the card is a debit card. Possible values:
+     *  - Yes
+     *  - No
+     *  - Unknown
+     */
+    @BinType
     public String getDebit() {
         return mDebit;
     }
 
-    @DurbinRequired
+    /**
+     * @return A value indicating whether the issuing bank's card range is regulated by the Durbin Amendment due to the bank's assets. Possible values:
+     *  - Yes
+     *  - No
+     *  - Unknown
+     */
+    @BinType
     public String getDurbinRegulated() {
         return mDurbinRegulated;
     }
 
-    @Commercial
+    /**
+     * @return Whether the card type is a commercial card and is capable of processing Level 2 transactions. Possible values:
+     *  - Yes
+     *  - No
+     *  - Unknown
+     */
+    @BinType
     public String getCommercial() {
         return mCommercial;
     }
 
-    @Payroll
+    /**
+     * @return Whether the card is a payroll card. Possible values:
+     *  - Yes
+     *  - No
+     *  - Unknown
+     */
+    @BinType
     public String getPayroll() {
         return mPayroll;
     }
 
+    /**
+     * @return The bank that issued the credit card.
+     */
     public String getIssuingBank() {
         return mIssuingBank;
     }
 
+    /**
+     * @return The country that issued the credit card.
+     */
     public String getCountryOfIssuance() {
         return mCountryOfIssuance;
     }
 
+    /**
+     * @return The code for the product type of the card (e.g. `D` (Visa Signature Preferred), `G` (Visa Business)).
+     */
     public String getProductId() {
         return mProductId;
     }

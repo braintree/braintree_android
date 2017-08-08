@@ -21,10 +21,10 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     private static final String CARD_TYPE_KEY = "cardType";
     private static final String LAST_TWO_KEY = "lastTwo";
 
-    private BinData mBinData;
-    private ThreeDSecureInfo mThreeDSecureInfo;
     private String mCardType;
     private String mLastTwo;
+    private ThreeDSecureInfo mThreeDSecureInfo;
+    private BinData mBinData;
 
     /**
      * Convert an API response to a {@link CardNonce}.
@@ -48,13 +48,13 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     protected void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
 
-        mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
-        mThreeDSecureInfo =
-                ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY));
-
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
         mLastTwo = details.getString(LAST_TWO_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
+
+        mThreeDSecureInfo =
+                ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY));
+        mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
     }
 
     /**
@@ -80,14 +80,6 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     }
 
     /**
-     * @return The BIN data for the card number associated with {@link CardNonce} or
-     * {@code null}
-     */
-    public BinData getBinData() {
-        return mBinData;
-    }
-
-    /**
      * @return The 3D Secure info for the current {@link CardNonce} or
      * {@code null}
      */
@@ -95,23 +87,30 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         return mThreeDSecureInfo;
     }
 
+    /**
+     * @return The BIN data for the card number associated with {@link CardNonce}
+     */
+    public BinData getBinData() {
+        return mBinData;
+    }
+
     public CardNonce() {}
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeParcelable(mBinData, flags);
-        dest.writeParcelable(mThreeDSecureInfo, flags);
         dest.writeString(mCardType);
         dest.writeString(mLastTwo);
+        dest.writeParcelable(mBinData, flags);
+        dest.writeParcelable(mThreeDSecureInfo, flags);
     }
 
     protected CardNonce(Parcel in) {
         super(in);
-        mBinData = in.readParcelable(BinData.class.getClassLoader());
-        mThreeDSecureInfo = in.readParcelable(ThreeDSecureInfo.class.getClassLoader());
         mCardType = in.readString();
         mLastTwo = in.readString();
+        mBinData = in.readParcelable(BinData.class.getClassLoader());
+        mThreeDSecureInfo = in.readParcelable(ThreeDSecureInfo.class.getClassLoader());
     }
 
     public static final Creator<CardNonce> CREATOR = new Creator<CardNonce>() {
