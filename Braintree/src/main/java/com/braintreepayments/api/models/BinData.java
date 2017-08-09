@@ -12,19 +12,18 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * A class to contain BIN data for the card number associated with this
- * {@link CardNonce}, {@link AndroidPayCardNonce}, and {@link VisaCheckoutNonce}
+ * A class to contain BIN data for the card number
  */
 public class BinData implements Parcelable {
 
     public static final String BIN_DATA_KEY = "binData";
-    public static final String YES = "Yes";
-    public static final String NO = "No";
-    public static final String UNKNOWN = "Unknown";
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({BinData.YES, BinData.NO, BinData.UNKNOWN})
     @interface BinType {}
+    public static final String YES = "Yes";
+    public static final String NO = "No";
+    public static final String UNKNOWN = "Unknown";
 
     private static final String PREPAID_KEY = "prepaid";
     private static final String HEALTHCARE_KEY = "healthcare";
@@ -66,10 +65,7 @@ public class BinData implements Parcelable {
     }
 
     /**
-     * @return Whether the card is a prepaid card. Possible values:
-     *  - Yes
-     *  - No
-     *  - Unknown
+     * @return Whether the card is a prepaid card. Possible {@link BinType} values are {@link BinData#YES}, {@link BinData#NO} or {@link BinData#UNKNOWN}
      */
     @BinType
     public String getPrepaid() {
@@ -77,10 +73,7 @@ public class BinData implements Parcelable {
     }
 
     /**
-     * @return Whether the card is a healthcare card. Possible values:
-     *  - Yes
-     *  - No
-     *  - Unknown
+     * @return Whether the card is a healthcare card. Possible {@link BinType} values are {@link BinData#YES}, {@link BinData#NO} or {@link BinData#UNKNOWN}
      */
     @BinType
     public String getHealthcare() {
@@ -88,10 +81,7 @@ public class BinData implements Parcelable {
     }
 
     /**
-     * @return Whether the card is a debit card. Possible values:
-     *  - Yes
-     *  - No
-     *  - Unknown
+     * @return Whether the card is a debit card. Possible {@link BinType} values are {@link BinData#YES}, {@link BinData#NO} or {@link BinData#UNKNOWN}
      */
     @BinType
     public String getDebit() {
@@ -99,10 +89,7 @@ public class BinData implements Parcelable {
     }
 
     /**
-     * @return A value indicating whether the issuing bank's card range is regulated by the Durbin Amendment due to the bank's assets. Possible values:
-     *  - Yes
-     *  - No
-     *  - Unknown
+     * @return A value indicating whether the issuing bank's card range is regulated by the Durbin Amendment due to the bank's assets. Possible {@link BinType} values are {@link BinData#YES}, {@link BinData#NO} or {@link BinData#UNKNOWN}
      */
     @BinType
     public String getDurbinRegulated() {
@@ -110,10 +97,7 @@ public class BinData implements Parcelable {
     }
 
     /**
-     * @return Whether the card type is a commercial card and is capable of processing Level 2 transactions. Possible values:
-     *  - Yes
-     *  - No
-     *  - Unknown
+     * @return Whether the card type is a commercial card and is capable of processing Level 2 transactions. Possible {@link BinType} values are {@link BinData#YES}, {@link BinData#NO} or {@link BinData#UNKNOWN}
      */
     @BinType
     public String getCommercial() {
@@ -121,10 +105,7 @@ public class BinData implements Parcelable {
     }
 
     /**
-     * @return Whether the card is a payroll card. Possible values:
-     *  - Yes
-     *  - No
-     *  - Unknown
+     * @return Whether the card is a payroll card. Possible {@link BinType} values are {@link BinData#YES}, {@link BinData#NO} or {@link BinData#UNKNOWN}
      */
     @BinType
     public String getPayroll() {
