@@ -12,7 +12,6 @@ import static com.braintreepayments.api.models.BinData.UNKNOWN;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
 public class BinDataUnitTest {
@@ -27,9 +26,9 @@ public class BinDataUnitTest {
         assertEquals(UNKNOWN, binData.getDurbinRegulated());
         assertEquals(UNKNOWN, binData.getCommercial());
         assertEquals(UNKNOWN, binData.getPayroll());
-        assertEquals(UNKNOWN, binData.getIssuingBank());
-        assertEquals(UNKNOWN, binData.getCountryOfIssuance());
-        assertEquals(UNKNOWN, binData.getProductId());
+        assertEquals("", binData.getIssuingBank());
+        assertEquals("", binData.getCountryOfIssuance());
+        assertEquals("", binData.getProductId());
     }
 
     @Test
@@ -42,9 +41,9 @@ public class BinDataUnitTest {
         assertEquals(UNKNOWN, binData.getDurbinRegulated());
         assertEquals(UNKNOWN, binData.getCommercial());
         assertEquals(UNKNOWN, binData.getPayroll());
-        assertEquals(UNKNOWN, binData.getIssuingBank());
-        assertEquals(UNKNOWN, binData.getCountryOfIssuance());
-        assertEquals(UNKNOWN, binData.getProductId());
+        assertEquals("", binData.getIssuingBank());
+        assertEquals("", binData.getCountryOfIssuance());
+        assertEquals("", binData.getProductId());
     }
 
     @Test
