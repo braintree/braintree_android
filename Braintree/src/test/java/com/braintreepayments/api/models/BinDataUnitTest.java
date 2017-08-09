@@ -68,5 +68,4 @@ public class BinDataUnitTest {
         assertEquals(expected.getCountryOfIssuance(), actual.getCountryOfIssuance());
         assertEquals(expected.getProductId(), actual.getProductId());
     }
-
 }

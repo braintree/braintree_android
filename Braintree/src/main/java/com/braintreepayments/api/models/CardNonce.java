@@ -51,7 +51,6 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
         mLastTwo = details.getString(LAST_TWO_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
-
         mThreeDSecureInfo =
                 ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY));
         mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
