@@ -89,7 +89,7 @@ dependencies {
         exclude group: 'com.braintreepayments.api', module: 'braintree'
     }
 
-    debugCompile 'com.facebook.stetho:stetho:1.4.1'
+    debugCompile 'com.facebook.stetho:stetho:1.5.0'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4'
 
     androidTestCompile 'com.lukekorth:device-automator:0.2.0'
