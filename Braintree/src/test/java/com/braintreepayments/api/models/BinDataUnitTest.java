@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 import static com.braintreepayments.api.models.BinData.UNKNOWN;
+import static com.braintreepayments.testutils.Assertions.assertBinDataEqual;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -19,6 +20,7 @@ public class BinDataUnitTest {
     @Test
     public void parsesCorrectly_ifEmptyJson() throws JSONException {
         BinData binData = BinData.fromJson(new JSONObject("{}"));
+
         assertNotNull(binData);
         assertEquals(UNKNOWN, binData.getPrepaid());
         assertEquals(UNKNOWN, binData.getHealthcare());
@@ -34,6 +36,7 @@ public class BinDataUnitTest {
     @Test
     public void parsesCorrectly_ifNull() throws JSONException {
         BinData binData = BinData.fromJson(new JSONObject());
+
         assertNotNull(binData);
         assertEquals(UNKNOWN, binData.getPrepaid());
         assertEquals(UNKNOWN, binData.getHealthcare());
@@ -54,18 +57,7 @@ public class BinDataUnitTest {
         parcel.setDataPosition(0);
 
         BinData parceled = BinData.CREATOR.createFromParcel(parcel);
-        assertBinData(binData, parceled);
-    }
 
-    public static void assertBinData(BinData expected, BinData actual) {
-        assertEquals(expected.getPrepaid(), actual.getPrepaid());
-        assertEquals(expected.getHealthcare(), actual.getHealthcare());
-        assertEquals(expected.getDebit(), actual.getDebit());
-        assertEquals(expected.getDurbinRegulated(), actual.getDurbinRegulated());
-        assertEquals(expected.getCommercial(), actual.getCommercial());
-        assertEquals(expected.getPayroll(), actual.getPayroll());
-        assertEquals(expected.getIssuingBank(), actual.getIssuingBank());
-        assertEquals(expected.getCountryOfIssuance(), actual.getCountryOfIssuance());
-        assertEquals(expected.getProductId(), actual.getProductId());
+        assertBinDataEqual(binData, parceled);
     }
 }

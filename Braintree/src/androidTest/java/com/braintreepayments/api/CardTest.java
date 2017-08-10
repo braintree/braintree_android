@@ -4,9 +4,9 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.models.BinData;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
@@ -34,7 +34,7 @@ public class CardTest {
             new BraintreeActivityTestRule<>(TestActivity.class);
 
     @Test(timeout = 10000)
-    public void tokenize_tokenizesACardWithACustomer() throws InvalidArgumentException, InterruptedException {
+    public void tokenize_tokenizesACardWithACustomer() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
                 .expirationDate("08/20");
@@ -43,7 +43,7 @@ public class CardTest {
     }
 
     @Test
-    public void tokenize_tokenizesACardWithoutACustomer() throws InvalidArgumentException, InterruptedException {
+    public void tokenize_tokenizesACardWithoutACustomer() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
                 .expirationDate("08/20");
@@ -52,7 +52,7 @@ public class CardTest {
     }
 
     @Test(timeout = 10000)
-    public void tokenize_tokenizesACardWithValidateTrue() throws InvalidArgumentException, InterruptedException {
+    public void tokenize_tokenizesACardWithValidateTrue() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
                 .expirationDate("08/20")
@@ -62,7 +62,7 @@ public class CardTest {
     }
 
     @Test(timeout = 10000)
-    public void tokenize_tokenizesACardWithValidateFalse() throws InvalidArgumentException, InterruptedException {
+    public void tokenize_tokenizesACardWithValidateFalse() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
                 .expirationDate("08/20")
@@ -72,7 +72,7 @@ public class CardTest {
     }
 
     @Test(timeout = 10000)
-    public void tokenize_tokenizesACardWithATokenizationKey() throws InvalidArgumentException, InterruptedException {
+    public void tokenize_tokenizesACardWithATokenizationKey() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
                 .expirationDate("08/20");
@@ -81,7 +81,7 @@ public class CardTest {
     }
 
     @Test(timeout = 10000)
-    public void tokenize_tokenizesACardWithATokenizationKeyAndValidateFalse() throws InvalidArgumentException, InterruptedException {
+    public void tokenize_tokenizesACardWithATokenizationKeyAndValidateFalse() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
                 .expirationDate("08/20")
@@ -91,8 +91,7 @@ public class CardTest {
     }
 
     @Test(timeout = 10000)
-    public void tokenize_failsWithTokenizationKeyAndValidateTrue() throws InterruptedException,
-            InvalidArgumentException {
+    public void tokenize_failsWithTokenizationKeyAndValidateTrue() throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivityTestRule.getActivity(), TOKENIZATION_KEY);
         fragment.addListener(new BraintreeErrorListener() {
@@ -115,7 +114,7 @@ public class CardTest {
     }
 
     @Test(timeout = 10000)
-    public void tokenize_tokenizesACardWithCvv() throws InvalidArgumentException, InterruptedException {
+    public void tokenize_tokenizesACardWithCvv() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
                 .expirationDate("08/20")
@@ -125,7 +124,7 @@ public class CardTest {
     }
 
     @Test(timeout = 10000)
-    public void tokenize_callsErrorCallbackForInvalidCvv() throws InvalidArgumentException, InterruptedException {
+    public void tokenize_callsErrorCallbackForInvalidCvv() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
                 .expirationDate("08/20")
@@ -149,7 +148,7 @@ public class CardTest {
     }
 
     @Test(timeout = 10000)
-    public void tokenize_tokenizesACardWithPostalCode() throws InvalidArgumentException, InterruptedException {
+    public void tokenize_tokenizesACardWithPostalCode() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
                 .expirationDate("08/20")
@@ -159,7 +158,7 @@ public class CardTest {
     }
 
     @Test(timeout = 10000)
-    public void tokenize_callsErrorCallbackForInvalidPostalCode() throws InvalidArgumentException, InterruptedException {
+    public void tokenize_callsErrorCallbackForInvalidPostalCode() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
                 .expirationDate("08/20")
@@ -183,15 +182,26 @@ public class CardTest {
         countDownLatch.await();
     }
 
-    private void assertTokenizationSuccessful(String authorization, CardBuilder cardBuilder)
-            throws InterruptedException, InvalidArgumentException {
+    private void assertTokenizationSuccessful(String authorization, CardBuilder cardBuilder) throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivityTestRule.getActivity(), authorization);
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
-                assertIsANonce(paymentMethodNonce.getNonce());
-                assertEquals("11", ((CardNonce) paymentMethodNonce).getLastTwo());
+                CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+
+                assertIsANonce(cardNonce.getNonce());
+                assertEquals("11", cardNonce.getLastTwo());
+                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getPrepaid());
+                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getHealthcare());
+                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getDebit());
+                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getDurbinRegulated());
+                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getCommercial());
+                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getPayroll());
+                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getIssuingBank());
+                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getCountryOfIssuance());
+                assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getProductId());
+
                 countDownLatch.countDown();
             }
         });

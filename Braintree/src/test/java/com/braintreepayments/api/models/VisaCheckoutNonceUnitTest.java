@@ -12,7 +12,7 @@ import org.robolectric.RobolectricTestRunner;
 import static com.braintreepayments.api.models.BinData.NO;
 import static com.braintreepayments.api.models.BinData.UNKNOWN;
 import static com.braintreepayments.api.models.BinData.YES;
-import static com.braintreepayments.api.models.BinDataUnitTest.assertBinData;
+import static com.braintreepayments.testutils.Assertions.assertBinDataEqual;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -103,23 +103,16 @@ public class VisaCheckoutNonceUnitTest {
         assertEquals(visaCheckoutNonce.getNonce(), actual.getNonce());
         assertEquals(visaCheckoutNonce.getDescription(), actual.getDescription());
         assertEquals(visaCheckoutNonce.isDefault(), actual.isDefault());
-
         assertEquals(visaCheckoutNonce.getLastTwo(), actual.getLastTwo());
         assertEquals(visaCheckoutNonce.getCardType(), actual.getCardType());
-
-        assertBinData(visaCheckoutNonce.getBinData(), actual.getBinData());
+        assertBinDataEqual(visaCheckoutNonce.getBinData(), actual.getBinData());
         assertVisaCheckoutAddress(visaCheckoutNonce.getBillingAddress(), actual.getBillingAddress());
         assertVisaCheckoutAddress(visaCheckoutNonce.getShippingAddress(), actual.getShippingAddress());
-
         assertEquals(visaCheckoutNonce.getCallId(), actual.getCallId());
-
-        VisaCheckoutUserData expectedUserData = visaCheckoutNonce.getUserData();
-        VisaCheckoutUserData actualUserData = visaCheckoutNonce.getUserData();
-
-        assertEquals(expectedUserData.getUserFirstName(), actualUserData.getUserFirstName());
-        assertEquals(expectedUserData.getUserLastName(), actualUserData.getUserLastName());
-        assertEquals(expectedUserData.getUserFullName(), actualUserData.getUserFullName());
-        assertEquals(expectedUserData.getUserEmail(), actualUserData.getUserEmail());
+        assertEquals(visaCheckoutNonce.getUserData().getUserFirstName(), actual.getUserData().getUserFirstName());
+        assertEquals(visaCheckoutNonce.getUserData().getUserLastName(), actual.getUserData().getUserLastName());
+        assertEquals(visaCheckoutNonce.getUserData().getUserFullName(), actual.getUserData().getUserFullName());
+        assertEquals(visaCheckoutNonce.getUserData().getUserEmail(), actual.getUserData().getUserEmail());
     }
 
     private void assertVisaCheckoutAddress(VisaCheckoutAddress expected, VisaCheckoutAddress actual) {

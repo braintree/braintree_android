@@ -10,6 +10,7 @@ import org.robolectric.RobolectricTestRunner;
 import static com.braintreepayments.api.models.BinData.NO;
 import static com.braintreepayments.api.models.BinData.UNKNOWN;
 import static com.braintreepayments.api.models.BinData.YES;
+import static com.braintreepayments.testutils.Assertions.assertBinDataEqual;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -42,6 +43,7 @@ public class CardNonceUnitTest {
     @Test
     public void parcelsCorrectly() throws JSONException {
         CardNonce cardNonce = CardNonce.fromJson(stringFromFixture("payment_methods/visa_credit_card_response.json"));
+
         Parcel parcel = Parcel.obtain();
         cardNonce.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -54,15 +56,6 @@ public class CardNonceUnitTest {
         assertEquals("ending in ••11", parceled.getDescription());
         assertEquals("11", parceled.getLastTwo());
         assertFalse(parceled.isDefault());
-        assertNotNull(parceled.getBinData());
-        assertEquals(UNKNOWN, parceled.getBinData().getPrepaid());
-        assertEquals(YES, parceled.getBinData().getHealthcare());
-        assertEquals(NO, parceled.getBinData().getDebit());
-        assertEquals(UNKNOWN, parceled.getBinData().getDurbinRegulated());
-        assertEquals(UNKNOWN, parceled.getBinData().getCommercial());
-        assertEquals(UNKNOWN, parceled.getBinData().getPayroll());
-        assertEquals(UNKNOWN, parceled.getBinData().getIssuingBank());
-        assertEquals("Something", parceled.getBinData().getCountryOfIssuance());
-        assertEquals("123", parceled.getBinData().getProductId());
+        assertBinDataEqual(cardNonce.getBinData(), parceled.getBinData());
     }
 }
