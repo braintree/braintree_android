@@ -93,8 +93,8 @@ dependencies {
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4'
 
     androidTestCompile 'com.lukekorth:device-automator:0.3.0'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-    androidTestCompile 'com.android.support.test.espresso:espresso-web:2.2.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.0'
+    androidTestCompile 'com.android.support.test.espresso:espresso-web:3.0.0'
     androidTestCompile project(':TestUtils')
 
     testCompile 'junit:junit:4.12'
