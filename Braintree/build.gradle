@@ -69,8 +69,8 @@ dependencies {
     compile(group: 'com.visa.checkout', name: 'VisaCheckout-Android-SDK', version: '4.6.0', ext: 'aar')
 
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
-    androidTestCompile 'com.android.support.test:rules:0.5'
-    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:rules:1.0.0'
+    androidTestCompile 'com.android.support.test:runner:1.0.0'
     androidTestCompile project(':TestUtils')
 
     testCompile 'org.robolectric:robolectric:3.3.2'
