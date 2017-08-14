@@ -46,6 +46,8 @@ public class ThreeDSecureWebView extends WebView {
         settings.setJavaScriptEnabled(true);
         settings.setBuiltInZoomControls(true);
         settings.setDisplayZoomControls(false);
+        settings.setDomStorageEnabled(true);
+        settings.setDatabaseEnabled(true);
 
        if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
           CookieManager.getInstance().setAcceptThirdPartyCookies(this, true);
