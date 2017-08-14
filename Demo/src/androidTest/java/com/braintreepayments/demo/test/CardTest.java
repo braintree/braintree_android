@@ -105,8 +105,8 @@ public class CardTest extends TestHelper {
         onDevice().pressTab().pressTab().pressEnter();
 
         getNonceDetails().check(text(containsString("Card Last Two: 02")));
-        getNonceDetails().check(text(containsString("3DS isLiabilityShifted: true")));
-        getNonceDetails().check(text(containsString("3DS isLiabilityShiftPossible: true")));
+        getNonceDetails().check(text(containsString("isLiabilityShifted: true")));
+        getNonceDetails().check(text(containsString("isLiabilityShiftPossible: true")));
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
