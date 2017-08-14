@@ -31,11 +31,12 @@ public class VisaCheckoutTest extends TestHelper {
     public void setup() {
         super.setup();
         onDevice(withText("Visa Checkout")).waitForEnabled().perform(click());
-        onDevice(withContentDescription("Visa Checkout")).waitForExists().perform(click());
+        onDevice(withContentDescription("Visa Checkout")).waitForExists().waitForEnabled().perform(click());
     }
 
     @Test(timeout = 60000)
     public void cancelsVisaCheckout_whenPressingBack() {
+        onDevice(withText("Sign In To Visa Checkout")).waitForExists().perform(click());
         onDevice().pressBack(); // Dismiss keyboard
         onDevice().pressBack();
         onDevice(withText("OK")).perform(click());
