@@ -31,7 +31,11 @@ public class DemoApplication extends Application implements UncaughtExceptionHan
                     .penaltyDeath()
                     .build());
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                    .detectAll()
+                    .detectLeakedSqlLiteObjects()
+                    .detectLeakedRegistrationObjects()
+                    .detectLeakedClosableObjects()
+                    .detectActivityLeaks()
+                    .detectFileUriExposure()
                     .penaltyLog()
                     .penaltyDeath()
                     .build());
