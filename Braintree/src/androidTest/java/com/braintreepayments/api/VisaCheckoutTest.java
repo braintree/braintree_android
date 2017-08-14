@@ -26,9 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.api.models.BinData.NO;
 import static com.braintreepayments.api.models.BinData.UNKNOWN;
-import static com.braintreepayments.api.models.BinData.YES;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
@@ -110,8 +108,8 @@ public class VisaCheckoutTest {
                 assertEquals(UNKNOWN, visaCheckoutPayment.getBinData().getCommercial());
                 assertEquals(UNKNOWN, visaCheckoutPayment.getBinData().getPayroll());
                 assertEquals(UNKNOWN, visaCheckoutPayment.getBinData().getIssuingBank());
-                assertEquals("Something", visaCheckoutPayment.getBinData().getCountryOfIssuance());
-                assertEquals("123", visaCheckoutPayment.getBinData().getProductId());
+                assertEquals(UNKNOWN, visaCheckoutPayment.getBinData().getCountryOfIssuance());
+                assertEquals(UNKNOWN, visaCheckoutPayment.getBinData().getProductId());
                 mCountDownLatch.countDown();
             }
         });
