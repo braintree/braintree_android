@@ -67,7 +67,7 @@ configurations.all {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:25.4.0'
+    compile 'com.android.support:support-v4:26.0.0'
 
     compile('com.squareup.retrofit:retrofit:1.9.0') {
         exclude module: 'com.google.gson'
@@ -80,8 +80,8 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'de.greenrobot:eventbus:2.4.1'
-    compile 'com.android.support:appcompat-v7:25.4.0'
-    compile 'com.android.support:design:25.4.0'
+    compile 'com.android.support:appcompat-v7:26.0.0'
+    compile 'com.android.support:design:26.0.0'
 
     compile project(':Braintree')
     compile 'io.card:android-sdk:5.5.1'

@@ -80,10 +80,10 @@ allprojects {
 
     version = '2.5.5-SNAPSHOT'
     ext {
-        compileSdkVersion = 25
-        buildToolsVersion = '25.0.3'
+        compileSdkVersion = 26
+        buildToolsVersion = '26.0.0'
         minSdkVersion = 16
-        targetSdkVersion = 25
+        targetSdkVersion = 26
         versionCode = 68
         versionName = version
     }
