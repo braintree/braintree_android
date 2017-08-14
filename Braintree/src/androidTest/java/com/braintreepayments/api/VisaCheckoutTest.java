@@ -88,7 +88,7 @@ public class VisaCheckoutTest {
         mCountDownLatch.await();
     }
 
-    @Test(timeout = 100000)
+    @Test(timeout = 10000)
     public void tokenize_whenSuccess_postsVisaCheckoutNonce()
             throws InterruptedException {
         mBraintreeFragment.addListener(new PaymentMethodNonceCreatedListener() {
