@@ -1,5 +1,17 @@
 # Braintree Android SDK Release Notes
 
+## 2.6.0
+
+* Upgrade Kount DataCollector to 3.2
+* Stop using dependency ranges (https://github.com/braintree/android-card-form/pull/29)
+* Relax `PRNGFixes` check for `PRNGSecureRandomProvider` to prevent race condition with other providers ([#151](https://github.com/braintree/braintree_android/issues/151))
+* Stop sending `Content-Type` header for GET requests ([#155](https://github.com/braintree/braintree_android/issues/155))
+* Upgrade browser-switch to 0.1.4 to prevent losing Chrome Custom Tab when switching to a password manager or other app
+* Add additional bin data to card based payment methods
+* Add DOM and database storage to `ThreeDSecureWebView` to improve compatibility with some bank web pages ([#159](https://github.com/braintree/braintree_android/pull/159))
+* Update compile and target SDK versions to 26
+  * Any support library dependencies must now be 26.0.0 or newer
+
 ## 2.5.4
 
 * Use custom task instead of overriding the clean task (fixes [#153](https://github.com/braintree/braintree_android/issues/153))
