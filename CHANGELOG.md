@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 2.6.2
+
+* Fix potential crash due to optional Visa Checkout dependency
+
 ## 2.6.1
 
 * Fix potential crash due to optional Google Play Services dependency
