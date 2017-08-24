@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 2.6.1
+
+* Fix potential crash due to optional Google Play Services dependency
+
 ## 2.6.0
 
 * Upgrade Kount DataCollector to 3.2
