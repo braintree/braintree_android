@@ -7,6 +7,7 @@ import com.braintreepayments.api.Json;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.wallet.Wallet;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -71,9 +72,11 @@ public class AndroidPayConfiguration {
      */
     public boolean isEnabled(Context context) {
         try {
+            Class.forName(Wallet.class.getName());
+
             return mEnabled && GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) ==
                     ConnectionResult.SUCCESS;
-        } catch (NoClassDefFoundError e) {
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
             return false;
         }
     }

@@ -2,6 +2,7 @@ package com.braintreepayments.api.models;
 
 import com.braintreepayments.api.Json;
 import com.visa.checkout.Profile.CardBrand;
+import com.visa.checkout.VisaCheckoutSdk;
 
 import org.json.JSONObject;
 
@@ -25,7 +26,7 @@ public class VisaCheckoutConfiguration {
      */
     private static boolean isVisaCheckoutSDKAvailable() {
         try {
-            Class.forName("com.visa.checkout.VisaCheckoutSdk");
+            Class.forName(VisaCheckoutSdk.class.getName());
             return true;
         } catch (ClassNotFoundException e) {
             return false;
