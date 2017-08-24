@@ -28,7 +28,7 @@ public class VisaCheckoutConfiguration {
         try {
             Class.forName(VisaCheckoutSdk.class.getName());
             return true;
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
             return false;
         }
     }
