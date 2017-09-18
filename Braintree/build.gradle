@@ -137,7 +137,7 @@ uploadArchives {
                 groupId = 'com.braintreepayments.api'
                 version = "${android.defaultConfig.versionName}"
                 packaging 'jar'
-                description 'This is Braintree\'s v.zero SDK for Android. Integrate this library to accept payments in your Android app.'
+                description 'This is Braintree\'s Android SDK. Integrate this library to accept payments in your Android app.'
             }
 
             pom.whenConfigured { MavenPom pom ->
