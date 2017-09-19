@@ -29,6 +29,14 @@
             android:enabled="false" />
 
         <Button
+            android:id="@+id/google_payments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/google_payments"
+            android:onClick="launchGooglePayments"
+            android:enabled="false" />
+
+        <Button
             android:id="@+id/card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

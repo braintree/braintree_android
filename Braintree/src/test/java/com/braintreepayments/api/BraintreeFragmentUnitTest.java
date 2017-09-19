@@ -81,7 +81,8 @@ import static org.powermock.api.mockito.PowerMockito.verifyZeroInteractions;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*" })
-@PrepareForTest({ AnalyticsSender.class, AndroidPay.class, ConfigurationManager.class, PayPal.class, ThreeDSecure.class,
+@PrepareForTest({ AnalyticsSender.class, AndroidPay.class, ConfigurationManager.class, GooglePayments.class,
+        PayPal.class, ThreeDSecure.class,
         Venmo.class })
 public class BraintreeFragmentUnitTest {
 
@@ -909,6 +910,18 @@ public class BraintreeFragmentUnitTest {
 
         verifyStatic();
         AndroidPay.onActivityResult(fragment, Activity.RESULT_OK, intent);
+    }
+
+    @Test
+    public void onActivityResult_handlesGooglePaymentsResult() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        mockStatic(GooglePayments.class);
+        Intent intent = new Intent();
+
+        fragment.onActivityResult(BraintreeRequestCodes.GOOGLE_PAYMENTS, Activity.RESULT_OK, intent);
+
+        verifyStatic();
+        GooglePayments.onActivityResult(fragment, Activity.RESULT_OK, intent);
     }
 
     @Test

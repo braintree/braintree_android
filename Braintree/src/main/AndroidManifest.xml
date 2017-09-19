@@ -6,7 +6,12 @@
     <application>
         <activity android:name="com.braintreepayments.api.AndroidPayActivity"
             android:theme="@style/bt_transparent_activity"/>
+
+        <activity android:name="com.braintreepayments.api.GooglePaymentsActivity"
+            android:theme="@style/bt_transparent_activity"/>
+
         <activity android:name="com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity"/>
+
         <service android:name="com.braintreepayments.api.internal.AnalyticsIntentService"/>
     </application>
 </manifest>

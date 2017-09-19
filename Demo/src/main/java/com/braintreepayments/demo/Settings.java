@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Settings {
 
     protected static final String ENVIRONMENT = "environment";
@@ -121,6 +124,41 @@ public class Settings {
         String[] countries = getPreferences(context).getString("android_pay_allowed_countries_for_shipping", "US").split(",");
         for(int i = 0; i < countries.length; i++) {
             countries[i] = countries[i].trim();
+        }
+
+        return countries;
+    }
+
+    public static boolean areGooglePaymentsPrepaidCardsAllowed(Context context) {
+        return getPreferences(context).getBoolean("google_payments_allow_prepaid_cards", true);
+    }
+
+    public static boolean isGooglePaymentsShippingAddressRequired(Context context) {
+        return getPreferences(context).getBoolean("google_payments_require_shipping_address", false);
+    }
+
+    public static boolean isGooglePaymentsBillingAddressRequired(Context context) {
+        return getPreferences(context).getBoolean("google_payments_require_billing_address", false);
+    }
+
+    public static boolean isGooglePaymentsPhoneNumberRequired(Context context) {
+        return getPreferences(context).getBoolean("google_payments_require_phone_number", false);
+    }
+
+    public static boolean isGooglePaymentsEmailRequired(Context context) {
+        return getPreferences(context).getBoolean("google_payments_require_email", false);
+    }
+
+    public static String getGooglePaymentsCurrency(Context context) {
+        return getPreferences(context).getString("google_payments_currency", "USD");
+    }
+
+    public static List<String> getGooglePaymentsAllowedCountriesForShipping(Context context) {
+        String[] preference = getPreferences(context).getString("google_payments_allowed_countries_for_shipping", "US")
+                .split(",");
+        List<String> countries = new ArrayList<>();
+        for(String country : preference) {
+            countries.add(country.trim());
         }
 
         return countries;

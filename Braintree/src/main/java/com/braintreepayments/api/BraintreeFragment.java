@@ -332,6 +332,9 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             case BraintreeRequestCodes.ANDROID_PAY:
                 AndroidPay.onActivityResult(this, resultCode, data);
                 break;
+            case BraintreeRequestCodes.GOOGLE_PAYMENTS:
+                GooglePayments.onActivityResult(this, resultCode, data);
+                break;
         }
 
         if (resultCode == Activity.RESULT_CANCELED) {
@@ -746,7 +749,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                     .addApi(Wallet.API, new Wallet.WalletOptions.Builder()
-                            .setEnvironment(AndroidPay.getEnvironment(getConfiguration().getAndroidPay()))
+                            .setEnvironment(GooglePayments.getEnvironment(getConfiguration().getAndroidPay()))
                             .setTheme(WalletConstants.THEME_LIGHT)
                             .build())
                     .build();

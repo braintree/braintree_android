@@ -14,11 +14,8 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.TokenizationParametersListener;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
-import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.MetadataBuilder;
-import com.braintreepayments.api.models.TokenizationKey;
 import com.google.android.gms.common.api.BooleanResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -27,10 +24,8 @@ import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
 import com.google.android.gms.wallet.MaskedWalletRequest;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
-import com.google.android.gms.wallet.PaymentMethodTokenizationType;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
-import com.google.android.gms.wallet.WalletConstants.CardNetwork;
 
 import org.json.JSONException;
 
@@ -56,11 +51,6 @@ import static com.braintreepayments.api.AndroidPayActivity.EXTRA_TOKENIZATION_PA
  * <a href="https://developers.braintreepayments.com/guides/android-pay/overview">documentation</a>
  */
 public class AndroidPay {
-
-    private static final String VISA_NETWORK = "visa";
-    private static final String MASTERCARD_NETWORK = "mastercard";
-    private static final String AMEX_NETWORK = "amex";
-    private static final String DISCOVER_NETWORK = "discover";
 
     /**
      * Before starting the Android Pay flow, use
@@ -122,85 +112,10 @@ public class AndroidPay {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                listener.onResult(getTokenizationParameters(fragment), getAllowedCardNetworks(fragment));
+                listener.onResult(GooglePayments.getTokenizationParameters(fragment),
+                        GooglePayments.getAllowedCardNetworks(fragment));
             }
         });
-    }
-
-    static PaymentMethodTokenizationParameters getTokenizationParameters(BraintreeFragment fragment) {
-        PaymentMethodTokenizationParameters.Builder parameters = PaymentMethodTokenizationParameters.newBuilder()
-                .setPaymentMethodTokenizationType(PaymentMethodTokenizationType.PAYMENT_GATEWAY)
-                .addParameter("gateway", "braintree")
-                .addParameter("braintree:merchantId", fragment.getConfiguration().getMerchantId())
-                .addParameter("braintree:authorizationFingerprint",
-                        fragment.getConfiguration().getAndroidPay().getGoogleAuthorizationFingerprint())
-                .addParameter("braintree:apiVersion", "v1")
-                .addParameter("braintree:sdkVersion", BuildConfig.VERSION_NAME)
-                .addParameter("braintree:metadata", new MetadataBuilder()
-                        .integration(fragment.getIntegrationType())
-                        .sessionId(fragment.getSessionId())
-                        .version()
-                        .toString());
-
-        if (fragment.getAuthorization() instanceof TokenizationKey) {
-            parameters.addParameter("braintree:clientKey", fragment.getAuthorization().toString());
-        }
-
-        return parameters.build();
-    }
-
-    static ArrayList<Integer> getAllowedCardNetworks(BraintreeFragment fragment) {
-        ArrayList<Integer> allowedNetworks = new ArrayList<>();
-        for (String network : fragment.getConfiguration().getAndroidPay().getSupportedNetworks()) {
-            switch (network) {
-                case VISA_NETWORK:
-                    allowedNetworks.add(CardNetwork.VISA);
-                    break;
-                case MASTERCARD_NETWORK:
-                    allowedNetworks.add(CardNetwork.MASTERCARD);
-                    break;
-                case AMEX_NETWORK:
-                    allowedNetworks.add(CardNetwork.AMEX);
-                    break;
-                case DISCOVER_NETWORK:
-                    allowedNetworks.add(CardNetwork.DISCOVER);
-                    break;
-            }
-        }
-
-        return allowedNetworks;
-    }
-
-    /**
-     * @deprecated Use {@link #tokenize(BraintreeFragment, FullWallet, Cart)} instead.
-     */
-    @Deprecated
-    public static void tokenize(BraintreeFragment fragment, FullWallet wallet) {
-        tokenize(fragment, wallet, null);
-    }
-
-    /**
-     * Call this method when you've received a successful FullWallet request in your activity's
-     * {@link Activity#onActivityResult(int, int, Intent)} to get an {@link AndroidPayCardNonce} from a
-     * {@link FullWallet}.
-     *
-     * @param fragment An instance of {@link BraintreeFragment}.
-     * @param wallet a {@link FullWallet} from the Intent in {@link Activity#onActivityResult(int, int, Intent)}.
-     * @param cart the {@link Cart} used when creating the {@link FullWallet}.
-     */
-    public static void tokenize(BraintreeFragment fragment, FullWallet wallet, Cart cart) {
-        try {
-            fragment.postCallback(AndroidPayCardNonce.fromFullWallet(wallet, cart));
-            fragment.sendAnalyticsEvent("android-pay.nonce-received");
-        } catch (JSONException e) {
-            fragment.sendAnalyticsEvent("android-pay.failed");
-
-            try {
-                fragment.postCallback(ErrorWithResponse.fromJson(wallet.getPaymentMethodToken().getToken()));
-            } catch (JSONException e1) {
-                fragment.postCallback(e1);
-            }
-        }
     }
 
     /**
@@ -237,11 +152,11 @@ public class AndroidPay {
                 fragment.sendAnalyticsEvent("android-pay.started");
 
                 Intent intent = new Intent(fragment.getApplicationContext(), AndroidPayActivity.class)
-                        .putExtra(EXTRA_ENVIRONMENT, getEnvironment(configuration.getAndroidPay()))
+                        .putExtra(EXTRA_ENVIRONMENT, GooglePayments.getEnvironment(configuration.getAndroidPay()))
                         .putExtra(EXTRA_MERCHANT_NAME, configuration.getAndroidPay().getDisplayName())
                         .putExtra(EXTRA_CART, cart)
-                        .putExtra(EXTRA_TOKENIZATION_PARAMETERS, getTokenizationParameters(fragment))
-                        .putIntegerArrayListExtra(EXTRA_ALLOWED_CARD_NETWORKS, getAllowedCardNetworks(fragment))
+                        .putExtra(EXTRA_TOKENIZATION_PARAMETERS, GooglePayments.getTokenizationParameters(fragment))
+                        .putIntegerArrayListExtra(EXTRA_ALLOWED_CARD_NETWORKS, GooglePayments.getAllowedCardNetworks(fragment))
                         .putExtra(EXTRA_SHIPPING_ADDRESS_REQUIRED, shippingAddressRequired)
                         .putExtra(EXTRA_PHONE_NUMBER_REQUIRED, phoneNumberRequired)
                         .putParcelableArrayListExtra(EXTRA_ALLOWED_COUNTRIES, allowedCountries)
@@ -266,13 +181,45 @@ public class AndroidPay {
                 fragment.sendAnalyticsEvent("android-pay.change-masked-wallet");
 
                 Intent intent = new Intent(fragment.getApplicationContext(), AndroidPayActivity.class)
-                        .putExtra(EXTRA_ENVIRONMENT, getEnvironment(configuration.getAndroidPay()))
+                        .putExtra(EXTRA_ENVIRONMENT, GooglePayments.getEnvironment(configuration.getAndroidPay()))
                         .putExtra(EXTRA_GOOGLE_TRANSACTION_ID, androidPayCardNonce.getGoogleTransactionId())
                         .putExtra(EXTRA_CART, androidPayCardNonce.getCart())
                         .putExtra(EXTRA_REQUEST_TYPE, CHANGE_PAYMENT_METHOD);
                 fragment.startActivityForResult(intent, BraintreeRequestCodes.ANDROID_PAY);
             }
         });
+    }
+
+    /**
+     * @deprecated Use {@link #tokenize(BraintreeFragment, FullWallet, Cart)} instead.
+     */
+    @Deprecated
+    public static void tokenize(BraintreeFragment fragment, FullWallet wallet) {
+        tokenize(fragment, wallet, null);
+    }
+
+    /**
+     * Call this method when you've received a successful FullWallet request in your activity's
+     * {@link Activity#onActivityResult(int, int, Intent)} to get an {@link AndroidPayCardNonce} from a
+     * {@link FullWallet}.
+     *
+     * @param fragment An instance of {@link BraintreeFragment}.
+     * @param wallet a {@link FullWallet} from the Intent in {@link Activity#onActivityResult(int, int, Intent)}.
+     * @param cart the {@link Cart} used when creating the {@link FullWallet}.
+     */
+    public static void tokenize(BraintreeFragment fragment, FullWallet wallet, Cart cart) {
+        try {
+            fragment.postCallback(AndroidPayCardNonce.fromFullWallet(wallet, cart));
+            fragment.sendAnalyticsEvent("android-pay.nonce-received");
+        } catch (JSONException e) {
+            fragment.sendAnalyticsEvent("android-pay.failed");
+
+            try {
+                fragment.postCallback(ErrorWithResponse.fromJson(wallet.getPaymentMethodToken().getToken()));
+            } catch (JSONException e1) {
+                fragment.postCallback(e1);
+            }
+        }
     }
 
     static void onActivityResult(BraintreeFragment fragment, int resultCode, Intent data) {
@@ -297,14 +244,6 @@ public class AndroidPay {
             }
 
             fragment.sendAnalyticsEvent("android-pay.failed");
-        }
-    }
-
-    protected static int getEnvironment(AndroidPayConfiguration configuration) {
-        if("production".equals(configuration.getEnvironment())) {
-            return WalletConstants.ENVIRONMENT_PRODUCTION;
-        } else {
-            return WalletConstants.ENVIRONMENT_TEST;
         }
     }
 

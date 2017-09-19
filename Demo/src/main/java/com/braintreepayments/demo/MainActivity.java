@@ -14,6 +14,7 @@ import com.braintreepayments.api.dropin.DropInResult;
 import com.braintreepayments.api.dropin.utils.PaymentMethodType;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.CardNonce;
+import com.braintreepayments.api.models.GooglePaymentsCardNonce;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VenmoAccountNonce;
@@ -35,10 +36,11 @@ public class MainActivity extends BaseActivity {
 
     private static final int DROP_IN_REQUEST = 1;
     private static final int ANDROID_PAY_REQUEST = 2;
-    private static final int CARDS_REQUEST = 3;
-    private static final int PAYPAL_REQUEST = 4;
-    private static final int VENMO_REQUEST = 5;
-    private static final int VISA_CHECKOUT_REQUEST = 6;
+    private static final int GOOGLE_PAYMENTS_REQUEST = 3;
+    private static final int CARDS_REQUEST = 4;
+    private static final int PAYPAL_REQUEST = 5;
+    private static final int VENMO_REQUEST = 6;
+    private static final int VISA_CHECKOUT_REQUEST = 7;
 
     private static final String KEY_NONCE = "nonce";
 
@@ -51,6 +53,7 @@ public class MainActivity extends BaseActivity {
 
     private Button mDropInButton;
     private Button mAndroidPayButton;
+    private Button mGooglePaymentsButton;
     private Button mCardsButton;
     private Button mPayPalButton;
     private Button mVenmoButton;
@@ -62,18 +65,19 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-        mNonceIcon = (ImageView) findViewById(R.id.nonce_icon);
-        mNonceString = (TextView) findViewById(R.id.nonce);
-        mNonceDetails = (TextView) findViewById(R.id.nonce_details);
-        mDeviceData = (TextView) findViewById(R.id.device_data);
+        mNonceIcon = findViewById(R.id.nonce_icon);
+        mNonceString = findViewById(R.id.nonce);
+        mNonceDetails = findViewById(R.id.nonce_details);
+        mDeviceData = findViewById(R.id.device_data);
 
-        mDropInButton = (Button) findViewById(R.id.drop_in);
-        mAndroidPayButton = (Button) findViewById(R.id.android_pay);
-        mCardsButton = (Button) findViewById(R.id.card);
-        mPayPalButton = (Button) findViewById(R.id.paypal);
-        mVenmoButton = (Button) findViewById(R.id.venmo);
-        mVisaCheckoutButton = (Button) findViewById(R.id.visa_checkout);
-        mCreateTransactionButton = (Button) findViewById(R.id.create_transaction);
+        mDropInButton = findViewById(R.id.drop_in);
+        mAndroidPayButton = findViewById(R.id.android_pay);
+        mGooglePaymentsButton = findViewById(R.id.google_payments);
+        mCardsButton = findViewById(R.id.card);
+        mPayPalButton = findViewById(R.id.paypal);
+        mVenmoButton = findViewById(R.id.venmo);
+        mVisaCheckoutButton = findViewById(R.id.visa_checkout);
+        mCreateTransactionButton = findViewById(R.id.create_transaction);
 
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(KEY_NONCE)) {
@@ -98,6 +102,11 @@ public class MainActivity extends BaseActivity {
         Intent intent = new Intent(this, AndroidPayActivity.class)
                 .putExtra(EXTRA_ANDROID_PAY_CART, getAndroidPayCart());
         startActivityForResult(intent, ANDROID_PAY_REQUEST);
+    }
+
+    public void launchGooglePayments(View v) {
+        Intent intent = new Intent(this, GooglePaymentsActivity.class);
+        startActivityForResult(intent, GOOGLE_PAYMENTS_REQUEST);
     }
 
     public void launchCards(View v) {
@@ -196,6 +205,8 @@ public class MainActivity extends BaseActivity {
             details = PayPalActivity.getDisplayString((PayPalAccountNonce) mNonce);
         } else if (mNonce instanceof AndroidPayCardNonce) {
             details = AndroidPayActivity.getDisplayString((AndroidPayCardNonce) mNonce);
+        } else if (mNonce instanceof GooglePaymentsCardNonce) {
+            details = GooglePaymentsActivity.getDisplayString((GooglePaymentsCardNonce) mNonce);
         } else if (mNonce instanceof VisaCheckoutNonce) {
             details = VisaCheckoutActivity.getDisplayString((VisaCheckoutNonce) mNonce);
         } else if (mNonce instanceof VenmoAccountNonce) {
@@ -236,6 +247,7 @@ public class MainActivity extends BaseActivity {
     private void enableButtons(boolean enable) {
         mDropInButton.setEnabled(enable);
         mAndroidPayButton.setEnabled(enable);
+        mGooglePaymentsButton.setEnabled(enable);
         mCardsButton.setEnabled(enable);
         mPayPalButton.setEnabled(enable);
         mVenmoButton.setEnabled(enable);

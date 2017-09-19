@@ -2,12 +2,10 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
-import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.TokenizationParametersListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
@@ -55,14 +53,12 @@ import static com.braintreepayments.api.AndroidPayActivity.EXTRA_REQUEST_TYPE;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_SHIPPING_ADDRESS_REQUIRED;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_TOKENIZATION_PARAMETERS;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
-import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWithConfiguration;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragmentWithConfiguration;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -159,95 +155,6 @@ public class AndroidPayTest {
         mLatch.await();
     }
 
-    @Test(timeout = 5000)
-    public void getTokenizationParameters_returnsCorrectParameters() throws Exception {
-        String config = mBaseConfiguration.withAnalytics().build();
-
-        final BraintreeFragment fragment = getFragment(mActivityTestRule.getActivity(), TOKENIZATION_KEY, config);
-
-        fragment.waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                Bundle tokenizationParameters = AndroidPay.getTokenizationParameters(fragment).getParameters();
-
-                assertEquals("braintree", tokenizationParameters.getString("gateway"));
-                assertEquals(configuration.getMerchantId(), tokenizationParameters.getString("braintree:merchantId"));
-                assertEquals(configuration.getAndroidPay().getGoogleAuthorizationFingerprint(),
-                        tokenizationParameters.getString("braintree:authorizationFingerprint"));
-                assertEquals("v1", tokenizationParameters.getString("braintree:apiVersion"));
-                assertEquals(BuildConfig.VERSION_NAME, tokenizationParameters.getString("braintree:sdkVersion"));
-
-                mLatch.countDown();
-            }
-        });
-
-        mLatch.await();
-    }
-
-    @Test(timeout = 5000)
-    public void getTokenizationParameters_doesNotIncludeATokenizationKeyWhenNotPresent() throws Exception {
-        final BraintreeFragment fragment = getFragment(mActivityTestRule.getActivity(),
-                stringFromFixture("client_token.json"), mBaseConfiguration.build());
-
-        fragment.waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                Bundle tokenizationParameters = AndroidPay.getTokenizationParameters(fragment).getParameters();
-
-                assertNull(tokenizationParameters.getString("braintree:clientKey"));
-
-                mLatch.countDown();
-            }
-        });
-
-        mLatch.countDown();
-    }
-
-    @Test(timeout = 5000)
-    public void getTokenizationParameters_includesATokenizationKeyWhenPresent() throws Exception {
-        final BraintreeFragment fragment = getFragment(mActivityTestRule.getActivity(), TOKENIZATION_KEY,
-                mBaseConfiguration.withAnalytics().build());
-
-        fragment.waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                Bundle tokenizationParameters = AndroidPay.getTokenizationParameters(fragment).getParameters();
-
-                assertEquals(TOKENIZATION_KEY,  tokenizationParameters.getString("braintree:clientKey"));
-
-                mLatch.countDown();
-            }
-        });
-
-        mLatch.await();
-    }
-
-    @Test(timeout = 5000)
-    public void getAllowedCardNetworks_returnsSupportedNetworks() throws InterruptedException {
-        String configuration = mBaseConfiguration.androidPay(mBaseConfiguration.androidPay()
-                .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"}))
-                .build();
-
-        final BraintreeFragment fragment = getFragmentWithConfiguration(mActivityTestRule.getActivity(), configuration);
-
-        fragment.waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                Collection<Integer> allowedCardNetworks = AndroidPay.getAllowedCardNetworks(fragment);
-
-                assertEquals(4, allowedCardNetworks.size());
-                assertTrue(allowedCardNetworks.contains(CardNetwork.VISA));
-                assertTrue(allowedCardNetworks.contains(CardNetwork.MASTERCARD));
-                assertTrue(allowedCardNetworks.contains(CardNetwork.AMEX));
-                assertTrue(allowedCardNetworks.contains(CardNetwork.DISCOVER));
-
-                mLatch.countDown();
-            }
-        });
-
-        mLatch.await();
-    }
-
     @Test
     public void requestAndroidPay_startsActivity() {
         BraintreeFragment fragment = getSetupFragment();
@@ -285,7 +192,7 @@ public class AndroidPayTest {
         order.verify(fragment).sendAnalyticsEvent("android-pay.started");
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void requestAndroidPay_postsExceptionWhenCartIsNull() throws InterruptedException, InvalidArgumentException {
         BraintreeFragment fragment = getSetupFragment();
 
@@ -296,7 +203,7 @@ public class AndroidPayTest {
         order.verify(fragment).sendAnalyticsEvent("android-pay.failed");
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void changePaymentMethod_startsActivity() {
         BraintreeFragment fragment = getSetupFragment();
         doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
@@ -317,7 +224,7 @@ public class AndroidPayTest {
         assertEquals(cart, intent.getParcelableExtra(EXTRA_CART));
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void changePaymentMethod_sendsAnalyticsEvent() {
         BraintreeFragment fragment = getSetupFragment();
         doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
@@ -329,7 +236,7 @@ public class AndroidPayTest {
         verify(fragment).sendAnalyticsEvent("android-pay.change-masked-wallet");
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void onActivityResult_sendsAnalyticsEventOnCancel() {
         BraintreeFragment fragment = getSetupFragment();
 
@@ -338,7 +245,7 @@ public class AndroidPayTest {
         verify(fragment).sendAnalyticsEvent("android-pay.canceled");
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void onActivityResult_sendsAnalyticsEventOnNonOkOrCanceledResult() {
         BraintreeFragment fragment = getSetupFragment();
 
@@ -347,7 +254,7 @@ public class AndroidPayTest {
         verify(fragment).sendAnalyticsEvent("android-pay.failed");
     }
 
-    @Test(timeout = 5000)
+    @Test
     public void onActivityResult_sendsAnalyticsEventOnFullWalletResponse() throws Exception {
         BraintreeFragment fragment = getSetupFragment();
 

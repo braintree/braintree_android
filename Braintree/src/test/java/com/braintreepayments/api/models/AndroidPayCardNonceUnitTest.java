@@ -17,7 +17,6 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 import static com.braintreepayments.api.models.BinData.NO;
 import static com.braintreepayments.api.models.BinData.UNKNOWN;
