@@ -19,7 +19,6 @@ import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestAndroidPayConfigurationBuilder;
 import com.google.android.gms.identity.intents.model.CountrySpecification;
 import com.google.android.gms.identity.intents.model.UserAddress;
-import com.google.android.gms.wallet.Address;
 import com.google.android.gms.wallet.Cart;
 import com.google.android.gms.wallet.FullWallet;
 import com.google.android.gms.wallet.InstrumentInfo;
@@ -39,7 +38,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
@@ -319,7 +317,7 @@ public class AndroidPayTest {
         assertEquals(cart, intent.getParcelableExtra(EXTRA_CART));
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void changePaymentMethod_sendsAnalyticsEvent() {
         BraintreeFragment fragment = getSetupFragment();
         doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
@@ -349,8 +347,8 @@ public class AndroidPayTest {
         verify(fragment).sendAnalyticsEvent("android-pay.failed");
     }
 
-    @Test(timeout = 1000)
-    public void onActivityResult_sendsAnalyticsEventOnFullWalletResponse() throws InterruptedException {
+    @Test(timeout = 5000)
+    public void onActivityResult_sendsAnalyticsEventOnFullWalletResponse() throws Exception {
         BraintreeFragment fragment = getSetupFragment();
 
         FullWallet wallet = createFullWallet();
@@ -374,31 +372,19 @@ public class AndroidPayTest {
         return fragment;
     }
 
-    private FullWallet createFullWallet() {
-        try {
-            Class paymentMethodTokenClass = PaymentMethodToken.class;
-            Class[] tokenParams = new Class[] { int.class, int.class, String.class };
-            Constructor<PaymentMethodToken> tokenConstructor = paymentMethodTokenClass.getDeclaredConstructor(tokenParams);
-            tokenConstructor.setAccessible(true);
-            PaymentMethodToken token = tokenConstructor.newInstance(0, 0, "");
+    private FullWallet createFullWallet() throws Exception {
+        Class paymentMethodTokenClass = PaymentMethodToken.class;
+        Class[] tokenParams = new Class[] { int.class, String.class };
+        Constructor<PaymentMethodToken> tokenConstructor = paymentMethodTokenClass.getDeclaredConstructor(tokenParams);
+        tokenConstructor.setAccessible(true);
+        PaymentMethodToken token = tokenConstructor.newInstance(0, stringFromFixture("payment_methods/android_pay_card.json"));
 
-            Class fullWalletClass = FullWallet.class;
-            Class[] walletParams = new Class[] { int.class, String.class, String.class, ProxyCard.class, String.class,
-                    Address.class, Address.class, String[].class, UserAddress.class, UserAddress.class,
-                    InstrumentInfo[].class, PaymentMethodToken.class };
-            Constructor<FullWallet> walletConstructor = fullWalletClass.getDeclaredConstructor(walletParams);
-            walletConstructor.setAccessible(true);
-            return walletConstructor.newInstance(0, null, null, null, null, null, null, null, null, null, null, token);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        Class fullWalletClass = FullWallet.class;
+        Class[] walletParams = new Class[] { String.class, String.class, ProxyCard.class, String.class,
+                com.google.android.gms.wallet.zza.class, com.google.android.gms.wallet.zza.class, String[].class, UserAddress.class, UserAddress.class,
+                InstrumentInfo[].class, PaymentMethodToken.class };
+        Constructor<FullWallet> walletConstructor = fullWalletClass.getDeclaredConstructor(walletParams);
+        walletConstructor.setAccessible(true);
+        return walletConstructor.newInstance(null, null, null, null, null, null, null, null, null, null, token);
     }
 }

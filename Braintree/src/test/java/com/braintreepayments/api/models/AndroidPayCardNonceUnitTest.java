@@ -39,18 +39,10 @@ public class AndroidPayCardNonceUnitTest {
 
     @Test
     public void fromFullWallet_createsAndroidPayCardNonce() throws JSONException {
-        PaymentMethodToken paymentMethodToken = mock(PaymentMethodToken.class);
-        when(paymentMethodToken.getToken())
-                .thenReturn(stringFromFixture("payment_methods/android_pay_card_response.json"));
         UserAddress billingAddress = mock(UserAddress.class);
         UserAddress shippingAddress = mock(UserAddress.class);
-        FullWallet wallet = mock(FullWallet.class);
-        when(wallet.getPaymentMethodToken()).thenReturn(paymentMethodToken);
-        when(wallet.getPaymentDescriptions()).thenReturn(new String[] { "MasterCard 0276" });
-        when(wallet.getEmail()).thenReturn("android-user@example.com");
-        when(wallet.getBuyerBillingAddress()).thenReturn(billingAddress);
-        when(wallet.getBuyerShippingAddress()).thenReturn(shippingAddress);
-        when(wallet.getGoogleTransactionId()).thenReturn("google-transaction-id");
+        FullWallet wallet = getFullWallet(stringFromFixture("payment_methods/android_pay_card_response.json"),
+                billingAddress, shippingAddress);
 
         AndroidPayCardNonce androidPayCardNonce = AndroidPayCardNonce.fromFullWallet(wallet);
 
@@ -67,19 +59,11 @@ public class AndroidPayCardNonceUnitTest {
 
     @Test
     public void fromFullWallet_withCart_createsAndroidPayCardNonce() throws JSONException {
-        PaymentMethodToken paymentMethodToken = mock(PaymentMethodToken.class);
-        when(paymentMethodToken.getToken())
-                .thenReturn(stringFromFixture("payment_methods/android_pay_card_response.json"));
         UserAddress billingAddress = mock(UserAddress.class);
         UserAddress shippingAddress = mock(UserAddress.class);
-        FullWallet wallet = mock(FullWallet.class);
         Cart cart = Cart.newBuilder().build();
-        when(wallet.getPaymentMethodToken()).thenReturn(paymentMethodToken);
-        when(wallet.getPaymentDescriptions()).thenReturn(new String[] { "MasterCard 0276" });
-        when(wallet.getEmail()).thenReturn("android-user@example.com");
-        when(wallet.getBuyerBillingAddress()).thenReturn(billingAddress);
-        when(wallet.getBuyerShippingAddress()).thenReturn(shippingAddress);
-        when(wallet.getGoogleTransactionId()).thenReturn("google-transaction-id");
+        FullWallet wallet = getFullWallet(stringFromFixture("payment_methods/android_pay_card_response.json"),
+                billingAddress, shippingAddress);
 
         AndroidPayCardNonce androidPayCardNonce = AndroidPayCardNonce.fromFullWallet(wallet, cart);
 
@@ -118,20 +102,12 @@ public class AndroidPayCardNonceUnitTest {
     }
 
     @Test
-    public void parcelsCorrectly() throws JSONException {
-        PaymentMethodToken paymentMethodToken = mock(PaymentMethodToken.class);
-        when(paymentMethodToken.getToken())
-                .thenReturn(stringFromFixture("payment_methods/android_pay_card_response.json"));
+    public void parcelsCorrectly() throws Exception {
         UserAddress billingAddress = getAddressObject();
         UserAddress shippingAddress = getAddressObject();
-        FullWallet wallet = mock(FullWallet.class);
         Cart cart = Cart.newBuilder().build();
-        when(wallet.getPaymentMethodToken()).thenReturn(paymentMethodToken);
-        when(wallet.getPaymentDescriptions()).thenReturn(new String[] { "MasterCard 0276" });
-        when(wallet.getEmail()).thenReturn("android-user@example.com");
-        when(wallet.getBuyerBillingAddress()).thenReturn(billingAddress);
-        when(wallet.getBuyerShippingAddress()).thenReturn(shippingAddress);
-        when(wallet.getGoogleTransactionId()).thenReturn("google-transaction-id");
+        FullWallet wallet = getFullWallet(stringFromFixture("payment_methods/android_pay_card_response.json"),
+                billingAddress, shippingAddress);
         AndroidPayCardNonce androidPayCardNonce = AndroidPayCardNonce.fromFullWallet(wallet, cart);
 
         Parcel parcel = Parcel.obtain();
@@ -154,21 +130,24 @@ public class AndroidPayCardNonceUnitTest {
         assertBinDataEqual(androidPayCardNonce.getBinData(), parceled.getBinData());
     }
 
-    /* helpers */
-    private UserAddress getAddressObject() {
-        try {
-            Constructor<UserAddress> constructor = UserAddress.class.getDeclaredConstructor(new Class[0]);
-            constructor.setAccessible(true);
-            return constructor.newInstance(new Object[0]);
-        } catch (NoSuchMethodException e) {
-            return null;
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return null;
+    private FullWallet getFullWallet(String response, UserAddress billingAddress, UserAddress shippingAddress) {
+        PaymentMethodToken paymentMethodToken = mock(PaymentMethodToken.class);
+        when(paymentMethodToken.getToken()).thenReturn(response);
+
+        FullWallet wallet = mock(FullWallet.class);
+        when(wallet.getPaymentMethodToken()).thenReturn(paymentMethodToken);
+        when(wallet.getPaymentDescriptions()).thenReturn(new String[] { "MasterCard 0276" });
+        when(wallet.getEmail()).thenReturn("android-user@example.com");
+        when(wallet.getBuyerBillingAddress()).thenReturn(billingAddress);
+        when(wallet.getBuyerShippingAddress()).thenReturn(shippingAddress);
+        when(wallet.getGoogleTransactionId()).thenReturn("google-transaction-id");
+
+        return wallet;
+    }
+
+    private UserAddress getAddressObject() throws Exception {
+        Constructor<UserAddress> constructor = UserAddress.class.getDeclaredConstructor(new Class[0]);
+        constructor.setAccessible(true);
+        return constructor.newInstance(new Object[0]);
     }
 }
