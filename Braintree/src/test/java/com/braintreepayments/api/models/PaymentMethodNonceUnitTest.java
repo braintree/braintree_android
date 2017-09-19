@@ -43,27 +43,14 @@ public class PaymentMethodNonceUnitTest {
     }
 
     @Test
-    public void parsePaymentMethods_parsesAndroidPayCardNonces() throws JSONException {
-        List<PaymentMethodNonce> paymentMethodNonces =
-                parsePaymentMethodNonces(stringFromFixture("payment_methods/get_payment_methods_response.json"));
-
-        assertTrue(paymentMethodNonces.get(2) instanceof AndroidPayCardNonce);
-        assertEquals("Android Pay", paymentMethodNonces.get(2).getTypeLabel());
-        assertEquals("fake-android-pay-nonce", paymentMethodNonces.get(2).getNonce());
-        assertEquals("Android Pay", paymentMethodNonces.get(2).getDescription());
-        assertEquals("11", ((AndroidPayCardNonce) paymentMethodNonces.get(2)).getLastTwo());
-        assertFalse(paymentMethodNonces.get(2).isDefault());
-    }
-
-    @Test
     public void parsePaymentMethods_parsesVenmoAccountNonce() throws JSONException {
         List<PaymentMethodNonce> paymentMethodNonces =
                 parsePaymentMethodNonces(stringFromFixture("payment_methods/get_payment_methods_response.json"));
 
-        assertTrue(paymentMethodNonces.get(3) instanceof VenmoAccountNonce);
-        assertEquals("Venmo", paymentMethodNonces.get(3).getTypeLabel());
-        assertEquals("fake-venmo-nonce", paymentMethodNonces.get(3).getNonce());
-        assertEquals("happy-venmo-joe", ((VenmoAccountNonce) paymentMethodNonces.get(3)).getUsername());
+        assertTrue(paymentMethodNonces.get(2) instanceof VenmoAccountNonce);
+        assertEquals("Venmo", paymentMethodNonces.get(2).getTypeLabel());
+        assertEquals("fake-venmo-nonce", paymentMethodNonces.get(2).getNonce());
+        assertEquals("happy-venmo-joe", ((VenmoAccountNonce) paymentMethodNonces.get(2)).getUsername());
     }
 
     @Test
@@ -87,16 +74,6 @@ public class PaymentMethodNonceUnitTest {
     }
 
     @Test
-    public void parsePaymentMethod_parsesAndroidPayCardNonces() throws JSONException {
-        JSONObject androidPayCard = new JSONObject(stringFromFixture("payment_methods/android_pay_card.json"));
-
-        PaymentMethodNonce paymentMethodNonce = parsePaymentMethodNonces(androidPayCard, AndroidPayCardNonce.TYPE);
-
-        assertTrue(paymentMethodNonce instanceof AndroidPayCardNonce);
-        assertEquals("11", ((AndroidPayCardNonce) paymentMethodNonce).getLastTwo());
-    }
-
-    @Test
     public void parsePaymentMethod_parsesCardResponses() throws JSONException {
         JSONObject card = new JSONObject(stringFromFixture("payment_methods/visa_credit_card_response.json"));
 
@@ -114,15 +91,5 @@ public class PaymentMethodNonceUnitTest {
 
         assertTrue(paymentMethodNonce instanceof PayPalAccountNonce);
         assertEquals("with email paypalaccount@example.com", paymentMethodNonce.getDescription());
-    }
-
-    @Test
-    public void parsePaymentMethod_parsesAndroidPayCardResponses() throws JSONException {
-        JSONObject androidPayCard = new JSONObject(stringFromFixture("payment_methods/android_pay_card_response.json"));
-
-        PaymentMethodNonce paymentMethodNonce = parsePaymentMethodNonces(androidPayCard, AndroidPayCardNonce.TYPE);
-
-        assertTrue(paymentMethodNonce instanceof AndroidPayCardNonce);
-        assertEquals("11", ((AndroidPayCardNonce) paymentMethodNonce).getLastTwo());
     }
 }

@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VenmoAccountNonce;
@@ -84,11 +83,24 @@ public class PaymentMethodUnitTest {
         ArgumentCaptor<List<PaymentMethodNonce>> captor = ArgumentCaptor.forClass((Class) List.class);
         verify(fragment).postCallback(captor.capture());
         List<PaymentMethodNonce> paymentMethodNonces = captor.getValue();
-        assertEquals(4, paymentMethodNonces.size());
+        assertEquals(3, paymentMethodNonces.size());
         assertEquals("11", ((CardNonce) paymentMethodNonces.get(0)).getLastTwo());
         assertEquals("PayPal", paymentMethodNonces.get(1).getTypeLabel());
-        assertEquals("11", ((AndroidPayCardNonce) paymentMethodNonces.get(2)).getLastTwo());
-        assertEquals("happy-venmo-joe", ((VenmoAccountNonce) paymentMethodNonces.get(3)).getUsername());
+        assertEquals("happy-venmo-joe", ((VenmoAccountNonce) paymentMethodNonces.get(2)).getUsername());
+    }
+
+    @Test
+    public void getPaymentMethodNonces_doesNotParseAndroidPayPaymentMethods() {
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .successResponse(stringFromFixture("payment_methods/get_payment_methods_android_pay_response.json"))
+                .build();
+
+        PaymentMethod.getPaymentMethodNonces(fragment);
+
+        ArgumentCaptor<List<PaymentMethodNonce>> captor = ArgumentCaptor.forClass((Class) List.class);
+        verify(fragment).postCallback(captor.capture());
+        List<PaymentMethodNonce> paymentMethodNonces = captor.getValue();
+        assertEquals(0, paymentMethodNonces.size());
     }
 
     @Test

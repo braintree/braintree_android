@@ -143,14 +143,6 @@ public abstract class PaymentMethodNonce implements Parcelable {
                     payPalAccountNonce.fromJson(json);
                     return payPalAccountNonce;
                 }
-            case AndroidPayCardNonce.TYPE:
-                if (json.has(AndroidPayCardNonce.API_RESOURCE_KEY)) {
-                    return AndroidPayCardNonce.fromJson(json.toString());
-                } else {
-                    AndroidPayCardNonce androidPayCardNonce = new AndroidPayCardNonce();
-                    androidPayCardNonce.fromJson(json);
-                    return androidPayCardNonce;
-                }
             case VenmoAccountNonce.TYPE:
                 if (json.has(VenmoAccountNonce.API_RESOURCE_KEY)) {
                     return VenmoAccountNonce.fromJson(json.toString());
