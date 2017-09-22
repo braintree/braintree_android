@@ -31,7 +31,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     protected static final String POSTAL_CODE_KEY = "postalCode";
     protected static final String REGION_KEY = "region";
     protected static final String STREET_ADDRESS_KEY = "streetAddress";
-    protected static final String EXTENDED_STREET_ADDRESS_KEY = "extendedStreetAddress";
+    protected static final String EXTENDED_ADDRESS_KEY = "extendedAddress";
 
     protected String mCardnumber;
     protected String mCvv;
@@ -294,15 +294,15 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     }
 
     /**
-     * @param extendedStreetAddress Street address of the card.
+     * @param extendedAddress  address of the card.
      * @return {@link com.braintreepayments.api.models.BaseCardBuilder}
      */
     @SuppressWarnings("unchecked")
-    public T extendedStreetAddress(String extendedStreetAddress) {
-        if (TextUtils.isEmpty(extendedStreetAddress)) {
-            mExtendedStreetAddress = null;
+    public T extendedAddress(String extendedAddress) {
+        if (TextUtils.isEmpty(extendedAddress)) {
+            mExtendedAddress = null;
         } else {
-            mExtendedStreetAddress = extendedStreetAddress;
+            mExtendedAddress = extendedAddress;
         }
         return (T) this;
     }
@@ -329,7 +329,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         billingAddressJson.put(POSTAL_CODE_KEY, mPostalCode);
         billingAddressJson.put(REGION_KEY, mRegion);
         billingAddressJson.put(STREET_ADDRESS_KEY, mStreetAddress);
-        billingAddressJson.put(EXTENDED_STREET_ADDRESS_KEY, mExtendedStreetAddress);
+        billingAddressJson.put(EXTENDED_ADDRESS_KEY, mExtendedAddress);
 
         if (billingAddressJson.length() > 0) {
             paymentMethodNonceJson.put(BILLING_ADDRESS_KEY, billingAddressJson);
