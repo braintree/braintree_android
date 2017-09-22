@@ -31,7 +31,10 @@ public class CardBuilderUnitTest {
                 .locality("Some Town")
                 .postalCode("12345")
                 .region("Some Region")
-                .countryName("Some Country");
+                .countryName("Some Country")
+                .countryCodeAlpha2("US")
+                .countryCodeAlpha3("USA")
+                .countryCodeNumeric("840");
 
         JSONObject json = new JSONObject(cardBuilder.build());
         JSONObject jsonCard = json.getJSONObject(CREDIT_CARD_KEY);
@@ -52,6 +55,9 @@ public class CardBuilderUnitTest {
         assertEquals("12345", jsonBillingAddress.getString("postalCode"));
         assertEquals("Some Region", jsonBillingAddress.getString("region"));
         assertEquals("Some Country", jsonBillingAddress.getString("countryName"));
+        assertEquals("US", jsonBillingAddress.getString("countryCodeAlpha2"));
+        assertEquals("USA", jsonBillingAddress.getString("countryCodeAlpha2"));
+        assertEquals("840", jsonBillingAddress.getString("countryCodeNumeric"));
 
         assertEquals("custom", jsonMetadata.getString("integration"));
         assertEquals("form", jsonMetadata.getString("source"));
@@ -87,6 +93,9 @@ public class CardBuilderUnitTest {
         assertEquals("60606", billingAddress.getString("postalCode"));
         assertFalse(billingAddress.has("region"));
         assertFalse(billingAddress.has("countryName"));
+        assertFalse(billingAddress.has("countryCodeAlpha2"));
+        assertFalse(billingAddress.has("countryCodeAlpha3"));
+        assertFalse(billingAddress.has("countryCodeNumeric"));
     }
 
     @Test
@@ -168,7 +177,10 @@ public class CardBuilderUnitTest {
                 .locality("")
                 .postalCode("")
                 .region("")
-                .countryName("");
+                .countryName("")
+                .countryCodeAlpha2("")
+                .countryCodeAlpha3("")
+                .countryCodeNumeric("");
 
         assertFalse(new JSONObject(cardBuilder.build()).getJSONObject(CREDIT_CARD_KEY).keys().hasNext());
         assertFalse(new JSONObject(cardBuilder.build()).has(BILLING_ADDRESS_KEY));

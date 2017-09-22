@@ -23,6 +23,9 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     protected static final String FIRST_NAME_KEY = "firstName";
     protected static final String LAST_NAME_KEY = "lastName";
     protected static final String COUNTRY_NAME_KEY = "countryName";
+    protected static final String COUNTRY_CODE_ALPHA2_KEY = "countryCodeAlpha2";
+    protected static final String COUNTRY_CODE_ALPHA3_KEY = "countryCodeAlpha3";
+    protected static final String COUNTRY_CODE_NUMERIC_KEY = "countryCodeNumeric";
     protected static final String LOCALITY_KEY = "locality";
     protected static final String POSTAL_CODE_KEY = "postalCode";
     protected static final String REGION_KEY = "region";
@@ -38,6 +41,9 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     protected String mFirstName;
     protected String mLastName;
     protected String mCountryName;
+    protected String mCountryCodeAlpha2;
+    protected String mCountryCodeAlpha3;
+    protected String mCountryCodeNumeric;
     protected String mLocality;
     protected String mPostalCode;
     protected String mRegion;
@@ -172,6 +178,48 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     }
 
     /**
+     * @param countryCodeAlpha2 The ISO 3166-1 alpha-2 country code specified in the card's billing address.
+     * @return {@link com.braintreepayments.api.models.BaseCardBuilder}
+     */
+    @SuppressWarnings("unchecked")
+    public T countryCodeAlpha2(String countryCodeAlpha2) {
+        if (TextUtils.isEmpty(countryCodeAlpha2)) {
+            mCountryCodeAlpha2 = null;
+        } else {
+            mCountryCodeAlpha2 = countryCodeAlpha2;
+        }
+        return (T) this;
+    }
+
+    /**
+     * @param countryCodeAlpha3 The ISO 3166-1 alpha-3 country code specified in the card's billing address.
+     * @return {@link com.braintreepayments.api.models.BaseCardBuilder}
+     */
+    @SuppressWarnings("unchecked")
+    public T countryCodeAlpha3(String countryCodeAlpha3) {
+        if (TextUtils.isEmpty(countryCodeAlpha3)) {
+            mCountryCodeAlpha3 = null;
+        } else {
+            mCountryCodeAlpha3 = countryCodeAlpha3;
+        }
+        return (T) this;
+    }
+
+    /**
+     * @param countryCodeNumeric The ISO 3166-1 alpha-numeric country code specified in the card's billing address.
+     * @return {@link com.braintreepayments.api.models.BaseCardBuilder}
+     */
+    @SuppressWarnings("unchecked")
+    public T countryCodeNumeric(String countryCodeNumeric) {
+        if (TextUtils.isEmpty(countryCodeNumeric)) {
+            mCountryCodeNumeric = null;
+        } else {
+            mCountryCodeNumeric = countryCodeNumeric;
+        }
+        return (T) this;
+    }
+
+    /**
      * @param locality Locality of the card.
      * @return {@link com.braintreepayments.api.models.BaseCardBuilder}
      */
@@ -241,6 +289,9 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         billingAddressJson.put(FIRST_NAME_KEY, mFirstName);
         billingAddressJson.put(LAST_NAME_KEY, mLastName);
         billingAddressJson.put(COUNTRY_NAME_KEY, mCountryName);
+        billingAddressJson.put(COUNTRY_CODE_ALPHA2_KEY, mCountryCodeAlpha2);
+        billingAddressJson.put(COUNTRY_CODE_ALPHA3_KEY, mCountryCodeAlpha3);
+        billingAddressJson.put(COUNTRY_CODE_ALPHA_NUMERIC_KEY, mCountryCodeNumeric);
         billingAddressJson.put(LOCALITY_KEY, mLocality);
         billingAddressJson.put(POSTAL_CODE_KEY, mPostalCode);
         billingAddressJson.put(REGION_KEY, mRegion);
@@ -280,6 +331,9 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         mFirstName = in.readString();
         mLastName = in.readString();
         mCountryName = in.readString();
+        mCountryCodeAlpha2 = in.readString();
+        mCountryCodeAlpha3 = in.readString();
+        mCountryCodeNumeric = in.readString();
         mLocality = in.readString();
         mPostalCode = in.readString();
         mRegion = in.readString();
@@ -299,6 +353,9 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         dest.writeString(mFirstName);
         dest.writeString(mLastName);
         dest.writeString(mCountryName);
+        dest.writeString(mCountryCodeAlpha2);
+        dest.writeString(mCountryCodeAlpha3);
+        dest.writeString(mCountryCodeNumeric);
         dest.writeString(mLocality);
         dest.writeString(mPostalCode);
         dest.writeString(mRegion);
