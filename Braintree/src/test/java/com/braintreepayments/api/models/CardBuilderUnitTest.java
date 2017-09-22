@@ -27,6 +27,8 @@ public class CardBuilderUnitTest {
                 .cardholderName("Joe Smith")
                 .firstName("Joe")
                 .lastName("Smith")
+                .company("Company")
+                .company("Company")
                 .streetAddress("1 Main St")
                 .locality("Some Town")
                 .postalCode("12345")
@@ -50,6 +52,8 @@ public class CardBuilderUnitTest {
 
         assertEquals("Joe", jsonBillingAddress.getString("firstName"));
         assertEquals("Smith", jsonBillingAddress.getString("lastName"));
+        assertEquals("Company", jsonBillingAddress.getString("company"));
+        assertEquals("Company", jsonBillingAddress.getString("company"));
         assertEquals("1 Main St", jsonBillingAddress.getString("streetAddress"));
         assertEquals("Some Town", jsonBillingAddress.getString("locality"));
         assertEquals("12345", jsonBillingAddress.getString("postalCode"));
@@ -88,6 +92,7 @@ public class CardBuilderUnitTest {
 
         assertFalse(billingAddress.has("firstName"));
         assertFalse(billingAddress.has("lastName"));
+        assertFalse(billingAddress.has("company"));
         assertFalse(billingAddress.has("streetAddress"));
         assertFalse(billingAddress.has("locality"));
         assertEquals("60606", billingAddress.getString("postalCode"));
@@ -173,6 +178,7 @@ public class CardBuilderUnitTest {
                 .cardholderName("")
                 .firstName("")
                 .lastName("")
+                .company("")
                 .streetAddress("")
                 .locality("")
                 .postalCode("")

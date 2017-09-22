@@ -22,6 +22,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     protected static final String BILLING_ADDRESS_KEY = "billingAddress";
     protected static final String FIRST_NAME_KEY = "firstName";
     protected static final String LAST_NAME_KEY = "lastName";
+    protected static final String COMPANY_KEY = "company";
     protected static final String COUNTRY_NAME_KEY = "countryName";
     protected static final String COUNTRY_CODE_ALPHA2_KEY = "countryCodeAlpha2";
     protected static final String COUNTRY_CODE_ALPHA3_KEY = "countryCodeAlpha3";
@@ -40,6 +41,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     protected String mBillingAddress;
     protected String mFirstName;
     protected String mLastName;
+    protected String mCompany;
     protected String mCountryName;
     protected String mCountryCodeAlpha2;
     protected String mCountryCodeAlpha3;
@@ -159,6 +161,20 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
             mLastName = null;
         } else {
             mLastName = lastName;
+        }
+        return (T) this;
+    }
+
+    /**
+     * @param company Company associated with the card.
+     * @return {@link com.braintreepayments.api.models.BaseCardBuilder}
+     */
+    @SuppressWarnings("unchecked")
+    public T company(String company) {
+        if (TextUtils.isEmpty(company)) {
+            mCompany = null;
+        } else {
+            mCompany = company;
         }
         return (T) this;
     }
@@ -288,6 +304,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         JSONObject billingAddressJson = new JSONObject();
         billingAddressJson.put(FIRST_NAME_KEY, mFirstName);
         billingAddressJson.put(LAST_NAME_KEY, mLastName);
+        billingAddressJson.put(COMPANY_KEY, mCompany);
         billingAddressJson.put(COUNTRY_NAME_KEY, mCountryName);
         billingAddressJson.put(COUNTRY_CODE_ALPHA2_KEY, mCountryCodeAlpha2);
         billingAddressJson.put(COUNTRY_CODE_ALPHA3_KEY, mCountryCodeAlpha3);
@@ -330,6 +347,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         mBillingAddress = in.readString();
         mFirstName = in.readString();
         mLastName = in.readString();
+        mCompany = in.readString();
         mCountryName = in.readString();
         mCountryCodeAlpha2 = in.readString();
         mCountryCodeAlpha3 = in.readString();
@@ -352,6 +370,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         dest.writeString(mBillingAddress);
         dest.writeString(mFirstName);
         dest.writeString(mLastName);
+        dest.writeString(mCompany);
         dest.writeString(mCountryName);
         dest.writeString(mCountryCodeAlpha2);
         dest.writeString(mCountryCodeAlpha3);
