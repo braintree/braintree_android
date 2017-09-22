@@ -31,6 +31,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     protected static final String POSTAL_CODE_KEY = "postalCode";
     protected static final String REGION_KEY = "region";
     protected static final String STREET_ADDRESS_KEY = "streetAddress";
+    protected static final String EXTENDED_STREET_ADDRESS_KEY = "extendedStreetAddress";
 
     protected String mCardnumber;
     protected String mCvv;
@@ -50,6 +51,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     protected String mPostalCode;
     protected String mRegion;
     protected String mStreetAddress;
+    protected String mExtenedStreetAddress;
 
     public BaseCardBuilder() {}
 
@@ -291,6 +293,20 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         return (T) this;
     }
 
+    /**
+     * @param extendedStreetAddress Street address of the card.
+     * @return {@link com.braintreepayments.api.models.BaseCardBuilder}
+     */
+    @SuppressWarnings("unchecked")
+    public T extendedStreetAddress(String extendedStreetAddress) {
+        if (TextUtils.isEmpty(extendedStreetAddress)) {
+            mExtendedStreetAddress = null;
+        } else {
+            mExtendedStreetAddress = extendedStreetAddress;
+        }
+        return (T) this;
+    }
+
     @Override
     protected void build(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
         paymentMethodNonceJson.put(NUMBER_KEY, mCardnumber);
@@ -313,6 +329,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         billingAddressJson.put(POSTAL_CODE_KEY, mPostalCode);
         billingAddressJson.put(REGION_KEY, mRegion);
         billingAddressJson.put(STREET_ADDRESS_KEY, mStreetAddress);
+        billingAddressJson.put(EXTENDED_STREET_ADDRESS_KEY, mExtendedStreetAddress);
 
         if (billingAddressJson.length() > 0) {
             paymentMethodNonceJson.put(BILLING_ADDRESS_KEY, billingAddressJson);
@@ -356,6 +373,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         mPostalCode = in.readString();
         mRegion = in.readString();
         mStreetAddress = in.readString();
+        mExtendedStreetAddress = in.readString();
     }
 
     @Override
@@ -379,5 +397,6 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         dest.writeString(mPostalCode);
         dest.writeString(mRegion);
         dest.writeString(mStreetAddress);
+        dest.writeString(mExtendedStreetAddress);
     }
 }
