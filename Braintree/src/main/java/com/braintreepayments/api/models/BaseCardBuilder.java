@@ -51,7 +51,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     protected String mPostalCode;
     protected String mRegion;
     protected String mStreetAddress;
-    protected String mExtenedStreetAddress;
+    protected String mExtendedAddress;
 
     public BaseCardBuilder() {}
 
@@ -324,7 +324,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         billingAddressJson.put(COUNTRY_NAME_KEY, mCountryName);
         billingAddressJson.put(COUNTRY_CODE_ALPHA2_KEY, mCountryCodeAlpha2);
         billingAddressJson.put(COUNTRY_CODE_ALPHA3_KEY, mCountryCodeAlpha3);
-        billingAddressJson.put(COUNTRY_CODE_ALPHA_NUMERIC_KEY, mCountryCodeNumeric);
+        billingAddressJson.put(COUNTRY_CODE_NUMERIC_KEY, mCountryCodeNumeric);
         billingAddressJson.put(LOCALITY_KEY, mLocality);
         billingAddressJson.put(POSTAL_CODE_KEY, mPostalCode);
         billingAddressJson.put(REGION_KEY, mRegion);
@@ -373,7 +373,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         mPostalCode = in.readString();
         mRegion = in.readString();
         mStreetAddress = in.readString();
-        mExtendedStreetAddress = in.readString();
+        mExtendedAddress = in.readString();
     }
 
     @Override
@@ -397,6 +397,6 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         dest.writeString(mPostalCode);
         dest.writeString(mRegion);
         dest.writeString(mStreetAddress);
-        dest.writeString(mExtendedStreetAddress);
+        dest.writeString(mExtendedAddress);
     }
 }
