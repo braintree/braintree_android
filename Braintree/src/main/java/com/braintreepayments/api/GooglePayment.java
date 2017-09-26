@@ -13,6 +13,7 @@ import com.braintreepayments.api.exceptions.GoogleApiClientException.ErrorType;
 import com.braintreepayments.api.exceptions.GooglePaymentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.interfaces.TokenizationParametersListener;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
@@ -37,6 +38,7 @@ import com.google.android.gms.wallet.WalletConstants;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_ENVIRONMENT;
 import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_PAYMENT_DATA_REQUEST;
@@ -102,6 +104,32 @@ public class GooglePayment {
                         }
                     }
                 });
+            }
+        });
+    }
+
+    /**
+     * Get Braintree specific tokenization parameters for a Google Payment. Useful for when full control over the
+     * {@link PaymentDataRequest} is required.
+     *
+     * {@link PaymentMethodTokenizationParameters} should be supplied to the
+     * {@link PaymentDataRequest} via
+     * {@link PaymentDataRequest.Builder#setPaymentMethodTokenizationParameters(PaymentMethodTokenizationParameters)}
+     * and {@link Collection<Integer>} allowedCardNetworks should be supplied to the
+     * {@link CardRequirements} via
+     * {@link CardRequirements.Builder#addAllowedCardNetworks(Collection)}}.
+     *
+     * @param fragment {@link BraintreeFragment}
+     * @param listener Instance of {@link TokenizationParametersListener} to receive the
+     *                 {@link PaymentMethodTokenizationParameters}.
+     */
+    public static void getTokenizationParameters(final BraintreeFragment fragment,
+            final TokenizationParametersListener listener) {
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                listener.onResult(GooglePayment.getTokenizationParameters(fragment),
+                        GooglePayment.getAllowedCardNetworks(fragment));
             }
         });
     }

@@ -7,6 +7,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.interfaces.TokenizationParametersListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
@@ -16,10 +17,13 @@ import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestAndroidPayConfigurationBuilder;
 import com.google.android.gms.wallet.PaymentDataRequest;
+import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
 import com.google.android.gms.wallet.WalletConstants.CardNetwork;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,8 +44,10 @@ import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
@@ -264,6 +270,53 @@ public class GooglePaymentTest {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 Collection<Integer> allowedCardNetworks = GooglePayment.getAllowedCardNetworks(fragment);
+
+                assertEquals(4, allowedCardNetworks.size());
+                assertTrue(allowedCardNetworks.contains(CardNetwork.VISA));
+                assertTrue(allowedCardNetworks.contains(CardNetwork.MASTERCARD));
+                assertTrue(allowedCardNetworks.contains(CardNetwork.AMEX));
+                assertTrue(allowedCardNetworks.contains(CardNetwork.DISCOVER));
+
+                mLatch.countDown();
+            }
+        });
+
+        mLatch.await();
+    }
+
+    @Test(timeout = 5000)
+    public void getTokenizationParameters_returnsCorrectParametersInCallback() throws Exception {
+        String config = mBaseConfiguration.androidPay(mBaseConfiguration.androidPay()
+                .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"}))
+                .build();
+        final Configuration configuration = Configuration.fromJson(config);
+
+        BraintreeFragment fragment = getFragment(mActivityTestRule.getActivity(), TOKENIZATION_KEY, config);
+
+        GooglePayment.getTokenizationParameters(fragment, new TokenizationParametersListener() {
+            @Override
+            public void onResult(PaymentMethodTokenizationParameters parameters,
+                    Collection<Integer> allowedCardNetworks) {
+                assertEquals("braintree", parameters.getParameters().getString("gateway"));
+                assertEquals(configuration.getMerchantId(),
+                        parameters.getParameters().getString("braintree:merchantId"));
+                assertEquals(configuration.getAndroidPay().getGoogleAuthorizationFingerprint(),
+                        parameters.getParameters().getString("braintree:authorizationFingerprint"));
+                assertEquals("v1",
+                        parameters.getParameters().getString("braintree:apiVersion"));
+                assertEquals(BuildConfig.VERSION_NAME,
+                        parameters.getParameters().getString("braintree:sdkVersion"));
+
+                try {
+                    JSONObject metadata = new JSONObject(parameters.getParameters().getString("braintree:metadata"));
+                    assertNotNull(metadata);
+                    assertEquals(BuildConfig.VERSION_NAME, metadata.getString("version"));
+                    assertNotNull(metadata.getString("sessionId"));
+                    assertEquals("custom", metadata.getString("integration"));
+                    assertEquals("android", metadata.get("platform"));
+                } catch (JSONException e) {
+                    fail("Failed to unpack json from tokenization parameters: " + e.getMessage());
+                }
 
                 assertEquals(4, allowedCardNetworks.size());
                 assertTrue(allowedCardNetworks.contains(CardNetwork.VISA));
