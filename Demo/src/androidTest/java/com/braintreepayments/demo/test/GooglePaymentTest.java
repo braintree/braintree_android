@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.endsWith;
 
 @RunWith(AndroidJUnit4.class)
 @RequiresDevice
-public class GooglePaymentsTest extends TestHelper {
+public class GooglePaymentTest extends TestHelper {
 
     @Before
     public void setup() {
@@ -29,8 +29,8 @@ public class GooglePaymentsTest extends TestHelper {
     }
 
     @Test(timeout = 60000)
-    public void tokenizesGooglePayments() {
-        onDevice(withContentDescription("Google Payments")).perform(click());
+    public void tokenizesGooglePayment() {
+        onDevice(withContentDescription("Pay with Google")).perform(click());
         onDevice(withText("CONTINUE")).perform(click());
 
         getNonceDetails().check(text(containsString("Underlying Card Last Two")));

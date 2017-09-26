@@ -3,6 +3,7 @@ package com.braintreepayments.api.models;
 import android.support.annotation.Nullable;
 
 import com.braintreepayments.api.BraintreeFragment;
+import com.braintreepayments.api.GooglePayment;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants.BillingAddressFormat;
@@ -10,7 +11,7 @@ import com.google.android.gms.wallet.WalletConstants.BillingAddressFormat;
 /**
  * Represents the parameters that are needed to use the Google Payments API.
  */
-public class GooglePaymentsRequest {
+public class GooglePaymentRequest {
 
     private TransactionInfo mTransactionInfo;
     private Boolean mEmailRequired = null;
@@ -26,9 +27,9 @@ public class GooglePaymentsRequest {
      * Details and the price of the transaction. Required.
      *
      * @param transactionInfo See {@link TransactionInfo}.
-     * @return {@link GooglePaymentsRequest}
+     * @return {@link GooglePaymentRequest}
      */
-    public GooglePaymentsRequest transactionInfo(TransactionInfo transactionInfo) {
+    public GooglePaymentRequest transactionInfo(TransactionInfo transactionInfo) {
         mTransactionInfo = transactionInfo;
         return this;
     }
@@ -37,9 +38,9 @@ public class GooglePaymentsRequest {
      * Optional.
      *
      * @param emailRequired {@code true} if the buyer's email address is required to be returned, {@code false} otherwise.
-     * @return {@link GooglePaymentsRequest}
+     * @return {@link GooglePaymentRequest}
      */
-    public GooglePaymentsRequest emailRequired(boolean emailRequired) {
+    public GooglePaymentRequest emailRequired(boolean emailRequired) {
         mEmailRequired = emailRequired;
         return this;
     }
@@ -49,9 +50,9 @@ public class GooglePaymentsRequest {
      *
      * @param phoneNumberRequired {@code true} if the buyer's phone number is required to be returned as part of the
      * billing address and shipping address, {@code false} otherwise.
-     * @return {@link GooglePaymentsRequest}
+     * @return {@link GooglePaymentRequest}
      */
-    public GooglePaymentsRequest phoneNumberRequired(boolean phoneNumberRequired) {
+    public GooglePaymentRequest phoneNumberRequired(boolean phoneNumberRequired) {
         mPhoneNumberRequired = phoneNumberRequired;
         return this;
     }
@@ -61,9 +62,9 @@ public class GooglePaymentsRequest {
      *
      * @param billingAddressRequired {@code true} if the buyer's billing address is required to be returned,
      * {@code false} otherwise.
-     * @return {@link GooglePaymentsRequest}
+     * @return {@link GooglePaymentRequest}
      */
-    public GooglePaymentsRequest billingAddressRequired(boolean billingAddressRequired) {
+    public GooglePaymentRequest billingAddressRequired(boolean billingAddressRequired) {
         mBillingAddressRequired = billingAddressRequired;
         return this;
     }
@@ -72,9 +73,9 @@ public class GooglePaymentsRequest {
      * Optional.
      *
      * @param billingAddressFormat the billing address format to return. {@link BillingAddressFormat}
-     * @return {@link GooglePaymentsRequest}
+     * @return {@link GooglePaymentRequest}
      */
-    public GooglePaymentsRequest billingAddressFormat(@BillingAddressFormat int billingAddressFormat) {
+    public GooglePaymentRequest billingAddressFormat(@BillingAddressFormat int billingAddressFormat) {
         mBillingAddressFormat = billingAddressFormat;
         return this;
     }
@@ -84,9 +85,9 @@ public class GooglePaymentsRequest {
      *
      * @param shippingAddressRequired {@code true} if the buyer's shipping address is required to be returned,
      * {@code false} otherwise.
-     * @return {@link GooglePaymentsRequest}
+     * @return {@link GooglePaymentRequest}
      */
-    public GooglePaymentsRequest shippingAddressRequired(boolean shippingAddressRequired) {
+    public GooglePaymentRequest shippingAddressRequired(boolean shippingAddressRequired) {
         mShippingAddressRequired = shippingAddressRequired;
         return this;
     }
@@ -95,9 +96,9 @@ public class GooglePaymentsRequest {
      * Optional.
      *
      * @param shippingAddressRequirements the shipping address requirements. {@link ShippingAddressRequirements}
-     * @return {@link GooglePaymentsRequest}
+     * @return {@link GooglePaymentRequest}
      */
-    public GooglePaymentsRequest shippingAddressRequirements(ShippingAddressRequirements shippingAddressRequirements) {
+    public GooglePaymentRequest shippingAddressRequirements(ShippingAddressRequirements shippingAddressRequirements) {
         mShippingAddressRequirements = shippingAddressRequirements;
         return this;
     }
@@ -106,25 +107,25 @@ public class GooglePaymentsRequest {
      * Optional.
      *
      * @param allowPrepaidCards {@code true} prepaid cards are allowed, {@code false} otherwise.
-     * @return {@link GooglePaymentsRequest}
+     * @return {@link GooglePaymentRequest}
      */
-    public GooglePaymentsRequest allowPrepaidCards(boolean allowPrepaidCards) {
+    public GooglePaymentRequest allowPrepaidCards(boolean allowPrepaidCards) {
         mAllowPrepaidCards = allowPrepaidCards;
         return this;
     }
 
     /**
      * When this is set to false,
-     * {@link com.braintreepayments.api.GooglePayments#requestPayment(BraintreeFragment, GooglePaymentsRequest)}
+     * {@link GooglePayment#requestPayment(BraintreeFragment, GooglePaymentRequest)}
      * will attempt to skip the UI and directly return the data from the buyer's previous selection. The merchant must
      * be whitelisted for not showing UI. Please contact Google if you think your use case would benefit from skipping UI.
      *
      * Optional.
      *
      * @param uiRequired {@code false} if the UI should not be shown, {@code true} otherwise.
-     * @return {@link GooglePaymentsRequest}
+     * @return {@link GooglePaymentRequest}
      */
-    public GooglePaymentsRequest uiRequired(boolean uiRequired) {
+    public GooglePaymentRequest uiRequired(boolean uiRequired) {
         mUiRequired = uiRequired;
         return this;
     }

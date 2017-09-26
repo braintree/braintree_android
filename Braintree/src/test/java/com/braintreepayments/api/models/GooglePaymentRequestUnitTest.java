@@ -12,7 +12,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
-public class GooglePaymentsRequestUnitTest {
+public class GooglePaymentRequestUnitTest {
 
     @Test
     public void returnsAllValues() {
@@ -22,7 +22,7 @@ public class GooglePaymentsRequestUnitTest {
                 .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_NOT_CURRENTLY_KNOWN)
                 .build();
 
-        GooglePaymentsRequest request = new GooglePaymentsRequest()
+        GooglePaymentRequest request = new GooglePaymentRequest()
                 .allowPrepaidCards(true)
                 .billingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL)
                 .billingAddressRequired(true)
@@ -46,7 +46,7 @@ public class GooglePaymentsRequestUnitTest {
 
     @Test
     public void returnsNullForAllValuesWhenNotSet() {
-        GooglePaymentsRequest request = new GooglePaymentsRequest();
+        GooglePaymentRequest request = new GooglePaymentRequest();
 
         assertNull(request.getAllowPrepaidCards());
         assertNull(request.getBillingAddressFormat());

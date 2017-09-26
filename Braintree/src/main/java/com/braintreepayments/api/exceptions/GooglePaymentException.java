@@ -3,13 +3,13 @@ package com.braintreepayments.api.exceptions;
 import com.google.android.gms.common.api.Status;
 
 /**
- * Error class thrown when an Google Payments exception is encountered.
+ * Error class thrown when a Google Payment exception is encountered.
  */
-public class GooglePaymentsException extends BraintreeException {
+public class GooglePaymentException extends BraintreeException {
 
     private Status mStatus;
 
-    public GooglePaymentsException(String message, Status status) {
+    public GooglePaymentException(String message, Status status) {
         super(message);
         mStatus = status;
     }

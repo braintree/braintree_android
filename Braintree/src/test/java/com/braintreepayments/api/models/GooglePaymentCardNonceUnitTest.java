@@ -23,47 +23,47 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 
 @RunWith(RobolectricTestRunner.class)
-public class GooglePaymentsCardNonceUnitTest {
+public class GooglePaymentCardNonceUnitTest {
 
     @Test
-    public void fromPaymentData_createsGooglePaymentsCardNonce() throws Exception {
+    public void fromPaymentData_createsGooglePaymentCardNonce() throws Exception {
         UserAddress billingAddress = getAddressObject();
         UserAddress shippingAddress = getAddressObject();
         PaymentData paymentData = getPaymentData("android-user@example.com", billingAddress, shippingAddress,
                 stringFromFixture("payment_methods/android_pay_card_response.json"));
 
-        GooglePaymentsCardNonce googlePaymentsCardNonce = GooglePaymentsCardNonce.fromPaymentData(paymentData);
+        GooglePaymentCardNonce googlePaymentCardNonce = GooglePaymentCardNonce.fromPaymentData(paymentData);
 
-        assertEquals("Google Payments", googlePaymentsCardNonce.getTypeLabel());
-        assertEquals("fake-android-pay-nonce", googlePaymentsCardNonce.getNonce());
-        assertEquals("MasterCard 0276", googlePaymentsCardNonce.getDescription());
-        assertEquals("Visa", googlePaymentsCardNonce.getCardType());
-        assertEquals("11", googlePaymentsCardNonce.getLastTwo());
-        assertEquals("android-user@example.com", googlePaymentsCardNonce.getEmail());
-        assertEquals(billingAddress, googlePaymentsCardNonce.getBillingAddress());
-        assertEquals(shippingAddress, googlePaymentsCardNonce.getShippingAddress());
+        assertEquals("Google Payments", googlePaymentCardNonce.getTypeLabel());
+        assertEquals("fake-android-pay-nonce", googlePaymentCardNonce.getNonce());
+        assertEquals("MasterCard 0276", googlePaymentCardNonce.getDescription());
+        assertEquals("Visa", googlePaymentCardNonce.getCardType());
+        assertEquals("11", googlePaymentCardNonce.getLastTwo());
+        assertEquals("android-user@example.com", googlePaymentCardNonce.getEmail());
+        assertEquals(billingAddress, googlePaymentCardNonce.getBillingAddress());
+        assertEquals(shippingAddress, googlePaymentCardNonce.getShippingAddress());
     }
 
     @Test
     public void fromJson_createsAndroidPayCardNonce() throws JSONException {
-        GooglePaymentsCardNonce googlePaymentsCardNonce = GooglePaymentsCardNonce.fromJson(
+        GooglePaymentCardNonce googlePaymentCardNonce = GooglePaymentCardNonce.fromJson(
                 stringFromFixture("payment_methods/android_pay_card_response.json"));
 
-        assertEquals("Google Payments", googlePaymentsCardNonce.getTypeLabel());
-        assertEquals("fake-android-pay-nonce", googlePaymentsCardNonce.getNonce());
-        assertEquals("Google Payments", googlePaymentsCardNonce.getDescription());
-        assertEquals("Visa", googlePaymentsCardNonce.getCardType());
-        assertEquals("11", googlePaymentsCardNonce.getLastTwo());
-        assertNotNull(googlePaymentsCardNonce.getBinData());
-        assertEquals(UNKNOWN, googlePaymentsCardNonce.getBinData().getPrepaid());
-        assertEquals(YES, googlePaymentsCardNonce.getBinData().getHealthcare());
-        assertEquals(NO, googlePaymentsCardNonce.getBinData().getDebit());
-        assertEquals(UNKNOWN, googlePaymentsCardNonce.getBinData().getDurbinRegulated());
-        assertEquals(UNKNOWN, googlePaymentsCardNonce.getBinData().getCommercial());
-        assertEquals(UNKNOWN, googlePaymentsCardNonce.getBinData().getPayroll());
-        assertEquals(UNKNOWN, googlePaymentsCardNonce.getBinData().getIssuingBank());
-        assertEquals("Something", googlePaymentsCardNonce.getBinData().getCountryOfIssuance());
-        assertEquals("123", googlePaymentsCardNonce.getBinData().getProductId());
+        assertEquals("Google Payments", googlePaymentCardNonce.getTypeLabel());
+        assertEquals("fake-android-pay-nonce", googlePaymentCardNonce.getNonce());
+        assertEquals("Google Payments", googlePaymentCardNonce.getDescription());
+        assertEquals("Visa", googlePaymentCardNonce.getCardType());
+        assertEquals("11", googlePaymentCardNonce.getLastTwo());
+        assertNotNull(googlePaymentCardNonce.getBinData());
+        assertEquals(UNKNOWN, googlePaymentCardNonce.getBinData().getPrepaid());
+        assertEquals(YES, googlePaymentCardNonce.getBinData().getHealthcare());
+        assertEquals(NO, googlePaymentCardNonce.getBinData().getDebit());
+        assertEquals(UNKNOWN, googlePaymentCardNonce.getBinData().getDurbinRegulated());
+        assertEquals(UNKNOWN, googlePaymentCardNonce.getBinData().getCommercial());
+        assertEquals(UNKNOWN, googlePaymentCardNonce.getBinData().getPayroll());
+        assertEquals(UNKNOWN, googlePaymentCardNonce.getBinData().getIssuingBank());
+        assertEquals("Something", googlePaymentCardNonce.getBinData().getCountryOfIssuance());
+        assertEquals("123", googlePaymentCardNonce.getBinData().getProductId());
     }
 
     @Test
@@ -73,13 +73,13 @@ public class GooglePaymentsCardNonceUnitTest {
         PaymentData paymentData = getPaymentData("android-user@example.com", billingAddress, shippingAddress,
                 stringFromFixture("payment_methods/android_pay_card_response.json"));
 
-        GooglePaymentsCardNonce googlePaymentsCardNonce = GooglePaymentsCardNonce.fromPaymentData(paymentData);
+        GooglePaymentCardNonce googlePaymentCardNonce = GooglePaymentCardNonce.fromPaymentData(paymentData);
 
         Parcel parcel = Parcel.obtain();
-        googlePaymentsCardNonce.writeToParcel(parcel, 0);
+        googlePaymentCardNonce.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
 
-        GooglePaymentsCardNonce parceled = GooglePaymentsCardNonce.CREATOR.createFromParcel(parcel);
+        GooglePaymentCardNonce parceled = GooglePaymentCardNonce.CREATOR.createFromParcel(parcel);
 
         assertEquals("Google Payments", parceled.getTypeLabel());
         assertEquals("fake-android-pay-nonce", parceled.getNonce());
@@ -89,7 +89,7 @@ public class GooglePaymentsCardNonceUnitTest {
         assertEquals("android-user@example.com", parceled.getEmail());
         assertNotNull(parceled.getBillingAddress());
         assertNotNull(parceled.getShippingAddress());
-        assertBinDataEqual(googlePaymentsCardNonce.getBinData(), parceled.getBinData());
+        assertBinDataEqual(googlePaymentCardNonce.getBinData(), parceled.getBinData());
     }
 
     private PaymentData getPaymentData(String email, UserAddress billingAddress, UserAddress shippingAddress,

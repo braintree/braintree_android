@@ -29,11 +29,11 @@
             android:enabled="false" />
 
         <Button
-            android:id="@+id/google_payments"
+            android:id="@+id/google_payment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/google_payments"
-            android:onClick="launchGooglePayments"
+            android:text="@string/pay_with_google"
+            android:onClick="launchGooglePayment"
             android:enabled="false" />
 
         <Button

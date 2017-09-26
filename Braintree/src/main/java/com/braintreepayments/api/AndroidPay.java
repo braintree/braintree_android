@@ -112,8 +112,8 @@ public class AndroidPay {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                listener.onResult(GooglePayments.getTokenizationParameters(fragment),
-                        GooglePayments.getAllowedCardNetworks(fragment));
+                listener.onResult(GooglePayment.getTokenizationParameters(fragment),
+                        GooglePayment.getAllowedCardNetworks(fragment));
             }
         });
     }
@@ -152,11 +152,11 @@ public class AndroidPay {
                 fragment.sendAnalyticsEvent("android-pay.started");
 
                 Intent intent = new Intent(fragment.getApplicationContext(), AndroidPayActivity.class)
-                        .putExtra(EXTRA_ENVIRONMENT, GooglePayments.getEnvironment(configuration.getAndroidPay()))
+                        .putExtra(EXTRA_ENVIRONMENT, GooglePayment.getEnvironment(configuration.getAndroidPay()))
                         .putExtra(EXTRA_MERCHANT_NAME, configuration.getAndroidPay().getDisplayName())
                         .putExtra(EXTRA_CART, cart)
-                        .putExtra(EXTRA_TOKENIZATION_PARAMETERS, GooglePayments.getTokenizationParameters(fragment))
-                        .putIntegerArrayListExtra(EXTRA_ALLOWED_CARD_NETWORKS, GooglePayments.getAllowedCardNetworks(fragment))
+                        .putExtra(EXTRA_TOKENIZATION_PARAMETERS, GooglePayment.getTokenizationParameters(fragment))
+                        .putIntegerArrayListExtra(EXTRA_ALLOWED_CARD_NETWORKS, GooglePayment.getAllowedCardNetworks(fragment))
                         .putExtra(EXTRA_SHIPPING_ADDRESS_REQUIRED, shippingAddressRequired)
                         .putExtra(EXTRA_PHONE_NUMBER_REQUIRED, phoneNumberRequired)
                         .putParcelableArrayListExtra(EXTRA_ALLOWED_COUNTRIES, allowedCountries)
@@ -181,7 +181,7 @@ public class AndroidPay {
                 fragment.sendAnalyticsEvent("android-pay.change-masked-wallet");
 
                 Intent intent = new Intent(fragment.getApplicationContext(), AndroidPayActivity.class)
-                        .putExtra(EXTRA_ENVIRONMENT, GooglePayments.getEnvironment(configuration.getAndroidPay()))
+                        .putExtra(EXTRA_ENVIRONMENT, GooglePayment.getEnvironment(configuration.getAndroidPay()))
                         .putExtra(EXTRA_GOOGLE_TRANSACTION_ID, androidPayCardNonce.getGoogleTransactionId())
                         .putExtra(EXTRA_CART, androidPayCardNonce.getCart())
                         .putExtra(EXTRA_REQUEST_TYPE, CHANGE_PAYMENT_METHOD);

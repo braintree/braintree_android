@@ -10,7 +10,7 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.GooglePaymentsRequest;
+import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
@@ -34,8 +34,8 @@ import java.util.concurrent.CountDownLatch;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWithConfiguration;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragmentWithConfiguration;
-import static com.braintreepayments.api.GooglePaymentsActivity.EXTRA_ENVIRONMENT;
-import static com.braintreepayments.api.GooglePaymentsActivity.EXTRA_PAYMENT_DATA_REQUEST;
+import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_ENVIRONMENT;
+import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_PAYMENT_DATA_REQUEST;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
@@ -52,7 +52,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
-public class GooglePaymentsTest {
+public class GooglePaymentTest {
 
     @Rule
     public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
@@ -78,7 +78,7 @@ public class GooglePaymentsTest {
 
         BraintreeFragment fragment = getFragment(mActivityTestRule.getActivity(), TOKENIZATION_KEY, configuration);
 
-        GooglePayments.isReadyToPay(fragment, new BraintreeResponseListener<Boolean>() {
+        GooglePayment.isReadyToPay(fragment, new BraintreeResponseListener<Boolean>() {
             @Override
             public void onResponse(Boolean isReadyToPay) {
                 assertFalse(isReadyToPay);
@@ -93,22 +93,22 @@ public class GooglePaymentsTest {
     public void requestPayment_startsActivity() {
         BraintreeFragment fragment = getSetupFragment();
         doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
-        GooglePaymentsRequest googlePaymentsRequest = new GooglePaymentsRequest()
+        GooglePaymentRequest googlePaymentRequest = new GooglePaymentRequest()
                 .transactionInfo(TransactionInfo.newBuilder()
                         .setTotalPrice("1.00")
                         .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                         .setCurrencyCode("USD")
                         .build());
 
-        GooglePayments.requestPayment(fragment, googlePaymentsRequest);
+        GooglePayment.requestPayment(fragment, googlePaymentRequest);
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.GOOGLE_PAYMENTS));
+        verify(fragment).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.GOOGLE_PAYMENT));
         Intent intent = captor.getValue();
-        assertEquals(GooglePaymentsActivity.class.getName(), intent.getComponent().getClassName());
+        assertEquals(GooglePaymentActivity.class.getName(), intent.getComponent().getClassName());
         assertEquals(WalletConstants.ENVIRONMENT_TEST, intent.getIntExtra(EXTRA_ENVIRONMENT, -1));
         PaymentDataRequest paymentDataRequest = intent.getParcelableExtra(EXTRA_PAYMENT_DATA_REQUEST);
-        assertEquals(googlePaymentsRequest.getTransactionInfo(), paymentDataRequest.getTransactionInfo());
+        assertEquals(googlePaymentRequest.getTransactionInfo(), paymentDataRequest.getTransactionInfo());
         assertEquals(2, paymentDataRequest.getAllowedPaymentMethods().size());
         assertTrue(paymentDataRequest.getAllowedPaymentMethods().contains(WalletConstants.PAYMENT_METHOD_CARD));
         assertTrue(paymentDataRequest.getAllowedPaymentMethods().contains(WalletConstants.PAYMENT_METHOD_TOKENIZED_CARD));
@@ -121,7 +121,7 @@ public class GooglePaymentsTest {
         assertEquals(WalletConstants.PAYMENT_METHOD_TOKENIZATION_TYPE_PAYMENT_GATEWAY,
                 paymentDataRequest.getPaymentMethodTokenizationParameters().getPaymentMethodTokenizationType());
 
-        Bundle expectedParameters = GooglePayments.getTokenizationParameters(fragment)
+        Bundle expectedParameters = GooglePayment.getTokenizationParameters(fragment)
                 .getParameters();
         Bundle actualParameters = paymentDataRequest.getPaymentMethodTokenizationParameters().getParameters();
         assertEquals(expectedParameters.getString("gateway"), actualParameters.getString("gateway"));
@@ -137,14 +137,14 @@ public class GooglePaymentsTest {
     public void requestPayment_sendsAnalyticsEvent() throws Exception {
         BraintreeFragment fragment = getSetupFragment();
         doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
-        GooglePaymentsRequest googlePaymentsRequest = new GooglePaymentsRequest()
+        GooglePaymentRequest googlePaymentRequest = new GooglePaymentRequest()
                 .transactionInfo(TransactionInfo.newBuilder()
                         .setTotalPrice("1.00")
                         .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                         .setCurrencyCode("USD")
                         .build());
 
-        GooglePayments.requestPayment(fragment, googlePaymentsRequest);
+        GooglePayment.requestPayment(fragment, googlePaymentRequest);
 
         InOrder order = inOrder(fragment);
         order.verify(fragment).sendAnalyticsEvent("google-payments.selected");
@@ -155,7 +155,7 @@ public class GooglePaymentsTest {
     public void requestPayment_postsExceptionWhenTransactionInfoIsNull() throws Exception {
         BraintreeFragment fragment = getSetupFragment();
 
-        GooglePayments.requestPayment(fragment, null);
+        GooglePayment.requestPayment(fragment, null);
 
         InOrder order = inOrder(fragment);
         order.verify(fragment).sendAnalyticsEvent("google-payments.selected");
@@ -166,7 +166,7 @@ public class GooglePaymentsTest {
     public void onActivityResult_sendsAnalyticsEventOnCancel() {
         BraintreeFragment fragment = getSetupFragment();
 
-        GooglePayments.onActivityResult(fragment, Activity.RESULT_CANCELED, new Intent());
+        GooglePayment.onActivityResult(fragment, Activity.RESULT_CANCELED, new Intent());
 
         verify(fragment).sendAnalyticsEvent("google-payments.canceled");
     }
@@ -175,7 +175,7 @@ public class GooglePaymentsTest {
     public void onActivityResult_sendsAnalyticsEventOnNonOkOrCanceledResult() {
         BraintreeFragment fragment = getSetupFragment();
 
-        GooglePayments.onActivityResult(fragment, Activity.RESULT_FIRST_USER, new Intent());
+        GooglePayment.onActivityResult(fragment, Activity.RESULT_FIRST_USER, new Intent());
 
         verify(fragment).sendAnalyticsEvent("google-payments.failed");
     }
@@ -184,7 +184,7 @@ public class GooglePaymentsTest {
     public void onActivityResult_sendsAnalyticsEventOnOkResponse() throws InterruptedException {
         BraintreeFragment fragment = getSetupFragment();
 
-        GooglePayments.onActivityResult(fragment, Activity.RESULT_OK, new Intent());
+        GooglePayment.onActivityResult(fragment, Activity.RESULT_OK, new Intent());
 
         verify(fragment).sendAnalyticsEvent("google-payments.authorized");
     }
@@ -198,7 +198,7 @@ public class GooglePaymentsTest {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                Bundle tokenizationParameters = GooglePayments.getTokenizationParameters(fragment).getParameters();
+                Bundle tokenizationParameters = GooglePayment.getTokenizationParameters(fragment).getParameters();
 
                 assertEquals("braintree", tokenizationParameters.getString("gateway"));
                 assertEquals(configuration.getMerchantId(), tokenizationParameters.getString("braintree:merchantId"));
@@ -222,7 +222,7 @@ public class GooglePaymentsTest {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                Bundle tokenizationParameters = GooglePayments.getTokenizationParameters(fragment).getParameters();
+                Bundle tokenizationParameters = GooglePayment.getTokenizationParameters(fragment).getParameters();
 
                 assertNull(tokenizationParameters.getString("braintree:clientKey"));
 
@@ -241,7 +241,7 @@ public class GooglePaymentsTest {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                Bundle tokenizationParameters = GooglePayments.getTokenizationParameters(fragment).getParameters();
+                Bundle tokenizationParameters = GooglePayment.getTokenizationParameters(fragment).getParameters();
 
                 assertEquals(TOKENIZATION_KEY,  tokenizationParameters.getString("braintree:clientKey"));
 
@@ -263,7 +263,7 @@ public class GooglePaymentsTest {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                Collection<Integer> allowedCardNetworks = GooglePayments.getAllowedCardNetworks(fragment);
+                Collection<Integer> allowedCardNetworks = GooglePayment.getAllowedCardNetworks(fragment);
 
                 assertEquals(4, allowedCardNetworks.size());
                 assertTrue(allowedCardNetworks.contains(CardNetwork.VISA));

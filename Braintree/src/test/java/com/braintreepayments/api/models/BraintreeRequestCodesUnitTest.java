@@ -35,7 +35,7 @@ public class BraintreeRequestCodesUnitTest {
     }
 
     @Test
-    public void googlePayments() {
-        assertEquals(13593, BraintreeRequestCodes.GOOGLE_PAYMENTS);
+    public void googlePayment() {
+        assertEquals(13593, BraintreeRequestCodes.GOOGLE_PAYMENT);
     }
 }

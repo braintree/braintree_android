@@ -14,7 +14,7 @@ import com.braintreepayments.api.dropin.DropInResult;
 import com.braintreepayments.api.dropin.utils.PaymentMethodType;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.GooglePaymentsCardNonce;
+import com.braintreepayments.api.models.GooglePaymentCardNonce;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VenmoAccountNonce;
@@ -36,7 +36,7 @@ public class MainActivity extends BaseActivity {
 
     private static final int DROP_IN_REQUEST = 1;
     private static final int ANDROID_PAY_REQUEST = 2;
-    private static final int GOOGLE_PAYMENTS_REQUEST = 3;
+    private static final int GOOGLE_PAYMENT_REQUEST = 3;
     private static final int CARDS_REQUEST = 4;
     private static final int PAYPAL_REQUEST = 5;
     private static final int VENMO_REQUEST = 6;
@@ -53,7 +53,7 @@ public class MainActivity extends BaseActivity {
 
     private Button mDropInButton;
     private Button mAndroidPayButton;
-    private Button mGooglePaymentsButton;
+    private Button mGooglePaymentButton;
     private Button mCardsButton;
     private Button mPayPalButton;
     private Button mVenmoButton;
@@ -72,7 +72,7 @@ public class MainActivity extends BaseActivity {
 
         mDropInButton = findViewById(R.id.drop_in);
         mAndroidPayButton = findViewById(R.id.android_pay);
-        mGooglePaymentsButton = findViewById(R.id.google_payments);
+        mGooglePaymentButton = findViewById(R.id.google_payment);
         mCardsButton = findViewById(R.id.card);
         mPayPalButton = findViewById(R.id.paypal);
         mVenmoButton = findViewById(R.id.venmo);
@@ -104,9 +104,9 @@ public class MainActivity extends BaseActivity {
         startActivityForResult(intent, ANDROID_PAY_REQUEST);
     }
 
-    public void launchGooglePayments(View v) {
-        Intent intent = new Intent(this, GooglePaymentsActivity.class);
-        startActivityForResult(intent, GOOGLE_PAYMENTS_REQUEST);
+    public void launchGooglePayment(View v) {
+        Intent intent = new Intent(this, GooglePaymentActivity.class);
+        startActivityForResult(intent, GOOGLE_PAYMENT_REQUEST);
     }
 
     public void launchCards(View v) {
@@ -205,8 +205,8 @@ public class MainActivity extends BaseActivity {
             details = PayPalActivity.getDisplayString((PayPalAccountNonce) mNonce);
         } else if (mNonce instanceof AndroidPayCardNonce) {
             details = AndroidPayActivity.getDisplayString((AndroidPayCardNonce) mNonce);
-        } else if (mNonce instanceof GooglePaymentsCardNonce) {
-            details = GooglePaymentsActivity.getDisplayString((GooglePaymentsCardNonce) mNonce);
+        } else if (mNonce instanceof GooglePaymentCardNonce) {
+            details = GooglePaymentActivity.getDisplayString((GooglePaymentCardNonce) mNonce);
         } else if (mNonce instanceof VisaCheckoutNonce) {
             details = VisaCheckoutActivity.getDisplayString((VisaCheckoutNonce) mNonce);
         } else if (mNonce instanceof VenmoAccountNonce) {
@@ -247,7 +247,7 @@ public class MainActivity extends BaseActivity {
     private void enableButtons(boolean enable) {
         mDropInButton.setEnabled(enable);
         mAndroidPayButton.setEnabled(enable);
-        mGooglePaymentsButton.setEnabled(enable);
+        mGooglePaymentButton.setEnabled(enable);
         mCardsButton.setEnabled(enable);
         mPayPalButton.setEnabled(enable);
         mVenmoButton.setEnabled(enable);

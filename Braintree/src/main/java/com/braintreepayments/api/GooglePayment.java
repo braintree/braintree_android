@@ -10,15 +10,15 @@ import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.GoogleApiClientException;
 import com.braintreepayments.api.exceptions.GoogleApiClientException.ErrorType;
-import com.braintreepayments.api.exceptions.GooglePaymentsException;
+import com.braintreepayments.api.exceptions.GooglePaymentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.GooglePaymentsCardNonce;
-import com.braintreepayments.api.models.GooglePaymentsRequest;
+import com.braintreepayments.api.models.GooglePaymentCardNonce;
+import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.models.MetadataBuilder;
 import com.braintreepayments.api.models.TokenizationKey;
 import com.google.android.gms.common.api.ApiException;
@@ -38,13 +38,13 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 
-import static com.braintreepayments.api.GooglePaymentsActivity.EXTRA_ENVIRONMENT;
-import static com.braintreepayments.api.GooglePaymentsActivity.EXTRA_PAYMENT_DATA_REQUEST;
+import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_ENVIRONMENT;
+import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_PAYMENT_DATA_REQUEST;
 
 /**
  * Used to create and tokenize Google Payments payment methods.
  */
-public class GooglePayments {
+public class GooglePayment {
 
     private static final String VISA_NETWORK = "visa";
     private static final String MASTERCARD_NETWORK = "mastercard";
@@ -110,13 +110,13 @@ public class GooglePayments {
      * Launch a Google Payments request. This method will show the payment instrument chooser to the user.
      *
      * @param fragment The current {@link BraintreeFragment}.
-     * @param request The {@link GooglePaymentsRequest} containing options for the transaction.
+     * @param request The {@link GooglePaymentRequest} containing options for the transaction.
      */
-    public static void requestPayment(final BraintreeFragment fragment, final @NonNull GooglePaymentsRequest request) {
+    public static void requestPayment(final BraintreeFragment fragment, final @NonNull GooglePaymentRequest request) {
         fragment.sendAnalyticsEvent("google-payments.selected");
 
         if (!validateManifest(fragment.getApplicationContext())) {
-            fragment.postCallback(new BraintreeException("GooglePaymentsActivity was not found in the Android " +
+            fragment.postCallback(new BraintreeException("GooglePaymentActivity was not found in the Android " +
                     "manifest, or did not have a theme of R.style.bt_transparent_activity"));
             fragment.sendAnalyticsEvent("google-payments.failed");
             return;
@@ -136,7 +136,6 @@ public class GooglePayments {
                         .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_CARD)
                         .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_TOKENIZED_CARD)
                         .setPaymentMethodTokenizationParameters(getTokenizationParameters(fragment));
-
 
                 CardRequirements.Builder cardRequirements = CardRequirements.newBuilder()
                         .addAllowedCardNetworks(getAllowedCardNetworks(fragment));
@@ -176,10 +175,10 @@ public class GooglePayments {
 
                 fragment.sendAnalyticsEvent("google-payments.started");
 
-                Intent intent = new Intent(fragment.getApplicationContext(), GooglePaymentsActivity.class)
+                Intent intent = new Intent(fragment.getApplicationContext(), GooglePaymentActivity.class)
                         .putExtra(EXTRA_ENVIRONMENT, getEnvironment(configuration.getAndroidPay()))
                         .putExtra(EXTRA_PAYMENT_DATA_REQUEST, paymentDataRequest.build());
-                fragment.startActivityForResult(intent, BraintreeRequestCodes.GOOGLE_PAYMENTS);
+                fragment.startActivityForResult(intent, BraintreeRequestCodes.GOOGLE_PAYMENT);
             }
         });
     }
@@ -189,7 +188,7 @@ public class GooglePayments {
             fragment.sendAnalyticsEvent("google-payments.authorized");
 
             try {
-                fragment.postCallback(GooglePaymentsCardNonce.fromPaymentData(PaymentData.getFromIntent(data)));
+                fragment.postCallback(GooglePaymentCardNonce.fromPaymentData(PaymentData.getFromIntent(data)));
                 fragment.sendAnalyticsEvent("google-payments.nonce-received");
             } catch (JSONException | NullPointerException e) {
                 fragment.sendAnalyticsEvent("google-payments.failed");
@@ -204,7 +203,7 @@ public class GooglePayments {
         } else if (resultCode == AutoResolveHelper.RESULT_ERROR) {
             fragment.sendAnalyticsEvent("google-payments.failed");
 
-            fragment.postCallback(new GooglePaymentsException("An error was encountered during the Google Payments " +
+            fragment.postCallback(new GooglePaymentException("An error was encountered during the Google Payments " +
                     "flow. See the status object in this exception for more details.",
                     AutoResolveHelper.getStatusFromIntent(data)));
         } else if (resultCode == Activity.RESULT_CANCELED) {
@@ -265,7 +264,7 @@ public class GooglePayments {
     }
 
     private static boolean validateManifest(Context context) {
-        ActivityInfo activityInfo = ManifestValidator.getActivityInfo(context, GooglePaymentsActivity.class);
+        ActivityInfo activityInfo = ManifestValidator.getActivityInfo(context, GooglePaymentActivity.class);
         return activityInfo != null && activityInfo.getThemeResource() == R.style.bt_transparent_activity;
     }
 }

@@ -6,13 +6,13 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import com.braintreepayments.api.BraintreeFragment;
-import com.braintreepayments.api.GooglePayments;
+import com.braintreepayments.api.GooglePayment;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.GooglePaymentsCardNonce;
-import com.braintreepayments.api.models.GooglePaymentsRequest;
+import com.braintreepayments.api.models.GooglePaymentCardNonce;
+import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.google.android.gms.identity.intents.model.UserAddress;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
@@ -22,23 +22,23 @@ import com.google.android.gms.wallet.WalletConstants;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class GooglePaymentsActivity extends BaseActivity implements ConfigurationListener {
+public class GooglePaymentActivity extends BaseActivity implements ConfigurationListener {
 
-    private ImageButton mGooglePaymentsButton;
+    private ImageButton mGooglePaymentButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.google_payments_activity);
+        setContentView(R.layout.google_payment_activity);
         setUpAsBack();
 
-        mGooglePaymentsButton = findViewById(R.id.google_payments_button);
+        mGooglePaymentButton = findViewById(R.id.google_payment_button);
     }
 
     @Override
     protected void reset() {
-        mGooglePaymentsButton.setVisibility(GONE);
+        mGooglePaymentButton.setVisibility(GONE);
     }
 
     @Override
@@ -53,11 +53,11 @@ public class GooglePaymentsActivity extends BaseActivity implements Configuratio
     @Override
     public void onConfigurationFetched(Configuration configuration) {
         if (configuration.getAndroidPay().isEnabled(this)) {
-            GooglePayments.isReadyToPay(mBraintreeFragment, new BraintreeResponseListener<Boolean>() {
+            GooglePayment.isReadyToPay(mBraintreeFragment, new BraintreeResponseListener<Boolean>() {
                 @Override
                 public void onResponse(Boolean isReadyToPay) {
                     if (isReadyToPay) {
-                        mGooglePaymentsButton.setVisibility(VISIBLE);
+                        mGooglePaymentButton.setVisibility(VISIBLE);
                     } else {
                         showDialog("There are no cards set up in Google Payments or the Android Pay app." +
                                 "Please add a card and try again.");
@@ -80,30 +80,30 @@ public class GooglePaymentsActivity extends BaseActivity implements Configuratio
         finish();
     }
 
-    public void launchGooglePayments(View v) {
+    public void launchGooglePayment(View v) {
         setProgressBarIndeterminateVisibility(true);
 
-        GooglePaymentsRequest googlePaymentsRequest = new GooglePaymentsRequest()
+        GooglePaymentRequest googlePaymentRequest = new GooglePaymentRequest()
                 .transactionInfo(TransactionInfo.newBuilder()
-                        .setCurrencyCode(Settings.getGooglePaymentsCurrency(this))
+                        .setCurrencyCode(Settings.getGooglePaymentCurrency(this))
                         .setTotalPrice("1.00")
                         .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                         .build())
-                .allowPrepaidCards(Settings.areGooglePaymentsPrepaidCardsAllowed(this))
+                .allowPrepaidCards(Settings.areGooglePaymentPrepaidCardsAllowed(this))
                 .billingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL)
-                .billingAddressRequired(Settings.isGooglePaymentsBillingAddressRequired(this))
-                .emailRequired(Settings.isGooglePaymentsEmailRequired(this))
-                .phoneNumberRequired(Settings.isGooglePaymentsPhoneNumberRequired(this))
-                .shippingAddressRequired(Settings.isGooglePaymentsShippingAddressRequired(this))
+                .billingAddressRequired(Settings.isGooglePaymentBillingAddressRequired(this))
+                .emailRequired(Settings.isGooglePaymentEmailRequired(this))
+                .phoneNumberRequired(Settings.isGooglePaymentPhoneNumberRequired(this))
+                .shippingAddressRequired(Settings.isGooglePaymentShippingAddressRequired(this))
                 .shippingAddressRequirements(ShippingAddressRequirements.newBuilder()
-                        .addAllowedCountryCodes(Settings.getGooglePaymentsAllowedCountriesForShipping(this))
+                        .addAllowedCountryCodes(Settings.getGooglePaymentAllowedCountriesForShipping(this))
                         .build())
                 .uiRequired(true);
 
-        GooglePayments.requestPayment(mBraintreeFragment, googlePaymentsRequest);
+        GooglePayment.requestPayment(mBraintreeFragment, googlePaymentRequest);
     }
 
-    public static String getDisplayString(GooglePaymentsCardNonce nonce) {
+    public static String getDisplayString(GooglePaymentCardNonce nonce) {
         return "Underlying Card Last Two: " + nonce.getLastTwo() + "\n" +
                 "Email: " + nonce.getEmail() + "\n" +
                 "Billing address: " + formatAddress(nonce.getBillingAddress()) + "\n" +

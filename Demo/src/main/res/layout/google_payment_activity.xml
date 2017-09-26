@@ -7,17 +7,17 @@
     android:gravity="center">
 
     <ImageButton
-        android:id="@+id/google_payments_button"
+        android:id="@+id/google_payment_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="0dp"
-        android:src="@drawable/button_google_payments"
+        android:src="@drawable/button_google_payment"
         android:scaleType="fitCenter"
         android:adjustViewBounds="true"
         android:background="@android:color/transparent"
-        android:contentDescription="@string/google_payments"
+        android:contentDescription="@string/pay_with_google"
         android:visibility="gone"
-        android:onClick="launchGooglePayments" />
+        android:onClick="launchGooglePayment" />
 
 </LinearLayout>
