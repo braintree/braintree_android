@@ -18,7 +18,6 @@ import static com.braintreepayments.api.models.BinData.BIN_DATA_KEY;
 public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcelable {
 
     private static final String API_RESOURCE_KEY = "androidPayCards";
-
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
     private static final String LAST_TWO_KEY = "lastTwo";
