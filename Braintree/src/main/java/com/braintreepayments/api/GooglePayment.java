@@ -211,23 +211,32 @@ public class GooglePayment {
         });
     }
 
+    /**
+     * Call this method when you've received a successful {@link PaymentData} response in your activity's
+     * {@link Activity#onActivityResult(int, int, Intent)} to get a {@link GooglePaymentCardNonce}.
+     *
+     * @param fragment An instance of {@link BraintreeFragment}.
+     * @param paymentData {@link PaymentData} from the Intent in {@link Activity#onActivityResult(int, int, Intent)}.
+     */
+    public static void tokenize(BraintreeFragment fragment, PaymentData paymentData) {
+        try {
+            fragment.postCallback(GooglePaymentCardNonce.fromPaymentData(paymentData));
+            fragment.sendAnalyticsEvent("google-payments.nonce-received");
+        } catch (JSONException | NullPointerException e) {
+            fragment.sendAnalyticsEvent("google-payments.failed");
+
+            try {
+                fragment.postCallback(ErrorWithResponse.fromJson(paymentData.getPaymentMethodToken().getToken()));
+            } catch (JSONException | NullPointerException e1) {
+                fragment.postCallback(e1);
+            }
+        }
+    }
+
     static void onActivityResult(BraintreeFragment fragment, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             fragment.sendAnalyticsEvent("google-payments.authorized");
-
-            try {
-                fragment.postCallback(GooglePaymentCardNonce.fromPaymentData(PaymentData.getFromIntent(data)));
-                fragment.sendAnalyticsEvent("google-payments.nonce-received");
-            } catch (JSONException | NullPointerException e) {
-                fragment.sendAnalyticsEvent("google-payments.failed");
-
-                try {
-                    fragment.postCallback(ErrorWithResponse.fromJson(PaymentData.getFromIntent(data)
-                            .getPaymentMethodToken().getToken()));
-                } catch (JSONException | NullPointerException e1) {
-                    fragment.postCallback(e1);
-                }
-            }
+            tokenize(fragment, PaymentData.getFromIntent(data));
         } else if (resultCode == AutoResolveHelper.RESULT_ERROR) {
             fragment.sendAnalyticsEvent("google-payments.failed");
 
