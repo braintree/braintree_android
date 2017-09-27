@@ -1,15 +1,5 @@
 # Braintree Android SDK Release Notes
 
-## UNRELEASED
-
-* Add additional billing address params to card builder
-  * Country Code Alpha 2
-  * Country Code Alpha 3
-  * Country Code Numeric
-  * Company
-  * Extended Address
-
-
 ## 2.6.2
 
 * Fix potential crash due to optional Visa Checkout dependency
