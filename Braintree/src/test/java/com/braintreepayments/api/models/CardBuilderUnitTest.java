@@ -1,5 +1,7 @@
 package com.braintreepayments.api.models;
 
+import android.os.Parcel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -192,5 +194,62 @@ public class CardBuilderUnitTest {
 
         assertFalse(new JSONObject(cardBuilder.build()).getJSONObject(CREDIT_CARD_KEY).keys().hasNext());
         assertFalse(new JSONObject(cardBuilder.build()).has(BILLING_ADDRESS_KEY));
+    }
+
+    @Test
+    public void parcelsCorrectly() throws JSONException {
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber(VISA)
+                .expirationDate("01/2015")
+                .expirationMonth("01")
+                .expirationYear("2015")
+                .cvv("123")
+                .cardholderName("Joe Smith")
+                .firstName("Joe")
+                .lastName("Smith")
+                .company("Company")
+                .streetAddress("1 Main St")
+                .extendedAddress("Unit 1")
+                .locality("Some Town")
+                .postalCode("12345")
+                .region("Some Region")
+                .countryName("Some Country")
+                .countryCodeAlpha2("US")
+                .countryCodeAlpha3("USA")
+                .countryCodeNumeric("840");
+
+        Parcel parcel = Parcel.obtain();
+        cardBuilder.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+
+        CardBuilder actual = CardBuilder.CREATOR.createFromParcel(parcel);
+
+        JSONObject json = new JSONObject(actual.build());
+        JSONObject jsonCard = json.getJSONObject(CREDIT_CARD_KEY);
+        JSONObject jsonBillingAddress = jsonCard.getJSONObject(BILLING_ADDRESS_KEY);
+        JSONObject jsonMetadata = json.getJSONObject(MetadataBuilder.META_KEY);
+
+        assertEquals(VISA, jsonCard.getString("number"));
+        assertEquals("01/2015", jsonCard.getString("expirationDate"));
+        assertEquals("01", jsonCard.getString("expirationMonth"));
+        assertEquals("2015", jsonCard.getString("expirationYear"));
+        assertEquals("123", jsonCard.getString("cvv"));
+        assertEquals("Joe Smith", jsonCard.getString("cardholderName"));
+
+        assertEquals("Joe", jsonBillingAddress.getString("firstName"));
+        assertEquals("Smith", jsonBillingAddress.getString("lastName"));
+        assertEquals("Company", jsonBillingAddress.getString("company"));
+        assertEquals("1 Main St", jsonBillingAddress.getString("streetAddress"));
+        assertEquals("Unit 1", jsonBillingAddress.getString("extendedAddress"));
+        assertEquals("Some Town", jsonBillingAddress.getString("locality"));
+        assertEquals("12345", jsonBillingAddress.getString("postalCode"));
+        assertEquals("Some Region", jsonBillingAddress.getString("region"));
+        assertEquals("Some Country", jsonBillingAddress.getString("countryName"));
+        assertEquals("US", jsonBillingAddress.getString("countryCodeAlpha2"));
+        assertEquals("USA", jsonBillingAddress.getString("countryCodeAlpha3"));
+        assertEquals("840", jsonBillingAddress.getString("countryCodeNumeric"));
+
+        assertEquals("custom", jsonMetadata.getString("integration"));
+        assertEquals("form", jsonMetadata.getString("source"));
     }
 }
