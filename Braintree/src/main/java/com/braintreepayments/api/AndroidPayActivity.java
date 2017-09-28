@@ -20,6 +20,7 @@ import com.google.android.gms.wallet.WalletConstants;
 
 import java.util.ArrayList;
 
+@Deprecated
 public class AndroidPayActivity extends Activity implements ConnectionCallbacks, OnConnectionFailedListener {
 
     protected static final String EXTRA_ENVIRONMENT = "com.braintreepayments.api.EXTRA_ENVIRONMENT";

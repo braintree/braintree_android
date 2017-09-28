@@ -13,9 +13,13 @@ import org.json.JSONObject;
 import static com.braintreepayments.api.models.BinData.BIN_DATA_KEY;
 
 /**
+ * @deprecated Android Pay is deprecated, use {@link GooglePaymentCardNonce} instead. For more information see the
+ * <a href="https://developers.braintreepayments.com/guides/pay-with-google/overview">documentation</a>
+ *
  * {@link PaymentMethodNonce} representing an Android Pay card.
  * @see PaymentMethodNonce
  */
+@Deprecated
 public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelable {
 
     protected static final String TYPE = "AndroidPayCard";
@@ -43,6 +47,9 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
     }
 
     /**
+     * @deprecated Android Pay is deprecated, use {@link GooglePaymentCardNonce} instead. For more information see the
+     * <a href="https://developers.braintreepayments.com/guides/pay-with-google/overview">documentation</a>
+     *
      * Convert a {@link FullWallet} to an {@link AndroidPayCardNonce}.
      *
      * @param wallet the {@link FullWallet} from an Android Pay response.
@@ -50,6 +57,7 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
      * @return {@link AndroidPayCardNonce}.
      * @throws JSONException when parsing the response fails.
      */
+    @Deprecated
     public static AndroidPayCardNonce fromFullWallet(FullWallet wallet, Cart cart) throws JSONException {
         AndroidPayCardNonce androidPayCardNonce =
                 AndroidPayCardNonce.fromJson(wallet.getPaymentMethodToken().getToken());
@@ -64,12 +72,16 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
     }
 
     /**
+     * @deprecated Android Pay is deprecated, use {@link GooglePaymentCardNonce} instead. For more information see the
+     * <a href="https://developers.braintreepayments.com/guides/pay-with-google/overview">documentation</a>
+     *
      * Convert an API response to an {@link AndroidPayCardNonce}.
      *
      * @param json Raw JSON response from Braintree of a {@link AndroidPayCardNonce}.
      * @return {@link AndroidPayCardNonce}.
      * @throws JSONException when parsing the response fails.
      */
+    @Deprecated
     public static AndroidPayCardNonce fromJson(String json) throws JSONException {
         AndroidPayCardNonce androidPayCardNonce = new AndroidPayCardNonce();
         androidPayCardNonce

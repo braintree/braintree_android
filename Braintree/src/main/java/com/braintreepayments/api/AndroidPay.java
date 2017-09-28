@@ -47,12 +47,19 @@ import static com.braintreepayments.api.AndroidPayActivity.EXTRA_SHIPPING_ADDRES
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_TOKENIZATION_PARAMETERS;
 
 /**
+ * @deprecated Android Pay is deprecated, use {@link GooglePayment} instead. For more information see the
+ * <a href="https://developers.braintreepayments.com/guides/pay-with-google/overview">documentation</a>
+ *
  * Used to create and tokenize Android Pay payment methods. For more information see the
  * <a href="https://developers.braintreepayments.com/guides/android-pay/overview">documentation</a>
  */
+@Deprecated
 public class AndroidPay {
 
     /**
+     * @deprecated Android Pay is deprecated, use {@link GooglePayment} instead. For more information see the
+     * <a href="https://developers.braintreepayments.com/guides/pay-with-google/overview">documentation</a>
+     *
      * Before starting the Android Pay flow, use
      * {@link #isReadyToPay(BraintreeFragment, BraintreeResponseListener)} to check whether the
      * user has the Android Pay app installed and is ready to pay. When the listener is called with
@@ -63,6 +70,7 @@ public class AndroidPay {
      * @param listener Instance of {@link BraintreeResponseListener<Boolean>} to receive the
      *                 isReadyToPay response.
      */
+    @Deprecated
     public static void isReadyToPay(final BraintreeFragment fragment,
             final BraintreeResponseListener<Boolean> listener) {
         fragment.waitForConfiguration(new ConfigurationListener() {
@@ -91,6 +99,9 @@ public class AndroidPay {
     }
 
     /**
+     * @deprecated Android Pay is deprecated, use {@link GooglePayment} instead. For more information see the
+     * <a href="https://developers.braintreepayments.com/guides/pay-with-google/overview">documentation</a>
+     *
      * Get Braintree specific tokenization parameters for Android Pay. Useful for existing Google
      * Wallet or Android Pay integrations, or when full control over the
      * {@link com.google.android.gms.wallet.MaskedWalletRequest} and
@@ -107,6 +118,7 @@ public class AndroidPay {
      * @param listener Instance of {@link TokenizationParametersListener} to receive the
      *                 {@link PaymentMethodTokenizationParameters}.
      */
+    @Deprecated
     public static void getTokenizationParameters(final BraintreeFragment fragment,
             final TokenizationParametersListener listener) {
         fragment.waitForConfiguration(new ConfigurationListener() {
@@ -119,6 +131,9 @@ public class AndroidPay {
     }
 
     /**
+     * @deprecated Android Pay is deprecated, use {@link GooglePayment} instead. For more information see the
+     * <a href="https://developers.braintreepayments.com/guides/pay-with-google/overview">documentation</a>
+     *
      * Launch an Android Pay masked wallet request. This method will show the payment instrument
      * chooser to the user.
      *
@@ -128,6 +143,7 @@ public class AndroidPay {
      * @param phoneNumberRequired {@code true} if this request requires a phone number, {@code false} otherwise.
      * @param allowedCountries ISO 3166-2 country codes that shipping is allowed to.
      */
+    @Deprecated
     public static void requestAndroidPay(final BraintreeFragment fragment, final @NonNull Cart cart,
             final boolean shippingAddressRequired, final boolean phoneNumberRequired,
             final ArrayList<CountrySpecification> allowedCountries) {
@@ -167,12 +183,16 @@ public class AndroidPay {
     }
 
     /**
+     * @deprecated Android Pay is deprecated, use {@link GooglePayment} instead. For more information see the
+     * <a href="https://developers.braintreepayments.com/guides/pay-with-google/overview">documentation</a>
+     *
      * Performs a change masked wallet request. This will allow the user to change the backing card and other information
      * associated with the payment method.
      *
      * @param fragment The current {@link BraintreeFragment}.
      * @param androidPayCardNonce the {@link AndroidPayCardNonce} to update.
      */
+    @Deprecated
     public static void changePaymentMethod(final BraintreeFragment fragment,
             final AndroidPayCardNonce androidPayCardNonce) {
         fragment.waitForConfiguration(new ConfigurationListener() {
@@ -199,6 +219,9 @@ public class AndroidPay {
     }
 
     /**
+     * @deprecated Android Pay is deprecated, use {@link GooglePayment} instead. For more information see the
+     * <a href="https://developers.braintreepayments.com/guides/pay-with-google/overview">documentation</a>
+     *
      * Call this method when you've received a successful FullWallet request in your activity's
      * {@link Activity#onActivityResult(int, int, Intent)} to get an {@link AndroidPayCardNonce} from a
      * {@link FullWallet}.
@@ -207,6 +230,7 @@ public class AndroidPay {
      * @param wallet a {@link FullWallet} from the Intent in {@link Activity#onActivityResult(int, int, Intent)}.
      * @param cart the {@link Cart} used when creating the {@link FullWallet}.
      */
+    @Deprecated
     public static void tokenize(BraintreeFragment fragment, FullWallet wallet, Cart cart) {
         try {
             fragment.postCallback(AndroidPayCardNonce.fromFullWallet(wallet, cart));
