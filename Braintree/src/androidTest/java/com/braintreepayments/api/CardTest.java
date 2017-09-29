@@ -182,6 +182,29 @@ public class CardTest {
         countDownLatch.await();
     }
 
+    @Test(timeout = 10000)
+    public void tokenize_tokenizesACardWithACompleteBillingAddress() throws Exception {
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber(VISA)
+                .expirationDate("08/20")
+                .cvv("123")
+                .cardholderName("Joe Smith")
+                .firstName("Joe")
+                .lastName("Smith")
+                .company("Company")
+                .streetAddress("1 Main St")
+                .extendedAddress("Unit 1")
+                .locality("Some Town")
+                .postalCode("12345")
+                .region("Some Region")
+                .countryName("United States")
+                .countryCodeAlpha2("US")
+                .countryCodeAlpha3("USA")
+                .countryCodeNumeric("840");
+
+        assertTokenizationSuccessful(new TestClientTokenBuilder().build(), cardBuilder);
+    }
+
     private void assertTokenizationSuccessful(String authorization, CardBuilder cardBuilder) throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivityTestRule.getActivity(), authorization);
