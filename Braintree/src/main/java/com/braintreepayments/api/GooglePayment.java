@@ -44,7 +44,8 @@ import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_ENVIRONMENT;
 import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_PAYMENT_DATA_REQUEST;
 
 /**
- * Used to create and tokenize Google Payments payment methods.
+ * Used to create and tokenize Google Payments payment methods. For more information see the
+ * <a href="https://developers.braintreepayments.com/guides/pay-with-google/overview">documentation</a>
  */
 public class GooglePayment {
 
