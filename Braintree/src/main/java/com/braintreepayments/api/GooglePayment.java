@@ -142,18 +142,18 @@ public class GooglePayment {
      * @param request The {@link GooglePaymentRequest} containing options for the transaction.
      */
     public static void requestPayment(final BraintreeFragment fragment, final @NonNull GooglePaymentRequest request) {
-        fragment.sendAnalyticsEvent("google-payments.selected");
+        fragment.sendAnalyticsEvent("google-payment.selected");
 
         if (!validateManifest(fragment.getApplicationContext())) {
             fragment.postCallback(new BraintreeException("GooglePaymentActivity was not found in the Android " +
                     "manifest, or did not have a theme of R.style.bt_transparent_activity"));
-            fragment.sendAnalyticsEvent("google-payments.failed");
+            fragment.sendAnalyticsEvent("google-payment.failed");
             return;
         }
 
         if (request == null || request.getTransactionInfo() == null) {
             fragment.postCallback(new BraintreeException("Cannot pass null TransactionInfo to requestPayment"));
-            fragment.sendAnalyticsEvent("google-payments.failed");
+            fragment.sendAnalyticsEvent("google-payment.failed");
             return;
         }
 
@@ -202,7 +202,7 @@ public class GooglePayment {
                     paymentDataRequest.setUiRequired(request.isUiRequired());
                 }
 
-                fragment.sendAnalyticsEvent("google-payments.started");
+                fragment.sendAnalyticsEvent("google-payment.started");
 
                 Intent intent = new Intent(fragment.getApplicationContext(), GooglePaymentActivity.class)
                         .putExtra(EXTRA_ENVIRONMENT, getEnvironment(configuration.getAndroidPay()))
@@ -222,9 +222,9 @@ public class GooglePayment {
     public static void tokenize(BraintreeFragment fragment, PaymentData paymentData) {
         try {
             fragment.postCallback(GooglePaymentCardNonce.fromPaymentData(paymentData));
-            fragment.sendAnalyticsEvent("google-payments.nonce-received");
+            fragment.sendAnalyticsEvent("google-payment.nonce-received");
         } catch (JSONException | NullPointerException e) {
-            fragment.sendAnalyticsEvent("google-payments.failed");
+            fragment.sendAnalyticsEvent("google-payment.failed");
 
             try {
                 fragment.postCallback(ErrorWithResponse.fromJson(paymentData.getPaymentMethodToken().getToken()));
@@ -236,16 +236,16 @@ public class GooglePayment {
 
     static void onActivityResult(BraintreeFragment fragment, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            fragment.sendAnalyticsEvent("google-payments.authorized");
+            fragment.sendAnalyticsEvent("google-payment.authorized");
             tokenize(fragment, PaymentData.getFromIntent(data));
         } else if (resultCode == AutoResolveHelper.RESULT_ERROR) {
-            fragment.sendAnalyticsEvent("google-payments.failed");
+            fragment.sendAnalyticsEvent("google-payment.failed");
 
             fragment.postCallback(new GooglePaymentException("An error was encountered during the Google Payments " +
                     "flow. See the status object in this exception for more details.",
                     AutoResolveHelper.getStatusFromIntent(data)));
         } else if (resultCode == Activity.RESULT_CANCELED) {
-            fragment.sendAnalyticsEvent("google-payments.canceled");
+            fragment.sendAnalyticsEvent("google-payment.canceled");
         }
     }
 

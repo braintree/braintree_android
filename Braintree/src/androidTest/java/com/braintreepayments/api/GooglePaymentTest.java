@@ -153,8 +153,8 @@ public class GooglePaymentTest {
         GooglePayment.requestPayment(fragment, googlePaymentRequest);
 
         InOrder order = inOrder(fragment);
-        order.verify(fragment).sendAnalyticsEvent("google-payments.selected");
-        order.verify(fragment).sendAnalyticsEvent("google-payments.started");
+        order.verify(fragment).sendAnalyticsEvent("google-payment.selected");
+        order.verify(fragment).sendAnalyticsEvent("google-payment.started");
     }
 
     @Test
@@ -164,8 +164,8 @@ public class GooglePaymentTest {
         GooglePayment.requestPayment(fragment, null);
 
         InOrder order = inOrder(fragment);
-        order.verify(fragment).sendAnalyticsEvent("google-payments.selected");
-        order.verify(fragment).sendAnalyticsEvent("google-payments.failed");
+        order.verify(fragment).sendAnalyticsEvent("google-payment.selected");
+        order.verify(fragment).sendAnalyticsEvent("google-payment.failed");
     }
 
     @Test
@@ -174,7 +174,7 @@ public class GooglePaymentTest {
 
         GooglePayment.onActivityResult(fragment, Activity.RESULT_CANCELED, new Intent());
 
-        verify(fragment).sendAnalyticsEvent("google-payments.canceled");
+        verify(fragment).sendAnalyticsEvent("google-payment.canceled");
     }
 
     @Test
@@ -183,7 +183,7 @@ public class GooglePaymentTest {
 
         GooglePayment.onActivityResult(fragment, Activity.RESULT_FIRST_USER, new Intent());
 
-        verify(fragment).sendAnalyticsEvent("google-payments.failed");
+        verify(fragment).sendAnalyticsEvent("google-payment.failed");
     }
 
     @Test
@@ -192,7 +192,7 @@ public class GooglePaymentTest {
 
         GooglePayment.onActivityResult(fragment, Activity.RESULT_OK, new Intent());
 
-        verify(fragment).sendAnalyticsEvent("google-payments.authorized");
+        verify(fragment).sendAnalyticsEvent("google-payment.authorized");
     }
 
     @Test(timeout = 5000)
