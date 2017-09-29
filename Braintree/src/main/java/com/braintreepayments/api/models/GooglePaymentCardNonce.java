@@ -2,6 +2,7 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import com.google.android.gms.identity.intents.model.UserAddress;
 import com.google.android.gms.wallet.PaymentData;
@@ -88,6 +89,7 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
     /**
      * @return The user's email address associated the Google Payments account.
      */
+    @Nullable
     public String getEmail() {
         return mEmail;
     }
@@ -95,6 +97,7 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
     /**
      * @return The user's billing address.
      */
+    @Nullable
     public UserAddress getBillingAddress() {
         return mBillingAddress;
     }
@@ -102,6 +105,7 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
     /**
      * @return The user's shipping address.
      */
+    @Nullable
     public UserAddress getShippingAddress() {
         return mShippingAddress;
     }
