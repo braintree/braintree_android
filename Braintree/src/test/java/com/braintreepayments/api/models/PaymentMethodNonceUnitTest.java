@@ -12,6 +12,7 @@ import static com.braintreepayments.api.models.PaymentMethodNonce.parsePaymentMe
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
@@ -54,6 +55,14 @@ public class PaymentMethodNonceUnitTest {
     }
 
     @Test
+    public void parsePaymentMethods_doesNotParseAndroidPayCardNonces() throws JSONException {
+        List<PaymentMethodNonce> paymentMethodNonces =
+                parsePaymentMethodNonces(stringFromFixture("payment_methods/get_payment_methods_android_pay_response.json"));
+
+        assertEquals(0, paymentMethodNonces.size());
+    }
+
+    @Test
     public void parsePaymentMethod_parsesCards() throws JSONException {
         JSONObject card = new JSONObject(stringFromFixture("payment_methods/visa_credit_card.json"));
 
@@ -74,6 +83,13 @@ public class PaymentMethodNonceUnitTest {
     }
 
     @Test
+    public void parsePaymentMethod_doesNotParseAndroidPay() throws JSONException {
+        JSONObject androidPayCard = new JSONObject(stringFromFixture("payment_methods/android_pay_card.json"));
+
+        assertNull(parsePaymentMethodNonces(androidPayCard, AndroidPayCardNonce.TYPE));
+    }
+
+    @Test
     public void parsePaymentMethod_parsesCardResponses() throws JSONException {
         JSONObject card = new JSONObject(stringFromFixture("payment_methods/visa_credit_card_response.json"));
 
@@ -91,5 +107,12 @@ public class PaymentMethodNonceUnitTest {
 
         assertTrue(paymentMethodNonce instanceof PayPalAccountNonce);
         assertEquals("with email paypalaccount@example.com", paymentMethodNonce.getDescription());
+    }
+
+    @Test
+    public void parsePaymentMethod_doesNotParseAndroidPayCardResponses() throws JSONException {
+        JSONObject androidPayCard = new JSONObject(stringFromFixture("payment_methods/android_pay_card_response.json"));
+
+        assertNull(parsePaymentMethodNonces(androidPayCard, AndroidPayCardNonce.TYPE));
     }
 }
