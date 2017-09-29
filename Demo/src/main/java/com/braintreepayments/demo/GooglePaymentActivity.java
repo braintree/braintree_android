@@ -59,8 +59,9 @@ public class GooglePaymentActivity extends BaseActivity implements Configuration
                     if (isReadyToPay) {
                         mGooglePaymentButton.setVisibility(VISIBLE);
                     } else {
-                        showDialog("There are no cards set up in Google Payments or the Android Pay app." +
-                                "Please add a card and try again.");
+                        showDialog("Google Payments are not available. The following issues could be the cause:\n\n" +
+                                "No user is logged in to the device.\n\n" +
+                                "Google Play Services is missing or out of date.");
                     }
                 }
             });
