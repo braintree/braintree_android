@@ -1,5 +1,12 @@
 # Braintree Android SDK Release Notes
 
+## 2.7.0
+
+* Increase minimum version of Google Play Services Wallet to 11.4.0
+* Add support for the Google Payments API
+* Deprecate Android Pay
+* Add additional billing address params to `CardBuilder`
+
 ## 2.6.2
 
 * Fix potential crash due to optional Visa Checkout dependency
