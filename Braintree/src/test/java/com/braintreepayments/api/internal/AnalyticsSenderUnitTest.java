@@ -25,7 +25,9 @@ import org.robolectric.RuntimeEnvironment;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.awaitThreadPoolFinished;
 import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.clearAllEvents;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
@@ -67,7 +69,10 @@ public class AnalyticsSenderUnitTest {
     public void newRequest_sendsCorrectMetaData() throws Exception {
         AnalyticsEvent event = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId", "custom",
                 "event.started");
-        AnalyticsDatabase.getInstance(RuntimeEnvironment.application).addEvent(event);
+        AnalyticsDatabase database = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
+        database.addEvent(event);
+
+        awaitThreadPoolFinished(database);
 
         AnalyticsSender.send(RuntimeEnvironment.application, mAuthorization, mHttpClient, "", true);
 
@@ -106,6 +111,8 @@ public class AnalyticsSenderUnitTest {
         database.addEvent(one);
         database.addEvent(two);
 
+        awaitThreadPoolFinished(database);
+
         AnalyticsSender.send(RuntimeEnvironment.application, mAuthorization, mHttpClient, "", true);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -128,6 +135,8 @@ public class AnalyticsSenderUnitTest {
         AnalyticsDatabase database = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
         database.addEvent(one);
         database.addEvent(two);
+
+        awaitThreadPoolFinished(database);
 
         AnalyticsSender.send(RuntimeEnvironment.application, mAuthorization, mHttpClient, "", true);
 
@@ -160,6 +169,8 @@ public class AnalyticsSenderUnitTest {
         database.addEvent(one);
         database.addEvent(two);
 
+        awaitThreadPoolFinished(database);
+
         when(mHttpClient.post(anyString(), anyString())).thenReturn("");
 
         AnalyticsSender.send(RuntimeEnvironment.application, mAuthorization, mHttpClient, "", true);
@@ -169,12 +180,14 @@ public class AnalyticsSenderUnitTest {
     }
 
     @Test
-    public void deletesDatabaseEventsOnAsynchronousSuccessResponse() {
+    public void deletesDatabaseEventsOnAsynchronousSuccessResponse() throws InterruptedException {
         AnalyticsEvent one = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId", "custom", "started");
         AnalyticsEvent two = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId", "custom", "finished");
         AnalyticsDatabase database = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
         database.addEvent(one);
         database.addEvent(two);
+
+        awaitThreadPoolFinished(database);
 
         doAnswer(new Answer() {
             @Override
@@ -198,6 +211,8 @@ public class AnalyticsSenderUnitTest {
         database.addEvent(one);
         database.addEvent(two);
 
+        awaitThreadPoolFinished(database);
+
         when(mHttpClient.post(anyString(), anyString())).thenThrow(ServerException.class);
 
         AnalyticsSender.send(RuntimeEnvironment.application, mAuthorization, mHttpClient, "", true);
@@ -213,6 +228,8 @@ public class AnalyticsSenderUnitTest {
         AnalyticsDatabase database = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
         database.addEvent(one);
         database.addEvent(two);
+
+        awaitThreadPoolFinished(database);
 
         doAnswer(new Answer() {
             @Override

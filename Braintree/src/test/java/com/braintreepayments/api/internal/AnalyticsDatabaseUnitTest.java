@@ -12,7 +12,11 @@ import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
+import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.awaitThreadPoolFinished;
 import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.clearAllEvents;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -34,11 +38,13 @@ public class AnalyticsDatabaseUnitTest {
     }
 
     @Test
-    public void addEvent_persistsEvent() throws JSONException {
+    public void addEvent_persistsEvent() throws Exception {
         AnalyticsEvent request = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
                 "custom", "started.client-token");
 
         mAnalyticsDatabase.addEvent(request);
+
+        awaitThreadPoolFinished(mAnalyticsDatabase);
 
         Cursor cursor = mAnalyticsDatabase.getReadableDatabase().query(false, "analytics", null, null, null,
                 null, null, "_id desc", "1");
@@ -50,7 +56,7 @@ public class AnalyticsDatabaseUnitTest {
     }
 
     @Test
-    public void removeEvents_removesEventsFromDb() {
+    public void removeEvents_removesEventsFromDb() throws InterruptedException {
         AnalyticsEvent event1 = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
                 "custom", "started.client-token");
         AnalyticsEvent event2 = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
@@ -58,6 +64,9 @@ public class AnalyticsDatabaseUnitTest {
 
         mAnalyticsDatabase.addEvent(event1);
         mAnalyticsDatabase.addEvent(event2);
+
+        awaitThreadPoolFinished(mAnalyticsDatabase);
+        mAnalyticsDatabase = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
 
         Cursor idCursor = mAnalyticsDatabase.getReadableDatabase().query(false, "analytics", new String[]{"_id"},
                 null, null, null, null, "_id asc", null);
@@ -72,6 +81,9 @@ public class AnalyticsDatabaseUnitTest {
         assertEquals(2, fetchedEvents.size());
 
         mAnalyticsDatabase.removeEvents(fetchedEvents);
+
+        awaitThreadPoolFinished(mAnalyticsDatabase);
+
         idCursor = mAnalyticsDatabase.getReadableDatabase().query(false, "analytics", new String[]{"_id"},
                 null, null, null, null, "_id asc", null);
 
@@ -79,7 +91,7 @@ public class AnalyticsDatabaseUnitTest {
     }
 
     @Test
-    public void getPendingRequests_returnsCorrectGroupingsOfMetadata() throws JSONException {
+    public void getPendingRequests_returnsCorrectGroupingsOfMetadata() throws Exception {
         AnalyticsEvent request1 = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
                 "custom", "started.client-token");
         AnalyticsEvent request2 = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
@@ -92,8 +104,15 @@ public class AnalyticsDatabaseUnitTest {
 
         mAnalyticsDatabase.addEvent(request1);
         mAnalyticsDatabase.addEvent(request2);
+
+        awaitThreadPoolFinished(mAnalyticsDatabase);
+        mAnalyticsDatabase = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
+
         mAnalyticsDatabase.addEvent(request3);
         mAnalyticsDatabase.addEvent(request4);
+
+        awaitThreadPoolFinished(mAnalyticsDatabase);
+        mAnalyticsDatabase = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
 
         List<List<AnalyticsEvent>> analyticsRequests = mAnalyticsDatabase.getPendingRequests();
 
