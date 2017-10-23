@@ -13,6 +13,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class AnalyticsDatabase extends SQLiteOpenHelper {
 
@@ -24,6 +26,8 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
     static final String EVENT = "event";
     static final String TIMESTAMP = "timestamp";
     static final String META_JSON = "meta_json";
+
+    protected final ExecutorService mThreadPool = Executors.newCachedThreadPool();
 
     public static AnalyticsDatabase getInstance(Context context) {
         return new AnalyticsDatabase(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -54,18 +58,30 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
     }
 
     public void addEvent(AnalyticsEvent request) {
-        ContentValues values = new ContentValues();
+        final ContentValues values = new ContentValues();
         values.put(EVENT, request.event);
         values.put(TIMESTAMP, request.timestamp);
         values.put(META_JSON, request.metadata.toString());
-        SQLiteDatabase db = getWritableDatabase();
-        db.insert(TABLE_NAME, null, values);
-        db.close();
+
+        mThreadPool.submit(new Runnable() {
+            @Override
+            public void run() {
+                SQLiteDatabase db = null;
+                try {
+                    db = getWritableDatabase();
+                    db.insert(TABLE_NAME, null, values);
+                } finally {
+                    if (db != null) {
+                        db.close();
+                    }
+                }
+            }
+        });
     }
 
     public void removeEvents(List<AnalyticsEvent> events) {
-        StringBuilder where = new StringBuilder(ID).append(" in (");
-        String[] whereArgs = new String[events.size()];
+        final StringBuilder where = new StringBuilder(ID).append(" in (");
+        final String[] whereArgs = new String[events.size()];
 
         for (int i = 0; i < events.size(); i++) {
             whereArgs[i] = Integer.toString(events.get(i).id);
@@ -78,9 +94,20 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
             }
         }
 
-        SQLiteDatabase db = getWritableDatabase();
-        db.delete(TABLE_NAME, where.toString(), whereArgs);
-        db.close();
+        mThreadPool.submit(new Runnable() {
+            @Override
+            public void run() {
+                SQLiteDatabase db = null;
+                try {
+                    db = getWritableDatabase();
+                    db.delete(TABLE_NAME, where.toString(), whereArgs);
+                } finally {
+                    if (db != null) {
+                        db.close();
+                    }
+                }
+            }
+        });
     }
 
     public List<List<AnalyticsEvent>> getPendingRequests() {
