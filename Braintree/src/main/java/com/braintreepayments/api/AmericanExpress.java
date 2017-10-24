@@ -36,8 +36,7 @@ public class AmericanExpress {
                         .build()
                         .toString();
 
-                fragment.getHttpClient().get(TokenizationClient.versionedPath(
-                        getRewardsBalanceUrl), new HttpResponseCallback() {
+                fragment.getHttpClient().get(getRewardsBalanceUrl, new HttpResponseCallback() {
                     @Override
                     public void success(String responseBody) {
                         fragment.sendAnalyticsEvent("amex.rewards-balance.success");

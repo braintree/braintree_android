@@ -9,17 +9,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.braintreepayments.api.AmericanExpress;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.Card;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.ThreeDSecure;
 import com.braintreepayments.api.UnionPay;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.interfaces.AmericanExpressListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.UnionPayListener;
+import com.braintreepayments.api.models.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
@@ -38,7 +41,7 @@ import static android.view.View.combineMeasuredStates;
 
 public class CardActivity extends BaseActivity implements ConfigurationListener, UnionPayListener,
         PaymentMethodNonceCreatedListener, BraintreeErrorListener, OnCardFormSubmitListener,
-        OnCardFormFieldFocusedListener {
+        OnCardFormFieldFocusedListener, AmericanExpressListener {
 
     private static final String EXTRA_UNIONPAY = "com.braintreepayments.demo.EXTRA_UNIONPAY";
     private static final String EXTRA_UNIONPAY_ENROLLMENT_ID = "com.braintreepayments.demo.EXTRA_UNIONPAY_ENROLLMENT_ID";
@@ -268,9 +271,23 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
             mThreeDSecureRequested = true;
             mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
             ThreeDSecure.performVerification(mBraintreeFragment, paymentMethodNonce.getNonce(), "1");
+        } else if (paymentMethodNonce instanceof CardNonce && Settings.amexRewardsBalance(this)) {
+            mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
+            AmericanExpress.getRewardsBalance(mBraintreeFragment, paymentMethodNonce.getNonce(), "USD");
         } else {
             Intent intent = new Intent()
                     .putExtra(MainActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce)
+                    .putExtra(MainActivity.EXTRA_DEVICE_DATA, mDeviceData);
+            setResult(RESULT_OK, intent);
+            finish();
+        }
+    }
+
+    @Override
+    public void onRewardsBalanceFetched(AmericanExpressRewardsBalance rewardsBalance) {
+        if (rewardsBalance != null) {
+            Intent intent = new Intent()
+                    .putExtra(MainActivity.EXTRA_AMEX_REWARDS_BALANCE, rewardsBalance)
                     .putExtra(MainActivity.EXTRA_DEVICE_DATA, mDeviceData);
             setResult(RESULT_OK, intent);
             finish();
@@ -289,5 +306,11 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
                 "3DS: \n" +
                 "         - isLiabilityShifted: " + nonce.getThreeDSecureInfo().isLiabilityShifted() + "\n" +
                 "         - isLiabilityShiftPossible: " + nonce.getThreeDSecureInfo().isLiabilityShiftPossible();
+    }
+
+    public static String getAmexRewardsBalanceString(AmericanExpressRewardsBalance rewardsBalance) {
+        return  "Amex Rewards Balance: \n" +
+                "         - rewardsAmount: " + rewardsBalance.getRewardsAmount() + "\n" +
+                "         - errorCode: " + rewardsBalance.getErrorCode();
     }
 }

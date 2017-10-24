@@ -198,4 +198,15 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/amex">
+
+        <CheckBoxPreference
+            android:key="amex_rewards_balance"
+            android:title="@string/amex_rewards_balance"
+            android:summary="@string/amex_rewards_balance_summary"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>
