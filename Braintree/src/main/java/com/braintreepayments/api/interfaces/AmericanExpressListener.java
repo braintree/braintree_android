@@ -3,7 +3,7 @@ package com.braintreepayments.api.interfaces;
 import com.braintreepayments.api.models.AmericanExpressRewardsBalance;
 
 /**
- * Interface that defines callbacks for American Express.
+ * Interface that defines callbacks for {@link com.braintreepayments.api.AmericanExpress}.
  */
 public interface AmericanExpressListener extends BraintreeListener {
 

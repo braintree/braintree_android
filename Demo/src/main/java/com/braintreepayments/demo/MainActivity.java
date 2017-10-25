@@ -30,7 +30,6 @@ import static android.view.View.VISIBLE;
 
 public class MainActivity extends BaseActivity {
 
-    static final String EXTRA_AMEX_REWARDS_BALANCE = "amex_rewards_balance";
     static final String EXTRA_PAYMENT_METHOD_NONCE = "payment_method_nonce";
     static final String EXTRA_DEVICE_DATA = "device_data";
     static final String EXTRA_COLLECT_DEVICE_DATA = "collect_device_data";
@@ -168,12 +167,7 @@ public class MainActivity extends BaseActivity {
             if (requestCode == DROP_IN_REQUEST) {
                 DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
                 displayResult(result.getPaymentMethodNonce(), result.getDeviceData());
-            } else if (data.getParcelableExtra(EXTRA_AMEX_REWARDS_BALANCE) != null) {
-                AmericanExpressRewardsBalance rewardsBalance = data.getParcelableExtra(EXTRA_AMEX_REWARDS_BALANCE);
-                mNonceDetails.setText(CardActivity.getAmexRewardsBalanceString(rewardsBalance));
-                mNonceDetails.setVisibility(VISIBLE);
-            }
-            else {
+            } else {
                 displayResult((PaymentMethodNonce) data.getParcelableExtra(EXTRA_PAYMENT_METHOD_NONCE),
                         data.getStringExtra(EXTRA_DEVICE_DATA));
                 mCreateTransactionButton.setEnabled(true);

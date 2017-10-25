@@ -125,8 +125,7 @@ public class CardTest extends TestHelper {
         onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
-        getNonceDetails().check(text(containsString("Amex Rewards Balance")));
-        getNonceDetails().check(text(containsString("rewardsAmount: 45256433")));
+        onDevice(withTextStartingWith("Amex Rewards Balance:")).check(text(containsString("amount: 45256433")));
     }
 
     @Test(timeout = 60000)
@@ -142,8 +141,7 @@ public class CardTest extends TestHelper {
         onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
-        getNonceDetails().check(text(containsString("Amex Rewards Balance")));
-        getNonceDetails().check(text(containsString("errorCode: INQ2003")));
+        onDevice(withTextStartingWith("Amex Rewards Balance:")).check(text(containsString("errorCode: INQ2003")));
     }
 
     @Test(timeout = 60000)
@@ -159,8 +157,7 @@ public class CardTest extends TestHelper {
         onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
-        getNonceDetails().check(text(containsString("Amex Rewards Balance")));
-        getNonceDetails().check(text(containsString("errorCode: INQ2002")));
+        onDevice(withTextStartingWith("Amex Rewards Balance:")).check(text(containsString("errorCode: INQ2002")));
     }
 
     private void fillInExpiration() {

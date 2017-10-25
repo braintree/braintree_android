@@ -208,7 +208,7 @@ public class Settings {
         return getPreferences(context).getBoolean("vault_venmo", true);
     }
 
-    public static boolean amexRewardsBalance(Context context) {
+    public static boolean isAmexRewardsBalanceEnabled(Context context) {
         return getPreferences(context).getBoolean("amex_rewards_balance", false);
     }
 }

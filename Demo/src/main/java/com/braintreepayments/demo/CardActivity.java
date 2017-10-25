@@ -37,7 +37,6 @@ import com.braintreepayments.cardform.view.CardForm;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static android.view.View.combineMeasuredStates;
 
 public class CardActivity extends BaseActivity implements ConfigurationListener, UnionPayListener,
         PaymentMethodNonceCreatedListener, BraintreeErrorListener, OnCardFormSubmitListener,
@@ -271,7 +270,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
             mThreeDSecureRequested = true;
             mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
             ThreeDSecure.performVerification(mBraintreeFragment, paymentMethodNonce.getNonce(), "1");
-        } else if (paymentMethodNonce instanceof CardNonce && Settings.amexRewardsBalance(this)) {
+        } else if (paymentMethodNonce instanceof CardNonce && Settings.isAmexRewardsBalanceEnabled(this)) {
             mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
             AmericanExpress.getRewardsBalance(mBraintreeFragment, paymentMethodNonce.getNonce(), "USD");
         } else {
@@ -285,13 +284,8 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
 
     @Override
     public void onRewardsBalanceFetched(AmericanExpressRewardsBalance rewardsBalance) {
-        if (rewardsBalance != null) {
-            Intent intent = new Intent()
-                    .putExtra(MainActivity.EXTRA_AMEX_REWARDS_BALANCE, rewardsBalance)
-                    .putExtra(MainActivity.EXTRA_DEVICE_DATA, mDeviceData);
-            setResult(RESULT_OK, intent);
-            finish();
-        }
+        safelyCloseLoadingView();
+        ProgressDialog.show(this, null, getAmexRewardsBalanceString(rewardsBalance), true, true);
     }
 
     private void safelyCloseLoadingView() {
@@ -310,7 +304,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
 
     public static String getAmexRewardsBalanceString(AmericanExpressRewardsBalance rewardsBalance) {
         return  "Amex Rewards Balance: \n" +
-                "         - rewardsAmount: " + rewardsBalance.getRewardsAmount() + "\n" +
-                "         - errorCode: " + rewardsBalance.getErrorCode();
+                "- amount: " + rewardsBalance.getRewardsAmount() + "\n" +
+                "- errorCode: " + rewardsBalance.getErrorCode();
     }
 }

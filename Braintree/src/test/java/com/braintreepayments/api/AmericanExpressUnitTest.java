@@ -28,6 +28,7 @@ public class AmericanExpressUnitTest {
 
     @Rule
     public PowerMockRule mPowerMockRule = new PowerMockRule();
+
     private Configuration mConfiguration;
 
     @Before
@@ -116,6 +117,7 @@ public class AmericanExpressUnitTest {
 
         AmericanExpress.getRewardsBalance(fragment, "fake-nonce", "USD");
 
+        verify(fragment).sendAnalyticsEvent("amex.rewards-balance.start");
         verify(fragment).sendAnalyticsEvent("amex.rewards-balance.success");
     }
 
@@ -128,6 +130,20 @@ public class AmericanExpressUnitTest {
 
         AmericanExpress.getRewardsBalance(fragment, "fake-nonce", "USD");
 
+        verify(fragment).sendAnalyticsEvent("amex.rewards-balance.start");
         verify(fragment).sendAnalyticsEvent("amex.rewards-balance.error");
+    }
+
+    @Test
+    public void getRewardsBalance_sendsAnalyticsEventOnParseError() {
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .configuration(mConfiguration)
+                .successResponse("-- not json --")
+                .build();
+
+        AmericanExpress.getRewardsBalance(fragment, "fake-nonce", "USD");
+
+        verify(fragment).sendAnalyticsEvent("amex.rewards-balance.start");
+        verify(fragment).sendAnalyticsEvent("amex.rewards-balance.parse.failed");
     }
 }

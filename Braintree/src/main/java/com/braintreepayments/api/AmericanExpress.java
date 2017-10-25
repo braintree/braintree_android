@@ -9,26 +9,27 @@ import com.braintreepayments.api.models.Configuration;
 
 import org.json.JSONException;
 
+/**
+ * Used to integrate with Braintree's American Express API
+ */
 public class AmericanExpress {
 
     private static final String AMEX_REWARDS_BALANCE_PATH = TokenizationClient.versionedPath(
             "payment_methods/amex_rewards_balance");
 
     /**
-     * Gets the rewards balance associated with a Braintree nonce.
+     * Gets the rewards balance associated with a Braintree nonce. Only for American Express cards.
      *
-     * @param fragment the {@link BraintreeFragment} backing the http request. This fragment will also be responsible
+     * @param fragment the {@link BraintreeFragment} This fragment will also be responsible
      * for handling callbacks to it's listeners
-     * @param nonce The nonce that represents a card that will be used to get the rewards balance
+     * @param nonce A nonce representing a card that will be used to look up the rewards balance
      * @param currencyIsoCode The currencyIsoCode to use. Example: 'USD'
      */
     public static void getRewardsBalance(final BraintreeFragment fragment, final String nonce,
             final String currencyIsoCode) {
-
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-
                 String getRewardsBalanceUrl = Uri.parse(AMEX_REWARDS_BALANCE_PATH)
                         .buildUpon()
                         .appendQueryParameter("paymentMethodNonce", nonce)
@@ -36,15 +37,15 @@ public class AmericanExpress {
                         .build()
                         .toString();
 
+                fragment.sendAnalyticsEvent("amex.rewards-balance.start");
                 fragment.getHttpClient().get(getRewardsBalanceUrl, new HttpResponseCallback() {
                     @Override
                     public void success(String responseBody) {
                         fragment.sendAnalyticsEvent("amex.rewards-balance.success");
                         try {
-                            AmericanExpressRewardsBalance rewardsBalance =
-                                    AmericanExpressRewardsBalance.fromJson(responseBody);
-                            fragment.postAmericanExpressCallback(rewardsBalance);
+                            fragment.postAmericanExpressCallback(AmericanExpressRewardsBalance.fromJson(responseBody));
                         } catch (JSONException e) {
+                            fragment.sendAnalyticsEvent("amex.rewards-balance.parse.failed");
                             fragment.postCallback(e);
                         }
                     }

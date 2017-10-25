@@ -2,6 +2,7 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import com.braintreepayments.api.Json;
 
@@ -63,6 +64,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
     /**
      * @return An error code when there was an issue fetching the rewards balance
      */
+    @Nullable
     public String getErrorCode() {
         return mErrorCode;
     }
@@ -70,6 +72,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
     /**
      * @return An error message when there was an issue fetching the rewards balance
      */
+    @Nullable
     public String getErrorMessage() {
         return mErrorMessage;
     }
@@ -77,6 +80,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
     /**
      * @return The conversion rate associated with the rewards balance
      */
+    @Nullable
     public String getConversionRate() {
         return mConversionRate;
     }
@@ -84,6 +88,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
     /**
      * @return The currency amount associated with the rewards balance
      */
+    @Nullable
     public String getCurrencyAmount() {
         return mCurrencyAmount;
     }
@@ -91,6 +96,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
     /**
      * @return The currency ISO code associated with the rewards balance
      */
+    @Nullable
     public String getCurrencyIsoCode() {
         return mCurrencyIsoCode;
     }
@@ -98,6 +104,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
     /**
      * @return The request ID used when fetching the rewards balance
      */
+    @Nullable
     public String getRequestId() {
         return mRequestId;
     }
@@ -105,6 +112,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
     /**
      * @return The rewards amount associated with the rewards balance
      */
+    @Nullable
     public String getRewardsAmount() {
         return mRewardsAmount;
     }
@@ -112,6 +120,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
     /**
      * @return The rewards unit associated with the rewards balance
      */
+    @Nullable
     public String getRewardsUnit() {
         return mRewardsUnit;
     }

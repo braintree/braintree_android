@@ -16,6 +16,7 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
 import com.braintreepayments.api.interfaces.UnionPayListener;
+import com.braintreepayments.api.interfaces.AmericanExpressListener;
 import com.braintreepayments.api.internal.AnalyticsDatabase;
 import com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils;
 import com.braintreepayments.api.internal.AnalyticsIntentService;
@@ -30,6 +31,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.UnionPayCapabilities;
+import com.braintreepayments.api.models.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.test.FragmentTestActivity;
 import com.braintreepayments.api.test.UnitTestListenerActivity;
 import com.braintreepayments.browserswitch.BrowserSwitchFragment.BrowserSwitchResult;
@@ -531,6 +533,10 @@ public class BraintreeFragmentUnitTest {
             @Override
             public void onSmsCodeSent(String enrollmentId, boolean smsCodeRequired) {}
         };
+        AmericanExpressListener americanExpressListener = new AmericanExpressListener() {
+            @Override
+            public void onRewardsBalanceFetched(AmericanExpressRewardsBalance rewardsBalance) {}
+        };
 
         fragment.addListener(configurationListener);
         fragment.addListener(braintreeErrorListener);
@@ -538,8 +544,9 @@ public class BraintreeFragmentUnitTest {
         fragment.addListener(paymentMethodNonceCreatedListener);
         fragment.addListener(braintreeCancelListener);
         fragment.addListener(unionPayListener);
+        fragment.addListener(americanExpressListener);
 
-        assertEquals(6, fragment.getListeners().size());
+        assertEquals(7, fragment.getListeners().size());
 
         fragment.removeListener(configurationListener);
         fragment.removeListener(braintreeErrorListener);
@@ -547,6 +554,7 @@ public class BraintreeFragmentUnitTest {
         fragment.removeListener(paymentMethodNonceCreatedListener);
         fragment.removeListener(braintreeCancelListener);
         fragment.removeListener(unionPayListener);
+        fragment.removeListener(americanExpressListener);
 
         assertEquals(0, fragment.getListeners().size());
     }
