@@ -285,7 +285,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
     @Override
     public void onRewardsBalanceFetched(AmericanExpressRewardsBalance rewardsBalance) {
         safelyCloseLoadingView();
-        ProgressDialog.show(this, null, getAmexRewardsBalanceString(rewardsBalance), true, true);
+        showDialog(getAmexRewardsBalanceString(rewardsBalance));
     }
 
     private void safelyCloseLoadingView() {
