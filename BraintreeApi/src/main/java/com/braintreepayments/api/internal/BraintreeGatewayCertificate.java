@@ -409,7 +409,7 @@ import java.io.UnsupportedEncodingException;
         "Yzi9RKR/5CYrCsSXaQ3pjOLAEFe4yHYSkVXySGnYvCoCWw9E1CAx2/S6cCZdkGCe\n" +
         "vEsXCS+0yx5DaMkHJ8HSXPfqIbloEpw8nL+e/IBcm2PN7EeqJSdnoDfzAIJ9VNep\n" +
         "+OkuE6N36B9K\n" +
-        "-----END CERTIFICATE-----" +
+        "-----END CERTIFICATE-----\n" +
         "-----BEGIN CERTIFICATE-----\n" +
         "MIIDjjCCAnagAwIBAgIQAzrx5qcRqaC7KGSxHQn65TANBgkqhkiG9w0BAQsFADBh\n" +
         "MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\n" +
@@ -431,7 +431,7 @@ import java.io.UnsupportedEncodingException;
         "8rGOmaFvE7FBcf6IKshPECBV1/MUReXgRPTqh5Uykw7+U0b6LJ3/iyK5S9kJRaTe\n" +
         "pLiaWN0bfVKfjllDiIGknibVb63dDcY3fe0Dkhvld1927jyNxF1WW6LZZm6zNTfl\n" +
         "MrY=\n" +
-        "-----END CERTIFICATE-----";
+        "-----END CERTIFICATE-----\n";
 
     protected static InputStream getCertInputStream() {
         try {
