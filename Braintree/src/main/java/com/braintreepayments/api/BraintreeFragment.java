@@ -19,6 +19,7 @@ import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.GoogleApiClientException;
 import com.braintreepayments.api.exceptions.GoogleApiClientException.ErrorType;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.interfaces.AmericanExpressListener;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreeListener;
@@ -35,6 +36,7 @@ import com.braintreepayments.api.internal.AnalyticsSender;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.internal.IntegrationType;
 import com.braintreepayments.api.internal.UUIDHelper;
+import com.braintreepayments.api.models.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
@@ -100,6 +102,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     private PaymentMethodNonceCreatedListener mPaymentMethodNonceCreatedListener;
     private BraintreeErrorListener mErrorListener;
     private UnionPayListener mUnionPayListener;
+    private AmericanExpressListener mAmericanExpressListener;
 
     public BraintreeFragment() {}
 
@@ -372,6 +375,10 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             mUnionPayListener = (UnionPayListener) listener;
         }
 
+        if (listener instanceof AmericanExpressListener) {
+            mAmericanExpressListener = (AmericanExpressListener) listener;
+        }
+
         flushCallbacks();
     }
 
@@ -404,6 +411,10 @@ public class BraintreeFragment extends BrowserSwitchFragment {
         if (listener instanceof UnionPayListener) {
             mUnionPayListener = null;
         }
+
+        if (listener instanceof AmericanExpressListener) {
+            mAmericanExpressListener = null;
+        }
     }
 
     /**
@@ -434,6 +445,10 @@ public class BraintreeFragment extends BrowserSwitchFragment {
 
         if (mUnionPayListener != null) {
             listeners.add(mUnionPayListener);
+        }
+
+        if (mAmericanExpressListener != null) {
+            listeners.add(mAmericanExpressListener);
         }
 
         return listeners;
@@ -565,6 +580,20 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             @Override
             public void run() {
                 mUnionPayListener.onSmsCodeSent(enrollmentId, smsCodeRequired);
+            }
+        });
+    }
+
+    protected void postAmericanExpressCallback(final AmericanExpressRewardsBalance rewardsBalance) {
+        postOrQueueCallback(new QueuedCallback() {
+            @Override
+            public boolean shouldRun() {
+                return mAmericanExpressListener != null;
+            }
+
+            @Override
+            public void run() {
+                mAmericanExpressListener.onRewardsBalanceFetched(rewardsBalance);
             }
         });
     }

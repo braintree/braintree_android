@@ -112,6 +112,54 @@ public class CardTest extends TestHelper {
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
+    @Test(timeout = 60000)
+    public void amexRewardsBalance_whenCardHasBalance() {
+        PreferenceManager.getDefaultSharedPreferences(getTargetContext())
+                .edit()
+                .putBoolean("amex_rewards_balance", true)
+                .commit();
+
+        onDevice(withContentDescription("Card Number")).perform(setText("371260714673002"));
+        fillInExpiration();
+        onDevice(withContentDescription("CID")).perform(setText("1234"));
+        onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
+        onDevice(withText("Purchase")).perform(click());
+
+        onDevice(withTextStartingWith("Amex Rewards Balance:")).check(text(containsString("amount: 45256433")));
+    }
+
+    @Test(timeout = 60000)
+    public void amexRewardsBalance_whenCardHasInsufficientPoints() {
+        PreferenceManager.getDefaultSharedPreferences(getTargetContext())
+                .edit()
+                .putBoolean("amex_rewards_balance", true)
+                .commit();
+
+        onDevice(withContentDescription("Card Number")).perform(setText("371544868764018"));
+        fillInExpiration();
+        onDevice(withContentDescription("CID")).perform(setText("1234"));
+        onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
+        onDevice(withText("Purchase")).perform(click());
+
+        onDevice(withTextStartingWith("Amex Rewards Balance:")).check(text(containsString("errorCode: INQ2003")));
+    }
+
+    @Test(timeout = 60000)
+    public void amexRewardsBalance_whenCardIsIneligible() {
+        PreferenceManager.getDefaultSharedPreferences(getTargetContext())
+                .edit()
+                .putBoolean("amex_rewards_balance", true)
+                .commit();
+
+        onDevice(withContentDescription("Card Number")).perform(setText("378267515471109"));
+        fillInExpiration();
+        onDevice(withContentDescription("CID")).perform(setText("1234"));
+        onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
+        onDevice(withText("Purchase")).perform(click());
+
+        onDevice(withTextStartingWith("Amex Rewards Balance:")).check(text(containsString("errorCode: INQ2002")));
+    }
+
     private void fillInExpiration() {
         try {
             onDevice(withText("Expiration Date")).perform(click());

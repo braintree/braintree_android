@@ -86,6 +86,9 @@
     <string name="venmo">Venmo</string>
     <string name="vault_venmo">Vault Venmo</string>
     <string name="vault_venmo_summary">Vault Venmo payment methods on creation. Requires a customer id to be set.</string>
+    <string name="amex">Amex</string>
+    <string name="amex_rewards_balance">Get Rewards Balance</string>
+    <string name="amex_rewards_balance_summary">Fetch Amex Rewards Balance on Card Tokenization. Requires a Client Token and relevant configurations.</string>
 
     <!-- PayPalActivity -->
     <string name="paypal_wallet_available">PayPal Wallet app available for app switch: %b</string>
