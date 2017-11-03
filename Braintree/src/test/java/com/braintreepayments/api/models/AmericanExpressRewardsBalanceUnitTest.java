@@ -16,8 +16,8 @@ public class AmericanExpressRewardsBalanceUnitTest {
 
     @Test
     public void fromJson_parsesResponse() throws JSONException {
-        AmericanExpressRewardsBalance rewardsBalance = AmericanExpressRewardsBalance.
-                fromJson(stringFromFixture("response/amex_rewards_balance_success.json"));
+        AmericanExpressRewardsBalance rewardsBalance = AmericanExpressRewardsBalance
+                .fromJson(stringFromFixture("response/amex_rewards_balance_success.json"));
 
         assertEquals("0.0070", rewardsBalance.getConversionRate());
         assertEquals("316795.03", rewardsBalance.getCurrencyAmount());
@@ -31,8 +31,8 @@ public class AmericanExpressRewardsBalanceUnitTest {
 
     @Test
     public void fromJson_parsesResponseForIneligibleCard() throws JSONException {
-        AmericanExpressRewardsBalance rewardsBalance = AmericanExpressRewardsBalance.
-                fromJson(stringFromFixture("response/amex_rewards_balance_ineligible_card.json"));
+        AmericanExpressRewardsBalance rewardsBalance = AmericanExpressRewardsBalance
+                .fromJson(stringFromFixture("response/amex_rewards_balance_ineligible_card.json"));
 
         assertNull(rewardsBalance.getConversionRate());
         assertNull(rewardsBalance.getCurrencyAmount());
@@ -46,8 +46,8 @@ public class AmericanExpressRewardsBalanceUnitTest {
 
     @Test
     public void parcelsCorrectly() throws JSONException {
-        AmericanExpressRewardsBalance rewardsBalanceFromJson = AmericanExpressRewardsBalance.
-                fromJson(stringFromFixture("response/amex_rewards_balance_success.json"));
+        AmericanExpressRewardsBalance rewardsBalanceFromJson = AmericanExpressRewardsBalance
+                .fromJson(stringFromFixture("response/amex_rewards_balance_success.json"));
 
         Parcel parcel = Parcel.obtain();
         rewardsBalanceFromJson.writeToParcel(parcel, 0);
@@ -66,8 +66,8 @@ public class AmericanExpressRewardsBalanceUnitTest {
 
     @Test
     public void parcelsCorrectly_forErrorResponse() throws JSONException {
-        AmericanExpressRewardsBalance rewardsBalanceFromJson = AmericanExpressRewardsBalance.
-                fromJson(stringFromFixture("response/amex_rewards_balance_insufficient_points.json"));
+        AmericanExpressRewardsBalance rewardsBalanceFromJson = AmericanExpressRewardsBalance
+                .fromJson(stringFromFixture("response/amex_rewards_balance_insufficient_points.json"));
 
         Parcel parcel = Parcel.obtain();
         rewardsBalanceFromJson.writeToParcel(parcel, 0);
