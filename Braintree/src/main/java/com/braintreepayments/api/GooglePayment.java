@@ -187,7 +187,7 @@ public class GooglePayment {
                 }
 
                 if (request.isPhoneNumberRequired() != null) {
-                    paymentDataRequest.setEmailRequired(request.isPhoneNumberRequired());
+                    paymentDataRequest.setPhoneNumberRequired(request.isPhoneNumberRequired());
                 }
 
                 if (request.isShippingAddressRequired() != null) {

@@ -16,8 +16,10 @@ import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestAndroidPayConfigurationBuilder;
+import com.google.android.gms.wallet.CardRequirements;
 import com.google.android.gms.wallet.PaymentDataRequest;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
+import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
 import com.google.android.gms.wallet.WalletConstants.CardNetwork;
@@ -118,6 +120,8 @@ public class GooglePaymentTest {
         assertEquals(2, paymentDataRequest.getAllowedPaymentMethods().size());
         assertTrue(paymentDataRequest.getAllowedPaymentMethods().contains(WalletConstants.PAYMENT_METHOD_CARD));
         assertTrue(paymentDataRequest.getAllowedPaymentMethods().contains(WalletConstants.PAYMENT_METHOD_TOKENIZED_CARD));
+        assertFalse(paymentDataRequest.isEmailRequired());
+        assertFalse(paymentDataRequest.isPhoneNumberRequired());
         List<Integer> allowedCardNetworks = paymentDataRequest.getCardRequirements().getAllowedCardNetworks();
         assertEquals(4, allowedCardNetworks.size());
         assertTrue(allowedCardNetworks.contains(WalletConstants.CARD_NETWORK_VISA));
@@ -137,6 +141,45 @@ public class GooglePaymentTest {
         assertEquals(expectedParameters.getString("braintree:apiVersion"), actualParameters.getString("braintree:apiVersion"));
         assertEquals(expectedParameters.getString("braintree:sdkVersion"), actualParameters.getString("braintree:sdkVersion"));
         assertEquals(expectedParameters.getString("braintree:metadata"), actualParameters.getString("braintree:metadata"));
+    }
+
+    @Test
+    public void requestPayment_startsActivityWithOptionalValues() {
+        BraintreeFragment fragment = getSetupFragment();
+        doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
+        GooglePaymentRequest googlePaymentRequest = new GooglePaymentRequest()
+                .allowPrepaidCards(true)
+                .billingAddressFormat(1)
+                .billingAddressRequired(true)
+                .emailRequired(true)
+                .phoneNumberRequired(true)
+                .shippingAddressRequired(true)
+                .shippingAddressRequirements(ShippingAddressRequirements.newBuilder().addAllowedCountryCode("USA").build())
+                .uiRequired(true)
+                .transactionInfo(TransactionInfo.newBuilder()
+                        .setTotalPrice("1.00")
+                        .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                        .setCurrencyCode("USD")
+                        .build());
+
+        GooglePayment.requestPayment(fragment, googlePaymentRequest);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(fragment).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.GOOGLE_PAYMENT));
+        Intent intent = captor.getValue();
+        PaymentDataRequest paymentDataRequest = intent.getParcelableExtra(EXTRA_PAYMENT_DATA_REQUEST);
+        CardRequirements cardRequirements = paymentDataRequest.getCardRequirements();
+        assertNotNull(cardRequirements);
+        assertTrue(cardRequirements.allowPrepaidCards());
+        assertEquals(1, cardRequirements.getBillingAddressFormat());
+        assertTrue(cardRequirements.isBillingAddressRequired());
+        assertTrue(paymentDataRequest.isEmailRequired());
+        assertTrue(paymentDataRequest.isPhoneNumberRequired());
+        assertTrue(paymentDataRequest.isShippingAddressRequired());
+        assertNotNull(paymentDataRequest.getShippingAddressRequirements());
+        assertNotNull(paymentDataRequest.getShippingAddressRequirements().getAllowedCountryCodes());
+        assertTrue(paymentDataRequest.getShippingAddressRequirements().getAllowedCountryCodes().contains("USA"));
+        assertTrue(paymentDataRequest.isUiRequired());
     }
 
     @Test
