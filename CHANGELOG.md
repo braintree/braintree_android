@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 2.7.1
+
+* Add AmericanExpress support with getRewardsBalance method
+* Use ExecutorService for async database operations
+
 ## 2.7.0
 
 * Increase minimum version of Google Play Services Wallet to 11.4.0
