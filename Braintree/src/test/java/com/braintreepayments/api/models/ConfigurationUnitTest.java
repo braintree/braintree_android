@@ -227,4 +227,19 @@ public class ConfigurationUnitTest {
         assertNotNull(configuration.getIdealConfiguration());
         assertTrue(configuration.getIdealConfiguration().isEnabled());
     }
+
+    @Test
+    public void returnsGraphQLConfiguration_whenGraphQLConfigurationIsPresent() throws JSONException {
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration/with_graphql.json"));
+
+        assertTrue(configuration.getGraphQL().isEnabled());
+    }
+
+    @Test
+    public void returnsNewGraphQLConfigurationWhenGraphQLConfigurationIsAbsent() throws JSONException {
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
+
+        assertFalse(configuration.getGraphQL().isEnabled());
+    }
 }

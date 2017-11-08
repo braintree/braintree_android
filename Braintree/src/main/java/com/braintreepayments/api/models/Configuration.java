@@ -34,6 +34,7 @@ public class Configuration {
     private static final String CARD_KEY = "creditCards";
     private static final String VISA_CHECKOUT_KEY = "visaCheckout";
     private static final String IDEAL_KEY = "ideal";
+    private static final String GRAPHQL_KEY = "graphQL";
 
     private String mConfigurationString;
     private String mClientApiUrl;
@@ -54,6 +55,7 @@ public class Configuration {
     private KountConfiguration mKountConfiguration;
     private UnionPayConfiguration mUnionPayConfiguration;
     private VisaCheckoutConfiguration mVisaCheckoutConfiguration;
+    private GraphQLConfiguration mGraphQLConfiguration;
 
     /**
      * Creates a new {@link com.braintreepayments.api.models.Configuration} instance from a json string.
@@ -91,6 +93,7 @@ public class Configuration {
         mUnionPayConfiguration = UnionPayConfiguration.fromJson(json.optJSONObject(UNIONPAY_KEY));
         mVisaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(json.optJSONObject(VISA_CHECKOUT_KEY));
         mIdealConfiguration = IdealConfiguration.fromJson(json.optJSONObject(IDEAL_KEY));
+        mGraphQLConfiguration = GraphQLConfiguration.fromJson(json.optJSONObject(GRAPHQL_KEY));
     }
 
     public String toJson() {
@@ -230,6 +233,13 @@ public class Configuration {
      */
     public IdealConfiguration getIdealConfiguration() {
         return mIdealConfiguration;
+    }
+
+    /**
+     * @return instance of {@link GraphQLConfiguration}.
+     */
+    public GraphQLConfiguration getGraphQL() {
+        return mGraphQLConfiguration;
     }
 
     private void parseJsonChallenges(JSONArray jsonArray) {
