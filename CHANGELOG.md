@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 2.7.2
+
+* Fix phoneNumberRequired in GooglePayment
+
 ## 2.7.1
 
 * Add AmericanExpress support with getRewardsBalance method
