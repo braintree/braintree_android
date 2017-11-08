@@ -69,6 +69,12 @@ public abstract class Recipe<T extends Recipe<T>> {
     protected abstract T getThis();
 
     public boolean isValidAppTarget(Context context) {
+        // Only support wallet app switch if package name is a match
+        String packageName = context.getApplicationContext().getPackageName();
+        if (!packageName.equals(packageName.toLowerCase().replace("_", ""))) {
+            return false;
+        }
+
         for (String allowedWalletTarget : getTargetPackagesInReversePriorityOrder()) {
             boolean isIntentAvailable = AppHelper.isIntentAvailable(context,
                     AppSwitchHelper.createBaseIntent(getTargetIntentAction(), allowedWalletTarget));
