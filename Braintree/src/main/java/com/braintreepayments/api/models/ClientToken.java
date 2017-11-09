@@ -47,6 +47,11 @@ public class ClientToken extends Authorization {
         return mConfigUrl;
     }
 
+    @Override
+    public String getAuthorization() {
+        return mAuthorizationFingerprint;
+    }
+
     /**
      * @return The authorizationFingerprint for the current session
      */

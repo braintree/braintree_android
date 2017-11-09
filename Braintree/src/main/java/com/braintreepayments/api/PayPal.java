@@ -308,10 +308,9 @@ public class PayPal {
                 .put(OFFER_CREDIT_KEY, request.shouldOfferCredit());
 
         if (fragment.getAuthorization() instanceof ClientToken) {
-            parameters.put(AUTHORIZATION_FINGERPRINT_KEY,
-                    ((ClientToken) fragment.getAuthorization()).getAuthorizationFingerprint());
+            parameters.put(AUTHORIZATION_FINGERPRINT_KEY, fragment.getAuthorization().getAuthorization());
         } else {
-            parameters.put(TOKENIZATION_KEY, fragment.getAuthorization().toString());
+            parameters.put(TOKENIZATION_KEY, fragment.getAuthorization().getAuthorization());
         }
 
         if (!isBillingAgreement) {

@@ -273,7 +273,7 @@ public class GooglePayment {
                         .toString());
 
         if (fragment.getAuthorization() instanceof TokenizationKey) {
-            parameters.addParameter("braintree:clientKey", fragment.getAuthorization().toString());
+            parameters.addParameter("braintree:clientKey", fragment.getAuthorization().getAuthorization());
         }
 
         return parameters.build();

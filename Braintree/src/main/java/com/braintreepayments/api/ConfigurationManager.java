@@ -12,9 +12,7 @@ import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.BraintreeSharedPreferences;
-import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.TokenizationKey;
 
 import org.json.JSONException;
 
@@ -37,22 +35,14 @@ class ConfigurationManager {
 
     static void getConfiguration(final BraintreeFragment fragment, final @NonNull ConfigurationListener listener,
             final @NonNull BraintreeResponseListener<Exception> errorListener) {
-        final String authorization;
-        if (fragment.getAuthorization() instanceof ClientToken) {
-            authorization = ((ClientToken) fragment.getAuthorization()).getAuthorizationFingerprint();
-        } else if (fragment.getAuthorization() instanceof TokenizationKey) {
-            authorization = fragment.getAuthorization().toString();
-        } else {
-            authorization = "";
-        }
-
         final String configUrl = Uri.parse(fragment.getAuthorization().getConfigUrl())
                 .buildUpon()
                 .appendQueryParameter("configVersion", "3")
                 .build()
                 .toString();
 
-        Configuration cachedConfig = getCachedConfiguration(fragment.getApplicationContext(), configUrl + authorization);
+        Configuration cachedConfig = getCachedConfiguration(fragment.getApplicationContext(), configUrl +
+                fragment.getAuthorization().getAuthorization());
         if (cachedConfig != null) {
             listener.onConfigurationFetched(cachedConfig);
         } else {
@@ -62,7 +52,8 @@ class ConfigurationManager {
                 public void success(String responseBody) {
                     try {
                         Configuration configuration = Configuration.fromJson(responseBody);
-                        cacheConfiguration(fragment.getApplicationContext(), configUrl + authorization, configuration);
+                        cacheConfiguration(fragment.getApplicationContext(),
+                                configUrl + fragment.getAuthorization().getAuthorization(), configuration);
 
                         sFetchingConfiguration = false;
                         listener.onConfigurationFetched(configuration);

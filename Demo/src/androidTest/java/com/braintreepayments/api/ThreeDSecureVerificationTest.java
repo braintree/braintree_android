@@ -13,9 +13,7 @@ import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
 import com.braintreepayments.demo.test.DemoTestActivity;
@@ -450,14 +448,7 @@ public class ThreeDSecureVerificationTest {
     private BraintreeFragment getFragment(String authorization, String configuration) {
         try {
             Authorization auth = Authorization.fromString(authorization);
-            String appendedAuthorization = "";
-            if (auth instanceof ClientToken) {
-                appendedAuthorization = ((ClientToken) auth).getAuthorizationFingerprint();
-            } else if (auth instanceof TokenizationKey) {
-                appendedAuthorization = auth.toString();
-            }
-
-            writeMockConfiguration(getTargetContext(), auth.getConfigUrl(), appendedAuthorization, configuration);
+            writeMockConfiguration(getTargetContext(), auth.getConfigUrl(), auth.getAuthorization(), configuration);
 
             BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, authorization);
 

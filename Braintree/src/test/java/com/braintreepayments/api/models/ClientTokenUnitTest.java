@@ -33,4 +33,11 @@ public class ClientTokenUnitTest {
     public void fromString_throwsInvalidArgumentExceptionWhenGivenRandomJson() throws InvalidArgumentException {
         ClientToken.fromString(stringFromFixture("random_json.json"));
     }
+
+    @Test
+    public void getAuthorization_returnsAuthorizationFingerprint() throws InvalidArgumentException {
+        ClientToken clientToken = (ClientToken) Authorization.fromString(stringFromFixture("client_token.json"));
+
+        assertEquals(clientToken.getAuthorizationFingerprint(), clientToken.getAuthorization());
+    }
 }

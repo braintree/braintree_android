@@ -41,6 +41,11 @@ public class TokenizationKey extends Authorization implements Parcelable {
         return mUrl + "v1/configuration";
     }
 
+    @Override
+    public String getAuthorization() {
+        return toString();
+    }
+
     private enum BraintreeEnvironment {
 
         DEVELOPMENT("development", BuildConfig.DEVELOPMENT_URL),
