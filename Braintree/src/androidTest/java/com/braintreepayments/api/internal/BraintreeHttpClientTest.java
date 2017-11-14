@@ -284,14 +284,12 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 5000)
-    public void getRequestBadCertificateCheck()
-            throws InterruptedException, InvalidArgumentException {
+    public void getRequestBadCertificateCheck() throws InterruptedException, InvalidArgumentException {
         if (!BuildConfig.RUN_ALL_TESTS) {
             return;
         }
 
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(
-                TokenizationKey.fromString(TOKENIZATION_KEY));
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY));
         httpClient.setBaseUrl("https://" + EnvironmentHelper.getLocalhostIp() + ":9443");
 
         httpClient.get("/", new HttpResponseCallback() {

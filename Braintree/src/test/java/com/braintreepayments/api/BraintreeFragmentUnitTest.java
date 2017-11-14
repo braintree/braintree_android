@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.interfaces.AmericanExpressListener;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreePaymentResultListener;
@@ -17,13 +18,13 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
 import com.braintreepayments.api.interfaces.UnionPayListener;
-import com.braintreepayments.api.interfaces.AmericanExpressListener;
 import com.braintreepayments.api.internal.AnalyticsDatabase;
 import com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils;
 import com.braintreepayments.api.internal.AnalyticsIntentService;
 import com.braintreepayments.api.internal.AnalyticsSender;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.internal.HttpClient;
+import com.braintreepayments.api.models.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.BraintreePaymentResult;
@@ -33,7 +34,6 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.UnionPayCapabilities;
-import com.braintreepayments.api.models.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.test.FragmentTestActivity;
 import com.braintreepayments.api.test.UnitTestListenerActivity;
 import com.braintreepayments.browserswitch.BrowserSwitchFragment.BrowserSwitchResult;
@@ -170,9 +170,10 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void onCreate_restoresConfigurationAndHttpClient() throws InvalidArgumentException, NoSuchFieldException,
-            IllegalAccessException {
-        Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
+    public void onCreate_restoresConfigurationAndHttpClients() throws Exception {
+        Configuration configuration = new TestConfigurationBuilder()
+                .graphQL()
+                .buildConfiguration();
         mockConfigurationManager(configuration);
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         Bundle bundle = new Bundle();
@@ -184,6 +185,7 @@ public class BraintreeFragmentUnitTest {
 
         assertNotNull(fragment.getConfiguration());
         assertNotNull(fragment.mHttpClient);
+        assertNotNull(fragment.mGraphQLHttpClient);
         assertEquals("client_api_url", getField("mBaseUrl", fragment.mHttpClient));
     }
 
@@ -404,6 +406,23 @@ public class BraintreeFragmentUnitTest {
 
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         assertNull(fragment.getBraintreeApiHttpClient());
+    }
+
+    public void getGraphQLHttpClient_returnsNullWhenNotEnabled() throws InvalidArgumentException {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+
+        assertNull(fragment.getGraphQLHttpClient());
+    }
+
+    @Test
+    public void getGraphQLHttpClient_returnsGraphQLHttpClientWhenEnabled() throws InvalidArgumentException {
+        Configuration configuration = new TestConfigurationBuilder()
+                .graphQL()
+                .buildConfiguration();
+        mockConfigurationManager(configuration);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+
+        assertNotNull(fragment.getGraphQLHttpClient());
     }
 
     @Test

@@ -129,9 +129,25 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return this;
     }
 
+    public TestConfigurationBuilder graphQL() {
+        try {
+            JSONObject graphQLJson = new JSONObject();
+            graphQLJson.put("url", "http://10.0.2.2:8080/graphql");
+            put(graphQLJson);
+        } catch (JSONException ignored) {}
+        return this;
+    }
+
     public TestConfigurationBuilder ideal(TestIdealConfigurationBuilder idealConfigurationBuilder) {
         try {
             put(new JSONObject(idealConfigurationBuilder.build()));
+        } catch (JSONException ignored) {}
+        return this;
+    }
+
+    public TestConfigurationBuilder graphQL(TestGraphQLConfigurationBuilder graphQLConfigurationBuilder) {
+        try {
+            put(new JSONObject(graphQLConfigurationBuilder.build()));
         } catch (JSONException ignored) {}
         return this;
     }
@@ -183,6 +199,13 @@ public class TestConfigurationBuilder extends JSONBuilder {
             return new TestVisaCheckoutConfigurationBuilder(mJsonBody.getJSONObject("visaCheckout"));
         } catch (JSONException ignored) {}
         return new TestVisaCheckoutConfigurationBuilder();
+    }
+
+    public TestGraphQLConfigurationBuilder graphQLConfigurationBuilder() {
+        try {
+            return new TestGraphQLConfigurationBuilder(mJsonBody.getJSONObject("graphQL"));
+        } catch (JSONException ignored) {}
+        return new TestGraphQLConfigurationBuilder();
     }
 
     public static class TestVenmoConfigurationBuilder extends JSONBuilder {
@@ -369,6 +392,22 @@ public class TestConfigurationBuilder extends JSONBuilder {
         }
 
         public TestBraintreeApiConfigurationBuilder url(String url) {
+            put(url);
+            return this;
+        }
+    }
+
+    public static class TestGraphQLConfigurationBuilder extends JSONBuilder {
+
+        public TestGraphQLConfigurationBuilder() {
+            super();
+        }
+
+        protected TestGraphQLConfigurationBuilder(JSONObject json) {
+            super(json);
+        }
+
+        public TestGraphQLConfigurationBuilder url(String url) {
             put(url);
             return this;
         }
