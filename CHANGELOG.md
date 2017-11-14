@@ -1,5 +1,8 @@
 # Braintree Android SDK Release Notes
 
+## 2.7.3
+* Check package name is valid for PayPal Wallet switch
+
 ## 2.7.2
 
 * Fix phoneNumberRequired in GooglePayment
