@@ -25,9 +25,8 @@ import org.robolectric.RuntimeEnvironment;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.awaitThreadPoolFinished;
+import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.awaitTasksFinished;
 import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.clearAllEvents;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
@@ -72,7 +71,7 @@ public class AnalyticsSenderUnitTest {
         AnalyticsDatabase database = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
         database.addEvent(event);
 
-        awaitThreadPoolFinished(database);
+        awaitTasksFinished(database);
 
         AnalyticsSender.send(RuntimeEnvironment.application, mAuthorization, mHttpClient, "", true);
 
@@ -111,7 +110,7 @@ public class AnalyticsSenderUnitTest {
         database.addEvent(one);
         database.addEvent(two);
 
-        awaitThreadPoolFinished(database);
+        awaitTasksFinished(database);
 
         AnalyticsSender.send(RuntimeEnvironment.application, mAuthorization, mHttpClient, "", true);
 
@@ -136,7 +135,7 @@ public class AnalyticsSenderUnitTest {
         database.addEvent(one);
         database.addEvent(two);
 
-        awaitThreadPoolFinished(database);
+        awaitTasksFinished(database);
 
         AnalyticsSender.send(RuntimeEnvironment.application, mAuthorization, mHttpClient, "", true);
 
@@ -169,7 +168,7 @@ public class AnalyticsSenderUnitTest {
         database.addEvent(one);
         database.addEvent(two);
 
-        awaitThreadPoolFinished(database);
+        awaitTasksFinished(database);
 
         when(mHttpClient.post(anyString(), anyString())).thenReturn("");
 
@@ -187,7 +186,7 @@ public class AnalyticsSenderUnitTest {
         database.addEvent(one);
         database.addEvent(two);
 
-        awaitThreadPoolFinished(database);
+        awaitTasksFinished(database);
 
         doAnswer(new Answer() {
             @Override
@@ -211,7 +210,7 @@ public class AnalyticsSenderUnitTest {
         database.addEvent(one);
         database.addEvent(two);
 
-        awaitThreadPoolFinished(database);
+        awaitTasksFinished(database);
 
         when(mHttpClient.post(anyString(), anyString())).thenThrow(ServerException.class);
 
@@ -229,7 +228,7 @@ public class AnalyticsSenderUnitTest {
         database.addEvent(one);
         database.addEvent(two);
 
-        awaitThreadPoolFinished(database);
+        awaitTasksFinished(database);
 
         doAnswer(new Answer() {
             @Override

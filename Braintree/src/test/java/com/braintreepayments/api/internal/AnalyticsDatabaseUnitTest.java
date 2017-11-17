@@ -2,7 +2,6 @@ package com.braintreepayments.api.internal;
 
 import android.database.Cursor;
 
-import org.json.JSONException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,11 +11,8 @@ import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
-import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.awaitThreadPoolFinished;
+import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.awaitTasksFinished;
 import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.clearAllEvents;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -44,7 +40,7 @@ public class AnalyticsDatabaseUnitTest {
 
         mAnalyticsDatabase.addEvent(request);
 
-        awaitThreadPoolFinished(mAnalyticsDatabase);
+        awaitTasksFinished(mAnalyticsDatabase);
 
         Cursor cursor = mAnalyticsDatabase.getReadableDatabase().query(false, "analytics", null, null, null,
                 null, null, "_id desc", "1");
@@ -65,7 +61,7 @@ public class AnalyticsDatabaseUnitTest {
         mAnalyticsDatabase.addEvent(event1);
         mAnalyticsDatabase.addEvent(event2);
 
-        awaitThreadPoolFinished(mAnalyticsDatabase);
+        awaitTasksFinished(mAnalyticsDatabase);
         mAnalyticsDatabase = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
 
         Cursor idCursor = mAnalyticsDatabase.getReadableDatabase().query(false, "analytics", new String[]{"_id"},
@@ -82,7 +78,7 @@ public class AnalyticsDatabaseUnitTest {
 
         mAnalyticsDatabase.removeEvents(fetchedEvents);
 
-        awaitThreadPoolFinished(mAnalyticsDatabase);
+        awaitTasksFinished(mAnalyticsDatabase);
 
         idCursor = mAnalyticsDatabase.getReadableDatabase().query(false, "analytics", new String[]{"_id"},
                 null, null, null, null, "_id asc", null);
@@ -105,13 +101,13 @@ public class AnalyticsDatabaseUnitTest {
         mAnalyticsDatabase.addEvent(request1);
         mAnalyticsDatabase.addEvent(request2);
 
-        awaitThreadPoolFinished(mAnalyticsDatabase);
+        awaitTasksFinished(mAnalyticsDatabase);
         mAnalyticsDatabase = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
 
         mAnalyticsDatabase.addEvent(request3);
         mAnalyticsDatabase.addEvent(request4);
 
-        awaitThreadPoolFinished(mAnalyticsDatabase);
+        awaitTasksFinished(mAnalyticsDatabase);
         mAnalyticsDatabase = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
 
         List<List<AnalyticsEvent>> analyticsRequests = mAnalyticsDatabase.getPendingRequests();

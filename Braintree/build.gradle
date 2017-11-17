@@ -73,7 +73,7 @@ dependencies {
     androidTestCompile 'com.android.support.test:runner:1.0.0'
     androidTestCompile project(':TestUtils')
 
-    testCompile 'org.robolectric:robolectric:3.3.2'
+    testCompile 'org.robolectric:robolectric:3.5.1'
     testCompile 'org.powermock:powermock-module-junit4:1.6.6'
     testCompile 'org.powermock:powermock-module-junit4-rule:1.6.6'
     testCompile 'org.powermock:powermock-api-mockito:1.6.6'

@@ -7,14 +7,17 @@ import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.AsyncTask;
+
+import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Set;
 
 public class AnalyticsDatabase extends SQLiteOpenHelper {
 
@@ -27,7 +30,7 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
     static final String TIMESTAMP = "timestamp";
     static final String META_JSON = "meta_json";
 
-    protected final ExecutorService mThreadPool = Executors.newCachedThreadPool();
+    protected final Set<AsyncTask> mTaskSet = new HashSet<>();
 
     public static AnalyticsDatabase getInstance(Context context) {
         return new AnalyticsDatabase(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -63,7 +66,7 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
         values.put(TIMESTAMP, request.timestamp);
         values.put(META_JSON, request.metadata.toString());
 
-        mThreadPool.submit(new Runnable() {
+        DatabaseTask task = new DatabaseTask(new Runnable() {
             @Override
             public void run() {
                 SQLiteDatabase db = null;
@@ -77,6 +80,8 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
                 }
             }
         });
+
+        queueTask(task);
     }
 
     public void removeEvents(List<AnalyticsEvent> events) {
@@ -94,7 +99,7 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
             }
         }
 
-        mThreadPool.submit(new Runnable() {
+        DatabaseTask task = new DatabaseTask(new Runnable() {
             @Override
             public void run() {
                 SQLiteDatabase db = null;
@@ -108,6 +113,8 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
                 }
             }
         });
+
+        queueTask(task);
     }
 
     public List<List<AnalyticsEvent>> getPendingRequests() {
@@ -147,5 +154,49 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
         db.close();
 
         return analyticsRequests;
+    }
+
+    private void queueTask(final DatabaseTask task) {
+        task.setFinishedCallback(new BraintreeResponseListener<Void>() {
+            @Override
+            public void onResponse(Void aVoid) {
+                synchronized (mTaskSet) {
+                    mTaskSet.remove(task);
+                }
+            }
+        });
+
+        synchronized (mTaskSet) {
+            mTaskSet.add(task);
+        }
+
+        task.execute();
+    }
+
+    private static class DatabaseTask extends AsyncTask<Void, Void, Void> {
+
+        private Runnable mDatabaseAction;
+        private BraintreeResponseListener<Void> mFinishedCallback;
+
+        public DatabaseTask(Runnable action) {
+            mDatabaseAction = action;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            mDatabaseAction.run();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if (mFinishedCallback != null) {
+                mFinishedCallback.onResponse(null);
+            }
+        }
+
+        private void setFinishedCallback(BraintreeResponseListener<Void> callback) {
+            mFinishedCallback = callback;
+        }
     }
 }
