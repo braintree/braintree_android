@@ -1,5 +1,7 @@
 package com.braintreepayments.api.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.braintreepayments.api.BraintreeFragment;
@@ -11,7 +13,7 @@ import com.google.android.gms.wallet.WalletConstants.BillingAddressFormat;
 /**
  * Represents the parameters that are needed to use the Google Payments API.
  */
-public class GooglePaymentRequest {
+public class GooglePaymentRequest implements Parcelable {
 
     private TransactionInfo mTransactionInfo;
     private Boolean mEmailRequired = null;
@@ -22,6 +24,8 @@ public class GooglePaymentRequest {
     private ShippingAddressRequirements mShippingAddressRequirements;
     private Boolean mAllowPrepaidCards = null;
     private Boolean mUiRequired = null;
+
+    public GooglePaymentRequest() {}
 
     /**
      * Details and the price of the transaction. Required.
@@ -174,4 +178,61 @@ public class GooglePaymentRequest {
     public Boolean isUiRequired() {
         return mUiRequired;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(mTransactionInfo, flags);
+        dest.writeByte((byte) (mEmailRequired == null ? 0 : mEmailRequired ? 1 : 2));
+        dest.writeByte((byte) (mPhoneNumberRequired == null ? 0 : mPhoneNumberRequired ? 1 : 2));
+        dest.writeByte((byte) (mBillingAddressRequired == null ? 0 : mBillingAddressRequired ? 1 : 2));
+        if (mBillingAddressFormat == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(mBillingAddressFormat);
+        }
+        dest.writeByte((byte) (mShippingAddressRequired == null ? 0 : mShippingAddressRequired ? 1 : 2));
+        dest.writeParcelable(mShippingAddressRequirements, flags);
+        dest.writeByte((byte) (mAllowPrepaidCards == null ? 0 : mAllowPrepaidCards ? 1 : 2));
+        dest.writeByte((byte) (mUiRequired == null ? 0 : mUiRequired ? 1 : 2));
+    }
+
+    protected GooglePaymentRequest(Parcel in) {
+        mTransactionInfo = in.readParcelable(TransactionInfo.class.getClassLoader());
+        byte emailRequired = in.readByte();
+        mEmailRequired = emailRequired == 0 ? null : emailRequired == 1;
+        byte phoneNumberRequired = in.readByte();
+        mPhoneNumberRequired = phoneNumberRequired == 0 ? null : phoneNumberRequired == 1;
+        byte billingAddressRequired = in.readByte();
+        mBillingAddressRequired = billingAddressRequired == 0 ? null : billingAddressRequired == 1;
+        if (in.readByte() == 0) {
+            mBillingAddressFormat = null;
+        } else {
+            mBillingAddressFormat = in.readInt();
+        }
+        byte shippingAddressRequired = in.readByte();
+        mShippingAddressRequired = shippingAddressRequired == 0 ? null : shippingAddressRequired == 1;
+        mShippingAddressRequirements = in.readParcelable(ShippingAddressRequirements.class.getClassLoader());
+        byte allowPrepaidCards = in.readByte();
+        mAllowPrepaidCards = allowPrepaidCards == 0 ? null : allowPrepaidCards == 1;
+        byte uiRequired = in.readByte();
+        mUiRequired = uiRequired == 0 ? null : uiRequired == 1;
+    }
+
+    public static final Creator<GooglePaymentRequest> CREATOR = new Creator<GooglePaymentRequest>() {
+        @Override
+        public GooglePaymentRequest createFromParcel(Parcel in) {
+            return new GooglePaymentRequest(in);
+        }
+
+        @Override
+        public GooglePaymentRequest[] newArray(int size) {
+            return new GooglePaymentRequest[size];
+        }
+    };
 }
