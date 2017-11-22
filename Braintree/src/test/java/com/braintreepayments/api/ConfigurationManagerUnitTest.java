@@ -87,7 +87,7 @@ public class ConfigurationManagerUnitTest {
 
     @Test(timeout = 1000)
     public void isFetchingConfiguration_isFalseInSuccessCallback() throws InterruptedException {
-        stubConfigurationFromGateway(stringFromFixture("configuration_with_analytics.json"));
+        stubConfigurationFromGateway(stringFromFixture("configuration/with_analytics.json"));
 
         ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
             @Override
@@ -135,12 +135,13 @@ public class ConfigurationManagerUnitTest {
     @Test(timeout = 1000)
     public void getConfiguration_getsConfigFromCacheWhenTimeoutHasNotExpired() throws InterruptedException {
         writeMockConfiguration(RuntimeEnvironment.application, mTokenizationKey.getConfigUrl(),
-                mTokenizationKey.toString(), stringFromFixture("configuration.json"), System.currentTimeMillis());
+                mTokenizationKey.toString(), stringFromFixture("configuration/configuration.json"),
+                System.currentTimeMillis());
 
         ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                assertEquals(stringFromFixture("configuration.json"), configuration.toJson());
+                assertEquals(stringFromFixture("configuration/configuration.json"), configuration.toJson());
                 mCountDownLatch.countDown();
             }
         }, new BraintreeResponseListener<Exception>() {
@@ -156,14 +157,14 @@ public class ConfigurationManagerUnitTest {
     @Test(timeout = 1000)
     public void getConfiguration_getsConfigFromGatewayWhenTimeoutExpired() throws InterruptedException {
         writeMockConfiguration(RuntimeEnvironment.application, mTokenizationKey.getConfigUrl(),
-                mTokenizationKey.toString(), stringFromFixture("configuration.json"),
+                mTokenizationKey.toString(), stringFromFixture("configuration/configuration.json"),
                 System.currentTimeMillis() - (ConfigurationManager.TTL + 1));
-        stubConfigurationFromGateway(stringFromFixture("configuration_with_analytics.json"));
+        stubConfigurationFromGateway(stringFromFixture("configuration/with_analytics.json"));
 
         ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                assertEquals(stringFromFixture("configuration_with_analytics.json"),
+                assertEquals(stringFromFixture("configuration/with_analytics.json"),
                         configuration.toJson());
                 mCountDownLatch.countDown();
             }
@@ -179,12 +180,12 @@ public class ConfigurationManagerUnitTest {
 
     @Test(timeout = 1000)
     public void getConfiguration_fetchesConfigFromGatewayWhenCacheIsEmpty() throws InterruptedException {
-        stubConfigurationFromGateway(stringFromFixture("configuration_with_analytics.json"));
+        stubConfigurationFromGateway(stringFromFixture("configuration/with_analytics.json"));
 
         ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                assertEquals(stringFromFixture("configuration_with_analytics.json"),
+                assertEquals(stringFromFixture("configuration/with_analytics.json"),
                         configuration.toJson());
                 mCountDownLatch.countDown();
             }
@@ -203,12 +204,12 @@ public class ConfigurationManagerUnitTest {
             throws InterruptedException {
         writeMockConfiguration(RuntimeEnvironment.application, mTokenizationKey.getConfigUrl(),
                 mTokenizationKey.toString(), "not a config");
-        stubConfigurationFromGateway(stringFromFixture("configuration.json"));
+        stubConfigurationFromGateway(stringFromFixture("configuration/configuration.json"));
 
         ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                assertEquals(stringFromFixture("configuration.json"), configuration.toJson());
+                assertEquals(stringFromFixture("configuration/configuration.json"), configuration.toJson());
                 mCountDownLatch.countDown();
             }
         }, new BraintreeResponseListener<Exception>() {
@@ -228,13 +229,13 @@ public class ConfigurationManagerUnitTest {
                 stringFromFixture("client_token_with_authorization_fingerprint_options.json"));
         when(mBraintreeFragment.getAuthorization()).thenReturn(clientToken);
         writeMockConfiguration(RuntimeEnvironment.application, clientToken.getConfigUrl(),
-                clientToken.getAuthorizationFingerprint(), stringFromFixture("configuration.json"),
+                clientToken.getAuthorizationFingerprint(), stringFromFixture("configuration/configuration.json"),
                 System.currentTimeMillis());
 
         ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                assertEquals(stringFromFixture("configuration.json"), configuration.toJson());
+                assertEquals(stringFromFixture("configuration/configuration.json"), configuration.toJson());
                 mCountDownLatch.countDown();
             }
         }, new BraintreeResponseListener<Exception>() {
@@ -249,7 +250,7 @@ public class ConfigurationManagerUnitTest {
 
     @Test(timeout = 1000)
     public void getConfiguration_writesConfigToDiskWithValidTimestampAfterFetch() throws InterruptedException {
-        stubConfigurationFromGateway(stringFromFixture("configuration.json"));
+        stubConfigurationFromGateway(stringFromFixture("configuration/configuration.json"));
 
         ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
             @Override
@@ -264,7 +265,7 @@ public class ConfigurationManagerUnitTest {
                                 .getBytes(),
                         0);
 
-                assertEquals(stringFromFixture("configuration.json"),
+                assertEquals(stringFromFixture("configuration/configuration.json"),
                         getSharedPreferences(RuntimeEnvironment.application).getString(key, ""));
                 assertTrue(System.currentTimeMillis() -
                         getSharedPreferences(RuntimeEnvironment.application).getLong(key + "_timestamp", 0) < 1000);

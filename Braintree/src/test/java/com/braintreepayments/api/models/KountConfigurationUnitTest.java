@@ -14,7 +14,7 @@ public class KountConfigurationUnitTest {
 
     @Test
     public void parsesKountConfiguration() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_kount.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_kount.json"));
         KountConfiguration kountConfiguration = configuration.getKount();
 
         assertTrue(kountConfiguration.isEnabled());

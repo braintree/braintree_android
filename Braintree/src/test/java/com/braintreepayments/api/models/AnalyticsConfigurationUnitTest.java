@@ -18,7 +18,7 @@ public class AnalyticsConfigurationUnitTest {
 
     @Test
     public void parsesAnalyticsConfigurationFromToken() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_analytics.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_analytics.json"));
 
         assertTrue(configuration.getAnalytics().isEnabled());
         assertEquals("analytics_url", configuration.getAnalytics().getUrl());
@@ -68,7 +68,7 @@ public class AnalyticsConfigurationUnitTest {
 
     @Test
     public void reportsAnalyticsDisabledWhenNoAnalyticsPresent() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_without_analytics.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/without_analytics.json"));
 
         assertFalse(configuration.getAnalytics().isEnabled());
     }
@@ -76,7 +76,7 @@ public class AnalyticsConfigurationUnitTest {
     @Test
     public void reportsAnalyticsDisabledWhenUrlIsEmpty() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_empty_analytics_url.json"));
+                stringFromFixture("configuration/with_empty_analytics_url.json"));
 
         assertNotNull(configuration.getAnalytics());
         assertEquals("", configuration.getAnalytics().getUrl());

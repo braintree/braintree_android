@@ -291,7 +291,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void getConfiguration_returnsConfiguration() throws InvalidArgumentException, JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
         mockConfigurationManager(configuration);
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
 
@@ -301,7 +301,7 @@ public class BraintreeFragmentUnitTest {
     @Test
     public void waitForConfiguration_postsCallbackAfterConfigurationIsReceived() throws JSONException,
             InvalidArgumentException {
-        final Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
+        final Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
         mockConfigurationManager(configuration);
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
 
@@ -319,7 +319,7 @@ public class BraintreeFragmentUnitTest {
     @Test
     public void waitForConfiguration_doesNotPostCallbackWhenNotAttached() throws JSONException,
             InvalidArgumentException {
-        final Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
+        final Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
         mockConfigurationManager(configuration);
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
 
@@ -337,7 +337,7 @@ public class BraintreeFragmentUnitTest {
     @Test
     public void waitForConfiguration_postsCallbackWhenFragmentIsAttached() throws JSONException,
             InvalidArgumentException {
-        final Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
+        final Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
         mockConfigurationManager(configuration);
         final BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
 

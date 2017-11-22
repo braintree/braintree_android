@@ -34,21 +34,20 @@ public class ConfigurationUnitTest {
 
     @Test(expected = JSONException.class)
     public void fromJson_throwsWhenNoClientApiUrlPresent() throws JSONException {
-        Configuration.fromJson(stringFromFixture("configuration_without_client_api_url.json"));
+        Configuration.fromJson(stringFromFixture("configuration/without_client_api_url.json"));
     }
 
     @Test
     public void fromJson_parsesClientApiUrl() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_client_api_url.json"));
+                stringFromFixture("configuration/with_client_api_url.json"));
 
         assertEquals("client_api_url", configuration.getClientApiUrl());
     }
 
     @Test
     public void fromJson_handlesAbsentChallenges() throws JSONException {
-        Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_without_challenge.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/without_challenge.json"));
 
         assertFalse(configuration.isCvvChallengePresent());
         assertFalse(configuration.isPostalCodeChallengePresent());
@@ -57,7 +56,7 @@ public class ConfigurationUnitTest {
     @Test
     public void fromJson_parsesSingleChallenge() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_cvv_challenge.json"));
+                stringFromFixture("configuration/with_cvv_challenge.json"));
 
         assertTrue(configuration.isCvvChallengePresent());
         assertFalse(configuration.isPostalCodeChallengePresent());
@@ -66,7 +65,7 @@ public class ConfigurationUnitTest {
     @Test
     public void fromJson_parsesAllChallenges() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_multiple_challenges.json"));
+                stringFromFixture("configuration/with_multiple_challenges.json"));
 
         assertTrue(configuration.isCvvChallengePresent());
         assertTrue(configuration.isPostalCodeChallengePresent());
@@ -74,26 +73,25 @@ public class ConfigurationUnitTest {
 
     @Test(expected = JSONException.class)
     public void fromJson_throwsWhenNoMerchantIdPresent() throws JSONException {
-        Configuration.fromJson(stringFromFixture("configuration_without_merchant_id.json"));
+        Configuration.fromJson(stringFromFixture("configuration/without_merchant_id.json"));
     }
 
     @Test(expected = JSONException.class)
     public void fromJson_throwsWhenNoEnvironmentPresent() throws JSONException {
-        Configuration.fromJson(stringFromFixture("configuration_without_environment.json"));
+        Configuration.fromJson(stringFromFixture("configuration/without_environment.json"));
     }
 
     @Test
     public void fromJson_parsesEnvironment() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_environment.json"));
+                stringFromFixture("configuration/with_environment.json"));
 
         assertEquals("integration_merchant_id", configuration.getMerchantId());
     }
 
     @Test
     public void fromJson_parsesMerchantId() throws JSONException {
-        Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_merchant_id.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_merchant_id.json"));
 
         assertEquals("integration_merchant_id", configuration.getMerchantId());
     }
@@ -101,7 +99,7 @@ public class ConfigurationUnitTest {
     @Test
     public void fromJson_parsesMerchantAccountId() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_merchant_account_id.json"));
+                stringFromFixture("configuration/with_merchant_account_id.json"));
 
         assertEquals("integration_merchant_account_id", configuration.getMerchantAccountId());
     }
@@ -109,7 +107,7 @@ public class ConfigurationUnitTest {
     @Test
     public void returnsEmptyVenmoConfigurationWhenNotDefined() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration.json"));
+                stringFromFixture("configuration/configuration.json"));
 
         assertNotNull(configuration.getPayWithVenmo());
         assertTrue(TextUtils.isEmpty(configuration.getPayWithVenmo().getAccessToken()));
@@ -118,7 +116,7 @@ public class ConfigurationUnitTest {
     @Test
     public void payWithVenmoIsEnabledWhenConfigurationExists() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_pay_with_venmo.json"));
+                stringFromFixture("configuration/with_pay_with_venmo.json"));
 
         assertNotNull(configuration.getPayWithVenmo());
         assertFalse(TextUtils.isEmpty(configuration.getPayWithVenmo().getAccessToken()));
@@ -127,7 +125,7 @@ public class ConfigurationUnitTest {
     @Test
     public void reportsThreeDSecureEnabledWhenEnabled() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_three_d_secure.json"));
+                stringFromFixture("configuration/with_three_d_secure.json"));
 
         assertTrue(configuration.isThreeDSecureEnabled());
     }
@@ -135,7 +133,7 @@ public class ConfigurationUnitTest {
     @Test
     public void reportsThreeDSecureDisabledWhenAbsent() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_no_three_d_secure.json"));
+                stringFromFixture("configuration/with_no_three_d_secure.json"));
 
         assertFalse(configuration.isThreeDSecureEnabled());
     }
@@ -143,7 +141,7 @@ public class ConfigurationUnitTest {
     @Test
     public void returnsNewAndroidPayConfigurationWhenAndroidPayIsNull() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_without_android_pay.json"));
+                stringFromFixture("configuration/without_android_pay.json"));
 
         assertNotNull(configuration.getAndroidPay());
         assertFalse(configuration.getAndroidPay().isEnabled(null));
@@ -154,14 +152,14 @@ public class ConfigurationUnitTest {
     @Test
     public void returnsNewUnionPayConfigurationWhenUnionPayIsAbsent() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration.json"));
+                stringFromFixture("configuration/configuration.json"));
 
         assertFalse(configuration.getUnionPay().isEnabled());
     }
 
     @Test
     public void returnsNewKountConfigurationWhenKountIsAbsent() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
 
         assertNotNull(configuration.getKount());
         assertFalse(configuration.getKount().isEnabled());
@@ -169,7 +167,7 @@ public class ConfigurationUnitTest {
 
     @Test
     public void returnsNewCardConfigurationWhenCardConfigurationIsAbsent() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
 
         assertNotNull(configuration.getCardConfiguration());
         assertEquals(0, configuration.getCardConfiguration().getSupportedCardTypes().size());
@@ -185,7 +183,7 @@ public class ConfigurationUnitTest {
 
     @Test
     public void returnsNewVisaCheckoutConfigurationWhenVisaCheckoutConfigurationIsAbsent() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
 
         assertFalse(configuration.getVisaCheckout().isEnabled());
     }

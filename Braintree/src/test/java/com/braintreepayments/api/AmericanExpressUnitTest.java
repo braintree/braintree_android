@@ -33,7 +33,7 @@ public class AmericanExpressUnitTest {
 
     @Before
     public void setup() throws JSONException {
-        mConfiguration = Configuration.fromJson(stringFromFixture("configuration.json"));
+        mConfiguration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
     }
 
     @Test

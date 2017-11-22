@@ -25,7 +25,7 @@ public class AndroidPayConfigurationTest {
     public void parsesAndroidPayConfigurationFromToken() throws JSONException {
         failIfNotGooglePlayServicesDevice();
 
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_android_pay.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_android_pay.json"));
 
         AndroidPayConfiguration androidPayConfiguration = configuration.getAndroidPay();
 
@@ -43,7 +43,7 @@ public class AndroidPayConfigurationTest {
     public void fromJson_parsesConfiguration() throws JSONException {
         failIfNotGooglePlayServicesDevice();
 
-        JSONObject json = new JSONObject(stringFromFixture("configuration_with_android_pay.json"))
+        JSONObject json = new JSONObject(stringFromFixture("configuration/with_android_pay.json"))
                 .getJSONObject("androidPay");
 
         AndroidPayConfiguration androidPayConfiguration = AndroidPayConfiguration.fromJson(json);

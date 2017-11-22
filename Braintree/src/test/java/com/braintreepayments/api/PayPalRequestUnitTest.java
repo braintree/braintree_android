@@ -35,7 +35,7 @@ public class PayPalRequestUnitTest {
 
     @Test
     public void getCheckoutRequest_containsCorrectValues() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_offline_paypal.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_offline_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder.configuration(configuration).build();
 
         CheckoutRequest request = PayPal.getCheckoutRequest(fragment, "https://paypal.com/?token=pairingId");
@@ -49,7 +49,7 @@ public class PayPalRequestUnitTest {
 
     @Test
     public void getCheckoutRequest_buildsWithLiveStageUrl() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_live_paypal.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_live_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder.configuration(configuration).build();
 
         Request request = PayPal.getCheckoutRequest(fragment, null);
@@ -59,7 +59,7 @@ public class PayPalRequestUnitTest {
 
     @Test
     public void getCheckoutRequest_buildsWithOfflineStageUrl() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_offline_paypal.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_offline_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder.configuration(configuration).build();
 
         Request request = PayPal.getCheckoutRequest(fragment, null);
@@ -69,7 +69,7 @@ public class PayPalRequestUnitTest {
 
     @Test
     public void getCheckoutRequest_buildsWithCustomStageUrl() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_custom_paypal.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_custom_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder.configuration(configuration).build();
 
         Request request = PayPal.getCheckoutRequest(fragment, null);
@@ -79,7 +79,7 @@ public class PayPalRequestUnitTest {
 
     @Test
     public void getBillingAgreement_containsCorrectValues() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_offline_paypal.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_offline_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder.configuration(configuration).build();
 
         BillingAgreementRequest request = PayPal.getBillingAgreementRequest(fragment,
@@ -94,7 +94,7 @@ public class PayPalRequestUnitTest {
 
     @Test
     public void getBillingAgreementRequest_buildsWithLiveStageUrl() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_live_paypal.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_live_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder.configuration(configuration).build();
 
         Request request = PayPal.getBillingAgreementRequest(fragment, null);
@@ -104,7 +104,7 @@ public class PayPalRequestUnitTest {
 
     @Test
     public void getBillingAgreementRequest_buildsWithOfflineStageUrl() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_offline_paypal.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_offline_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder.configuration(configuration).build();
 
         Request request = PayPal.getBillingAgreementRequest(fragment, null);
@@ -114,7 +114,7 @@ public class PayPalRequestUnitTest {
 
     @Test
     public void getBillingAgreementRequest_buildsWithCustomStageUrl() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_custom_paypal.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_custom_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder.configuration(configuration).build();
 
         Request request = PayPal.getBillingAgreementRequest(fragment, null);
@@ -124,7 +124,7 @@ public class PayPalRequestUnitTest {
 
     @Test
     public void getAuthorizationRequest_containsCorrectValues() throws JSONException, InvalidArgumentException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_offline_paypal.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_offline_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder
                 .authorization(Authorization.fromString(TOKENIZATION_KEY))
                 .configuration(configuration)
@@ -148,7 +148,7 @@ public class PayPalRequestUnitTest {
 
     @Test
     public void getAuthorizationRequest_buildsWithLiveStageUrl() throws JSONException, InvalidArgumentException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_live_paypal.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_live_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder
                 .authorization(Authorization.fromString(TOKENIZATION_KEY))
                 .configuration(configuration)
@@ -161,7 +161,7 @@ public class PayPalRequestUnitTest {
 
     @Test
     public void getAuthorizationRequest_buildsWithOfflineStageUrl() throws JSONException, InvalidArgumentException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_offline_paypal.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_offline_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder
                 .authorization(Authorization.fromString(TOKENIZATION_KEY))
                 .configuration(configuration)
@@ -174,7 +174,7 @@ public class PayPalRequestUnitTest {
 
     @Test
     public void getAuthorizationRequest_buildsWithCustomStageUrl() throws JSONException, InvalidArgumentException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_custom_paypal.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_custom_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder
                 .authorization(Authorization.fromString(TOKENIZATION_KEY))
                 .configuration(configuration)

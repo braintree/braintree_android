@@ -18,7 +18,7 @@ public class PayPalConfigurationUnitTest {
     @Test
     public void parsesPayPalConfigurationFromToken() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_offline_paypal.json"));
+                stringFromFixture("configuration/with_offline_paypal.json"));
         PayPalConfiguration payPalConfiguration = configuration.getPayPal();
 
         assertTrue(configuration.isPayPalEnabled());
@@ -34,7 +34,7 @@ public class PayPalConfigurationUnitTest {
 
     @Test
     public void parsesPayPalConfigurationFromTokenForLive() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_live_paypal.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_live_paypal.json"));
         PayPalConfiguration payPalConfiguration = configuration.getPayPal();
 
         assertTrue(configuration.isPayPalEnabled());
@@ -51,7 +51,7 @@ public class PayPalConfigurationUnitTest {
     @Test
     public void parsesPayPalConfigurationFromTokenForCustom() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_custom_paypal.json"));
+                stringFromFixture("configuration/with_custom_paypal.json"));
         PayPalConfiguration payPalConfiguration = configuration.getPayPal();
 
         assertTrue(configuration.isPayPalEnabled());
@@ -68,7 +68,7 @@ public class PayPalConfigurationUnitTest {
     @Test
     public void reportsPayPalNotEnabledWhenFlagged() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_disabled_paypal.json"));
+                stringFromFixture("configuration/with_disabled_paypal.json"));
 
         assertFalse(configuration.isPayPalEnabled());
         assertFalse(configuration.getPayPal().isEnabled());
@@ -77,7 +77,7 @@ public class PayPalConfigurationUnitTest {
     @Test
     public void reportsPayPalNotEnabledWhenConfigAbsent() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_disabled_paypal.json"));
+                stringFromFixture("configuration/with_disabled_paypal.json"));
 
         assertFalse(configuration.isPayPalEnabled());
         assertFalse(configuration.getPayPal().isEnabled());
@@ -86,7 +86,7 @@ public class PayPalConfigurationUnitTest {
     @Test
     public void exposesPayPalTouchKillSwitch() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_paypal_touch_disabled.json"));
+                stringFromFixture("configuration/with_paypal_touch_disabled.json"));
 
         assertTrue(configuration.getPayPal().isTouchDisabled());
     }
@@ -94,7 +94,7 @@ public class PayPalConfigurationUnitTest {
     @Test
     public void reportsPayPalEnabledWhenClientIdAbsentInOfflineMode() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_offline_paypal_no_client_id.json"));
+                stringFromFixture("configuration/with_offline_paypal_no_client_id.json"));
         PayPalConfiguration payPalConfiguration = configuration.getPayPal();
 
         assertTrue(payPalConfiguration.isEnabled());
@@ -103,7 +103,7 @@ public class PayPalConfigurationUnitTest {
     @Test
     public void reportsPayPalNotEnabledWhenClientIdAbsentInLiveMode() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_live_paypal_no_client_id.json"));
+                stringFromFixture("configuration/with_live_paypal_no_client_id.json"));
         PayPalConfiguration payPalConfiguration = configuration.getPayPal();
 
         assertFalse(payPalConfiguration.isEnabled());
@@ -111,7 +111,7 @@ public class PayPalConfigurationUnitTest {
 
     @Test
     public void fromJson_parsesConfiguration() throws JSONException {
-        JSONObject json = new JSONObject(stringFromFixture("configuration_with_offline_paypal.json"))
+        JSONObject json = new JSONObject(stringFromFixture("configuration/with_offline_paypal.json"))
                 .getJSONObject("paypal");
 
         PayPalConfiguration payPalConfiguration = PayPalConfiguration.fromJson(json);

@@ -23,7 +23,7 @@ public class VenmoConfigurationUnitTest {
 
     @Before
     public void setup() throws JSONException {
-        mConfiguration = Configuration.fromJson(stringFromFixture("configuration_with_pay_with_venmo.json"));
+        mConfiguration = Configuration.fromJson(stringFromFixture("configuration/with_pay_with_venmo.json"));
     }
 
     @Test
@@ -41,7 +41,7 @@ public class VenmoConfigurationUnitTest {
 
     @Test
     public void fromJson_parsesEmptyVenmoConfigurationWhenConfigurationDoesntHavePayWithVenmo() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
 
         assertEquals("", configuration.getPayWithVenmo().getAccessToken());
         assertTrue(TextUtils.isEmpty(configuration.getPayWithVenmo().getAccessToken()));

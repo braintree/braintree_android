@@ -14,7 +14,7 @@ public class CardConfigurationUnitTest {
 
     @Test
     public void parsesCardConfiguration() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration_with_supported_card_types.json"));
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_supported_card_types.json"));
         CardConfiguration cardConfiguration = configuration.getCardConfiguration();
 
         assertEquals(5, cardConfiguration.getSupportedCardTypes().size());

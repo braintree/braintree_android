@@ -18,7 +18,7 @@ public class UnionPayConfigurationUnitTest {
 
     @Before
     public void setup() throws JSONException {
-        JSONObject configuration = new JSONObject(stringFromFixture("configuration_with_unionpay.json"));
+        JSONObject configuration = new JSONObject(stringFromFixture("configuration/with_unionpay.json"));
         mUnionPayConfiguration = configuration.getJSONObject("unionPay");
     }
 
@@ -48,7 +48,7 @@ public class UnionPayConfigurationUnitTest {
     @Test
     public void reportsUnionPayEnabledWhenEnabled() throws JSONException {
         Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration_with_unionpay.json"));
+                stringFromFixture("configuration/with_unionpay.json"));
 
         assertTrue(configuration.getUnionPay().isEnabled());
     }
