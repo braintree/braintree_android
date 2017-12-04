@@ -1,5 +1,8 @@
 package com.braintreepayments.api.models;
 
+import android.content.Context;
+
+import com.braintreepayments.api.exceptions.BraintreeException;
 import com.visa.checkout.VisaPaymentSummary;
 
 import org.json.JSONException;
@@ -39,6 +42,10 @@ public class VisaCheckoutBuilder extends PaymentMethodBuilder<VisaCheckoutBuilde
         paymentMethodNonceJson.put(ENCRYPTED_PAYMENT_DATA, mEncryptedPaymentData);
         base.put(VISA_CHECKOUT_KEY, paymentMethodNonceJson);
     }
+
+    @Override
+    protected void buildGraphQL(Context context, JSONObject base, JSONObject input)
+            throws BraintreeException, JSONException {}
 
     @Override
     public String getApiPath() {

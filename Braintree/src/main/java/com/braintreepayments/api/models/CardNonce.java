@@ -16,9 +16,13 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     protected static final String TYPE = "CreditCard";
     protected static final String API_RESOURCE_KEY = "creditCards";
 
+    private static final String GRAPHQL_PAYLOAD_KEY = "tokenizeCreditCard";
+    private static final String GRAPHQL_CREDIT_CARD_KEY = "creditCard";
+    private static final String GRAPHQL_BRAND_KEY = "brand";
     private static final String THREE_D_SECURE_INFO_KEY = "threeDSecureInfo";
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
+    private static final String LAST_FOUR_KEY = "last4";
     private static final String LAST_TWO_KEY = "lastTwo";
 
     private String mCardType;
@@ -35,7 +39,14 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
      */
     public static CardNonce fromJson(String json) throws JSONException {
         CardNonce cardNonce = new CardNonce();
-        cardNonce.fromJson(CardNonce.getJsonObjectForType(API_RESOURCE_KEY, json));
+        JSONObject jsonObject = new JSONObject(json);
+
+        if (jsonObject.has(DATA_KEY)) {
+            cardNonce.fromGraphQLJson(jsonObject);
+        } else {
+            cardNonce.fromJson(CardNonce.getJsonObjectForType(API_RESOURCE_KEY, jsonObject));
+        }
+
         return cardNonce;
     }
 
@@ -54,6 +65,20 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         mThreeDSecureInfo =
                 ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY));
         mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
+    }
+
+    private void fromGraphQLJson(JSONObject json) throws JSONException {
+        JSONObject payload = json.getJSONObject(DATA_KEY).getJSONObject(GRAPHQL_PAYLOAD_KEY);
+
+        JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
+        mLastTwo = creditCard.getString(LAST_FOUR_KEY).substring(2);
+        mCardType = creditCard.getString(GRAPHQL_BRAND_KEY);
+        mThreeDSecureInfo = ThreeDSecureInfo.fromJson(null);
+        mBinData = BinData.fromJson(creditCard.optJSONObject(BIN_DATA_KEY));
+
+        mNonce = payload.getString(TOKEN_KEY);
+        mDescription = "ending in ••" + mLastTwo;
+        mDefault = false;
     }
 
     /**

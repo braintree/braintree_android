@@ -50,6 +50,19 @@ public class BinDataUnitTest {
     }
 
     @Test
+    public void parsesCorrectly_withNullValues() throws JSONException {
+        JSONObject jsonObject = new JSONObject(stringFromFixture("bin_data.json"))
+                .put("issuingBank", JSONObject.NULL)
+                .put("countryOfIssuance", JSONObject.NULL)
+                .put("productId", JSONObject.NULL);
+
+        BinData binData = BinData.fromJson(jsonObject);
+        assertEquals(UNKNOWN, binData.getIssuingBank());
+        assertEquals(UNKNOWN, binData.getCountryOfIssuance());
+        assertEquals(UNKNOWN, binData.getProductId());
+    }
+
+    @Test
     public void isParcelable() throws JSONException {
         BinData binData = BinData.fromJson(new JSONObject(stringFromFixture("bin_data.json")));
         Parcel parcel = Parcel.obtain();

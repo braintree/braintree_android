@@ -52,8 +52,7 @@ public class VisaCheckoutTest {
     public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
 
-    public final String mAuthorization;
-
+    private String mAuthorization;
     private BraintreeFragment mBraintreeFragment;
     private CountDownLatch mCountDownLatch;
 

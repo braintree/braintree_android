@@ -1,8 +1,11 @@
 package com.braintreepayments.api.models;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+
+import com.braintreepayments.api.exceptions.BraintreeException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -95,7 +98,6 @@ public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> im
         unionPayEnrollment.put(NUMBER_KEY, mCardnumber);
         unionPayEnrollment.put(EXPIRATION_MONTH_KEY, mExpirationMonth);
         unionPayEnrollment.put(EXPIRATION_YEAR_KEY, mExpirationYear);
-        unionPayEnrollment.put(EXPIRATION_DATE_KEY, mExpirationDate);
         unionPayEnrollment.put(MOBILE_COUNTRY_CODE_KEY, mMobileCountryCode);
         unionPayEnrollment.put(MOBILE_PHONE_NUMBER_KEY, mMobilePhoneNumber);
 
@@ -121,6 +123,10 @@ public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> im
 
         json.put(UNIONPAY_KEY, paymentMethodNonceJson);
     }
+
+    @Override
+    protected void buildGraphQL(Context context, JSONObject base, JSONObject input)
+            throws BraintreeException, JSONException {}
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {

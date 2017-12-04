@@ -1,9 +1,11 @@
 package com.braintreepayments.api;
 
+import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
+import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
@@ -38,30 +40,65 @@ class TokenizationClient {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                fragment.getHttpClient().post(TokenizationClient.versionedPath(
-                        TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + paymentMethodBuilder.getApiPath()),
-                        paymentMethodBuilder.build(), new HttpResponseCallback() {
-                            @Override
-                            public void success(String responseBody) {
-                                try {
-                                   PaymentMethodNonce paymentMethodNonce = parsePaymentMethodNonces(responseBody,
-                                            paymentMethodBuilder.getResponsePaymentMethodType());
-                                    callback.success(paymentMethodNonce);
-                                } catch (JSONException e) {
-                                    callback.failure(e);
-                                }
-                            }
-
-                            @Override
-                            public void failure(Exception exception) {
-                                callback.failure(exception);
-                            }
-                        });
+                if (paymentMethodBuilder instanceof CardBuilder && configuration.getGraphQL().isEnabled()) {
+                    tokenizeGraphQL(fragment, (CardBuilder) paymentMethodBuilder, callback);
+                } else {
+                    tokenizeRest(fragment, paymentMethodBuilder, callback);
+                }
             }
         });
     }
 
     static String versionedPath(String path) {
         return "/v1/" + path;
+    }
+
+    private static void tokenizeGraphQL(final BraintreeFragment fragment, final CardBuilder cardBuilder,
+            final PaymentMethodNonceCallback callback) {
+        String payload;
+        try {
+            payload = cardBuilder.buildGraphQL(fragment.getApplicationContext(), fragment.getAuthorization());
+        } catch (BraintreeException e) {
+            callback.failure(e);
+            return;
+        }
+
+        fragment.getGraphQLHttpClient().post(payload, new HttpResponseCallback() {
+            @Override
+            public void success(String responseBody) {
+                try {
+                    callback.success(parsePaymentMethodNonces(responseBody, cardBuilder.getResponsePaymentMethodType()));
+                } catch (JSONException e) {
+                    callback.failure(e);
+                }
+            }
+
+            @Override
+            public void failure(Exception exception) {
+                callback.failure(exception);
+            }
+        });
+    }
+
+    private static void tokenizeRest(final BraintreeFragment fragment, final PaymentMethodBuilder paymentMethodBuilder,
+            final PaymentMethodNonceCallback callback) {
+        fragment.getHttpClient().post(TokenizationClient.versionedPath(
+                TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + paymentMethodBuilder.getApiPath()),
+                paymentMethodBuilder.build(), new HttpResponseCallback() {
+                    @Override
+                    public void success(String responseBody) {
+                        try {
+                            callback.success(parsePaymentMethodNonces(responseBody,
+                                    paymentMethodBuilder.getResponsePaymentMethodType()));
+                        } catch (JSONException e) {
+                            callback.failure(e);
+                        }
+                    }
+
+                    @Override
+                    public void failure(Exception exception) {
+                        callback.failure(exception);
+                    }
+                });
     }
 }

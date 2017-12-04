@@ -1,5 +1,9 @@
 package com.braintreepayments.api.models;
 
+import android.content.Context;
+
+import com.braintreepayments.api.exceptions.BraintreeException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,6 +26,10 @@ public class VenmoAccountBuilder extends PaymentMethodBuilder<VenmoAccountBuilde
         paymentMethodNonceJson.put(NONCE_KEY, mNonce);
         base.put(VENMO_ACCOUNT_KEY, paymentMethodNonceJson);
     }
+
+    @Override
+    protected void buildGraphQL(Context context, JSONObject base, JSONObject input)
+            throws BraintreeException, JSONException {}
 
     @Override
     public String getApiPath() {

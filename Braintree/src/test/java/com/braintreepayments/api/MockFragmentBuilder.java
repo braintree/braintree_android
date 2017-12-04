@@ -5,6 +5,7 @@ import android.content.Context;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
+import com.braintreepayments.api.internal.GraphQLHttpClient;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
@@ -25,9 +26,10 @@ public class MockFragmentBuilder {
     private Context mContext;
     private Authorization mAuthorization;
     private Configuration mConfiguration;
-    private String mSuccessResponse;
     private String mSessionId;
+    private String mSuccessResponse;
     private Exception mErrorResponse;
+    private String mGraphQLResponse;
 
     public MockFragmentBuilder() {
         mContext = RuntimeEnvironment.application;
@@ -71,6 +73,11 @@ public class MockFragmentBuilder {
         return this;
     }
 
+    public MockFragmentBuilder graphQLResponse(String response) {
+        mGraphQLResponse = response;
+        return this;
+    }
+
     public BraintreeFragment build() {
         BraintreeFragment fragment = mock(BraintreeFragment.class);
         when(fragment.getApplicationContext()).thenReturn(mContext);
@@ -93,8 +100,13 @@ public class MockFragmentBuilder {
         } else if (mErrorResponse != null) {
             setupErrorResponses(httpClient);
         }
-
         when(fragment.getHttpClient()).thenReturn(httpClient);
+
+        GraphQLHttpClient graphQLHttpClient = mock(GraphQLHttpClient.class);
+        if (mGraphQLResponse != null) {
+            setupGraphQLResponses(graphQLHttpClient);
+        }
+        when(fragment.getGraphQLHttpClient()).thenReturn(graphQLHttpClient);
 
         return fragment;
     }
@@ -131,5 +143,22 @@ public class MockFragmentBuilder {
                 return null;
             }
         }).when(httpClient).post(anyString(), anyString(), any(HttpResponseCallback.class));
+    }
+
+    private void setupGraphQLResponses(GraphQLHttpClient graphQLHttpClient) {
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                ((HttpResponseCallback) invocation.getArguments()[1]).success(mSuccessResponse);
+                return null;
+            }
+        }).when(graphQLHttpClient).get(any(String.class), any(HttpResponseCallback.class));
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                ((HttpResponseCallback) invocation.getArguments()[2]).success(mSuccessResponse);
+                return null;
+            }
+        }).when(graphQLHttpClient).post(anyString(), anyString(), any(HttpResponseCallback.class));
     }
 }

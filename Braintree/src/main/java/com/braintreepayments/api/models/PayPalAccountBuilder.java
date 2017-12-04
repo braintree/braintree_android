@@ -2,6 +2,7 @@ package com.braintreepayments.api.models;
 
 import android.content.Context;
 
+import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.models.PayPalRequest.PayPalPaymentIntent;
 
 import org.json.JSONException;
@@ -76,6 +77,10 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
 
         base.put(PAYPAL_ACCOUNT_KEY, paymentMethodNonceJson);
     }
+
+    @Override
+    protected void buildGraphQL(Context context, JSONObject base, JSONObject input)
+            throws BraintreeException, JSONException {}
 
     @Override
     public String getApiPath() {

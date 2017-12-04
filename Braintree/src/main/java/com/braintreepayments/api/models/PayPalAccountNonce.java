@@ -52,7 +52,8 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
      */
     public static PayPalAccountNonce fromJson(String json) throws JSONException {
         PayPalAccountNonce payPalAccountNonce = new PayPalAccountNonce();
-        payPalAccountNonce.fromJson(PayPalAccountNonce.getJsonObjectForType(API_RESOURCE_KEY, json));
+        payPalAccountNonce.fromJson(PayPalAccountNonce.getJsonObjectForType(API_RESOURCE_KEY, new JSONObject(json)));
+
         return payPalAccountNonce;
     }
 

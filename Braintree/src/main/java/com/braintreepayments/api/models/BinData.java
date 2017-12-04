@@ -57,11 +57,20 @@ public class BinData implements Parcelable {
         binData.mDurbinRegulated = Json.optString(json, DURBIN_REGULATED_KEY, UNKNOWN);
         binData.mCommercial = Json.optString(json, COMMERCIAL_KEY, UNKNOWN);
         binData.mPayroll = Json.optString(json, PAYROLL_KEY, UNKNOWN);
-        binData.mIssuingBank = Json.optString(json, ISSUING_BANK_KEY, "");
-        binData.mCountryOfIssuance = Json.optString(json, COUNTRY_OF_ISSUANCE_KEY, "");
-        binData.mProductId = Json.optString(json, PRODUCT_ID_KEY, "");
+
+        binData.mIssuingBank = convertNullToUnknown(json, ISSUING_BANK_KEY);
+        binData.mCountryOfIssuance = convertNullToUnknown(json, COUNTRY_OF_ISSUANCE_KEY);
+        binData.mProductId = convertNullToUnknown(json, PRODUCT_ID_KEY);
 
         return binData;
+    }
+
+    private static String convertNullToUnknown(JSONObject json, String key) {
+        if (json.has(key) && json.isNull(key)) {
+            return UNKNOWN;
+        } else {
+            return Json.optString(json, key, "");
+        }
     }
 
     /**

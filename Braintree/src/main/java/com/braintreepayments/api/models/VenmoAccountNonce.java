@@ -34,7 +34,8 @@ public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable 
      */
     public static VenmoAccountNonce fromJson(String json) throws JSONException {
         VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce();
-        venmoAccountNonce.fromJson(VenmoAccountNonce.getJsonObjectForType(API_RESOURCE_KEY, json));
+        venmoAccountNonce.fromJson(VenmoAccountNonce.getJsonObjectForType(API_RESOURCE_KEY, new JSONObject(json)));
+
         return venmoAccountNonce;
     }
 

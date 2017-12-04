@@ -28,6 +28,9 @@ public class CardNonceUnitTest {
         assertEquals("123456-12345-12345-a-adfa", cardNonce.getNonce());
         assertEquals("ending in ••11", cardNonce.getDescription());
         assertEquals("11", cardNonce.getLastTwo());
+        assertNotNull(cardNonce.getThreeDSecureInfo());
+        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
         assertNotNull(cardNonce.getBinData());
         assertEquals(UNKNOWN, cardNonce.getBinData().getPrepaid());
         assertEquals(YES, cardNonce.getBinData().getHealthcare());
@@ -38,6 +41,30 @@ public class CardNonceUnitTest {
         assertEquals(UNKNOWN, cardNonce.getBinData().getIssuingBank());
         assertEquals("Something", cardNonce.getBinData().getCountryOfIssuance());
         assertEquals("123", cardNonce.getBinData().getProductId());
+    }
+
+    @Test
+    public void canCreateCardFromGraphQLResponse() throws JSONException {
+        CardNonce cardNonce = CardNonce.fromJson(stringFromFixture("response/graphql/credit_card.json"));
+
+        assertEquals("Visa", cardNonce.getTypeLabel());
+        assertEquals("Visa", cardNonce.getCardType());
+        assertEquals("3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1", cardNonce.getNonce());
+        assertEquals("ending in ••11", cardNonce.getDescription());
+        assertEquals("11", cardNonce.getLastTwo());
+        assertNotNull(cardNonce.getThreeDSecureInfo());
+        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertNotNull(cardNonce.getBinData());
+        assertEquals(YES, cardNonce.getBinData().getPrepaid());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getHealthcare());
+        assertEquals(NO, cardNonce.getBinData().getDebit());
+        assertEquals(YES, cardNonce.getBinData().getDurbinRegulated());
+        assertEquals(NO, cardNonce.getBinData().getCommercial());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getPayroll());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getIssuingBank());
+        assertEquals("USA", cardNonce.getBinData().getCountryOfIssuance());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getProductId());
     }
 
     @Test

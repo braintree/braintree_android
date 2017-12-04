@@ -1,7 +1,13 @@
 package com.braintreepayments.api;
 
+import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.PayPalAccountBuilder;
+import com.braintreepayments.api.models.UnionPayCardBuilder;
+import com.braintreepayments.api.models.VenmoAccountBuilder;
+import com.braintreepayments.api.models.VisaCheckoutBuilder;
+import com.braintreepayments.testutils.TestConfigurationBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +20,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
@@ -30,5 +37,57 @@ public class TokenizationClientUnitTest {
         verify(fragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));
         JSONObject data = new JSONObject(captor.getValue()).getJSONObject("_meta");
         assertEquals("session-id", data.getString("sessionId"));
+    }
+
+    @Test
+    public void tokenize_tokenizesCardsWithGraphQLWhenEnabled() throws BraintreeException {
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .configuration(new TestConfigurationBuilder()
+                        .graphQL()
+                        .build())
+                .build();
+        CardBuilder cardBuilder = new CardBuilder();
+
+        TokenizationClient.tokenize(fragment, cardBuilder, null);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verifyZeroInteractions(fragment.getHttpClient());
+        verify(fragment.getGraphQLHttpClient()).post(captor.capture(), any(HttpResponseCallback.class));
+        assertEquals(cardBuilder.buildGraphQL(fragment.getApplicationContext(), fragment.getAuthorization()),
+                captor.getValue());
+    }
+
+    @Test
+    public void tokenize_tokenizesCardsWithRestWhenGraphQLIsDisabled() {
+        BraintreeFragment fragment = new MockFragmentBuilder().build();
+        CardBuilder cardBuilder = new CardBuilder();
+
+        TokenizationClient.tokenize(fragment, cardBuilder, null);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verifyZeroInteractions(fragment.getGraphQLHttpClient());
+        verify(fragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));
+        assertEquals(cardBuilder.build(), captor.getValue());
+    }
+
+    @Test
+    public void tokenize_tokenizesNonCardPaymentMethodsWithRestWhenGraphQLIsEnabled() {
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .configuration(new TestConfigurationBuilder()
+                        .graphQL()
+                        .build())
+                .build();
+
+        TokenizationClient.tokenize(fragment, new PayPalAccountBuilder(), null);
+        TokenizationClient.tokenize(fragment, new UnionPayCardBuilder(), null);
+        TokenizationClient.tokenize(fragment, new VenmoAccountBuilder(), null);
+        TokenizationClient.tokenize(fragment, new VisaCheckoutBuilder(null), null);
+
+        verifyZeroInteractions(fragment.getGraphQLHttpClient());
+    }
+
+    @Test
+    public void versionedPath_returnsv1Path() {
+        assertEquals("/v1/test/path", TokenizationClient.versionedPath("test/path"));
     }
 }

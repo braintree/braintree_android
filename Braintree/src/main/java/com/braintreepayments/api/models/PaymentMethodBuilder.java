@@ -1,9 +1,12 @@
 package com.braintreepayments.api.models;
 
+import android.content.Context;
 import android.os.Parcel;
 
 import com.braintreepayments.api.BraintreeFragment;
+import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
+import com.braintreepayments.api.internal.GraphQLQueryHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,7 +18,10 @@ import org.json.JSONObject;
 public abstract class PaymentMethodBuilder<T> {
 
     protected static final String OPTIONS_KEY = "options";
+    protected static final String OPERATION_NAME_KEY = "operationName";
+
     private static final String VALIDATE_KEY = "validate";
+    private static final String GRAPHQL_CLIENT_SDK_METADATA_KEY = "clientSdkMetadata";
 
     private String mIntegration = getDefaultIntegration();
     private String mSource = getDefaultSource();
@@ -79,27 +85,62 @@ public abstract class PaymentMethodBuilder<T> {
      * @return String representation of {@link PaymentMethodNonce} for API use.
      */
     public String build() {
-        JSONObject json = new JSONObject();
+        JSONObject base = new JSONObject();
         JSONObject optionsJson = new JSONObject();
         JSONObject paymentMethodNonceJson = new JSONObject();
-        JSONObject metaJson = new MetadataBuilder()
-                .sessionId(mSessionId)
-                .source(mSource)
-                .integration(mIntegration)
-                .build();
 
         try {
-            json.put(MetadataBuilder.META_KEY, metaJson);
+            base.put(MetadataBuilder.META_KEY, new MetadataBuilder()
+                    .sessionId(mSessionId)
+                    .source(mSource)
+                    .integration(mIntegration)
+                    .build());
 
             if (mValidateSet) {
                 optionsJson.put(VALIDATE_KEY, mValidate);
                 paymentMethodNonceJson.put(OPTIONS_KEY, optionsJson);
             }
 
-            build(json, paymentMethodNonceJson);
+            build(base, paymentMethodNonceJson);
         } catch (JSONException ignored) {}
 
-        return json.toString();
+        return base.toString();
+    }
+
+    /**
+     * @param context
+     * @param authorization The current authorization being used.
+     * @return String representation of a GraphQL request for {@link PaymentMethodNonce}.
+     * @throws BraintreeException Thrown if resources cannot be accessed.
+     */
+    public String buildGraphQL(Context context, Authorization authorization) throws BraintreeException {
+        JSONObject base = new JSONObject();
+        JSONObject input = new JSONObject();
+
+        try {
+            base.put(GRAPHQL_CLIENT_SDK_METADATA_KEY, new MetadataBuilder()
+                    .sessionId(mSessionId)
+                    .source(mSource)
+                    .integration(mIntegration)
+                    .build());
+
+            JSONObject optionsJson = new JSONObject();
+            if (mValidateSet) {
+                optionsJson.put(VALIDATE_KEY, mValidate);
+            } else {
+                if (authorization instanceof ClientToken) {
+                    optionsJson.put(VALIDATE_KEY, true);
+                } else if (authorization instanceof TokenizationKey) {
+                    optionsJson.put(VALIDATE_KEY, false);
+                }
+            }
+            input.put(OPTIONS_KEY, optionsJson);
+
+            buildGraphQL(context, base, input);
+            base.put(GraphQLQueryHelper.VARIABLES_KEY, new JSONObject().put(GraphQLQueryHelper.INPUT_KEY, input));
+        } catch (JSONException ignored) {}
+
+        return base.toString();
     }
 
     protected PaymentMethodBuilder(Parcel in) {
@@ -127,6 +168,9 @@ public abstract class PaymentMethodBuilder<T> {
     }
 
     protected abstract void build(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException;
+
+    protected abstract void buildGraphQL(Context context, JSONObject base, JSONObject input) throws BraintreeException,
+            JSONException;
 
     public abstract String getApiPath();
 

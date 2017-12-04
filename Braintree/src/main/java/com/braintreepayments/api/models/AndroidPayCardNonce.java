@@ -84,8 +84,8 @@ public class AndroidPayCardNonce extends PaymentMethodNonce implements Parcelabl
     @Deprecated
     public static AndroidPayCardNonce fromJson(String json) throws JSONException {
         AndroidPayCardNonce androidPayCardNonce = new AndroidPayCardNonce();
-        androidPayCardNonce
-                .fromJson(AndroidPayCardNonce.getJsonObjectForType(API_RESOURCE_KEY, json));
+        androidPayCardNonce.fromJson(AndroidPayCardNonce.getJsonObjectForType(API_RESOURCE_KEY, new JSONObject(json)));
+
         return androidPayCardNonce;
     }
 

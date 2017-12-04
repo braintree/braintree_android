@@ -44,7 +44,8 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
      */
     public static VisaCheckoutNonce fromJson(String json) throws JSONException {
         VisaCheckoutNonce visaCheckoutNonce = new VisaCheckoutNonce();
-        visaCheckoutNonce.fromJson(PaymentMethodNonce.getJsonObjectForType(API_RESOURCE_KEY, json));
+        visaCheckoutNonce.fromJson(PaymentMethodNonce.getJsonObjectForType(API_RESOURCE_KEY, new JSONObject(json)));
+
         return visaCheckoutNonce;
     }
 

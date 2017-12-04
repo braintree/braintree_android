@@ -1,37 +1,58 @@
 package com.braintreepayments.api;
 
-import android.support.test.runner.AndroidJUnit4;
-
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
+import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.BinData;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
+import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(Parameterized.class)
 public class CardTest {
+
+    private static final String REST = "REST";
+    private static final String GRAPHQL = "GRAPHQL";
+
+    @Parameters(name="{0}")
+    public static Collection authorizationStrings() {
+        return Arrays.asList(REST, GRAPHQL);
+    }
 
     @Rule
     public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
+
+    private String mRequestProtocol;
+
+    public CardTest(String requestProtocol) {
+        mRequestProtocol = requestProtocol;
+    }
 
     @Test(timeout = 10000)
     public void tokenize_tokenizesACardWithACustomer() throws Exception {
@@ -42,7 +63,7 @@ public class CardTest {
         assertTokenizationSuccessful(new TestClientTokenBuilder().build(), cardBuilder);
     }
 
-    @Test
+    @Test(timeout = 10000)
     public void tokenize_tokenizesACardWithoutACustomer() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
@@ -92,8 +113,12 @@ public class CardTest {
 
     @Test(timeout = 10000)
     public void tokenize_failsWithTokenizationKeyAndValidateTrue() throws Exception {
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber(VISA)
+                .expirationDate("08/20")
+                .validate(true);
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivityTestRule.getActivity(), TOKENIZATION_KEY);
+        BraintreeFragment fragment = setupBraintreeFragment(TOKENIZATION_KEY);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
@@ -103,10 +128,6 @@ public class CardTest {
                 countDownLatch.countDown();
             }
         });
-        CardBuilder cardBuilder = new CardBuilder()
-                .cardNumber(VISA)
-                .expirationDate("08/20")
-                .validate(true);
 
         Card.tokenize(fragment, cardBuilder);
 
@@ -131,8 +152,7 @@ public class CardTest {
                 .cvv("200");
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivityTestRule.getActivity(),
-                new TestClientTokenBuilder().withCvvVerification().build());
+        BraintreeFragment fragment = setupBraintreeFragment(new TestClientTokenBuilder().withCvvVerification().build());
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
@@ -165,7 +185,7 @@ public class CardTest {
                 .postalCode("20000");
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivityTestRule.getActivity(),
+        BraintreeFragment fragment = setupBraintreeFragment(
                 new TestClientTokenBuilder().withPostalCodeVerification().build());
         fragment.addListener(new BraintreeErrorListener() {
             @Override
@@ -207,13 +227,14 @@ public class CardTest {
 
     private void assertTokenizationSuccessful(String authorization, CardBuilder cardBuilder) throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivityTestRule.getActivity(), authorization);
+        BraintreeFragment fragment = setupBraintreeFragment(authorization);
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
                 CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
-                assertIsANonce(cardNonce.getNonce());
+                assertNotNull(cardNonce.getNonce());
+                assertEquals("Visa", cardNonce.getCardType());
                 assertEquals("11", cardNonce.getLastTwo());
                 assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getPrepaid());
                 assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getHealthcare());
@@ -232,5 +253,32 @@ public class CardTest {
         Card.tokenize(fragment, cardBuilder);
 
         countDownLatch.await();
+    }
+
+    private BraintreeFragment setupBraintreeFragment(String authorization) throws Exception {
+        final BraintreeFragment fragment = BraintreeFragment.newInstance(mActivityTestRule.getActivity(), authorization);
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                if (mRequestProtocol.equals(REST)) {
+                    try {
+                        JSONObject configJson = new JSONObject(configuration.toJson());
+                        configJson.remove("graphQL");
+                        fragment.setConfiguration(Configuration.fromJson(configJson.toString()));
+                    } catch (JSONException ignored) {}
+
+                    assertFalse(fragment.getConfiguration().getGraphQL().isEnabled());
+                } else if (mRequestProtocol.equals(GRAPHQL)) {
+                    assertTrue(configuration.getGraphQL().isEnabled());
+                }
+
+                latch.countDown();
+            }
+        });
+
+        latch.await();
+        return fragment;
     }
 }

@@ -59,7 +59,8 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
      */
     public static GooglePaymentCardNonce fromJson(String json) throws JSONException {
         GooglePaymentCardNonce googlePaymentCardNonce = new GooglePaymentCardNonce();
-        googlePaymentCardNonce.fromJson(GooglePaymentCardNonce.getJsonObjectForType(API_RESOURCE_KEY, json));
+        googlePaymentCardNonce.fromJson(GooglePaymentCardNonce.getJsonObjectForType(API_RESOURCE_KEY,
+                new JSONObject(json)));
 
         return googlePaymentCardNonce;
     }

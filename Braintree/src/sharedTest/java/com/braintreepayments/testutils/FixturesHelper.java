@@ -1,13 +1,12 @@
 package com.braintreepayments.testutils;
 
-import java.io.BufferedReader;
+import com.braintreepayments.api.internal.StreamHelper;
+
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 
@@ -36,7 +35,7 @@ public class FixturesHelper {
         InputStream inputStream = null;
         try {
             inputStream = getTargetContext().getResources().getAssets().open(FIXTURES_PATH + filename);
-            return stringFromStream(inputStream);
+            return StreamHelper.getString(inputStream);
         } finally {
             if (inputStream != null) {
                 inputStream.close();
@@ -48,26 +47,11 @@ public class FixturesHelper {
         InputStream inputStream = null;
         try {
             inputStream = new FileInputStream(LOCAL_UNIT_TEST_FIXTURES_PATH + filename);
-            return stringFromStream(inputStream);
+            return StreamHelper.getString(inputStream);
         } finally {
             if (inputStream != null) {
                 inputStream.close();
             }
-        }
-    }
-
-    private static String stringFromStream(InputStream stream) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream, Charset.forName("UTF-8")));
-        try {
-            StringBuilder data = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                data.append(line);
-            }
-
-            return data.toString();
-        } finally {
-            reader.close();
         }
     }
 }

@@ -1,0 +1,25 @@
+{
+  "data": {
+    "tokenizeCreditCard": {
+      "token": "3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1",
+      "creditCard": {
+        "brand": "Visa",
+        "last4": "1111",
+        "binData": {
+          "prepaid": "Yes",
+          "healthcare": "Unknown",
+          "debit": "No",
+          "durbinRegulated": "Yes",
+          "commercial": "No",
+          "payroll": "Unknown",
+          "issuingBank": null,
+          "countryOfIssuance": "USA",
+          "productId": null
+        }
+      }
+    }
+  },
+  "extensions" : {
+    "requestId" : "fef505c8-5930-4e30-b74a-c41fc7807fb8"
+  }
+}

@@ -52,12 +52,12 @@ public class UnionPayCardBuilderUnitTest {
     }
 
     @Test
-    public void expirationDate_addsToJson() throws JSONException {
+    public void expirationDate_addsToJsonAsExpirationMonthAndExpirationYear() throws JSONException {
         UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder().expirationDate("12/2020");
 
-        assertEquals("12/2020", unionPayCardBuilder.buildEnrollment()
-                .getJSONObject("unionPayEnrollment")
-                .getString("expirationDate"));
+        JSONObject enrollment = unionPayCardBuilder.buildEnrollment().getJSONObject("unionPayEnrollment");
+        assertEquals("12", enrollment.getString("expirationMonth"));
+        assertEquals("2020", enrollment.getString("expirationYear"));
     }
 
     @Test
@@ -133,7 +133,6 @@ public class UnionPayCardBuilderUnitTest {
                 .expirationYear("expiration-year")
                 .expirationMonth("expiration-month")
                 .cardNumber("card-number")
-                .expirationDate("expiration-date")
                 .mobileCountryCode("mobile-country-code")
                 .mobilePhoneNumber("mobile-phone-number")
                 .smsCode("sms-code")
@@ -146,7 +145,6 @@ public class UnionPayCardBuilderUnitTest {
         assertEquals("card-number", unionPayEnrollment.getString("number"));
         assertEquals("expiration-month", unionPayEnrollment.getString("expirationMonth"));
         assertEquals("expiration-year", unionPayEnrollment.getString("expirationYear"));
-        assertEquals("expiration-date", unionPayEnrollment.getString("expirationDate"));
         assertEquals("mobile-country-code", unionPayEnrollment.getString("mobileCountryCode"));
         assertEquals("mobile-phone-number", unionPayEnrollment.getString("mobileNumber"));
     }
@@ -159,7 +157,6 @@ public class UnionPayCardBuilderUnitTest {
                 .expirationYear("expiration-year")
                 .expirationMonth("expiration-month")
                 .cardNumber("card-number")
-                .expirationDate("expiration-date")
                 .mobileCountryCode("mobile-country-code")
                 .mobilePhoneNumber("mobile-phone-number")
                 .smsCode("sms-code")
@@ -172,7 +169,6 @@ public class UnionPayCardBuilderUnitTest {
         assertEquals("card-number", creditCard.getString("number"));
         assertEquals("expiration-month", creditCard.getString("expirationMonth"));
         assertEquals("expiration-year", creditCard.getString("expirationYear"));
-        assertEquals("expiration-date", creditCard.getString("expirationDate"));
         assertEquals("123", creditCard.getString("cvv"));
 
         JSONObject options = creditCard.getJSONObject("options");

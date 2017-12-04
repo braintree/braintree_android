@@ -17,7 +17,6 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     protected static final String EXPIRATION_MONTH_KEY = "expirationMonth";
     protected static final String EXPIRATION_YEAR_KEY = "expirationYear";
     protected static final String CVV_KEY = "cvv";
-    protected static final String EXPIRATION_DATE_KEY = "expirationDate";
     protected static final String CARDHOLDER_NAME_KEY = "cardholderName";
     protected static final String BILLING_ADDRESS_KEY = "billingAddress";
     protected static final String FIRST_NAME_KEY = "firstName";
@@ -37,7 +36,6 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     protected String mCvv;
     protected String mExpirationMonth;
     protected String mExpirationYear;
-    protected String mExpirationDate;
     protected String mCardholderName;
     protected String mBillingAddress;
     protected String mFirstName;
@@ -118,9 +116,16 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     @SuppressWarnings("unchecked")
     public T expirationDate(String expirationDate) {
         if (TextUtils.isEmpty(expirationDate)) {
-            mExpirationDate = null;
+            mExpirationMonth = null;
+            mExpirationYear = null;
         } else {
-            mExpirationDate = expirationDate;
+            String[] splitExpiration = expirationDate.split("/");
+
+            mExpirationMonth = splitExpiration[0];
+
+            if (splitExpiration.length > 1) {
+                mExpirationYear = splitExpiration[1];
+            }
         }
         return (T) this;
     }
@@ -313,7 +318,6 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         paymentMethodNonceJson.put(CVV_KEY, mCvv);
         paymentMethodNonceJson.put(EXPIRATION_MONTH_KEY, mExpirationMonth);
         paymentMethodNonceJson.put(EXPIRATION_YEAR_KEY, mExpirationYear);
-        paymentMethodNonceJson.put(EXPIRATION_DATE_KEY, mExpirationDate);
 
         paymentMethodNonceJson.put(CARDHOLDER_NAME_KEY, mCardholderName);
 
@@ -359,7 +363,6 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         mCvv = in.readString();
         mExpirationMonth = in.readString();
         mExpirationYear = in.readString();
-        mExpirationDate = in.readString();
         mCardholderName = in.readString();
         mBillingAddress = in.readString();
         mFirstName = in.readString();
@@ -383,7 +386,6 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         dest.writeString(mCvv);
         dest.writeString(mExpirationMonth);
         dest.writeString(mExpirationYear);
-        dest.writeString(mExpirationDate);
         dest.writeString(mCardholderName);
         dest.writeString(mBillingAddress);
         dest.writeString(mFirstName);
