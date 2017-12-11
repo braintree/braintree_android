@@ -4,6 +4,7 @@
   "merchantId": "integration_merchant_id",
   "merchantAccountId": "integration_merchant_account_id",
   "graphQL": {
-    "url": "/graphql"
+    "url": "/graphql",
+    "features": ["tokenize_credit_cards"]
   }
 }

@@ -18,6 +18,7 @@ public class GraphQLConfigurationUnitTest {
         GraphQLConfiguration graphQLConfiguration = configuration.getGraphQL();
 
         assertTrue(graphQLConfiguration.isEnabled());
+        assertTrue(graphQLConfiguration.isFeatureEnabled(GraphQLConfiguration.TOKENIZE_CREDIT_CARDS_FEATURE));
         assertEquals("/graphql", graphQLConfiguration.getUrl());
     }
 }
