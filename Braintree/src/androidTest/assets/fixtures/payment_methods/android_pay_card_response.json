@@ -6,7 +6,8 @@
       "description": "Android Pay",
       "details": {
         "cardType": "Visa",
-        "lastTwo": "11"
+        "lastTwo": "11",
+        "lastFour": "1234"
       },
       "binData": {
         "prepaid": "Unknown",

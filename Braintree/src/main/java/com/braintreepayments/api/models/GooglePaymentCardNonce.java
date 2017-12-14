@@ -22,9 +22,11 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
     private static final String LAST_TWO_KEY = "lastTwo";
+    private static final String LAST_FOUR_KEY = "lastFour";
 
     private String mCardType;
     private String mLastTwo;
+    private String mLastFour;
     private String mEmail;
     private UserAddress mBillingAddress;
     private UserAddress mShippingAddress;
@@ -69,6 +71,7 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
         mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
         mLastTwo = details.getString(LAST_TWO_KEY);
+        mLastFour = details.getString(LAST_FOUR_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
     }
 
@@ -84,6 +87,13 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
      */
     public String getLastTwo() {
         return mLastTwo;
+    }
+
+    /**
+     * @return Last four digits of the user's underlying card, intended for display purposes.
+     */
+    public String getLastFour() {
+        return mLastFour;
     }
 
     /**
@@ -129,6 +139,7 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
         super.writeToParcel(dest, flags);
         dest.writeString(mCardType);
         dest.writeString(mLastTwo);
+        dest.writeString(mLastFour);
         dest.writeString(mEmail);
         dest.writeParcelable(mBillingAddress, flags);
         dest.writeParcelable(mShippingAddress, flags);
@@ -139,6 +150,7 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
         super(in);
         mCardType = in.readString();
         mLastTwo = in.readString();
+        mLastFour = in.readString();
         mEmail = in.readString();
         mBillingAddress = in.readParcelable(UserAddress.class.getClassLoader());
         mShippingAddress = in.readParcelable(UserAddress.class.getClassLoader());

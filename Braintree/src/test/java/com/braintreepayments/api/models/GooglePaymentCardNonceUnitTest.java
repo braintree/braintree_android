@@ -39,6 +39,7 @@ public class GooglePaymentCardNonceUnitTest {
         assertEquals("MasterCard 0276", googlePaymentCardNonce.getDescription());
         assertEquals("Visa", googlePaymentCardNonce.getCardType());
         assertEquals("11", googlePaymentCardNonce.getLastTwo());
+        assertEquals("1234", googlePaymentCardNonce.getLastFour());
         assertEquals("android-user@example.com", googlePaymentCardNonce.getEmail());
         assertEquals(billingAddress, googlePaymentCardNonce.getBillingAddress());
         assertEquals(shippingAddress, googlePaymentCardNonce.getShippingAddress());
@@ -54,6 +55,7 @@ public class GooglePaymentCardNonceUnitTest {
         assertEquals("Google Payments", googlePaymentCardNonce.getDescription());
         assertEquals("Visa", googlePaymentCardNonce.getCardType());
         assertEquals("11", googlePaymentCardNonce.getLastTwo());
+        assertEquals("1234", googlePaymentCardNonce.getLastFour());
         assertNotNull(googlePaymentCardNonce.getBinData());
         assertEquals(UNKNOWN, googlePaymentCardNonce.getBinData().getPrepaid());
         assertEquals(YES, googlePaymentCardNonce.getBinData().getHealthcare());
@@ -86,6 +88,7 @@ public class GooglePaymentCardNonceUnitTest {
         assertEquals("MasterCard 0276", parceled.getDescription());
         assertEquals("Visa", parceled.getCardType());
         assertEquals("11", parceled.getLastTwo());
+        assertEquals("1234", parceled.getLastFour());
         assertEquals("android-user@example.com", parceled.getEmail());
         assertNotNull(parceled.getBillingAddress());
         assertNotNull(parceled.getShippingAddress());
