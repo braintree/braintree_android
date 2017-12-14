@@ -7,8 +7,10 @@
 
     <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" android:orientation="vertical"
-        android:layout_alignParentBottom="true" android:id="@+id/action_buttons">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/action_buttons">
 
         <TableRow android:layout_width="match_parent" android:layout_height="match_parent">
             <Button
@@ -31,7 +33,7 @@
                 android:id="@+id/google_payment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/pay_with_google"
+                android:text="@string/google_pay"
                 android:onClick="launchGooglePayment"
                 android:enabled="false" android:textSize="10sp" android:layout_weight="1" />
             <Button

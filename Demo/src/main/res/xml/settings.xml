@@ -70,7 +70,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/pay_with_google">
+        android:title="@string/google_pay">
 
         <CheckBoxPreference
             android:key="google_payment_allow_prepaid_cards"
