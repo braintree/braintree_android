@@ -123,8 +123,15 @@ public class CardTest {
             @Override
             public void onError(Exception error) {
                 assertTrue(error instanceof AuthorizationException);
-                assertEquals("Tokenization key authorization not allowed for this endpoint. Please use an authentication method with upgraded permissions",
-                        error.getMessage());
+
+                if (mRequestProtocol.equals(GRAPHQL)) {
+                    assertEquals("Validation is not supported for requests authorized with a tokenization key.",
+                            error.getMessage());
+                } else {
+                    assertEquals("Tokenization key authorization not allowed for this endpoint. Please use an " +
+                            "authentication method with upgraded permissions", error.getMessage());
+                }
+
                 countDownLatch.countDown();
             }
         });

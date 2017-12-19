@@ -38,6 +38,30 @@ public class BraintreeError implements Parcelable {
         return errors;
     }
 
+    protected static List<BraintreeError> fromGraphQLJsonArray(JSONArray json) {
+        if (json == null) {
+            json = new JSONArray();
+        }
+
+        List<BraintreeError> errors = new ArrayList<>();
+
+        for (int i = 0; i < json.length(); i++) {
+            try {
+                JSONObject errorJSON = json.getJSONObject(i);
+                ArrayList<String> inputPath = new ArrayList<>();
+                JSONArray inputPathJSON = errorJSON.getJSONArray("inputPath");
+
+                for (int j = 1; j < inputPathJSON.length(); j++) {
+                    inputPath.add(inputPathJSON.getString(j));
+                }
+
+                addGraphQLFieldError(inputPath, errorJSON, errors);
+            } catch (JSONException ignored) {}
+        }
+
+        return errors;
+    }
+
     public static BraintreeError fromJson(JSONObject json) {
         BraintreeError error = new BraintreeError();
         error.mField = Json.optString(json, FIELD_KEY, null);
@@ -45,6 +69,39 @@ public class BraintreeError implements Parcelable {
         error.mFieldErrors = BraintreeError.fromJsonArray(json.optJSONArray(FIELD_ERRORS_KEY));
 
         return error;
+    }
+
+    private static void addGraphQLFieldError(List<String> inputPath, JSONObject errorJSON, List<BraintreeError> errors) throws JSONException {
+        String field = inputPath.get(0);
+
+        if (inputPath.size() == 1) {
+            BraintreeError error = new BraintreeError();
+            error.mField = field;
+            error.mMessage = errorJSON.getString(MESSAGE_KEY);
+            error.mFieldErrors = new ArrayList<>();
+
+            errors.add(error);
+            return;
+        }
+
+        BraintreeError nestedError = null;
+        List<String> nestedInputPath = inputPath.subList(1, inputPath.size());
+
+        for (BraintreeError error : errors) {
+            if (error.mField.equals(field)) {
+                nestedError = error;
+            }
+        }
+
+        if (nestedError == null) {
+            nestedError = new BraintreeError();
+            nestedError.mField = field;
+            nestedError.mFieldErrors = new ArrayList<>();
+
+            errors.add(nestedError);
+        }
+
+        addGraphQLFieldError(nestedInputPath, errorJSON, nestedError.mFieldErrors);
     }
 
     /**
@@ -78,7 +135,7 @@ public class BraintreeError implements Parcelable {
     @Nullable
     public BraintreeError errorFor(String field) {
         BraintreeError returnError;
-        if(mFieldErrors != null) {
+        if (mFieldErrors != null) {
             for (BraintreeError error : mFieldErrors) {
                 if (error.getField().equals(field)) {
                     return error;

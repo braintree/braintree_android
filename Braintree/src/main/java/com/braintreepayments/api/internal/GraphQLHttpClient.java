@@ -1,8 +1,13 @@
 package com.braintreepayments.api.internal;
 
 import com.braintreepayments.api.BuildConfig;
+import com.braintreepayments.api.exceptions.AuthorizationException;
+import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.Authorization;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -46,5 +51,23 @@ public class GraphQLHttpClient extends HttpClient {
         connection.setRequestProperty("Braintree-Version", API_VERSION_2018_01_08);
 
         return connection;
+    }
+
+    @Override
+    protected String parseResponse(HttpURLConnection connection) throws Exception {
+        String response = super.parseResponse(connection);
+
+        JSONArray errors = new JSONObject(response).optJSONArray(ErrorWithResponse.GRAPHQL_ERRORS_KEY);
+        if (errors != null) {
+            ErrorWithResponse error = ErrorWithResponse.fromGraphQLJson(response);
+
+            if (error.errorFor("validate") != null) {
+                throw new AuthorizationException(error.errorFor("validate").getMessage());
+            } else {
+                throw error;
+            }
+        }
+
+        return response;
     }
 }
