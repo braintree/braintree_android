@@ -4,7 +4,7 @@
   "merchantId": "integration_merchant_id",
   "merchantAccountId": "integration_merchant_account_id",
   "payWithVenmo": {
-    "accessToken" : "access-token",
+    "accessToken": "access-token",
     "environment": "environment",
     "merchantId": "merchant-id"
   }

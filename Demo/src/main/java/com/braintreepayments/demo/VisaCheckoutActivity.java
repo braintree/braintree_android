@@ -62,7 +62,7 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         Intent intent = new Intent()
-                .putExtra(MainActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce);
+                .putExtra(MainActivity.EXTRA_PAYMENT_RESULT, paymentMethodNonce);
         setResult(RESULT_OK, intent);
         finish();
     }

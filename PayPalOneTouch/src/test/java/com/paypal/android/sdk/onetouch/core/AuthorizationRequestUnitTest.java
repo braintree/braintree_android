@@ -143,8 +143,8 @@ public class AuthorizationRequestUnitTest {
     @Test
     public void parseBrowserSwitchResponse_parsesSuccessResponses()
             throws JSONException, NoSuchFieldException, IllegalAccessException {
-        setField(AuthorizationRequest.class, "mMsgGuid", mRequest, "19342c28-c6d3-4948-a989-8ee1d40dae5c");
-        setField(AuthorizationRequest.class, "mEncryptionKey", mRequest,
+        setField("mMsgGuid", mRequest, "19342c28-c6d3-4948-a989-8ee1d40dae5c");
+        setField("mEncryptionKey", mRequest,
                 EncryptionUtils.hexStringToByteArray("96BF26A3851D0127AF474CC556D9C296A9A02171CD319EE5249C4B3033FC7BB6"));
         Uri uri = Uri.parse("com.braintreepayments.demo.braintree://onetouch/v1/success?payloadEnc=9kuRyRmR8PpMoc3umclWyuGeibf4%2FIWdDyF9ehFL0TWI33GJ83iAHC7NdZszNRXrsa5uvO20N6BpGCKm3M%2F%2FjXzI5XrkxHhpKnH4j96mLNlTjDI2012cUZ7hotqm8rahnFkobykEwfI6OTGu3Zk%2Bc6FQ4Vi44nEeIw7Ocs%2Fiw%2BwzXGaZz3LgJajediKcwL%2BrDJIRgoZTnjzT2aM2No7wvORpAk%2FBRmAp1QxZkzTor0zcYgPEia%2B%2FivuEDRFKDUIC%2BC4GRulZB70Bzo7FBSvSOyy1rldRjaLg9W8bhBd8WOXjyg%2F0gLryjIqppmA%2FWFwUH7nBrbqpOyCyp5hskE5NZSNFZEokUEh4oOHI%2BMQshZETuivdWEjNrvbWq8bp2JHv5fnM9NjqmHY%2Bu23sEHQoJQ%3D%3D&payload=eyJ2ZXJzaW9uIjozLCJtc2dfR1VJRCI6IjE5MzQyYzI4LWM2ZDMtNDk0OC1hOTg5LThlZTFkNDBkYWU1YyIsInJlc3BvbnNlX3R5cGUiOiJjb2RlIiwiZW52aXJvbm1lbnQiOiJtb2NrIiwiZXJyb3IiOm51bGx9&x-source=com.braintree.browserswitch");
 
@@ -157,8 +157,8 @@ public class AuthorizationRequestUnitTest {
     @Test
     public void parseBrowserSwitchResponse_parsesSuccessResponseAndReturnsErrorWhenErrorIsPresent()
             throws NoSuchFieldException, IllegalAccessException {
-        setField(AuthorizationRequest.class, "mMsgGuid", mRequest, "19342c28-c6d3-4948-a989-8ee1d40dae5c");
-        setField(AuthorizationRequest.class, "mEncryptionKey", mRequest,
+        setField("mMsgGuid", mRequest, "19342c28-c6d3-4948-a989-8ee1d40dae5c");
+        setField("mEncryptionKey", mRequest,
                 EncryptionUtils.hexStringToByteArray("96BF26A3851D0127AF474CC556D9C296A9A02171CD319EE5249C4B3033FC7BB6"));
         Uri uri = Uri.parse("com.braintreepayments.demo.braintree://onetouch/v1/success?payloadEnc=9kuRyRmR8PpMoc3umclWyuGeibf4%2FIWdDyF9ehFL0TWI33GJ83iAHC7NdZszNRXrsa5uvO20N6BpGCKm3M%2F%2FjXzI5XrkxHhpKnH4j96mLNlTjDI2012cUZ7hotqm8rahnFkobykEwfI6OTGu3Zk%2Bc6FQ4Vi44nEeIw7Ocs%2Fiw%2BwzXGaZz3LgJajediKcwL%2BrDJIRgoZTnjzT2aM2No7wvORpAk%2FBRmAp1QxZkzTor0zcYgPEia%2B%2FivuEDRFKDUIC%2BC4GRulZB70Bzo7FBSvSOyy1rldRjaLg9W8bhBd8WOXjyg%2F0gLryjIqppmA%2FWFwUH7nBrbqpOyCyp5hskE5NZSNFZEokUEh4oOHI%2BMQshZETuivdWEjNrvbWq8bp2JHv5fnM9NjqmHY%2Bu23sEHQoJQ%3D%3D&payload=eyJ2ZXJzaW9uIjozLCJtc2dfR1VJRCI6IjE5MzQyYzI4LWM2ZDMtNDk0OC1hOTg5LThlZTFkNDBkYWU1YyIsImVycm9yIjoiVGhlcmUgd2FzIGFuIGVycm9yIn0=");
 
@@ -172,7 +172,7 @@ public class AuthorizationRequestUnitTest {
     @Test
     public void parseBrowserSwitchResponse_parsesSuccessResponsesAndReturnsErrorWhenInvalidPayloadEncIsReturned()
             throws NoSuchFieldException, IllegalAccessException {
-        setField(AuthorizationRequest.class, "mMsgGuid", mRequest, "19342c28-c6d3-4948-a989-8ee1d40dae5c");
+        setField("mMsgGuid", mRequest, "19342c28-c6d3-4948-a989-8ee1d40dae5c");
         Uri uri = Uri.parse("com.braintreepayments.demo.braintree://onetouch/v1/success?payloadEnc=9kuRy&payload=eyJ2ZXJzaW9uIjozLCJtc2dfR1VJRCI6IjE5MzQyYzI4LWM2ZDMtNDk0OC1hOTg5LThlZTFkNDBkYWU1YyIsInJlc3BvbnNlX3R5cGUiOiJjb2RlIiwiZW52aXJvbm1lbnQiOiJtb2NrIiwiZXJyb3IiOm51bGx9");
 
         Result result = mRequest.parseBrowserResponse(mContextInspector, uri);

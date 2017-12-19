@@ -331,6 +331,20 @@ public class HttpClientTest {
     }
 
     @Test(timeout = 1000)
+    public void postsUnexpectedExceptionOn404() throws IOException, InterruptedException {
+        HttpClient httpClient = clientWithExpectedResponse(404, "Not found");
+
+        assertExceptionIsPosted(httpClient, UnexpectedException.class, "Not found");
+    }
+
+    @Test(timeout = 1000)
+    public void postsUnprocessableEntityExceptionOn400() throws IOException, InterruptedException {
+        HttpClient httpClient = clientWithExpectedResponse(400, "There was an error");
+
+        assertExceptionIsPosted(httpClient, UnprocessableEntityException.class, "There was an error");
+    }
+
+    @Test(timeout = 1000)
     public void postsUnprocessableEntityExceptionOn422() throws IOException, InterruptedException {
         HttpClient httpClient = clientWithExpectedResponse(422, "There was an error");
 

@@ -1,0 +1,66 @@
+{
+  "data": [
+    {
+      "country_code": "NL",
+      "localized_country_names": [
+        "Netherlands"
+      ],
+      "issuers": [
+        {
+          "id": "ABNANL2A",
+          "name": "ABN AMRO",
+          "image_file_name": "ABNANL2A.png"
+        },
+        {
+          "id": "ASNBNL21",
+          "name": "ASN Bank",
+          "image_file_name": "ASNBNL21.png"
+        },
+        {
+          "id": "BUNQNL2A",
+          "name": "bunq",
+          "image_file_name": "BUNQNL2A.png"
+        },
+        {
+          "id": "INGBNL2A",
+          "name": "ING",
+          "image_file_name": "INGBNL2A.png"
+        },
+        {
+          "id": "KNABNL2H",
+          "name": "Knab",
+          "image_file_name": "AEGONL2U.png"
+        },
+        {
+          "id": "RABONL2U",
+          "name": "Rabobank",
+          "image_file_name": "RABONL2U.png"
+        },
+        {
+          "id": "RBRBNL21",
+          "name": "RegioBank",
+          "image_file_name": "RBRBNL21.png"
+        },
+        {
+          "id": "SNSBNL2A",
+          "name": "SNS Bank",
+          "image_file_name": "SNSBNL2A.png"
+        },
+        {
+          "id": "TRIONL2U",
+          "name": "Triodos Bank",
+          "image_file_name": "TRIONL2U.png"
+        },
+        {
+          "id": "FVLBNL22",
+          "name": "Van Lanschot",
+          "image_file_name": "FVLBNL22.png"
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "braintree_request_id": "cff12918-691a-4ab3-8ab3-70b4f9debe55"
+  },
+  "links": []
+}

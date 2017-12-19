@@ -1,0 +1,12 @@
+{
+  "data": {
+    "id": "ideal_payment_id",
+    "short_id": "short_id",
+    "status": "PENDING",
+    "approval_url": "http://approval.example.com/"
+  },
+  "meta": {
+    "braintree_request_id": "faf24dea-2aed-48c7-997b-beb891fe567f"
+  },
+  "links": []
+}

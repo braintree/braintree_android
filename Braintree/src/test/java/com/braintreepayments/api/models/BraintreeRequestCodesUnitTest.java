@@ -10,6 +10,11 @@ import static junit.framework.Assert.assertEquals;
 public class BraintreeRequestCodesUnitTest {
 
     @Test
+    public void expectedNumberOfRequestCodes() {
+        assertEquals(7, BraintreeRequestCodes.class.getDeclaredFields().length);
+    }
+
+    @Test
     public void threeDSecure() {
         assertEquals(13487, BraintreeRequestCodes.THREE_D_SECURE);
     }
@@ -37,5 +42,10 @@ public class BraintreeRequestCodesUnitTest {
     @Test
     public void googlePayment() {
         assertEquals(13593, BraintreeRequestCodes.GOOGLE_PAYMENT);
+    }
+
+    @Test
+    public void ideal() {
+        assertEquals(13594, BraintreeRequestCodes.IDEAL);
     }
 }

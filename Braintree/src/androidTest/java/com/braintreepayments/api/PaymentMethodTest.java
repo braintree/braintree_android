@@ -6,13 +6,16 @@ import android.support.test.runner.AndroidJUnit4;
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
+import com.braintreepayments.api.interfaces.BraintreePaymentResultListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
+import com.braintreepayments.api.models.BraintreePaymentResult;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
+import com.braintreepayments.testutils.ExpirationDateHelper;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,6 +31,7 @@ import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.tokenize;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.CardNumber.VISA;
+import static com.braintreepayments.testutils.ExpirationDateHelper.validExpirationYear;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -63,10 +67,18 @@ public class PaymentMethodTest {
                 latch.countDown();
             }
         });
+
+        fragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onError(Exception error) {
+                fail(error.getMessage());
+            }
+        });
+
         tokenize(fragment, new CardBuilder()
                 .cardNumber(VISA)
                 .expirationMonth("04")
-                .expirationYear(nextYear()));
+                .expirationYear(validExpirationYear()));
 
         PaymentMethod.getPaymentMethodNonces(fragment);
 
@@ -97,18 +109,10 @@ public class PaymentMethodTest {
         tokenize(fragment, new CardBuilder()
                 .cardNumber(VISA)
                 .expirationMonth("04")
-                .expirationYear(nextYear()));
+                .expirationYear(validExpirationYear()));
 
         PaymentMethod.getPaymentMethodNonces(fragment);
 
         latch.await();
-    }
-
-    private String nextYear() {
-        SimpleDateFormat twoDigitYear = new SimpleDateFormat("yy");
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.YEAR, 1);
-
-        return twoDigitYear.format(cal.getTime());
     }
 }

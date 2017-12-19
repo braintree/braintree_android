@@ -46,6 +46,14 @@ public class ConfigurationUnitTest {
     }
 
     @Test
+    public void fromJson_parsesAssetsUrl() throws JSONException {
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration/with_assets_url.json"));
+
+        assertEquals("https://assets.braintreegateway.com", configuration.getAssetsUrl());
+    }
+
+    @Test
     public void fromJson_handlesAbsentChallenges() throws JSONException {
         Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/without_challenge.json"));
 
@@ -186,5 +194,37 @@ public class ConfigurationUnitTest {
         Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
 
         assertFalse(configuration.getVisaCheckout().isEnabled());
+    }
+
+    @Test
+    public void returnsBraintreeApiConfigurationWhenBraintreeApiConfigurationPresent() throws JSONException {
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_braintree_api.json"));
+
+        assertNotNull(configuration.getBraintreeApiConfiguration());
+        assertTrue(configuration.getBraintreeApiConfiguration().isEnabled());
+    }
+
+    @Test
+    public void returnsNewBraintreeApiConfigurationWhenBraintreeApiConfigurationAbsent() throws JSONException {
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
+
+        assertNotNull(configuration.getBraintreeApiConfiguration());
+        assertFalse(configuration.getBraintreeApiConfiguration().isEnabled());
+    }
+
+    @Test
+    public void returnsNewIdealConfigurationWhenIdealConfigurationAbsent() throws JSONException {
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
+
+        assertNotNull(configuration.getIdealConfiguration());
+        assertFalse(configuration.getIdealConfiguration().isEnabled());
+    }
+
+    @Test
+    public void returnsIdealConfigurationWhenIdealConfigurationPresent() throws JSONException {
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_ideal.json"));
+
+        assertNotNull(configuration.getIdealConfiguration());
+        assertTrue(configuration.getIdealConfiguration().isEnabled());
     }
 }

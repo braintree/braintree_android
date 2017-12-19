@@ -21,7 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.api.internal.BraintreeHttpClientTestUtils.clientWithExpectedResponse;
+import static com.braintreepayments.api.internal.HttpClientTestUtils.stubResponse;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
@@ -151,8 +151,7 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 1000)
-    public void postsErrorWhenBaseUrlIsNull()
-            throws InterruptedException, InvalidArgumentException, IOException {
+    public void postsErrorWhenBaseUrlIsNull() throws Exception {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY));
         httpClient.setBaseUrl(null);
 
@@ -161,8 +160,7 @@ public class BraintreeHttpClientTest {
 
 
     @Test(timeout = 1000)
-    public void postsErrorWhenBaseUrlIsEmpty()
-            throws InterruptedException, IOException, InvalidArgumentException {
+    public void postsErrorWhenBaseUrlIsEmpty() throws Exception {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY));
         httpClient.setBaseUrl("");
 
@@ -230,20 +228,15 @@ public class BraintreeHttpClientTest {
     }
 
     @Test(timeout = 1000)
-    public void throwsAuthorizationExceptionWithCorrectMessageOn403() throws IOException,
-            InterruptedException, ErrorWithResponse, InvalidArgumentException {
-        BraintreeHttpClient httpClient = clientWithExpectedResponse(403,
-                stringFromFixture("error_response.json"));
-
-        assertExceptionIsPosted(httpClient, AuthorizationException.class, "There was an error");
+    public void throwsAuthorizationExceptionWithCorrectMessageOn403() throws Exception {
+        assertExceptionIsPosted(403, stringFromFixture("error_response.json"),AuthorizationException.class,
+                "There was an error");
     }
 
     @Test(timeout = 1000)
-    public void throwsErrorWithResponseOn422() throws IOException, InterruptedException, ErrorWithResponse,
-            InvalidArgumentException {
-        BraintreeHttpClient httpClient = clientWithExpectedResponse(422, stringFromFixture("error_response.json"));
-
-        assertExceptionIsPosted(httpClient, ErrorWithResponse.class, "There was an error");
+    public void throwsErrorWithResponseOn422() throws Exception {
+        assertExceptionIsPosted(422, stringFromFixture("error_response.json"), ErrorWithResponse.class,
+                "There was an error");
     }
 
     @Test(timeout = 5000)
@@ -320,9 +313,14 @@ public class BraintreeHttpClientTest {
     }
 
     /* helpers */
+    private void assertExceptionIsPosted(int responseCode, String responseBody,
+            final Class<? extends Exception> exceptionType, final String exceptionMessage) throws Exception {
+        assertExceptionIsPosted((BraintreeHttpClient) stubResponse(new BraintreeHttpClient(null), responseCode, responseBody),
+                exceptionType, exceptionMessage);
+    }
+
     private void assertExceptionIsPosted(BraintreeHttpClient httpClient,
-            final Class<? extends Exception> exceptionType, final String exceptionMessage)
-            throws IOException, InterruptedException {
+            final Class<? extends Exception> exceptionType, final String exceptionMessage) throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(2);
 
         httpClient.get("/", new HttpResponseCallback() {

@@ -35,6 +35,7 @@ import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocketFactory;
 
 import static java.net.HttpURLConnection.HTTP_ACCEPTED;
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
@@ -260,6 +261,7 @@ public class HttpClient<T extends HttpClient> {
                 throw new AuthenticationException(readStream(connection.getErrorStream(), gzip));
             case HTTP_FORBIDDEN:
                 throw new AuthorizationException(readStream(connection.getErrorStream(), gzip));
+            case HTTP_BAD_REQUEST:
             case 422: // HTTP_UNPROCESSABLE_ENTITY
                 throw new UnprocessableEntityException(readStream(connection.getErrorStream(), gzip));
             case 426: // HTTP_UPGRADE_REQUIRED

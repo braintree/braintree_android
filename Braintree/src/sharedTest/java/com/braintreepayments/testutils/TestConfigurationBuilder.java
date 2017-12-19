@@ -21,6 +21,11 @@ public class TestConfigurationBuilder extends JSONBuilder {
         merchantId("integration_merchant_id");
     }
 
+    public TestConfigurationBuilder assetsUrl(String assetsUrl) {
+        put(assetsUrl);
+        return this;
+    }
+
     public TestConfigurationBuilder clientApiUrl(String clientApiUrl) {
         put(clientApiUrl);
         return this;
@@ -113,6 +118,20 @@ public class TestConfigurationBuilder extends JSONBuilder {
     public TestConfigurationBuilder visaCheckout(TestVisaCheckoutConfigurationBuilder visaCheckoutConfigurationBuilder) {
         try {
             put(new JSONObject(visaCheckoutConfigurationBuilder.build()));
+        } catch (JSONException ignored) {}
+        return this;
+    }
+
+    public TestConfigurationBuilder braintreeApi(TestBraintreeApiConfigurationBuilder braintreeApiConfigurationBuilder) {
+        try {
+            put(new JSONObject(braintreeApiConfigurationBuilder.build()));
+        } catch (JSONException ignored) {}
+        return this;
+    }
+
+    public TestConfigurationBuilder ideal(TestIdealConfigurationBuilder idealConfigurationBuilder) {
+        try {
+            put(new JSONObject(idealConfigurationBuilder.build()));
         } catch (JSONException ignored) {}
         return this;
     }
@@ -330,6 +349,48 @@ public class TestConfigurationBuilder extends JSONBuilder {
 
         public TestVisaCheckoutConfigurationBuilder supportedCardTypes(String... supportedCardTypes) {
             put(new JSONArray(Arrays.asList(supportedCardTypes)));
+            return this;
+        }
+    }
+
+    public static class TestBraintreeApiConfigurationBuilder extends JSONBuilder {
+
+        public TestBraintreeApiConfigurationBuilder() {
+            super();
+        }
+
+        protected TestBraintreeApiConfigurationBuilder(JSONObject json) {
+            super(json);
+        }
+
+        public TestBraintreeApiConfigurationBuilder accessToken(String accessToken) {
+            put(accessToken);
+            return this;
+        }
+
+        public TestBraintreeApiConfigurationBuilder url(String url) {
+            put(url);
+            return this;
+        }
+    }
+
+    public static class TestIdealConfigurationBuilder extends JSONBuilder {
+
+        public TestIdealConfigurationBuilder() {
+            super();
+        }
+
+        protected TestIdealConfigurationBuilder(JSONObject json) {
+            super(json);
+        }
+
+        public TestIdealConfigurationBuilder routeId(String routeId) {
+            put(routeId);
+            return this;
+        }
+
+        public TestIdealConfigurationBuilder assetsUrl(String assetsUrl) {
+            put(assetsUrl);
             return this;
         }
     }

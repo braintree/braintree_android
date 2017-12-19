@@ -17,11 +17,13 @@ import java.util.Set;
 public class Configuration {
 
     private static final String CLIENT_API_URL_KEY = "clientApiUrl";
+    private static final String ASSETS_URL_KEY = "assetsUrl";
     private static final String CHALLENGES_KEY = "challenges";
     private static final String ENVIRONMENT_KEY = "environment";
     private static final String MERCHANT_ID_KEY = "merchantId";
     private static final String MERCHANT_ACCOUNT_ID_KEY = "merchantAccountId";
     private static final String ANALYTICS_KEY = "analytics";
+    private static final String BRAINTREE_API_KEY = "braintreeApi";
     private static final String PAYPAL_ENABLED_KEY = "paypalEnabled";
     private static final String PAYPAL_KEY = "paypal";
     private static final String KOUNT_KEY = "kount";
@@ -31,13 +33,17 @@ public class Configuration {
     private static final String UNIONPAY_KEY = "unionPay";
     private static final String CARD_KEY = "creditCards";
     private static final String VISA_CHECKOUT_KEY = "visaCheckout";
+    private static final String IDEAL_KEY = "ideal";
 
     private String mConfigurationString;
     private String mClientApiUrl;
+    private String mAssetsUrl;
     private final Set<String> mChallenges = new HashSet<>();
     private String mEnvironment;
     private String mMerchantId;
     private String mMerchantAccountId;
+    private BraintreeApiConfiguration mBraintreeApiConfiguration;
+    private IdealConfiguration mIdealConfiguration;
     private AnalyticsConfiguration mAnalyticsConfiguration;
     private CardConfiguration mCardConfiguration;
     private boolean mPaypalEnabled;
@@ -68,11 +74,13 @@ public class Configuration {
         JSONObject json = new JSONObject(configurationString);
 
         mClientApiUrl = json.getString(CLIENT_API_URL_KEY);
+        mAssetsUrl = Json.optString(json, ASSETS_URL_KEY, "");
         parseJsonChallenges(json.optJSONArray(CHALLENGES_KEY));
         mEnvironment = json.getString(ENVIRONMENT_KEY);
         mMerchantId = json.getString(MERCHANT_ID_KEY);
         mMerchantAccountId = Json.optString(json, MERCHANT_ACCOUNT_ID_KEY, null);
         mAnalyticsConfiguration = AnalyticsConfiguration.fromJson(json.optJSONObject(ANALYTICS_KEY));
+        mBraintreeApiConfiguration = BraintreeApiConfiguration.fromJson(json.optJSONObject(BRAINTREE_API_KEY));
         mCardConfiguration = CardConfiguration.fromJson(json.optJSONObject(CARD_KEY));
         mPaypalEnabled = json.optBoolean(PAYPAL_ENABLED_KEY, false);
         mPayPalConfiguration = PayPalConfiguration.fromJson(json.optJSONObject(PAYPAL_KEY));
@@ -82,6 +90,7 @@ public class Configuration {
         mKountConfiguration = KountConfiguration.fromJson(json.optJSONObject(KOUNT_KEY));
         mUnionPayConfiguration = UnionPayConfiguration.fromJson(json.optJSONObject(UNIONPAY_KEY));
         mVisaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(json.optJSONObject(VISA_CHECKOUT_KEY));
+        mIdealConfiguration = IdealConfiguration.fromJson(json.optJSONObject(IDEAL_KEY));
     }
 
     public String toJson() {
@@ -96,6 +105,13 @@ public class Configuration {
     }
 
     /**
+     * @return The url of the Braintree assets server.
+     */
+    public String getAssetsUrl() {
+        return mAssetsUrl;
+    }
+
+    /**
      * @return {@code true} if cvv is required for card transactions, {@code false} otherwise.
      */
     public boolean isCvvChallengePresent() {
@@ -107,6 +123,13 @@ public class Configuration {
      */
     public boolean isPostalCodeChallengePresent() {
         return mChallenges.contains("postal_code");
+    }
+
+    /**
+     * @return instance of {@link BraintreeApiConfiguration}.
+     */
+    public BraintreeApiConfiguration getBraintreeApiConfiguration() {
+        return mBraintreeApiConfiguration;
     }
 
     /**
@@ -200,6 +223,13 @@ public class Configuration {
      */
     public KountConfiguration getKount() {
         return mKountConfiguration;
+    }
+
+    /**
+     * @return instance of {@link IdealConfiguration}.
+     */
+    public IdealConfiguration getIdealConfiguration() {
+        return mIdealConfiguration;
     }
 
     private void parseJsonChallenges(JSONArray jsonArray) {

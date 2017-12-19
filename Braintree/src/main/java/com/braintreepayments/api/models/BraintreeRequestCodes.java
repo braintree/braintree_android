@@ -16,7 +16,8 @@ import java.lang.annotation.RetentionPolicy;
         BraintreeRequestCodes.ANDROID_PAY,
         BraintreeRequestCodes.PAYPAL,
         BraintreeRequestCodes.VISA_CHECKOUT,
-        BraintreeRequestCodes.GOOGLE_PAYMENT
+        BraintreeRequestCodes.GOOGLE_PAYMENT,
+        BraintreeRequestCodes.IDEAL
 })
 public @interface BraintreeRequestCodes {
     int THREE_D_SECURE = 13487;
@@ -25,4 +26,5 @@ public @interface BraintreeRequestCodes {
     int PAYPAL = 13591;
     int VISA_CHECKOUT = 13592;
     int GOOGLE_PAYMENT = 13593;
+    int IDEAL = 13594;
 }

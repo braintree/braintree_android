@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "braintree_request_id": "fe62f36c-7616-4130-a83f-20dc341d5c79"
+  },
+  "error": {
+    "user_message": "Invalid data detected. Please check your entries and try again.",
+    "developer_message": "The provided parameters are invalid; see details for field-specific error messages.",
+    "details": [
+      {
+        "code": "not_an_integer",
+        "user_message": "must be a number",
+        "developer_message": "The provided value must be a string encoding of a base-10 integer between 1 and 12.",
+        "in": "body",
+        "at": "/expiration_month"
+      }
+    ]
+  }
+}

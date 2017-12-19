@@ -95,7 +95,7 @@ public class ThreeDSecureTest {
         mCountDownLatch.await();
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 2000)
     public void onActivityResult_postsPaymentMethodNonceToListener() throws JSONException, InterruptedException {
         BraintreeFragment fragment = getMockFragmentWithConfiguration(mActivity, new TestConfigurationBuilder().build());
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
@@ -117,7 +117,7 @@ public class ThreeDSecureTest {
         mCountDownLatch.await();
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 2000)
     public void onActivityResult_postsUnrecoverableErrorsToListeners() throws InterruptedException {
         BraintreeFragment fragment = getMockFragmentWithConfiguration(mActivity, new TestConfigurationBuilder().build());
         fragment.addListener(new BraintreeErrorListener() {
@@ -137,7 +137,7 @@ public class ThreeDSecureTest {
         mCountDownLatch.await();
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 2000)
     public void onActivityResult_postsRecoverableErrorsToListener() throws InterruptedException {
         BraintreeFragment fragment = getMockFragmentWithConfiguration(mActivity, new TestConfigurationBuilder().build());
         fragment.addListener(new BraintreeErrorListener() {
@@ -158,7 +158,7 @@ public class ThreeDSecureTest {
         mCountDownLatch.await();
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 2000)
     public void onActivityResult_doesNothingWhenResultCodeNotOk() {
         Intent intent = mock(Intent.class);
 

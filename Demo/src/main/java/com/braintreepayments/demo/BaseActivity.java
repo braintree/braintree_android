@@ -21,9 +21,12 @@ import android.widget.ArrayAdapter;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
+import com.braintreepayments.api.interfaces.BraintreePaymentResultListener;
+import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.internal.SignatureVerificationOverrides;
 import com.braintreepayments.api.models.BinData;
+import com.braintreepayments.api.models.BraintreePaymentResult;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.demo.internal.LogReporting;
 import com.braintreepayments.demo.models.ClientToken;
@@ -41,7 +44,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 @SuppressWarnings("deprecation")
 public abstract class BaseActivity extends AppCompatActivity implements OnRequestPermissionsResultCallback,
         PaymentMethodNonceCreatedListener, BraintreeCancelListener, BraintreeErrorListener,
-        ActionBar.OnNavigationListener {
+        BraintreePaymentResultListener, ActionBar.OnNavigationListener {
 
     private static final String EXTRA_AUTHORIZATION = "com.braintreepayments.demo.EXTRA_AUTHORIZATION";
     private static final String EXTRA_CUSTOMER_ID = "com.braintreepayments.demo.EXTRA_CUSTOMER_ID";
@@ -124,6 +127,14 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
 
     @CallSuper
     @Override
+    public void onBraintreePaymentResult(BraintreePaymentResult result) {
+        setProgressBarIndeterminateVisibility(true);
+
+        mLogger.debug("Braintree Payment Result received: " + result.getClass().getSimpleName());
+    }
+
+    @CallSuper
+    @Override
     public void onCancel(int requestCode) {
         setProgressBarIndeterminateVisibility(false);
 
@@ -170,7 +181,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
             onAuthorizationFetched();
         } else {
             DemoApplication.getApiClient(this).getClientToken(Settings.getCustomerId(this),
-                    Settings.getThreeDSecureMerchantAccountId(this), new Callback<ClientToken>() {
+                    Settings.getMerchantAccountId(this), new Callback<ClientToken>() {
                         @Override
                         public void success(ClientToken clientToken, Response response) {
                             setProgressBarIndeterminateVisibility(false);

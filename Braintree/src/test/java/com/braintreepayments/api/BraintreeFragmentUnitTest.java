@@ -10,6 +10,7 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
+import com.braintreepayments.api.interfaces.BraintreePaymentResultListener;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
@@ -25,6 +26,7 @@ import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.internal.HttpClient;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.Authorization;
+import com.braintreepayments.api.models.BraintreePaymentResult;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
@@ -36,6 +38,7 @@ import com.braintreepayments.api.test.FragmentTestActivity;
 import com.braintreepayments.api.test.UnitTestListenerActivity;
 import com.braintreepayments.browserswitch.BrowserSwitchFragment.BrowserSwitchResult;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
+import com.braintreepayments.testutils.TestConfigurationBuilder.TestBraintreeApiConfigurationBuilder;
 
 import org.json.JSONException;
 import org.junit.Before;
@@ -66,6 +69,8 @@ import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_K
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertSame;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -172,25 +177,25 @@ public class BraintreeFragmentUnitTest {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         Bundle bundle = new Bundle();
         fragment.onSaveInstanceState(bundle);
-        setField(BraintreeFragment.class, "mConfiguration", fragment, null);
+        setField("mConfiguration", fragment, null);
         fragment.mHttpClient = null;
 
         fragment.onCreate(bundle);
 
         assertNotNull(fragment.getConfiguration());
         assertNotNull(fragment.mHttpClient);
-        assertEquals("client_api_url", getField(HttpClient.class, "mBaseUrl", fragment.mHttpClient));
+        assertEquals("client_api_url", getField("mBaseUrl", fragment.mHttpClient));
     }
 
     @Test
     public void onAttach_recordsNewActivity()
             throws JSONException, InvalidArgumentException, NoSuchFieldException, IllegalAccessException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        assertEquals(false, getField(BraintreeFragment.class, "mNewActivityNeedsConfiguration", fragment));
+        assertEquals(false, getField("mNewActivityNeedsConfiguration", fragment));
 
         fragment.onAttach(null);
 
-        assertEquals(true, getField(BraintreeFragment.class, "mNewActivityNeedsConfiguration", fragment));
+        assertEquals(true, getField("mNewActivityNeedsConfiguration", fragment));
     }
 
     @Test
@@ -198,7 +203,7 @@ public class BraintreeFragmentUnitTest {
             throws InvalidArgumentException, NoSuchFieldException, IllegalAccessException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
 
-        assertEquals("custom", getField(BraintreeFragment.class, "mIntegrationType", fragment));
+        assertEquals("custom", getField("mIntegrationType", fragment));
     }
 
     @Test
@@ -357,6 +362,48 @@ public class BraintreeFragmentUnitTest {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
 
         assertNotNull(fragment.getHttpClient());
+    }
+
+    @Test
+    public void getBraintreeApiHttpClient_returnsHttpClient_whenEnabled() throws InvalidArgumentException,
+            JSONException {
+        String configuration = new TestConfigurationBuilder()
+                .braintreeApi(new TestBraintreeApiConfigurationBuilder()
+                        .accessToken("some-token")
+                        .url("http://braintree-api.com"))
+                .build();
+        mockConfigurationManager(Configuration.fromJson(configuration));
+
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+
+        assertNotNull(fragment.getBraintreeApiHttpClient());
+    }
+
+    @Test
+    public void getBraintreeApiHttpClient_returnsExistingClientIfOneExists() throws Exception {
+        String configuration = new TestConfigurationBuilder()
+                .braintreeApi(new TestBraintreeApiConfigurationBuilder()
+                        .accessToken("some-token")
+                        .url("http://braintree-api.com"))
+                .build();
+        mockConfigurationManager(Configuration.fromJson(configuration));
+
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+
+        HttpClient client = fragment.getBraintreeApiHttpClient();
+        HttpClient client2 = fragment.getBraintreeApiHttpClient();
+
+        assertSame(client, client2);
+    }
+
+    @Test
+    public void getBraintreeApiHttpClient_returnsNull_whenNotPresent() throws InvalidArgumentException, JSONException {
+        String configuration = new TestConfigurationBuilder()
+                .build();
+        mockConfigurationManager(Configuration.fromJson(configuration));
+
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        assertNull(fragment.getBraintreeApiHttpClient());
     }
 
     @Test
@@ -537,6 +584,10 @@ public class BraintreeFragmentUnitTest {
             @Override
             public void onRewardsBalanceFetched(AmericanExpressRewardsBalance rewardsBalance) {}
         };
+        BraintreePaymentResultListener braintreePaymentResultListener = new BraintreePaymentResultListener() {
+            @Override
+            public void onBraintreePaymentResult(BraintreePaymentResult result) {}
+        };
 
         fragment.addListener(configurationListener);
         fragment.addListener(braintreeErrorListener);
@@ -545,8 +596,9 @@ public class BraintreeFragmentUnitTest {
         fragment.addListener(braintreeCancelListener);
         fragment.addListener(unionPayListener);
         fragment.addListener(americanExpressListener);
+        fragment.addListener(braintreePaymentResultListener);
 
-        assertEquals(7, fragment.getListeners().size());
+        assertEquals(8, fragment.getListeners().size());
 
         fragment.removeListener(configurationListener);
         fragment.removeListener(braintreeErrorListener);
@@ -555,6 +607,7 @@ public class BraintreeFragmentUnitTest {
         fragment.removeListener(braintreeCancelListener);
         fragment.removeListener(unionPayListener);
         fragment.removeListener(americanExpressListener);
+        fragment.removeListener(braintreePaymentResultListener);
 
         assertEquals(0, fragment.getListeners().size());
     }

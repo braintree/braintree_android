@@ -2,6 +2,7 @@ package com.braintreepayments.demo;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -13,7 +14,9 @@ import com.braintreepayments.api.dropin.DropInRequest;
 import com.braintreepayments.api.dropin.DropInResult;
 import com.braintreepayments.api.dropin.utils.PaymentMethodType;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
+import com.braintreepayments.api.models.BraintreePaymentResult;
 import com.braintreepayments.api.models.CardNonce;
+import com.braintreepayments.api.models.IdealResult;
 import com.braintreepayments.api.models.GooglePaymentCardNonce;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
@@ -29,7 +32,7 @@ import static android.view.View.VISIBLE;
 
 public class MainActivity extends BaseActivity {
 
-    static final String EXTRA_PAYMENT_METHOD_NONCE = "payment_method_nonce";
+    static final String EXTRA_PAYMENT_RESULT = "payment_result";
     static final String EXTRA_DEVICE_DATA = "device_data";
     static final String EXTRA_COLLECT_DEVICE_DATA = "collect_device_data";
     static final String EXTRA_ANDROID_PAY_CART = "android_pay_cart";
@@ -41,6 +44,7 @@ public class MainActivity extends BaseActivity {
     private static final int PAYPAL_REQUEST = 5;
     private static final int VENMO_REQUEST = 6;
     private static final int VISA_CHECKOUT_REQUEST = 7;
+    private static final int IDEAL_REQUEST = 8;
 
     private static final String KEY_NONCE = "nonce";
 
@@ -59,6 +63,7 @@ public class MainActivity extends BaseActivity {
     private Button mVenmoButton;
     private Button mVisaCheckoutButton;
     private Button mCreateTransactionButton;
+    private Button mIdealButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +82,7 @@ public class MainActivity extends BaseActivity {
         mPayPalButton = findViewById(R.id.paypal);
         mVenmoButton = findViewById(R.id.venmo);
         mVisaCheckoutButton = findViewById(R.id.visa_checkout);
+        mIdealButton = (Button) findViewById(R.id.ideal);
         mCreateTransactionButton = findViewById(R.id.create_transaction);
 
         if (savedInstanceState != null) {
@@ -131,6 +137,11 @@ public class MainActivity extends BaseActivity {
         startActivityForResult(intent, VISA_CHECKOUT_REQUEST);
     }
 
+    public void launchIdeal(View v) {
+        Intent intent = new Intent(this, IdealActivity.class);
+        startActivityForResult(intent, IDEAL_REQUEST);
+    }
+
     private DropInRequest getDropInRequest() {
         DropInRequest dropInRequest = new DropInRequest()
                 .amount("1.00")
@@ -165,10 +176,16 @@ public class MainActivity extends BaseActivity {
         if (resultCode == RESULT_OK) {
             if (requestCode == DROP_IN_REQUEST) {
                 DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
-                displayResult(result.getPaymentMethodNonce(), result.getDeviceData());
+                displayNonce(result.getPaymentMethodNonce(), result.getDeviceData());
             } else {
-                displayResult((PaymentMethodNonce) data.getParcelableExtra(EXTRA_PAYMENT_METHOD_NONCE),
-                        data.getStringExtra(EXTRA_DEVICE_DATA));
+                Parcelable returnedData = data.getParcelableExtra(EXTRA_PAYMENT_RESULT);
+                String deviceData = data.getStringExtra(EXTRA_DEVICE_DATA);
+                if (returnedData instanceof PaymentMethodNonce) {
+                    displayNonce((PaymentMethodNonce) returnedData, deviceData);
+                } else if (returnedData instanceof BraintreePaymentResult) {
+                    displayBraintreeResult((BraintreePaymentResult) returnedData);
+                }
+
                 mCreateTransactionButton.setEnabled(true);
             }
         } else if (resultCode != RESULT_CANCELED) {
@@ -189,7 +206,7 @@ public class MainActivity extends BaseActivity {
         enableButtons(true);
     }
 
-    private void displayResult(PaymentMethodNonce paymentMethodNonce, String deviceData) {
+    private void displayNonce(PaymentMethodNonce paymentMethodNonce, String deviceData) {
         mNonce = paymentMethodNonce;
 
         mNonceIcon.setImageResource(PaymentMethodType.forType(mNonce).getDrawable());
@@ -222,6 +239,19 @@ public class MainActivity extends BaseActivity {
         mCreateTransactionButton.setEnabled(true);
     }
 
+    private void displayBraintreeResult(BraintreePaymentResult result) {
+        if (result instanceof IdealResult) {
+            IdealResult idealResult = (IdealResult) result;
+            mNonceString.setText("iDEAL payment id: \n" + idealResult.getId());
+            mNonceString.setVisibility(VISIBLE);
+
+            mNonceDetails.setText("iDEAL payment status: \n" + idealResult.getStatus());
+            mNonceDetails.setVisibility(VISIBLE);
+
+            mCreateTransactionButton.setEnabled(false);
+        }
+    }
+
     private void clearNonce() {
         mNonceIcon.setVisibility(GONE);
         mNonceString.setVisibility(GONE);
@@ -252,5 +282,6 @@ public class MainActivity extends BaseActivity {
         mPayPalButton.setEnabled(enable);
         mVenmoButton.setEnabled(enable);
         mVisaCheckoutButton.setEnabled(enable);
+        mIdealButton.setEnabled(enable);
     }
 }

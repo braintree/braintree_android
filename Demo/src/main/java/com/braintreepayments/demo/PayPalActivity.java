@@ -131,7 +131,7 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         Intent intent = new Intent()
-                .putExtra(MainActivity.EXTRA_PAYMENT_METHOD_NONCE, paymentMethodNonce)
+                .putExtra(MainActivity.EXTRA_PAYMENT_RESULT, paymentMethodNonce)
                 .putExtra(MainActivity.EXTRA_DEVICE_DATA, mDeviceData);
         setResult(RESULT_OK, intent);
         finish();

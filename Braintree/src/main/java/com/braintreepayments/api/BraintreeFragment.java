@@ -23,6 +23,7 @@ import com.braintreepayments.api.interfaces.AmericanExpressListener;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreeListener;
+import com.braintreepayments.api.interfaces.BraintreePaymentResultListener;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
@@ -33,12 +34,14 @@ import com.braintreepayments.api.internal.AnalyticsDatabase;
 import com.braintreepayments.api.internal.AnalyticsEvent;
 import com.braintreepayments.api.internal.AnalyticsIntentService;
 import com.braintreepayments.api.internal.AnalyticsSender;
+import com.braintreepayments.api.internal.BraintreeApiHttpClient;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.internal.IntegrationType;
 import com.braintreepayments.api.internal.UUIDHelper;
 import com.braintreepayments.api.models.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.Authorization;
+import com.braintreepayments.api.models.BraintreePaymentResult;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
@@ -59,6 +62,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
+
+import static com.braintreepayments.api.internal.BraintreeApiHttpClient.API_VERSION_2016_10_07;
 
 /**
  * Core Braintree class that handles network requests and managing callbacks.
@@ -81,6 +86,8 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     @VisibleForTesting
     protected BraintreeHttpClient mHttpClient;
     @VisibleForTesting
+    protected BraintreeApiHttpClient mBraintreeApiClient;
+    @VisibleForTesting
     protected GoogleApiClient mGoogleApiClient;
 
     private CrashReporter mCrashReporter;
@@ -101,6 +108,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     private PaymentMethodNoncesUpdatedListener mPaymentMethodNoncesUpdatedListener;
     private PaymentMethodNonceCreatedListener mPaymentMethodNonceCreatedListener;
     private BraintreeErrorListener mErrorListener;
+    private BraintreePaymentResultListener mBraintreePaymentResultListener;
     private UnionPayListener mUnionPayListener;
     private AmericanExpressListener mAmericanExpressListener;
 
@@ -335,6 +343,9 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             case BraintreeRequestCodes.ANDROID_PAY:
                 AndroidPay.onActivityResult(this, resultCode, data);
                 break;
+            case BraintreeRequestCodes.IDEAL:
+                Ideal.onActivityResult(this, resultCode);
+                break;
             case BraintreeRequestCodes.GOOGLE_PAYMENT:
                 GooglePayment.onActivityResult(this, resultCode, data);
                 break;
@@ -365,6 +376,10 @@ public class BraintreeFragment extends BrowserSwitchFragment {
 
         if (listener instanceof PaymentMethodNonceCreatedListener) {
             mPaymentMethodNonceCreatedListener = (PaymentMethodNonceCreatedListener) listener;
+        }
+
+        if (listener instanceof BraintreePaymentResultListener) {
+            mBraintreePaymentResultListener = (BraintreePaymentResultListener) listener;
         }
 
         if (listener instanceof BraintreeErrorListener) {
@@ -404,6 +419,10 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             mPaymentMethodNonceCreatedListener = null;
         }
 
+        if (listener instanceof BraintreePaymentResultListener) {
+            mBraintreePaymentResultListener = null;
+        }
+
         if (listener instanceof BraintreeErrorListener) {
             mErrorListener = null;
         }
@@ -437,6 +456,10 @@ public class BraintreeFragment extends BrowserSwitchFragment {
 
         if (mPaymentMethodNonceCreatedListener != null) {
             listeners.add(mPaymentMethodNonceCreatedListener);
+        }
+
+        if (mBraintreePaymentResultListener != null) {
+            listeners.add(mBraintreePaymentResultListener);
         }
 
         if (mErrorListener != null) {
@@ -580,6 +603,20 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             @Override
             public void run() {
                 mUnionPayListener.onSmsCodeSent(enrollmentId, smsCodeRequired);
+            }
+        });
+    }
+
+    protected void postCallback(final BraintreePaymentResult result) {
+        postOrQueueCallback(new QueuedCallback() {
+            @Override
+            public boolean shouldRun() {
+                return mBraintreePaymentResultListener != null;
+            }
+
+            @Override
+            public void run() {
+                mBraintreePaymentResultListener.onBraintreePaymentResult(result);
             }
         });
     }
@@ -734,6 +771,17 @@ public class BraintreeFragment extends BrowserSwitchFragment {
 
     protected BraintreeHttpClient getHttpClient() {
         return mHttpClient;
+    }
+
+    @Nullable
+    protected BraintreeApiHttpClient getBraintreeApiHttpClient() {
+        if (mBraintreeApiClient == null && getConfiguration() != null &&
+                getConfiguration().getBraintreeApiConfiguration().isEnabled()) {
+            mBraintreeApiClient = new BraintreeApiHttpClient(getConfiguration().getBraintreeApiConfiguration().getUrl(),
+                    getConfiguration().getBraintreeApiConfiguration().getAccessToken());
+        }
+
+        return mBraintreeApiClient;
     }
 
     protected String getSessionId() {

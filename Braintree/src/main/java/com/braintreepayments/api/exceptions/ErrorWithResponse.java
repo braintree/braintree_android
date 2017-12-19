@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *  Error container returned when the Braintree server receives a 422 Unprocessible Entity.
+ *  Error container returned when the Braintree server returns a 422 Unprocessible Entity.
  *  A 422 occurs when a request is properly formed, but the server was unable to take the requested
  *  action due to bad user data.
  *
@@ -66,6 +66,7 @@ public class ErrorWithResponse extends Exception implements Parcelable {
     /**
      * @return Human readable top level summary of the error.
      */
+    @Override
     public String getMessage() {
         return mMessage;
     }

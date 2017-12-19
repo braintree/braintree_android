@@ -146,8 +146,8 @@ public class PayPalUnitTest {
         final AuthorizationRequest request = new AuthorizationRequest(RuntimeEnvironment.application);
         request.environment("test");
         request.successUrl("com.braintreepayments.api.test.braintree", "success");
-        setField(AuthorizationRequest.class, "mMsgGuid", request, "c862cf00-f878-4e38-bb83-65bcc4b51831");
-        setField(AuthorizationRequest.class, "mEncryptionKey", request, EncryptionUtils.hexStringToByteArray("0481806100DE4EBB5581163579990EE825737255A81A883B791A1BB6F5A7E81C"));
+        setField("mMsgGuid", request, "c862cf00-f878-4e38-bb83-65bcc4b51831");
+        setField("mEncryptionKey", request, EncryptionUtils.hexStringToByteArray("0481806100DE4EBB5581163579990EE825737255A81A883B791A1BB6F5A7E81C"));
 
         doAnswer(new Answer<AuthorizationRequest>() {
             @Override
@@ -188,8 +188,8 @@ public class PayPalUnitTest {
         final AuthorizationRequest request = new AuthorizationRequest(RuntimeEnvironment.application);
         request.environment("test");
         request.successUrl("com.braintreepayments.api.test.braintree", "success");
-        setField(AuthorizationRequest.class, "mMsgGuid", request, "c862cf00-f878-4e38-bb83-65bcc4b51831");
-        setField(AuthorizationRequest.class, "mEncryptionKey", request, EncryptionUtils.hexStringToByteArray("0481806100DE4EBB5581163579990EE825737255A81A883B791A1BB6F5A7E81C"));
+        setField("mMsgGuid", request, "c862cf00-f878-4e38-bb83-65bcc4b51831");
+        setField("mEncryptionKey", request, EncryptionUtils.hexStringToByteArray("0481806100DE4EBB5581163579990EE825737255A81A883B791A1BB6F5A7E81C"));
 
         doAnswer(new Answer<AuthorizationRequest>() {
             @Override
@@ -643,8 +643,8 @@ public class PayPalUnitTest {
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").offerCredit(true));
 
         ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/create_payment_resource"), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
+        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/create_payment_resource"),
+                dataCaptor.capture(), any(HttpResponseCallback.class));
 
         JSONObject json = new JSONObject(dataCaptor.getValue());
         assertTrue(json.getBoolean("offer_paypal_credit"));

@@ -30,16 +30,15 @@ public class BraintreeHttpClient extends HttpClient {
     private final Authorization mAuthorization;
 
     public BraintreeHttpClient(Authorization authorization) {
+        mAuthorization = authorization;
+
         setUserAgent(getUserAgent());
 
         try {
-            setSSLSocketFactory(
-                    new TLSSocketFactory(BraintreeGatewayCertificate.getCertInputStream()));
+            setSSLSocketFactory(new TLSSocketFactory(BraintreeGatewayCertificate.getCertInputStream()));
         } catch (SSLException e) {
             setSSLSocketFactory(null);
         }
-
-        mAuthorization = authorization;
     }
 
     /**
