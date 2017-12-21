@@ -1,5 +1,8 @@
 # Braintree Android SDK Release Notes
 
+## 2.8.0
+* Add support for iDEAL payments
+
 ## 2.7.3
 * Check package name is valid for PayPal Wallet switch
 
