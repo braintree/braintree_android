@@ -16,7 +16,8 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     protected static final String TYPE = "CreditCard";
     protected static final String API_RESOURCE_KEY = "creditCards";
 
-    private static final String GRAPHQL_PAYLOAD_KEY = "tokenizeCreditCard";
+    private static final String GRAPHQL_TOKENIZE_CREDIT_CARD_KEY = "tokenizeCreditCard";
+    private static final String GRAPHQL_TOKENIZE_CVV_KEY = "tokenizeCvv";
     private static final String GRAPHQL_CREDIT_CARD_KEY = "creditCard";
     private static final String GRAPHQL_BRAND_KEY = "brand";
     private static final String THREE_D_SECURE_INFO_KEY = "threeDSecureInfo";
@@ -68,17 +69,29 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     }
 
     private void fromGraphQLJson(JSONObject json) throws JSONException {
-        JSONObject payload = json.getJSONObject(DATA_KEY).getJSONObject(GRAPHQL_PAYLOAD_KEY);
+        JSONObject data = json.getJSONObject(DATA_KEY);
 
-        JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
-        mLastTwo = creditCard.getString(LAST_FOUR_KEY).substring(2);
-        mCardType = creditCard.getString(GRAPHQL_BRAND_KEY);
-        mThreeDSecureInfo = ThreeDSecureInfo.fromJson(null);
-        mBinData = BinData.fromJson(creditCard.optJSONObject(BIN_DATA_KEY));
+        if (data.has(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY)) {
+            JSONObject payload = data.getJSONObject(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY);
 
-        mNonce = payload.getString(TOKEN_KEY);
-        mDescription = "ending in ••" + mLastTwo;
-        mDefault = false;
+            JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
+            mLastTwo = creditCard.getString(LAST_FOUR_KEY).substring(2);
+            mCardType = creditCard.getString(GRAPHQL_BRAND_KEY);
+            mThreeDSecureInfo = ThreeDSecureInfo.fromJson(null);
+            mBinData = BinData.fromJson(creditCard.optJSONObject(BIN_DATA_KEY));
+
+            mNonce = payload.getString(TOKEN_KEY);
+            mDescription = "ending in ••" + mLastTwo;
+            mDefault = false;
+        } else if (data.has(GRAPHQL_TOKENIZE_CVV_KEY)) {
+            mLastTwo = "";
+            mDescription = "";
+            mCardType = "Unknown";
+            mNonce = data.getJSONObject(GRAPHQL_TOKENIZE_CVV_KEY).getString(TOKEN_KEY);
+        } else {
+            throw new JSONException("Failed to parse GraphQL response JSON");
+        }
+
     }
 
     /**

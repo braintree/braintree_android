@@ -152,6 +152,28 @@ public class CardTest {
     }
 
     @Test(timeout = 10000)
+    public void tokenize_tokenizesCvvOnly() throws Exception {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        BraintreeFragment fragment = setupBraintreeFragment(TOKENIZATION_KEY);
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
+            @Override
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+
+                assertNotNull(cardNonce.getNonce());
+                assertEquals("Unknown", cardNonce.getCardType());
+
+                countDownLatch.countDown();
+            }
+        });
+
+        CardBuilder cardBuilder = new CardBuilder().cvv("123");
+        Card.tokenize(fragment, cardBuilder);
+
+        countDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
     public void tokenize_callsErrorCallbackForInvalidCvv() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)

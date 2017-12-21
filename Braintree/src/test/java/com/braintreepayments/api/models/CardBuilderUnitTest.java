@@ -12,6 +12,7 @@ import com.braintreepayments.api.internal.GraphQLQueryHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONString;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -204,7 +205,7 @@ public class CardBuilderUnitTest {
     }
 
     @Test
-    public void buildGraphQL_correctlyBuildsACard() throws Exception {
+    public void buildGraphQL_correctlyBuildsACardTokenization() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
                 .expirationMonth("01")
@@ -292,6 +293,22 @@ public class CardBuilderUnitTest {
         assertFalse(billingAddress.has("countryCodeAlpha2"));
         assertFalse(billingAddress.has("countryCodeAlpha3"));
         assertFalse(billingAddress.has("countryCodeNumeric"));
+    }
+
+    @Test
+    public void buildGraphQL_correctlyBuildsACvvTokenization() throws Exception {
+        CardBuilder cardBuilder = new CardBuilder().cvv("123");
+
+        Context context = RuntimeEnvironment.application.getApplicationContext();
+        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(TOKENIZATION_KEY)));
+        String jsonCvv = json.getJSONObject(GraphQLQueryHelper.VARIABLES_KEY)
+                .getJSONObject(GraphQLQueryHelper.INPUT_KEY)
+                .getString(BaseCardBuilder.CVV_KEY);
+
+        assertEquals(GraphQLQueryHelper.getQuery(context, R.raw.tokenize_cvv_mutation),
+                json.getString(GraphQLQueryHelper.QUERY_KEY));
+
+        assertEquals("123", jsonCvv);
     }
 
     @Test

@@ -21,6 +21,27 @@ public class CardBuilder extends BaseCardBuilder<CardBuilder> implements Parcela
 
     protected void buildGraphQL(Context context, JSONObject base, JSONObject input) throws BraintreeException,
             JSONException {
+        if (mCardnumber == null && mCvv != null) {
+            buildGraphQLTokenizeCvv(context, base, input);
+        } else {
+            buildGraphQLTokenizeCreditCard(context, base, input);
+        }
+    }
+
+    private void buildGraphQLTokenizeCvv(Context context, JSONObject base, JSONObject input) throws BraintreeException, JSONException {
+        try {
+            base.put(GraphQLQueryHelper.QUERY_KEY,
+                    GraphQLQueryHelper.getQuery(context, R.raw.tokenize_cvv_mutation));
+        } catch (Resources.NotFoundException | IOException e) {
+            throw new BraintreeException("Unable to read GraphQL query", e);
+        }
+
+        base.put(OPERATION_NAME_KEY, "TokenizeCvv");
+        input.put(CVV_KEY, mCvv);
+        input.remove(OPTIONS_KEY);
+    }
+
+    private void buildGraphQLTokenizeCreditCard(Context context, JSONObject base, JSONObject input) throws BraintreeException, JSONException {
         try {
             base.put(GraphQLQueryHelper.QUERY_KEY,
                     GraphQLQueryHelper.getQuery(context, R.raw.tokenize_credit_card_mutation));

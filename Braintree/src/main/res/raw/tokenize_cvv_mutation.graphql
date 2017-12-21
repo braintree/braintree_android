@@ -1,0 +1,5 @@
+mutation TokenizeCvv($input: TokenizeCvvInput!) {
+  tokenizeCvv(input: $input) {
+    token
+  }
+}

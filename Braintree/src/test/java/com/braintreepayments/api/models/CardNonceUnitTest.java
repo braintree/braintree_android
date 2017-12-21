@@ -15,6 +15,7 @@ import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
 public class CardNonceUnitTest {
@@ -44,7 +45,7 @@ public class CardNonceUnitTest {
     }
 
     @Test
-    public void canCreateCardFromGraphQLResponse() throws JSONException {
+    public void canCreateCardFromTokenizeCreditCardGraphQLResponse() throws JSONException {
         CardNonce cardNonce = CardNonce.fromJson(stringFromFixture("response/graphql/credit_card.json"));
 
         assertEquals("Visa", cardNonce.getTypeLabel());
@@ -65,6 +66,18 @@ public class CardNonceUnitTest {
         assertEquals(UNKNOWN, cardNonce.getBinData().getIssuingBank());
         assertEquals("USA", cardNonce.getBinData().getCountryOfIssuance());
         assertEquals(UNKNOWN, cardNonce.getBinData().getProductId());
+    }
+
+    @Test
+    public void canCreateCardFromTokenizeCvvGraphQLResponse() throws JSONException {
+        CardNonce cardNonce = CardNonce.fromJson(stringFromFixture("response/graphql/cvv.json"));
+
+        assertEquals("Unknown", cardNonce.getTypeLabel());
+        assertEquals("3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1", cardNonce.getNonce());
+        assertEquals("", cardNonce.getDescription());
+        assertEquals("", cardNonce.getLastTwo());
+        assertNull(cardNonce.getThreeDSecureInfo());
+        assertNull(cardNonce.getBinData());
     }
 
     @Test
