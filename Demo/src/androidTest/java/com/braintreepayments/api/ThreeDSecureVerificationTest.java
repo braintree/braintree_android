@@ -19,6 +19,8 @@ import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
 import com.braintreepayments.demo.test.DemoTestActivity;
+import com.lukekorth.deviceautomator.AutomatorAction;
+import com.lukekorth.deviceautomator.UiObjectMatcher;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -52,6 +54,7 @@ import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICA
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON_NOT_REQUIRED;
 import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
+import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -289,10 +292,13 @@ public class ThreeDSecureVerificationTest {
         ThreeDSecure.performVerification(fragment, cardBuilder, TEST_AMOUNT);
 
         waitForView(withId(android.R.id.widget_frame));
-        onWebView().withElement(findElement(Locator.NAME, "external.field.password"))
-                .perform(webKeys("1234"));
-        onWebView().withElement(findElement(Locator.NAME, "UsernamePasswordEntry"))
-                .perform(webClick());
+
+        try {
+            onDevice(UiObjectMatcher.withContentDescription("Password:")).perform(AutomatorAction.click());
+        } catch (RuntimeException ignored) {}
+
+        onDevice().pressTab().typeText("1234");
+        onDevice(UiObjectMatcher.withContentDescription("Submit")).perform(AutomatorAction.click());
 
         mCountDownLatch.await();
     }
@@ -314,10 +320,13 @@ public class ThreeDSecureVerificationTest {
         ThreeDSecure.performVerification(fragment, cardBuilder, TEST_AMOUNT);
 
         waitForView(withId(android.R.id.widget_frame));
-        onWebView().withElement(findElement(Locator.NAME, "external.field.password"))
-                .perform(webKeys("1234"));
-        onWebView().withElement(findElement(Locator.NAME, "UsernamePasswordEntry"))
-                .perform(webClick());
+
+        try {
+            onDevice(UiObjectMatcher.withContentDescription("Password:")).perform(AutomatorAction.click());
+        } catch (RuntimeException ignored) {}
+
+        onDevice().pressTab().typeText("1234");
+        onDevice(UiObjectMatcher.withContentDescription("Submit")).perform(AutomatorAction.click());
 
         mCountDownLatch.await();
     }
@@ -366,10 +375,13 @@ public class ThreeDSecureVerificationTest {
         ThreeDSecure.performVerification(fragment, cardBuilder, TEST_AMOUNT);
 
         waitForView(withId(android.R.id.widget_frame));
-        onWebView().withElement(findElement(Locator.NAME, "external.field.password"))
-                .perform(webKeys("1234"));
-        onWebView().withElement(findElement(Locator.NAME, "UsernamePasswordEntry"))
-                .perform(webClick());
+
+        try {
+            onDevice(UiObjectMatcher.withContentDescription("Password:")).perform(AutomatorAction.click());
+        } catch (RuntimeException ignored) {}
+
+        onDevice().pressTab().typeText("1234");
+        onDevice(UiObjectMatcher.withContentDescription("Submit")).perform(AutomatorAction.click());
 
         mCountDownLatch.await();
     }
@@ -390,10 +402,13 @@ public class ThreeDSecureVerificationTest {
         ThreeDSecure.performVerification(fragment, cardBuilder, TEST_AMOUNT);
 
         waitForView(withId(android.R.id.widget_frame));
-        onWebView().withElement(findElement(Locator.NAME, "external.field.password"))
-                .perform(webKeys("1234"));
-        onWebView().withElement(findElement(Locator.NAME, "UsernamePasswordEntry"))
-                .perform(webClick());
+
+        try {
+            onDevice(UiObjectMatcher.withContentDescription("Password:")).perform(AutomatorAction.click());
+        } catch (RuntimeException ignored) {}
+
+        onDevice().pressTab().typeText("1234");
+        onDevice(UiObjectMatcher.withContentDescription("Submit")).perform(AutomatorAction.click());
 
         mCountDownLatch.await();
     }
@@ -415,10 +430,13 @@ public class ThreeDSecureVerificationTest {
         ThreeDSecure.performVerification(fragment, cardBuilder, TEST_AMOUNT);
 
         waitForView(withId(android.R.id.widget_frame));
-        onWebView().withElement(findElement(Locator.NAME, "external.field.password"))
-                .perform(webKeys("1234"));
-        onWebView().withElement(findElement(Locator.NAME, "UsernamePasswordEntry"))
-                .perform(webClick());
+
+        try {
+            onDevice(UiObjectMatcher.withContentDescription("Password:")).perform(AutomatorAction.click());
+        } catch (RuntimeException ignored) {}
+
+        onDevice().pressTab().typeText("1234");
+        onDevice(UiObjectMatcher.withContentDescription("Submit")).perform(AutomatorAction.click());
 
         mCountDownLatch.await();
     }

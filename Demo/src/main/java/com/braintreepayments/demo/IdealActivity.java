@@ -105,7 +105,7 @@ public class IdealActivity extends BaseActivity implements BraintreePaymentResul
                             IdealRequest builder = new IdealRequest()
                                     .issuerId(bank.getId())
                                     .amount("10")
-                                    .orderId(UUID.randomUUID().toString())
+                                    .orderId(UUID.randomUUID().toString().substring(0, 15))
                                     .currency("EUR");
 
                             Ideal.startPayment(mBraintreeFragment, builder, new BraintreeResponseListener<IdealResult>() {

@@ -36,7 +36,10 @@ public class VisaCheckoutTest extends TestHelper {
 
     @Test(timeout = 60000)
     public void cancelsVisaCheckout_whenPressingBack() {
-        onDevice(withText("Sign In To Visa Checkout")).waitForExists().perform(click());
+        if (onDevice(withText("New to Visa Checkout?")).exists()) {
+            onDevice(withText("Sign In")).perform(click());
+        }
+
         onDevice().pressBack(); // Dismiss keyboard
         onDevice().pressBack();
         onDevice(withText("OK")).perform(click());
