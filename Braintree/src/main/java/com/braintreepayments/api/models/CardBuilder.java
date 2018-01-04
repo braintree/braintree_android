@@ -21,7 +21,7 @@ public class CardBuilder extends BaseCardBuilder<CardBuilder> implements Parcela
 
     protected void buildGraphQL(Context context, JSONObject base, JSONObject input) throws BraintreeException,
             JSONException {
-        if (mCardnumber == null && mCvv != null) {
+        if (isCvvOnlyTokenization()) {
             buildGraphQLTokenizeCvv(context, base, input);
         } else {
             buildGraphQLTokenizeCreditCard(context, base, input);
@@ -78,6 +78,27 @@ public class CardBuilder extends BaseCardBuilder<CardBuilder> implements Parcela
         }
 
         input.put(CREDIT_CARD_KEY, creditCard);
+    }
+
+    private boolean isCvvOnlyTokenization() {
+        return mCvv != null
+                && mCardnumber == null
+                && mExpirationMonth == null
+                && mExpirationYear == null
+                && mCardholderName == null
+                && mFirstName == null
+                && mLastName == null
+                && mCompany == null
+                && mCountryCode == null
+                && mCountryName == null
+                && mCountryCodeAlpha2 == null
+                && mCountryCodeAlpha3 == null
+                && mCountryCodeNumeric == null
+                && mLocality == null
+                && mPostalCode == null
+                && mRegion == null
+                && mStreetAddress == null
+                && mExtendedAddress == null;
     }
 
     public CardBuilder() {}

@@ -12,11 +12,14 @@ import com.braintreepayments.api.internal.GraphQLQueryHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONString;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.function.Predicate;
 
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
@@ -566,5 +569,27 @@ public class CardBuilderUnitTest {
         JSONObject jsonBillingAddress = jsonCard.getJSONObject(BILLING_ADDRESS_KEY);
 
         assertEquals("USA", jsonBillingAddress.getString("countryCode"));
+    }
+
+    @Test
+    public void isCvvOnlyTokenization_checksAllFields() {
+        Field[] baseCardBuilderFields = BaseCardBuilder.class.getDeclaredFields();
+        Field[] cardBuilderFields = CardBuilder.class.getDeclaredFields();
+
+        Predicate isMemberField = new Predicate<Field>() {
+            @Override
+            public boolean test(Field field) {
+                return field.getName().startsWith("m");
+            }
+        };
+
+        long totalMemberFields = Arrays.asList(baseCardBuilderFields).stream().filter(isMemberField).count() +
+                Arrays.asList(cardBuilderFields).stream().filter(isMemberField).count();
+
+        assertEquals(
+                "CVV-only tokenizations are categorized by all fields being null except CVV. If you added or removed a field, please update CardBuilder#isCvvOnlyTokenization and this test.",
+                18,
+                totalMemberFields
+        );
     }
 }
