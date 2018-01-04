@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 2.8.1
+* Support `lastFour` in `GooglePayCardNonce`
+* Add Google Pay branding
+
 ## 2.8.0
 * Add support for iDEAL payments
 
