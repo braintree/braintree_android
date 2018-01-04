@@ -52,9 +52,10 @@ public class CardBuilderUnitTest {
                 .locality("Some Town")
                 .postalCode("12345")
                 .region("Some Region")
+                .countryCode("USA")
                 .countryName("Some Country")
                 .countryCodeAlpha2("US")
-                .countryCodeAlpha3("USA")
+                .countryCodeAlpha3("RUS")
                 .countryCodeNumeric("840")
                 .integration("test-integration")
                 .source("test-source")
@@ -108,6 +109,7 @@ public class CardBuilderUnitTest {
         assertFalse(billingAddress.has("locality"));
         assertEquals("60606", billingAddress.getString("postalCode"));
         assertFalse(billingAddress.has("region"));
+        assertFalse(billingAddress.has("countryCode"));
         assertFalse(billingAddress.has("countryName"));
         assertFalse(billingAddress.has("countryCodeAlpha2"));
         assertFalse(billingAddress.has("countryCodeAlpha3"));
@@ -195,6 +197,7 @@ public class CardBuilderUnitTest {
                 .locality("")
                 .postalCode("")
                 .region("")
+                .countryCode("")
                 .countryName("")
                 .countryCodeAlpha2("")
                 .countryCodeAlpha3("")
@@ -220,9 +223,10 @@ public class CardBuilderUnitTest {
                 .locality("Some Town")
                 .postalCode("12345")
                 .region("Some Region")
+                .countryCode("USA")
                 .countryName("Some Country")
                 .countryCodeAlpha2("US")
-                .countryCodeAlpha3("USA")
+                .countryCodeAlpha3("RUS")
                 .countryCodeNumeric("840")
                 .integration("test-integration")
                 .source("test-source")
@@ -259,9 +263,10 @@ public class CardBuilderUnitTest {
         assertEquals("Some Town", jsonBillingAddress.getString("locality"));
         assertEquals("12345", jsonBillingAddress.getString("postalCode"));
         assertEquals("Some Region", jsonBillingAddress.getString("region"));
+        assertEquals("USA", jsonBillingAddress.getString("countryCode"));
         assertEquals("Some Country", jsonBillingAddress.getString("countryName"));
         assertEquals("US", jsonBillingAddress.getString("countryCodeAlpha2"));
-        assertEquals("USA", jsonBillingAddress.getString("countryCodeAlpha3"));
+        assertEquals("RUS", jsonBillingAddress.getString("countryCodeAlpha3"));
         assertEquals("840", jsonBillingAddress.getString("countryCodeNumeric"));
 
         assertEquals("test-integration", jsonMetadata.getString("integration"));
@@ -289,6 +294,7 @@ public class CardBuilderUnitTest {
         assertFalse(billingAddress.has("locality"));
         assertEquals("60606", billingAddress.getString("postalCode"));
         assertFalse(billingAddress.has("region"));
+        assertFalse(billingAddress.has("countryCode"));
         assertFalse(billingAddress.has("countryName"));
         assertFalse(billingAddress.has("countryCodeAlpha2"));
         assertFalse(billingAddress.has("countryCodeAlpha3"));
@@ -431,6 +437,7 @@ public class CardBuilderUnitTest {
                 .locality("")
                 .postalCode("")
                 .region("")
+                .countryCode("")
                 .countryName("")
                 .countryCodeAlpha2("")
                 .countryCodeAlpha3("")
@@ -542,5 +549,22 @@ public class CardBuilderUnitTest {
         assertEquals("test-integration", jsonMetadata.getString("integration"));
         assertEquals("test-source", jsonMetadata.getString("source"));
         assertEquals("test-session-id", jsonMetadata.getString("sessionId"));
+    }
+
+    @Test
+    public void parcelsCountryCodeCorrectly() throws JSONException {
+        CardBuilder cardBuilder = new CardBuilder().countryCode("USA");
+
+        Parcel parcel = Parcel.obtain();
+        cardBuilder.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+
+        CardBuilder actual = CardBuilder.CREATOR.createFromParcel(parcel);
+
+        JSONObject json = new JSONObject(actual.build());
+        JSONObject jsonCard = json.getJSONObject(CREDIT_CARD_KEY);
+        JSONObject jsonBillingAddress = jsonCard.getJSONObject(BILLING_ADDRESS_KEY);
+
+        assertEquals("USA", jsonBillingAddress.getString("countryCode"));
     }
 }

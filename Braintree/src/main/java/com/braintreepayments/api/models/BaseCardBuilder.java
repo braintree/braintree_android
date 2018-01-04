@@ -22,6 +22,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     protected static final String FIRST_NAME_KEY = "firstName";
     protected static final String LAST_NAME_KEY = "lastName";
     protected static final String COMPANY_KEY = "company";
+    protected static final String COUNTRY_CODE_KEY = "countryCode";
     protected static final String COUNTRY_NAME_KEY = "countryName";
     protected static final String COUNTRY_CODE_ALPHA2_KEY = "countryCodeAlpha2";
     protected static final String COUNTRY_CODE_ALPHA3_KEY = "countryCodeAlpha3";
@@ -41,6 +42,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     protected String mFirstName;
     protected String mLastName;
     protected String mCompany;
+    protected String mCountryCode;
     protected String mCountryName;
     protected String mCountryCodeAlpha2;
     protected String mCountryCodeAlpha3;
@@ -187,9 +189,26 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     }
 
     /**
+     * @param countryCode The ISO 3166-1 alpha-3 country code specified in the card's billing address.
+     * @return {@link com.braintreepayments.api.models.BaseCardBuilder}
+     */
+    @SuppressWarnings("unchecked")
+    public T countryCode(String countryCode) {
+        if (TextUtils.isEmpty(countryCode)) {
+            mCountryCode = null;
+        } else {
+            mCountryCode = countryCode;
+        }
+        return (T) this;
+    }
+
+    /**
+     * @deprecated Use {@link #countryCode(String)} instead.
+     *
      * @param countryName Country name of the card.
      * @return {@link com.braintreepayments.api.models.BaseCardBuilder}
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public T countryName(String countryName) {
         if (TextUtils.isEmpty(countryName)) {
@@ -201,9 +220,12 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     }
 
     /**
+     * @deprecated Use {@link #countryCode(String)} instead.
+     *
      * @param countryCodeAlpha2 The ISO 3166-1 alpha-2 country code specified in the card's billing address.
      * @return {@link com.braintreepayments.api.models.BaseCardBuilder}
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public T countryCodeAlpha2(String countryCodeAlpha2) {
         if (TextUtils.isEmpty(countryCodeAlpha2)) {
@@ -215,9 +237,12 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     }
 
     /**
+     * @deprecated Use {@link #countryCode(String)} instead.
+     *
      * @param countryCodeAlpha3 The ISO 3166-1 alpha-3 country code specified in the card's billing address.
      * @return {@link com.braintreepayments.api.models.BaseCardBuilder}
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public T countryCodeAlpha3(String countryCodeAlpha3) {
         if (TextUtils.isEmpty(countryCodeAlpha3)) {
@@ -229,9 +254,12 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     }
 
     /**
+     * @deprecated Use {@link #countryCode(String)} instead.
+     *
      * @param countryCodeNumeric The ISO 3166-1 alpha-numeric country code specified in the card's billing address.
      * @return {@link com.braintreepayments.api.models.BaseCardBuilder}
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public T countryCodeNumeric(String countryCodeNumeric) {
         if (TextUtils.isEmpty(countryCodeNumeric)) {
@@ -325,6 +353,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         billingAddressJson.put(FIRST_NAME_KEY, mFirstName);
         billingAddressJson.put(LAST_NAME_KEY, mLastName);
         billingAddressJson.put(COMPANY_KEY, mCompany);
+        billingAddressJson.put(COUNTRY_CODE_KEY, mCountryCode);
         billingAddressJson.put(COUNTRY_NAME_KEY, mCountryName);
         billingAddressJson.put(COUNTRY_CODE_ALPHA2_KEY, mCountryCodeAlpha2);
         billingAddressJson.put(COUNTRY_CODE_ALPHA3_KEY, mCountryCodeAlpha3);
@@ -334,6 +363,10 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         billingAddressJson.put(REGION_KEY, mRegion);
         billingAddressJson.put(STREET_ADDRESS_KEY, mStreetAddress);
         billingAddressJson.put(EXTENDED_ADDRESS_KEY, mExtendedAddress);
+
+        if (mCountryCode != null) {
+            billingAddressJson.put(COUNTRY_CODE_ALPHA3_KEY, mCountryCode);
+        }
 
         if (billingAddressJson.length() > 0) {
             paymentMethodNonceJson.put(BILLING_ADDRESS_KEY, billingAddressJson);
@@ -368,6 +401,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         mFirstName = in.readString();
         mLastName = in.readString();
         mCompany = in.readString();
+        mCountryCode = in.readString();
         mCountryName = in.readString();
         mCountryCodeAlpha2 = in.readString();
         mCountryCodeAlpha3 = in.readString();
@@ -391,6 +425,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         dest.writeString(mFirstName);
         dest.writeString(mLastName);
         dest.writeString(mCompany);
+        dest.writeString(mCountryCode);
         dest.writeString(mCountryName);
         dest.writeString(mCountryCodeAlpha2);
         dest.writeString(mCountryCodeAlpha3);

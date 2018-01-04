@@ -62,6 +62,7 @@ public class CardBuilder extends BaseCardBuilder<CardBuilder> implements Parcela
                 .put(FIRST_NAME_KEY, mFirstName)
                 .put(LAST_NAME_KEY, mLastName)
                 .put(COMPANY_KEY, mCompany)
+                .put(COUNTRY_CODE_KEY, mCountryCode)
                 .put(COUNTRY_NAME_KEY, mCountryName)
                 .put(COUNTRY_CODE_ALPHA2_KEY, mCountryCodeAlpha2)
                 .put(COUNTRY_CODE_ALPHA3_KEY, mCountryCodeAlpha3)
