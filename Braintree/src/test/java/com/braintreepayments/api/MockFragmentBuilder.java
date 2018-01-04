@@ -29,7 +29,8 @@ public class MockFragmentBuilder {
     private String mSessionId;
     private String mSuccessResponse;
     private Exception mErrorResponse;
-    private String mGraphQLResponse;
+    private String mGraphQLSuccessResponse;
+    private Exception mGraphQLErrorResponse;
 
     public MockFragmentBuilder() {
         mContext = RuntimeEnvironment.application;
@@ -73,8 +74,13 @@ public class MockFragmentBuilder {
         return this;
     }
 
-    public MockFragmentBuilder graphQLResponse(String response) {
-        mGraphQLResponse = response;
+    public MockFragmentBuilder graphQLSuccessResponse(String response) {
+        mGraphQLSuccessResponse = response;
+        return this;
+    }
+
+    public MockFragmentBuilder graphQLErrorResponse(Exception exception) {
+        mGraphQLErrorResponse = exception;
         return this;
     }
 
@@ -103,8 +109,10 @@ public class MockFragmentBuilder {
         when(fragment.getHttpClient()).thenReturn(httpClient);
 
         GraphQLHttpClient graphQLHttpClient = mock(GraphQLHttpClient.class);
-        if (mGraphQLResponse != null) {
-            setupGraphQLResponses(graphQLHttpClient);
+        if (mGraphQLSuccessResponse != null) {
+            setupGraphQLSuccessResponses(graphQLHttpClient);
+        } else if (mGraphQLErrorResponse != null) {
+            setupGraphQLErrorResponses(graphQLHttpClient);
         }
         when(fragment.getGraphQLHttpClient()).thenReturn(graphQLHttpClient);
 
@@ -145,20 +153,31 @@ public class MockFragmentBuilder {
         }).when(httpClient).post(anyString(), anyString(), any(HttpResponseCallback.class));
     }
 
-    private void setupGraphQLResponses(GraphQLHttpClient graphQLHttpClient) {
-        doAnswer(new Answer() {
+    private void setupGraphQLSuccessResponses(GraphQLHttpClient graphQLHttpClient) {
+        Answer answer = new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                ((HttpResponseCallback) invocation.getArguments()[1]).success(mSuccessResponse);
+                ((HttpResponseCallback) invocation.getArguments()[1]).success(mGraphQLSuccessResponse);
                 return null;
             }
-        }).when(graphQLHttpClient).get(any(String.class), any(HttpResponseCallback.class));
-        doAnswer(new Answer() {
+        };
+
+        doAnswer(answer).when(graphQLHttpClient).get(any(String.class), any(HttpResponseCallback.class));
+        doAnswer(answer).when(graphQLHttpClient).post(anyString(), anyString(), any(HttpResponseCallback.class));
+        doAnswer(answer).when(graphQLHttpClient).post(anyString(), any(HttpResponseCallback.class));
+    }
+
+    private void setupGraphQLErrorResponses(GraphQLHttpClient graphQLHttpClient) {
+        Answer answer = new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                ((HttpResponseCallback) invocation.getArguments()[2]).success(mSuccessResponse);
+                ((HttpResponseCallback) invocation.getArguments()[1]).failure(mGraphQLErrorResponse);
                 return null;
             }
-        }).when(graphQLHttpClient).post(anyString(), anyString(), any(HttpResponseCallback.class));
+        };
+
+        doAnswer(answer).when(graphQLHttpClient).get(any(String.class), any(HttpResponseCallback.class));
+        doAnswer(answer).when(graphQLHttpClient).post(anyString(), anyString(), any(HttpResponseCallback.class));
+        doAnswer(answer).when(graphQLHttpClient).post(anyString(), any(HttpResponseCallback.class));
     }
 }

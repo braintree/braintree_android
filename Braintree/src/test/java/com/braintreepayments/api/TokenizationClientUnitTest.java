@@ -1,9 +1,12 @@
 package com.braintreepayments.api;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
+import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.UnionPayCardBuilder;
 import com.braintreepayments.api.models.VenmoAccountBuilder;
 import com.braintreepayments.api.models.VisaCheckoutBuilder;
@@ -16,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 
+import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -58,6 +62,20 @@ public class TokenizationClientUnitTest {
     }
 
     @Test
+    public void tokenize_sendGraphQLAnalyticsEventWhenEnabled() {
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .configuration(new TestConfigurationBuilder()
+                        .graphQL()
+                        .build())
+                .build();
+        CardBuilder cardBuilder = new CardBuilder();
+
+        TokenizationClient.tokenize(fragment, cardBuilder, null);
+
+        verify(fragment).sendAnalyticsEvent("card.graphql.tokenization.started");
+    }
+
+    @Test
     public void tokenize_tokenizesCardsWithRestWhenGraphQLIsDisabled() {
         BraintreeFragment fragment = new MockFragmentBuilder().build();
         CardBuilder cardBuilder = new CardBuilder();
@@ -84,6 +102,48 @@ public class TokenizationClientUnitTest {
         TokenizationClient.tokenize(fragment, new VisaCheckoutBuilder(null), null);
 
         verifyZeroInteractions(fragment.getGraphQLHttpClient());
+    }
+
+    @Test
+    public void tokenize_sendGraphQLAnalyticsEventOnSuccess() {
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .configuration(new TestConfigurationBuilder()
+                        .graphQL()
+                        .build())
+                .graphQLSuccessResponse(stringFromFixture("response/graphql/credit_card.json"))
+                .build();
+        CardBuilder cardBuilder = new CardBuilder();
+
+        TokenizationClient.tokenize(fragment, cardBuilder, new PaymentMethodNonceCallback() {
+            @Override
+            public void success(PaymentMethodNonce paymentMethodNonce) {}
+
+            @Override
+            public void failure(Exception exception) {}
+        });
+
+        verify(fragment).sendAnalyticsEvent("card.graphql.tokenization.success");
+    }
+
+    @Test
+    public void tokenize_sendGraphQLAnalyticsEventOnFailure() {
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .configuration(new TestConfigurationBuilder()
+                        .graphQL()
+                        .build())
+                .graphQLErrorResponse(ErrorWithResponse.fromGraphQLJson(stringFromFixture("errors/graphql/credit_card_error.json")))
+                .build();
+        CardBuilder cardBuilder = new CardBuilder();
+
+        TokenizationClient.tokenize(fragment, cardBuilder, new PaymentMethodNonceCallback() {
+            @Override
+            public void success(PaymentMethodNonce paymentMethodNonce) {}
+
+            @Override
+            public void failure(Exception exception) {}
+        });
+
+        verify(fragment).sendAnalyticsEvent("card.graphql.tokenization.failure");
     }
 
     @Test

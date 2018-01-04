@@ -57,6 +57,7 @@ class TokenizationClient {
 
     private static void tokenizeGraphQL(final BraintreeFragment fragment, final CardBuilder cardBuilder,
             final PaymentMethodNonceCallback callback) {
+        fragment.sendAnalyticsEvent("card.graphql.tokenization.started");
         String payload;
         try {
             payload = cardBuilder.buildGraphQL(fragment.getApplicationContext(), fragment.getAuthorization());
@@ -70,6 +71,7 @@ class TokenizationClient {
             public void success(String responseBody) {
                 try {
                     callback.success(parsePaymentMethodNonces(responseBody, cardBuilder.getResponsePaymentMethodType()));
+                    fragment.sendAnalyticsEvent("card.graphql.tokenization.success");
                 } catch (JSONException e) {
                     callback.failure(e);
                 }
@@ -77,6 +79,7 @@ class TokenizationClient {
 
             @Override
             public void failure(Exception exception) {
+                fragment.sendAnalyticsEvent("card.graphql.tokenization.failure");
                 callback.failure(exception);
             }
         });
