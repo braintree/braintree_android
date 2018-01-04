@@ -119,7 +119,7 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
 
     @Override
     public String getTypeLabel() {
-        return "Google Payments";
+        return "Google Pay";
     }
 
     public GooglePaymentCardNonce() {}

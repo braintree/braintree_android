@@ -34,7 +34,7 @@ public class GooglePaymentCardNonceUnitTest {
 
         GooglePaymentCardNonce googlePaymentCardNonce = GooglePaymentCardNonce.fromPaymentData(paymentData);
 
-        assertEquals("Google Payments", googlePaymentCardNonce.getTypeLabel());
+        assertEquals("Google Pay", googlePaymentCardNonce.getTypeLabel());
         assertEquals("fake-android-pay-nonce", googlePaymentCardNonce.getNonce());
         assertEquals("MasterCard 0276", googlePaymentCardNonce.getDescription());
         assertEquals("Visa", googlePaymentCardNonce.getCardType());
@@ -49,9 +49,9 @@ public class GooglePaymentCardNonceUnitTest {
         GooglePaymentCardNonce googlePaymentCardNonce = GooglePaymentCardNonce.fromJson(
                 stringFromFixture("payment_methods/android_pay_card_response.json"));
 
-        assertEquals("Google Payments", googlePaymentCardNonce.getTypeLabel());
+        assertEquals("Google Pay", googlePaymentCardNonce.getTypeLabel());
         assertEquals("fake-android-pay-nonce", googlePaymentCardNonce.getNonce());
-        assertEquals("Google Payments", googlePaymentCardNonce.getDescription());
+        assertEquals("Google Pay", googlePaymentCardNonce.getDescription());
         assertEquals("Visa", googlePaymentCardNonce.getCardType());
         assertEquals("11", googlePaymentCardNonce.getLastTwo());
         assertNotNull(googlePaymentCardNonce.getBinData());
@@ -81,7 +81,7 @@ public class GooglePaymentCardNonceUnitTest {
 
         GooglePaymentCardNonce parceled = GooglePaymentCardNonce.CREATOR.createFromParcel(parcel);
 
-        assertEquals("Google Payments", parceled.getTypeLabel());
+        assertEquals("Google Pay", parceled.getTypeLabel());
         assertEquals("fake-android-pay-nonce", parceled.getNonce());
         assertEquals("MasterCard 0276", parceled.getDescription());
         assertEquals("Visa", parceled.getCardType());
