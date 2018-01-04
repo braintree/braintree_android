@@ -38,7 +38,6 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     protected String mExpirationMonth;
     protected String mExpirationYear;
     protected String mCardholderName;
-    protected String mBillingAddress;
     protected String mFirstName;
     protected String mLastName;
     protected String mCompany;
@@ -397,7 +396,6 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         mExpirationMonth = in.readString();
         mExpirationYear = in.readString();
         mCardholderName = in.readString();
-        mBillingAddress = in.readString();
         mFirstName = in.readString();
         mLastName = in.readString();
         mCompany = in.readString();
@@ -421,7 +419,6 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         dest.writeString(mExpirationMonth);
         dest.writeString(mExpirationYear);
         dest.writeString(mCardholderName);
-        dest.writeString(mBillingAddress);
         dest.writeString(mFirstName);
         dest.writeString(mLastName);
         dest.writeString(mCompany);
