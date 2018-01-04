@@ -8,7 +8,7 @@
     <string name="feedback">Feedback</string>
     <string name="nonce">Nonce</string>
     <string name="drop_in">Drop-In</string>
-    <string name="pay_with_google">Pay with Google</string>
+    <string name="google_pay">Google Pay</string>
     <string name="paypal_button">@string/paypal</string>
     <string name="visa_checkout_button">Visa Checkout</string>
     <string name="ideal_button">iDEAL</string>
