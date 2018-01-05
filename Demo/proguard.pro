@@ -1,14 +1,17 @@
 # Only Required for Demo App
 
+## Mailable_Log
+-dontwarn ch.qos.logback.core.net.**
+-dontwarn org.slf4j.**
+
+## Picasso
+-dontwarn com.squareup.okhttp.**
+
 ## Retrofit
 -dontwarn retrofit.**
 -keep class retrofit.** { *; }
 -keepattributes Signature
 -keepattributes Exceptions
-
-## Mailable_Log
--dontwarn ch.qos.logback.core.net.**
--dontwarn org.slf4j.**
 
 ## Visa Checkout
 -assumenosideeffects class android.util.Log {
