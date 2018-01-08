@@ -7,7 +7,7 @@ task :default => :tests
 
 desc "Run Android lint on all modules"
 task :lint do
-  sh "./gradlew clean lint"
+  sh "./gradlew clean lint :Demo:assembleDebug :Demo:assembleRelease"
 end
 
 desc "Run Android unit tests"
