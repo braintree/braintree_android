@@ -264,6 +264,7 @@ public class CardTest {
 
                 assertNotNull(cardNonce.getNonce());
                 assertEquals("Visa", cardNonce.getCardType());
+                assertEquals("1111", cardNonce.getLastFour());
                 assertEquals("11", cardNonce.getLastTwo());
                 assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getPrepaid());
                 assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getHealthcare());

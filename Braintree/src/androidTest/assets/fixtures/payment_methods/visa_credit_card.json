@@ -8,6 +8,7 @@
   "details":
   {
     "cardType": "Visa",
-    "lastTwo": "11"
+    "lastTwo": "11",
+    "lastFour": "1111"
   }
 }

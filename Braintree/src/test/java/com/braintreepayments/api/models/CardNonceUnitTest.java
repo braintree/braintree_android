@@ -28,6 +28,7 @@ public class CardNonceUnitTest {
         assertEquals("Visa", cardNonce.getCardType());
         assertEquals("123456-12345-12345-a-adfa", cardNonce.getNonce());
         assertEquals("ending in ••11", cardNonce.getDescription());
+        assertEquals("1111", cardNonce.getLastFour());
         assertEquals("11", cardNonce.getLastTwo());
         assertNotNull(cardNonce.getThreeDSecureInfo());
         assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());

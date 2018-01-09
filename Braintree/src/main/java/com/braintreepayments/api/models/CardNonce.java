@@ -20,14 +20,16 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     private static final String GRAPHQL_TOKENIZE_CVV_KEY = "tokenizeCvv";
     private static final String GRAPHQL_CREDIT_CARD_KEY = "creditCard";
     private static final String GRAPHQL_BRAND_KEY = "brand";
+    private static final String GRAPHQL_LAST_FOUR_KEY = "last4";
     private static final String THREE_D_SECURE_INFO_KEY = "threeDSecureInfo";
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
-    private static final String LAST_FOUR_KEY = "last4";
     private static final String LAST_TWO_KEY = "lastTwo";
+    private static final String LAST_FOUR_KEY = "lastFour";
 
     private String mCardType;
     private String mLastTwo;
+    private String mLastFour;
     private ThreeDSecureInfo mThreeDSecureInfo;
     private BinData mBinData;
 
@@ -62,6 +64,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
 
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
         mLastTwo = details.getString(LAST_TWO_KEY);
+        mLastFour = details.getString(LAST_FOUR_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
         mThreeDSecureInfo =
                 ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY));
@@ -75,7 +78,8 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
             JSONObject payload = data.getJSONObject(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY);
 
             JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
-            mLastTwo = creditCard.getString(LAST_FOUR_KEY).substring(2);
+            mLastFour = creditCard.getString(GRAPHQL_LAST_FOUR_KEY);
+            mLastTwo = mLastFour.substring(2);
             mCardType = creditCard.getString(GRAPHQL_BRAND_KEY);
             mThreeDSecureInfo = ThreeDSecureInfo.fromJson(null);
             mBinData = BinData.fromJson(creditCard.optJSONObject(BIN_DATA_KEY));
@@ -84,6 +88,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
             mDescription = "ending in ••" + mLastTwo;
             mDefault = false;
         } else if (data.has(GRAPHQL_TOKENIZE_CVV_KEY)) {
+            mLastFour = "";
             mLastTwo = "";
             mDescription = "";
             mCardType = "Unknown";
@@ -117,6 +122,11 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     }
 
     /**
+     * @return Last four digits of the card.
+     */
+    public String getLastFour() { return mLastFour; }
+
+    /**
      * @return The 3D Secure info for the current {@link CardNonce} or
      * {@code null}
      */
@@ -138,6 +148,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         super.writeToParcel(dest, flags);
         dest.writeString(mCardType);
         dest.writeString(mLastTwo);
+        dest.writeString(mLastFour);
         dest.writeParcelable(mBinData, flags);
         dest.writeParcelable(mThreeDSecureInfo, flags);
     }
@@ -146,6 +157,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         super(in);
         mCardType = in.readString();
         mLastTwo = in.readString();
+        mLastFour = in.readString();
         mBinData = in.readParcelable(BinData.class.getClassLoader());
         mThreeDSecureInfo = in.readParcelable(ThreeDSecureInfo.class.getClassLoader());
     }
