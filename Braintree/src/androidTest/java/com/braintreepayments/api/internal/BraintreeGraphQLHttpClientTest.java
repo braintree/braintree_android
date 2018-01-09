@@ -26,7 +26,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
-public class GraphQLHttpClientTest {
+public class BraintreeGraphQLHttpClientTest {
 
     private CountDownLatch mCountDownLatch;
 
@@ -38,7 +38,7 @@ public class GraphQLHttpClientTest {
     @Test
     public void sendsUserAgent() throws IOException, InvalidArgumentException {
         String baseUrl = "http://example.com/graphql";
-        GraphQLHttpClient httpClient = new GraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
+        BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
 
         HttpURLConnection connection = httpClient.init(baseUrl);
 
@@ -48,7 +48,7 @@ public class GraphQLHttpClientTest {
     @Test
     public void sendsTokenizationKeyAsAuthorization() throws IOException, InvalidArgumentException {
         String baseUrl = "http://example.com/graphql";
-        GraphQLHttpClient httpClient = new GraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
+        BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
 
         HttpURLConnection connection = httpClient.init(baseUrl);
 
@@ -59,7 +59,7 @@ public class GraphQLHttpClientTest {
     public void sendsAuthorizationFingerprintAsAuthorization() throws IOException, InvalidArgumentException {
         String baseUrl = "http://example.com/graphql";
         ClientToken clientToken = (ClientToken) Authorization.fromString(stringFromFixture("client_token.json"));
-        GraphQLHttpClient httpClient = new GraphQLHttpClient(baseUrl, clientToken.getAuthorization());
+        BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, clientToken.getAuthorization());
 
         HttpURLConnection connection = httpClient.init(baseUrl);
 
@@ -69,7 +69,7 @@ public class GraphQLHttpClientTest {
     @Test
     public void sendsBraintreeVersionHeader() throws IOException, InvalidArgumentException {
         String baseUrl = "http://example.com/graphql";
-        GraphQLHttpClient httpClient = new GraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
+        BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
 
         HttpURLConnection connection = httpClient.init(baseUrl);
 
@@ -78,8 +78,8 @@ public class GraphQLHttpClientTest {
 
     @Test(timeout = 5000)
     public void getRequestSslCertificateSuccessfulInSandbox() throws InterruptedException, InvalidArgumentException {
-        GraphQLHttpClient httpClient =
-                new GraphQLHttpClient("https://payments.sandbox.braintree-api.com/graphql", TOKENIZATION_KEY);
+        BraintreeGraphQLHttpClient httpClient =
+                new BraintreeGraphQLHttpClient("https://payments.sandbox.braintree-api.com/graphql", TOKENIZATION_KEY);
 
         httpClient.get("/", new HttpResponseCallback() {
             @Override
@@ -99,8 +99,8 @@ public class GraphQLHttpClientTest {
 
     @Test(timeout = 5000)
     public void getRequestSslCertificateSuccessfulInProduction() throws InterruptedException, InvalidArgumentException {
-        GraphQLHttpClient httpClient =
-                new GraphQLHttpClient("https://payments.braintree-api.com/graphql", TOKENIZATION_KEY);
+        BraintreeGraphQLHttpClient httpClient =
+                new BraintreeGraphQLHttpClient("https://payments.braintree-api.com/graphql", TOKENIZATION_KEY);
 
         httpClient.get("/", new HttpResponseCallback() {
             @Override
@@ -125,7 +125,7 @@ public class GraphQLHttpClientTest {
         }
 
         String baseUrl = "https://" + EnvironmentHelper.getLocalhostIp() + ":9443";
-        GraphQLHttpClient httpClient = new GraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
+        BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
 
         httpClient.get("/", new HttpResponseCallback() {
             @Override

@@ -12,15 +12,15 @@ import java.net.HttpURLConnection;
 
 import javax.net.ssl.SSLException;
 
-public class GraphQLHttpClient extends BraintreeApiHttpClient {
+public class BraintreeGraphQLHttpClient extends BraintreeApiHttpClient {
 
     private static final String API_VERSION_2018_01_08 = "2018-01-08";
 
-    public GraphQLHttpClient(String baseUrl, String authorization) {
+    public BraintreeGraphQLHttpClient(String baseUrl, String authorization) {
         this(baseUrl, authorization, API_VERSION_2018_01_08);
     }
 
-    private GraphQLHttpClient(String baseUrl, String authorization, String apiVersion) {
+    private BraintreeGraphQLHttpClient(String baseUrl, String authorization, String apiVersion) {
         super(baseUrl, authorization, apiVersion);
 
         try {

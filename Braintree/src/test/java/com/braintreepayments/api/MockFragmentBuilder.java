@@ -5,7 +5,7 @@ import android.content.Context;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
-import com.braintreepayments.api.internal.GraphQLHttpClient;
+import com.braintreepayments.api.internal.BraintreeGraphQLHttpClient;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
@@ -108,7 +108,7 @@ public class MockFragmentBuilder {
         }
         when(fragment.getHttpClient()).thenReturn(httpClient);
 
-        GraphQLHttpClient graphQLHttpClient = mock(GraphQLHttpClient.class);
+        BraintreeGraphQLHttpClient graphQLHttpClient = mock(BraintreeGraphQLHttpClient.class);
         if (mGraphQLSuccessResponse != null) {
             setupGraphQLSuccessResponses(graphQLHttpClient);
         } else if (mGraphQLErrorResponse != null) {
@@ -153,7 +153,7 @@ public class MockFragmentBuilder {
         }).when(httpClient).post(anyString(), anyString(), any(HttpResponseCallback.class));
     }
 
-    private void setupGraphQLSuccessResponses(GraphQLHttpClient graphQLHttpClient) {
+    private void setupGraphQLSuccessResponses(BraintreeGraphQLHttpClient graphQLHttpClient) {
         Answer answer = new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -167,7 +167,7 @@ public class MockFragmentBuilder {
         doAnswer(answer).when(graphQLHttpClient).post(anyString(), any(HttpResponseCallback.class));
     }
 
-    private void setupGraphQLErrorResponses(GraphQLHttpClient graphQLHttpClient) {
+    private void setupGraphQLErrorResponses(BraintreeGraphQLHttpClient graphQLHttpClient) {
         Answer answer = new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
