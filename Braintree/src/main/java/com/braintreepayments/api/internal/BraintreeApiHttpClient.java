@@ -19,15 +19,19 @@ public class BraintreeApiHttpClient extends HttpClient {
 
     public static final String API_VERSION_2016_10_07 = "2016-10-07";
 
-    private final String mAccessToken;
+    private final String mAuthorization;
     private final String mApiVersion;
 
-    public BraintreeApiHttpClient(String baseUrl, String accessToken) {
+    public BraintreeApiHttpClient(String baseUrl, String authorization) {
+        this(baseUrl, authorization, API_VERSION_2016_10_07);
+    }
+
+    public BraintreeApiHttpClient(String baseUrl, String authorization, String apiVersion) {
         super();
 
         mBaseUrl = baseUrl;
-        mAccessToken = accessToken;
-        mApiVersion = API_VERSION_2016_10_07;
+        mAuthorization = authorization;
+        mApiVersion = apiVersion;
 
         setUserAgent("braintree/android/" + BuildConfig.VERSION_NAME);
 
@@ -42,8 +46,8 @@ public class BraintreeApiHttpClient extends HttpClient {
     protected HttpURLConnection init(String url) throws IOException {
         HttpURLConnection connection = super.init(url);
 
-        if (!TextUtils.isEmpty(mAccessToken)) {
-            connection.setRequestProperty("Authorization", "Bearer " + mAccessToken);
+        if (!TextUtils.isEmpty(mAuthorization)) {
+            connection.setRequestProperty("Authorization", "Bearer " + mAuthorization);
         }
 
         connection.setRequestProperty("Braintree-Version", mApiVersion);
