@@ -59,7 +59,7 @@ public class BraintreeGraphQLHttpClientTest {
     public void sendsAuthorizationFingerprintAsAuthorization() throws IOException, InvalidArgumentException {
         String baseUrl = "http://example.com/graphql";
         ClientToken clientToken = (ClientToken) Authorization.fromString(stringFromFixture("client_token.json"));
-        BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, clientToken.getAuthorization());
+        BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, clientToken.getBearer());
 
         HttpURLConnection connection = httpClient.init(baseUrl);
 

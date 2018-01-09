@@ -79,9 +79,9 @@ public class AnalyticsSender {
 
         JSONObject requestObject = new JSONObject();
         if (authorization instanceof ClientToken) {
-            requestObject.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.getAuthorization());
+            requestObject.put(AUTHORIZATION_FINGERPRINT_KEY, authorization.getBearer());
         } else {
-            requestObject.put(TOKENIZATION_KEY, authorization.getAuthorization());
+            requestObject.put(TOKENIZATION_KEY, authorization.getBearer());
         }
 
         JSONObject meta = primeEvent.metadata

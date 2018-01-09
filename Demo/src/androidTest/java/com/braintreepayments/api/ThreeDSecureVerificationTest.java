@@ -1,7 +1,6 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
-import android.support.test.espresso.web.webdriver.Locator;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.exceptions.AuthorizationException;
@@ -33,9 +32,6 @@ import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.web.sugar.Web.onWebView;
-import static android.support.test.espresso.web.webdriver.DriverAtoms.findElement;
-import static android.support.test.espresso.web.webdriver.DriverAtoms.webClick;
-import static android.support.test.espresso.web.webdriver.DriverAtoms.webKeys;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.api.test.Matchers.withId;
 import static com.braintreepayments.api.test.ViewHelper.waitForView;
@@ -448,7 +444,7 @@ public class ThreeDSecureVerificationTest {
     private BraintreeFragment getFragment(String authorization, String configuration) {
         try {
             Authorization auth = Authorization.fromString(authorization);
-            writeMockConfiguration(getTargetContext(), auth.getConfigUrl(), auth.getAuthorization(), configuration);
+            writeMockConfiguration(getTargetContext(), auth.getConfigUrl(), auth.getBearer(), configuration);
 
             BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, authorization);
 

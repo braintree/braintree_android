@@ -87,7 +87,7 @@ public class PayPalUnitTest {
         doReturn(true).when(Recipe.class, "isValidBrowserTarget", any(Context.class), anyString(), anyString());
 
         Authorization authorization = mock(Authorization.class);
-        when(authorization.getAuthorization()).thenReturn("authorization");
+        when(authorization.getBearer()).thenReturn("authorization");
         when(authorization.toString()).thenReturn("authorization");
 
         Configuration configuration = new TestConfigurationBuilder()

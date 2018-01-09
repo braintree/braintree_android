@@ -40,9 +40,9 @@ public abstract class Authorization implements Parcelable {
     public abstract String getConfigUrl();
 
     /**
-     * @return The authorization string for authorizing requests.
+     * @return The authorization bearer string for authorizing requests.
      */
-    public abstract String getAuthorization();
+    public abstract String getBearer();
 
     /**
      * @return The original Client token or Tokenization Key string, which can be used for serialization

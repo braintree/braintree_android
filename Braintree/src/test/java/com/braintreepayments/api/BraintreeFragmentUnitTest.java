@@ -293,7 +293,7 @@ public class BraintreeFragmentUnitTest {
     public void getTokenizationKey_returnsTokenizationKey() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
 
-        assertEquals(TOKENIZATION_KEY, fragment.getAuthorization().getAuthorization());
+        assertEquals(TOKENIZATION_KEY, fragment.getAuthorization().getBearer());
     }
 
     @Test

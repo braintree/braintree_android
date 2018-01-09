@@ -17,7 +17,7 @@ public class TokenizationKeyUnitTest {
     public void fromString_acceptsATokenizationKey() throws InvalidArgumentException {
         Authorization tokenizationKey = Authorization.fromString(TOKENIZATION_KEY);
 
-        assertEquals("development_testing_integration_merchant_id", tokenizationKey.getAuthorization());
+        assertEquals("development_testing_integration_merchant_id", tokenizationKey.getBearer());
     }
 
     @Test(expected = InvalidArgumentException.class)
@@ -77,7 +77,7 @@ public class TokenizationKeyUnitTest {
     }
 
     @Test
-    public void getAuthorization_returnsTokenizationKey() throws InvalidArgumentException {
-        assertEquals(TOKENIZATION_KEY, Authorization.fromString(TOKENIZATION_KEY).getAuthorization());
+    public void getBearer_returnsTokenizationKey() throws InvalidArgumentException {
+        assertEquals(TOKENIZATION_KEY, Authorization.fromString(TOKENIZATION_KEY).getBearer());
     }
 }

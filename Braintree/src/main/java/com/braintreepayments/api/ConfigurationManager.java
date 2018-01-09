@@ -42,7 +42,7 @@ class ConfigurationManager {
                 .toString();
 
         Configuration cachedConfig = getCachedConfiguration(fragment.getApplicationContext(), configUrl +
-                fragment.getAuthorization().getAuthorization());
+                fragment.getAuthorization().getBearer());
         if (cachedConfig != null) {
             listener.onConfigurationFetched(cachedConfig);
         } else {
@@ -53,7 +53,7 @@ class ConfigurationManager {
                     try {
                         Configuration configuration = Configuration.fromJson(responseBody);
                         cacheConfiguration(fragment.getApplicationContext(),
-                                configUrl + fragment.getAuthorization().getAuthorization(), configuration);
+                                configUrl + fragment.getAuthorization().getBearer(), configuration);
 
                         sFetchingConfiguration = false;
                         listener.onConfigurationFetched(configuration);

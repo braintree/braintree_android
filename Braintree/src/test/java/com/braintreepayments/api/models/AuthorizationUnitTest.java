@@ -76,7 +76,7 @@ public class AuthorizationUnitTest {
         Authorization parceled = ClientToken.CREATOR.createFromParcel(parcel);
 
         assertEquals(authorization.toString(), parceled.toString());
-        assertEquals(authorization.getAuthorization(), parceled.getAuthorization());
+        assertEquals(authorization.getBearer(), parceled.getBearer());
         assertEquals(authorization.getConfigUrl(), parceled.getConfigUrl());
         assertEquals(((ClientToken) authorization).getAuthorizationFingerprint(),
                 ((ClientToken) parceled).getAuthorizationFingerprint());
@@ -92,7 +92,7 @@ public class AuthorizationUnitTest {
         Authorization parceled = TokenizationKey.CREATOR.createFromParcel(parcel);
 
         assertEquals(authorization.toString(), parceled.toString());
-        assertEquals(authorization.getAuthorization(), parceled.getAuthorization());
+        assertEquals(authorization.getBearer(), parceled.getBearer());
         assertEquals(authorization.getConfigUrl(), parceled.getConfigUrl());
         assertEquals(((TokenizationKey) authorization).getEnvironment(), ((TokenizationKey) parceled).getEnvironment());
         assertEquals(((TokenizationKey) authorization).getMerchantId(), ((TokenizationKey) parceled).getMerchantId());

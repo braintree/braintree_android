@@ -66,7 +66,7 @@ public class BraintreeFragmentTestUtils {
 
     public static void setConfiguration(String authorization, String configuration) throws InvalidArgumentException {
         Authorization auth = Authorization.fromString(authorization);
-        writeMockConfiguration(getTargetContext(), auth.getConfigUrl(), auth.getAuthorization(), configuration);
+        writeMockConfiguration(getTargetContext(), auth.getConfigUrl(), auth.getBearer(), configuration);
     }
 
     public static CardNonce tokenize(BraintreeFragment fragment, CardBuilder cardBuilder) {

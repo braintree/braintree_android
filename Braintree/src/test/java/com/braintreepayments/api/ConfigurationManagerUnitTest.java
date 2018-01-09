@@ -135,7 +135,7 @@ public class ConfigurationManagerUnitTest {
     @Test(timeout = 1000)
     public void getConfiguration_getsConfigFromCacheWhenTimeoutHasNotExpired() throws InterruptedException {
         writeMockConfiguration(RuntimeEnvironment.application, mTokenizationKey.getConfigUrl(),
-                mTokenizationKey.getAuthorization(), stringFromFixture("configuration/configuration.json"),
+                mTokenizationKey.getBearer(), stringFromFixture("configuration/configuration.json"),
                 System.currentTimeMillis());
 
         ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
@@ -157,7 +157,7 @@ public class ConfigurationManagerUnitTest {
     @Test(timeout = 1000)
     public void getConfiguration_getsConfigFromGatewayWhenTimeoutExpired() throws InterruptedException {
         writeMockConfiguration(RuntimeEnvironment.application, mTokenizationKey.getConfigUrl(),
-                mTokenizationKey.getAuthorization(), stringFromFixture("configuration/configuration.json"),
+                mTokenizationKey.getBearer(), stringFromFixture("configuration/configuration.json"),
                 System.currentTimeMillis() - (ConfigurationManager.TTL + 1));
         stubConfigurationFromGateway(stringFromFixture("configuration/with_analytics.json"));
 
@@ -203,7 +203,7 @@ public class ConfigurationManagerUnitTest {
     public void getConfiguration_fetchesConfigurationFromGatewayWhenCachedConfigIsInvalid()
             throws InterruptedException {
         writeMockConfiguration(RuntimeEnvironment.application, mTokenizationKey.getConfigUrl(),
-                mTokenizationKey.getAuthorization(), "not a config");
+                mTokenizationKey.getBearer(), "not a config");
         stubConfigurationFromGateway(stringFromFixture("configuration/configuration.json"));
 
         ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
@@ -261,7 +261,7 @@ public class ConfigurationManagerUnitTest {
                                 .appendQueryParameter("configVersion", "3")
                                 .build()
                                 .toString()
-                                .concat(mTokenizationKey.getAuthorization())
+                                .concat(mTokenizationKey.getBearer())
                                 .getBytes(),
                         0);
 

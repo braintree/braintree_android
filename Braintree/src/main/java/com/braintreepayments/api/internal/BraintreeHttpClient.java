@@ -125,7 +125,7 @@ public class BraintreeHttpClient extends HttpClient {
         HttpURLConnection connection = super.init(url);
 
         if (mAuthorization instanceof TokenizationKey) {
-            connection.setRequestProperty(TOKENIZATION_KEY_HEADER_KEY, mAuthorization.getAuthorization());
+            connection.setRequestProperty(TOKENIZATION_KEY_HEADER_KEY, mAuthorization.getBearer());
         }
 
         return connection;

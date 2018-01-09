@@ -771,7 +771,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
 
         if (configuration.getGraphQL().isEnabled()) {
             mGraphQLHttpClient = new BraintreeGraphQLHttpClient(configuration.getGraphQL().getUrl(),
-                    mAuthorization.getAuthorization());
+                    mAuthorization.getBearer());
         }
     }
 

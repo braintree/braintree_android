@@ -48,7 +48,7 @@ public class ClientToken extends Authorization {
     }
 
     @Override
-    public String getAuthorization() {
+    public String getBearer() {
         return mAuthorizationFingerprint;
     }
 

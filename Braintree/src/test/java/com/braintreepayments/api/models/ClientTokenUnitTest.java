@@ -35,9 +35,9 @@ public class ClientTokenUnitTest {
     }
 
     @Test
-    public void getAuthorization_returnsAuthorizationFingerprint() throws InvalidArgumentException {
+    public void getBearer_returnsAuthorizationFingerprint() throws InvalidArgumentException {
         ClientToken clientToken = (ClientToken) Authorization.fromString(stringFromFixture("client_token.json"));
 
-        assertEquals(clientToken.getAuthorizationFingerprint(), clientToken.getAuthorization());
+        assertEquals(clientToken.getAuthorizationFingerprint(), clientToken.getBearer());
     }
 }

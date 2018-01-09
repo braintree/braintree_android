@@ -16,12 +16,12 @@ public class BraintreeGraphQLHttpClient extends BraintreeApiHttpClient {
 
     private static final String API_VERSION_2018_01_08 = "2018-01-08";
 
-    public BraintreeGraphQLHttpClient(String baseUrl, String authorization) {
-        this(baseUrl, authorization, API_VERSION_2018_01_08);
+    public BraintreeGraphQLHttpClient(String baseUrl, String bearer) {
+        this(baseUrl, bearer, API_VERSION_2018_01_08);
     }
 
-    private BraintreeGraphQLHttpClient(String baseUrl, String authorization, String apiVersion) {
-        super(baseUrl, authorization, apiVersion);
+    private BraintreeGraphQLHttpClient(String baseUrl, String bearer, String apiVersion) {
+        super(baseUrl, bearer, apiVersion);
 
         try {
             setSSLSocketFactory(new TLSSocketFactory(BraintreeGraphQLCertificate.getCertInputStream()));

@@ -42,7 +42,7 @@ public class TokenizationKey extends Authorization implements Parcelable {
     }
 
     @Override
-    public String getAuthorization() {
+    public String getBearer() {
         return toString();
     }
 
