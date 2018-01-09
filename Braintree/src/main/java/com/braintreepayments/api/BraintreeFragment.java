@@ -64,8 +64,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 
-import static com.braintreepayments.api.internal.BraintreeApiHttpClient.API_VERSION_2016_10_07;
-
 /**
  * Core Braintree class that handles network requests and managing callbacks.
  */
@@ -772,11 +770,8 @@ public class BraintreeFragment extends BrowserSwitchFragment {
         getHttpClient().setBaseUrl(configuration.getClientApiUrl());
 
         if (configuration.getGraphQL().isEnabled()) {
-            if (mGraphQLHttpClient == null) {
-                mGraphQLHttpClient = new GraphQLHttpClient(mAuthorization);
-            }
-
-            getGraphQLHttpClient().setBaseUrl(configuration.getGraphQL().getUrl());
+            mGraphQLHttpClient = new GraphQLHttpClient(configuration.getGraphQL().getUrl(),
+                    mAuthorization.getAuthorization());
         }
     }
 

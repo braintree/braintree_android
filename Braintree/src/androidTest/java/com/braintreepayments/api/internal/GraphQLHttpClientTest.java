@@ -3,12 +3,10 @@ package com.braintreepayments.api.internal;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.BuildConfig;
-import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.ClientToken;
-import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.test.EnvironmentHelper;
 
 import org.junit.Before;
@@ -38,51 +36,50 @@ public class GraphQLHttpClientTest {
     }
 
     @Test
-    public void getUserAgent_returnsCorrectUserAgent() {
-        assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, GraphQLHttpClient.getUserAgent());
-    }
-
-    @Test
     public void sendsUserAgent() throws IOException, InvalidArgumentException {
-        GraphQLHttpClient httpClient = new GraphQLHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY));
+        String baseUrl = "http://example.com/graphql";
+        GraphQLHttpClient httpClient = new GraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
 
-        HttpURLConnection connection = httpClient.init("http://example.com/");
+        HttpURLConnection connection = httpClient.init(baseUrl);
 
         assertEquals("braintree/android/" + BuildConfig.VERSION_NAME, connection.getRequestProperty("User-Agent"));
     }
 
     @Test
     public void sendsTokenizationKeyAsAuthorization() throws IOException, InvalidArgumentException {
-        GraphQLHttpClient httpClient = new GraphQLHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY));
+        String baseUrl = "http://example.com/graphql";
+        GraphQLHttpClient httpClient = new GraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
 
-        HttpURLConnection connection = httpClient.init("http://example.com/");
+        HttpURLConnection connection = httpClient.init(baseUrl);
 
         assertEquals("Bearer " + TOKENIZATION_KEY, connection.getRequestProperty("Authorization"));
     }
 
     @Test
     public void sendsAuthorizationFingerprintAsAuthorization() throws IOException, InvalidArgumentException {
+        String baseUrl = "http://example.com/graphql";
         ClientToken clientToken = (ClientToken) Authorization.fromString(stringFromFixture("client_token.json"));
-        GraphQLHttpClient httpClient = new GraphQLHttpClient(clientToken);
+        GraphQLHttpClient httpClient = new GraphQLHttpClient(baseUrl, clientToken.getAuthorization());
 
-        HttpURLConnection connection = httpClient.init("http://example.com/");
+        HttpURLConnection connection = httpClient.init(baseUrl);
 
         assertEquals("Bearer " + clientToken.getAuthorizationFingerprint(), connection.getRequestProperty("Authorization"));
     }
 
     @Test
     public void sendsBraintreeVersionHeader() throws IOException, InvalidArgumentException {
-        GraphQLHttpClient httpClient = new GraphQLHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY));
+        String baseUrl = "http://example.com/graphql";
+        GraphQLHttpClient httpClient = new GraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
 
-        HttpURLConnection connection = httpClient.init("http://example.com/");
+        HttpURLConnection connection = httpClient.init(baseUrl);
 
-        assertEquals("2016-10-07", connection.getRequestProperty("Braintree-Version"));
+        assertEquals("2018-01-08", connection.getRequestProperty("Braintree-Version"));
     }
 
     @Test(timeout = 5000)
     public void getRequestSslCertificateSuccessfulInSandbox() throws InterruptedException, InvalidArgumentException {
-        GraphQLHttpClient httpClient = new GraphQLHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY));
-        httpClient.setBaseUrl("https://payments.sandbox.braintree-api.com/graphql");
+        GraphQLHttpClient httpClient =
+                new GraphQLHttpClient("https://payments.sandbox.braintree-api.com/graphql", TOKENIZATION_KEY);
 
         httpClient.get("/", new HttpResponseCallback() {
             @Override
@@ -102,8 +99,8 @@ public class GraphQLHttpClientTest {
 
     @Test(timeout = 5000)
     public void getRequestSslCertificateSuccessfulInProduction() throws InterruptedException, InvalidArgumentException {
-        GraphQLHttpClient httpClient = new GraphQLHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY));
-        httpClient.setBaseUrl("https://payments.braintree-api.com/graphql");
+        GraphQLHttpClient httpClient =
+                new GraphQLHttpClient("https://payments.braintree-api.com/graphql", TOKENIZATION_KEY);
 
         httpClient.get("/", new HttpResponseCallback() {
             @Override
@@ -127,8 +124,8 @@ public class GraphQLHttpClientTest {
             return;
         }
 
-        GraphQLHttpClient httpClient = new GraphQLHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY));
-        httpClient.setBaseUrl("https://" + EnvironmentHelper.getLocalhostIp() + ":9443");
+        String baseUrl = "https://" + EnvironmentHelper.getLocalhostIp() + ":9443";
+        GraphQLHttpClient httpClient = new GraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
 
         httpClient.get("/", new HttpResponseCallback() {
             @Override
