@@ -1068,7 +1068,7 @@ public class BraintreeTest extends AndroidTestCase {
         braintree.createHelper(new CardBuilder()
                 .cardNumber(VISA)
                 .expirationMonth("04")
-                .expirationYear("17")).get();
+                .expirationYear("2021")).get();
     }
 
     /**
