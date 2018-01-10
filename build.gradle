@@ -86,13 +86,13 @@ allprojects {
         sign configurations.archives
     }
 
-    version = '1.7.9-SNAPSHOT'
+    version = '1.7.10'
     ext {
         compileSdkVersion = 25
         buildToolsVersion = '25.0.0'
         minSdkVersion = 16
         targetSdkVersion = 25
-        versionCode = 38
+        versionCode = 39
         versionName = version
     }
 }

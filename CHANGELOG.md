@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 1.7.10
+
+* Updated trusted certificates
+
 ## 1.7.9
 
 * Update PayPal SDK to 2.13.3
