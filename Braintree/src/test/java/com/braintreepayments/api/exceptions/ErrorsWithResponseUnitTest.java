@@ -99,6 +99,16 @@ public class ErrorsWithResponseUnitTest {
     }
 
     @Test
+    public void fromGraphQLJson_parsesGraphQLCoercionErrorsCorrectly() {
+        String response = stringFromFixture("errors/graphql/coercion_error.json");
+
+        ErrorWithResponse errorWithResponse = ErrorWithResponse.fromGraphQLJson(response);
+
+        assertEquals("Variable 'input' has coerced Null value for NonNull type 'String!'", errorWithResponse.getMessage());
+        assertEquals(422, errorWithResponse.getStatusCode());
+    }
+
+    @Test
     public void fromGraphQLJson_doesNotBlowUpParsingBadJson() {
         String badJson = stringFromFixture("random_json.json");
 

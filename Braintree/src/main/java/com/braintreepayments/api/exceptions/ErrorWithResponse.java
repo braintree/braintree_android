@@ -79,8 +79,13 @@ public class ErrorWithResponse extends Exception implements Parcelable {
             }
 
             errorWithResponse.mMessage = error.getString(MESSAGE_KEY);
-            errorWithResponse.mFieldErrors = BraintreeError.fromGraphQLJsonArray(
-                    error.getJSONObject(GRAPHQL_EXTENSIONS_KEY).optJSONArray(GRAPHQL_ERROR_DETAILS_KEY));
+
+            if (error.has(GRAPHQL_EXTENSIONS_KEY)) {
+                errorWithResponse.mFieldErrors = BraintreeError.fromGraphQLJsonArray(
+                        error.getJSONObject(GRAPHQL_EXTENSIONS_KEY).optJSONArray(GRAPHQL_ERROR_DETAILS_KEY));
+            } else {
+                errorWithResponse.mFieldErrors = new ArrayList<>();
+            }
         } catch (JSONException e) {
             errorWithResponse.mMessage = "Parsing error response failed";
             errorWithResponse.mFieldErrors = new ArrayList<>();
@@ -129,11 +134,11 @@ public class ErrorWithResponse extends Exception implements Parcelable {
      *
      * @param field Name of the field desired, expected to be in camelCase.
      * @return {@link BraintreeError} for the field searched, or {@code null} if not found.
-    */
+     */
     @Nullable
     public BraintreeError errorFor(String field) {
         BraintreeError returnError;
-        if(mFieldErrors != null) {
+        if (mFieldErrors != null) {
             for (BraintreeError error : mFieldErrors) {
                 if (error.getField().equals(field)) {
                     return error;

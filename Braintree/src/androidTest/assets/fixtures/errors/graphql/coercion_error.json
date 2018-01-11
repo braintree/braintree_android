@@ -1,0 +1,13 @@
+{
+  "data" : null,
+  "errors" : [ {
+    "message" : "Variable 'input' has coerced Null value for NonNull type 'String!'",
+    "locations" : [ {
+      "line" : 1,
+      "column" : 29
+    } ]
+  } ],
+  "extensions" : {
+    "requestId" : "42e50df8-c29d-4430-9d3f-00379b147543"
+  }
+}
