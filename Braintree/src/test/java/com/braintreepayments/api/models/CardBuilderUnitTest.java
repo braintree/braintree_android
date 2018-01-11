@@ -9,6 +9,7 @@ import com.braintreepayments.api.R;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.internal.GraphQLQueryHelper;
+import com.google.common.collect.Lists;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +22,11 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
+import static com.braintreepayments.api.models.BaseCardBuilder.CARDHOLDER_NAME_KEY;
+import static com.braintreepayments.api.models.BaseCardBuilder.CVV_KEY;
+import static com.braintreepayments.api.models.BaseCardBuilder.EXPIRATION_MONTH_KEY;
+import static com.braintreepayments.api.models.BaseCardBuilder.EXPIRATION_YEAR_KEY;
+import static com.braintreepayments.api.models.BaseCardBuilder.NUMBER_KEY;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
@@ -305,6 +311,22 @@ public class CardBuilderUnitTest {
     }
 
     @Test
+    public void buildGraphQL_convertsNonNullableCreditCardFieldsToEmptyString() throws Exception {
+        Context context = RuntimeEnvironment.application.getApplicationContext();
+        CardBuilder cardBuilder = new CardBuilder();
+
+        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(TOKENIZATION_KEY)));
+
+        JSONObject cardJson = json.getJSONObject(GraphQLQueryHelper.VARIABLES_KEY)
+                .getJSONObject(GraphQLQueryHelper.INPUT_KEY)
+                .getJSONObject(BaseCardBuilder.CREDIT_CARD_KEY);
+
+        assertEquals("", cardJson.getString("number"));
+        assertEquals("", cardJson.getString("expirationYear"));
+        assertEquals("", cardJson.getString("expirationMonth"));
+    }
+
+    @Test
     public void buildGraphQL_correctlyBuildsACvvTokenization() throws Exception {
         CardBuilder cardBuilder = new CardBuilder().cvv("123");
 
@@ -312,7 +334,7 @@ public class CardBuilderUnitTest {
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(TOKENIZATION_KEY)));
         String jsonCvv = json.getJSONObject(GraphQLQueryHelper.VARIABLES_KEY)
                 .getJSONObject(GraphQLQueryHelper.INPUT_KEY)
-                .getString(BaseCardBuilder.CVV_KEY);
+                .getString(CVV_KEY);
 
         assertEquals(GraphQLQueryHelper.getQuery(context, R.raw.tokenize_cvv_mutation),
                 json.getString(GraphQLQueryHelper.QUERY_KEY));
@@ -393,7 +415,8 @@ public class CardBuilderUnitTest {
         CardBuilder cardBuilder = new CardBuilder();
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
-        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(stringFromFixture("client_token.json"))));
+        JSONObject json = new JSONObject(
+                cardBuilder.buildGraphQL(context, Authorization.fromString(stringFromFixture("client_token.json"))));
         JSONObject jsonOptions = json.getJSONObject(GraphQLQueryHelper.VARIABLES_KEY)
                 .getJSONObject(GraphQLQueryHelper.INPUT_KEY)
                 .getJSONObject(PaymentMethodBuilder.OPTIONS_KEY);
@@ -423,7 +446,7 @@ public class CardBuilderUnitTest {
     }
 
     @Test
-    public void buildGraphQL_doesNotIncludeEmptyStrings() throws Exception {
+    public void buildGraphQL_doesNotIncludeEmptyStringsForNullableFields() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber("")
                 .expirationDate("")
@@ -452,8 +475,8 @@ public class CardBuilderUnitTest {
                 .getJSONObject(GraphQLQueryHelper.INPUT_KEY)
                 .getJSONObject(BaseCardBuilder.CREDIT_CARD_KEY);
 
-        assertFalse(jsonCard.keys().hasNext());
-        assertFalse(jsonCard.has(BILLING_ADDRESS_KEY));
+        assertEquals(Arrays.asList(EXPIRATION_YEAR_KEY, NUMBER_KEY, EXPIRATION_MONTH_KEY),
+                Lists.newArrayList(jsonCard.keys()));
     }
 
     @Test
