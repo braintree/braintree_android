@@ -11,7 +11,6 @@ import org.robolectric.RobolectricTestRunner;
 import java.util.List;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
-import static com.braintreepayments.testutils.ReflectionHelper.getField;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(RobolectricTestRunner.class)

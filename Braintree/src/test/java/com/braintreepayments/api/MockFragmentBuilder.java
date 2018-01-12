@@ -4,8 +4,8 @@ import android.content.Context;
 
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.internal.BraintreeGraphQLHttpClient;
+import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.TestConfigurationBuilder;

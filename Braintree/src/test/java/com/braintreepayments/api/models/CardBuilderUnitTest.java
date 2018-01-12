@@ -22,7 +22,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
-import static com.braintreepayments.api.models.BaseCardBuilder.CARDHOLDER_NAME_KEY;
 import static com.braintreepayments.api.models.BaseCardBuilder.CVV_KEY;
 import static com.braintreepayments.api.models.BaseCardBuilder.EXPIRATION_MONTH_KEY;
 import static com.braintreepayments.api.models.BaseCardBuilder.EXPIRATION_YEAR_KEY;

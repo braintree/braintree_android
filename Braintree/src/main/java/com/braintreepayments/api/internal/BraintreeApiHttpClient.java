@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.exceptions.BraintreeApiErrorResponse;
 import com.braintreepayments.api.exceptions.UnprocessableEntityException;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
