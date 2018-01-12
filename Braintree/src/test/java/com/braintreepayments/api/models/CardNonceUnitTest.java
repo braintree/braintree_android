@@ -28,8 +28,8 @@ public class CardNonceUnitTest {
         assertEquals("Visa", cardNonce.getCardType());
         assertEquals("123456-12345-12345-a-adfa", cardNonce.getNonce());
         assertEquals("ending in ••11", cardNonce.getDescription());
-        assertEquals("1111", cardNonce.getLastFour());
         assertEquals("11", cardNonce.getLastTwo());
+        assertEquals("1111", cardNonce.getLastFour());
         assertNotNull(cardNonce.getThreeDSecureInfo());
         assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
         assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
@@ -54,6 +54,7 @@ public class CardNonceUnitTest {
         assertEquals("3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1", cardNonce.getNonce());
         assertEquals("ending in ••11", cardNonce.getDescription());
         assertEquals("11", cardNonce.getLastTwo());
+        assertEquals("1111", cardNonce.getLastFour());
         assertNotNull(cardNonce.getThreeDSecureInfo());
         assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
         assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
@@ -82,6 +83,31 @@ public class CardNonceUnitTest {
     }
 
     @Test
+    public void handlesGraphQLUnknownCardResponses() throws JSONException {
+        CardNonce cardNonce = CardNonce.fromJson(stringFromFixture("response/graphql/unknown_credit_card.json"));
+
+        assertEquals("Unknown", cardNonce.getTypeLabel());
+        assertEquals("Unknown", cardNonce.getCardType());
+        assertEquals("tokencc_3bbd22_fpjshh_bqbvh5_mkf3nf_smz", cardNonce.getNonce());
+        assertEquals("", cardNonce.getDescription());
+        assertEquals("", cardNonce.getLastTwo());
+        assertEquals("", cardNonce.getLastFour());
+        assertNotNull(cardNonce.getThreeDSecureInfo());
+        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertNotNull(cardNonce.getBinData());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getPrepaid());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getHealthcare());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getDebit());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getDurbinRegulated());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getCommercial());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getPayroll());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getIssuingBank());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getCountryOfIssuance());
+        assertEquals(UNKNOWN, cardNonce.getBinData().getProductId());
+    }
+
+    @Test
     public void parcelsCorrectly() throws JSONException {
         CardNonce cardNonce = CardNonce.fromJson(stringFromFixture("payment_methods/visa_credit_card_response.json"));
 
@@ -96,6 +122,7 @@ public class CardNonceUnitTest {
         assertEquals("123456-12345-12345-a-adfa", parceled.getNonce());
         assertEquals("ending in ••11", parceled.getDescription());
         assertEquals("11", parceled.getLastTwo());
+        assertEquals("1111", parceled.getLastFour());
         assertFalse(parceled.isDefault());
         assertBinDataEqual(cardNonce.getBinData(), parceled.getBinData());
     }

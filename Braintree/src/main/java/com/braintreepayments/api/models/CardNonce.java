@@ -2,6 +2,7 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -79,13 +80,13 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
 
             JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
             mLastFour = creditCard.getString(GRAPHQL_LAST_FOUR_KEY);
-            mLastTwo = mLastFour.substring(2);
+            mLastTwo = mLastFour.length() < 4 ? "" : mLastFour.substring(2);
             mCardType = creditCard.getString(GRAPHQL_BRAND_KEY);
             mThreeDSecureInfo = ThreeDSecureInfo.fromJson(null);
             mBinData = BinData.fromJson(creditCard.optJSONObject(BIN_DATA_KEY));
 
             mNonce = payload.getString(TOKEN_KEY);
-            mDescription = "ending in ••" + mLastTwo;
+            mDescription = TextUtils.isEmpty(mLastTwo) ? "" : "ending in ••" + mLastTwo;
             mDefault = false;
         } else if (data.has(GRAPHQL_TOKENIZE_CVV_KEY)) {
             mLastFour = "";

@@ -1,0 +1,25 @@
+{
+  "data" : {
+    "tokenizeCreditCard" : {
+      "token" : "tokencc_3bbd22_fpjshh_bqbvh5_mkf3nf_smz",
+      "creditCard" : {
+        "brand" : "Unknown",
+        "last4" : "",
+        "binData" : {
+          "prepaid" : "Unknown",
+          "healthcare" : "Unknown",
+          "debit" : "Unknown",
+          "durbinRegulated" : "Unknown",
+          "commercial" : "Unknown",
+          "payroll" : "Unknown",
+          "issuingBank" : null,
+          "countryOfIssuance" : null,
+          "productId" : null
+        }
+      }
+    }
+  },
+  "extensions" : {
+    "requestId" : "91cc8d47-d426-4571-9228-8414679d42c0"
+  }
+}
