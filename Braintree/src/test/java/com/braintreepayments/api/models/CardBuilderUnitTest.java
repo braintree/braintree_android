@@ -18,11 +18,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.function.Predicate;
 
-import static com.braintreepayments.api.models.BaseCardBuilder.CVV_KEY;
 import static com.braintreepayments.api.models.BaseCardBuilder.EXPIRATION_MONTH_KEY;
 import static com.braintreepayments.api.models.BaseCardBuilder.EXPIRATION_YEAR_KEY;
 import static com.braintreepayments.api.models.BaseCardBuilder.NUMBER_KEY;
@@ -326,22 +323,6 @@ public class CardBuilderUnitTest {
     }
 
     @Test
-    public void buildGraphQL_correctlyBuildsACvvTokenization() throws Exception {
-        CardBuilder cardBuilder = new CardBuilder().cvv("123");
-
-        Context context = RuntimeEnvironment.application.getApplicationContext();
-        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(TOKENIZATION_KEY)));
-        String jsonCvv = json.getJSONObject(GraphQLQueryHelper.VARIABLES_KEY)
-                .getJSONObject(GraphQLQueryHelper.INPUT_KEY)
-                .getString(CVV_KEY);
-
-        assertEquals(GraphQLQueryHelper.getQuery(context, R.raw.tokenize_cvv_mutation),
-                json.getString(GraphQLQueryHelper.QUERY_KEY));
-
-        assertEquals("123", jsonCvv);
-    }
-
-    @Test
     public void buildGraphQL_usesDefaultInfoForMetadata() throws Exception {
         CardBuilder cardBuilder = new CardBuilder();
 
@@ -591,27 +572,5 @@ public class CardBuilderUnitTest {
         JSONObject jsonBillingAddress = jsonCard.getJSONObject(BILLING_ADDRESS_KEY);
 
         assertEquals("USA", jsonBillingAddress.getString("countryCode"));
-    }
-
-    @Test
-    public void isCvvOnlyTokenization_checksAllFields() {
-        Field[] baseCardBuilderFields = BaseCardBuilder.class.getDeclaredFields();
-        Field[] cardBuilderFields = CardBuilder.class.getDeclaredFields();
-
-        Predicate isMemberField = new Predicate<Field>() {
-            @Override
-            public boolean test(Field field) {
-                return field.getName().startsWith("m");
-            }
-        };
-
-        long totalMemberFields = Arrays.asList(baseCardBuilderFields).stream().filter(isMemberField).count() +
-                Arrays.asList(cardBuilderFields).stream().filter(isMemberField).count();
-
-        assertEquals(
-                "CVV-only tokenizations are categorized by all fields being null except CVV. If you added or removed a field, please update CardBuilder#isCvvOnlyTokenization and this test.",
-                18,
-                totalMemberFields
-        );
     }
 }

@@ -18,7 +18,6 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     protected static final String API_RESOURCE_KEY = "creditCards";
 
     private static final String GRAPHQL_TOKENIZE_CREDIT_CARD_KEY = "tokenizeCreditCard";
-    private static final String GRAPHQL_TOKENIZE_CVV_KEY = "tokenizeCvv";
     private static final String GRAPHQL_CREDIT_CARD_KEY = "creditCard";
     private static final String GRAPHQL_BRAND_KEY = "brand";
     private static final String GRAPHQL_LAST_FOUR_KEY = "last4";
@@ -88,12 +87,6 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
             mNonce = payload.getString(TOKEN_KEY);
             mDescription = TextUtils.isEmpty(mLastTwo) ? "" : "ending in ••" + mLastTwo;
             mDefault = false;
-        } else if (data.has(GRAPHQL_TOKENIZE_CVV_KEY)) {
-            mLastFour = "";
-            mLastTwo = "";
-            mDescription = "";
-            mCardType = "Unknown";
-            mNonce = data.getJSONObject(GRAPHQL_TOKENIZE_CVV_KEY).getString(TOKEN_KEY);
         } else {
             throw new JSONException("Failed to parse GraphQL response JSON");
         }
