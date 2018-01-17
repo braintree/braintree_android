@@ -117,7 +117,9 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     /**
      * @return Last four digits of the card.
      */
-    public String getLastFour() { return mLastFour; }
+    public String getLastFour() {
+        return mLastFour;
+    }
 
     /**
      * @return The 3D Secure info for the current {@link CardNonce} or
