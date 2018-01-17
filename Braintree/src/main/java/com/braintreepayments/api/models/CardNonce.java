@@ -90,7 +90,6 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         } else {
             throw new JSONException("Failed to parse GraphQL response JSON");
         }
-
     }
 
     /**
