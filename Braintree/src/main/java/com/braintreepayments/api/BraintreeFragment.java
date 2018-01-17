@@ -790,6 +790,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
         return mBraintreeApiClient;
     }
 
+    @Nullable
     protected BraintreeGraphQLHttpClient getGraphQLHttpClient() {
         return mGraphQLHttpClient;
     }
