@@ -9,7 +9,6 @@ import com.braintreepayments.api.R;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.internal.GraphQLQueryHelper;
-import com.google.common.collect.Lists;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,11 +17,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-import java.util.Arrays;
-
-import static com.braintreepayments.api.models.BaseCardBuilder.EXPIRATION_MONTH_KEY;
-import static com.braintreepayments.api.models.BaseCardBuilder.EXPIRATION_YEAR_KEY;
-import static com.braintreepayments.api.models.BaseCardBuilder.NUMBER_KEY;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
@@ -307,22 +301,6 @@ public class CardBuilderUnitTest {
     }
 
     @Test
-    public void buildGraphQL_convertsNonNullableCreditCardFieldsToEmptyString() throws Exception {
-        Context context = RuntimeEnvironment.application.getApplicationContext();
-        CardBuilder cardBuilder = new CardBuilder();
-
-        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(TOKENIZATION_KEY)));
-
-        JSONObject cardJson = json.getJSONObject(GraphQLQueryHelper.VARIABLES_KEY)
-                .getJSONObject(GraphQLQueryHelper.INPUT_KEY)
-                .getJSONObject(BaseCardBuilder.CREDIT_CARD_KEY);
-
-        assertEquals("", cardJson.getString("number"));
-        assertEquals("", cardJson.getString("expirationYear"));
-        assertEquals("", cardJson.getString("expirationMonth"));
-    }
-
-    @Test
     public void buildGraphQL_usesDefaultInfoForMetadata() throws Exception {
         CardBuilder cardBuilder = new CardBuilder();
 
@@ -426,7 +404,7 @@ public class CardBuilderUnitTest {
     }
 
     @Test
-    public void buildGraphQL_doesNotIncludeEmptyStringsForNullableFields() throws Exception {
+    public void buildGraphQL_doesNotIncludeEmptyStrings() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber("")
                 .expirationDate("")
@@ -455,8 +433,7 @@ public class CardBuilderUnitTest {
                 .getJSONObject(GraphQLQueryHelper.INPUT_KEY)
                 .getJSONObject(BaseCardBuilder.CREDIT_CARD_KEY);
 
-        assertEquals(Arrays.asList(EXPIRATION_YEAR_KEY, NUMBER_KEY, EXPIRATION_MONTH_KEY),
-                Lists.newArrayList(jsonCard.keys()));
+        assertFalse(jsonCard.keys().hasNext());
     }
 
     @Test

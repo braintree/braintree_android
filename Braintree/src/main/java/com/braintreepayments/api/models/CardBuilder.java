@@ -31,9 +31,9 @@ public class CardBuilder extends BaseCardBuilder<CardBuilder> implements Parcela
         base.put(OPERATION_NAME_KEY, "TokenizeCreditCard");
 
         JSONObject creditCard = new JSONObject()
-                .put(NUMBER_KEY, mCardnumber == null ? "" : mCardnumber)
-                .put(EXPIRATION_MONTH_KEY, mExpirationMonth == null ? "" : mExpirationMonth)
-                .put(EXPIRATION_YEAR_KEY, mExpirationYear == null ? "" : mExpirationYear)
+                .put(NUMBER_KEY, mCardnumber)
+                .put(EXPIRATION_MONTH_KEY, mExpirationMonth)
+                .put(EXPIRATION_YEAR_KEY, mExpirationYear)
                 .put(CVV_KEY, mCvv)
                 .put(CARDHOLDER_NAME_KEY, mCardholderName);
 
