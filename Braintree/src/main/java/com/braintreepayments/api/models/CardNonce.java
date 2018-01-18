@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import com.braintreepayments.api.Json;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -66,8 +68,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         mLastTwo = details.getString(LAST_TWO_KEY);
         mLastFour = details.getString(LAST_FOUR_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
-        mThreeDSecureInfo =
-                ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY));
+        mThreeDSecureInfo = ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY));
         mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
     }
 
@@ -78,9 +79,9 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
             JSONObject payload = data.getJSONObject(GRAPHQL_TOKENIZE_CREDIT_CARD_KEY);
 
             JSONObject creditCard = payload.getJSONObject(GRAPHQL_CREDIT_CARD_KEY);
-            mLastFour = creditCard.getString(GRAPHQL_LAST_FOUR_KEY);
+            mLastFour = Json.optString(creditCard, GRAPHQL_LAST_FOUR_KEY, "");
             mLastTwo = mLastFour.length() < 4 ? "" : mLastFour.substring(2);
-            mCardType = creditCard.getString(GRAPHQL_BRAND_KEY);
+            mCardType = Json.optString(creditCard, GRAPHQL_BRAND_KEY, "Unknown");
             mThreeDSecureInfo = ThreeDSecureInfo.fromJson(null);
             mBinData = BinData.fromJson(creditCard.optJSONObject(BIN_DATA_KEY));
 

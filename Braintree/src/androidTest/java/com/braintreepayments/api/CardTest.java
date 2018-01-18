@@ -160,8 +160,14 @@ public class CardTest {
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
                 CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
-                assertNotNull(cardNonce.getNonce());
+                assertNotNull(cardNonce.getBinData());
                 assertEquals("Unknown", cardNonce.getCardType());
+                assertEquals("", cardNonce.getLastFour());
+                assertEquals("", cardNonce.getLastTwo());
+                assertNotNull(cardNonce.getThreeDSecureInfo());
+                assertFalse(cardNonce.isDefault());
+                assertEquals("", cardNonce.getDescription());
+                assertNotNull(cardNonce.getNonce());
 
                 countDownLatch.countDown();
             }
