@@ -8,7 +8,7 @@
       "line": 1,
       "column": 66
     }],
-    "path": [ "tokenizeCreditCard" ],
+    "path": ["tokenizeCreditCard"],
     "extensions": {
       "legacyMessage": "Credit card verification failed",
       "errorType": "user_error",
@@ -16,17 +16,17 @@
         {
           "message": "Expiration month is invalid",
           "legacyCode": "81712",
-          "inputPath": [ "input", "creditCard", "expirationMonth" ]
+          "inputPath": ["input", "creditCard", "expirationMonth"]
         },
         {
           "message": "Expiration year is invalid",
           "legacyCode": "81713",
-          "inputPath": [ "input", "creditCard", "expirationYear" ]
+          "inputPath": ["input", "creditCard", "expirationYear"]
         },
         {
           "message": "CVV verification failed",
           "legacyCode": "81736",
-          "inputPath": [ "input", "creditCard", "cvv" ]
+          "inputPath": ["input", "creditCard", "cvv"]
         }
       ]
     }
