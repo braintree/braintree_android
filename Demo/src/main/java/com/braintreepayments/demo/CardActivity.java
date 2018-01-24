@@ -68,14 +68,14 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
         setContentView(R.layout.custom_activity);
         setUpAsBack();
 
-        mCardForm = (CardForm) findViewById(R.id.card_form);
+        mCardForm = findViewById(R.id.card_form);
         mCardForm.setOnFormFieldFocusedListener(this);
         mCardForm.setOnCardFormSubmitListener(this);
 
-        mSmsCodeContainer = (TextInputLayout) findViewById(R.id.sms_code_container);
-        mSmsCode = (EditText) findViewById(R.id.sms_code);
-        mSendSmsButton = (Button) findViewById(R.id.unionpay_enroll_button);
-        mPurchaseButton = (Button) findViewById(R.id.purchase_button);
+        mSmsCodeContainer = findViewById(R.id.sms_code_container);
+        mSmsCode = findViewById(R.id.sms_code);
+        mSendSmsButton = findViewById(R.id.unionpay_enroll_button);
+        mPurchaseButton = findViewById(R.id.purchase_button);
 
         if (onSaveInstanceState != null) {
             mIsUnionPay = onSaveInstanceState.getBoolean(EXTRA_UNIONPAY);
