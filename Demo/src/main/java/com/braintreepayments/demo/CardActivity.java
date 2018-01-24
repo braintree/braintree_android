@@ -43,6 +43,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
         PaymentMethodNonceCreatedListener, BraintreeErrorListener, OnCardFormSubmitListener,
         OnCardFormFieldFocusedListener, AmericanExpressListener {
 
+    private static final String EXTRA_THREE_D_SECURE_REQUESTED = "com.braintreepayments.demo.EXTRA_THREE_D_SECURE_REQUESTED";
     private static final String EXTRA_UNIONPAY = "com.braintreepayments.demo.EXTRA_UNIONPAY";
     private static final String EXTRA_UNIONPAY_ENROLLMENT_ID = "com.braintreepayments.demo.EXTRA_UNIONPAY_ENROLLMENT_ID";
 
@@ -78,6 +79,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
         mPurchaseButton = findViewById(R.id.purchase_button);
 
         if (onSaveInstanceState != null) {
+            mThreeDSecureRequested = onSaveInstanceState.getBoolean(EXTRA_THREE_D_SECURE_REQUESTED);
             mIsUnionPay = onSaveInstanceState.getBoolean(EXTRA_UNIONPAY);
             mEnrollmentId = onSaveInstanceState.getString(EXTRA_UNIONPAY_ENROLLMENT_ID);
 
@@ -97,6 +99,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putBoolean(EXTRA_THREE_D_SECURE_REQUESTED, mThreeDSecureRequested);
         outState.putBoolean(EXTRA_UNIONPAY, mIsUnionPay);
         outState.putString(EXTRA_UNIONPAY_ENROLLMENT_ID, mEnrollmentId);
     }
@@ -156,6 +159,10 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
 
     @Override
     public void onCardFormFieldFocused(View field) {
+        if (mBraintreeFragment == null) {
+            return;
+        }
+
         if (!(field instanceof CardEditText) && !TextUtils.isEmpty(mCardForm.getCardNumber())) {
             CardType cardType = CardType.forCardNumber(mCardForm.getCardNumber());
             if (mCardType != cardType) {
