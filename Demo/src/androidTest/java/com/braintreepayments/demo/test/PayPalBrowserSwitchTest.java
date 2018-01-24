@@ -33,7 +33,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
     @Test(timeout = 60000)
     public void browserSwitch_makesASinglePayment() {
         onDevice(withText("Single Payment")).waitForEnabled().perform(click());
-        onDevice(withContentDescription("Proceed with Sandbox Purchase")).perform(click());
+        onDevice(withText("Proceed with Sandbox Purchase")).perform(click());
 
         getNonceDetails().check(text(containsString("Email: bt_buyer_us@paypal.com")));
 
@@ -51,8 +51,8 @@ public class PayPalBrowserSwitchTest extends TestHelper {
 
         onDevice().typeText("test@paypal.com");
         onDevice().pressTab().typeText("password");
-        onDevice(withContentDescription("Log In")).perform(click());
-        onDevice(withContentDescription("Agree")).perform(click());
+        onDevice(withText("Log In")).perform(click());
+        onDevice(withText("Agree")).perform(click());
 
         getNonceDetails().check(text(containsString("Email: jane.doe@example.com")));
 
@@ -70,8 +70,8 @@ public class PayPalBrowserSwitchTest extends TestHelper {
 
         onDevice().typeText("test@paypal.com");
         onDevice().pressTab().typeText("password");
-        onDevice(withContentDescription("Log In")).perform(click());
-        onDevice(withContentDescription("Agree")).perform(click());
+        onDevice(withText("Log In")).perform(click());
+        onDevice(withText("Agree")).perform(click());
 
         getNonceDetails().check(text(containsString("Email: jane.doe@example.com")));
 
@@ -82,7 +82,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
     @Test(timeout = 60000)
     public void browserSwitch_makesABillingAgreement() {
         onDevice(withText("Billing Agreement")).waitForEnabled().perform(click());
-        onDevice(withContentDescription("Proceed with Sandbox Purchase")).perform(click());
+        onDevice(withText("Proceed with Sandbox Purchase")).perform(click());
 
         getNonceDetails().check(text(containsString("Email: bt_buyer_us@paypal.com")));
 
