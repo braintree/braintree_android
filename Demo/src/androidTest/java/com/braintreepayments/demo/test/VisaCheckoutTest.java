@@ -68,7 +68,6 @@ public class VisaCheckoutTest extends TestHelper {
         onDevice(withContentDescription("Email or Mobile Number")).typeText(VISA_CHECKOUT_USERNAME);
         onDevice(withContentDescription("Password")).perform(click());
         onDevice().typeText(VISA_CHECKOUT_PASSWORD);
-        onDevice().pressBack(); // Dismiss keyboard
         onDevice(withText("Sign In")).perform(click());
         onDevice(withText("Pay with")).waitForExists();
         onDevice(withText("Continue")).perform(click());
