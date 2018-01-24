@@ -8,7 +8,7 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 public interface PaymentMethodNonceCreatedListener extends BraintreeListener {
 
     /**
-     * {@link #onPaymentMethodNonceCreated} will be called with a new {@link PaymentMethodNonce} has been
+     * {@link #onPaymentMethodNonceCreated} will be called when a new {@link PaymentMethodNonce} has been
      * created.
      *
      * @param paymentMethodNonce the {@link PaymentMethodNonce}.
