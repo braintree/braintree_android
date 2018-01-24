@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 2.9.0
+
+* Internal performance optimizations
+* Deprecate `countryName`, `countryCodeAlpha2`, `countryCodeAlpha3`, and `countryCodeNumeric` in favor of `countryCode` in `CardBuilder` and `UnionPayCardBuilder`.
+
 ## 2.8.1
 * Support `lastFour` in `GooglePayCardNonce`
 * Add Google Pay branding
