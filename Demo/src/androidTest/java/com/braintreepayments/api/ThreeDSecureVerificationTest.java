@@ -17,7 +17,6 @@ import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
 import com.braintreepayments.demo.test.DemoTestActivity;
 import com.lukekorth.deviceautomator.AutomatorAction;
-import com.lukekorth.deviceautomator.UiObjectMatcher;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,7 +30,6 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
-import static android.support.test.espresso.web.sugar.Web.onWebView;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.api.test.Matchers.withId;
 import static com.braintreepayments.api.test.ViewHelper.waitForView;
@@ -49,6 +47,7 @@ import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICA
 import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
+import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -288,11 +287,11 @@ public class ThreeDSecureVerificationTest {
         waitForView(withId(android.R.id.widget_frame));
 
         try {
-            onDevice(UiObjectMatcher.withContentDescription("Password:")).perform(AutomatorAction.click());
+            onDevice(withText("Password:")).perform(AutomatorAction.click());
         } catch (RuntimeException ignored) {}
 
         onDevice().pressTab().typeText("1234");
-        onDevice(UiObjectMatcher.withContentDescription("Submit")).perform(AutomatorAction.click());
+        onDevice(withText("Submit")).perform(AutomatorAction.click());
 
         mCountDownLatch.await();
     }
@@ -316,11 +315,11 @@ public class ThreeDSecureVerificationTest {
         waitForView(withId(android.R.id.widget_frame));
 
         try {
-            onDevice(UiObjectMatcher.withContentDescription("Password:")).perform(AutomatorAction.click());
+            onDevice(withText("Password:")).perform(AutomatorAction.click());
         } catch (RuntimeException ignored) {}
 
         onDevice().pressTab().typeText("1234");
-        onDevice(UiObjectMatcher.withContentDescription("Submit")).perform(AutomatorAction.click());
+        onDevice(withText("Submit")).perform(AutomatorAction.click());
 
         mCountDownLatch.await();
     }
@@ -371,11 +370,11 @@ public class ThreeDSecureVerificationTest {
         waitForView(withId(android.R.id.widget_frame));
 
         try {
-            onDevice(UiObjectMatcher.withContentDescription("Password:")).perform(AutomatorAction.click());
+            onDevice(withText("Password:")).perform(AutomatorAction.click());
         } catch (RuntimeException ignored) {}
 
         onDevice().pressTab().typeText("1234");
-        onDevice(UiObjectMatcher.withContentDescription("Submit")).perform(AutomatorAction.click());
+        onDevice(withText("Submit")).perform(AutomatorAction.click());
 
         mCountDownLatch.await();
     }
@@ -398,11 +397,11 @@ public class ThreeDSecureVerificationTest {
         waitForView(withId(android.R.id.widget_frame));
 
         try {
-            onDevice(UiObjectMatcher.withContentDescription("Password:")).perform(AutomatorAction.click());
+            onDevice(withText("Password:")).perform(AutomatorAction.click());
         } catch (RuntimeException ignored) {}
 
         onDevice().pressTab().typeText("1234");
-        onDevice(UiObjectMatcher.withContentDescription("Submit")).perform(AutomatorAction.click());
+        onDevice(withText("Submit")).perform(AutomatorAction.click());
 
         mCountDownLatch.await();
     }
@@ -426,11 +425,11 @@ public class ThreeDSecureVerificationTest {
         waitForView(withId(android.R.id.widget_frame));
 
         try {
-            onDevice(UiObjectMatcher.withContentDescription("Password:")).perform(AutomatorAction.click());
+            onDevice(withText("Password:")).perform(AutomatorAction.click());
         } catch (RuntimeException ignored) {}
 
         onDevice().pressTab().typeText("1234");
-        onDevice(UiObjectMatcher.withContentDescription("Submit")).perform(AutomatorAction.click());
+        onDevice(withText("Submit")).perform(AutomatorAction.click());
 
         mCountDownLatch.await();
     }
