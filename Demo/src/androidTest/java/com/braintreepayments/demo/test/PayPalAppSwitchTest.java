@@ -60,7 +60,7 @@ public class PayPalAppSwitchTest extends TestHelper {
         onDevice().checkForegroundAppIs(PAYPAL_WALLET_PACKAGE_NAME);
 
         onDevice(withText("Email")).waitForExists();
-        onDevice().pressBack().pressBack();
+        onDevice().pressBack();
 
         onDevice().checkForegroundAppIs("com.braintreepayments.demo");
         onDevice(withText("Single Payment")).check(text(equalToIgnoringCase("Single Payment")));
