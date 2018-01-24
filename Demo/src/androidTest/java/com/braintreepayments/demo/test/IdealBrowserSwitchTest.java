@@ -12,7 +12,6 @@ import org.junit.runner.RunWith;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static org.hamcrest.Matchers.containsString;
 
@@ -31,7 +30,7 @@ public class IdealBrowserSwitchTest extends TestHelper {
         onDevice(withText("iDEAL")).waitForEnabled().perform(click());
         onDevice(withText("iDEAL")).waitForEnabled().perform(click());
         onDevice(withText("bunq")).perform(click());
-        onDevice(withContentDescription("Continue")).perform(click());
+        onDevice(withText("Continue")).perform(click());
 
         getNonceDetails().check(text(containsString("COMPLETE")));
     }
