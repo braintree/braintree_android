@@ -38,7 +38,6 @@ public class DropInTest extends TestHelper {
         onDevice(withContentDescription("Card Number")).perform(setText(VISA));
         onDevice(withText("12")).perform(click());
         onDevice(withText("2019")).perform(click());
-        onDevice().pressBack();
         onDevice(withContentDescription("CVV")).perform(setText("123"));
         onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
         onDevice(withTextContaining("Add Card")).perform(click());
