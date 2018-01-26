@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.uninstallPayPalWallet;
+import static com.braintreepayments.demo.test.utilities.UiTestActions.clickWebViewText;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAction.setText;
@@ -54,7 +55,7 @@ public class DropInTest extends TestHelper {
         uninstallPayPalWallet();
 
         onDevice(withText("PayPal")).perform(click());
-        onDevice(withText("Proceed with Sandbox Purchase")).perform(click());
+        clickWebViewText("Proceed with Sandbox Purchase");
 
         getNonceDetails().check(text(containsString("Email: bt_buyer_us@paypal.com")));
 

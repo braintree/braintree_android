@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static com.braintreepayments.demo.test.utilities.UiTestActions.clickWebViewText;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
@@ -30,7 +31,7 @@ public class IdealBrowserSwitchTest extends TestHelper {
         onDevice(withText("iDEAL")).waitForEnabled().perform(click());
         onDevice(withText("iDEAL")).waitForEnabled().perform(click());
         onDevice(withText("bunq")).perform(click());
-        onDevice(withText("Continue")).perform(click());
+        clickWebViewText("Continue");
 
         getNonceDetails().check(text(containsString("COMPLETE")));
     }

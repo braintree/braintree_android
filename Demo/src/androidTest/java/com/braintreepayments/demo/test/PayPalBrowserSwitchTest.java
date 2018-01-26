@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.uninstallPayPalWallet;
+import static com.braintreepayments.demo.test.utilities.UiTestActions.clickWebViewText;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
@@ -33,7 +34,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
     @Test(timeout = 60000)
     public void browserSwitch_makesASinglePayment() {
         onDevice(withText("Single Payment")).waitForEnabled().perform(click());
-        onDevice(withText("Proceed with Sandbox Purchase")).perform(click());
+        clickWebViewText("Proceed with Sandbox Purchase");
 
         getNonceDetails().check(text(containsString("Email: bt_buyer_us@paypal.com")));
 
@@ -51,8 +52,8 @@ public class PayPalBrowserSwitchTest extends TestHelper {
 
         onDevice().typeText("test@paypal.com");
         onDevice().pressTab().typeText("password");
-        onDevice(withText("Log In")).perform(click());
-        onDevice(withText("Agree")).perform(click());
+        clickWebViewText("Log In");
+        clickWebViewText("Agree");
 
         getNonceDetails().check(text(containsString("Email: jane.doe@example.com")));
 
@@ -70,8 +71,8 @@ public class PayPalBrowserSwitchTest extends TestHelper {
 
         onDevice().typeText("test@paypal.com");
         onDevice().pressTab().typeText("password");
-        onDevice(withText("Log In")).perform(click());
-        onDevice(withText("Agree")).perform(click());
+        clickWebViewText("Log In");
+        clickWebViewText("Agree");
 
         getNonceDetails().check(text(containsString("Email: jane.doe@example.com")));
 
@@ -82,7 +83,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
     @Test(timeout = 60000)
     public void browserSwitch_makesABillingAgreement() {
         onDevice(withText("Billing Agreement")).waitForEnabled().perform(click());
-        onDevice(withText("Proceed with Sandbox Purchase")).perform(click());
+        clickWebViewText("Proceed with Sandbox Purchase");
 
         getNonceDetails().check(text(containsString("Email: bt_buyer_us@paypal.com")));
 

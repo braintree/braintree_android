@@ -16,7 +16,6 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
 import com.braintreepayments.demo.test.DemoTestActivity;
-import com.lukekorth.deviceautomator.AutomatorAction;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,6 +32,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withContentDesc
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.api.test.Matchers.withId;
 import static com.braintreepayments.api.test.ViewHelper.waitForView;
+import static com.braintreepayments.demo.test.utilities.UiTestActions.clickWebViewText;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_AUTHENTICATION_FAILED;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_AUTHENTICATION_UNAVAILABLE;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_ISSUER_DOES_NOT_PARTICIPATE;
@@ -47,7 +47,6 @@ import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICA
 import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -286,12 +285,10 @@ public class ThreeDSecureVerificationTest {
 
         waitForView(withId(android.R.id.widget_frame));
 
-        try {
-            onDevice(withText("Password:")).perform(AutomatorAction.click());
-        } catch (RuntimeException ignored) {}
+        clickWebViewText("Password:");
 
         onDevice().pressTab().typeText("1234");
-        onDevice(withText("Submit")).perform(AutomatorAction.click());
+        clickWebViewText("Submit");
 
         mCountDownLatch.await();
     }
@@ -314,12 +311,10 @@ public class ThreeDSecureVerificationTest {
 
         waitForView(withId(android.R.id.widget_frame));
 
-        try {
-            onDevice(withText("Password:")).perform(AutomatorAction.click());
-        } catch (RuntimeException ignored) {}
+        clickWebViewText("Password:");
 
         onDevice().pressTab().typeText("1234");
-        onDevice(withText("Submit")).perform(AutomatorAction.click());
+        clickWebViewText("Submit");
 
         mCountDownLatch.await();
     }
@@ -369,12 +364,10 @@ public class ThreeDSecureVerificationTest {
 
         waitForView(withId(android.R.id.widget_frame));
 
-        try {
-            onDevice(withText("Password:")).perform(AutomatorAction.click());
-        } catch (RuntimeException ignored) {}
+        clickWebViewText("Password:");
 
         onDevice().pressTab().typeText("1234");
-        onDevice(withText("Submit")).perform(AutomatorAction.click());
+        clickWebViewText("Submit");
 
         mCountDownLatch.await();
     }
@@ -396,12 +389,10 @@ public class ThreeDSecureVerificationTest {
 
         waitForView(withId(android.R.id.widget_frame));
 
-        try {
-            onDevice(withText("Password:")).perform(AutomatorAction.click());
-        } catch (RuntimeException ignored) {}
+        clickWebViewText("Password:");
 
         onDevice().pressTab().typeText("1234");
-        onDevice(withText("Submit")).perform(AutomatorAction.click());
+        clickWebViewText("Submit");
 
         mCountDownLatch.await();
     }
@@ -424,12 +415,10 @@ public class ThreeDSecureVerificationTest {
 
         waitForView(withId(android.R.id.widget_frame));
 
-        try {
-            onDevice(withText("Password:")).perform(AutomatorAction.click());
-        } catch (RuntimeException ignored) {}
+        clickWebViewText("Password:");
 
         onDevice().pressTab().typeText("1234");
-        onDevice(withText("Submit")).perform(AutomatorAction.click());
+        clickWebViewText("Submit");
 
         mCountDownLatch.await();
     }
