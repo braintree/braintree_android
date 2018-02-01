@@ -55,7 +55,7 @@ public class DropInTest extends TestHelper {
         uninstallPayPalWallet();
 
         onDevice(withText("PayPal")).perform(click());
-        clickWebViewText("Proceed with Sandbox Purchase");
+        clickWebViewText("Proceed with Sandbox Purchase", 5000);
 
         getNonceDetails().check(text(containsString("Email: bt_buyer_us@paypal.com")));
 

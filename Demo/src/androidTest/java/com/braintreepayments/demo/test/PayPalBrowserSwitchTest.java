@@ -34,7 +34,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
     @Test(timeout = 60000)
     public void browserSwitch_makesASinglePayment() {
         onDevice(withText("Single Payment")).waitForEnabled().perform(click());
-        clickWebViewText("Proceed with Sandbox Purchase");
+        clickWebViewText("Proceed with Sandbox Purchase", 5000);
 
         getNonceDetails().check(text(containsString("Email: bt_buyer_us@paypal.com")));
 
@@ -83,7 +83,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
     @Test(timeout = 60000)
     public void browserSwitch_makesABillingAgreement() {
         onDevice(withText("Billing Agreement")).waitForEnabled().perform(click());
-        clickWebViewText("Proceed with Sandbox Purchase");
+        clickWebViewText("Proceed with Sandbox Purchase", 5000);
 
         getNonceDetails().check(text(containsString("Email: bt_buyer_us@paypal.com")));
 

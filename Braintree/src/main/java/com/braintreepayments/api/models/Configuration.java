@@ -16,8 +16,8 @@ import java.util.Set;
  */
 public class Configuration {
 
-    private static final String CLIENT_API_URL_KEY = "clientApiUrl";
     private static final String ASSETS_URL_KEY = "assetsUrl";
+    private static final String CLIENT_API_URL_KEY = "clientApiUrl";
     private static final String CHALLENGES_KEY = "challenges";
     private static final String ENVIRONMENT_KEY = "environment";
     private static final String MERCHANT_ID_KEY = "merchantId";
@@ -36,9 +36,9 @@ public class Configuration {
     private static final String IDEAL_KEY = "ideal";
     private static final String GRAPHQL_KEY = "graphQL";
 
+    private String mAssetsUrl;
     private String mConfigurationString;
     private String mClientApiUrl;
-    private String mAssetsUrl;
     private final Set<String> mChallenges = new HashSet<>();
     private String mEnvironment;
     private String mMerchantId;
@@ -75,8 +75,8 @@ public class Configuration {
         mConfigurationString = configurationString;
         JSONObject json = new JSONObject(configurationString);
 
-        mClientApiUrl = json.getString(CLIENT_API_URL_KEY);
         mAssetsUrl = Json.optString(json, ASSETS_URL_KEY, "");
+        mClientApiUrl = json.getString(CLIENT_API_URL_KEY);
         parseJsonChallenges(json.optJSONArray(CHALLENGES_KEY));
         mEnvironment = json.getString(ENVIRONMENT_KEY);
         mMerchantId = json.getString(MERCHANT_ID_KEY);
@@ -101,17 +101,17 @@ public class Configuration {
     }
 
     /**
+     * @return The assets URL of the current environment.
+     */
+    public String getAssetsUrl() {
+        return mAssetsUrl;
+    }
+
+    /**
      * @return The url of the Braintree client API for the current environment.
      */
     public String getClientApiUrl() {
         return mClientApiUrl;
-    }
-
-    /**
-     * @return The url of the Braintree assets server.
-     */
-    public String getAssetsUrl() {
-        return mAssetsUrl;
     }
 
     /**

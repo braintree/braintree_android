@@ -66,6 +66,7 @@ public class ThreeDSecureVerificationTest {
 
     @Before
     public void setUp() {
+        ThreeDSecure.sWebViewOverride = true;
         mActivity = mActivityTestRule.getActivity();
         mCountDownLatch = new CountDownLatch(1);
     }
@@ -125,6 +126,7 @@ public class ThreeDSecureVerificationTest {
                 assertEquals("51", cardNonce.getLastTwo());
                 assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
                 assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+                assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
 
                 mCountDownLatch.countDown();
             }
@@ -150,6 +152,7 @@ public class ThreeDSecureVerificationTest {
                 assertEquals("44", cardNonce.getLastTwo());
                 assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
                 assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+                assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
 
                 mCountDownLatch.countDown();
             }
@@ -176,6 +179,7 @@ public class ThreeDSecureVerificationTest {
                 assertEquals("69", cardNonce.getLastTwo());
                 assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
                 assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+                assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
 
                 mCountDownLatch.countDown();
             }
@@ -224,6 +228,7 @@ public class ThreeDSecureVerificationTest {
                 assertEquals("77", cardNonce.getLastTwo());
                 assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
                 assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+                assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
 
                 mCountDownLatch.countDown();
             }
@@ -249,6 +254,7 @@ public class ThreeDSecureVerificationTest {
                 assertEquals("85", cardNonce.getLastTwo());
                 assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
                 assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+                assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
 
                 mCountDownLatch.countDown();
             }
@@ -274,6 +280,7 @@ public class ThreeDSecureVerificationTest {
                 assertEquals("02", cardNonce.getLastTwo());
                 assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
                 assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+                assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
 
                 mCountDownLatch.countDown();
             }
@@ -332,6 +339,7 @@ public class ThreeDSecureVerificationTest {
                 assertEquals("01", cardNonce.getLastTwo());
                 assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
                 assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+                assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
 
                 mCountDownLatch.countDown();
             }

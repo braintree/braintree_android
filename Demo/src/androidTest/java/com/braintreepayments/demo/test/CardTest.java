@@ -12,6 +12,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static com.braintreepayments.demo.test.utilities.UiTestActions.clickWebViewText;
+import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_AUTHENTICATION_FAILED;
+import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_LOOKUP_ERROR;
+import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAction.scrollTextIntoView;
 import static com.lukekorth.deviceautomator.AutomatorAction.setText;
@@ -20,6 +24,7 @@ import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withClass;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
+import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextContaining;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
@@ -85,14 +90,14 @@ public class CardTest extends TestHelper {
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
-    @Test(timeout = 60000)
-    public void authenticatesWithThreeDSecure() {
+    @Test(timeout = 80000)
+    public void threeDSecure_authenticates() {
         PreferenceManager.getDefaultSharedPreferences(getTargetContext())
                 .edit()
                 .putBoolean("enable_three_d_secure", true)
                 .commit();
 
-        onDevice(withContentDescription("Card Number")).perform(setText("4000000000000002"));
+        onDevice(withContentDescription("Card Number")).perform(setText(THREE_D_SECURE_VERIFICATON));
         fillInExpiration();
         onDevice(withContentDescription("CVV")).perform(setText("123"));
         onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
@@ -104,9 +109,56 @@ public class CardTest extends TestHelper {
         onDevice().typeText("1234");
         onDevice().pressTab().pressTab().pressEnter();
 
+        ensureThreeDSecureRedirect();
+
         getNonceDetails().check(text(containsString("Card Last Two: 02")));
         getNonceDetails().check(text(containsString("isLiabilityShifted: true")));
         getNonceDetails().check(text(containsString("isLiabilityShiftPossible: true")));
+
+        onDevice(withText("Create a Transaction")).perform(click());
+        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
+    }
+
+    @Test(timeout = 80000)
+    public void threeDSecure_authenticationFailed() {
+        PreferenceManager.getDefaultSharedPreferences(getTargetContext())
+                .edit()
+                .putBoolean("enable_three_d_secure", true)
+                .commit();
+
+        onDevice(withContentDescription("Card Number")).perform(setText(THREE_D_SECURE_AUTHENTICATION_FAILED));
+        fillInExpiration();
+        onDevice(withContentDescription("CVV")).perform(setText("123"));
+        onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
+        onDevice(withText("Purchase")).perform(click());
+
+        onDevice(withText("Authentication")).waitForExists();
+
+        onDevice().pressTab();
+        onDevice().typeText("1234");
+        onDevice().pressTab().pressTab().pressEnter();
+
+        ensureThreeDSecureRedirect();
+
+        onDevice(withTextContaining("Failed to authenticate, please try a different form of payment")).waitForExists();
+    }
+
+    @Test(timeout = 80000)
+    public void threeDSecure_lookupError() {
+        PreferenceManager.getDefaultSharedPreferences(getTargetContext())
+                .edit()
+                .putBoolean("enable_three_d_secure", true)
+                .commit();
+
+        onDevice(withContentDescription("Card Number")).perform(setText(THREE_D_SECURE_LOOKUP_ERROR));
+        fillInExpiration();
+        onDevice(withContentDescription("CVV")).perform(setText("123"));
+        onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
+        onDevice(withText("Purchase")).perform(click());
+
+        getNonceDetails().check(text(containsString("Card Last Two: 77")));
+        getNonceDetails().check(text(containsString("isLiabilityShifted: false")));
+        getNonceDetails().check(text(containsString("isLiabilityShiftPossible: false")));
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
@@ -163,11 +215,17 @@ public class CardTest extends TestHelper {
     private void fillInExpiration() {
         try {
             onDevice(withText("Expiration Date")).perform(click());
-            onDevice(withText("12")).perform(click());
-            onDevice(withText("2019")).perform(click());
+            onDevice(withText("04")).perform(click());
+            onDevice(withText("2020")).perform(click());
             onDevice().pressBack();
         } catch (RuntimeException e) {
             fillInExpiration();
         }
+    }
+
+    private void ensureThreeDSecureRedirect() {
+        try {
+            clickWebViewText("RETURN TO APP", 3000);
+        } catch (RuntimeException ignored) {}
     }
 }

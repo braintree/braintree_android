@@ -9,6 +9,7 @@ import android.webkit.WebViewClient;
 
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 
+@Deprecated
 public class ThreeDSecureWebViewClient extends WebViewClient {
 
     private ThreeDSecureWebViewActivity mActivity;

@@ -15,6 +15,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Stack;
 
+/**
+ * Legacy Activity used for performing ThreeDSecure verifications.
+ *
+ * @deprecated Please use {@link com.braintreepayments.api.BraintreeBrowserSwitchActivity} instead.
+ * See <a href="https://developers.braintreepayments.com/guides/client-sdk/setup/android/v2#browser-switch-setup">
+ * Browser switch setup.</a>
+ */
+@Deprecated
 public class ThreeDSecureWebViewActivity extends Activity {
 
     public static final String EXTRA_THREE_D_SECURE_LOOKUP = "com.braintreepayments.api.EXTRA_THREE_D_SECURE_LOOKUP";
@@ -38,7 +46,7 @@ public class ThreeDSecureWebViewActivity extends Activity {
 
         setupActionBar();
 
-        mThreeDSecureWebViews = new Stack<ThreeDSecureWebView>();
+        mThreeDSecureWebViews = new Stack<>();
         mRootView = ((FrameLayout) findViewById(android.R.id.content));
 
         StringBuilder params = new StringBuilder();

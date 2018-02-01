@@ -281,6 +281,7 @@ public class CardTest {
                 assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getIssuingBank());
                 assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getCountryOfIssuance());
                 assertEquals(BinData.UNKNOWN, cardNonce.getBinData().getProductId());
+                assertFalse(cardNonce.getThreeDSecureInfo().wasVerified());
 
                 countDownLatch.countDown();
             }

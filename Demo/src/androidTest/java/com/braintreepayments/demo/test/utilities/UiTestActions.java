@@ -11,10 +11,14 @@ import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 public class UiTestActions {
 
     public static void clickWebViewText(String text) {
+        clickWebViewText(text,1000);
+    }
+
+    public static void clickWebViewText(String text, Integer waitTimeout) {
         Configurator configurator = Configurator.getInstance();
         long originalTimeout = configurator.getWaitForSelectorTimeout();
 
-        configurator.setWaitForSelectorTimeout(1000);
+        configurator.setWaitForSelectorTimeout(waitTimeout);
 
         try {
             onDevice(withContentDescription(text)).perform(click());

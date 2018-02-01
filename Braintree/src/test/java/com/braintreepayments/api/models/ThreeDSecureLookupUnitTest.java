@@ -32,6 +32,7 @@ public class ThreeDSecureLookupUnitTest {
         assertEquals("123456-12345-12345-a-adfa", mLookup.getCardNonce().getNonce());
         assertTrue(mLookup.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
         assertTrue(mLookup.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertTrue(mLookup.getCardNonce().getThreeDSecureInfo().wasVerified());
     }
 
     @Test
@@ -52,5 +53,7 @@ public class ThreeDSecureLookupUnitTest {
                 parceled.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
         assertEquals(mLookup.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible(),
                 parceled.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertEquals(mLookup.getCardNonce().getThreeDSecureInfo().wasVerified(),
+                parceled.getCardNonce().getThreeDSecureInfo().wasVerified());
     }
 }

@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
@@ -11,6 +12,8 @@ import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
+import com.braintreepayments.api.models.ThreeDSecureInfo;
+import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
@@ -32,6 +35,8 @@ import static com.braintreepayments.api.BraintreeFragmentTestUtils.tokenize;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -64,11 +69,64 @@ public class ThreeDSecureTest {
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
                 assertIsANonce(paymentMethodNonce.getNonce());
                 assertEquals("51", ((CardNonce) paymentMethodNonce).getLastTwo());
+                assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
                 mCountDownLatch.countDown();
             }
         });
 
         ThreeDSecure.performVerification(fragment, nonce, "5");
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 10000)
+    public void performVerification_acceptsAThreeDSecureRequest_postsPaymentMethodNonceToListenersWhenLookupReturnsACard()
+            throws InterruptedException, InvalidArgumentException {
+        String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
+        BraintreeFragment fragment = getFragmentWithAuthorization(mActivity, clientToken);
+        String nonce = tokenize(fragment, new CardBuilder()
+                .cardNumber("4000000000000051")
+                .expirationDate("12/20")).getNonce();
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
+            @Override
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertIsANonce(paymentMethodNonce.getNonce());
+                assertEquals("51", ((CardNonce) paymentMethodNonce).getLastTwo());
+
+                ThreeDSecureInfo threeDSecureInfo = ((CardNonce) paymentMethodNonce).getThreeDSecureInfo();
+                assertFalse(threeDSecureInfo.isLiabilityShifted());
+                assertFalse(threeDSecureInfo.isLiabilityShiftPossible());
+                assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
+                mCountDownLatch.countDown();
+            }
+        });
+
+        ThreeDSecureRequest request = new ThreeDSecureRequest()
+                .nonce(nonce)
+                .amount("5");
+
+        ThreeDSecure.performVerification(fragment, request);
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 1000)
+    public void performVerification_withInvalidThreeDSecureRequest_postsException()
+            throws InterruptedException, InvalidArgumentException {
+        String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
+        BraintreeFragment fragment = getFragmentWithAuthorization(mActivity, clientToken);
+        fragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onError(Exception error) {
+                assertEquals("The ThreeDSecureRequest nonce and amount cannot be null", error.getMessage());
+                mCountDownLatch.countDown();
+            }
+        });
+
+        ThreeDSecureRequest request = new ThreeDSecureRequest()
+                .amount("5");
+
+        ThreeDSecure.performVerification(fragment, request);
 
         mCountDownLatch.await();
     }
@@ -83,6 +141,7 @@ public class ThreeDSecureTest {
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
                 assertIsANonce(paymentMethodNonce.getNonce());
                 assertEquals("51", ((CardNonce) paymentMethodNonce).getLastTwo());
+                assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
                 mCountDownLatch.countDown();
             }
         });
@@ -103,6 +162,7 @@ public class ThreeDSecureTest {
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
                 assertIsANonce(paymentMethodNonce.getNonce());
                 assertEquals("11", ((CardNonce) paymentMethodNonce).getLastTwo());
+                assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
                 mCountDownLatch.countDown();
             }
         });
@@ -111,6 +171,31 @@ public class ThreeDSecureTest {
         Intent data = new Intent()
                 .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT,
                         ThreeDSecureAuthenticationResponse.fromJson(authResponse.toString()));
+
+        ThreeDSecure.onActivityResult(fragment, Activity.RESULT_OK, data);
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 1000)
+    public void onActivityResult_postsPaymentMethodNonceToListener_fromUri() throws JSONException, InterruptedException {
+        BraintreeFragment fragment = getMockFragmentWithConfiguration(mActivity, new TestConfigurationBuilder().build());
+        fragment.addListener(new PaymentMethodNonceCreatedListener() {
+            @Override
+            public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+                assertIsANonce(paymentMethodNonce.getNonce());
+                assertEquals("11", ((CardNonce) paymentMethodNonce).getLastTwo());
+                assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
+                mCountDownLatch.countDown();
+            }
+        });
+
+        Uri responseUri = Uri.parse("http://demo-app.com")
+                .buildUpon()
+                .appendQueryParameter("auth_response", stringFromFixture("three_d_secure/authentication_response.json"))
+                .build();
+        Intent data = new Intent()
+                .setData(responseUri);
 
         ThreeDSecure.onActivityResult(fragment, Activity.RESULT_OK, data);
 

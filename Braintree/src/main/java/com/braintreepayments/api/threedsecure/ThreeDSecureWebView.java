@@ -13,6 +13,7 @@ import android.webkit.WebView;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 
 @SuppressLint("SetJavaScriptEnabled")
+@Deprecated
 public class ThreeDSecureWebView extends WebView {
 
     public ThreeDSecureWebView(Context context) {

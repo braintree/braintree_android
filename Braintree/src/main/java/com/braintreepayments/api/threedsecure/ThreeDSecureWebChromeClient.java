@@ -4,6 +4,7 @@ import android.os.Message;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
+@Deprecated
 public class ThreeDSecureWebChromeClient extends WebChromeClient {
 
     private ThreeDSecureWebViewActivity mActivity;

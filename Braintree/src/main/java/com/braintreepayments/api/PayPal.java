@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Parcel;
 import android.support.annotation.Nullable;
@@ -20,7 +19,6 @@ import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PayPalApprovalCallback;
 import com.braintreepayments.api.interfaces.PayPalApprovalHandler;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.internal.AppHelper;
 import com.braintreepayments.api.internal.BraintreeSharedPreferences;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
@@ -672,14 +670,7 @@ public class PayPal {
     }
 
     private static boolean isManifestValid(BraintreeFragment fragment) {
-        Intent intent = new Intent(Intent.ACTION_VIEW)
-                .setData(Uri.parse(fragment.getReturnUrlScheme() + "://"))
-                .addCategory(Intent.CATEGORY_DEFAULT)
-                .addCategory(Intent.CATEGORY_BROWSABLE);
-
-        ActivityInfo activityInfo = ManifestValidator.getActivityInfo(fragment.getApplicationContext(),
-                BraintreeBrowserSwitchActivity.class);
-        return (activityInfo != null && activityInfo.launchMode == ActivityInfo.LAUNCH_SINGLE_TASK &&
-                AppHelper.isIntentAvailable(fragment.getApplicationContext(), intent));
+        return ManifestValidator.isUrlSchemeDeclaredInAndroidManifest(fragment.getApplicationContext(),
+                fragment.getReturnUrlScheme(), BraintreeBrowserSwitchActivity.class);
     }
 }

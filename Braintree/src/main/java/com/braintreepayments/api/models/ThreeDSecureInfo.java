@@ -16,6 +16,7 @@ public class ThreeDSecureInfo implements Parcelable {
 
     private boolean mLiabilityShifted;
     private boolean mLiabilityShiftPossible;
+    private boolean mWasVerified;
 
     protected static ThreeDSecureInfo fromJson(JSONObject json) {
         if (json == null) {
@@ -25,6 +26,7 @@ public class ThreeDSecureInfo implements Parcelable {
         ThreeDSecureInfo threeDSecureInfo = new ThreeDSecureInfo();
         threeDSecureInfo.mLiabilityShifted = json.optBoolean(LIABILITY_SHIFTED_KEY);
         threeDSecureInfo.mLiabilityShiftPossible = json.optBoolean(LIABILITY_SHIFT_POSSIBLE_KEY);
+        threeDSecureInfo.mWasVerified = json.has(LIABILITY_SHIFTED_KEY) && json.has(LIABILITY_SHIFT_POSSIBLE_KEY);
 
         return threeDSecureInfo;
     }
@@ -45,6 +47,13 @@ public class ThreeDSecureInfo implements Parcelable {
         return mLiabilityShiftPossible;
     }
 
+    /**
+     * @return If the 3D Secure lookup was performed
+     */
+    public boolean wasVerified() {
+        return mWasVerified;
+    }
+
     public ThreeDSecureInfo() {}
 
     @Override
@@ -56,11 +65,13 @@ public class ThreeDSecureInfo implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte(mLiabilityShifted ? (byte) 1 : (byte) 0);
         dest.writeByte(mLiabilityShiftPossible ? (byte) 1 : (byte) 0);
+        dest.writeByte(mWasVerified ? (byte) 1 : (byte) 0);
     }
 
     private ThreeDSecureInfo(Parcel in) {
         mLiabilityShifted = in.readByte() != 0;
         mLiabilityShiftPossible = in.readByte() != 0;
+        mWasVerified = in.readByte() != 0;
     }
 
     public static final Creator<ThreeDSecureInfo> CREATOR = new Creator<ThreeDSecureInfo>() {
