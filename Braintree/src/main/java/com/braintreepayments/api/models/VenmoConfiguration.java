@@ -3,7 +3,6 @@ package com.braintreepayments.api.models;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.text.TextUtils;
 
 import com.braintreepayments.api.Json;
@@ -19,8 +18,6 @@ public class VenmoConfiguration {
     private static final String ACCESS_TOKEN_KEY = "accessToken";
     private static final String ENVIRONMENT_KEY = "environment";
     private static final String MERCHANT_ID_KEY = "merchantId";
-    private static final Uri VENMO_AUTHORITY_URI =
-            Uri.parse("content://com.venmo.whitelistprovider");
 
     private String mAccessToken;
     private String mEnvironment;
