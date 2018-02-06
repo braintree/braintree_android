@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 2.10.0
+
+* Update GooglePaymentException to be parcelable
+* Add browser switch support to 3D Secure integrations
+
 ## 2.9.0
 
 * Internal performance optimizations
