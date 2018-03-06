@@ -24,10 +24,10 @@ public class ErrorWithResponse extends Exception implements Parcelable {
 
     public static final String GRAPHQL_ERRORS_KEY = "errors";
 
-    private static final String GRAPHQL_EXTENSIONS_KEY = "extensions";
     private static final String GRAPHQL_ERROR_TYPE_KEY = "errorType";
-    private static final String GRAPHQL_ERROR_DETAILS_KEY = "errorDetails";
     private static final String GRAPHQL_USER_ERROR = "user_error";
+    private static final String GRAPHQL_UNKNOWN_ERROR_MESSAGE = "An unknown error occurred.";
+    private static final String GRAPHQL_USER_ERROR_MESSAGE = "Input is invalid.";
     private static final String ERROR_KEY = "error";
     private static final String MESSAGE_KEY = "message";
     private static final String FIELD_ERRORS_KEY = "fieldErrors";
@@ -66,25 +66,13 @@ public class ErrorWithResponse extends Exception implements Parcelable {
 
         try {
             JSONArray errors = new JSONObject(json).getJSONArray(GRAPHQL_ERRORS_KEY);
-            JSONObject error = null;
-            for (int i = 0; i < errors.length(); i++) {
-                JSONObject errorExtension = errors.getJSONObject(i).optJSONObject(GRAPHQL_EXTENSIONS_KEY);
-                if (errorExtension != null && Json.optString(errorExtension, GRAPHQL_ERROR_TYPE_KEY, "").equals(GRAPHQL_USER_ERROR)) {
-                    error = errors.getJSONObject(i);
-                }
-            }
 
-            if (error == null) {
-                error = errors.getJSONObject(0);
-            }
+            errorWithResponse.mFieldErrors = BraintreeError.fromGraphQLJsonArray(errors);
 
-            errorWithResponse.mMessage = error.getString(MESSAGE_KEY);
-
-            if (error.has(GRAPHQL_EXTENSIONS_KEY)) {
-                errorWithResponse.mFieldErrors = BraintreeError.fromGraphQLJsonArray(
-                        error.getJSONObject(GRAPHQL_EXTENSIONS_KEY).optJSONArray(GRAPHQL_ERROR_DETAILS_KEY));
+            if (errorWithResponse.mFieldErrors.isEmpty()) {
+                errorWithResponse.mMessage = errors.getJSONObject(0).getString(MESSAGE_KEY);
             } else {
-                errorWithResponse.mFieldErrors = new ArrayList<>();
+                errorWithResponse.mMessage = GRAPHQL_USER_ERROR_MESSAGE;
             }
         } catch (JSONException e) {
             errorWithResponse.mMessage = "Parsing error response failed";

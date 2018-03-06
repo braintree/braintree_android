@@ -73,7 +73,7 @@ public class BraintreeGraphQLHttpClientTest {
 
         HttpURLConnection connection = httpClient.init(baseUrl);
 
-        assertEquals("2018-01-08", connection.getRequestProperty("Braintree-Version"));
+        assertEquals("2018-03-06", connection.getRequestProperty("Braintree-Version"));
     }
 
     @Test(timeout = 5000)
