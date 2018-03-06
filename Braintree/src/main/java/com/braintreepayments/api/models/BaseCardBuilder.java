@@ -69,7 +69,7 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
     }
 
     /**
-     * @param cvv The card's CVV.
+     * @param cvv The card verification code (like CVV or CID). If you wish to create a CVV-only payment method nonce to verify a card already stored in your Vault, omit all other properties to only collect CVV.
      * @return {@link com.braintreepayments.api.models.BaseCardBuilder}
      */
     @SuppressWarnings("unchecked")
