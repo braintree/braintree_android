@@ -11,7 +11,7 @@ import com.braintreepayments.api.Venmo;
 import org.json.JSONObject;
 
 /**
- * Contains the remote Pay with Venmo configuration for the Braintree SDK.
+ * Contains the remote Venmo configuration for the Braintree SDK.
  */
 public class VenmoConfiguration {
 
@@ -24,7 +24,7 @@ public class VenmoConfiguration {
     private String mMerchantId;
 
     /**
-     * Parses the Pay with Venmo configuration from json.
+     * Parses the Venmo configuration from json.
      *
      * @param json The json to parse.
      * @return A {@link VenmoConfiguration} instance with data that was able to be parsed from the
@@ -44,28 +44,28 @@ public class VenmoConfiguration {
     }
 
     /**
-     * @return The access token to use Pay with Venmo.
+     * @return The access token to use with Venmo.
      */
     public String getAccessToken() {
         return mAccessToken;
     }
 
     /**
-     * @return The merchant Id associated with this merchant's Pay with Venmo integration.
+     * @return The merchant Id associated with this merchant's Venmo integration.
      */
     public String getMerchantId() {
         return mMerchantId;
     }
 
     /**
-     * @return The Pay with Venmo environment the merchant is running in.
+     * @return The Venmo environment the merchant is running in.
      */
     public String getEnvironment() {
         return mEnvironment;
     }
 
     /**
-     * Determines if the Pay with Venmo flow is available to be used. This can be used to determine
+     * Determines if the Venmo flow is available to be used. This can be used to determine
      * if UI components should be shown or hidden.
      *
      * @param context A context to access the {@link PackageManager}
@@ -80,7 +80,7 @@ public class VenmoConfiguration {
     }
 
     /**
-     * @deprecated Pay with Venmo no longer requires a user whitelist
+     * @deprecated Venmo no longer requires a user whitelist
      */
     @Deprecated
     public boolean isVenmoWhitelisted(ContentResolver contentResolver) {

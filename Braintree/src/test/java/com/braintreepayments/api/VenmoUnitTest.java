@@ -102,12 +102,7 @@ public class VenmoUnitTest {
 
     @Test
     public void getLaunchIntent_containsCorrectVenmoExtras() throws JSONException, InvalidArgumentException {
-        Configuration configuration = new TestConfigurationBuilder()
-                .payWithVenmo(new TestVenmoConfigurationBuilder()
-                        .accessToken("access-token")
-                        .merchantId("merchant_id")
-                        .environment("environment"))
-                .buildConfiguration();
+        Configuration configuration = getConfigurationFromFixture();
 
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .authorization(Authorization.fromString(stringFromFixture("client_token.json")))
@@ -116,11 +111,12 @@ public class VenmoUnitTest {
                 .build();
         when(fragment.getIntegrationType()).thenReturn("custom");
 
-        Intent intent = Venmo.getLaunchIntent(configuration.getPayWithVenmo(), fragment);
+        Intent intent = Venmo.getLaunchIntent(configuration.getPayWithVenmo(),
+                configuration.getPayWithVenmo().getMerchantId(), fragment);
 
         assertEquals(new ComponentName("com.venmo", "com.venmo.controller.SetupMerchantActivity"),
                 intent.getComponent());
-        assertEquals("merchant_id", intent.getStringExtra(Venmo.EXTRA_MERCHANT_ID));
+        assertEquals("merchant-id", intent.getStringExtra(Venmo.EXTRA_MERCHANT_ID));
         assertEquals("access-token", intent.getStringExtra(Venmo.EXTRA_ACCESS_TOKEN));
         assertEquals("environment", intent.getStringExtra(Venmo.EXTRA_ENVIRONMENT));
 
@@ -151,12 +147,7 @@ public class VenmoUnitTest {
 
     @Test
     public void authorizeAccount_postsExceptionWhenNotInstalled() {
-         Configuration configuration = new TestConfigurationBuilder()
-                .payWithVenmo(new TestVenmoConfigurationBuilder()
-                        .accessToken("access-token")
-                        .merchantId("merchant_id")
-                        .environment("environment"))
-                 .buildConfiguration();
+        Configuration configuration = getConfigurationFromFixture();
 
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(configuration)
@@ -172,12 +163,7 @@ public class VenmoUnitTest {
 
     @Test
     public void performAppSwitch_appSwitchesWithVenmoLaunchIntent() throws InvalidArgumentException, JSONException {
-        Configuration configuration = new TestConfigurationBuilder()
-                .payWithVenmo(new TestVenmoConfigurationBuilder()
-                        .accessToken("access-token")
-                        .merchantId("merchant_id")
-                        .environment("environment"))
-                .buildConfiguration();
+        Configuration configuration = getConfigurationFromFixture();
 
         Authorization clientToken = Authorization.fromString(stringFromFixture("base_64_client_token.txt"));
         disableSignatureVerification();
@@ -198,7 +184,7 @@ public class VenmoUnitTest {
         assertEquals("com.venmo/com.venmo.controller.SetupMerchantActivity",
                 captor.getValue().getComponent().flattenToString());
         Bundle extras = captor.getValue().getExtras();
-        assertEquals("merchant_id", extras.getString(Venmo.EXTRA_MERCHANT_ID));
+        assertEquals("merchant-id", extras.getString(Venmo.EXTRA_MERCHANT_ID));
         assertEquals("access-token", extras.getString(Venmo.EXTRA_ACCESS_TOKEN));
         assertEquals("environment", extras.getString(Venmo.EXTRA_ENVIRONMENT));
 
@@ -213,14 +199,63 @@ public class VenmoUnitTest {
     }
 
     @Test
+    public void performAppSwitch_whenProfileIdIsNull_appSwitchesWithMerchantId() throws InvalidArgumentException, JSONException {
+        Configuration configuration = getConfigurationFromFixture();
+
+        Authorization clientToken = Authorization.fromString(stringFromFixture("base_64_client_token.txt"));
+        disableSignatureVerification();
+
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .context(VenmoInstalledContextFactory.venmoInstalledContext(true, RuntimeEnvironment.application))
+                .authorization(clientToken)
+                .configuration(configuration)
+                .build();
+
+        when(fragment.getSessionId()).thenReturn("a-session-id");
+        when(fragment.getIntegrationType()).thenReturn("custom");
+
+        Venmo.authorizeAccount(fragment, false, null);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(fragment).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.VENMO));
+        assertEquals("com.venmo/com.venmo.controller.SetupMerchantActivity",
+                captor.getValue().getComponent().flattenToString());
+        Bundle extras = captor.getValue().getExtras();
+        assertEquals("merchant-id", extras.getString(Venmo.EXTRA_MERCHANT_ID));
+        assertEquals("access-token", extras.getString(Venmo.EXTRA_ACCESS_TOKEN));
+    }
+
+    @Test
+    public void performAppSwitch_whenProfileIdIsSpecified_appSwitchesWithProfileIdAndAccessToken() throws InvalidArgumentException, JSONException {
+        Configuration configuration = getConfigurationFromFixture();
+
+        Authorization clientToken = Authorization.fromString(stringFromFixture("base_64_client_token.txt"));
+        disableSignatureVerification();
+
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .context(VenmoInstalledContextFactory.venmoInstalledContext(true, RuntimeEnvironment.application))
+                .authorization(clientToken)
+                .configuration(configuration)
+                .build();
+
+        when(fragment.getSessionId()).thenReturn("a-session-id");
+        when(fragment.getIntegrationType()).thenReturn("custom");
+
+        Venmo.authorizeAccount(fragment, false, "second-pwv-profile-id");
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(fragment).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.VENMO));
+        assertEquals("com.venmo/com.venmo.controller.SetupMerchantActivity",
+                captor.getValue().getComponent().flattenToString());
+        Bundle extras = captor.getValue().getExtras();
+        assertEquals("second-pwv-profile-id", extras.getString(Venmo.EXTRA_MERCHANT_ID));
+        assertEquals("access-token", extras.getString(Venmo.EXTRA_ACCESS_TOKEN));
+    }
+
+    @Test
     public void getLaunchIntent_doesNotContainAuthFingerprintWhenUsingTokenziationkey()
             throws JSONException, InvalidArgumentException {
-        Configuration configuration = new TestConfigurationBuilder()
-                .payWithVenmo(new TestVenmoConfigurationBuilder()
-                        .accessToken("access-token")
-                        .merchantId("merchant_id")
-                        .environment("environment"))
-                .buildConfiguration();
+        Configuration configuration = getConfigurationFromFixture();
 
         Authorization clientToken = Authorization.fromString(TestTokenizationKey.TOKENIZATION_KEY);
         disableSignatureVerification();
@@ -241,7 +276,7 @@ public class VenmoUnitTest {
         assertEquals("com.venmo/com.venmo.controller.SetupMerchantActivity",
                 captor.getValue().getComponent().flattenToString());
         Bundle extras = captor.getValue().getExtras();
-        assertEquals("merchant_id", extras.getString(Venmo.EXTRA_MERCHANT_ID));
+        assertEquals("merchant-id", extras.getString(Venmo.EXTRA_MERCHANT_ID));
         assertEquals("access-token", extras.getString(Venmo.EXTRA_ACCESS_TOKEN));
         assertEquals("environment", extras.getString(Venmo.EXTRA_ENVIRONMENT));
 
@@ -251,12 +286,7 @@ public class VenmoUnitTest {
 
     @Test
     public void performAppSwitch_sendsAnalyticsEvent() {
-        Configuration configuration = new TestConfigurationBuilder()
-                .payWithVenmo(new TestVenmoConfigurationBuilder()
-                        .accessToken("access-token")
-                        .merchantId("merchant_id")
-                        .environment("environment"))
-                .buildConfiguration();
+        Configuration configuration = getConfigurationFromFixture();
 
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(configuration)
@@ -269,12 +299,7 @@ public class VenmoUnitTest {
 
     @Test
     public void performAppSwitch_sendsAnalyticsEventWhenStarted() {
-        Configuration configuration = new TestConfigurationBuilder()
-                .payWithVenmo(new TestVenmoConfigurationBuilder()
-                        .accessToken("access-token")
-                        .merchantId("merchant_id")
-                        .environment("environment"))
-                .buildConfiguration();
+        Configuration configuration = getConfigurationFromFixture();
 
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .context(VenmoInstalledContextFactory.venmoInstalledContext(true, RuntimeEnvironment.application))
@@ -289,12 +314,7 @@ public class VenmoUnitTest {
 
     @Test
     public void performAppSwitch_persistsIfVaultTrue() throws InvalidArgumentException {
-        Configuration configuration = new TestConfigurationBuilder()
-                .payWithVenmo(new TestVenmoConfigurationBuilder()
-                        .accessToken("access-token")
-                        .merchantId("merchant_id")
-                        .environment("environment"))
-                .buildConfiguration();
+        Configuration configuration = getConfigurationFromFixture();
 
         Authorization clientToken = Authorization.fromString(stringFromFixture("base_64_client_token.txt"));
         disableSignatureVerification();
@@ -312,12 +332,7 @@ public class VenmoUnitTest {
 
     @Test
     public void performAppSwitch_persistsIfVaultFalse() throws InvalidArgumentException {
-        Configuration configuration = new TestConfigurationBuilder()
-                .payWithVenmo(new TestVenmoConfigurationBuilder()
-                        .accessToken("access-token")
-                        .merchantId("merchant_id")
-                        .environment("environment"))
-                .buildConfiguration();
+        Configuration configuration = getConfigurationFromFixture();
 
         Authorization clientToken = Authorization.fromString(stringFromFixture("base_64_client_token.txt"));
         disableSignatureVerification();
@@ -336,12 +351,7 @@ public class VenmoUnitTest {
 
     @Test
     public void performAppSwitch_persistsFalseIfTokenizationKeyUsed() throws InvalidArgumentException {
-        Configuration configuration = new TestConfigurationBuilder()
-                .payWithVenmo(new TestVenmoConfigurationBuilder()
-                        .accessToken("access-token")
-                        .merchantId("merchant_id")
-                        .environment("environment"))
-                .buildConfiguration();
+        Configuration configuration = getConfigurationFromFixture();
 
         Authorization tokenizationkey = Authorization.fromString("sandbox_tk_abcd");
         disableSignatureVerification();
@@ -360,12 +370,7 @@ public class VenmoUnitTest {
 
     @Test
     public void performAppSwitch_sendsAnalyticsEventWhenUnavailableAndPostException() {
-        Configuration configuration = new TestConfigurationBuilder()
-                .payWithVenmo(new TestVenmoConfigurationBuilder()
-                        .accessToken("access-token")
-                        .merchantId("merchant_id")
-                        .environment("environment"))
-                .buildConfiguration();
+        Configuration configuration = getConfigurationFromFixture();
 
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(configuration)
@@ -425,12 +430,7 @@ public class VenmoUnitTest {
     @Test
     public void onActivityResult_performsVaultRequestIfRequestPersisted()
             throws InvalidArgumentException, NoSuchAlgorithmException {
-        Configuration configuration = new TestConfigurationBuilder()
-                .payWithVenmo(new TestVenmoConfigurationBuilder()
-                        .accessToken("access-token")
-                        .merchantId("merchant_id")
-                        .environment("environment"))
-                .buildConfiguration();
+        Configuration configuration = getConfigurationFromFixture();
 
         Authorization clientToken = Authorization.fromString(stringFromFixture("base_64_client_token.txt"));
         disableSignatureVerification();
@@ -453,12 +453,7 @@ public class VenmoUnitTest {
     @Test
     public void onActivityResult_doesNotPerformRequestIfTokenizationKeyUsed()
             throws NoSuchAlgorithmException, InvalidArgumentException {
-        Configuration configuration = new TestConfigurationBuilder()
-                .payWithVenmo(new TestVenmoConfigurationBuilder()
-                        .accessToken("access-token")
-                        .merchantId("merchant_id")
-                        .environment("environment"))
-                .buildConfiguration();
+        Configuration configuration = getConfigurationFromFixture();
 
         mockStatic(TokenizationClient.class);
         BraintreeFragment fragment = new MockFragmentBuilder()
@@ -477,12 +472,7 @@ public class VenmoUnitTest {
 
     @Test
     public void onActivityResult_withSuccessfulVaultCall_returnsVenmoAccountNonce() throws InvalidArgumentException {
-        Configuration configuration = new TestConfigurationBuilder()
-                .payWithVenmo(new TestVenmoConfigurationBuilder()
-                        .accessToken("access-token")
-                        .merchantId("merchant_id")
-                        .environment("environment"))
-                .buildConfiguration();
+        Configuration configuration = getConfigurationFromFixture();
 
         Authorization clientToken = Authorization.fromString(stringFromFixture("base_64_client_token.txt"));
         disableSignatureVerification();
@@ -515,12 +505,7 @@ public class VenmoUnitTest {
 
     @Test
     public void onActivityResult_withSuccessfulVaultCall_sendsAnalyticsEvent() throws InvalidArgumentException {
-        Configuration configuration = new TestConfigurationBuilder()
-                .payWithVenmo(new TestVenmoConfigurationBuilder()
-                        .accessToken("access-token")
-                        .merchantId("merchant_id")
-                        .environment("environment"))
-                .buildConfiguration();
+        Configuration configuration = getConfigurationFromFixture();
 
         Authorization clientToken = Authorization.fromString(stringFromFixture("base_64_client_token.txt"));
         disableSignatureVerification();
@@ -543,12 +528,7 @@ public class VenmoUnitTest {
 
     @Test
     public void onActivityResult_withFailedVaultCall_postsCallbackToErrorListener() throws InvalidArgumentException {
-        Configuration configuration = new TestConfigurationBuilder()
-                .payWithVenmo(new TestVenmoConfigurationBuilder()
-                        .accessToken("access-token")
-                        .merchantId("merchant_id")
-                        .environment("environment"))
-                .buildConfiguration();
+        Configuration configuration = getConfigurationFromFixture();
 
         Authorization clientToken = Authorization.fromString(stringFromFixture("base_64_client_token.txt"));
 
@@ -577,12 +557,7 @@ public class VenmoUnitTest {
 
     @Test
     public void onActivityResult_withFailedVaultCall_sendsAnalyticsEvent() throws InvalidArgumentException {
-        Configuration configuration = new TestConfigurationBuilder()
-                .payWithVenmo(new TestVenmoConfigurationBuilder()
-                        .accessToken("access-token")
-                        .merchantId("merchant_id")
-                        .environment("environment"))
-                .buildConfiguration();
+        Configuration configuration = getConfigurationFromFixture();
 
         Authorization clientToken = Authorization.fromString(stringFromFixture("base_64_client_token.txt"));
 
@@ -602,5 +577,13 @@ public class VenmoUnitTest {
         Venmo.onActivityResult(fragment, Activity.RESULT_OK, responseIntent);
 
         verify(fragment).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.failed"));
+    }
+
+    Configuration getConfigurationFromFixture() {
+        try {
+            return Configuration.fromJson(stringFromFixture("configuration/with_pay_with_venmo.json"));
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

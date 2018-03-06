@@ -60,9 +60,9 @@ public class Venmo {
         return new Intent().setComponent(new ComponentName(PACKAGE_NAME, PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
     }
 
-    static Intent getLaunchIntent(VenmoConfiguration venmoConfiguration, BraintreeFragment fragment) {
+    static Intent getLaunchIntent(VenmoConfiguration venmoConfiguration, String profileId, BraintreeFragment fragment) {
         Intent venmoIntent = getVenmoIntent()
-                .putExtra(EXTRA_MERCHANT_ID, venmoConfiguration.getMerchantId())
+                .putExtra(EXTRA_MERCHANT_ID, profileId)
                 .putExtra(EXTRA_ACCESS_TOKEN, venmoConfiguration.getAccessToken())
                 .putExtra(EXTRA_ENVIRONMENT, venmoConfiguration.getEnvironment());
 
@@ -92,12 +92,20 @@ public class Venmo {
      * @param vault If true, and you are using Client Token authorization with a customer ID, this payment method will
      * be added to your customer's vault. @see <a href="https://developers.braintreepayments.com/guides/authorization/overview">our
      * docs on client authorization</a> for more info.
+     * @param profileId The Venmo profile ID to be used during payment authorization. Customers will see the business
+     * name and logo associated with this Venmo profile, and it will show up in the Venmo app as a "Connected Merchant".
+     * Venmo profile IDs can be found in the Braintree Control Panel. Passing `null` will use the default Venmo profile.
      */
-    public static void authorizeAccount(final BraintreeFragment fragment, final boolean vault) {
+    public static void authorizeAccount(final BraintreeFragment fragment, final boolean vault, final String profileId) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 fragment.sendAnalyticsEvent("pay-with-venmo.selected");
+
+                String venmoProfileId = profileId;
+                if (TextUtils.isEmpty(venmoProfileId)) {
+                    venmoProfileId = configuration.getPayWithVenmo().getMerchantId();
+                }
 
                 String exceptionMessage = "";
                 if (!configuration.getPayWithVenmo().isAccessTokenValid()) {
@@ -113,7 +121,7 @@ public class Venmo {
                     persistVenmoVaultOption(vault && fragment.getAuthorization() instanceof ClientToken,
                             fragment.getApplicationContext());
 
-                    fragment.startActivityForResult(getLaunchIntent(configuration.getPayWithVenmo(), fragment),
+                    fragment.startActivityForResult(getLaunchIntent(configuration.getPayWithVenmo(), venmoProfileId, fragment),
                             BraintreeRequestCodes.VENMO);
                     fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
                 }
@@ -121,8 +129,23 @@ public class Venmo {
         });
     }
 
+    /**
+     * Start the Venmo flow. This will app switch to the Venmo app.
+     * <p/>
+     * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to {@link
+     * com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}.
+     *
+     * @param fragment {@link BraintreeFragment}
+     * @param vault If true, and you are using Client Token authorization with a customer ID, this payment method will
+     * be added to your customer's vault. @see <a href="https://developers.braintreepayments.com/guides/authorization/overview">our
+     * docs on client authorization</a> for more info.
+     */
+    public static void authorizeAccount(final BraintreeFragment fragment, final boolean vault) {
+        authorizeAccount(fragment, vault, null);
+    }
+
     public static void authorizeAccount(final BraintreeFragment fragment) {
-        authorizeAccount(fragment, false);
+        authorizeAccount(fragment, false, null);
     }
 
     private static void persistVenmoVaultOption(boolean shouldVault, Context context) {
