@@ -6,6 +6,7 @@ import android.os.Parcel;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
+import com.braintreepayments.api.internal.GraphQLConstants.Keys;
 import com.braintreepayments.api.internal.GraphQLQueryHelper;
 
 import org.json.JSONException;
@@ -137,7 +138,7 @@ public abstract class PaymentMethodBuilder<T> {
             input.put(OPTIONS_KEY, optionsJson);
 
             buildGraphQL(context, base, input);
-            base.put(GraphQLQueryHelper.VARIABLES_KEY, new JSONObject().put(GraphQLQueryHelper.INPUT_KEY, input));
+            base.put(Keys.VARIABLES, new JSONObject().put(Keys.INPUT, input));
         } catch (JSONException ignored) {}
 
         return base.toString();

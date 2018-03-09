@@ -5,6 +5,8 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.braintreepayments.api.Json;
+import com.braintreepayments.api.internal.GraphQLConstants.ErrorTypes;
+import com.braintreepayments.api.internal.GraphQLConstants.Keys;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,10 +20,6 @@ public class BraintreeError implements Parcelable {
     private static final String FIELD_KEY = "field";
     private static final String MESSAGE_KEY = "message";
     private static final String FIELD_ERRORS_KEY = "fieldErrors";
-    private static final String EXTENSIONS_KEY = "extensions";
-    private static final String ERROR_TYPE_KEY = "errorType";
-    private static final String INPUT_PATH_KEY = "inputPath";
-    private static final String USER_ERROR_TYPE = "user_error";
 
     private String mField;
     private String mMessage;
@@ -52,14 +50,14 @@ public class BraintreeError implements Parcelable {
         for (int i = 0; i < graphQLErrors.length(); i++) {
             try {
                 JSONObject graphQLError = graphQLErrors.getJSONObject(i);
-                JSONObject extensions = graphQLError.optJSONObject(EXTENSIONS_KEY);
+                JSONObject extensions = graphQLError.optJSONObject(Keys.EXTENSIONS);
 
-                if (extensions == null || !USER_ERROR_TYPE.equals(extensions.getString(ERROR_TYPE_KEY))) {
+                if (extensions == null || !ErrorTypes.USER.equals(extensions.optString(Keys.ERROR_TYPE))) {
                     continue;
                 }
 
                 ArrayList<String> inputPath = new ArrayList<>();
-                JSONArray inputPathJSON = extensions.getJSONArray(INPUT_PATH_KEY);
+                JSONArray inputPathJSON = extensions.getJSONArray(Keys.INPUT_PATH);
 
                 for (int j = 1; j < inputPathJSON.length(); j++) {
                     inputPath.add(inputPathJSON.getString(j));
@@ -87,7 +85,7 @@ public class BraintreeError implements Parcelable {
         if (inputPath.size() == 1) {
             BraintreeError error = new BraintreeError();
             error.mField = field;
-            error.mMessage = errorJSON.getString(MESSAGE_KEY);
+            error.mMessage = errorJSON.getString(Keys.MESSAGE);
             error.mFieldErrors = new ArrayList<>();
 
             errors.add(error);
