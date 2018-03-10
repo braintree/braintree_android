@@ -3,11 +3,15 @@ package com.braintreepayments.api.internal;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.BuildConfig;
+import com.braintreepayments.api.exceptions.AuthorizationException;
+import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.test.EnvironmentHelper;
+import com.braintreepayments.testutils.FixturesHelper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +27,8 @@ import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
@@ -144,5 +150,72 @@ public class BraintreeGraphQLHttpClientTest {
         });
 
         mCountDownLatch.await();
+    }
+
+    @Test
+    public void parseResponseReturnsSuccessBody() throws Exception {
+        String baseUrl = "http://example.com/graphql";
+        HttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
+        httpClient = HttpClientTestUtils.stubResponse(httpClient,
+                200,
+                FixturesHelper.stringFromFixture("response/graphql/credit_card.json"));
+        HttpURLConnection connection = httpClient.init(baseUrl);
+
+        String response = httpClient.parseResponse(connection);
+        assertTrue(response.contains("tokenizeCreditCard"));
+        assertFalse(response.contains("errors"));
+    }
+
+    @Test
+    public void parseResponseFailsWithUserErrors() throws Exception {
+        String baseUrl = "http://example.com/graphql";
+        HttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
+        httpClient = HttpClientTestUtils.stubResponse(httpClient,
+                200,
+                FixturesHelper.stringFromFixture("errors/graphql/credit_card_error.json"));
+        HttpURLConnection connection = httpClient.init(baseUrl);
+
+        try {
+            httpClient.parseResponse(connection);
+            fail("No exception was thrown");
+        } catch (ErrorWithResponse e) {
+            assertEquals("Input is invalid.", e.getMessage());
+            assertNotNull(e.errorFor("creditCard"));
+        }
+    }
+
+    @Test
+    public void parseResponseFailsWithValidationNotAllowed() throws Exception {
+        String baseUrl = "http://example.com/graphql";
+        HttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
+        httpClient = HttpClientTestUtils.stubResponse(httpClient,
+                200,
+                FixturesHelper.stringFromFixture("errors/graphql/validation_not_allowed_error.json"));
+        HttpURLConnection connection = httpClient.init(baseUrl);
+
+        try {
+            httpClient.parseResponse(connection);
+            fail("No exception was thrown");
+        } catch (AuthorizationException e) {
+            assertEquals("Validation is not supported for requests authorized with a tokenization key.",
+                    e.getMessage());
+        }
+    }
+
+    @Test
+    public void parseResponseFailsWithCoercionError() throws Exception {
+        String baseUrl = "http://example.com/graphql";
+        HttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
+        httpClient = HttpClientTestUtils.stubResponse(httpClient,
+                200,
+                FixturesHelper.stringFromFixture("errors/graphql/coercion_error.json"));
+        HttpURLConnection connection = httpClient.init(baseUrl);
+
+        try {
+            httpClient.parseResponse(connection);
+            fail("No exception was thrown");
+        } catch (UnexpectedException e) {
+            assertEquals("An unexpected error occurred", e.getMessage());
+        }
     }
 }
