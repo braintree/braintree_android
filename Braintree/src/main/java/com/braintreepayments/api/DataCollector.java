@@ -104,7 +104,7 @@ public class DataCollector {
             if (!TextUtils.isEmpty(clientMetadataId)) {
                 deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
             }
-        } catch (JSONException ignored) { }
+        } catch (JSONException ignored) {}
 
         listener.onResponse(deviceData.toString());
     }
