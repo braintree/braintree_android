@@ -25,6 +25,7 @@ import java.util.concurrent.CountDownLatch;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -157,5 +158,25 @@ public class DataCollectorUnitTest {
     public void getPayPalClientMetadataId_returnsClientMetadataId() {
         String clientMetadataId = DataCollector.getPayPalClientMetadataId(RuntimeEnvironment.application);
         assertFalse(TextUtils.isEmpty(clientMetadataId));
+    }
+
+    @Test
+    public void collectPayPalDeviceData() throws JSONException, InterruptedException {
+        final BraintreeFragment fragment = new MockFragmentBuilder().build();
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        DataCollector.collectPayPalDeviceData(fragment, new BraintreeResponseListener<String>() {
+            @Override
+            public void onResponse(String s) {
+                try {
+                    JSONObject json = new JSONObject(s);
+                    assertNotNull(json.getString("correlation_id"));
+                } catch (JSONException e) {
+                    fail();
+                }
+                latch.countDown();
+            }
+        });
+        latch.await();
     }
 }
