@@ -12,5 +12,7 @@ android:
     - build-tools-27.0.3
     - android-27
     - extra-google-m2repository
+before_install:
+  - yes | sdkmanager "platforms;android-27"
 script: ./gradlew --stacktrace lint test :Demo:assembleDebug :Demo:assembleRelease
 after_success: ./script/deploy_snapshot.sh
