@@ -358,7 +358,7 @@ public class PayPalUnitTest {
     }
 
     @Test
-    public void requestBillingAgreement_isSuccessful() {
+    public void requestBillingAgreement_isSuccessful_andSendsAnalyticsEvents() {
         final BraintreeFragment fragment = mMockFragmentBuilder
                 .successResponse(stringFromFixture("paypal_hermes_billing_agreement_response.json"))
                 .build();
@@ -386,6 +386,8 @@ public class PayPalUnitTest {
         PayPal.requestBillingAgreement(fragment, new PayPalRequest());
 
         verify(fragment).postCallback(any(PayPalAccountNonce.class));
+        verify(fragment).sendAnalyticsEvent("paypal-billing-agreement.webswitch.started");
+        verify(fragment).sendAnalyticsEvent("paypal-billing-agreement.webswitch.succeeded");
     }
 
     @Test
@@ -905,7 +907,7 @@ public class PayPalUnitTest {
     }
 
     @Test
-    public void requestOneTimePayment_isSuccessful() {
+    public void requestOneTimePayment_isSuccessful_andSendsAnalyticsEvents() {
         final BraintreeFragment fragment = mMockFragmentBuilder
                 .successResponse(stringFromFixture("paypal_hermes_response.json"))
                 .build();
@@ -937,6 +939,8 @@ public class PayPalUnitTest {
         SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(RuntimeEnvironment.application);
         assertNull(prefs.getString("com.braintreepayments.api.PayPal.REQUEST_KEY", null));
         assertNull(prefs.getString("com.braintreepayments.api.PayPal.REQUEST_TYPE_KEY", null));
+        verify(fragment).sendAnalyticsEvent("paypal-single-payment.webswitch.started");
+        verify(fragment).sendAnalyticsEvent("paypal-single-payment.webswitch.succeeded");
     }
 
     @Test
