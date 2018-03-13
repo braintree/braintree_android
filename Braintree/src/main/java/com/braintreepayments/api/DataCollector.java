@@ -91,6 +91,25 @@ public class DataCollector {
     }
 
     /**
+     * Collect PayPal device information for fraud identification purposes.
+     *
+     * @param fragment {@link BraintreeFragment}
+     * @param listener listener to be called with the device data String to send to Braintree.
+     */
+    public static void collectPayPalDeviceData(final BraintreeFragment fragment, final BraintreeResponseListener<String> listener) {
+        final JSONObject deviceData = new JSONObject();
+
+        try {
+            String clientMetadataId = getPayPalClientMetadataId(fragment.getApplicationContext());
+            if (!TextUtils.isEmpty(clientMetadataId)) {
+                deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
+            }
+        } catch (JSONException ignored) { }
+
+        listener.onResponse(deviceData.toString());
+    }
+
+    /**
      * @deprecated Use {@link #collectDeviceData(BraintreeFragment, BraintreeResponseListener)} instead.
      */
     @Deprecated
