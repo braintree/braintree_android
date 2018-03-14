@@ -9,7 +9,6 @@ import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.UnionPayCardBuilder;
 import com.braintreepayments.api.models.VenmoAccountBuilder;
-import com.braintreepayments.api.models.VisaCheckoutBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 
 import org.json.JSONException;
@@ -99,7 +98,6 @@ public class TokenizationClientUnitTest {
         TokenizationClient.tokenize(fragment, new PayPalAccountBuilder(), null);
         TokenizationClient.tokenize(fragment, new UnionPayCardBuilder(), null);
         TokenizationClient.tokenize(fragment, new VenmoAccountBuilder(), null);
-        TokenizationClient.tokenize(fragment, new VisaCheckoutBuilder(null), null);
 
         verifyZeroInteractions(fragment.getGraphQLHttpClient());
     }

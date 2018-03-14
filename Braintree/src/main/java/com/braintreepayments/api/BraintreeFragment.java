@@ -35,8 +35,8 @@ import com.braintreepayments.api.internal.AnalyticsEvent;
 import com.braintreepayments.api.internal.AnalyticsIntentService;
 import com.braintreepayments.api.internal.AnalyticsSender;
 import com.braintreepayments.api.internal.BraintreeApiHttpClient;
-import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.internal.BraintreeGraphQLHttpClient;
+import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.internal.IntegrationType;
 import com.braintreepayments.api.internal.UUIDHelper;
 import com.braintreepayments.api.models.AmericanExpressRewardsBalance;
@@ -339,7 +339,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
                 Venmo.onActivityResult(this, resultCode, data);
                 break;
             case BraintreeRequestCodes.VISA_CHECKOUT:
-                VisaCheckout.onActivityResult(this, resultCode, data);
+                VisaCheckoutFacade.onActivityResult(this, resultCode, data);
                 break;
             case BraintreeRequestCodes.ANDROID_PAY:
                 AndroidPay.onActivityResult(this, resultCode, data);

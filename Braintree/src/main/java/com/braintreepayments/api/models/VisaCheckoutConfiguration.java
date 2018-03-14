@@ -1,8 +1,8 @@
 package com.braintreepayments.api.models;
 
 import com.braintreepayments.api.Json;
-import com.visa.checkout.Profile.CardBrand;
-import com.visa.checkout.VisaCheckoutSdk;
+import com.braintreepayments.api.internal.ClassHelper;
+import com.braintreepayments.api.internal.VisaCheckoutConstants;
 
 import org.json.JSONObject;
 
@@ -20,19 +20,6 @@ public class VisaCheckoutConfiguration {
     private String mExternalClientId;
     private List<String> mCardBrands;
 
-    /**
-     * Determines if the Visa Checkout SDK is available.
-     * @return true when the class can be found, false otherwise.
-     */
-    private static boolean isVisaCheckoutSDKAvailable() {
-        try {
-            Class.forName(VisaCheckoutSdk.class.getName());
-            return true;
-        } catch (ClassNotFoundException | NoClassDefFoundError e) {
-            return false;
-        }
-    }
-
     static VisaCheckoutConfiguration fromJson(JSONObject json) {
         VisaCheckoutConfiguration visaCheckoutConfiguration = new VisaCheckoutConfiguration();
 
@@ -41,7 +28,8 @@ public class VisaCheckoutConfiguration {
         }
 
         visaCheckoutConfiguration.mApiKey = Json.optString(json, "apikey", "");
-        visaCheckoutConfiguration.mIsEnabled = isVisaCheckoutSDKAvailable() && visaCheckoutConfiguration.mApiKey != "";
+        visaCheckoutConfiguration.mIsEnabled = ClassHelper.isClassAvailable(VisaCheckoutConstants.VISA_CHECKOUT_CLASSNAME) &&
+                !visaCheckoutConfiguration.mApiKey.equals("");
         visaCheckoutConfiguration.mExternalClientId = Json.optString(json, "externalClientId", "");
         visaCheckoutConfiguration.mCardBrands = supportedCardTypesToAcceptedCardBrands(
                 CardConfiguration.fromJson(json).getSupportedCardTypes());
@@ -80,25 +68,26 @@ public class VisaCheckoutConfiguration {
         return mCardBrands;
     }
 
-    private static List<String> supportedCardTypesToAcceptedCardBrands(
-            Set<String> supportedCardTypes) {
+    private static List<String> supportedCardTypesToAcceptedCardBrands(Set<String> supportedCardTypes) {
         List<String> acceptedCardBrands = new ArrayList<>();
+
         for (String supportedCardType : supportedCardTypes) {
             switch (supportedCardType.toLowerCase()) {
                 case "visa":
-                    acceptedCardBrands.add(CardBrand.VISA);
+                    acceptedCardBrands.add("VISA");
                     break;
                 case "mastercard":
-                    acceptedCardBrands.add(CardBrand.MASTERCARD);
+                    acceptedCardBrands.add("MASTERCARD");
                     break;
                 case "discover":
-                    acceptedCardBrands.add(CardBrand.DISCOVER);
+                    acceptedCardBrands.add("DISCOVER");
                     break;
                 case "american express":
-                    acceptedCardBrands.add(CardBrand.AMEX);
+                    acceptedCardBrands.add("AMEX");
                     break;
             }
         }
+
         return acceptedCardBrands;
     }
 }

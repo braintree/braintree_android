@@ -1,7 +1,7 @@
 package com.braintreepayments.api.models;
 
+import com.braintreepayments.api.internal.ClassHelper;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestVisaCheckoutConfigurationBuilder;
-import com.visa.checkout.Profile.CardBrand;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,11 +18,12 @@ import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
-import static org.powermock.api.support.membermodification.MemberMatcher.method;
-import static org.powermock.api.support.membermodification.MemberModifier.stub;
+import static org.mockito.Matchers.eq;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(VisaCheckoutConfiguration.class)
+@PrepareForTest({ VisaCheckoutConfiguration.class, ClassHelper.class })
 public class VisaCheckoutConfigurationUnitTest {
 
     private JSONObject mVisaCheckoutConfigurationJson;
@@ -42,8 +43,9 @@ public class VisaCheckoutConfigurationUnitTest {
     }
 
     @Test
-    public void isEnabled_returnsFalseWhenConfigurationExistsButVisaPackageUnavailable() throws JSONException {
-        stub(method(VisaCheckoutConfiguration.class, "isVisaCheckoutSDKAvailable")).toReturn(false);
+    public void isEnabled_returnsFalseWhenVisaCheckoutModuleIsNotPresent() throws JSONException {
+        mockStatic(ClassHelper.class);
+        when(ClassHelper.isClassAvailable(eq("com.braintreepayments.api.VisaCheckout"))).thenReturn(false);
 
         VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
                 mVisaCheckoutConfigurationJson);
@@ -52,7 +54,7 @@ public class VisaCheckoutConfigurationUnitTest {
     }
 
     @Test
-    public void isEnabled_returnsTrueWhenVisaCheckoutAvailableAndConfigurationApiKeyExists() throws JSONException {
+    public void isEnabled_returnsTrueWhenConfigurationApiKeyExists() throws JSONException {
         VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
                 mVisaCheckoutConfigurationJson);
 
@@ -91,7 +93,7 @@ public class VisaCheckoutConfigurationUnitTest {
 
     @Test
     public void getAcceptedCardBrands_whenVisa_returnsElectronAndVisa() throws JSONException {
-        List<String> expected = Arrays.asList(CardBrand.VISA);
+        List<String> expected = Arrays.asList("VISA");
         String visaCheckoutConfigurationJson = new TestVisaCheckoutConfigurationBuilder()
                 .supportedCardTypes("Visa")
                 .build();
@@ -104,7 +106,7 @@ public class VisaCheckoutConfigurationUnitTest {
 
     @Test
     public void getAcceptedCardBrands_whenMastercard_returnsMastercard() throws JSONException {
-        List<String> expected = Arrays.asList(CardBrand.MASTERCARD);
+        List<String> expected = Arrays.asList("MASTERCARD");
         String visaCheckoutConfigurationJson = new TestVisaCheckoutConfigurationBuilder()
                 .supportedCardTypes("MasterCard")
                 .build();
@@ -117,7 +119,7 @@ public class VisaCheckoutConfigurationUnitTest {
 
     @Test
     public void getAcceptedCardBrands_whenDiscover_returnsDiscover() throws JSONException {
-        List<String> expected = Arrays.asList(CardBrand.DISCOVER);
+        List<String> expected = Arrays.asList("DISCOVER");
         String visaCheckoutConfigurationJson = new TestVisaCheckoutConfigurationBuilder()
                 .supportedCardTypes("Discover")
                 .build();
@@ -130,7 +132,7 @@ public class VisaCheckoutConfigurationUnitTest {
 
     @Test
     public void getAcceptedCardBrands_whenAmericanExpress_returnsAmex() throws JSONException {
-        List<String> expected = Arrays.asList(CardBrand.AMEX);
+        List<String> expected = Arrays.asList("AMEX");
         String visaCheckoutConfigurationJson = new TestVisaCheckoutConfigurationBuilder()
                 .supportedCardTypes("American Express")
                 .build();

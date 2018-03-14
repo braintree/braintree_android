@@ -89,8 +89,7 @@ import static org.powermock.api.mockito.PowerMockito.verifyZeroInteractions;
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*" })
 @PrepareForTest({ AnalyticsSender.class, AndroidPay.class, ConfigurationManager.class, GooglePayment.class,
-        PayPal.class, ThreeDSecure.class,
-        Venmo.class })
+        PayPal.class, ThreeDSecure.class, Venmo.class })
 public class BraintreeFragmentUnitTest {
 
     @Rule

@@ -77,8 +77,6 @@ dependencies {
         exclude group: 'com.google.android'
     }
 
-    // Visa Checkout
-    compile(group: 'com.visa.checkout', name: 'VisaCheckout-Android-SDK', version: '4.6.0', ext: 'aar')
     compile 'com.squareup.okio:okio:1.13.0'
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
     compile 'com.google.code.gson:gson:2.8.1'
@@ -87,6 +85,9 @@ dependencies {
     compile 'com.android.support:design:26.0.0'
 
     compile project(':Braintree')
+    compile(group: 'com.visa.checkout', name: 'VisaCheckout-Android-SDK', version: '4.6.0', ext: 'aar')
+    compile 'com.braintreepayments.api:visa-checkout:0.1.1'
+
     compile 'io.card:android-sdk:5.5.1'
     compile('com.braintreepayments.api:drop-in:3.1.0') {
         exclude group: 'com.braintreepayments.api', module: 'braintree'
