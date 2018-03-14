@@ -358,7 +358,7 @@ public class PayPalUnitTest {
     }
 
     @Test
-    public void requestBillingAgreement_isSuccessful_andSendsAnalyticsEvents() {
+    public void requestBillingAgreement_whenSuccessful_sendsAnalyticsEvents() {
         final BraintreeFragment fragment = mMockFragmentBuilder
                 .successResponse(stringFromFixture("paypal_hermes_billing_agreement_response.json"))
                 .build();
@@ -907,7 +907,7 @@ public class PayPalUnitTest {
     }
 
     @Test
-    public void requestOneTimePayment_isSuccessful_andSendsAnalyticsEvents() {
+    public void requestOneTimePayment_whenSuccessful_sendsAnalyticsEvents() {
         final BraintreeFragment fragment = mMockFragmentBuilder
                 .successResponse(stringFromFixture("paypal_hermes_response.json"))
                 .build();

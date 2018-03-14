@@ -403,11 +403,23 @@ public class PayPal {
         String eventFragment;
         String authorizationType = authorizationTypeForRequest(request);
         String switchType = target == RequestTarget.wallet ? "appswitch" : "webswitch";
-        if (!success) {
-            eventFragment = String.format("%s.initiate.failed", authorizationType);
-        } else {
+        if (success) {
             eventFragment = String.format("%s.%s.started", authorizationType, switchType);
+        } else {
+            eventFragment = String.format("%s.initiate.failed", authorizationType);
         }
+        /**
+         * Possible values:
+         * paypal-billing-agreement.webswitch.started
+         * paypal-billing-agreement.appswitch.started
+         * paypal-billing-agreement.initiate.failed
+         * paypal-single-payment.webswitch.started
+         * paypal-single-payment.appswitch.started
+         * paypal-single-payment.initiate.failed
+         * paypal-future-payments.webswitch.started
+         * paypal-future-payments.appswitch.started
+         * paypal-future-payments.initiate.failed
+         */
         fragment.sendAnalyticsEvent(eventFragment);
     }
 
@@ -664,8 +676,10 @@ public class PayPal {
     }
 
     private static String authorizationTypeForRequest(Request request) {
-        if (request instanceof CheckoutRequest) {
-            return (request instanceof BillingAgreementRequest) ? "paypal-billing-agreement" : "paypal-single-payment";
+        if (request instanceof BillingAgreementRequest) {
+            return "paypal-billing-agreement";
+        } else if (request instanceof CheckoutRequest) {
+            return "paypal-single-payment";
         }
         return "paypal-future-payments";
     }
