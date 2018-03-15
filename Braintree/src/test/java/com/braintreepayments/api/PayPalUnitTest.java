@@ -1049,7 +1049,6 @@ public class PayPalUnitTest {
         verify(fragment).sendAnalyticsEvent("paypal-single-payment.webswitch.succeeded");
     }
 
-
     @Test
     public void requestOneTimePayment_containsPaymentIntent() throws JSONException, InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);

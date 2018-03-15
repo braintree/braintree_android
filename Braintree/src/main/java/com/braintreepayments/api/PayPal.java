@@ -401,12 +401,12 @@ public class PayPal {
     private static void sendAnalyticsForPayPal(BraintreeFragment fragment, Request request, boolean success,
             RequestTarget target) {
         String eventFragment;
-        String authorizationType = authorizationTypeForRequest(request);
+        String paymentType = paymentTypeForRequest(request);
         String switchType = target == RequestTarget.wallet ? "appswitch" : "webswitch";
         if (success) {
-            eventFragment = String.format("%s.%s.started", authorizationType, switchType);
+            eventFragment = String.format("%s.%s.started", paymentType, switchType);
         } else {
-            eventFragment = String.format("%s.initiate.failed", authorizationType);
+            eventFragment = String.format("%s.initiate.failed", paymentType);
         }
         /**
          * Possible values:
@@ -532,9 +532,9 @@ public class PayPal {
      */
     private static void sendAnalyticsEventForSwitchResult(BraintreeFragment fragment, Request request,
             boolean isAppSwitch, String eventFragment) {
-        String authorizationType = authorizationTypeForRequest(request);
+        String paymentType = paymentTypeForRequest(request);
         String switchType = isAppSwitch ? "appswitch" : "webswitch";
-        String event = String.format("%s.%s.%s", authorizationType, switchType, eventFragment);
+        String event = String.format("%s.%s.%s", paymentType, switchType, eventFragment);
         fragment.sendAnalyticsEvent(event);
     }
 
@@ -675,7 +675,7 @@ public class PayPal {
                 fragment.getReturnUrlScheme(), BraintreeBrowserSwitchActivity.class);
     }
 
-    private static String authorizationTypeForRequest(Request request) {
+    private static String paymentTypeForRequest(Request request) {
         if (request instanceof BillingAgreementRequest) {
             return "paypal-billing-agreement";
         } else if (request instanceof CheckoutRequest) {
