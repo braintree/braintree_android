@@ -1,0 +1,143 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+apply plugin: 'signing'
+apply plugin: 'io.codearte.nexus-staging'
+
+version '0.0.1-SNAPSHOT'
+
+android {
+    buildToolsVersion '26.0.2'
+    compileSdkVersion 26
+
+    dataBinding.enabled = true
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 26
+        versionCode 66
+        versionName version
+        multiDexEnabled = true
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    testOptions.unitTests.all {
+        jvmArgs '-noverify'
+    }
+
+    sourceSets {
+        String sharedTestDir = 'src/sharedTest/java'
+        test {
+            java.srcDir sharedTestDir
+        }
+    }
+}
+
+android.buildTypes.debug {
+    dependencies {
+        compile 'com.android.support:support-v4:26.0.0'
+        compile 'com.android.support:appcompat-v7:26.0.0'
+        compile 'com.android.support:design:26.0.0'
+    }
+}
+
+dependencies {
+    compile 'com.google.android.gms:play-services-wallet:11.4.0'
+    compile 'com.android.support:support-annotations:26.0.0'
+    compile 'com.braintreepayments.api:braintree:[2.10.0,)'
+
+    compile(group: 'com.visa.checkout', name: 'visacheckout-android-sdk', version: '4.6.0', ext: 'aar')
+
+    testCompile 'com.android.support.test:runner:1.0.0'
+    testCompile 'com.android.support.test:rules:1.0.0'
+    testCompile 'org.powermock:powermock-module-junit4:1.6.6'
+    testCompile 'org.powermock:powermock-module-junit4-rule:1.6.6'
+    testCompile 'org.powermock:powermock-api-mockito:1.6.6'
+    testCompile 'org.powermock:powermock-classloading-xstream:1.6.6'
+    testCompile 'org.robolectric:robolectric:3.3.2'
+    testCompile 'org.skyscreamer:jsonassert:1.4.0'
+    testCompile 'com.squareup.assertj:assertj-android:1.1.1'
+    testCompile 'junit:junit:4.12'
+    androidTestCompile 'junit:junit:4.12'
+}
+
+/* maven deploy + signing */
+task javadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    failOnError false
+}
+
+task javadocsJar(type: Jar, dependsOn: javadocs) {
+    classifier = 'javadoc'
+    from javadocs.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    archives javadocsJar
+    archives sourcesJar
+}
+
+signing {
+    required { !version.endsWith("SNAPSHOT") }
+    sign configurations.archives
+}
+
+nexusStaging {
+    packageGroup = "com.braintreepayments"
+}
+
+def sonatypeUsername = System.env['SONATYPE_USERNAME']
+def sonatypePassword = System.env['SONATYPE_PASSWORD']
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            snapshotRepository(url: 'file:///tmp/local') {
+            }
+
+            pom.setArtifactId 'visa-checkout'
+
+            pom.project {
+                name 'visa-checkout'
+                groupId = 'com.braintreepayments.api'
+                version = "${android.defaultConfig.versionName}"
+                packaging 'jar'
+                description 'Visa Checkout Module for Braintree\'s Android SDK.'
+                url 'https://github.com/braintree/braintree-android-visa-checkout'
+
+                developers {
+                    developer {
+                        id 'devs'
+                        name 'Braintree Payments'
+                    }
+                }
+
+                licenses {
+                    license {
+                        name 'MIT'
+                        url 'http://opensource.org/licenses/MIT'
+                        distribution 'repo'
+                    }
+                }
+            }
+
+            pom.whenConfigured {
+                it.dependencies.removeAll { true }
+            }
+        }
+    }
+}
