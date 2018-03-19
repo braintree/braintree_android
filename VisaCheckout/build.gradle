@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'io.codearte.nexus-staging'
 
-version '0.0.1-SNAPSHOT'
+version = '0.1.0-SNAPSHOT'
 
 android {
     buildToolsVersion '26.0.2'
@@ -14,7 +14,7 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 66
+        versionCode 1
         versionName version
         multiDexEnabled = true
     }
@@ -106,7 +106,8 @@ uploadArchives {
                 authentication(userName: sonatypeUsername, password: sonatypePassword)
             }
 
-            snapshotRepository(url: 'file:///tmp/local') {
+            snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
             }
 
             pom.setArtifactId 'visa-checkout'
