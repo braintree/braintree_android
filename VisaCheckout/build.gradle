@@ -120,6 +120,12 @@ uploadArchives {
                 description 'Visa Checkout Module for Braintree\'s Android SDK.'
                 url 'https://github.com/braintree/braintree-android-visa-checkout'
 
+                scm {
+                    url 'scm:git@github.com:braintree/braintree-android-visa-checkout.git'
+                    connection 'scm:git@github.com:braintree/braintree-android-visa-checkout.git'
+                    developerConnection 'scm:git@github.com:braintree/braintree-android-visa-checkout.git'
+                }
+
                 developers {
                     developer {
                         id 'devs'
