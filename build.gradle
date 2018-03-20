@@ -62,9 +62,9 @@ subprojects {
         }
     }
 
-    version = '0.1.1'
+    version = '0.1.2-SNAPSHOT'
     ext {
-      versionCode = 2
+      versionCode = 3
       versionName = version
     }
 }
