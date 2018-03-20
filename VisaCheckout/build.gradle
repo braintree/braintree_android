@@ -3,8 +3,6 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'io.codearte.nexus-staging'
 
-version = '0.1.1-SNAPSHOT'
-
 android {
     buildToolsVersion '26.0.2'
     compileSdkVersion 26
@@ -14,8 +12,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 1
-        versionName version
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
         multiDexEnabled = true
     }
 

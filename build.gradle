@@ -61,4 +61,10 @@ subprojects {
             }
         }
     }
+
+    version = '0.1.0'
+    ext {
+      versionCode = 1
+      versionName = version
+    }
 }
