@@ -58,8 +58,10 @@ public class VisaCheckout {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 VisaCheckoutConfiguration visaCheckoutConfiguration = configuration.getVisaCheckout();
+                boolean enabledAndSdkAvailable = isVisaCheckoutSDKAvailable() && configuration
+                        .getVisaCheckout().isEnabled();
 
-                if (!configuration.getVisaCheckout().isEnabled()) {
+                if (!enabledAndSdkAvailable) {
                     fragment.postCallback(new ConfigurationException("Visa Checkout is not enabled."));
                     return;
                 }
@@ -93,6 +95,15 @@ public class VisaCheckout {
 
         fragment.sendAnalyticsEvent("visacheckout.initiate.started");
         fragment.startActivityForResult(intent, BraintreeRequestCodes.VISA_CHECKOUT);
+    }
+
+    static boolean isVisaCheckoutSDKAvailable() {
+        try {
+            Class.forName("com.visa.checkout.VisaCheckoutSdk");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 
     static void onActivityResult(BraintreeFragment fragment, int resultCode, Intent data) {
