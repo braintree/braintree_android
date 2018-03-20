@@ -400,25 +400,26 @@ public class PayPal {
 
     private static void sendAnalyticsForPayPal(BraintreeFragment fragment, Request request, boolean success,
             RequestTarget target) {
-        String eventFragment = "";
-        if (request instanceof CheckoutRequest) {
-            if (!success) {
-                eventFragment = "paypal-single-payment.initiate.failed";
-            } else if (target == RequestTarget.browser) {
-                eventFragment = "paypal-single-payment.webswitch.initiate.started";
-            } else if (target == RequestTarget.wallet) {
-                eventFragment = "paypal-single-payment.appswitch.initiate.started";
-            }
+        String eventFragment;
+        String paymentType = paymentTypeForRequest(request);
+        String switchType = target == RequestTarget.wallet ? "appswitch" : "webswitch";
+        if (success) {
+            eventFragment = String.format("%s.%s.started", paymentType, switchType);
         } else {
-            if (!success) {
-                eventFragment = "paypal-future-payments.initiate.failed";
-            } else if (target == RequestTarget.browser) {
-                eventFragment = "paypal-future-payments.webswitch.initiate.started";
-            } else if (target == RequestTarget.wallet) {
-                eventFragment = "paypal-future-payments.appswitch.initiate.started";
-            }
+            eventFragment = String.format("%s.initiate.failed", paymentType);
         }
-
+        /**
+         * Possible values:
+         * paypal-billing-agreement.webswitch.started
+         * paypal-billing-agreement.appswitch.started
+         * paypal-billing-agreement.initiate.failed
+         * paypal-single-payment.webswitch.started
+         * paypal-single-payment.appswitch.started
+         * paypal-single-payment.initiate.failed
+         * paypal-future-payments.webswitch.started
+         * paypal-future-payments.appswitch.started
+         * paypal-future-payments.initiate.failed
+         */
         fragment.sendAnalyticsEvent(eventFragment);
     }
 
@@ -531,9 +532,9 @@ public class PayPal {
      */
     private static void sendAnalyticsEventForSwitchResult(BraintreeFragment fragment, Request request,
             boolean isAppSwitch, String eventFragment) {
-        String authorizationType = (request instanceof CheckoutRequest) ? "paypal-single-payment" : "paypal-future-payments";
+        String paymentType = paymentTypeForRequest(request);
         String switchType = isAppSwitch ? "appswitch" : "webswitch";
-        String event = String.format("%s.%s.%s", authorizationType, switchType, eventFragment);
+        String event = String.format("%s.%s.%s", paymentType, switchType, eventFragment);
         fragment.sendAnalyticsEvent(event);
     }
 
@@ -672,5 +673,14 @@ public class PayPal {
     private static boolean isManifestValid(BraintreeFragment fragment) {
         return ManifestValidator.isUrlSchemeDeclaredInAndroidManifest(fragment.getApplicationContext(),
                 fragment.getReturnUrlScheme(), BraintreeBrowserSwitchActivity.class);
+    }
+
+    private static String paymentTypeForRequest(Request request) {
+        if (request instanceof BillingAgreementRequest) {
+            return "paypal-billing-agreement";
+        } else if (request instanceof CheckoutRequest) {
+            return "paypal-single-payment";
+        }
+        return "paypal-future-payments";
     }
 }
