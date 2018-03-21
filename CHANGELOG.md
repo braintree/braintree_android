@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 2.11.0
+
+* Add support for Venmo profiles
+* Update PayPalDataCollector library to 3.1.5
+
 ## 2.10.0
 
 * Update GooglePaymentException to be parcelable
