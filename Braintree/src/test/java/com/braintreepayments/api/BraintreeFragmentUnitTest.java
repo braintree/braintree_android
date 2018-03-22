@@ -37,6 +37,7 @@ import com.braintreepayments.api.models.UnionPayCapabilities;
 import com.braintreepayments.api.test.FragmentTestActivity;
 import com.braintreepayments.api.test.UnitTestListenerActivity;
 import com.braintreepayments.browserswitch.BrowserSwitchFragment.BrowserSwitchResult;
+import com.braintreepayments.testutils.ReflectionHelper;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestBraintreeApiConfigurationBuilder;
 
@@ -941,6 +942,57 @@ public class BraintreeFragmentUnitTest {
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(fragment).onActivityResult(eq(42), eq(Activity.RESULT_FIRST_USER), captor.capture());
         assertEquals("http://example.com", captor.getValue().getData().toString());
+    }
+
+    @Test
+    public void onBrowserSwitchResult_sendsAnalyticsEventForOkResult() throws InvalidArgumentException {
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY));
+
+        BrowserSwitchResult result = BrowserSwitchResult.OK;
+
+        fragment.onBrowserSwitchResult(BraintreeRequestCodes.PAYPAL, result, Uri.parse("http://example.com"));
+
+        verify(fragment).sendAnalyticsEvent("paypal.browser-switch.succeeded");
+    }
+
+    @Test
+    public void onBrowserSwitchResult_sendsAnalyticsEventForCanceledResult() throws InvalidArgumentException {
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY));
+
+        BrowserSwitchResult result = BrowserSwitchResult.CANCELED;
+
+        fragment.onBrowserSwitchResult(BraintreeRequestCodes.PAYPAL, result, Uri.parse("http://example.com"));
+
+        verify(fragment).sendAnalyticsEvent("paypal.browser-switch.canceled");
+    }
+
+    @Test
+    public void onBrowserSwitchResult_sendsAnalyticsEventForNoBrowserInstalledErrorResult()
+            throws InvalidArgumentException, NoSuchFieldException, IllegalAccessException {
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY));
+
+        BrowserSwitchResult result = BrowserSwitchResult.ERROR;
+        ReflectionHelper.setField("mErrorMessage", result, "No installed activities can open this URL: http://example.com");
+
+        fragment.onBrowserSwitchResult(BraintreeRequestCodes.PAYPAL, result, Uri.parse("http://example.com"));
+
+        verify(fragment).sendAnalyticsEvent("paypal.browser-switch.failed.no-browser-installed");
+    }
+
+    @Test
+    public void onBrowserSwitchResult_sendsAnalyticsEventWhenSetupFailedErrorResult()
+            throws InvalidArgumentException, NoSuchFieldException, IllegalAccessException {
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY));
+
+        BrowserSwitchResult result = BrowserSwitchResult.ERROR;
+        ReflectionHelper.setField("mErrorMessage", result,
+                "Activity on this device defines the same url scheme in it's Android Manifest. " +
+                        "See https://github.com/braintree/browser-switch-android for more information on " +
+                        "setting up a return url scheme.");
+
+        fragment.onBrowserSwitchResult(BraintreeRequestCodes.PAYPAL, result, Uri.parse("http://example.com"));
+
+        verify(fragment).sendAnalyticsEvent("paypal.browser-switch.failed.not-setup");
     }
 
     @Test

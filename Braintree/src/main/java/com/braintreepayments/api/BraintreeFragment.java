@@ -316,11 +316,32 @@ public class BraintreeFragment extends BrowserSwitchFragment {
 
     @Override
     public void onBrowserSwitchResult(int requestCode, BrowserSwitchResult browserSwitchResult, @Nullable Uri uri) {
+        String type = "";
+        switch (requestCode) {
+            case BraintreeRequestCodes.PAYPAL:
+                type = "paypal";
+                break;
+            case BraintreeRequestCodes.THREE_D_SECURE:
+                type =  "three-d-secure";
+                break;
+            case BraintreeRequestCodes.IDEAL:
+                type = "ideal";
+                break;
+        }
+
         int resultCode = Activity.RESULT_FIRST_USER;
         if (browserSwitchResult == BrowserSwitchResult.OK) {
             resultCode = Activity.RESULT_OK;
+            sendAnalyticsEvent(type + ".browser-switch.succeeded");
         } else if (browserSwitchResult == BrowserSwitchResult.CANCELED) {
             resultCode = Activity.RESULT_CANCELED;
+            sendAnalyticsEvent(type + ".browser-switch.canceled");
+        } else if (browserSwitchResult == BrowserSwitchResult.ERROR) {
+            if (browserSwitchResult.getErrorMessage().startsWith("No installed activities")) {
+                sendAnalyticsEvent(type + ".browser-switch.failed.no-browser-installed");
+            } else {
+                sendAnalyticsEvent(type + ".browser-switch.failed.not-setup");
+            }
         }
 
         onActivityResult(requestCode, resultCode, new Intent().setData(uri));
