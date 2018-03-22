@@ -39,7 +39,7 @@ public class VisaCheckout {
      *         transact.
      *     </li>
      *     <li>
-     *         {@link ProfileBuilder#setDateLevel(String)} - Required to be {@link DataLevel#FULL} for Braintree to
+     *         {@link ProfileBuilder#setDataLevel(String)} - Required to be {@link DataLevel#FULL} for Braintree to
      *     access card details
      *     </li>
      *     <li>
@@ -76,7 +76,7 @@ public class VisaCheckout {
 
                 ProfileBuilder profileBuilder = new ProfileBuilder(merchantApiKey, environment);
                 profileBuilder.setCardBrands(acceptedCardBrands.toArray(new String[acceptedCardBrands.size()]));
-                profileBuilder.setDateLevel(DataLevel.FULL);
+                profileBuilder.setDataLevel(DataLevel.FULL);
                 profileBuilder.setExternalClientId(visaCheckoutConfiguration.getExternalClientId());
 
                 profileBuilderResponseListener.onResponse(profileBuilder);
