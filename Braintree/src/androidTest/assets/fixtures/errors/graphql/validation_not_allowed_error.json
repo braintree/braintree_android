@@ -1,0 +1,31 @@
+{
+  "data": {
+    "tokenizeCreditCard": null
+  },
+  "errors": [
+    {
+      "message": "Validation is not supported for requests authorized with a tokenization key.",
+      "locations": [
+        {
+          "line": 2,
+          "column": 9
+        }
+      ],
+      "path": [
+        "tokenizeCreditCard"
+      ],
+      "extensions": {
+        "errorType": "developer_error",
+        "legacyCode": "50000",
+        "inputPath": [
+          "input",
+          "options",
+          "validate"
+        ]
+      }
+    }
+  ],
+  "extensions": {
+    "requestId": "07d4e050-0d8b-4118-a2cb-1539ce0a1777"
+  }
+}

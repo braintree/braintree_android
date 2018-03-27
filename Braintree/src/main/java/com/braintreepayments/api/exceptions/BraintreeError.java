@@ -18,6 +18,10 @@ public class BraintreeError implements Parcelable {
     private static final String FIELD_KEY = "field";
     private static final String MESSAGE_KEY = "message";
     private static final String FIELD_ERRORS_KEY = "fieldErrors";
+    private static final String EXTENSIONS_KEY = "extensions";
+    private static final String ERROR_TYPE_KEY = "errorType";
+    private static final String INPUT_PATH_KEY = "inputPath";
+    private static final String USER_ERROR_TYPE = "user_error";
 
     private String mField;
     private String mMessage;
@@ -38,24 +42,30 @@ public class BraintreeError implements Parcelable {
         return errors;
     }
 
-    protected static List<BraintreeError> fromGraphQLJsonArray(JSONArray json) {
-        if (json == null) {
-            json = new JSONArray();
-        }
-
+    protected static List<BraintreeError> fromGraphQLJsonArray(JSONArray graphQLErrors) {
         List<BraintreeError> errors = new ArrayList<>();
 
-        for (int i = 0; i < json.length(); i++) {
+        if (graphQLErrors == null) {
+            return errors;
+        }
+
+        for (int i = 0; i < graphQLErrors.length(); i++) {
             try {
-                JSONObject errorJSON = json.getJSONObject(i);
+                JSONObject graphQLError = graphQLErrors.getJSONObject(i);
+                JSONObject extensions = graphQLError.optJSONObject(EXTENSIONS_KEY);
+
+                if (extensions == null || !USER_ERROR_TYPE.equals(extensions.getString(ERROR_TYPE_KEY))) {
+                    continue;
+                }
+
                 ArrayList<String> inputPath = new ArrayList<>();
-                JSONArray inputPathJSON = errorJSON.getJSONArray("inputPath");
+                JSONArray inputPathJSON = extensions.getJSONArray(INPUT_PATH_KEY);
 
                 for (int j = 1; j < inputPathJSON.length(); j++) {
                     inputPath.add(inputPathJSON.getString(j));
                 }
 
-                addGraphQLFieldError(inputPath, errorJSON, errors);
+                addGraphQLFieldError(inputPath, graphQLError, errors);
             } catch (JSONException ignored) {}
         }
 

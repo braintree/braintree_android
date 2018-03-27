@@ -1,8 +1,9 @@
 package com.braintreepayments.api.internal;
 
+import com.braintreepayments.api.Json;
 import com.braintreepayments.api.exceptions.AuthorizationException;
-import com.braintreepayments.api.exceptions.BraintreeError;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 
 import org.json.JSONArray;
@@ -14,10 +15,10 @@ import javax.net.ssl.SSLException;
 
 public class BraintreeGraphQLHttpClient extends BraintreeApiHttpClient {
 
-    private static final String API_VERSION_2018_01_08 = "2018-01-08";
+    private static final String API_VERSION = "2018-03-06";
 
     public BraintreeGraphQLHttpClient(String baseUrl, String bearer) {
-        this(baseUrl, bearer, API_VERSION_2018_01_08);
+        this(baseUrl, bearer, API_VERSION);
     }
 
     private BraintreeGraphQLHttpClient(String baseUrl, String bearer, String apiVersion) {
@@ -41,14 +42,22 @@ public class BraintreeGraphQLHttpClient extends BraintreeApiHttpClient {
                 .optJSONArray(ErrorWithResponse.GRAPHQL_ERRORS_KEY);
 
         if (errors != null) {
-            ErrorWithResponse error = ErrorWithResponse.fromGraphQLJson(response);
-            BraintreeError validateError = error.errorFor("validate");
+            for (int i = 0; i < errors.length(); i++) {
+                JSONObject error = errors.getJSONObject(i);
+                JSONObject extensions = error.optJSONObject("extensions");
 
-            if (validateError != null) {
-                throw new AuthorizationException(validateError.getMessage());
-            } else {
-                throw error;
+                if (extensions == null) {
+                    throw new UnexpectedException("An unexpected error occurred");
+                }
+
+                if (Json.optString(extensions, "legacyCode", "").equals("50000")) {
+                    throw new AuthorizationException(error.getString("message"));
+                } else if (!Json.optString(extensions, "errorType", "").equals("user_error")) {
+                    throw new UnexpectedException("An unexpected error occurred");
+                }
             }
+
+            throw ErrorWithResponse.fromGraphQLJson(response);
         }
 
         return response;

@@ -2,35 +2,71 @@
   "data": {
     "tokenizeCreditCard": null
   },
-  "errors": [{
-    "message": "Input is invalid.",
-    "locations": [{
-      "line": 1,
-      "column": 66
-    }],
-    "path": ["tokenizeCreditCard"],
-    "extensions": {
-      "legacyMessage": "Credit card verification failed",
-      "errorType": "user_error",
-      "errorDetails": [
+  "errors": [
+    {
+      "message": "Expiration month is invalid",
+      "path": [
+        "tokenizeCreditCard"
+      ],
+      "locations": [
         {
-          "message": "Expiration month is invalid",
-          "legacyCode": "81712",
-          "inputPath": ["input", "creditCard", "expirationMonth"]
-        },
-        {
-          "message": "Expiration year is invalid",
-          "legacyCode": "81713",
-          "inputPath": ["input", "creditCard", "expirationYear"]
-        },
-        {
-          "message": "CVV verification failed",
-          "legacyCode": "81736",
-          "inputPath": ["input", "creditCard", "cvv"]
+          "line": 1,
+          "column": 66
         }
-      ]
+      ],
+      "extensions": {
+        "errorType": "user_error",
+        "legacyCode": "81712",
+        "inputPath": [
+          "input",
+          "creditCard",
+          "expirationMonth"
+        ]
+      }
+    },
+    {
+      "message": "Expiration year is invalid",
+      "path": [
+        "tokenizeCreditCard"
+      ],
+      "locations": [
+        {
+          "line": 1,
+          "column": 66
+        }
+      ],
+      "extensions": {
+        "errorType": "user_error",
+        "legacyCode": "81713",
+        "inputPath": [
+          "input",
+          "creditCard",
+          "expirationYear"
+        ]
+      }
+    },
+    {
+      "message": "CVV verification failed",
+      "path": [
+        "tokenizeCreditCard"
+      ],
+      "locations": [
+        {
+          "line": 1,
+          "column": 66
+        }
+      ],
+      "extensions": {
+        "errorType": "user_error",
+        "legacyCode": "81736",
+        "inputPath": [
+          "input",
+          "creditCard",
+          "cvv"
+        ]
+      }
     }
-  }],
+  ],
   "extensions": {
     "requestId": "de1f7c67-4861-455f-89bb-1d208915f270"
   }

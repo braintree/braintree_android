@@ -37,10 +37,7 @@ public class BraintreeErrorUnitTest {
     @Test
     public void graphQLErrors_parcelCorrectly() throws Exception {
         JSONObject errorResponse = new JSONObject(stringFromFixture("errors/graphql/credit_card_error.json"));
-        List<BraintreeError> errors = BraintreeError.fromGraphQLJsonArray(errorResponse.getJSONArray("errors")
-                .getJSONObject(0)
-                .getJSONObject("extensions")
-                .getJSONArray("errorDetails"));
+        List<BraintreeError> errors = BraintreeError.fromGraphQLJsonArray(errorResponse.getJSONArray("errors"));
         assertEquals(1, errors.size());
         BraintreeError error = errors.get(0);
 
