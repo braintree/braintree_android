@@ -60,7 +60,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "com.visa.*" })
-@PrepareForTest({ TokenizationClient.class, VisaCheckoutConfiguration.class })
+@PrepareForTest({ TokenizationClient.class, VisaCheckoutConfiguration.class, VisaCheckout.class })
 public class VisaCheckoutUnitTest {
 
     @Rule
@@ -89,8 +89,7 @@ public class VisaCheckoutUnitTest {
     }
 
     @Test
-    public void createProfileBuilder_whenNotEnabled_throwsConfigurationException()
-            throws JSONException {
+    public void createProfileBuilder_whenNotEnabled_throwsConfigurationException() {
         BraintreeFragment braintreeFragment = new MockFragmentBuilder()
                 .build();
 
@@ -119,7 +118,7 @@ public class VisaCheckoutUnitTest {
         VisaCheckout.createProfileBuilder(braintreeFragment, new BraintreeResponseListener<ProfileBuilder>() {
             @Override
             public void onResponse(ProfileBuilder profileBuilder) {
-                List<String> expectedCardBrands = Arrays.asList(new String[] { CardBrand.VISA, CardBrand.MASTERCARD });
+                List<String> expectedCardBrands = Arrays.asList(CardBrand.VISA, CardBrand.MASTERCARD);
                 Profile profile = profileBuilder.build();
                 assertEquals(Environment.PRODUCTION, profile.getEnvironment());
                 assertEquals("gwApiKey", profile.getApiKey());
@@ -150,7 +149,7 @@ public class VisaCheckoutUnitTest {
         VisaCheckout.createProfileBuilder(braintreeFragment, new BraintreeResponseListener<ProfileBuilder>() {
             @Override
             public void onResponse(ProfileBuilder profileBuilder) {
-                List<String> expectedCardBrands = Arrays.asList(new String[] { CardBrand.VISA, CardBrand.MASTERCARD });
+                List<String> expectedCardBrands = Arrays.asList(CardBrand.VISA, CardBrand.MASTERCARD);
                 Profile profile = profileBuilder.build();
                 assertEquals(Environment.SANDBOX, profile.getEnvironment());
                 assertEquals("gwApiKey", profile.getApiKey());
@@ -166,7 +165,7 @@ public class VisaCheckoutUnitTest {
     }
 
     @Test(timeout = 10000)
-    public void authorize_startsVisaCheckoutActivity() throws InterruptedException {
+    public void authorize_startsVisaCheckoutActivity() {
         doNothing().when(mBraintreeFragment).startActivityForResult(any(Intent.class), anyInt());
 
         VisaCheckout.authorize(mBraintreeFragment, new PurchaseInfoBuilder(new BigDecimal("1.00"), "test"));
@@ -238,7 +237,7 @@ public class VisaCheckoutUnitTest {
         mockStatic(TokenizationClient.class);
         doAnswer(new Answer<Object>() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 PaymentMethodNonceCallback paymentMethodNonceCallback = (PaymentMethodNonceCallback)invocation
                         .getArguments()[2];
 
@@ -260,7 +259,7 @@ public class VisaCheckoutUnitTest {
         mockStatic(TokenizationClient.class);
         doAnswer(new Answer<Object>() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 PaymentMethodNonceCallback paymentMethodNonceCallback = (PaymentMethodNonceCallback)invocation
                         .getArguments()[2];
 
@@ -348,13 +347,6 @@ public class VisaCheckoutUnitTest {
         VisaCheckout.onActivityResult(mBraintreeFragment, -100, null);
         verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.result.failed"));
     }
-
-    // TODO Update test
-//    @Test
-//    public void onActivityResult_throughBraintreeFragment_callsVisaCheckout() {
-//        mBraintreeFragment.onActivityResult(BraintreeRequestCodes.VISA_CHECKOUT, -100, null);
-//        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.result.failed"));
-//    }
 
     private VisaPaymentSummary sampleVisaPaymentSummary() {
         Parcel in = Parcel.obtain();

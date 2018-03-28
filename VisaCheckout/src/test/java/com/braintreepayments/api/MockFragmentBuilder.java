@@ -37,16 +37,6 @@ public class MockFragmentBuilder {
         mConfiguration = TestConfigurationBuilder.basicConfig();
     }
 
-    public MockFragmentBuilder context(Context context) {
-        mContext = context;
-        return this;
-    }
-
-    public MockFragmentBuilder authorization(Authorization authorization) {
-        mAuthorization = authorization;
-        return this;
-    }
-
     public MockFragmentBuilder configuration(String configuration) {
         try {
             mConfiguration = Configuration.fromJson(configuration);
@@ -59,31 +49,6 @@ public class MockFragmentBuilder {
         return this;
     }
 
-    public MockFragmentBuilder successResponse(String response) {
-        mSuccessResponse = response;
-        return this;
-    }
-
-    public MockFragmentBuilder sessionId(String sessionId) {
-        mSessionId = sessionId;
-        return this;
-    }
-
-    public MockFragmentBuilder errorResponse(Exception exception) {
-        mErrorResponse = exception;
-        return this;
-    }
-
-    public MockFragmentBuilder graphQLSuccessResponse(String response) {
-        mGraphQLSuccessResponse = response;
-        return this;
-    }
-
-    public MockFragmentBuilder graphQLErrorResponse(Exception exception) {
-        mGraphQLErrorResponse = exception;
-        return this;
-    }
-
     public BraintreeFragment build() {
         BraintreeFragment fragment = mock(BraintreeFragment.class);
         when(fragment.getApplicationContext()).thenReturn(mContext);
@@ -93,7 +58,7 @@ public class MockFragmentBuilder {
 
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((ConfigurationListener) invocation.getArguments()[0]).onConfigurationFetched(mConfiguration);
                 return null;
             }
@@ -122,14 +87,14 @@ public class MockFragmentBuilder {
     private void setupSuccessResponses(BraintreeHttpClient httpClient) {
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((HttpResponseCallback) invocation.getArguments()[1]).success(mSuccessResponse);
                 return null;
             }
         }).when(httpClient).get(any(String.class), any(HttpResponseCallback.class));
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((HttpResponseCallback) invocation.getArguments()[2]).success(mSuccessResponse);
                 return null;
             }
@@ -139,14 +104,14 @@ public class MockFragmentBuilder {
     private void setupErrorResponses(BraintreeHttpClient httpClient) {
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((HttpResponseCallback) invocation.getArguments()[1]).failure(mErrorResponse);
                 return null;
             }
         }).when(httpClient).get(any(String.class), any(HttpResponseCallback.class));
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((HttpResponseCallback) invocation.getArguments()[2]).failure(mErrorResponse);
                 return null;
             }
@@ -156,7 +121,7 @@ public class MockFragmentBuilder {
     private void setupGraphQLSuccessResponses(BraintreeGraphQLHttpClient graphQLHttpClient) {
         Answer answer = new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((HttpResponseCallback) invocation.getArguments()[1]).success(mGraphQLSuccessResponse);
                 return null;
             }
@@ -170,7 +135,7 @@ public class MockFragmentBuilder {
     private void setupGraphQLErrorResponses(BraintreeGraphQLHttpClient graphQLHttpClient) {
         Answer answer = new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((HttpResponseCallback) invocation.getArguments()[1]).failure(mGraphQLErrorResponse);
                 return null;
             }

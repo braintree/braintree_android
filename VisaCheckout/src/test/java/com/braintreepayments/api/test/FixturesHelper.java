@@ -2,18 +2,16 @@ package com.braintreepayments.api.test;
 
 import com.braintreepayments.api.internal.StreamHelper;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 
 public class FixturesHelper {
 
     private static final String FIXTURES_PATH = "fixtures/";
-    private static final String LOCAL_UNIT_TEST_FIXTURES_PATH = "src/androidTest/assets/" + FIXTURES_PATH;
+    private static final String LOCAL_UNIT_TEST_FIXTURES_PATH = "src/test/assets/" + FIXTURES_PATH;
 
     public static String stringFromFixture(String filename) {
         try {
@@ -25,10 +23,6 @@ public class FixturesHelper {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static InputStream streamFromString(String string) throws UnsupportedEncodingException {
-        return new ByteArrayInputStream(string.getBytes("UTF-8"));
     }
 
     private static String stringFromAndroidFixture(String filename) throws IOException {
