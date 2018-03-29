@@ -2,8 +2,6 @@ package com.braintreepayments.demo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
 
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.VisaCheckout;
@@ -18,13 +16,15 @@ import com.visa.checkout.PurchaseInfo.PurchaseInfoBuilder;
 import com.visa.checkout.VisaCheckoutSdk;
 import com.visa.checkout.VisaCheckoutSdk.Status;
 import com.visa.checkout.VisaCheckoutSdkInitListener;
+import com.visa.checkout.widget.VisaCheckoutButton;
+import com.visa.checkout.widget.VisaCheckoutButton.CheckoutWithVisaListener;
 
 import java.math.BigDecimal;
 
-public class VisaCheckoutActivity extends BaseActivity implements OnClickListener,
-        BraintreeResponseListener<ProfileBuilder>, VisaCheckoutSdkInitListener {
+public class VisaCheckoutActivity extends BaseActivity implements BraintreeResponseListener<ProfileBuilder>,
+        VisaCheckoutSdkInitListener, CheckoutWithVisaListener {
 
-    private View mVisaPaymentButton;
+    private VisaCheckoutButton mVisaPaymentButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +33,8 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
         setContentView(R.layout.visa_checkout_activity);
         setUpAsBack();
 
-        mVisaPaymentButton = findViewById(R.id.visa_checkout_button);
-        mVisaPaymentButton.setOnClickListener(this);
+        mVisaPaymentButton = (VisaCheckoutButton) findViewById(R.id.visa_checkout_button);
+        mVisaPaymentButton.setCheckoutListener(this);
     }
 
     @Override
@@ -49,15 +49,6 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
     }
 
     @Override
-    public void onClick(View view) {
-        setProgressBarIndeterminateVisibility(true);
-
-        PurchaseInfoBuilder purchaseInfo = new PurchaseInfoBuilder(new BigDecimal("1.00"), PurchaseInfo.Currency.USD)
-                .setDescription("Description");
-        VisaCheckout.authorize(mBraintreeFragment, purchaseInfo);
-    }
-
-    @Override
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
@@ -68,9 +59,7 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
     }
 
     @Override
-    protected void reset() {
-        mVisaPaymentButton.setEnabled(false);
-    }
+    protected void reset() { }
 
     @Override
     public void onResponse(ProfileBuilder profileBuilder) {
@@ -79,11 +68,15 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
 
     @Override
     public void status(int code, String message) {
-        if (code != Status.SUCCESS) {
-            onError(new Exception("Visa Checkout: " + code + " " + message));
-            mVisaPaymentButton.setEnabled(false);
-        } else {
-            mVisaPaymentButton.setEnabled(true);
+        switch (code) {
+            case Status.INVALID_API_KEY:
+            case Status.UNSUPPORTED_SDK_VERSION:
+            case Status.OS_VERSION_NOT_SUPPORTED:
+            case Status.FAIL_TO_INITIALIZE:
+            case Status.MISSING_PARAMETER:
+            case Status.INTERNAL_ERROR:
+                onError(new Exception("Visa Checkout: " + code + " " + message));
+                mVisaPaymentButton.setEnabled(false);
         }
     }
 
@@ -109,5 +102,14 @@ public class VisaCheckoutActivity extends BaseActivity implements OnClickListene
                 address.getRegion() + " " +
                 address.getCountryCode() + " " +
                 address.getPhoneNumber();
+    }
+
+    @Override
+    public void onClick() {
+        setProgressBarIndeterminateVisibility(true);
+
+        PurchaseInfoBuilder purchaseInfo = new PurchaseInfoBuilder(new BigDecimal("1.00"), PurchaseInfo.Currency.USD)
+                .setDescription("Description");
+        VisaCheckout.authorize(mBraintreeFragment, purchaseInfo);
     }
 }

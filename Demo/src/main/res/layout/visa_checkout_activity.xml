@@ -5,9 +5,8 @@
     android:layout_height="match_parent"
     android:gravity="center">
 
-    <com.visa.checkout.widget.VisaPaymentButton
+    <com.visa.checkout.widget.VisaCheckoutButton
         android:id="@+id/visa_checkout_button"
-        android:enabled="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent" />

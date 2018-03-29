@@ -1,7 +1,6 @@
 package com.braintreepayments.demo.test;
 
 import android.support.test.runner.AndroidJUnit4;
-import android.support.test.uiautomator.UiObjectNotFoundException;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
 
@@ -9,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static com.lukekorth.deviceautomator.AutomatorAction.check;
 import static com.lukekorth.deviceautomator.AutomatorAction.clearTextField;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
@@ -36,41 +34,33 @@ public class VisaCheckoutTest extends TestHelper {
 
     @Test(timeout = 60000)
     public void cancelsVisaCheckout_whenPressingBack() {
-        if (onDevice(withText("New to Visa Checkout?")).exists()) {
-            onDevice(withText("Sign In")).perform(click());
-        }
-
-        onDevice().pressBack(); // Dismiss keyboard
         onDevice().pressBack();
-        onDevice(withText("OK")).perform(click());
+        onDevice(withText("YES")).perform(click());
         onDevice(withText("Reset")).waitForExists();
     }
 
     @Test(timeout = 60000)
     public void cancelsVisaCheckout_whenClickingUpButton() {
         onDevice(withResourceId("com.braintreepayments.demo:id/vco_header_right_btn")).perform(click());
-        onDevice(withText("OK")).perform(click());
+        onDevice(withText("YES")).perform(click());
         onDevice(withText("Reset")).waitForExists();
     }
 
     @Test(timeout = 120000)
-    public void tokenizesVisaCheckout() throws UiObjectNotFoundException {
-        if (onDevice(withText("New to Visa Checkout?")).exists()) {
-            onDevice(withText("Sign In")).perform(click());
-        }
-
+    public void tokenizesVisaCheckout() {
         try {
-            onDevice(withResourceId("com.braintreepayments.demo:id/com_visa_checkout_cbSignInUsernamePreferences"))
-                    .perform(check(false));
+            onDevice(withResourceId("com.braintreepayments.demo:id/vco_signIn_tv_notYou"))
+                    .perform(click());
         } catch (RuntimeException ignored) {}
 
-        onDevice(withContentDescription("Email or Mobile Number")).perform(click(), clearTextField());
-        onDevice(withContentDescription("Email or Mobile Number")).typeText(VISA_CHECKOUT_USERNAME);
-        onDevice(withContentDescription("Password")).perform(click());
+        onDevice(withText("Email Address")).perform(click(), clearTextField());
+        onDevice(withText("Email Address")).typeText(VISA_CHECKOUT_USERNAME);
+        onDevice(withText("Continue")).perform(click());
+        onDevice(withText("Password")).perform(click());
         onDevice().typeText(VISA_CHECKOUT_PASSWORD);
         onDevice(withText("Sign In")).perform(click());
-        onDevice(withText("Pay with")).waitForExists();
-        onDevice(withText("Continue")).perform(click());
+        onDevice(withText("Continue With Purchase")).waitForExists();
+        onDevice(withText("Continue With Purchase")).perform(click());
         onDevice(withText("Create a Transaction")).waitForExists();
         onDevice(withText("Nonce:")).waitForExists();
         getNonceDetails().check(text(containsString("First name: NoReply")),

@@ -11,6 +11,7 @@ android {
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        multiDexEnabled true
     }
 
     signingConfigs {
@@ -74,16 +75,19 @@ dependencies {
         exclude module: 'com.google.gson'
     }
 
+    compile project(':Braintree')
+
+    // Visa checkout dependencies
+    compile(group: 'com.visa.checkout', name: 'visacheckout-android-sdk', version: '5.5.2', ext: 'aar')
     compile 'com.squareup.okio:okio:1.13.0'
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
     compile 'com.google.code.gson:gson:2.8.1'
     compile 'de.greenrobot:eventbus:2.4.1'
     compile 'com.android.support:appcompat-v7:26.0.0'
     compile 'com.android.support:design:26.0.0'
+    compile 'com.android.support:multidex:1.0.0'
 
-    compile project(':Braintree')
-    compile(group: 'com.visa.checkout', name: 'VisaCheckout-Android-SDK', version: '4.6.0', ext: 'aar')
-    compile 'com.braintreepayments.api:visa-checkout:0.1.1'
+    compile 'com.braintreepayments.api:visa-checkout:1.0.0'
 
     compile 'io.card:android-sdk:5.5.1'
     compile('com.braintreepayments.api:drop-in:3.1.0') {
