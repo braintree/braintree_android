@@ -1,5 +1,6 @@
 package com.braintreepayments.api.internal;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -169,6 +170,9 @@ public class AnalyticsSender {
         return Boolean.toString(check1 || check2 || check3);
     }
 
+    // Google recommends using InstanceId: https://developers.google.com/instance-id/
+    // We can't use it though since Google Play Services are required.
+    @SuppressLint("HardwareIds")
     private static String getAndroidId(Context context) {
         String id = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
         if (id == null) {

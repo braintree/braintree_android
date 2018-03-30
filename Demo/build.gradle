@@ -46,6 +46,7 @@ android {
     }
 
     lintOptions {
+        disable 'IconMissingDensityFolder'
         warning 'InvalidPackage'
         warning 'GradleCompatible'
         textReport true

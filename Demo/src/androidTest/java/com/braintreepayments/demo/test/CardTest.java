@@ -1,5 +1,6 @@
 package com.braintreepayments.demo.test;
 
+import android.annotation.SuppressLint;
 import android.preference.PreferenceManager;
 import android.support.test.runner.AndroidJUnit4;
 import android.widget.ScrollView;
@@ -29,6 +30,7 @@ import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
+@SuppressLint("ApplySharedPref")
 @RunWith(AndroidJUnit4.class)
 public class CardTest extends TestHelper {
 

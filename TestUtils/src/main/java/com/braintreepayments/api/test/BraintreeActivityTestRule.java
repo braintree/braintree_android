@@ -27,7 +27,7 @@ public class BraintreeActivityTestRule<T extends Activity> extends ActivityTestR
     }
 
     @SuppressWarnings("MissingPermission")
-    @SuppressLint("MissingPermission")
+    @SuppressLint({"MissingPermission", "ApplySharedPref"})
     private void init() {
         getSharedPreferences(getTargetContext()).edit().clear().commit();
 
@@ -37,7 +37,7 @@ public class BraintreeActivityTestRule<T extends Activity> extends ActivityTestR
     }
 
     @SuppressWarnings("MissingPermission")
-    @SuppressLint("MissingPermission")
+    @SuppressLint({"MissingPermission", "ApplySharedPref"})
     @Override
     protected void afterActivityFinished() {
         super.afterActivityFinished();

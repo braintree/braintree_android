@@ -212,7 +212,7 @@ public class MainActivity extends BaseActivity {
         mNonceIcon.setImageResource(PaymentMethodType.forType(mNonce).getDrawable());
         mNonceIcon.setVisibility(VISIBLE);
 
-        mNonceString.setText(getString(R.string.nonce) + ": " + mNonce.getNonce());
+        mNonceString.setText(getString(R.string.nonce_placeholder, mNonce.getNonce()));
         mNonceString.setVisibility(VISIBLE);
 
         String details = "";
@@ -233,7 +233,7 @@ public class MainActivity extends BaseActivity {
         mNonceDetails.setText(details);
         mNonceDetails.setVisibility(VISIBLE);
 
-        mDeviceData.setText("Device Data: " + deviceData);
+        mDeviceData.setText(getString(R.string.device_data_placeholder, deviceData));
         mDeviceData.setVisibility(VISIBLE);
 
         mCreateTransactionButton.setEnabled(true);
@@ -242,10 +242,10 @@ public class MainActivity extends BaseActivity {
     private void displayBraintreeResult(BraintreePaymentResult result) {
         if (result instanceof IdealResult) {
             IdealResult idealResult = (IdealResult) result;
-            mNonceString.setText("iDEAL payment id: \n" + idealResult.getId());
+            mNonceString.setText(getString(R.string.ideal_id_placeholder, idealResult.getId()));
             mNonceString.setVisibility(VISIBLE);
 
-            mNonceDetails.setText("iDEAL payment status: \n" + idealResult.getStatus());
+            mNonceDetails.setText(getString(R.string.ideal_status_placeholder, idealResult.getStatus()));
             mNonceDetails.setVisibility(VISIBLE);
 
             mCreateTransactionButton.setEnabled(false);
