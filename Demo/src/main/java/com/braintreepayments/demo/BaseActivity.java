@@ -13,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -22,18 +23,13 @@ import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreePaymentResultListener;
-import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.internal.SignatureVerificationOverrides;
 import com.braintreepayments.api.models.BinData;
 import com.braintreepayments.api.models.BraintreePaymentResult;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.demo.internal.LogReporting;
 import com.braintreepayments.demo.models.ClientToken;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -52,7 +48,6 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
     protected String mAuthorization;
     protected String mCustomerId;
     protected BraintreeFragment mBraintreeFragment;
-    protected Logger mLogger;
 
     private boolean mActionBarSetup;
 
@@ -62,8 +57,6 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
 
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setProgressBarIndeterminateVisibility(true);
-
-        mLogger = LoggerFactory.getLogger(getClass().getSimpleName());
 
         if (savedInstanceState != null) {
             mAuthorization = savedInstanceState.getString(EXTRA_AUTHORIZATION);
@@ -122,7 +115,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
     public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         setProgressBarIndeterminateVisibility(true);
 
-        mLogger.debug("Payment Method Nonce received: " + paymentMethodNonce.getTypeLabel());
+        Log.d(getClass().getSimpleName(), "Payment Method Nonce received: " + paymentMethodNonce.getTypeLabel());
     }
 
     @CallSuper
@@ -130,7 +123,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
     public void onBraintreePaymentResult(BraintreePaymentResult result) {
         setProgressBarIndeterminateVisibility(true);
 
-        mLogger.debug("Braintree Payment Result received: " + result.getClass().getSimpleName());
+        Log.d(getClass().getSimpleName(), "Braintree Payment Result received: " + result.getClass().getSimpleName());
     }
 
     @CallSuper
@@ -138,7 +131,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
     public void onCancel(int requestCode) {
         setProgressBarIndeterminateVisibility(false);
 
-        mLogger.debug("Cancel received: " + requestCode);
+        Log.d(getClass().getSimpleName(), "Cancel received: " + requestCode);
     }
 
     @CallSuper
@@ -146,8 +139,8 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
     public void onError(Exception error) {
         setProgressBarIndeterminateVisibility(false);
 
-        mLogger.debug("Error received (" + error.getClass() + "): "  + error.getMessage());
-        mLogger.debug(error.toString());
+        Log.d(getClass().getSimpleName(), "Error received (" + error.getClass() + "): "  + error.getMessage());
+        Log.d(getClass().getSimpleName(), error.toString());
 
         showDialog("An error occurred (" + error.getClass() + "): " + error.getMessage());
     }
@@ -267,8 +260,6 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
             case R.id.settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
-            case R.id.feedback:
-                new LogReporting(this).collectAndSendLogs();
             default:
                 return false;
         }

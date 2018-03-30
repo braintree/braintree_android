@@ -73,9 +73,6 @@ dependencies {
     compile('com.squareup.retrofit:retrofit:1.9.0') {
         exclude module: 'com.google.gson'
     }
-    compile ('com.lukekorth:mailable_log:0.1.6') {
-        exclude group: 'com.google.android'
-    }
 
     compile 'com.squareup.okio:okio:1.13.0'
     compile 'com.squareup.okhttp3:okhttp:3.8.1'

@@ -29,14 +29,6 @@ public class Settings {
         return sSharedPreferences;
     }
 
-    public static int getVersion(Context context) {
-        return getPreferences(context).getInt(VERSION, 0);
-    }
-
-    public static void setVersion(Context context) {
-        getPreferences(context).edit().putInt(VERSION, BuildConfig.VERSION_CODE).apply();
-    }
-
     public static int getEnvironment(Context context) {
         return getPreferences(context).getInt(ENVIRONMENT, 0);
     }

@@ -9,8 +9,4 @@
         android:id="@+id/settings"
         android:title="@string/settings"
         app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/feedback"
-        android:title="@string/feedback"
-        app:showAsAction="never" />
 </menu>
