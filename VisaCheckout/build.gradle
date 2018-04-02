@@ -83,12 +83,14 @@ signing {
     sign configurations.archives
 }
 
-nexusStaging {
-    packageGroup = "com.braintreepayments"
-}
-
 def sonatypeUsername = System.env['SONATYPE_USERNAME']
 def sonatypePassword = System.env['SONATYPE_PASSWORD']
+
+nexusStaging {
+    packageGroup = "com.braintreepayments"
+    username = sonatypeUsername
+    password = sonatypePassword
+}
 
 uploadArchives {
     repositories {
