@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-version = '0.1.2-SNAPSHOT'
+version = '1.0.0'
 
 android {
     buildToolsVersion '27.0.3'
@@ -88,6 +88,7 @@ def sonatypePassword = System.env['SONATYPE_PASSWORD']
 
 nexusStaging {
     packageGroup = "com.braintreepayments"
+    delayBetweenRetriesInMillis = 10000
     username = sonatypeUsername
     password = sonatypePassword
 }
