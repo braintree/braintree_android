@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 2.12.0
+* Move Visa Checkout to separate module
+* Update Visa Checkout to 5.5.2
+* Update SDK to 27
+
 ## 2.11.0
 
 * Add support for Venmo profiles
