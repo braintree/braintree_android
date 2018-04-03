@@ -7,6 +7,7 @@ import android.os.Parcelable;
 
 import com.braintreepayments.api.R;
 import com.braintreepayments.api.exceptions.BraintreeException;
+import com.braintreepayments.api.internal.GraphQLConstants.Keys;
 import com.braintreepayments.api.internal.GraphQLQueryHelper;
 
 import org.json.JSONException;
@@ -22,8 +23,7 @@ public class CardBuilder extends BaseCardBuilder<CardBuilder> implements Parcela
     protected void buildGraphQL(Context context, JSONObject base, JSONObject input) throws BraintreeException,
             JSONException {
         try {
-            base.put(GraphQLQueryHelper.QUERY_KEY,
-                    GraphQLQueryHelper.getQuery(context, R.raw.tokenize_credit_card_mutation));
+            base.put(Keys.QUERY, GraphQLQueryHelper.getQuery(context, R.raw.tokenize_credit_card_mutation));
         } catch (Resources.NotFoundException | IOException e) {
             throw new BraintreeException("Unable to read GraphQL query", e);
         }

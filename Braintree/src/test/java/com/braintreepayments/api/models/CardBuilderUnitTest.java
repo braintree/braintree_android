@@ -8,6 +8,7 @@ import android.os.Parcel;
 import com.braintreepayments.api.R;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.internal.GraphQLConstants.Keys;
 import com.braintreepayments.api.internal.GraphQLQueryHelper;
 
 import org.json.JSONException;
@@ -234,17 +235,17 @@ public class CardBuilderUnitTest {
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(TOKENIZATION_KEY)));
-        JSONObject jsonCard = json.getJSONObject(GraphQLQueryHelper.VARIABLES_KEY)
-                .getJSONObject(GraphQLQueryHelper.INPUT_KEY)
+        JSONObject jsonCard = json.getJSONObject(Keys.VARIABLES)
+                .getJSONObject(Keys.INPUT)
                 .getJSONObject(BaseCardBuilder.CREDIT_CARD_KEY);
         JSONObject jsonBillingAddress = jsonCard.getJSONObject(BILLING_ADDRESS_KEY);
-        JSONObject jsonOptions = json.getJSONObject(GraphQLQueryHelper.VARIABLES_KEY)
-                .getJSONObject(GraphQLQueryHelper.INPUT_KEY)
+        JSONObject jsonOptions = json.getJSONObject(Keys.VARIABLES)
+                .getJSONObject(Keys.INPUT)
                 .getJSONObject(PaymentMethodBuilder.OPTIONS_KEY);
         JSONObject jsonMetadata = json.getJSONObject("clientSdkMetadata");
 
         assertEquals(GraphQLQueryHelper.getQuery(context, R.raw.tokenize_credit_card_mutation),
-                json.getString(GraphQLQueryHelper.QUERY_KEY));
+                json.getString(Keys.QUERY));
 
         assertEquals(VISA, jsonCard.getString("number"));
         assertEquals("01", jsonCard.getString("expirationMonth"));
@@ -280,8 +281,8 @@ public class CardBuilderUnitTest {
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(TOKENIZATION_KEY)));
-        JSONObject jsonCard = json.getJSONObject(GraphQLQueryHelper.VARIABLES_KEY)
-                .getJSONObject(GraphQLQueryHelper.INPUT_KEY)
+        JSONObject jsonCard = json.getJSONObject(Keys.VARIABLES)
+                .getJSONObject(Keys.INPUT)
                 .getJSONObject(BaseCardBuilder.CREDIT_CARD_KEY);
         JSONObject billingAddress = jsonCard.getJSONObject(BILLING_ADDRESS_KEY);
 
@@ -348,8 +349,8 @@ public class CardBuilderUnitTest {
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(TOKENIZATION_KEY)));
-        JSONObject jsonOptions = json.getJSONObject(GraphQLQueryHelper.VARIABLES_KEY)
-                .getJSONObject(GraphQLQueryHelper.INPUT_KEY)
+        JSONObject jsonOptions = json.getJSONObject(Keys.VARIABLES)
+                .getJSONObject(Keys.INPUT)
                 .getJSONObject(PaymentMethodBuilder.OPTIONS_KEY);
 
         assertTrue(jsonOptions.getBoolean("validate"));
@@ -361,8 +362,8 @@ public class CardBuilderUnitTest {
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(TOKENIZATION_KEY)));
-        JSONObject jsonOptions = json.getJSONObject(GraphQLQueryHelper.VARIABLES_KEY)
-                .getJSONObject(GraphQLQueryHelper.INPUT_KEY)
+        JSONObject jsonOptions = json.getJSONObject(Keys.VARIABLES)
+                .getJSONObject(Keys.INPUT)
                 .getJSONObject(PaymentMethodBuilder.OPTIONS_KEY);
 
         assertFalse(jsonOptions.getBoolean("validate"));
@@ -375,8 +376,8 @@ public class CardBuilderUnitTest {
         Context context = RuntimeEnvironment.application.getApplicationContext();
         JSONObject json = new JSONObject(
                 cardBuilder.buildGraphQL(context, Authorization.fromString(stringFromFixture("client_token.json"))));
-        JSONObject jsonOptions = json.getJSONObject(GraphQLQueryHelper.VARIABLES_KEY)
-                .getJSONObject(GraphQLQueryHelper.INPUT_KEY)
+        JSONObject jsonOptions = json.getJSONObject(Keys.VARIABLES)
+                .getJSONObject(Keys.INPUT)
                 .getJSONObject(PaymentMethodBuilder.OPTIONS_KEY);
 
         assertTrue(jsonOptions.getBoolean("validate"));
@@ -388,8 +389,8 @@ public class CardBuilderUnitTest {
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(TOKENIZATION_KEY)));
-        JSONObject jsonOptions = json.getJSONObject(GraphQLQueryHelper.VARIABLES_KEY)
-                .getJSONObject(GraphQLQueryHelper.INPUT_KEY)
+        JSONObject jsonOptions = json.getJSONObject(Keys.VARIABLES)
+                .getJSONObject(Keys.INPUT)
                 .getJSONObject(PaymentMethodBuilder.OPTIONS_KEY);
 
         assertFalse(jsonOptions.getBoolean("validate"));
@@ -429,8 +430,8 @@ public class CardBuilderUnitTest {
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
         JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(TOKENIZATION_KEY)));
-        JSONObject jsonCard = json.getJSONObject(GraphQLQueryHelper.VARIABLES_KEY)
-                .getJSONObject(GraphQLQueryHelper.INPUT_KEY)
+        JSONObject jsonCard = json.getJSONObject(Keys.VARIABLES)
+                .getJSONObject(Keys.INPUT)
                 .getJSONObject(BaseCardBuilder.CREDIT_CARD_KEY);
 
         assertFalse(jsonCard.keys().hasNext());

@@ -1,5 +1,7 @@
 package com.braintreepayments.api.models;
 
+import com.braintreepayments.api.internal.GraphQLConstants.Features;
+
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +20,7 @@ public class GraphQLConfigurationUnitTest {
         GraphQLConfiguration graphQLConfiguration = configuration.getGraphQL();
 
         assertTrue(graphQLConfiguration.isEnabled());
-        assertTrue(graphQLConfiguration.isFeatureEnabled(GraphQLConfiguration.TOKENIZE_CREDIT_CARDS_FEATURE));
+        assertTrue(graphQLConfiguration.isFeatureEnabled(Features.TOKENIZE_CREDIT_CARDS));
         assertEquals("/graphql", graphQLConfiguration.getUrl());
     }
 }

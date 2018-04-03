@@ -3,6 +3,7 @@ package com.braintreepayments.api.models;
 import android.text.TextUtils;
 
 import com.braintreepayments.api.Json;
+import com.braintreepayments.api.internal.GraphQLConstants.Keys;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,11 +15,6 @@ import java.util.Set;
  * Contains the remote GraphQL configuration for the Braintree SDK.
  */
 public class GraphQLConfiguration {
-
-    public static final String TOKENIZE_CREDIT_CARDS_FEATURE = "tokenize_credit_cards";
-
-    private final static String URL_KEY = "url";
-    private final static String FEATURES_KEY = "features";
 
     private String mUrl;
     private Set<String> mFeatures;
@@ -36,8 +32,8 @@ public class GraphQLConfiguration {
         }
 
         GraphQLConfiguration graphQLConfiguration = new GraphQLConfiguration();
-        graphQLConfiguration.mUrl = Json.optString(json, URL_KEY, "");
-        graphQLConfiguration.mFeatures = parseJsonFeatures(json.optJSONArray(FEATURES_KEY));
+        graphQLConfiguration.mUrl = Json.optString(json, Keys.URL, "");
+        graphQLConfiguration.mFeatures = parseJsonFeatures(json.optJSONArray(Keys.FEATURES));
 
         return graphQLConfiguration;
     }

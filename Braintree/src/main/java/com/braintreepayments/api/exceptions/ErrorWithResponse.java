@@ -4,7 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
-import com.braintreepayments.api.Json;
+import com.braintreepayments.api.internal.GraphQLConstants.ErrorMessages;
+import com.braintreepayments.api.internal.GraphQLConstants.Keys;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,13 +22,6 @@ import java.util.List;
  *  ErrorWithResponse parses the server's error response and exposes the errors.
  */
 public class ErrorWithResponse extends Exception implements Parcelable {
-
-    public static final String GRAPHQL_ERRORS_KEY = "errors";
-
-    private static final String GRAPHQL_ERROR_TYPE_KEY = "errorType";
-    private static final String GRAPHQL_USER_ERROR = "user_error";
-    private static final String GRAPHQL_UNKNOWN_ERROR_MESSAGE = "An unknown error occurred.";
-    private static final String GRAPHQL_USER_ERROR_MESSAGE = "Input is invalid.";
     private static final String ERROR_KEY = "error";
     private static final String MESSAGE_KEY = "message";
     private static final String FIELD_ERRORS_KEY = "fieldErrors";
@@ -65,14 +59,14 @@ public class ErrorWithResponse extends Exception implements Parcelable {
         errorWithResponse.mStatusCode = 422;
 
         try {
-            JSONArray errors = new JSONObject(json).getJSONArray(GRAPHQL_ERRORS_KEY);
+            JSONArray errors = new JSONObject(json).getJSONArray(Keys.ERRORS);
 
             errorWithResponse.mFieldErrors = BraintreeError.fromGraphQLJsonArray(errors);
 
             if (errorWithResponse.mFieldErrors.isEmpty()) {
-                errorWithResponse.mMessage = errors.getJSONObject(0).getString(MESSAGE_KEY);
+                errorWithResponse.mMessage = errors.getJSONObject(0).getString(Keys.MESSAGE);
             } else {
-                errorWithResponse.mMessage = GRAPHQL_USER_ERROR_MESSAGE;
+                errorWithResponse.mMessage = ErrorMessages.USER;
             }
         } catch (JSONException e) {
             errorWithResponse.mMessage = "Parsing error response failed";

@@ -5,6 +5,7 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
+import com.braintreepayments.api.internal.GraphQLConstants.Features;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.GraphQLConfiguration;
@@ -42,7 +43,7 @@ class TokenizationClient {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 if (paymentMethodBuilder instanceof CardBuilder &&
-                        configuration.getGraphQL().isFeatureEnabled(GraphQLConfiguration.TOKENIZE_CREDIT_CARDS_FEATURE)) {
+                        configuration.getGraphQL().isFeatureEnabled(Features.TOKENIZE_CREDIT_CARDS)) {
                     tokenizeGraphQL(fragment, (CardBuilder) paymentMethodBuilder, callback);
                 } else {
                     tokenizeRest(fragment, paymentMethodBuilder, callback);

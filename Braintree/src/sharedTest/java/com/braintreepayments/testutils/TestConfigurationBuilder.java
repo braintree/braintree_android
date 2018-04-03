@@ -1,5 +1,6 @@
 package com.braintreepayments.testutils;
 
+import com.braintreepayments.api.internal.GraphQLConstants.Features;
 import com.braintreepayments.api.models.GraphQLConfiguration;
 
 import org.json.JSONArray;
@@ -135,7 +136,7 @@ public class TestConfigurationBuilder extends JSONBuilder {
         try {
             JSONObject graphQLJson = new JSONObject();
             graphQLJson.put("url", "http://10.0.2.2:8080/graphql");
-            graphQLJson.put("features", new JSONArray().put(GraphQLConfiguration.TOKENIZE_CREDIT_CARDS_FEATURE));
+            graphQLJson.put("features", new JSONArray().put(Features.TOKENIZE_CREDIT_CARDS));
             put(graphQLJson);
         } catch (JSONException ignored) {}
         return this;
