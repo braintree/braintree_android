@@ -1,7 +1,6 @@
 package com.braintreepayments.testutils;
 
 import com.braintreepayments.api.internal.GraphQLConstants.Features;
-import com.braintreepayments.api.models.GraphQLConfiguration;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,6 +9,7 @@ import org.json.JSONObject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 
 public class TestConfigurationBuilder extends JSONBuilder {
 
@@ -156,6 +156,13 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return this;
     }
 
+    public TestConfigurationBuilder samsungPay(TestSamsungPayConfigurationBuilder samsungPayConfigurationBuilder) {
+        try {
+            put(new JSONObject(samsungPayConfigurationBuilder.build()));
+        } catch (JSONException ignored) {}
+        return this;
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T buildConfiguration() {
         try {
@@ -210,6 +217,13 @@ public class TestConfigurationBuilder extends JSONBuilder {
             return new TestGraphQLConfigurationBuilder(mJsonBody.getJSONObject("graphQL"));
         } catch (JSONException ignored) {}
         return new TestGraphQLConfigurationBuilder();
+    }
+
+    public TestSamsungPayConfigurationBuilder samsungPayConfigurationBuilder() {
+        try {
+            return new TestSamsungPayConfigurationBuilder(mJsonBody.getJSONObject("samsungPay"));
+        } catch (JSONException ignored) {}
+        return new TestSamsungPayConfigurationBuilder();
     }
 
     public static class TestVenmoConfigurationBuilder extends JSONBuilder {
@@ -444,6 +458,42 @@ public class TestConfigurationBuilder extends JSONBuilder {
 
         public TestIdealConfigurationBuilder assetsUrl(String assetsUrl) {
             put(assetsUrl);
+            return this;
+        }
+    }
+
+    public static class TestSamsungPayConfigurationBuilder extends JSONBuilder {
+
+        public TestSamsungPayConfigurationBuilder() {
+            super();
+        }
+
+        protected TestSamsungPayConfigurationBuilder(JSONObject json) {
+            super(json);
+        }
+
+        public TestSamsungPayConfigurationBuilder merchantDisplayName(String displayName) {
+            put(displayName);
+            return this;
+        }
+
+        public TestSamsungPayConfigurationBuilder serviceId(String serviceId) {
+            put(serviceId);
+            return this;
+        }
+
+        public TestSamsungPayConfigurationBuilder supportedCardBrands(List<String> supportedCardBrands) {
+            JSONArray jsonBrands = new JSONArray();
+            for (String feature : supportedCardBrands) {
+                jsonBrands.put(feature);
+            }
+
+            put(jsonBrands);
+            return this;
+        }
+
+        public TestSamsungPayConfigurationBuilder samsungAuthorization(String authorization) {
+            put(authorization);
             return this;
         }
     }
