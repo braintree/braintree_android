@@ -237,6 +237,15 @@ public class ConfigurationUnitTest {
     }
 
     @Test
+    public void returnsSamsungPayConfiguration_whenSamsungPayConfigurationIsPresent() throws JSONException {
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration/with_samsungpay.json"));
+
+        assertNotNull(configuration.getSamsungPay());
+        assertEquals("some-service-id", configuration.getSamsungPay().getServiceId());
+    }
+
+    @Test
     public void returnsNewGraphQLConfigurationWhenGraphQLConfigurationIsAbsent() throws JSONException {
         Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
 

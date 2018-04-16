@@ -1,5 +1,6 @@
 package com.braintreepayments.api.models;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.braintreepayments.api.Json;
@@ -35,6 +36,7 @@ public class Configuration {
     private static final String VISA_CHECKOUT_KEY = "visaCheckout";
     private static final String IDEAL_KEY = "ideal";
     private static final String GRAPHQL_KEY = "graphQL";
+    private static final String SAMSUNG_PAY_KEY = "samsungPay";
 
     private String mAssetsUrl;
     private String mConfigurationString;
@@ -56,6 +58,7 @@ public class Configuration {
     private UnionPayConfiguration mUnionPayConfiguration;
     private VisaCheckoutConfiguration mVisaCheckoutConfiguration;
     private GraphQLConfiguration mGraphQLConfiguration;
+    private SamsungPayConfiguration mSamsungPayConfiguration;
 
     /**
      * Creates a new {@link com.braintreepayments.api.models.Configuration} instance from a json string.
@@ -94,6 +97,7 @@ public class Configuration {
         mVisaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(json.optJSONObject(VISA_CHECKOUT_KEY));
         mIdealConfiguration = IdealConfiguration.fromJson(json.optJSONObject(IDEAL_KEY));
         mGraphQLConfiguration = GraphQLConfiguration.fromJson(json.optJSONObject(GRAPHQL_KEY));
+        mSamsungPayConfiguration = SamsungPayConfiguration.fromJson(json.optJSONObject(SAMSUNG_PAY_KEY));
     }
 
     public String toJson() {
@@ -240,6 +244,14 @@ public class Configuration {
      */
     public GraphQLConfiguration getGraphQL() {
         return mGraphQLConfiguration;
+    }
+
+    /**
+     * @return instance of {@link SamsungPayConfiguration}.
+     */
+    @NonNull
+    public SamsungPayConfiguration getSamsungPay() {
+        return mSamsungPayConfiguration;
     }
 
     private void parseJsonChallenges(JSONArray jsonArray) {
