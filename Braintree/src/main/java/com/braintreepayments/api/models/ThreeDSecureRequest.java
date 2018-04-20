@@ -3,13 +3,27 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * A class to contain 3D Secure request information used for authentication
  */
 public class ThreeDSecureRequest implements Parcelable {
 
+    protected static final String AMOUNT_KEY = "amount";
+    protected static final String CUSTOMER_KEY = "customer";
+    protected static final String BILLING_ADDRESS_KEY = "billingAddress";
+    protected static final String MOBILE_PHONE_NUMBER_KEY = "mobilePhoneNumber";
+    protected static final String EMAIL_KEY = "email";
+    protected static final String SHIPPING_METHOD_KEY = "shippingMethod";
+
     private String mNonce;
     private String mAmount;
+    private String mMobilePhoneNumber;
+    private String mEmail;
+    private String mShippingMethod;
+    private ThreeDSecurePostalAddress mBillingAddress;
 
     /**
      * Set the nonce
@@ -32,6 +46,53 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
+     * Optional. Set the mobilePhoneNumber
+     *
+     * @param mobilePhoneNumber The mobile phone number used for verification. Only numbers. Remove dashes, parentheses and other characters.
+     * */
+    public ThreeDSecureRequest mobilePhoneNumber(String mobilePhoneNumber) {
+        mMobilePhoneNumber = mobilePhoneNumber;
+        return this;
+    }
+
+    /**
+     * Optional. Set the email
+     *
+     * @param email The email used for verification.
+     * */
+    public ThreeDSecureRequest email(String email) {
+        mEmail = email;
+        return this;
+    }
+
+    /**
+     * Optional. Set the shippingMethod
+     * Possible Values:
+     * 01 Same Day
+     * 02 Overnight / Expedited
+     * 03 Priority (2-3 Days)
+     * 04 Ground
+     * 05 Electronic Delivery
+     * 06 Ship to Store
+     *
+     * @param shippingMethod The 2-digit string indicating the shipping method chosen for the transaction.
+     * */
+    public ThreeDSecureRequest shippingMethod(String shippingMethod) {
+        mShippingMethod = shippingMethod;
+        return this;
+    }
+
+    /**
+     * Optional. Set the billingAddress
+     *
+     * @param billingAddress The billing address used for verification.
+     * */
+    public ThreeDSecureRequest billingAddress(ThreeDSecurePostalAddress billingAddress) {
+        mBillingAddress = billingAddress;
+        return this;
+    }
+
+    /**
      * @return The nonce to use for 3D Secure verification
      */
     public String getNonce() {
@@ -45,6 +106,34 @@ public class ThreeDSecureRequest implements Parcelable {
         return mAmount;
     }
 
+    /**
+     * @return The mobile phone number to use for 3D Secure verification
+     */
+    public String getMobilePhoneNumber() {
+        return mMobilePhoneNumber;
+    }
+
+    /**
+     * @return The email to use for 3D Secure verification
+     */
+    public String getEmail() {
+        return mEmail;
+    }
+
+    /**
+     * @return The shipping method to use for 3D Secure verification
+     */
+    public String getShippingMethod() {
+        return mShippingMethod;
+    }
+
+    /**
+     * @return The billing address to use for 3D Secure verification
+     */
+    public ThreeDSecurePostalAddress getBillingAddress() {
+        return mBillingAddress;
+    }
+
     public ThreeDSecureRequest() {}
 
     @Override
@@ -56,11 +145,19 @@ public class ThreeDSecureRequest implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mNonce);
         dest.writeString(mAmount);
+        dest.writeString(mMobilePhoneNumber);
+        dest.writeString(mEmail);
+        dest.writeString(mShippingMethod);
+        dest.writeParcelable(mBillingAddress, flags);
     }
 
     public ThreeDSecureRequest(Parcel in) {
         mNonce = in.readString();
         mAmount = in.readString();
+        mMobilePhoneNumber = in.readString();
+        mEmail = in.readString();
+        mShippingMethod = in.readString();
+        mBillingAddress = in.readParcelable(VisaCheckoutAddress.class.getClassLoader());
     }
 
     public static final Creator<ThreeDSecureRequest> CREATOR = new Creator<ThreeDSecureRequest>() {
@@ -72,4 +169,38 @@ public class ThreeDSecureRequest implements Parcelable {
             return new ThreeDSecureRequest[size];
         }
     };
+
+    /**
+     * @return String representation of {@link ThreeDSecureRequest} for API use.
+     */
+    public String build() {
+        JSONObject base = new JSONObject();
+        JSONObject customer = new JSONObject();
+
+        try {
+            base.put(AMOUNT_KEY, mAmount);
+
+            customer.putOpt(MOBILE_PHONE_NUMBER_KEY, mMobilePhoneNumber);
+            customer.putOpt(EMAIL_KEY, mEmail);
+            customer.putOpt(SHIPPING_METHOD_KEY, mShippingMethod);
+
+            if (mBillingAddress != null) {
+                JSONObject billingAddress = new JSONObject();
+                billingAddress.putOpt(ThreeDSecurePostalAddress.FIRST_NAME_KEY, mBillingAddress.getFirstName());
+                billingAddress.putOpt(ThreeDSecurePostalAddress.LAST_NAME_KEY, mBillingAddress.getLastName());
+                billingAddress.putOpt(ThreeDSecurePostalAddress.STREET_ADDRESS_KEY, mBillingAddress.getStreetAddress());
+                billingAddress.putOpt(ThreeDSecurePostalAddress.EXTENDED_ADDRESS_KEY, mBillingAddress.getExtendedAddress());
+                billingAddress.putOpt(ThreeDSecurePostalAddress.LOCALITY_KEY, mBillingAddress.getLocality());
+                billingAddress.putOpt(ThreeDSecurePostalAddress.REGION_KEY, mBillingAddress.getRegion());
+                billingAddress.putOpt(ThreeDSecurePostalAddress.POSTAL_CODE_KEY, mBillingAddress.getPostalCode());
+                billingAddress.putOpt(ThreeDSecurePostalAddress.COUNTRY_CODE_ALPHA_2_KEY, mBillingAddress.getCountryCodeAlpha2());
+                billingAddress.putOpt(ThreeDSecurePostalAddress.PHONE_NUMBER_KEY, mBillingAddress.getPhoneNumber());
+                customer.put(BILLING_ADDRESS_KEY, billingAddress);
+            }
+
+            base.put(CUSTOMER_KEY, customer);
+        } catch (JSONException ignored) {}
+
+        return base.toString();
+    }
 }
