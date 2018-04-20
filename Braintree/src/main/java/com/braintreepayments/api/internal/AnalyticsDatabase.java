@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 
@@ -73,6 +74,7 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
                 try {
                     db = getWritableDatabase();
                     db.insert(TABLE_NAME, null, values);
+                } catch (SQLiteException ignored) {
                 } finally {
                     if (db != null) {
                         db.close();
@@ -106,6 +108,7 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
                 try {
                     db = getWritableDatabase();
                     db.delete(TABLE_NAME, where.toString(), whereArgs);
+                } catch (SQLiteException ignored) {
                 } finally {
                     if (db != null) {
                         db.close();
@@ -118,40 +121,47 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
     }
 
     public List<List<AnalyticsEvent>> getPendingRequests() {
-        SQLiteDatabase db = getReadableDatabase();
-
-        String[] columns = {"group_concat(" + ID + ")", "group_concat(" + EVENT + ")", "group_concat(" + TIMESTAMP + ")",
-                META_JSON};
-        Cursor cursor = db.query(false, TABLE_NAME, columns, null, null, META_JSON, null, "_id asc", null);
-
+        SQLiteDatabase db = null;
         List<List<AnalyticsEvent>> analyticsRequests = new ArrayList<>();
 
-        List<AnalyticsEvent> innerList;
-        String[] ids;
-        String[] events;
-        String[] timestamps;
-        AnalyticsEvent request;
-        while (cursor.moveToNext()) {
-            innerList = new ArrayList<>();
-            ids = cursor.getString(0).split(",");
-            events = cursor.getString(1).split(",");
-            timestamps = cursor.getString(2).split(",");
-            for (int i = 0; i < events.length; i++) {
-                try {
-                    request = new AnalyticsEvent();
-                    request.id = Integer.valueOf(ids[i]);
-                    request.event = events[i];
-                    request.timestamp = Long.valueOf(timestamps[i]);
-                    request.metadata = new JSONObject(cursor.getString(cursor.getColumnIndex(META_JSON)));
-                    innerList.add(request);
-                } catch (JSONException ignored) {}
+        try {
+            db = getReadableDatabase();
+
+            String[] columns = {"group_concat(" + ID + ")", "group_concat(" + EVENT + ")", "group_concat(" + TIMESTAMP + ")",
+                    META_JSON};
+            Cursor cursor = db.query(false, TABLE_NAME, columns, null, null, META_JSON, null, "_id asc", null);
+
+            List<AnalyticsEvent> innerList;
+            String[] ids;
+            String[] events;
+            String[] timestamps;
+            AnalyticsEvent request;
+            while (cursor.moveToNext()) {
+                innerList = new ArrayList<>();
+                ids = cursor.getString(0).split(",");
+                events = cursor.getString(1).split(",");
+                timestamps = cursor.getString(2).split(",");
+                for (int i = 0; i < events.length; i++) {
+                    try {
+                        request = new AnalyticsEvent();
+                        request.id = Integer.valueOf(ids[i]);
+                        request.event = events[i];
+                        request.timestamp = Long.valueOf(timestamps[i]);
+                        request.metadata = new JSONObject(cursor.getString(cursor.getColumnIndex(META_JSON)));
+                        innerList.add(request);
+                    } catch (JSONException ignored) {}
+                }
+
+                analyticsRequests.add(innerList);
             }
 
-            analyticsRequests.add(innerList);
+            cursor.close();
+        } catch (SQLiteException ignored) {
+        } finally {
+            if (db != null) {
+                db.close();
+            }
         }
-
-        cursor.close();
-        db.close();
 
         return analyticsRequests;
     }

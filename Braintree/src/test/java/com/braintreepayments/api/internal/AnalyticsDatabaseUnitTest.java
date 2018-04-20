@@ -1,6 +1,10 @@
 package com.braintreepayments.api.internal;
 
+import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteCantOpenDatabaseException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
 
 import org.junit.After;
 import org.junit.Before;
@@ -10,6 +14,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.awaitTasksFinished;
@@ -133,5 +138,59 @@ public class AnalyticsDatabaseUnitTest {
         assertEquals(request4.event, analyticsRequests.get(1).get(1).event);
         assertEquals(request4.metadata.getString("sessionId"),
                 analyticsRequests.get(1).get(1).metadata.getString("sessionId"));
+    }
+
+    @Test
+    public void addEvent_catchesSQLiteCantOpenDatabaseException() throws Exception {
+        AnalyticsDatabase db = AnalyticsWithOpenExceptionsDatabase.getInstance(RuntimeEnvironment.application);
+        AnalyticsEvent request = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
+                "custom", "started.client-token");
+
+        db.addEvent(request);
+
+        awaitTasksFinished(db);
+    }
+
+    @Test
+    public void removeEvent_catchesSQLiteCantOpenDatabaseException() throws Exception {
+        AnalyticsDatabase db = AnalyticsWithOpenExceptionsDatabase.getInstance(RuntimeEnvironment.application);
+        AnalyticsEvent request = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
+                "custom", "started.client-token");
+
+        db.removeEvents(Collections.singletonList(request));
+
+        awaitTasksFinished(db);
+    }
+
+    @Test
+    public void getPendingRequests_catchesSQLiteCantOpenDatabaseException() throws Exception {
+        AnalyticsDatabase db = AnalyticsWithOpenExceptionsDatabase.getInstance(RuntimeEnvironment.application);
+        AnalyticsEvent request = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
+                "custom", "started.client-token");
+
+        assertEquals(Collections.emptyList(), db.getPendingRequests());
+
+        awaitTasksFinished(db);
+    }
+
+    private static class AnalyticsWithOpenExceptionsDatabase extends AnalyticsDatabase {
+        public AnalyticsWithOpenExceptionsDatabase(Context context, String name,
+                CursorFactory factory, int version) {
+            super(context, name, factory, version);
+        }
+
+        public static AnalyticsWithOpenExceptionsDatabase getInstance(Context context) {
+            return new AnalyticsWithOpenExceptionsDatabase(context, "braintree-analytics.db", null, 1);
+        }
+
+        @Override
+        public SQLiteDatabase getReadableDatabase() {
+            throw new SQLiteCantOpenDatabaseException();
+        }
+
+        @Override
+        public SQLiteDatabase getWritableDatabase() {
+            throw new SQLiteCantOpenDatabaseException();
+        }
     }
 }
