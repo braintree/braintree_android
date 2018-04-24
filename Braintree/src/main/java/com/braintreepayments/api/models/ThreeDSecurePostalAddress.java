@@ -3,20 +3,23 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * A class containing 3DS information about a postal address
  */
 public class ThreeDSecurePostalAddress implements Parcelable {
 
-    public static final String FIRST_NAME_KEY = "firstName";
-    public static final String LAST_NAME_KEY = "lastName";
-    public static final String STREET_ADDRESS_KEY = "line1";
-    public static final String EXTENDED_ADDRESS_KEY = "line2";
-    public static final String LOCALITY_KEY = "city";
-    public static final String REGION_KEY = "state";
-    public static final String POSTAL_CODE_KEY = "postalCode";
-    public static final String COUNTRY_CODE_ALPHA_2_KEY = "countryCode";
-    public static final String PHONE_NUMBER_KEY = "phoneNumber";
+    protected static final String FIRST_NAME_KEY = "firstName";
+    protected static final String LAST_NAME_KEY = "lastName";
+    protected static final String STREET_ADDRESS_KEY = "line1";
+    protected static final String EXTENDED_ADDRESS_KEY = "line2";
+    protected static final String LOCALITY_KEY = "city";
+    protected static final String REGION_KEY = "state";
+    protected static final String POSTAL_CODE_KEY = "postalCode";
+    protected static final String COUNTRY_CODE_ALPHA_2_KEY = "countryCode";
+    protected static final String PHONE_NUMBER_KEY = "phoneNumber";
 
     private String mFirstName;
     private String mLastName;
@@ -92,7 +95,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
 
     /**
      * Optional. Set the postalCode
-     * For list of countries that do not have postal codes please refer to http://en.wikipedia.org/wiki/Postal_code
+     * For a list of countries that do not have postal codes please refer to http://en.wikipedia.org/wiki/Postal_code
      *
      * @param postalCode Zip code or equivalent is usually required for countries that have them.
      * */
@@ -225,4 +228,25 @@ public class ThreeDSecurePostalAddress implements Parcelable {
             return new ThreeDSecurePostalAddress[size];
         }
     };
+
+    /**
+     * @return String representation of {@link ThreeDSecurePostalAddress} for API use.
+     */
+    public String build() {
+        JSONObject base = new JSONObject();
+
+        try {
+            base.putOpt(ThreeDSecurePostalAddress.FIRST_NAME_KEY, mFirstName);
+            base.putOpt(ThreeDSecurePostalAddress.LAST_NAME_KEY, mLastName);
+            base.putOpt(ThreeDSecurePostalAddress.STREET_ADDRESS_KEY, mStreetAddress);
+            base.putOpt(ThreeDSecurePostalAddress.EXTENDED_ADDRESS_KEY, mExtendedAddress);
+            base.putOpt(ThreeDSecurePostalAddress.LOCALITY_KEY, mLocality);
+            base.putOpt(ThreeDSecurePostalAddress.REGION_KEY, mRegion);
+            base.putOpt(ThreeDSecurePostalAddress.POSTAL_CODE_KEY, mPostalCode);
+            base.putOpt(ThreeDSecurePostalAddress.COUNTRY_CODE_ALPHA_2_KEY, mCountryCodeAlpha2);
+            base.putOpt(ThreeDSecurePostalAddress.PHONE_NUMBER_KEY, mPhoneNumber);
+        } catch (JSONException ignored) {}
+
+        return base.toString();
+    }
 }

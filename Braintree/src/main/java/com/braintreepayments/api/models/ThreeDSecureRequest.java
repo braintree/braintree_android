@@ -157,7 +157,7 @@ public class ThreeDSecureRequest implements Parcelable {
         mMobilePhoneNumber = in.readString();
         mEmail = in.readString();
         mShippingMethod = in.readString();
-        mBillingAddress = in.readParcelable(VisaCheckoutAddress.class.getClassLoader());
+        mBillingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
     }
 
     public static final Creator<ThreeDSecureRequest> CREATOR = new Creator<ThreeDSecureRequest>() {
@@ -185,17 +185,7 @@ public class ThreeDSecureRequest implements Parcelable {
             customer.putOpt(SHIPPING_METHOD_KEY, mShippingMethod);
 
             if (mBillingAddress != null) {
-                JSONObject billingAddress = new JSONObject();
-                billingAddress.putOpt(ThreeDSecurePostalAddress.FIRST_NAME_KEY, mBillingAddress.getFirstName());
-                billingAddress.putOpt(ThreeDSecurePostalAddress.LAST_NAME_KEY, mBillingAddress.getLastName());
-                billingAddress.putOpt(ThreeDSecurePostalAddress.STREET_ADDRESS_KEY, mBillingAddress.getStreetAddress());
-                billingAddress.putOpt(ThreeDSecurePostalAddress.EXTENDED_ADDRESS_KEY, mBillingAddress.getExtendedAddress());
-                billingAddress.putOpt(ThreeDSecurePostalAddress.LOCALITY_KEY, mBillingAddress.getLocality());
-                billingAddress.putOpt(ThreeDSecurePostalAddress.REGION_KEY, mBillingAddress.getRegion());
-                billingAddress.putOpt(ThreeDSecurePostalAddress.POSTAL_CODE_KEY, mBillingAddress.getPostalCode());
-                billingAddress.putOpt(ThreeDSecurePostalAddress.COUNTRY_CODE_ALPHA_2_KEY, mBillingAddress.getCountryCodeAlpha2());
-                billingAddress.putOpt(ThreeDSecurePostalAddress.PHONE_NUMBER_KEY, mBillingAddress.getPhoneNumber());
-                customer.put(BILLING_ADDRESS_KEY, billingAddress);
+                customer.put(BILLING_ADDRESS_KEY, new JSONObject(mBillingAddress.build()));
             }
 
             base.put(CUSTOMER_KEY, customer);

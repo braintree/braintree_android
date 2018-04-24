@@ -40,7 +40,9 @@ public class ThreeDSecureUnitTest {
 
     @Rule
     public PowerMockRule mPowerMockRule = new PowerMockRule();
+
     private MockFragmentBuilder mMockFragmentBuilder;
+    private BraintreeFragment mFragment;
 
     @Before
     public void setup() throws Exception {
@@ -54,19 +56,18 @@ public class ThreeDSecureUnitTest {
         mMockFragmentBuilder = new MockFragmentBuilder()
                 .authorization(Authorization.fromString(stringFromFixture("base_64_client_token.txt")))
                 .configuration(configuration);
-    }
+        mFragment = mMockFragmentBuilder.build();
 
-    @Test
-    public void performVerification_sendsAllParamatersInLookupRequest() throws InterruptedException, JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        fragment.addListener(new BraintreeErrorListener() {
+        mFragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
                 fail(error.getMessage());
             }
         });
+    }
 
+    @Test
+    public void performVerification_sendsAllParamatersInLookupRequest() throws InterruptedException, JSONException {
         ThreeDSecureRequest request = new ThreeDSecureRequest()
                 .nonce("a-nonce")
                 .amount("1.00")
@@ -84,10 +85,10 @@ public class ThreeDSecureUnitTest {
                         .countryCodeAlpha2("US")
                         .phoneNumber("12345678"));
 
-        ThreeDSecure.performVerification(fragment, request);
+        ThreeDSecure.performVerification(mFragment, request);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));
+        verify(mFragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));
 
         JSONObject body = new JSONObject(captor.getValue());
 
@@ -114,23 +115,14 @@ public class ThreeDSecureUnitTest {
 
     @Test
     public void performVerification_sendsMinimumParamatersInLookupRequest() throws InterruptedException, JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        fragment.addListener(new BraintreeErrorListener() {
-            @Override
-            public void onError(Exception error) {
-                fail(error.getMessage());
-            }
-        });
-
         ThreeDSecureRequest request = new ThreeDSecureRequest()
                 .nonce("a-nonce")
                 .amount("1.00");
 
-        ThreeDSecure.performVerification(fragment, request);
+        ThreeDSecure.performVerification(mFragment, request);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));
+        verify(mFragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));
 
         JSONObject body = new JSONObject(captor.getValue());
 
@@ -146,15 +138,6 @@ public class ThreeDSecureUnitTest {
 
     @Test
     public void performVerification_sendsPartialParamatersInLookupRequest() throws InterruptedException, JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        fragment.addListener(new BraintreeErrorListener() {
-            @Override
-            public void onError(Exception error) {
-                fail(error.getMessage());
-            }
-        });
-
         ThreeDSecureRequest request = new ThreeDSecureRequest()
                 .nonce("a-nonce")
                 .amount("1.00")
@@ -168,10 +151,10 @@ public class ThreeDSecureUnitTest {
                         .postalCode("12345")
                         .countryCodeAlpha2("US"));
 
-        ThreeDSecure.performVerification(fragment, request);
+        ThreeDSecure.performVerification(mFragment, request);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));
+        verify(mFragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));
 
         JSONObject body = new JSONObject(captor.getValue());
 
@@ -193,6 +176,6 @@ public class ThreeDSecureUnitTest {
         assertEquals("CA", billingAddress.getString("state"));
         assertEquals("12345", billingAddress.getString("postalCode"));
         assertEquals("US", billingAddress.getString("countryCode"));
-        assertTrue( billingAddress.isNull("phoneNumber"));
+        assertTrue(billingAddress.isNull("phoneNumber"));
     }
 }
