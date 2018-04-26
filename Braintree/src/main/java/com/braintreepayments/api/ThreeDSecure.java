@@ -136,40 +136,32 @@ public class ThreeDSecure {
                     return;
                 }
 
-                try {
-                    JSONObject params = new JSONObject()
-                            .put("merchantAccountId", configuration.getMerchantAccountId())
-                            .put("amount", request.getAmount());
-
-                    fragment.getHttpClient().post(TokenizationClient.versionedPath(
-                            TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() +
-                                    "/three_d_secure/lookup"), params.toString(), new HttpResponseCallback() {
-                        @Override
-                        public void success(String responseBody) {
-                            try {
-                                ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(responseBody);
-                                if (threeDSecureLookup.getAcsUrl() != null) {
-                                    if (supportsBrowserSwitch) {
-                                        launchBrowserSwitch(fragment, threeDSecureLookup);
-                                    } else {
-                                        launchWebView(fragment, threeDSecureLookup);
-                                    }
+                fragment.getHttpClient().post(TokenizationClient.versionedPath(
+                        TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() +
+                                "/three_d_secure/lookup"), request.build(), new HttpResponseCallback() {
+                    @Override
+                    public void success(String responseBody) {
+                        try {
+                            ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(responseBody);
+                            if (threeDSecureLookup.getAcsUrl() != null) {
+                                if (supportsBrowserSwitch) {
+                                    launchBrowserSwitch(fragment, threeDSecureLookup);
                                 } else {
-                                    fragment.postCallback(threeDSecureLookup.getCardNonce());
+                                    launchWebView(fragment, threeDSecureLookup);
                                 }
-                            } catch (JSONException e) {
-                                fragment.postCallback(e);
+                            } else {
+                                fragment.postCallback(threeDSecureLookup.getCardNonce());
                             }
+                        } catch (JSONException e) {
+                            fragment.postCallback(e);
                         }
+                    }
 
-                        @Override
-                        public void failure(Exception exception) {
-                            fragment.postCallback(exception);
-                        }
-                    });
-                } catch (JSONException e) {
-                    fragment.postCallback(e);
-                }
+                    @Override
+                    public void failure(Exception exception) {
+                        fragment.postCallback(exception);
+                    }
+                });
             }
         });
     }
