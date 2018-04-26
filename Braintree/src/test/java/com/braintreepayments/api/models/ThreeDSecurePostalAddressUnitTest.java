@@ -71,7 +71,7 @@ public class ThreeDSecurePostalAddressUnitTest {
     }
 
     @Test
-    public void buildsAllParameters() throws JSONException{
+    public void testToJson_buildsAllParameters() throws JSONException{
         ThreeDSecurePostalAddress address = new ThreeDSecurePostalAddress()
                 .streetAddress("123 Fake St.")
                 .extendedAddress("Apt. 3")
@@ -83,7 +83,7 @@ public class ThreeDSecurePostalAddressUnitTest {
                 .lastName("Fakerson")
                 .phoneNumber("5151231234");
 
-        JSONObject jsonParams = new JSONObject(address.build());
+        JSONObject jsonParams = address.toJson();
 
         assertEquals("123 Fake St.", jsonParams.get("line1"));
         assertEquals("Apt. 3", jsonParams.get("line2"));
@@ -97,7 +97,7 @@ public class ThreeDSecurePostalAddressUnitTest {
     }
 
     @Test
-    public void buildsPartialParameters() throws JSONException{
+    public void testToJson_buildsPartialParameters() throws JSONException{
         ThreeDSecurePostalAddress address = new ThreeDSecurePostalAddress()
                 .streetAddress("123 Fake St.")
                 .extendedAddress("Apt. 3")
@@ -107,7 +107,7 @@ public class ThreeDSecurePostalAddressUnitTest {
                 .firstName("John")
                 .lastName("Fakerson");
 
-        JSONObject jsonParams = new JSONObject(address.build());
+        JSONObject jsonParams = address.toJson();
 
         assertEquals("123 Fake St.", jsonParams.get("line1"));
         assertEquals("Apt. 3", jsonParams.get("line2"));
@@ -121,10 +121,10 @@ public class ThreeDSecurePostalAddressUnitTest {
     }
 
     @Test
-    public void buildsEmptyParameters() throws JSONException{
+    public void testToJson_buildsEmptyParameters() throws JSONException{
         ThreeDSecurePostalAddress address = new ThreeDSecurePostalAddress();
 
-        JSONObject jsonParams = new JSONObject(address.build());
+        JSONObject jsonParams = address.toJson();
 
         assertTrue(jsonParams.isNull("line1"));
         assertTrue(jsonParams.isNull("line2"));

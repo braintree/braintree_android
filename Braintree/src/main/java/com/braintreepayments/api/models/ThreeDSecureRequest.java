@@ -185,7 +185,7 @@ public class ThreeDSecureRequest implements Parcelable {
             customer.putOpt(SHIPPING_METHOD_KEY, mShippingMethod);
 
             if (mBillingAddress != null) {
-                customer.put(BILLING_ADDRESS_KEY, new JSONObject(mBillingAddress.build()));
+                customer.put(BILLING_ADDRESS_KEY, mBillingAddress.toJson());
             }
 
             base.put(CUSTOMER_KEY, customer);

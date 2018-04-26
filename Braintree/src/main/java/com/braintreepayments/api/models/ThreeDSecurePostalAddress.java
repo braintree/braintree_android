@@ -230,9 +230,9 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     };
 
     /**
-     * @return String representation of {@link ThreeDSecurePostalAddress} for API use.
+     * @return JSONObject representation of {@link ThreeDSecurePostalAddress}.
      */
-    public String build() {
+    public JSONObject toJson() {
         JSONObject base = new JSONObject();
 
         try {
@@ -247,6 +247,6 @@ public class ThreeDSecurePostalAddress implements Parcelable {
             base.putOpt(ThreeDSecurePostalAddress.PHONE_NUMBER_KEY, mPhoneNumber);
         } catch (JSONException ignored) {}
 
-        return base.toString();
+        return base;
     }
 }
