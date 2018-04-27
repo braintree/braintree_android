@@ -14,7 +14,7 @@
 
         <TableRow android:layout_width="match_parent" android:layout_height="match_parent">
             <Button
-                style="?android:attr/borderlessButtonStyle"
+                style="?android:attr/buttonStyle"
                 android:id="@+id/drop_in"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
                 android:textSize="12sp"
                 android:layout_weight="1" />
             <Button
-                style="?android:attr/borderlessButtonStyle"
+                style="?android:attr/buttonStyle"
                 android:id="@+id/card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -36,7 +36,7 @@
         </TableRow>
         <TableRow android:layout_width="match_parent" android:layout_height="match_parent">
             <Button
-                style="?android:attr/borderlessButtonStyle"
+                style="?android:attr/buttonStyle"
                 android:id="@+id/google_payment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -46,7 +46,7 @@
                 android:textSize="12sp"
                 android:layout_weight="1" />
             <Button
-                style="?android:attr/borderlessButtonStyle"
+                style="?android:attr/buttonStyle"
                 android:id="@+id/android_pay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
         </TableRow>
         <TableRow android:layout_width="match_parent" android:layout_height="match_parent">
             <Button
-                style="?android:attr/borderlessButtonStyle"
+                style="?android:attr/buttonStyle"
                 android:id="@+id/venmo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
                 android:textSize="12sp"
                 android:layout_weight="1" />
             <Button
-                style="?android:attr/borderlessButtonStyle"
+                style="?android:attr/buttonStyle"
                 android:id="@+id/paypal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
         </TableRow>
         <TableRow android:layout_width="match_parent" android:layout_height="match_parent">
             <Button
-                style="?android:attr/borderlessButtonStyle"
+                style="?android:attr/buttonStyle"
                 android:id="@+id/ideal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
                 android:textSize="12sp"
                 android:layout_weight="1" />
             <Button
-                style="?android:attr/borderlessButtonStyle"
+                style="?android:attr/buttonStyle"
                 android:id="@+id/visa_checkout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -104,7 +104,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <Button
-                style="?android:attr/borderlessButtonStyle"
+                style="?android:attr/buttonStyle"
                 android:id="@+id/create_transaction"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
