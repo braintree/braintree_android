@@ -13,7 +13,7 @@
         android:padding="10dp"
         android:layout_gravity="center"
         android:src="@drawable/logo_android_pay"
-        android:background="@color/white"
+        android:background="@android:color/white"
         android:contentDescription="@string/bt_descriptor_android_pay"
         android:visibility="gone"
         android:onClick="launchAndroidPay" />
