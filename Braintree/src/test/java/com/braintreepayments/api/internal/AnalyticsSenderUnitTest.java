@@ -88,7 +88,6 @@ public class AnalyticsSenderUnitTest {
         assertEquals("ApplicationNameUnknown", meta.getString("merchantAppName"));
         assertEquals(Build.MANUFACTURER, meta.getString("deviceManufacturer"));
         assertEquals(Build.MODEL, meta.getString("deviceModel"));
-        assertEquals("AndroidIdUnknown", meta.getString("androidId"));
         assertEquals(UUIDHelper.getPersistentUUID(RuntimeEnvironment.application),
                 meta.getString("deviceAppGeneratedPersistentUuid"));
         assertEquals("false", meta.getString("isSimulator"));

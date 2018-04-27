@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="text_input_layout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:accessibilityLiveRegion" tools:targetApi="kitkat">polite</item>
+    </style>
+    <style name="card_form_field" parent="bt_base_textview">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:textColorHint">#6D6D6D</item>
+        <item name="android:textCursorDrawable" tools:ignore="NewApi">@null</item>
+    </style>
+</resources>

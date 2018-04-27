@@ -6,7 +6,7 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:paddingTop="40dp">
 
         <com.braintreepayments.cardform.view.CardForm
@@ -28,7 +28,7 @@
             android:onClick="sendSms" />
 
         <android.support.design.widget.TextInputLayout
-            style="@style/bt_text_input_layout"
+            style="@style/text_input_layout"
             android:id="@+id/sms_code_container"
             android:layout_marginTop="20dp"
             android:layout_marginLeft="16dp"
@@ -37,9 +37,8 @@
             android:visibility="gone">
 
             <com.braintreepayments.cardform.view.ErrorEditText
-                style="@style/bt_card_form_field"
+                style="@style/card_form_field"
                 android:id="@+id/sms_code"
-                android:hint="@string/sms_auth_code"
                 android:contentDescription="@string/sms_auth_code"/>
 
         </android.support.design.widget.TextInputLayout>

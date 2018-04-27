@@ -1,5 +1,6 @@
 package com.braintreepayments.api.internal;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -94,7 +95,6 @@ public class AnalyticsSender {
                 .put(DEVICE_ROOTED_KEY, isDeviceRooted())
                 .put(DEVICE_MANUFACTURER_KEY, Build.MANUFACTURER)
                 .put(DEVICE_MODEL_KEY, Build.MODEL)
-                .put(ANDROID_ID_KEY, getAndroidId(context))
                 .put(DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY,
                         UUIDHelper.getPersistentUUID(context))
                 .put(IS_SIMULATOR_KEY, detectEmulator());
@@ -167,13 +167,5 @@ public class AnalyticsSender {
         }
 
         return Boolean.toString(check1 || check2 || check3);
-    }
-
-    private static String getAndroidId(Context context) {
-        String id = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
-        if (id == null) {
-            return "AndroidIdUnknown";
-        }
-        return id;
     }
 }

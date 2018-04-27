@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -72,7 +73,7 @@ public class VisaCheckoutConfiguration {
         List<String> acceptedCardBrands = new ArrayList<>();
 
         for (String supportedCardType : supportedCardTypes) {
-            switch (supportedCardType.toLowerCase()) {
+            switch (supportedCardType.toLowerCase(Locale.ROOT)) {
                 case "visa":
                     acceptedCardBrands.add("VISA");
                     break;

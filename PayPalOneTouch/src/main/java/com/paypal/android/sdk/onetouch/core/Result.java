@@ -114,26 +114,22 @@ public final class Result implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeValue(mEnvironment);
-        dest.writeValue(mResultType);
-        dest.writeValue(mResponseType);
-        if (null != mResponse) {
-            dest.writeValue(mResponse.toString());
-        } else {
-            dest.writeValue(null);
-        }
-        dest.writeValue(mUserEmail);
-        dest.writeValue(mError);
+        dest.writeString(mEnvironment);
+        dest.writeSerializable(mResultType);
+        dest.writeSerializable(mResponseType);
+        dest.writeString(mResponse == null ? null : mResponse.toString());
+        dest.writeString(mUserEmail);
+        dest.writeSerializable(mError);
     }
 
     private Result(Parcel in) {
-        mEnvironment = (String) in.readValue(null);
-        mResultType = (ResultType) in.readValue(ResultType.class.getClassLoader());
-        mResponseType = (ResponseType) in.readValue(ResponseType.class.getClassLoader());
+        mEnvironment = in.readString();
+        mResultType = (ResultType) in.readSerializable();
+        mResponseType = (ResponseType) in.readSerializable();
 
         JSONObject jsonResponse = null;
         try {
-            String jsonString = (String) in.readValue(null);
+            String jsonString = in.readString();
             if (null != jsonString) {
                 jsonResponse = new JSONObject(jsonString);
             }
@@ -142,8 +138,8 @@ public final class Result implements Parcelable {
         }
         mResponse = jsonResponse;
 
-        mUserEmail = (String) in.readValue(null);
-        mError = (Throwable) in.readValue(null);
+        mUserEmail = in.readString();
+        mError = (Throwable) in.readSerializable();
     }
 
     public static final Parcelable.Creator<Result> CREATOR = new Parcelable.Creator<Result>() {

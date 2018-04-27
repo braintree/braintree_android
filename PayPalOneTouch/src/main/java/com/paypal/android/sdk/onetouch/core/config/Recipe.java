@@ -71,7 +71,7 @@ public abstract class Recipe<T extends Recipe<T>> {
     public boolean isValidAppTarget(Context context) {
         // Only support wallet app switch if package name is a match
         String packageName = context.getApplicationContext().getPackageName();
-        if (!packageName.equals(packageName.toLowerCase().replace("_", ""))) {
+        if (!packageName.equals(packageName.toLowerCase(Locale.ROOT).replace("_", ""))) {
             return false;
         }
 

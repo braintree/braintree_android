@@ -62,6 +62,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Queue;
 
 /**
@@ -311,7 +312,8 @@ public class BraintreeFragment extends BrowserSwitchFragment {
 
     @Override
     public String getReturnUrlScheme() {
-        return getApplicationContext().getPackageName().toLowerCase().replace("_", "") + ".braintree";
+        return getApplicationContext().getPackageName().toLowerCase(Locale.ROOT)
+                .replace("_", "") + ".braintree";
     }
 
     @Override

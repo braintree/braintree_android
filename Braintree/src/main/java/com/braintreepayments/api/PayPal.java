@@ -46,6 +46,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Used to create and tokenize PayPal accounts. For more information see the
@@ -451,7 +452,7 @@ public class PayPal {
         } else {
             String type;
             if (request != null) {
-                type = request.getClass().getSimpleName().toLowerCase();
+                type = request.getClass().getSimpleName().toLowerCase(Locale.ROOT);
             } else {
                 type = "unknown";
             }

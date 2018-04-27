@@ -1,6 +1,7 @@
 package com.braintreepayments.demo.test.utilities;
 
 import android.Manifest.permission;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
@@ -20,6 +21,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 
 public class TestHelper {
 
+    @SuppressLint("ApplySharedPref")
     public void setup() {
         clearPreference("BraintreeApi");
         clearPreference("PayPalOTC");
@@ -39,6 +41,7 @@ public class TestHelper {
         return onDevice(withResourceId("com.braintreepayments.demo:id/nonce_details"));
     }
 
+    @SuppressLint("ApplySharedPref")
     private void clearPreference(String preference) {
         getTargetContext().getSharedPreferences(preference, Context.MODE_PRIVATE)
                 .edit()

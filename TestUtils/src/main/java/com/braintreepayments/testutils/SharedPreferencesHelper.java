@@ -11,6 +11,7 @@ public class SharedPreferencesHelper {
         return context.getSharedPreferences("BraintreeApi", Context.MODE_PRIVATE);
     }
 
+    @SuppressWarnings("ApplySharedPref")
     public static void clearSharedPreferences(Context context) {
         getSharedPreferences(context).edit().clear().commit();
     }
@@ -21,6 +22,7 @@ public class SharedPreferencesHelper {
                 System.currentTimeMillis());
     }
 
+    @SuppressWarnings("ApplySharedPref")
     public static void writeMockConfiguration(Context context, String configUrl, String appendedAuthorization,
             String configurationString, long timestamp) {
         configUrl = Uri.parse(configUrl)

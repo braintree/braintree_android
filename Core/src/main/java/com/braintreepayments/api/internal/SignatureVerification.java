@@ -1,5 +1,6 @@
 package com.braintreepayments.api.internal;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -30,6 +31,7 @@ public class SignatureVerification {
      * @param publicKeyHashCode the hash code of the app's public key.
      * @return true is signature is valid or signature verification has been disabled.
      */
+    @SuppressLint("PackageManagerGetSignatures")
     public static boolean isSignatureValid(Context context, String packageName,
             String certificateSubject, String certificateIssuer, int publicKeyHashCode) {
         if (!sEnableSignatureVerification) {

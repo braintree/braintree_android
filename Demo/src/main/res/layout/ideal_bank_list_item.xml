@@ -8,11 +8,12 @@
     <ImageView
         android:id="@+id/ideal_bank_list_item_icon"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:contentDescription="@string/ideal_bank_icon"/>
 
     <TextView
         android:id="@+id/ideal_bank_list_item_title"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:layout_gravity="center_vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

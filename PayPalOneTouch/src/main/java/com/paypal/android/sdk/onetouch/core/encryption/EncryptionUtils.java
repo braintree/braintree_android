@@ -7,6 +7,7 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Locale;
 
 /**
  * Very basic string manipulation methods useful for encryption.
@@ -53,7 +54,7 @@ public class EncryptionUtils {
             hexString.append(Integer.toHexString(intVal));
         }
 
-        return hexString.toString().toUpperCase();
+        return hexString.toString().toUpperCase(Locale.ROOT);
     }
 
     /**
