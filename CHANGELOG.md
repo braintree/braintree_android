@@ -1,5 +1,12 @@
 # Braintree Android SDK Release Notes
 
+## 2.13.0
+
+* 3D Secure
+  * Add support for American Express SafeKey params
+* Update PayPalDataCollector library to 3.1.6
+* Catch possible SQLite exceptions
+
 ## 2.12.0
 * Move Visa Checkout to separate module
 * Update Visa Checkout to 5.5.2
