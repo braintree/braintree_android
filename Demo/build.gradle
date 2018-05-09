@@ -68,42 +68,43 @@ configurations.all {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:26.1.0'
-    compile 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
 
-    compile('com.squareup.retrofit:retrofit:1.9.0') {
+    implementation('com.squareup.retrofit:retrofit:1.9.0') {
         exclude module: 'com.google.gson'
     }
 
-    compile project(':Braintree')
+    implementation project(':Braintree')
+
+    implementation 'com.google.android.gms:play-services-wallet:11.4.0'
 
     // Visa checkout dependencies
-    compile(group: 'com.visa.checkout', name: 'visacheckout-android-sdk', version: '5.5.2', ext: 'aar')
-    compile 'com.squareup.okio:okio:1.13.0'
-    compile 'com.squareup.okhttp3:okhttp:3.8.1'
-    compile 'com.google.code.gson:gson:2.8.1'
-    compile 'de.greenrobot:eventbus:2.4.1'
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support:design:26.1.0'
-    compile 'com.android.support:cardview-v7:26.1.0'
-    compile 'com.android.support:multidex:1.0.0'
+    implementation 'com.braintreepayments.api:visa-checkout:1.0.0'
+    implementation(group: 'com.visa.checkout', name: 'visacheckout-android-sdk', version: '5.5.2', ext: 'aar')
+    implementation 'com.squareup.okio:okio:1.13.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.8.1'
+    implementation 'com.google.code.gson:gson:2.8.1'
+    implementation 'de.greenrobot:eventbus:2.4.1'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support:cardview-v7:26.1.0'
+    implementation 'com.android.support:multidex:1.0.0'
 
-    compile 'com.braintreepayments.api:visa-checkout:1.0.0'
-
-    compile 'io.card:android-sdk:5.5.1'
-    compile('com.braintreepayments.api:drop-in:3.1.0') {
+    implementation 'io.card:android-sdk:5.5.1'
+    implementation('com.braintreepayments.api:drop-in:3.1.0') {
         exclude group: 'com.braintreepayments.api', module: 'braintree'
     }
 
-    debugCompile 'com.facebook.stetho:stetho:1.5.0'
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4'
+    debugImplementation 'com.facebook.stetho:stetho:1.5.0'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4'
 
-    androidTestCompile 'com.lukekorth:device-automator:0.3.0'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.0'
-    androidTestCompile 'com.android.support.test.espresso:espresso-web:3.0.0'
-    androidTestCompile project(':TestUtils')
+    androidTestImplementation 'com.lukekorth:device-automator:0.3.0'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.0'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-web:3.0.0'
+    androidTestImplementation project(':TestUtils')
 
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 }
 
 task demoApkSize<<{

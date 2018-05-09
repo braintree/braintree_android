@@ -22,8 +22,8 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support.test:runner:1.0.0'
-    compile 'com.android.support.test:rules:1.0.0'
+    api 'com.android.support.test:runner:1.0.0'
+    api 'com.android.support.test:rules:1.0.0'
 }
 
 android.buildTypes.each { type ->

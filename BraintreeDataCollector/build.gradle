@@ -19,7 +19,7 @@ android {
 }
 
 dependencies {
-    compile files('libs/' + deviceCollectorVersion)
+    api files('libs/' + deviceCollectorVersion)
 }
 
 /* maven deploy + signing */
