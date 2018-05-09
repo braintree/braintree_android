@@ -4,7 +4,6 @@ def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
@@ -19,6 +18,7 @@ android {
 
     testOptions {
         unitTests {
+            includeAndroidResources = true
             all {
                 jvmArgs '-noverify'
             }
