@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 2.13.1
+
+* Update 3D Secure redirect URL
+
 ## 2.13.0
 
 * 3D Secure
