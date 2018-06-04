@@ -39,7 +39,7 @@ public class ThreeDSecure {
     /**
      * The versioned path of the 3D Secure assets to use. Hosted by Braintree.
      */
-    private static final String THREE_D_SECURE_ASSETS_PATH = "/mobile/three-d-secure-redirect/0.1.4";
+    private static final String THREE_D_SECURE_ASSETS_PATH = "/mobile/three-d-secure-redirect/0.1.5";
 
     /**
      * Verification is associated with a transaction amount and your merchant account. To specify a
