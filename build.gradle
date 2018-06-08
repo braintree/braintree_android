@@ -15,8 +15,8 @@ allprojects {
         flatDir {
             dirs "${rootDir}/libs"
         }
-        jcenter()
         google()
+        jcenter()
         maven {
             url 'https://oss.sonatype.org/content/repositories/releases/'
         }
