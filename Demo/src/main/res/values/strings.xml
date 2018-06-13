@@ -101,4 +101,6 @@
     <string name="paypal_credit_offered_summary">Offers PayPal Credit prominently in the payment flow</string>
     <string name="paypal_useraction_commit_title">Set Useraction to Commit</string>
     <string name="paypal_useraction_commit_summary">Sets the Payment User Action to Commit for Express Checkout Transactions</string>
+    <string name="paypal_address_override">Send a shipping address to PayPal</string>
+    <string name="paypal_address_override_summary">Sends a shipping address as an override option to PayPal for any PayPal request</string>
 </resources>

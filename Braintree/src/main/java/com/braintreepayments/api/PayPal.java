@@ -95,6 +95,7 @@ public class PayPal {
     private static final String LANDING_PAGE_TYPE_KEY = "landing_page_type";
     private static final String USER_ACTION_KEY = "useraction";
     private static final String DISPLAY_NAME_KEY = "brand_name";
+    private static final String SHIPPING_ADDRESS_KEY = "shipping_address";
 
     /**
      * Starts the Pay With PayPal flow. This will launch the PayPal app if installed or switch to
@@ -337,14 +338,23 @@ public class PayPal {
 
         if (request.getShippingAddressOverride() != null) {
             experienceProfile.put(ADDRESS_OVERRIDE_KEY, true);
+
+            JSONObject shippingAddressJson;
+            if (isBillingAgreement) {
+                shippingAddressJson = new JSONObject();
+                parameters.put(SHIPPING_ADDRESS_KEY, shippingAddressJson);
+            } else {
+                shippingAddressJson = parameters;
+            }
+
             PostalAddress shippingAddress = request.getShippingAddressOverride();
-            parameters.put(PostalAddress.LINE_1_KEY, shippingAddress.getStreetAddress());
-            parameters.put(PostalAddress.LINE_2_KEY, shippingAddress.getExtendedAddress());
-            parameters.put(PostalAddress.LOCALITY_KEY, shippingAddress.getLocality());
-            parameters.put(PostalAddress.REGION_KEY, shippingAddress.getRegion());
-            parameters.put(PostalAddress.POSTAL_CODE_UNDERSCORE_KEY, shippingAddress.getPostalCode());
-            parameters.put(PostalAddress.COUNTRY_CODE_UNDERSCORE_KEY, shippingAddress.getCountryCodeAlpha2());
-            parameters.put(PostalAddress.RECIPIENT_NAME_UNDERSCORE_KEY, shippingAddress.getRecipientName());
+            shippingAddressJson.put(PostalAddress.LINE_1_KEY, shippingAddress.getStreetAddress());
+            shippingAddressJson.put(PostalAddress.LINE_2_KEY, shippingAddress.getExtendedAddress());
+            shippingAddressJson.put(PostalAddress.LOCALITY_KEY, shippingAddress.getLocality());
+            shippingAddressJson.put(PostalAddress.REGION_KEY, shippingAddress.getRegion());
+            shippingAddressJson.put(PostalAddress.POSTAL_CODE_UNDERSCORE_KEY, shippingAddress.getPostalCode());
+            shippingAddressJson.put(PostalAddress.COUNTRY_CODE_UNDERSCORE_KEY, shippingAddress.getCountryCodeAlpha2());
+            shippingAddressJson.put(PostalAddress.RECIPIENT_NAME_UNDERSCORE_KEY, shippingAddress.getRecipientName());
         } else {
             experienceProfile.put(ADDRESS_OVERRIDE_KEY, false);
         }

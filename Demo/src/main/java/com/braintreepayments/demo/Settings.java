@@ -184,6 +184,10 @@ public class Settings {
         return getPreferences(context).getBoolean("paypal_disable_signature_verification", true);
     }
 
+    public static boolean usePayPalAddressOverride(Context context) {
+        return getPreferences(context).getBoolean("paypal_address_override", true);
+    }
+
     public static boolean useHardcodedPayPalConfiguration(Context context) {
         return getPreferences(context).getBoolean("paypal_use_hardcoded_configuration", false);
     }
