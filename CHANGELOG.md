@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 2.13.2
+
+* Fix issue where address override was not set for PayPal billing agreements
+
 ## 2.13.1
 
 * Update 3D Secure redirect URL
