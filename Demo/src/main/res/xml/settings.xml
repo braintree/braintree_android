@@ -168,6 +168,12 @@
             android:title="@string/paypal_display_name"
             android:summary="@string/paypal_display_name_summary" />
 
+        <CheckBoxPreference
+            android:key="paypal_address_override"
+            android:title="@string/paypal_address_override"
+            android:summary="@string/paypal_address_override_summary"
+            android:defaultValue="false" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

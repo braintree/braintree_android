@@ -166,6 +166,17 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
             request.offerCredit(true);
         }
 
+        if (Settings.usePayPalAddressOverride(this)) {
+            request.shippingAddressOverride(new PostalAddress()
+                    .recipientName("Brian Tree")
+                    .streetAddress("123 Fake Street")
+                    .extendedAddress("Floor A")
+                    .locality("San Francisco")
+                    .region("CA")
+                    .countryCodeAlpha2("US")
+            );
+        }
+
         return request;
     }
 

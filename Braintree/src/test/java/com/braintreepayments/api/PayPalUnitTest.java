@@ -564,6 +564,44 @@ public class PayPalUnitTest {
     }
 
     @Test
+    public void requestBillingAgreement_postParamsIncludeAddressAndAddressOverride() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PostalAddress address = new PostalAddress()
+                .streetAddress("123 Fake St.")
+                .extendedAddress("Apt. v.0")
+                .locality("Oakland")
+                .region("CA")
+                .postalCode("12345")
+                .countryCodeAlpha2("US");
+        PayPalRequest request = new PayPalRequest()
+                .shippingAddressRequired(true)
+                .shippingAddressOverride(address);
+
+        PayPal.requestBillingAgreement(fragment, request);
+
+        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/setup_billing_agreement"));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        JSONObject shippingAddress = json.getJSONObject("shipping_address");
+        JSONObject experienceProfile = json.getJSONObject("experience_profile");
+
+        assertEquals("123 Fake St.", shippingAddress.get("line1"));
+        assertEquals("Apt. v.0", shippingAddress.get("line2"));
+        assertEquals("Oakland", shippingAddress.get("city"));
+        assertEquals("CA", shippingAddress.get("state"));
+        assertEquals("12345", shippingAddress.get("postal_code"));
+        assertEquals("US", shippingAddress.get("country_code"));
+
+        assertEquals(false, experienceProfile.get("no_shipping"));
+        assertEquals(true, experienceProfile.get("address_override"));
+    }
+
+    @Test
     public void requestOneTimePayment_postsExceptionWhenNoAmountIsSet() {
         BraintreeFragment fragment = mMockFragmentBuilder.build();
 
