@@ -596,7 +596,6 @@ public class PayPalUnitTest {
         assertEquals("12345", shippingAddress.get("postal_code"));
         assertEquals("US", shippingAddress.get("country_code"));
     }
-
     @Test
     public void requestBillingAgreement_whenEditable_postsAddressOverrideFalse() throws JSONException {
         BraintreeFragment fragment = mMockFragmentBuilder.build();
@@ -626,6 +625,61 @@ public class PayPalUnitTest {
 
         assertTrue(shippingAddress.length() > 0);
         assertEquals(false, experienceProfile.get("address_override"));
+    }
+
+    @Test
+    public void requestBillingAgreement_whenShippingRequired_postsNoShippingTrue() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PostalAddress address = new PostalAddress()
+                .streetAddress("123 Fake St.")
+                .extendedAddress("Apt. v.0")
+                .locality("Oakland")
+                .region("CA")
+                .postalCode("12345")
+                .countryCodeAlpha2("US");
+        PayPalRequest request = new PayPalRequest()
+                .shippingAddressRequired(true);
+
+        PayPal.requestBillingAgreement(fragment, request);
+
+        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/setup_billing_agreement"));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        JSONObject experienceProfile = json.getJSONObject("experience_profile");
+
+        assertEquals(false, experienceProfile.get("no_shipping"));
+    }
+
+    @Test
+    public void requestBillingAgreement_whenShippingRequiredFalse_postsNoShippingFalse() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PostalAddress address = new PostalAddress()
+                .streetAddress("123 Fake St.")
+                .extendedAddress("Apt. v.0")
+                .locality("Oakland")
+                .region("CA")
+                .postalCode("12345")
+                .countryCodeAlpha2("US");
+        PayPalRequest request = new PayPalRequest();
+
+        PayPal.requestBillingAgreement(fragment, request);
+
+        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/setup_billing_agreement"));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        JSONObject experienceProfile = json.getJSONObject("experience_profile");
+
+        assertEquals(true, experienceProfile.get("no_shipping"));
     }
 
     @Test
@@ -983,6 +1037,48 @@ public class PayPalUnitTest {
         assertEquals("CA", json.get("state"));
         assertEquals("12345", json.get("postal_code"));
         assertEquals("US", json.get("country_code"));
+    }
+
+    @Test
+    public void requestOnetimePayment_whenShippingRequired_postsNoShippingFalse() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPalRequest request = new PayPalRequest("3.43")
+                .shippingAddressRequired(true);
+
+        PayPal.requestOneTimePayment(fragment, request);
+
+        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        JSONObject experienceProfile = json.getJSONObject("experience_profile");
+
+        assertFalse(experienceProfile.getBoolean("no_shipping"));
+    }
+
+    @Test
+    public void requestOnetimePayment_whenShippingRequiredFalse_postsNoShippingTrue() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPalRequest request = new PayPalRequest("3.43")
+                .shippingAddressRequired(false);
+
+        PayPal.requestOneTimePayment(fragment, request);
+
+        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        JSONObject experienceProfile = json.getJSONObject("experience_profile");
+
+        assertTrue(experienceProfile.getBoolean("no_shipping"));
     }
 
     @Test
