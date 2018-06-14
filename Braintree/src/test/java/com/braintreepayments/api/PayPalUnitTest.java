@@ -564,7 +564,7 @@ public class PayPalUnitTest {
     }
 
     @Test
-    public void requestBillingAgreement_postParamsIncludeAddressAndAddressOverride() throws JSONException {
+    public void requestBillingAgreement_postParamsIncludeAddress() throws JSONException {
         BraintreeFragment fragment = mMockFragmentBuilder.build();
 
         PostalAddress address = new PostalAddress()
@@ -588,7 +588,6 @@ public class PayPalUnitTest {
 
         JSONObject json = new JSONObject(dataCaptor.getValue());
         JSONObject shippingAddress = json.getJSONObject("shipping_address");
-        JSONObject experienceProfile = json.getJSONObject("experience_profile");
 
         assertEquals("123 Fake St.", shippingAddress.get("line1"));
         assertEquals("Apt. v.0", shippingAddress.get("line2"));
@@ -596,8 +595,66 @@ public class PayPalUnitTest {
         assertEquals("CA", shippingAddress.get("state"));
         assertEquals("12345", shippingAddress.get("postal_code"));
         assertEquals("US", shippingAddress.get("country_code"));
+    }
 
-        assertEquals(false, experienceProfile.get("no_shipping"));
+    @Test
+    public void requestBillingAgreement_whenEditable_postsAddressOverrideFalse() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PostalAddress address = new PostalAddress()
+                .streetAddress("123 Fake St.")
+                .extendedAddress("Apt. v.0")
+                .locality("Oakland")
+                .region("CA")
+                .postalCode("12345")
+                .countryCodeAlpha2("US");
+        PayPalRequest request = new PayPalRequest()
+                .shippingAddressEditable(true)
+                .shippingAddressOverride(address);
+
+        PayPal.requestBillingAgreement(fragment, request);
+
+        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/setup_billing_agreement"));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        JSONObject shippingAddress = json.getJSONObject("shipping_address");
+        JSONObject experienceProfile = json.getJSONObject("experience_profile");
+
+        assertTrue(shippingAddress.length() > 0);
+        assertEquals(false, experienceProfile.get("address_override"));
+    }
+
+    @Test
+    public void requestBillingAgreement_whenEditableFalse_postsAddressOverrideTrue() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PostalAddress address = new PostalAddress()
+                .streetAddress("123 Fake St.")
+                .extendedAddress("Apt. v.0")
+                .locality("Oakland")
+                .region("CA")
+                .postalCode("12345")
+                .countryCodeAlpha2("US");
+        PayPalRequest request = new PayPalRequest()
+                .shippingAddressOverride(address);
+
+        PayPal.requestBillingAgreement(fragment, request);
+
+        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/setup_billing_agreement"));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        JSONObject shippingAddress = json.getJSONObject("shipping_address");
+        JSONObject experienceProfile = json.getJSONObject("experience_profile");
+
+        assertTrue(shippingAddress.length() > 0);
         assertEquals(true, experienceProfile.get("address_override"));
     }
 
@@ -897,7 +954,7 @@ public class PayPalUnitTest {
     }
 
     @Test
-    public void requestOneTimePayment_postParamsIncludeAddressAndAddressOverride() throws JSONException {
+    public void requestOneTimePayment_postParamsIncludeAddress() throws JSONException {
         BraintreeFragment fragment = mMockFragmentBuilder.build();
 
         PostalAddress address = new PostalAddress()
@@ -908,7 +965,6 @@ public class PayPalUnitTest {
                 .postalCode("12345")
                 .countryCodeAlpha2("US");
         PayPalRequest request = new PayPalRequest("3.43")
-                .shippingAddressRequired(true)
                 .shippingAddressOverride(address);
 
         PayPal.requestOneTimePayment(fragment, request);
@@ -927,10 +983,62 @@ public class PayPalUnitTest {
         assertEquals("CA", json.get("state"));
         assertEquals("12345", json.get("postal_code"));
         assertEquals("US", json.get("country_code"));
-        assertEquals(false, json.getJSONObject("experience_profile").get("no_shipping"));
-        assertEquals(true, json.getJSONObject("experience_profile").get("address_override"));
     }
 
+    @Test
+    public void requestOneTimePayment_whenEditable_postAddressOverrideFalse() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PostalAddress address = new PostalAddress()
+                .streetAddress("123 Fake St.")
+                .extendedAddress("Apt. v.0")
+                .locality("Oakland")
+                .region("CA")
+                .postalCode("12345")
+                .countryCodeAlpha2("US");
+        PayPalRequest request = new PayPalRequest("3.43")
+                .shippingAddressEditable(true)
+                .shippingAddressOverride(address);
+
+        PayPal.requestOneTimePayment(fragment, request);
+
+        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        assertEquals("US", json.get("country_code"));
+        assertEquals(false, json.getJSONObject("experience_profile").get("address_override"));
+    }
+
+    @Test
+    public void requestOneTimePayment_whenEditableFalse_postAddressOverrideTrue() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PostalAddress address = new PostalAddress()
+                .streetAddress("123 Fake St.")
+                .extendedAddress("Apt. v.0")
+                .locality("Oakland")
+                .region("CA")
+                .postalCode("12345")
+                .countryCodeAlpha2("US");
+        PayPalRequest request = new PayPalRequest("3.43")
+                .shippingAddressOverride(address);
+
+        PayPal.requestOneTimePayment(fragment, request);
+
+        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        assertEquals("US", json.get("country_code"));
+        assertEquals(true, json.getJSONObject("experience_profile").get("address_override"));
+    }
     @Test
     public void requestOneTimePayment_postParamsIncludeNoShippingAndAddressAndAddressOverride() throws JSONException {
         BraintreeFragment fragment = mMockFragmentBuilder.build();

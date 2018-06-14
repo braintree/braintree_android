@@ -337,7 +337,7 @@ public class PayPal {
         }
 
         if (request.getShippingAddressOverride() != null) {
-            experienceProfile.put(ADDRESS_OVERRIDE_KEY, true);
+            experienceProfile.put(ADDRESS_OVERRIDE_KEY, !request.isShippingAddressEditable());
 
             JSONObject shippingAddressJson;
             if (isBillingAgreement) {
