@@ -1,8 +1,11 @@
 package com.braintreepayments.api;
 
+import android.os.Parcel;
+
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.models.PayPalRequest;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.BillingAgreementRequest;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
@@ -21,6 +24,8 @@ import java.util.Arrays;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class PayPalRequestUnitTest {
@@ -183,6 +188,28 @@ public class PayPalRequestUnitTest {
         Request request = PayPal.getAuthorizationRequest(fragment);
 
         assertEquals("custom", request.getEnvironment());
+    }
+
+    @Test
+    public void parcelsShippingAddressEditableCorrectly() {
+        PayPalRequest trueResult;
+        PayPalRequest falseResult;
+        PayPalRequest request = new PayPalRequest();
+
+        Parcel parcel = Parcel.obtain();
+        request.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        falseResult = PayPalRequest.CREATOR.createFromParcel(parcel);
+
+        request.shippingAddressEditable(true);
+
+        parcel = Parcel.obtain();
+        request.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        trueResult = PayPalRequest.CREATOR.createFromParcel(parcel);
+
+        assertTrue(trueResult.isShippingAddressEditable());
+        assertFalse(falseResult.isShippingAddressEditable());
     }
 }
 
