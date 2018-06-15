@@ -6,6 +6,7 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalRequest;
+import com.braintreepayments.api.models.PostalAddress;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.BillingAgreementRequest;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
@@ -24,7 +25,6 @@ import java.util.Arrays;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
@@ -191,25 +191,41 @@ public class PayPalRequestUnitTest {
     }
 
     @Test
-    public void parcelsShippingAddressEditableCorrectly() {
-        PayPalRequest trueResult;
-        PayPalRequest falseResult;
-        PayPalRequest request = new PayPalRequest();
+    public void parcelsCorrectly() {
+        PayPalRequest request = new PayPalRequest("12.34")
+                .currencyCode("USD")
+                .localeCode("en-US")
+                .billingAgreementDescription("Billing Agreement Description")
+                .shippingAddressRequired(true)
+                .shippingAddressEditable(true)
+                .shippingAddressOverride(new PostalAddress()
+                        .recipientName("Postal Address"))
+                .intent(PayPalRequest.INTENT_SALE)
+                .landingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN)
+                .userAction(PayPalRequest.USER_ACTION_COMMIT)
+                .displayName("Display Name")
+                .offerCredit(true);
 
         Parcel parcel = Parcel.obtain();
         request.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
-        falseResult = PayPalRequest.CREATOR.createFromParcel(parcel);
+        PayPalRequest result = PayPalRequest.CREATOR.createFromParcel(parcel);
 
-        request.shippingAddressEditable(true);
+        assertEquals("12.34", result.getAmount());
+        assertEquals("USD", result.getCurrencyCode());
+        assertEquals("en-US", result.getLocaleCode());
+        assertEquals("Billing Agreement Description",
+                result.getBillingAgreementDescription());
+        assertEquals(true, result.isShippingAddressRequired());
+        assertEquals(true, result.isShippingAddressEditable());
+        assertEquals("Postal Address", result.getShippingAddressOverride()
+                .getRecipientName());
+        assertEquals(PayPalRequest.INTENT_SALE, result.getIntent());
+        assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, result.getLandingPageType());
+        assertEquals(PayPalRequest.USER_ACTION_COMMIT, result.getUserAction());
+        assertEquals("Display Name", result.getDisplayName());
+        assertTrue(result.shouldOfferCredit());
 
-        parcel = Parcel.obtain();
-        request.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        trueResult = PayPalRequest.CREATOR.createFromParcel(parcel);
-
-        assertTrue(trueResult.isShippingAddressEditable());
-        assertFalse(falseResult.isShippingAddressEditable());
     }
 }
 
