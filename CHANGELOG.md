@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 2.14.0
+
+* Add shippingAddressEditable to PayPalRequest
+
 ## 2.13.2
 
 * Fix issue where address override was not set for PayPal billing agreements
