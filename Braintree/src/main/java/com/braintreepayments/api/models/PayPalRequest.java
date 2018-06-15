@@ -79,6 +79,7 @@ public class PayPalRequest implements Parcelable {
     private String mLocaleCode;
     private String mBillingAgreementDescription;
     private boolean mShippingAddressRequired;
+    private boolean mShippingAddressEditable = false;
     private PostalAddress mShippingAddressOverride;
     private String mIntent = INTENT_AUTHORIZE;
     private String mLandingPageType;
@@ -134,6 +135,18 @@ public class PayPalRequest implements Parcelable {
      */
     public PayPalRequest shippingAddressRequired(boolean shippingAddressRequired) {
         mShippingAddressRequired = shippingAddressRequired;
+        return this;
+    }
+
+    /**
+     * Defaults to false. Set to true to enable user editing of the shipping address.
+     * Only applies when {@link PayPalRequest#shippingAddressOverride(PostalAddress)} is set
+     * with a {@link PostalAddress}.
+     *
+     * @param shippingAddressEditable Whether to allow the the shipping address to be editable.
+     */
+    public PayPalRequest shippingAddressEditable(boolean shippingAddressEditable) {
+        mShippingAddressEditable = shippingAddressEditable;
         return this;
     }
 
@@ -269,6 +282,10 @@ public class PayPalRequest implements Parcelable {
         return mShippingAddressRequired;
     }
 
+    public boolean isShippingAddressEditable() {
+        return mShippingAddressEditable;
+    }
+
     public PostalAddress getShippingAddressOverride() {
         return mShippingAddressOverride;
     }
@@ -308,6 +325,7 @@ public class PayPalRequest implements Parcelable {
         parcel.writeString(mLocaleCode);
         parcel.writeString(mBillingAgreementDescription);
         parcel.writeByte(mShippingAddressRequired ? (byte) 1:0);
+        parcel.writeByte(mShippingAddressEditable ? (byte) 1:0);
         parcel.writeParcelable(mShippingAddressOverride, i);
         parcel.writeString(mIntent);
         parcel.writeString(mLandingPageType);
@@ -322,6 +340,7 @@ public class PayPalRequest implements Parcelable {
         mLocaleCode = in.readString();
         mBillingAgreementDescription = in.readString();
         mShippingAddressRequired = in.readByte() > 0;
+        mShippingAddressEditable = in.readByte() > 0;
         mShippingAddressOverride = in.readParcelable(PostalAddress.class.getClassLoader());
         mIntent = in.readString();
         mLandingPageType = in.readString();
