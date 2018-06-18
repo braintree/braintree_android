@@ -6,7 +6,6 @@ def GATEWAY_PORT = System.properties['GATEWAY_PORT'] ?: '"3000"';
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
@@ -23,8 +22,8 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support.test:runner:1.0.0'
-    compile 'com.android.support.test:rules:1.0.0'
+    api 'com.android.support.test:runner:1.0.0'
+    api 'com.android.support.test:rules:1.0.0'
 }
 
 android.buildTypes.each { type ->

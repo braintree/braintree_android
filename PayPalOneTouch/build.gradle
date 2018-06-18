@@ -10,7 +10,6 @@ ext {
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
@@ -28,18 +27,18 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:26.0.0'
+    compileOnly 'com.android.support:support-annotations:26.0.0'
 
-    compile project(':Core')
-    compile project(':PayPalDataCollector')
+    api project(':Core')
+    api project(':PayPalDataCollector')
 
-    testCompile 'org.robolectric:robolectric:3.3.2'
-    testCompile 'org.skyscreamer:jsonassert:1.4.0'
-    testCompile 'org.powermock:powermock-module-junit4:1.6.6'
-    testCompile 'org.powermock:powermock-module-junit4-rule:1.6.6'
-    testCompile 'org.powermock:powermock-api-mockito:1.6.6'
-    testCompile 'org.powermock:powermock-classloading-xstream:1.6.6'
-    testCompile project(':TestUtils')
+    testImplementation 'org.robolectric:robolectric:3.3.2'
+    testImplementation 'org.skyscreamer:jsonassert:1.4.0'
+    testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
+    testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'
+    testImplementation 'org.powermock:powermock-api-mockito:1.6.6'
+    testImplementation 'org.powermock:powermock-classloading-xstream:1.6.6'
+    testImplementation project(':TestUtils')
 }
 
 /* maven deploy + signing */
@@ -81,14 +80,6 @@ uploadArchives {
                 version = "${android.defaultConfig.versionName}"
                 packaging 'jar'
                 description 'PayPal SDK for handling app and browser switch based payments.'
-            }
-
-            pom.whenConfigured { MavenPom pom ->
-                pom.dependencies.each {
-                    if (it.artifactId == 'support-annotations') {
-                        it.optional = true
-                    }
-                }
             }
         }
     }

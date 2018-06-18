@@ -2,7 +2,6 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
@@ -24,11 +23,11 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:26.0.0'
-    compile 'com.braintreepayments:browser-switch:0.1.5'
+    compileOnly 'com.android.support:support-annotations:26.0.0'
+    api 'com.braintreepayments:browser-switch:0.1.5'
 
-    androidTestCompile 'com.android.support.test:runner:1.0.0'
-    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
+    androidTestImplementation 'com.android.support.test:runner:1.0.0'
+    androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
 }
 
 /* maven deploy + signing */
@@ -70,14 +69,6 @@ uploadArchives {
                 version = "${android.defaultConfig.versionName}"
                 packaging 'jar'
                 description 'Library containing shared components used across Braintree\'s Android SDKs.'
-            }
-
-            pom.whenConfigured { MavenPom pom ->
-                pom.dependencies.each {
-                    if (it.artifactId == 'support-annotations') {
-                        it.optional = true
-                    }
-                }
             }
         }
     }

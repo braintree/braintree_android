@@ -4,7 +4,6 @@ def dataCollectorVersion = 'paypal-data-collector-3.1.6.jar'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
@@ -26,11 +25,11 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:26.0.0'
+    compileOnly 'com.android.support:support-annotations:26.0.0'
 
-    compile files('libs/' + dataCollectorVersion)
+    api files('libs/' + dataCollectorVersion)
 
-    androidTestCompile 'com.android.support.test:runner:1.0.0'
+    androidTestImplementation 'com.android.support.test:runner:1.0.0'
 }
 
 /* maven deploy + signing */
@@ -86,14 +85,6 @@ uploadArchives {
                 version = "${android.defaultConfig.versionName}"
                 packaging 'jar'
                 description 'Fraud tools for PayPal integrations on Android.'
-            }
-
-            pom.whenConfigured { MavenPom pom ->
-                pom.dependencies.each {
-                    if (it.artifactId == 'support-annotations') {
-                        it.optional = true
-                    }
-                }
             }
         }
     }

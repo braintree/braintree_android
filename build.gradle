@@ -1,9 +1,10 @@
 buildscript {
     repositories {
         jcenter()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.1.2'
 
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
     }
@@ -14,10 +15,8 @@ allprojects {
         flatDir {
             dirs "${rootDir}/libs"
         }
+        google()
         jcenter()
-        maven {
-            url 'https://maven.google.com'
-        }
         maven {
             url 'https://oss.sonatype.org/content/repositories/releases/'
         }
@@ -81,7 +80,6 @@ allprojects {
     version = '2.14.1-SNAPSHOT'
     ext {
         compileSdkVersion = 27
-        buildToolsVersion = '27.0.3'
         minSdkVersion = 16
         targetSdkVersion = 27
         versionCode = 85
