@@ -98,4 +98,9 @@ public class SamsungPayConfigurationUnitTest {
     public void testParsesSamsungAuthorization() {
         assertEquals("example-samsung-authorization", mSamsungPayConfiguration.getSamsungAuthorization());
     }
+
+    @Test
+    public void testParsesEnvironment() {
+        assertEquals("SANDBOX", mSamsungPayConfiguration.getEnvironment());
+    }
 }

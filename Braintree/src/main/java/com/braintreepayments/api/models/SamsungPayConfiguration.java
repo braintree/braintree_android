@@ -22,11 +22,13 @@ public class SamsungPayConfiguration {
     private static final String SERVICE_ID_KEY = "serviceId";
     private static final String SUPPORTED_CARD_BRANDS_KEY = "supportedCardBrands";
     private static final String SAMSUNG_AUTHORIZATION_KEY = "samsungAuthorization";
+    private static final String ENVIRONMENT = "environment";
 
     private Set<String> mSupportedCardBrands = new HashSet<>();
     private String mMerchantDisplayName;
     private String mServiceId;
     private String mSamsungAuthorization;
+    private String mEnvironment;
 
     static SamsungPayConfiguration fromJson(JSONObject json) {
         SamsungPayConfiguration configuration = new SamsungPayConfiguration();
@@ -46,6 +48,7 @@ public class SamsungPayConfiguration {
         } catch (JSONException ignored) {}
 
         configuration.mSamsungAuthorization = Json.optString(json, SAMSUNG_AUTHORIZATION_KEY, "");
+        configuration.mEnvironment = Json.optString(json, ENVIRONMENT, "");
 
         return configuration;
     }
@@ -88,5 +91,12 @@ public class SamsungPayConfiguration {
     @NonNull
     public String getSamsungAuthorization() {
         return mSamsungAuthorization;
+    }
+
+    /**
+     * @return the Braintree environment Samsung Pay should interact with.
+     */
+    public String getEnvironment() {
+        return mEnvironment;
     }
 }
