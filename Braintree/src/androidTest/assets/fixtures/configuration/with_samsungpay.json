@@ -15,6 +15,7 @@
       "mastercard",
       "visa"
     ],
-    "samsungAuthorization": "example-samsung-authorization"
+    "samsungAuthorization": "example-samsung-authorization",
+    "environment": "SANDBOX"
   }
 }
