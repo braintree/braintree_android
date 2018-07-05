@@ -39,12 +39,7 @@ public class PayPalOneTouchCore {
 
         for (OAuth2Recipe recipe : sConfigManager.getConfig().getOauth2Recipes()) {
             if (recipe.getTarget() == RequestTarget.wallet && recipe.isValidAppTarget(context)) {
-                sFptiManager.trackFpti(TrackingPoint.WalletIsPresent, "",
-                        Collections.<String, String>emptyMap(), recipe.getProtocol());
                 return true;
-            } else {
-                sFptiManager.trackFpti(TrackingPoint.WalletIsAbsent, "",
-                        Collections.<String, String>emptyMap(), recipe.getProtocol());
             }
         }
 
