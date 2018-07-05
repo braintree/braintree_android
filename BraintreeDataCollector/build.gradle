@@ -19,7 +19,12 @@ android {
 }
 
 dependencies {
-    api files('libs/' + deviceCollectorVersion)
+    // TODO `api` is the proper keyword for this dependency
+    // Although when we try to add this to our releaseJar
+    // We don't have access to configurations.(compile|api)
+    // So this needs more investigation.
+    // For now, revert back to `compile` keyword
+    compile files('libs/' + deviceCollectorVersion)
 }
 
 /* maven deploy + signing */
