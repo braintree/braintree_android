@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 2.14.1
+
+* Removed unused PayPal analytics event
+
 ## 2.14.0
 
 * Add shippingAddressEditable to PayPalRequest
