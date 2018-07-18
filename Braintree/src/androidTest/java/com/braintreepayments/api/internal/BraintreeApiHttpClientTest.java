@@ -6,9 +6,11 @@ import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.exceptions.BraintreeApiErrorResponse;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.test.EnvironmentHelper;
+import com.braintreepayments.testutils.Assumptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -26,6 +28,11 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(AndroidJUnit4.class)
 public class BraintreeApiHttpClientTest {
+
+    @Before
+    public void setup() {
+        Assumptions.assumeDeviceCanConnectToBraintreeApi();
+    }
 
     @Test(timeout = 1000)
     public void setsBaseUrl() throws IOException, InterruptedException {

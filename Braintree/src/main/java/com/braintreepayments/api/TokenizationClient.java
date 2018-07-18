@@ -1,5 +1,8 @@
 package com.braintreepayments.api;
 
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
+
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
@@ -8,7 +11,6 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.internal.GraphQLConstants.Features;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.GraphQLConfiguration;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 
@@ -43,6 +45,7 @@ class TokenizationClient {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 if (paymentMethodBuilder instanceof CardBuilder &&
+                        VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP &&
                         configuration.getGraphQL().isFeatureEnabled(Features.TOKENIZE_CREDIT_CARDS)) {
                     tokenizeGraphQL(fragment, (CardBuilder) paymentMethodBuilder, callback);
                 } else {

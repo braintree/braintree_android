@@ -11,6 +11,7 @@ import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.test.EnvironmentHelper;
+import com.braintreepayments.testutils.Assumptions;
 import com.braintreepayments.testutils.FixturesHelper;
 
 import org.junit.Before;
@@ -38,6 +39,8 @@ public class BraintreeGraphQLHttpClientTest {
 
     @Before
     public void setup() throws Exception {
+        Assumptions.assumeDeviceCanConnectToBraintreeApi();
+
         mCountDownLatch = new CountDownLatch(1);
     }
 
