@@ -13,6 +13,7 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
+import com.braintreepayments.testutils.Assumptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +53,10 @@ public class CardTest {
 
     public CardTest(String requestProtocol) {
         mRequestProtocol = requestProtocol;
+
+        if (GRAPHQL.equals(mRequestProtocol)) {
+            Assumptions.assumeDeviceCanConnectToBraintreeApi();
+        }
     }
 
     @Test(timeout = 10000)

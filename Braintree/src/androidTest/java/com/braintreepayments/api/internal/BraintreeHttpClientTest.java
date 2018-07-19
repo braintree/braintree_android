@@ -36,7 +36,7 @@ public class BraintreeHttpClientTest {
     private CountDownLatch mCountDownLatch;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         mCountDownLatch = new CountDownLatch(1);
     }
 

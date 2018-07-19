@@ -18,6 +18,7 @@ import com.braintreepayments.api.models.IdealResult;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
+import com.braintreepayments.testutils.Assumptions;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,11 +28,10 @@ import org.junit.runner.RunWith;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
 
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWithAuthorization;
-import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
@@ -46,6 +46,8 @@ public class IdealTest {
 
     @Before
     public void setUp() throws InvalidArgumentException {
+        Assumptions.assumeDeviceCanConnectToBraintreeApi();
+
         mCountDownLatch = new CountDownLatch(1);
 
         mBraintreeFragment = getFragmentWithAuthorization(mActivityTestRule.getActivity(),

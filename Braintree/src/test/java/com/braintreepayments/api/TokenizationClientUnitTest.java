@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
@@ -43,6 +44,24 @@ public class TokenizationClientUnitTest {
     }
 
     @Test
+    public void tokenize_withGraphQLEnabledButApiBelowLolipop_tokenizesCardsWithRest() throws BraintreeException {
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .configuration(new TestConfigurationBuilder()
+                        .graphQL()
+                        .build())
+                .build();
+        CardBuilder cardBuilder = new CardBuilder();
+
+        TokenizationClient.tokenize(fragment, cardBuilder, null);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verifyZeroInteractions(fragment.getGraphQLHttpClient());
+        verify(fragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));
+        assertEquals(cardBuilder.build(), captor.getValue());
+    }
+
+    @Config(sdk = 21)
+    @Test
     public void tokenize_tokenizesCardsWithGraphQLWhenEnabled() throws BraintreeException {
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(new TestConfigurationBuilder()
@@ -60,6 +79,7 @@ public class TokenizationClientUnitTest {
                 captor.getValue());
     }
 
+    @Config(sdk = 21)
     @Test
     public void tokenize_sendGraphQLAnalyticsEventWhenEnabled() {
         BraintreeFragment fragment = new MockFragmentBuilder()
@@ -102,6 +122,7 @@ public class TokenizationClientUnitTest {
         verifyZeroInteractions(fragment.getGraphQLHttpClient());
     }
 
+    @Config(sdk = 21)
     @Test
     public void tokenize_sendGraphQLAnalyticsEventOnSuccess() {
         BraintreeFragment fragment = new MockFragmentBuilder()
@@ -123,6 +144,7 @@ public class TokenizationClientUnitTest {
         verify(fragment).sendAnalyticsEvent("card.graphql.tokenization.success");
     }
 
+    @Config(sdk = 21)
     @Test
     public void tokenize_sendGraphQLAnalyticsEventOnFailure() {
         BraintreeFragment fragment = new MockFragmentBuilder()
