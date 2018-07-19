@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 2.14.2
+
+* Fix issue with TLS cipher in API < 21
+
 ## 2.14.1
 
 * Removed unused PayPal analytics event
