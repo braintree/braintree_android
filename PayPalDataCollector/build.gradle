@@ -27,12 +27,7 @@ android {
 dependencies {
     compileOnly 'com.android.support:support-annotations:26.0.0'
 
-    // TODO `api` is the proper keyword for this dependency
-    // Although when we try to add this to our releaseJar
-    // We don't have access to configurations.(compile|api)
-    // So this needs more investigation.
-    // For now, revert back to `compile` keyword
-    compile files('libs/' + dataCollectorVersion)
+    api files('libs/' + dataCollectorVersion)
 
     androidTestImplementation 'com.android.support.test:runner:1.0.0'
 }
@@ -58,13 +53,9 @@ task releaseJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompil
     from projectDir.path + '/build/intermediates/classes/release/'
     exclude { details -> details.file.name.endsWith('.xml') }
 
-    from {
-        configurations.compile.findAll {
-            it.getName() == dataCollectorVersion
-        }.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
+    from project.path + '/build/intermediates/packaged-classes/release/libs/'
+    into project.path + '/build/libs/'
+    include(dataCollectorVersion)
 }
 
 artifacts {
