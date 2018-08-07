@@ -2,9 +2,9 @@ package com.braintreepayments.api;
 
 import android.content.res.Resources;
 import android.net.Uri;
-import android.util.Log;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
+import com.braintreepayments.api.exceptions.PaymentMethodDeleteException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
@@ -132,7 +132,7 @@ public class PaymentMethod {
 
             @Override
             public void failure(Exception exception) {
-                fragment.postCallback(exception);
+                fragment.postCallback(new PaymentMethodDeleteException(paymentMethodNonce, exception));
                 fragment.sendAnalyticsEvent("delete-payment-methods.failed");
             }
         });

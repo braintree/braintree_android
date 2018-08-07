@@ -1,22 +1,17 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
-import android.util.Log;
-
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.exceptions.PaymentMethodDeleteException;
 import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.GraphQLConstants;
 import com.braintreepayments.api.internal.GraphQLQueryHelper;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.MetadataBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VenmoAccountNonce;
-import com.braintreepayments.api.test.TestClientTokenBuilder;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +20,6 @@ import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-import java.io.IOException;
 import java.util.List;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
@@ -180,7 +174,9 @@ public class PaymentMethodUnitTest {
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(fragment).postCallback(captor.capture());
-        assertTrue(captor.getValue() instanceof UnexpectedException);
+        PaymentMethodDeleteException paymentMethodDeleteException = (PaymentMethodDeleteException)captor.getValue();
+        PaymentMethodNonce paymentMethodNonce = paymentMethodDeleteException.getPaymentMethodNonce();
+        assertEquals(mCardNonce, paymentMethodNonce);
     }
 
     @Test
@@ -226,7 +222,7 @@ public class PaymentMethodUnitTest {
     }
 
     @Test
-    public void deletePaymentMethodNonce_postToGraphQl()
+    public void deletePaymentMethodNonce_postToGraphQL()
             throws Exception {
         Authorization authorization = Authorization.fromString(stringFromFixture("client_token.json"));
         BraintreeFragment fragment = new MockFragmentBuilder()
