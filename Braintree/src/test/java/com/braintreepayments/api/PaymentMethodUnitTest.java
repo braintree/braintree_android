@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 import java.util.List;
 
@@ -29,6 +30,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
@@ -148,6 +150,7 @@ public class PaymentMethodUnitTest {
         assertTrue(requestUri.contains("session_id=" + fragment.getSessionId()));
     }
 
+    @Config(sdk = 21)
     @Test
     public void deletePaymentMethodNonce_withTokenizationKey_throwsAnError() {
         BraintreeFragment fragment = new MockFragmentBuilder().build();
@@ -159,8 +162,10 @@ public class PaymentMethodUnitTest {
         assertTrue(captor.getValue() instanceof BraintreeException);
         assertEquals("A client token with a customer id must be used to delete a payment method nonce.",
                 captor.getValue().getMessage());
+        verifyZeroInteractions(fragment.getGraphQLHttpClient());
     }
 
+    @Config(sdk = 21)
     @Test
     public void deletePaymentMethodNonce_throwsAnError()
             throws InvalidArgumentException {
@@ -179,6 +184,7 @@ public class PaymentMethodUnitTest {
         assertEquals(mCardNonce, paymentMethodNonce);
     }
 
+    @Config(sdk = 21)
     @Test
     public void deletePaymentMethodNonce_sendAnAnalyticsEventForFailure()
             throws InvalidArgumentException {
@@ -193,6 +199,7 @@ public class PaymentMethodUnitTest {
         verify(fragment).sendAnalyticsEvent("delete-payment-methods.failed");
     }
 
+    @Config(sdk = 21)
     @Test
     public void deletePaymentMethodNonce_sendAnAnalyticsEventForSuccess()
             throws InvalidArgumentException {
@@ -207,6 +214,7 @@ public class PaymentMethodUnitTest {
         verify(fragment).sendAnalyticsEvent("delete-payment-methods.succeeded");
     }
 
+    @Config(sdk = 21)
     @Test
     public void deletePaymentMethodNonce_sendNoncePostCallbackForSuccess()
             throws InvalidArgumentException {
@@ -221,6 +229,7 @@ public class PaymentMethodUnitTest {
         verify(fragment).postPaymentMethodDeletedCallback(eq(mCardNonce));
     }
 
+    @Config(sdk = 21)
     @Test
     public void deletePaymentMethodNonce_postToGraphQL()
             throws Exception {
@@ -252,5 +261,26 @@ public class PaymentMethodUnitTest {
         assertEquals("test-integration", metadata.getString("integration"));
         assertEquals("test-session-id", metadata.getString("sessionId"));
         assertEquals("client", metadata.getString("source"));
+    }
+
+    @Test
+    public void deletePaymentMethodNonce_withApiBelowLollipop_doesNotPostToGraphQL() throws InvalidArgumentException {
+        Authorization authorization = Authorization.fromString(stringFromFixture("client_token.json"));
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .authorization(authorization)
+                .graphQLSuccessResponse("Success")
+                .sessionId("test-session-id")
+                .integration("test-integration")
+                .build();
+
+        PaymentMethod.deletePaymentMethod(fragment, mCardNonce);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(fragment).postCallback(captor.capture());
+        assertTrue(captor.getValue() instanceof BraintreeException);
+        assertEquals("Payment Method Nonce deletion is not supported for API < 21",
+                captor.getValue().getMessage());
+
+        verifyZeroInteractions(fragment.getGraphQLHttpClient());
     }
 }

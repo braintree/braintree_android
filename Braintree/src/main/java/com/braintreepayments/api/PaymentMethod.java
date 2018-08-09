@@ -2,6 +2,7 @@ package com.braintreepayments.api;
 
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Build;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.PaymentMethodDeleteException;
@@ -86,8 +87,16 @@ public class PaymentMethod {
     }
 
     /**
-     * Deletes a payment method owned by the customer whose id was used to generate the client
-     * token used to create the {@link BraintreeFragment}.
+     * Deletes a payment method owned by the customer whose id was used to generate the {@link ClientToken}
+     * used to create the {@link BraintreeFragment}.
+     * <p/>
+     * Note: This method only works with Android Lollipop (>= 21) and above.
+     * This will invoke {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)} when
+     * <ul>
+     *      <li>A {@link com.braintreepayments.api.models.TokenizationKey} is used.</li>
+     *      <li>The device is below Lollipop.</li>
+     *      <li>If the request fails.</li>
+     * <ul/>
      *
      * @param fragment {@link BraintreeFragment}
      * @param paymentMethodNonce The payment method nonce that references a vaulted payment method.
@@ -97,8 +106,14 @@ public class PaymentMethod {
 
         boolean usesClientToken = fragment.getAuthorization() instanceof ClientToken;
 
-        if(!usesClientToken) {
+        if (!usesClientToken) {
             fragment.postCallback(new BraintreeException("A client token with a customer id must be used to delete a payment method nonce."));
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            fragment.postCallback(new BraintreeException("Payment Method Nonce deletion is not supported for API < 21"));
+            return;
         }
 
         JSONObject base = new JSONObject();
