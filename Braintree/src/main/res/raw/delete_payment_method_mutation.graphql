@@ -1,0 +1,5 @@
+mutation DeletePaymentMethodFromSingleUseToken($input: DeletePaymentMethodFromSingleUseTokenInput!) {
+  deletePaymentMethodFromSingleUseToken(input: $input) {
+    clientMutationId
+  }
+}

@@ -44,7 +44,7 @@ public class TokenizationClientUnitTest {
     }
 
     @Test
-    public void tokenize_withGraphQLEnabledButApiBelowLolipop_tokenizesCardsWithRest() throws BraintreeException {
+    public void tokenize_withGraphQLEnabledButApiBelowLollipop_tokenizesCardsWithRest() throws BraintreeException {
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(new TestConfigurationBuilder()
                         .graphQL()

@@ -13,6 +13,7 @@ public final class GraphQLConstants {
         public static final String LEGACY_CODE = "legacyCode";
         public static final String URL = "url";
         public static final String FEATURES = "features";
+        public static final String OPERATION_NAME = "operationName";
     }
 
     public final class ErrorTypes {

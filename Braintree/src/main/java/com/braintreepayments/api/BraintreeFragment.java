@@ -27,6 +27,7 @@ import com.braintreepayments.api.interfaces.BraintreePaymentResultListener;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.interfaces.PaymentMethodNonceDeletedListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNoncesUpdatedListener;
 import com.braintreepayments.api.interfaces.QueuedCallback;
 import com.braintreepayments.api.interfaces.UnionPayListener;
@@ -109,6 +110,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     private BraintreeCancelListener mCancelListener;
     private PaymentMethodNoncesUpdatedListener mPaymentMethodNoncesUpdatedListener;
     private PaymentMethodNonceCreatedListener mPaymentMethodNonceCreatedListener;
+    private PaymentMethodNonceDeletedListener mPaymentMethodNonceDeletedListener;
     private BraintreeErrorListener mErrorListener;
     private BraintreePaymentResultListener mBraintreePaymentResultListener;
     private UnionPayListener mUnionPayListener;
@@ -402,6 +404,10 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             mPaymentMethodNonceCreatedListener = (PaymentMethodNonceCreatedListener) listener;
         }
 
+        if (listener instanceof PaymentMethodNonceDeletedListener) {
+            mPaymentMethodNonceDeletedListener = (PaymentMethodNonceDeletedListener) listener;
+        }
+
         if (listener instanceof BraintreePaymentResultListener) {
             mBraintreePaymentResultListener = (BraintreePaymentResultListener) listener;
         }
@@ -443,6 +449,10 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             mPaymentMethodNonceCreatedListener = null;
         }
 
+        if (listener instanceof PaymentMethodNonceDeletedListener) {
+            mPaymentMethodNonceDeletedListener = null;
+        }
+
         if (listener instanceof BraintreePaymentResultListener) {
             mBraintreePaymentResultListener = null;
         }
@@ -480,6 +490,10 @@ public class BraintreeFragment extends BrowserSwitchFragment {
 
         if (mPaymentMethodNonceCreatedListener != null) {
             listeners.add(mPaymentMethodNonceCreatedListener);
+        }
+
+        if (mPaymentMethodNonceDeletedListener != null) {
+            listeners.add(mPaymentMethodNonceDeletedListener);
         }
 
         if (mBraintreePaymentResultListener != null) {
@@ -672,6 +686,20 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             @Override
             public void run() {
                 mPaymentMethodNoncesUpdatedListener.onPaymentMethodNoncesUpdated(paymentMethodNonceList);
+            }
+        });
+    }
+
+    protected void postPaymentMethodDeletedCallback(final PaymentMethodNonce paymentMethodNonce) {
+        postOrQueueCallback(new QueuedCallback() {
+            @Override
+            public boolean shouldRun() {
+                return mPaymentMethodNonceDeletedListener != null;
+            }
+
+            @Override
+            public void run() {
+                mPaymentMethodNonceDeletedListener.onPaymentMethodNonceDeleted(paymentMethodNonce);
             }
         });
     }
