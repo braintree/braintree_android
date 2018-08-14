@@ -39,19 +39,9 @@ task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
 }
 
-task releaseJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompile) {
-    from projectDir.path + '/build/intermediates/classes/release/'
-    exclude { details -> details.file.name.endsWith('.xml') }
-
-    from project.path + '/build/intermediates/packaged-classes/release/libs/'
-    into project.path + '/build/libs/'
-    include(deviceCollectorVersion)
-}
-
 artifacts {
     archives javadocsJar
     archives sourcesJar
-    archives releaseJar
 }
 
 apply plugin: 'io.codearte.nexus-staging'
