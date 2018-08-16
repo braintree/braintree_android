@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 2.15.0
+
+* Add `PaymentMethod#deletePaymentMethod` which allows customers to remove their vaulted payment methods
+* Fix DataCollector not being available for instant run builds
+
 ## 2.14.2
 
 * Fix issue with TLS cipher in API < 21

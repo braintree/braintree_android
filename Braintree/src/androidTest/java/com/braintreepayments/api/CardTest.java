@@ -242,6 +242,30 @@ public class CardTest {
         countDownLatch.await();
     }
 
+    @Test
+    public void tokenize_whenInvalidCountryCode_callsErrorCallbackWithDetailedError() throws Exception {
+        CardBuilder cardBuilder = new CardBuilder()
+                .cardNumber(VISA)
+                .expirationDate("08/20")
+                .countryCode("US");
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        BraintreeFragment fragment = setupBraintreeFragment(new TestClientTokenBuilder().build());
+        fragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onError(Exception error) {
+                assertEquals("Postal code verification failed",
+                        ((ErrorWithResponse) error).errorFor("creditCard").errorFor("billingAddress")
+                                .getFieldErrors().get(0).getMessage());
+                countDownLatch.countDown();
+            }
+        });
+
+        Card.tokenize(fragment, cardBuilder);
+
+        countDownLatch.await();
+    }
+
     @Test(timeout = 10000)
     public void tokenize_tokenizesACardWithACompleteBillingAddress() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()
