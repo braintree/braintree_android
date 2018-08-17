@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 2.15.1
+
+* Fix InvalidPathException error
+
 ## 2.15.0
 
 * Add `PaymentMethod#deletePaymentMethod` which allows customers to remove their vaulted payment methods
