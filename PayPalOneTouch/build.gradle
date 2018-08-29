@@ -78,7 +78,6 @@ uploadArchives {
                 name 'paypal-one-touch'
                 groupId = 'com.paypal.android.sdk'
                 version = "${android.defaultConfig.versionName}"
-                packaging 'jar'
                 description 'PayPal SDK for handling app and browser switch based payments.'
             }
         }
