@@ -27,12 +27,7 @@ android {
 dependencies {
     compileOnly 'com.android.support:support-annotations:26.0.0'
 
-    // TODO `api` is the proper keyword for this dependency
-    // Although when we try to add this to our releaseJar
-    // We don't have access to configurations.(compile|api)
-    // So this needs more investigation.
-    // For now, revert back to `compile` keyword
-    compile files('libs/' + dataCollectorVersion)
+    api files('libs/' + dataCollectorVersion)
 
     androidTestImplementation 'com.android.support.test:runner:1.0.0'
 }
@@ -54,23 +49,9 @@ task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
 }
 
-task releaseJar(type: Jar, dependsOn: android.libraryVariants.release.javaCompile) {
-    from projectDir.path + '/build/intermediates/classes/release/'
-    exclude { details -> details.file.name.endsWith('.xml') }
-
-    from {
-        configurations.compile.findAll {
-            it.getName() == dataCollectorVersion
-        }.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
-}
-
 artifacts {
     archives javadocsJar
     archives sourcesJar
-    archives releaseJar
 }
 
 apply plugin: 'io.codearte.nexus-staging'
@@ -88,7 +69,6 @@ uploadArchives {
                 name 'data-collector'
                 groupId = 'com.paypal.android.sdk'
                 version = "${android.defaultConfig.versionName}"
-                packaging 'jar'
                 description 'Fraud tools for PayPal integrations on Android.'
             }
         }

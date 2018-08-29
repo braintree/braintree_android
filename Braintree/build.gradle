@@ -127,7 +127,6 @@ uploadArchives {
                 name 'braintree'
                 groupId = 'com.braintreepayments.api'
                 version = "${android.defaultConfig.versionName}"
-                packaging 'jar'
                 description 'This is Braintree\'s Android SDK. Integrate this library to accept payments in your Android app.'
             }
 
