@@ -77,7 +77,7 @@ allprojects {
         sign configurations.archives
     }
 
-    version = '2.15.2-SNAPSHOT'
+    version = '2.15.2'
     ext {
         compileSdkVersion = 27
         minSdkVersion = 16

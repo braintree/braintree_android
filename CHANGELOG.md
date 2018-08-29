@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 2.15.2
+
+* Fix NoClassDefFoundError compile error for PayPalDataCollector 
+
 ## 2.15.1
 
 * Fix InvalidPathException error
