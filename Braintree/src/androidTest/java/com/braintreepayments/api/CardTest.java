@@ -130,7 +130,7 @@ public class CardTest {
                 assertTrue(error instanceof AuthorizationException);
 
                 if (mRequestProtocol.equals(GRAPHQL)) {
-                    assertEquals("Validation is not supported for requests authorized with a tokenization key.",
+                    assertEquals("You are unauthorized to perform input validation with these authentication credentials.",
                             error.getMessage());
                 } else {
                     assertEquals("Tokenization key authorization not allowed for this endpoint. Please use an " +
@@ -247,14 +247,14 @@ public class CardTest {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
                 .expirationDate("08/20")
-                .countryCode("US");
+                .countryCode("ABC");
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         BraintreeFragment fragment = setupBraintreeFragment(new TestClientTokenBuilder().build());
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
-                assertEquals("Postal code verification failed",
+                assertEquals("Country code (alpha3) is not an accepted country",
                         ((ErrorWithResponse) error).errorFor("creditCard").errorFor("billingAddress")
                                 .getFieldErrors().get(0).getMessage());
                 countDownLatch.countDown();
