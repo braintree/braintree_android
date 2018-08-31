@@ -30,7 +30,6 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWithAuthorization;
-import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragmentWithConfiguration;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.tokenize;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
@@ -134,8 +133,8 @@ public class ThreeDSecureTest {
     @Test(timeout = 10000)
     public void performVerification_acceptsACardBuilderAndPostsAPaymentMethodNonceToListener()
             throws InterruptedException {
-        String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
-        BraintreeFragment fragment = getFragmentWithAuthorization(mActivity, clientToken);
+        BraintreeFragment fragment = getFragmentWithAuthorization(mActivity,
+                new TestClientTokenBuilder().withThreeDSecure().build());
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
@@ -156,7 +155,8 @@ public class ThreeDSecureTest {
 
     @Test(timeout = 2000)
     public void onActivityResult_postsPaymentMethodNonceToListener() throws JSONException, InterruptedException {
-        BraintreeFragment fragment = getMockFragmentWithConfiguration(mActivity, new TestConfigurationBuilder().build());
+        BraintreeFragment fragment = getFragmentWithAuthorization(mActivity,
+                new TestClientTokenBuilder().withThreeDSecure().build());
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
@@ -178,8 +178,9 @@ public class ThreeDSecureTest {
     }
 
     @Test(timeout = 1000)
-    public void onActivityResult_postsPaymentMethodNonceToListener_fromUri() throws JSONException, InterruptedException {
-        BraintreeFragment fragment = getMockFragmentWithConfiguration(mActivity, new TestConfigurationBuilder().build());
+    public void onActivityResult_postsPaymentMethodNonceToListener_fromUri() throws InterruptedException {
+        BraintreeFragment fragment = getFragmentWithAuthorization(mActivity,
+                new TestClientTokenBuilder().withThreeDSecure().build());
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
@@ -204,7 +205,8 @@ public class ThreeDSecureTest {
 
     @Test(timeout = 2000)
     public void onActivityResult_postsUnrecoverableErrorsToListeners() throws InterruptedException {
-        BraintreeFragment fragment = getMockFragmentWithConfiguration(mActivity, new TestConfigurationBuilder().build());
+        BraintreeFragment fragment = getFragmentWithAuthorization(mActivity,
+                new TestClientTokenBuilder().withThreeDSecure().build());
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
@@ -224,7 +226,8 @@ public class ThreeDSecureTest {
 
     @Test(timeout = 2000)
     public void onActivityResult_postsRecoverableErrorsToListener() throws InterruptedException {
-        BraintreeFragment fragment = getMockFragmentWithConfiguration(mActivity, new TestConfigurationBuilder().build());
+        BraintreeFragment fragment = getFragmentWithAuthorization(mActivity,
+                new TestClientTokenBuilder().withThreeDSecure().build());
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {

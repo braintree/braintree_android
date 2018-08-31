@@ -27,18 +27,6 @@ public class BraintreeFragmentTestUtils {
         return getFragment(activity, null, configuration);
     }
 
-    public static BraintreeFragment getMockFragmentWithAuthorization(Activity activity, String authorization) {
-        return getMockFragment(activity, authorization, null);
-    }
-
-    public static BraintreeFragment getMockFragmentWithConfiguration(Activity activity, String configuration) {
-        return getMockFragment(activity, null, configuration);
-    }
-
-    public static BraintreeFragment getMockFragment(Activity activity, String authoirzation, String configuration) {
-        return spy(getFragment(activity, authoirzation, configuration));
-    }
-
     public static BraintreeFragment getFragment(Activity activity, String authorization, String configuration) {
         try {
             if (authorization == null) {
