@@ -247,14 +247,14 @@ public class CardTest {
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(VISA)
                 .expirationDate("08/20")
-                .countryCode("US");
+                .countryCode("ABC");
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         BraintreeFragment fragment = setupBraintreeFragment(new TestClientTokenBuilder().build());
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
-                assertEquals("Postal code verification failed",
+                assertEquals("Country code (alpha3) is not an accepted country",
                         ((ErrorWithResponse) error).errorFor("creditCard").errorFor("billingAddress")
                                 .getFieldErrors().get(0).getMessage());
                 countDownLatch.countDown();

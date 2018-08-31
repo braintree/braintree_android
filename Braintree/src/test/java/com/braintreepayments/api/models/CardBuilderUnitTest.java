@@ -10,6 +10,7 @@ import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.internal.GraphQLConstants.Keys;
 import com.braintreepayments.api.internal.GraphQLQueryHelper;
+import com.braintreepayments.testutils.ReflectionHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -536,7 +537,7 @@ public class CardBuilderUnitTest {
     }
 
     @Test
-    public void parcelsCountryCodeCorrectly() throws JSONException {
+    public void parcelsCountryCodeCorrectly() throws NoSuchFieldException, IllegalAccessException {
         CardBuilder cardBuilder = new CardBuilder().countryCode("USA");
 
         Parcel parcel = Parcel.obtain();
@@ -545,10 +546,6 @@ public class CardBuilderUnitTest {
 
         CardBuilder actual = CardBuilder.CREATOR.createFromParcel(parcel);
 
-        JSONObject json = new JSONObject(actual.build());
-        JSONObject jsonCard = json.getJSONObject(CREDIT_CARD_KEY);
-        JSONObject jsonBillingAddress = jsonCard.getJSONObject(BILLING_ADDRESS_KEY);
-
-        assertEquals("USA", jsonBillingAddress.getString("countryCode"));
+        assertEquals("USA", ReflectionHelper.getField("mCountryCode", actual));
     }
 }
