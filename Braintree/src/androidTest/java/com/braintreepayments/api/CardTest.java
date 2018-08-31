@@ -130,7 +130,7 @@ public class CardTest {
                 assertTrue(error instanceof AuthorizationException);
 
                 if (mRequestProtocol.equals(GRAPHQL)) {
-                    assertEquals("Validation is not supported for requests authorized with a tokenization key.",
+                    assertEquals("You are unauthorized to perform input validation with these authentication credentials.",
                             error.getMessage());
                 } else {
                     assertEquals("Tokenization key authorization not allowed for this endpoint. Please use an " +
