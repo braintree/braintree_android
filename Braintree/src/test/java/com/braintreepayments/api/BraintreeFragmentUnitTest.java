@@ -1008,6 +1008,15 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
+    public void onActivityResult_callsCancelListenerOnlyOnceForPayPal() throws InvalidArgumentException {
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY));
+
+        fragment.onActivityResult(BraintreeRequestCodes.PAYPAL, Activity.RESULT_CANCELED, new Intent());
+
+        verify(fragment, times(1)).postCancelCallback(BraintreeRequestCodes.PAYPAL);
+    }
+
+    @Test
     public void onActivityResult_handlesThreeDSecureResult() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         mockStatic(ThreeDSecure.class);
@@ -1072,8 +1081,7 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void startActivityForResult_postsExceptionWhenNotAttached() throws JSONException,
-            InvalidArgumentException {
+    public void startActivityForResult_postsExceptionWhenNotAttached() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         mActivity.getFragmentManager().beginTransaction().detach(fragment).commit();
         mActivity.getFragmentManager().executePendingTransactions();

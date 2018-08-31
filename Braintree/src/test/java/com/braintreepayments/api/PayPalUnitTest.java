@@ -112,7 +112,7 @@ public class PayPalUnitTest {
     }
 
     @Test
-    public void authorizeAccount_postsExceptionWhenNotEnabled() throws JSONException, InterruptedException {
+    public void authorizeAccount_postsExceptionWhenNotEnabled() {
         BraintreeFragment fragment = new MockFragmentBuilder().build();
 
         PayPal.authorizeAccount(fragment);

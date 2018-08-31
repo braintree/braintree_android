@@ -8,7 +8,6 @@ import android.support.test.runner.AndroidJUnit4;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.TokenizationParametersListener;
-import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.GooglePaymentRequest;
@@ -39,7 +38,6 @@ import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWithConfiguration;
-import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragmentWithConfiguration;
 import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_ENVIRONMENT;
 import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_PAYMENT_DATA_REQUEST;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
@@ -50,14 +48,9 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 public class GooglePaymentTest {
@@ -100,7 +93,6 @@ public class GooglePaymentTest {
     @Test
     public void requestPayment_startsActivity() {
         BraintreeFragment fragment = getSetupFragment();
-        doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
         GooglePaymentRequest googlePaymentRequest = new GooglePaymentRequest()
                 .transactionInfo(TransactionInfo.newBuilder()
                         .setTotalPrice("1.00")
@@ -146,7 +138,6 @@ public class GooglePaymentTest {
     @Test
     public void requestPayment_startsActivityWithOptionalValues() {
         BraintreeFragment fragment = getSetupFragment();
-        doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
         GooglePaymentRequest googlePaymentRequest = new GooglePaymentRequest()
                 .allowPrepaidCards(true)
                 .billingAddressFormat(1)
@@ -183,9 +174,8 @@ public class GooglePaymentTest {
     }
 
     @Test
-    public void requestPayment_sendsAnalyticsEvent() throws Exception {
+    public void requestPayment_sendsAnalyticsEvent() {
         BraintreeFragment fragment = getSetupFragment();
-        doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
         GooglePaymentRequest googlePaymentRequest = new GooglePaymentRequest()
                 .transactionInfo(TransactionInfo.newBuilder()
                         .setTotalPrice("1.00")
@@ -230,7 +220,7 @@ public class GooglePaymentTest {
     }
 
     @Test
-    public void onActivityResult_sendsAnalyticsEventOnOkResponse() throws InterruptedException {
+    public void onActivityResult_sendsAnalyticsEventOnOkResponse() {
         BraintreeFragment fragment = getSetupFragment();
 
         GooglePayment.onActivityResult(fragment, Activity.RESULT_OK, new Intent());
@@ -380,9 +370,8 @@ public class GooglePaymentTest {
                 .withAnalytics()
                 .build();
 
-        BraintreeFragment fragment = getMockFragmentWithConfiguration(mActivityTestRule.getActivity(), configuration);
-        when(fragment.getHttpClient()).thenReturn(mock(BraintreeHttpClient.class));
-
-        return fragment;
+        return new MockFragmentBuilder()
+                .configuration(configuration)
+                .build();
     }
 }

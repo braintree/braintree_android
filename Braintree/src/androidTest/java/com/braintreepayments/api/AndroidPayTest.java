@@ -4,10 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.TokenizationParametersListener;
-import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
@@ -53,7 +51,6 @@ import static com.braintreepayments.api.AndroidPayActivity.EXTRA_REQUEST_TYPE;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_SHIPPING_ADDRESS_REQUIRED;
 import static com.braintreepayments.api.AndroidPayActivity.EXTRA_TOKENIZATION_PARAMETERS;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
-import static com.braintreepayments.api.BraintreeFragmentTestUtils.getMockFragmentWithConfiguration;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
@@ -61,10 +58,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -158,7 +152,6 @@ public class AndroidPayTest {
     @Test
     public void requestAndroidPay_startsActivity() {
         BraintreeFragment fragment = getSetupFragment();
-        doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
         Cart cart = Cart.newBuilder().build();
         ArrayList<CountrySpecification> allowedCountries = new ArrayList<>();
 
@@ -180,9 +173,8 @@ public class AndroidPayTest {
     }
 
     @Test
-    public void requestAndroidPay_sendsAnalyticsEvent() throws InterruptedException, InvalidArgumentException {
+    public void requestAndroidPay_sendsAnalyticsEvent() {
         BraintreeFragment fragment = getSetupFragment();
-        doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
 
         AndroidPay.requestAndroidPay(fragment, Cart.newBuilder().build(), false, false,
                 new ArrayList<CountrySpecification>());
@@ -193,7 +185,7 @@ public class AndroidPayTest {
     }
 
     @Test
-    public void requestAndroidPay_postsExceptionWhenCartIsNull() throws InterruptedException, InvalidArgumentException {
+    public void requestAndroidPay_postsExceptionWhenCartIsNull() {
         BraintreeFragment fragment = getSetupFragment();
 
         AndroidPay.requestAndroidPay(fragment, null, false, false, new ArrayList<CountrySpecification>());
@@ -206,7 +198,6 @@ public class AndroidPayTest {
     @Test
     public void changePaymentMethod_startsActivity() {
         BraintreeFragment fragment = getSetupFragment();
-        doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
         AndroidPayCardNonce androidPayCardNonce = mock(AndroidPayCardNonce.class);
         when(androidPayCardNonce.getGoogleTransactionId()).thenReturn("google-transaction-id");
         Cart cart = Cart.newBuilder().build();
@@ -227,7 +218,6 @@ public class AndroidPayTest {
     @Test
     public void changePaymentMethod_sendsAnalyticsEvent() {
         BraintreeFragment fragment = getSetupFragment();
-        doNothing().when(fragment).startActivityForResult(any(Intent.class), anyInt());
         AndroidPayCardNonce androidPayCardNonce = mock(AndroidPayCardNonce.class);
         when(androidPayCardNonce.getGoogleTransactionId()).thenReturn("google-transaction-id");
 
@@ -273,10 +263,9 @@ public class AndroidPayTest {
                 .withAnalytics()
                 .build();
 
-        BraintreeFragment fragment = getMockFragmentWithConfiguration(mActivityTestRule.getActivity(), configuration);
-        when(fragment.getHttpClient()).thenReturn(mock(BraintreeHttpClient.class));
-
-        return fragment;
+        return new MockFragmentBuilder()
+                .configuration(configuration)
+                .build();
     }
 
     private FullWallet createFullWallet() throws Exception {
