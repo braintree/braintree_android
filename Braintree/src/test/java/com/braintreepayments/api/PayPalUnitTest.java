@@ -713,6 +713,46 @@ public class PayPalUnitTest {
     }
 
     @Test
+    public void requestBillingAgreement_whenMerchantAccountIdPresent_postsParamsIncludeMerchantAccountId() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPalRequest request = new PayPalRequest()
+                .merchantAccountId("merchant_account_id");
+
+        PayPal.requestBillingAgreement(fragment, request);
+
+        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/setup_billing_agreement"));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        String merchantAccountId = json.getString("merchant_account_id");
+
+        assertEquals("merchant_account_id", merchantAccountId);
+    }
+
+    @Test
+    public void requestBillingAgreement_whenMerchantAccountIdNotPresent_postsDoNotIncludeMerchantAccountId() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPalRequest request = new PayPalRequest();
+
+        PayPal.requestBillingAgreement(fragment, request);
+
+        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/setup_billing_agreement"));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+
+        assertFalse(json.has("merchant_account_id"));
+    }
+
+    @Test
     public void requestOneTimePayment_postsExceptionWhenNoAmountIsSet() {
         BraintreeFragment fragment = mMockFragmentBuilder.build();
 
@@ -1107,6 +1147,46 @@ public class PayPalUnitTest {
         JSONObject json = new JSONObject(dataCaptor.getValue());
         assertEquals("US", json.get("country_code"));
         assertEquals(false, json.getJSONObject("experience_profile").get("address_override"));
+    }
+
+    @Test
+    public void requestOneTimePayment_whenMerchantAccountIdPresent_postIncludeMerchantAccountId() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPalRequest request = new PayPalRequest("3.43")
+                .merchantAccountId("merchant_account_id");
+
+        PayPal.requestOneTimePayment(fragment, request);
+
+        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        String merchantAccountId = json.getString("merchant_account_id");
+
+        assertEquals("merchant_account_id", merchantAccountId);
+    }
+
+    @Test
+    public void requestOneTimePayment_whenMerchantAccountIdNotPresent_postDoesNotIncludeMerchantAccountId() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPalRequest request = new PayPalRequest("3.43");
+
+        PayPal.requestOneTimePayment(fragment, request);
+
+        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+
+        assertFalse(json.has("merchant_account_id"));
     }
 
     @Test

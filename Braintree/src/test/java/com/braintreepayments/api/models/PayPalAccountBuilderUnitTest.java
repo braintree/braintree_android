@@ -22,7 +22,8 @@ public class PayPalAccountBuilderUnitTest {
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
                 .intent(PayPalRequest.INTENT_SALE)
                 .clientMetadataId("correlation_id")
-                .source("paypal-sdk");
+                .source("paypal-sdk")
+                .merchantAccountId("alt_merchant_account_id");
 
         String json = paypalAccountBuilder.build();
         JSONObject jsonObject = new JSONObject(json);
@@ -34,6 +35,7 @@ public class PayPalAccountBuilderUnitTest {
         assertEquals(PayPalRequest.INTENT_SALE, jsonAccount.getString("intent"));
         assertEquals("custom", jsonMetadata.getString("integration"));
         assertEquals("paypal-sdk", jsonMetadata.getString("source"));
+        assertEquals("alt_merchant_account_id", jsonObject.getString("merchant_account_id"));
     }
 
     @Test

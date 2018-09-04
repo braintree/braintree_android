@@ -86,6 +86,7 @@ public class PayPalRequest implements Parcelable {
     private String mUserAction = USER_ACTION_DEFAULT;
     private String mDisplayName;
     private boolean mOfferCredit;
+    private String mMerchantAccountId;
 
     /**
      * Constructs a description of a PayPal checkout for Single Payment and Billing Agreements.
@@ -262,6 +263,16 @@ public class PayPalRequest implements Parcelable {
         return this;
     }
 
+    /**
+     * Specify a merchant account Id other than the default to use during tokenization.
+     *
+     * @param merchantAccountId the non-default merchant account Id.
+     */
+    public PayPalRequest merchantAccountId(String merchantAccountId) {
+        mMerchantAccountId = merchantAccountId;
+        return this;
+    }
+
     public String getAmount() {
         return mAmount;
     }
@@ -298,6 +309,10 @@ public class PayPalRequest implements Parcelable {
         return mOfferCredit;
     }
 
+    public String getMerchantAccountId() {
+        return mMerchantAccountId;
+    }
+
     @PayPalPaymentIntent
     public String getIntent() {
         return mIntent;
@@ -332,6 +347,7 @@ public class PayPalRequest implements Parcelable {
         parcel.writeString(mUserAction);
         parcel.writeString(mDisplayName);
         parcel.writeByte(mOfferCredit ? (byte) 1:0);
+        parcel.writeString(mMerchantAccountId);
     }
 
     public PayPalRequest(Parcel in) {
@@ -347,6 +363,7 @@ public class PayPalRequest implements Parcelable {
         mUserAction = in.readString();
         mDisplayName = in.readString();
         mOfferCredit = in.readByte() > 0;
+        mMerchantAccountId = in.readString();
     }
 
     public static final Creator<PayPalRequest> CREATOR = new Creator<PayPalRequest>() {

@@ -96,6 +96,7 @@ public class PayPal {
     private static final String USER_ACTION_KEY = "useraction";
     private static final String DISPLAY_NAME_KEY = "brand_name";
     private static final String SHIPPING_ADDRESS_KEY = "shipping_address";
+    private static final String MERCHANT_ACCOUNT_ID = "merchant_account_id";
 
     /**
      * Starts the Pay With PayPal flow. This will launch the PayPal app if installed or switch to
@@ -359,6 +360,10 @@ public class PayPal {
             experienceProfile.put(ADDRESS_OVERRIDE_KEY, false);
         }
 
+        if(request.getMerchantAccountId() != null) {
+            parameters.put(MERCHANT_ACCOUNT_ID, request.getMerchantAccountId());
+        }
+
         parameters.put(EXPERIENCE_PROFILE_KEY, experienceProfile);
 
         String apiUrl = isBillingAgreement ? SETUP_BILLING_AGREEMENT_ENDPOINT : CREATE_SINGLE_PAYMENT_ENDPOINT;
@@ -505,7 +510,8 @@ public class PayPal {
     private static PayPalAccountBuilder parseResponse(PayPalRequest paypalRequest, Request request, Result result,
             Intent intent) {
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
-                .clientMetadataId(request.getClientMetadataId());
+                .clientMetadataId(request.getClientMetadataId())
+                .merchantAccountId(paypalRequest.getMerchantAccountId());
 
         if (request instanceof CheckoutRequest && paypalRequest != null) {
             paypalAccountBuilder.intent(paypalRequest.getIntent());

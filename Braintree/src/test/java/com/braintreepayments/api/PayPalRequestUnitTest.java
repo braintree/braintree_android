@@ -204,7 +204,8 @@ public class PayPalRequestUnitTest {
                 .landingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN)
                 .userAction(PayPalRequest.USER_ACTION_COMMIT)
                 .displayName("Display Name")
-                .offerCredit(true);
+                .offerCredit(true)
+                .merchantAccountId("merchant_account_id");
 
         Parcel parcel = Parcel.obtain();
         request.writeToParcel(parcel, 0);
@@ -225,6 +226,7 @@ public class PayPalRequestUnitTest {
         assertEquals(PayPalRequest.USER_ACTION_COMMIT, result.getUserAction());
         assertEquals("Display Name", result.getDisplayName());
         assertTrue(result.shouldOfferCredit());
+        assertEquals("merchant_account_id", result.getMerchantAccountId());
 
     }
 }

@@ -18,10 +18,12 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
     private static final String PAYPAL_ACCOUNT_KEY = "paypalAccount";
     private static final String CORRELATION_ID_KEY = "correlationId";
     private static final String INTENT_KEY = "intent";
+    private static final String MERCHANT_ACCOUNT_ID_KEY = "merchant_account_id";
 
     private String mClientMetadataId;
     private JSONObject mOneTouchCoreData = new JSONObject();
     private String mIntent;
+    private String mMerchantAccountId;
 
     public PayPalAccountBuilder() {
         super();
@@ -57,10 +59,21 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
      * Used by PayPal wrappers to construct a request to create a PayPal account.
      *
      * @param intent Can be either {@link PayPalRequest#INTENT_AUTHORIZE} or {@link PayPalRequest#INTENT_SALE}.
-     * @return
+     * @return {@link PayPalAccountBuilder}
      */
     public PayPalAccountBuilder intent(@PayPalPaymentIntent String intent) {
         mIntent = intent;
+        return this;
+    }
+
+    /**
+     * Used to set a non-default merchant account id.
+     *
+     * @param merchantAccountId String merchant account id
+     * @return {@link PayPalAccountBuilder}
+     */
+    public PayPalAccountBuilder merchantAccountId(String merchantAccountId) {
+        mMerchantAccountId = merchantAccountId;
         return this;
     }
 
@@ -73,6 +86,10 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
         while (otcKeyIterator.hasNext()) {
             String otcKey = otcKeyIterator.next();
             paymentMethodNonceJson.put(otcKey, mOneTouchCoreData.get(otcKey));
+        }
+
+        if(mMerchantAccountId != null) {
+            base.put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId);
         }
 
         base.put(PAYPAL_ACCOUNT_KEY, paymentMethodNonceJson);
