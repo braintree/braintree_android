@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.text.TextUtils;
 
 import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
@@ -54,6 +55,19 @@ public class Venmo {
         return AppHelper.isIntentAvailable(context, getVenmoIntent()) &&
                 SignatureVerification.isSignatureValid(context, PACKAGE_NAME, CERTIFICATE_SUBJECT, CERTIFICATE_ISSUER,
                         PUBLIC_KEY_HASH_CODE);
+    }
+
+    /**
+     * Launches an {@link Intent} pointing to the Venmo app on the Google Play Store
+     *
+     * @param fragment used to open the Venmo's Google Play Store
+     */
+    public static void openVenmoAppPageInGooglePlay(BraintreeFragment fragment) {
+        fragment.sendAnalyticsEvent("android.pay-with-venmo.app-store.invoked");
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(
+                "https://play.google.com/store/apps/details?id=" + PACKAGE_NAME));
+        fragment.startActivity(intent);
     }
 
     private static Intent getVenmoIntent() {

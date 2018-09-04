@@ -101,6 +101,40 @@ public class VenmoUnitTest {
     }
 
     @Test
+    public void openVenmoAppPageInGooglePlay_opensVenmoAppStoreURL()
+            throws JSONException {
+        Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
+
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .configuration(configuration)
+                .build();
+
+        Venmo.openVenmoAppPageInGooglePlay(fragment);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+
+        verify(fragment).startActivity(captor.capture());
+        assertEquals(captor.getValue().getData().toString(),"https://play.google.com/store/apps/details?id=com.venmo");
+    }
+
+    @Test
+    public void openVenmoAppPageInGooglePlay_sendsAnalyticsEvent()
+            throws JSONException {
+        Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
+
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .configuration(configuration)
+                .build();
+
+        Venmo.openVenmoAppPageInGooglePlay(fragment);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+
+        verify(fragment).startActivity(captor.capture());
+        verify(fragment).sendAnalyticsEvent("android.pay-with-venmo.app-store.invoked");
+    }
+
+    @Test
     public void getLaunchIntent_containsCorrectVenmoExtras() throws JSONException, InvalidArgumentException {
         Configuration configuration = getConfigurationFromFixture();
 
