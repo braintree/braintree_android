@@ -4,6 +4,8 @@
 
 Welcome to Braintree's Android SDK. This library will help you accept card and alternative payments in your Android app.
 
+Braintree's Android SDK is available for Android SDK >= 16.
+
 ## Adding It To Your Project
 
 Add the dependency in your `build.gradle`:
