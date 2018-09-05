@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 2.16.0
+
+* Add optional merchant account Id to PayPalRequest
+* Add openVenmoAppPageInGooglePlay method which opens Venmo on the Google Play
+
 ## 2.15.2
 
 * Fix NoClassDefFoundError compile error for PayPalDataCollector 

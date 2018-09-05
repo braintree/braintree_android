@@ -510,8 +510,11 @@ public class PayPal {
     private static PayPalAccountBuilder parseResponse(PayPalRequest paypalRequest, Request request, Result result,
             Intent intent) {
         PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
-                .clientMetadataId(request.getClientMetadataId())
-                .merchantAccountId(paypalRequest.getMerchantAccountId());
+                .clientMetadataId(request.getClientMetadataId());
+
+        if (paypalRequest != null && paypalRequest.getMerchantAccountId() != null) {
+            paypalAccountBuilder.merchantAccountId(paypalRequest.getMerchantAccountId());
+        }
 
         if (request instanceof CheckoutRequest && paypalRequest != null) {
             paypalAccountBuilder.intent(paypalRequest.getIntent());
