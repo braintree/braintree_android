@@ -5,14 +5,14 @@ apply plugin: 'signing'
 version = '1.0.1-SNAPSHOT'
 
 android {
-    buildToolsVersion '27.0.3'
-    compileSdkVersion 27
+    buildToolsVersion '28.0.2'
+    compileSdkVersion 28
 
     dataBinding.enabled = true
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode = 3
         versionName = version
 
@@ -23,37 +23,39 @@ android {
         abortOnError false
     }
 
-    testOptions.unitTests.all {
-        jvmArgs '-noverify'
+    testOptions.unitTests {
+        all {
+            jvmArgs '-noverify'
+        }
+        returnDefaultValues true
+        includeAndroidResources true
     }
 }
 
 android.buildTypes.debug {
     dependencies {
-        compile 'com.android.support:support-v4:27.1.0'
-        compile 'com.android.support:appcompat-v7:27.1.0'
-        compile 'com.android.support:design:27.1.0'
+        implementation 'com.android.support:support-v4:28.0.0'
+        implementation 'com.android.support:appcompat-v7:28.0.0'
+        implementation 'com.android.support:design:28.0.0'
     }
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:26.0.0'
-    compile 'com.braintreepayments.api:braintree:2.12.0'
+    implementation 'com.android.support:support-annotations:28.0.0'
+    implementation 'com.braintreepayments.api:braintree:2.16.0'
 
-    compile(group: 'com.visa.checkout', name: 'visacheckout-android-sdk', version: '6.6.0', ext: 'aar')
+    implementation(group: 'com.visa.checkout', name: 'visacheckout-android-sdk', version: '6.6.0', ext: 'aar')
 
-    testCompile 'com.google.android.gms:play-services-wallet:11.4.0'
-    testCompile 'com.android.support.test:runner:1.0.0'
-    testCompile 'com.android.support.test:rules:1.0.0'
-    testCompile 'org.powermock:powermock-module-junit4:1.6.6'
-    testCompile 'org.powermock:powermock-module-junit4-rule:1.6.6'
-    testCompile 'org.powermock:powermock-api-mockito:1.6.6'
-    testCompile 'org.powermock:powermock-classloading-xstream:1.6.6'
-    testCompile 'org.robolectric:robolectric:3.3.2'
-    testCompile 'org.skyscreamer:jsonassert:1.4.0'
-    testCompile 'com.squareup.assertj:assertj-android:1.1.1'
-    testCompile 'junit:junit:4.12'
-    androidTestCompile 'junit:junit:4.12'
+    testImplementation 'com.google.android.gms:play-services-wallet:16.0.1'
+    testImplementation 'com.android.support.test:runner:1.0.2'
+    testImplementation 'com.android.support.test:rules:1.0.2'
+    testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
+    testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'
+    testImplementation 'org.powermock:powermock-api-mockito:1.6.6'
+    testImplementation 'org.powermock:powermock-classloading-xstream:1.6.6'
+    testImplementation 'org.robolectric:robolectric:4.0-alpha-3'
+    testImplementation 'org.skyscreamer:jsonassert:1.4.0'
+    testImplementation 'com.squareup.assertj:assertj-android:1.1.1'
 }
 
 /* maven deploy + signing */
