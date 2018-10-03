@@ -218,6 +218,23 @@ public class BraintreeGraphQLHttpClientTest {
             httpClient.parseResponse(connection);
             fail("No exception was thrown");
         } catch (UnexpectedException e) {
+            assertEquals("Variable 'input' has coerced Null value for NonNull type 'String!'", e.getMessage());
+        }
+    }
+
+    @Test
+    public void parseResponseFailsWithUnknownError() throws Exception {
+        String baseUrl = "http://example.com/graphql";
+        HttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
+        httpClient = HttpClientTestUtils.stubResponse(httpClient,
+                200,
+                FixturesHelper.stringFromFixture("errors/graphql/unknown_error.json"));
+        HttpURLConnection connection = httpClient.init(baseUrl);
+
+        try {
+            httpClient.parseResponse(connection);
+            fail("No exception was thrown");
+        } catch (UnexpectedException e) {
             assertEquals("An unexpected error occurred", e.getMessage());
         }
     }

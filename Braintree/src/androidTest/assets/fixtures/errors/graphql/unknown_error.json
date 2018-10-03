@@ -1,0 +1,12 @@
+{
+  "data" : null,
+  "errors" : [{
+    "locations" : [{
+      "line" : 1,
+      "column" : 1
+    }]
+  }],
+  "extensions" : {
+    "requestId" : "42e50df8-c29d-4430-9d3f-00379b147543"
+  }
+}

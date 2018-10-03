@@ -46,15 +46,16 @@ public class BraintreeGraphQLHttpClient extends BraintreeApiHttpClient {
             for (int i = 0; i < errors.length(); i++) {
                 JSONObject error = errors.getJSONObject(i);
                 JSONObject extensions = error.optJSONObject(Keys.EXTENSIONS);
+                String message = Json.optString(error, Keys.MESSAGE, "An Unexpected Exception Occurred");
 
                 if (extensions == null) {
-                    throw new UnexpectedException("An unexpected error occurred");
+                    throw new UnexpectedException(message);
                 }
 
                 if (Json.optString(extensions, Keys.LEGACY_CODE, "").equals(LegacyErrorCodes.VALIDATION_NOT_ALLOWED)) {
                     throw new AuthorizationException(error.getString(Keys.MESSAGE));
                 } else if (!Json.optString(extensions, Keys.ERROR_TYPE, "").equals(ErrorTypes.USER)) {
-                    throw new UnexpectedException("An unexpected error occurred");
+                    throw new UnexpectedException(message);
                 }
             }
 

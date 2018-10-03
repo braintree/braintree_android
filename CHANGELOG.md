@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## Unreleased
+
+* Surface message on unexpected exception
+
 ## 2.16.0
 
 * Add optional merchant account Id to PayPalRequest
@@ -7,7 +11,7 @@
 
 ## 2.15.2
 
-* Fix NoClassDefFoundError compile error for PayPalDataCollector 
+* Fix NoClassDefFoundError compile error for PayPalDataCollector
 
 ## 2.15.1
 
