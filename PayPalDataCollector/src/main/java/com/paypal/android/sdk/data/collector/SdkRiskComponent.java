@@ -14,7 +14,11 @@ public final class SdkRiskComponent {
      */
     @Deprecated
     @MainThread
-    public static String getClientMetadataId(Context context, String applicationGuid, String pairingId) {
-        return PayPalDataCollector.getClientMetadataId(context, applicationGuid, pairingId);
+    public static String getClientMetadataId(Context context, String applicationGuid, String clientMetadataId) {
+        PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
+                .setApplicationGuid(applicationGuid)
+                .setClientMetadataId(clientMetadataId);
+
+        return PayPalDataCollector.getClientMetadataId(context, request);
     }
 }

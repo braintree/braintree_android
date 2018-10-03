@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 
-def dataCollectorVersion = 'paypal-data-collector-3.1.6.jar'
+def dataCollectorVersion = 'paypal-data-collector-4.0.3.jar'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -24,10 +24,15 @@ android {
     }
 }
 
-dependencies {
-    compileOnly 'com.android.support:support-annotations:26.0.0'
+repositories {
+    flatDir {
+        dirs "libs"
+    }
+}
 
+dependencies {
     api files('libs/' + dataCollectorVersion)
+    compileOnly 'com.android.support:support-annotations:26.0.0'
 
     androidTestImplementation 'com.android.support.test:runner:1.0.0'
 }

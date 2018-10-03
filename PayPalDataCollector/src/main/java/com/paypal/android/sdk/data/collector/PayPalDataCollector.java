@@ -3,18 +3,12 @@ package com.paypal.android.sdk.data.collector;
 import android.content.Context;
 import android.support.annotation.MainThread;
 
-import com.paypal.android.sdk.onetouch.core.metadata.MetadataIdProvider;
-import com.paypal.android.sdk.onetouch.core.metadata.MetadataIdProviderImpl;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Executors;
+import lib.android.paypal.com.magnessdk.MagnesResult;
+import lib.android.paypal.com.magnessdk.MagnesSDK;
+import lib.android.paypal.com.magnessdk.MagnesSettings;
+import lib.android.paypal.com.magnessdk.MagnesSource;
 
 public class PayPalDataCollector {
-
-    private static MetadataIdProvider sMetadataIdProvider;
-
     /**
      * Gets a Client Metadata ID at the time of payment activity. Once a user initiates a PayPal payment
      * from their device, PayPal uses the Client Metadata ID to verify that the payment is
@@ -28,7 +22,10 @@ public class PayPalDataCollector {
      */
     @MainThread
     public static String getClientMetadataId(Context context) {
-        return getClientMetadataId(context, null);
+        PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
+                .setApplicationGuid(InstallationIdentifier.getInstallationGUID(context));
+
+        return getClientMetadataId(context, request);
     }
 
     /**
@@ -40,43 +37,45 @@ public class PayPalDataCollector {
      * payment request sent to PayPal. Do not otherwise cache or store this value.
      *
      * @param context
-     * @param pairingId The desired pairing id
+     * @param clientMetadataId The desired client metadata ID
      * @return clientMetadataId Your server will send this to PayPal
      */
     @MainThread
-    public static String getClientMetadataId(Context context, String pairingId) {
-        return getClientMetadataId(context, InstallationIdentifier.getInstallationGUID(context), pairingId);
+    public static String getClientMetadataId(Context context, String clientMetadataId) {
+        PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
+                .setApplicationGuid(InstallationIdentifier.getInstallationGUID(context))
+                .setClientMetadataId(clientMetadataId);
+
+        return getClientMetadataId(context, request);
     }
 
+    /**
+     * Gets a Client Metadata ID at the time of payment activity. Once a user initiates a PayPal payment
+     * from their device, PayPal uses the Client Metadata ID to verify that the payment is
+     * originating from a valid, user-consented device and application. This helps reduce fraud and
+     * decrease declines. This method MUST be called prior to initiating a pre-consented payment (a
+     * "future payment") from a mobile device. Pass the result to your server, to include in the
+     * payment request sent to PayPal. Do not otherwise cache or store this value.
+     *
+     * @param context An Android context.
+     * @param request configures what data to collect.
+     * @return
+     */
     @MainThread
-    static String getClientMetadataId(Context context, String applicationGuid, String pairingId) {
-        if (sMetadataIdProvider == null) {
-            if (context == null) {
-                return "";
-            }
-
-            sMetadataIdProvider = new MetadataIdProviderImpl();
-
-            Map<String, Object> params;
-            if (pairingId != null) {
-                params = new HashMap<>();
-                params.put(MetadataIdProvider.PAIRING_ID, pairingId);
-            } else {
-                params = Collections.emptyMap();
-            }
-
-            String clientMetadataId = sMetadataIdProvider.init(context.getApplicationContext(), applicationGuid, params);
-
-            Executors.newSingleThreadExecutor().submit(new Runnable() {
-                @Override
-                public void run() {
-                    sMetadataIdProvider.flush();
-                }
-            });
-
-            return clientMetadataId;
-        } else {
-            return sMetadataIdProvider.generatePairingId(pairingId);
+    public static String getClientMetadataId(Context context, PayPalDataCollectorRequest request) {
+        if (context == null) {
+            return "";
         }
+
+        MagnesSDK magnesInstance = MagnesSDK.getInstance();
+        MagnesSettings.Builder magnesSettingsBuilder = new MagnesSettings.Builder(context)
+                .setMagnesSource(MagnesSource.BRAINTREE)
+                .setAppGuid(request.getApplicationGuid());
+
+        magnesInstance.setUp(magnesSettingsBuilder.build());
+
+        MagnesResult result = magnesInstance.collectAndSubmit(context, request.getClientMetadataId(), null);
+
+        return result.getPaypalClientMetaDataId();
     }
 }
