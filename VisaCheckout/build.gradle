@@ -2,8 +2,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-version = '1.0.1-SNAPSHOT'
-
 android {
     buildToolsVersion '28.0.2'
     compileSdkVersion 28
@@ -13,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode = 3
-        versionName = version
+        versionCode = rootProject.ext.versionCode
+        versionName = rootProject.ext.versionName
 
         consumerProguardFiles 'proguard.pro'
     }
@@ -81,7 +79,7 @@ artifacts {
 }
 
 signing {
-    required { !version.endsWith("SNAPSHOT") }
+    required { !rootProjext.ext.versionName.endsWith("SNAPSHOT") }
     sign configurations.archives
 }
 
@@ -113,7 +111,7 @@ uploadArchives {
             pom.project {
                 name 'visa-checkout'
                 groupId = 'com.braintreepayments.api'
-                version = "${android.defaultConfig.versionName}"
+                version = "${rootProject.ext.versionName}"
                 packaging 'jar'
                 description 'Visa Checkout Module for Braintree\'s Android SDK.'
                 url 'https://github.com/braintree/braintree-android-visa-checkout'
