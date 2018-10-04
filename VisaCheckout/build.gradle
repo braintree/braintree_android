@@ -79,7 +79,7 @@ artifacts {
 }
 
 signing {
-    required { !rootProjext.ext.versionName.endsWith("SNAPSHOT") }
+    required { !android.defaultConfig.versionName.endsWith("SNAPSHOT") }
     sign configurations.archives
 }
 
@@ -111,7 +111,7 @@ uploadArchives {
             pom.project {
                 name 'visa-checkout'
                 groupId = 'com.braintreepayments.api'
-                version = "${rootProject.ext.versionName}"
+                version = "${android.defaultConfig.versionName}"
                 packaging 'jar'
                 description 'Visa Checkout Module for Braintree\'s Android SDK.'
                 url 'https://github.com/braintree/braintree-android-visa-checkout'
