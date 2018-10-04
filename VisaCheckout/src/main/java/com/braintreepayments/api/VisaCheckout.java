@@ -1,14 +1,9 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
-import android.content.Intent;
-
-import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VisaCheckoutBuilder;
@@ -16,7 +11,6 @@ import com.braintreepayments.api.models.VisaCheckoutConfiguration;
 import com.visa.checkout.Environment;
 import com.visa.checkout.Profile.DataLevel;
 import com.visa.checkout.Profile.ProfileBuilder;
-import com.visa.checkout.PurchaseInfo.PurchaseInfoBuilder;
 import com.visa.checkout.VisaCheckoutSdk;
 import com.visa.checkout.VisaPaymentSummary;
 
@@ -84,19 +78,6 @@ public class VisaCheckout {
         });
     }
 
-    /**
-     * Starts Visa Checkout to authorize a payment from the customer.
-     * @param fragment {@link BraintreeFragment}
-     * @param purchaseInfoBuilder {@link PurchaseInfoBuilder} Used to customize the authorization process.
-     */
-    public static void authorize(final BraintreeFragment fragment, final PurchaseInfoBuilder purchaseInfoBuilder) {
-        Intent intent = VisaCheckoutSdk.getCheckoutIntent(fragment.getActivity(),
-                purchaseInfoBuilder.build());
-
-        fragment.sendAnalyticsEvent("visacheckout.initiate.started");
-        fragment.startActivityForResult(intent, BraintreeRequestCodes.VISA_CHECKOUT);
-    }
-
     static boolean isVisaCheckoutSDKAvailable() {
         try {
             Class.forName("com.visa.checkout.VisaCheckoutSdk");
@@ -106,22 +87,12 @@ public class VisaCheckout {
         }
     }
 
-    static void onActivityResult(BraintreeFragment fragment, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_CANCELED) {
-            fragment.sendAnalyticsEvent("visacheckout.result.cancelled");
-        } else if (resultCode == Activity.RESULT_OK && data != null) {
-            VisaPaymentSummary visaPaymentSummary = data.getParcelableExtra(
-                    VisaCheckoutSdk.INTENT_PAYMENT_SUMMARY);
-            tokenize(fragment, visaPaymentSummary);
-            fragment.sendAnalyticsEvent("visacheckout.result.succeeded");
-        } else {
-            fragment.postCallback(
-                    new BraintreeException("Visa Checkout responded with an invalid resultCode: " + resultCode));
-            fragment.sendAnalyticsEvent("visacheckout.result.failed");
-        }
-    }
-
-    static void tokenize(final BraintreeFragment fragment, final VisaPaymentSummary visaPaymentSummary) {
+    /**
+     * Tokenizes the payment summary of the Visa Checkout flow.
+     * @param fragment {@link BraintreeFragment}
+     * @param visaPaymentSummary {@link VisaPaymentSummary} The Visa payment to tokenize.
+     */
+    public static void tokenize(final BraintreeFragment fragment, final VisaPaymentSummary visaPaymentSummary) {
         TokenizationClient.tokenize(fragment, new VisaCheckoutBuilder(visaPaymentSummary),
                 new PaymentMethodNonceCallback() {
                     @Override

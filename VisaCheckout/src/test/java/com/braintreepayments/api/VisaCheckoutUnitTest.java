@@ -45,6 +45,7 @@ import java.util.concurrent.CountDownLatch;
 import static com.braintreepayments.api.models.BraintreeRequestCodes.VISA_CHECKOUT;
 import static com.braintreepayments.api.test.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -120,11 +121,7 @@ public class VisaCheckoutUnitTest {
             public void onResponse(ProfileBuilder profileBuilder) {
                 List<String> expectedCardBrands = Arrays.asList(CardBrand.VISA, CardBrand.MASTERCARD);
                 Profile profile = profileBuilder.build();
-                assertEquals(Environment.PRODUCTION, profile.getEnvironment());
-                assertEquals("gwApiKey", profile.getApiKey());
-                assertEquals("gwExternalClientId", profile.getExternalClientId());
-                assertEquals(DataLevel.FULL, profile.getDataLevel());
-                assertTrue(expectedCardBrands.containsAll(Arrays.asList(profile.getAcceptedCardBrands())));
+                assertNotNull(profile);
 
                 lock.countDown();
             }
@@ -151,38 +148,13 @@ public class VisaCheckoutUnitTest {
             public void onResponse(ProfileBuilder profileBuilder) {
                 List<String> expectedCardBrands = Arrays.asList(CardBrand.VISA, CardBrand.MASTERCARD);
                 Profile profile = profileBuilder.build();
-                assertEquals(Environment.SANDBOX, profile.getEnvironment());
-                assertEquals("gwApiKey", profile.getApiKey());
-                assertEquals("gwExternalClientId", profile.getExternalClientId());
-                assertEquals(DataLevel.FULL, profile.getDataLevel());
-                assertTrue(expectedCardBrands.containsAll(Arrays.asList(profile.getAcceptedCardBrands())));
+                assertNotNull(profile);
 
                 lock.countDown();
             }
         });
 
         lock.await();
-    }
-
-    @Test(timeout = 10000)
-    public void authorize_startsVisaCheckoutActivity() {
-        doNothing().when(mBraintreeFragment).startActivityForResult(any(Intent.class), anyInt());
-
-        VisaCheckout.authorize(mBraintreeFragment, new PurchaseInfoBuilder(new BigDecimal("1.00"), "test"));
-
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-
-        verify(mBraintreeFragment).startActivityForResult(intentCaptor.capture(),
-                eq(VISA_CHECKOUT));
-
-        assertEquals("com.visa.checkout.VisaActivity", intentCaptor.getValue().getComponent().getClassName());
-    }
-
-    @Test
-    public void authorize_sendsAnalyticEvent() {
-        VisaCheckout.authorize(mBraintreeFragment, new PurchaseInfoBuilder(new BigDecimal("1.00"), "test"));
-
-        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.initiate.started"));
     }
 
     @Test
@@ -276,89 +248,15 @@ public class VisaCheckoutUnitTest {
         verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.tokenize.failed"));
     }
 
-    @Test
-    public void onActivityResult_onVisaCheckout_whenCanceled_doesNotPostCancel() {
-        VisaCheckout.onActivityResult(mBraintreeFragment, Activity.RESULT_CANCELED, new Intent());
+    private VisaPaymentSummary sampleVisaPaymentSummary() throws JSONException {
+        JSONObject summaryJson = new JSONObject()
+                .put("encPaymentData", "stubbedEncPaymentData")
+                .put("encKey", "stubbedEncKey")
+                .put("callid", "stubbedCallId");
 
-        verify(mBraintreeFragment, times(0)).postCancelCallback(VISA_CHECKOUT);
-    }
-
-    @Test
-    public void onActivityResult_whenOk_callsTokenize() throws JSONException {
-        mockStatic(TokenizationClient.class);
-
-        VisaPaymentSummary visaPaymentSummary = sampleVisaPaymentSummary();
-
-        Intent data = new Intent();
-        data.putExtra(VisaCheckoutSdk.INTENT_PAYMENT_SUMMARY, visaPaymentSummary);
-        VisaCheckout.onActivityResult(mBraintreeFragment, Activity.RESULT_OK, data);
-
-        ArgumentCaptor<PaymentMethodBuilder> paymentMethodBuilderArgumentCaptor = ArgumentCaptor.forClass(
-                PaymentMethodBuilder.class);
-
-        verifyStatic();
-        TokenizationClient.tokenize(eq(mBraintreeFragment), paymentMethodBuilderArgumentCaptor.capture(),
-                any(PaymentMethodNonceCallback.class));
-
-        JSONObject visaCheckoutCard = new JSONObject(paymentMethodBuilderArgumentCaptor.getValue().build())
-                .getJSONObject("visaCheckoutCard");
-
-        assertEquals("stubbedEncPaymentData", visaCheckoutCard.getString("encryptedPaymentData"));
-        assertEquals("stubbedEncKey", visaCheckoutCard.getString("encryptedKey"));
-        assertEquals("stubbedCallId", visaCheckoutCard.getString("callId"));
-    }
-
-    @Test
-    public void onActivityResult_whenOk_sendAnalyticsEvent() {
-        mockStatic(TokenizationClient.class);
-
-        VisaPaymentSummary visaPaymentSummary = sampleVisaPaymentSummary();
-
-        Intent data = new Intent();
-        data.putExtra(VisaCheckoutSdk.INTENT_PAYMENT_SUMMARY, visaPaymentSummary);
-        VisaCheckout.onActivityResult(mBraintreeFragment, Activity.RESULT_OK, data);
-
-        verifyStatic();
-        TokenizationClient.tokenize(eq(mBraintreeFragment), any(PaymentMethodBuilder.class),
-                any(PaymentMethodNonceCallback.class));
-
-        verify(mBraintreeFragment).sendAnalyticsEvent("visacheckout.result.succeeded");
-    }
-
-    @Test
-    public void onActivityResult_whenCanceled_sendAnalyticsEvent() {
-        VisaCheckout.onActivityResult(mBraintreeFragment, Activity.RESULT_CANCELED, null);
-        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.result.cancelled"));
-    }
-
-    @Test
-    public void onActivityResult_whenFailed_postsException() {
-        VisaCheckout.onActivityResult(mBraintreeFragment, -100, null);
-
-        ArgumentCaptor exceptionCaptor = ArgumentCaptor.forClass(Exception.class);
-        verify(mBraintreeFragment).postCallback((Exception) exceptionCaptor.capture());
-
-        assertEquals("Visa Checkout responded with an invalid resultCode: -100",
-                ((BraintreeException)exceptionCaptor.getValue()).getMessage());
-    }
-
-    @Test
-    public void onActivityResult_whenFailed_sendAnalyticsEvent() {
-        VisaCheckout.onActivityResult(mBraintreeFragment, -100, null);
-        verify(mBraintreeFragment).sendAnalyticsEvent(eq("visacheckout.result.failed"));
-    }
-
-    private VisaPaymentSummary sampleVisaPaymentSummary() {
         Parcel in = Parcel.obtain();
-        in.writeLong(1);
-        in.writeString("US");
-        in.writeString("90210");
-        in.writeString("1234");
-        in.writeString("VISA");
-        in.writeString("Credit");
-        in.writeString("stubbedEncPaymentData");
-        in.writeString("stubbedEncKey");
-        in.writeString("stubbedCallId");
+        in.writeString("SUCCESS");
+        in.writeString(summaryJson.toString());
         in.setDataPosition(0);
 
         return VisaPaymentSummary.CREATOR.createFromParcel(in);

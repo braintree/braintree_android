@@ -34,16 +34,14 @@ public class VisaCheckoutBuilderUnitTest {
         JSONObject base = new JSONObject();
         JSONObject paymentMethodNonceJson = new JSONObject();
 
+        JSONObject summaryJson = new JSONObject()
+                .put("encPaymentData", "stubbedEncPaymentData")
+                .put("encKey", "stubbedEncKey")
+                .put("callid", "stubbedCallId");
+
         Parcel in = Parcel.obtain();
-        in.writeLong(1);
-        in.writeString("US");
-        in.writeString("90210");
-        in.writeString("1234");
-        in.writeString("VISA");
-        in.writeString("Credit");
-        in.writeString("stubbedEncPaymentData");
-        in.writeString("stubbedEncKey");
-        in.writeString("stubbedCallId");
+        in.writeString("SUCCESS");
+        in.writeString(summaryJson.toString());
         in.setDataPosition(0);
 
         VisaPaymentSummary visaPaymentSummary = VisaPaymentSummary.CREATOR.createFromParcel(in);
