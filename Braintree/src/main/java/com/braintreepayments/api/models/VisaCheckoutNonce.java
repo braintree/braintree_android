@@ -56,9 +56,9 @@ public class VisaCheckoutNonce extends PaymentMethodNonce implements Parcelable 
         JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
         mLastTwo = details.getString(LAST_TWO_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
-        mBillingAddress = VisaCheckoutAddress.fromJson(json.getJSONObject(BILLING_ADDRESS_KEY));
-        mShippingAddress = VisaCheckoutAddress.fromJson(json.getJSONObject(SHIPPING_ADDRESS_KEY));
-        mUserData = VisaCheckoutUserData.fromJson(json.getJSONObject(USER_DATA_KEY));
+        mBillingAddress = VisaCheckoutAddress.fromJson(json.optJSONObject(BILLING_ADDRESS_KEY));
+        mShippingAddress = VisaCheckoutAddress.fromJson(json.optJSONObject(SHIPPING_ADDRESS_KEY));
+        mUserData = VisaCheckoutUserData.fromJson(json.optJSONObject(USER_DATA_KEY));
         mCallId = Json.optString(json, CALL_ID_KEY, "");
         mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
     }

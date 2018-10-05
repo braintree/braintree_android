@@ -5,10 +5,11 @@
     android:layout_height="match_parent"
     android:gravity="center">
 
-    <com.visa.checkout.widget.VisaCheckoutButton
+
+    <com.visa.checkout.CheckoutButton
         android:id="@+id/visa_checkout_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/bt_payment_method_button_height"
         android:background="@android:color/transparent" />
 
 </LinearLayout>

@@ -80,8 +80,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-wallet:11.4.0'
 
     // Visa checkout dependencies
-    implementation 'com.braintreepayments.api:visa-checkout:1.0.0'
-    implementation(group: 'com.visa.checkout', name: 'visacheckout-android-sdk', version: '5.5.2', ext: 'aar')
+    implementation 'com.braintreepayments.api:visa-checkout:2.0.0'
+    implementation(group: 'com.visa.checkout', name: 'visacheckout-android-sdk', version: '6.6.0', ext: 'aar')
     implementation 'com.squareup.okio:okio:1.13.0'
     implementation 'com.squareup.okhttp3:okhttp:3.8.1'
     implementation 'com.google.code.gson:gson:2.8.1'
