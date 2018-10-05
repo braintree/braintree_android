@@ -41,6 +41,7 @@ public class DropInTest extends TestHelper {
         onDevice(withText("2019")).perform(click());
         onDevice(withContentDescription("CVV")).perform(setText("123"));
         onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
+        onDevice().pressBack();
         onDevice(withTextContaining("Add Card")).perform(click());
 
         getNonceDetails().check(text(containsString("Card Last Two: 11")));
