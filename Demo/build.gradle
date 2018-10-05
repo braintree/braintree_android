@@ -107,7 +107,12 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
-task demoApkSize<<{
+
+
+task demoApkSize {
+  group 'Braintree'
+  description 'Prints the current size of the Demo apk'
+
   def apkDir = fileTree('./build/outputs/apk')
   def apks = apkDir.matching {
     include '*.apk'
@@ -120,8 +125,6 @@ task demoApkSize<<{
     println "Size of ${apkName} is ${mb} MB"
   }
 }
-demoApkSize.group = 'Braintree'
-demoApkSize.description = 'Prints the current size of the Demo apk'
 
 project.tasks.findAll {
   if (it.name.startsWith('assemble')) {
