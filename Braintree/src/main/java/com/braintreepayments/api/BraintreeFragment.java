@@ -331,6 +331,9 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             case BraintreeRequestCodes.IDEAL:
                 type = "ideal";
                 break;
+            case BraintreeRequestCodes.LOCAL_PAYMENT:
+                type = "local-payment";
+                break;
         }
 
         int resultCode = Activity.RESULT_FIRST_USER;
@@ -371,6 +374,9 @@ public class BraintreeFragment extends BrowserSwitchFragment {
                 break;
             case BraintreeRequestCodes.IDEAL:
                 Ideal.onActivityResult(this, resultCode);
+                break;
+            case BraintreeRequestCodes.LOCAL_PAYMENT:
+                LocalPayment.onActivityResult(this, resultCode, data);
                 break;
             case BraintreeRequestCodes.GOOGLE_PAYMENT:
                 GooglePayment.onActivityResult(this, resultCode, data);

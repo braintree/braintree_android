@@ -1,0 +1,7 @@
+{
+  "paymentResource":{
+    "paymentToken":"local-payment-id-123",
+    "intent":"sale",
+    "redirectUrl":"https://checkout.paypal.com/latinum?token=payment-token"
+  }
+}

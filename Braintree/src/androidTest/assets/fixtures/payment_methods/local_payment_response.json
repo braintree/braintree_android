@@ -1,0 +1,29 @@
+{
+  "paypalAccounts": [
+    {
+      "type": "PayPalAccount",
+      "nonce": "e11c9c39-d6a4-0305-791d-bfe680ef2d5d",
+      "description": "PayPal",
+      "consumed": false,
+      "details": {
+        "correlationId": "084afbf1db15445587d30bc120a23b09",
+        "payerInfo": {
+          "email": "jon@getbraintree.com",
+          "firstName": "Jon",
+          "lastName": "Doe",
+          "payerId": "9KQSUZTL7YZQ4",
+          "shippingAddress": {
+            "recipientName": "Jon Doe",
+            "line1": "836486 of 22321 Park Lake",
+            "line2": "Apt B",
+            "city": "Den Haag",
+            "state": "CA",
+            "postalCode": "2585 GJ",
+            "countryCode": "NL"
+          },
+          "countryCode": "NL"
+        }
+      }
+    }
+  ]
+}

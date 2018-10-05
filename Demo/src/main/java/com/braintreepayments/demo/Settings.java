@@ -100,6 +100,17 @@ public class Settings {
         }
     }
 
+    public static String getEnvironmentTokenizationKeyForLocalPayment(Context context) {
+        int environment = getEnvironment(context);
+        if (environment == 0) {
+            return "sandbox_f252zhq7_hh4cpc39zq4rgjcg";
+        } else if (environment == 1) {
+            return PRODUCTION_TOKENIZATION_KEY;
+        } else {
+            return "";
+        }
+    }
+
     public static boolean isAndroidPayShippingAddressRequired(Context context) {
         return getPreferences(context).getBoolean("android_pay_require_shipping_address", false);
     }

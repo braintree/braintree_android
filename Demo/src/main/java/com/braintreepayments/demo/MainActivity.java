@@ -18,6 +18,7 @@ import com.braintreepayments.api.models.BraintreePaymentResult;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.IdealResult;
 import com.braintreepayments.api.models.GooglePaymentCardNonce;
+import com.braintreepayments.api.models.LocalPaymentResult;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VenmoAccountNonce;
@@ -228,6 +229,8 @@ public class MainActivity extends BaseActivity {
             details = VisaCheckoutActivity.getDisplayString((VisaCheckoutNonce) mNonce);
         } else if (mNonce instanceof VenmoAccountNonce) {
             details = VenmoActivity.getDisplayString((VenmoAccountNonce) mNonce);
+        } else if (mNonce instanceof LocalPaymentResult) {
+            details = IdealActivity.getDisplayString((LocalPaymentResult) mNonce);
         }
 
         mNonceDetails.setText(details);
