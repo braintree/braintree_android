@@ -235,7 +235,7 @@ public class BraintreeGraphQLHttpClientTest {
             httpClient.parseResponse(connection);
             fail("No exception was thrown");
         } catch (UnexpectedException e) {
-            assertEquals("An unexpected error occurred", e.getMessage());
+            assertEquals("An Unexpected Exception Occurred", e.getMessage());
         }
     }
 }
