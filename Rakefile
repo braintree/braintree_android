@@ -5,6 +5,9 @@ TMP_CHANGELOG_FILE = "/tmp/braintree-android-release.md"
 
 task :default => :tests
 
+desc "Run Android unit tests and tests on a device or emulator"
+task :tests => [:unit_tests, :integration_tests]
+
 desc "Run Android lint on all modules"
 task :lint do
   sh "./gradlew clean lint :Demo:assembleDebug :Demo:assembleRelease"
@@ -16,7 +19,7 @@ task :unit_tests => :lint do
 end
 
 desc "Run Android tests on a device or emulator"
-task :tests => :unit_tests do
+task :integration_tests do
   output = `adb devices`
   if output.match(/device$/)
     begin
@@ -38,7 +41,9 @@ desc "Publish current version as a SNAPSHOT"
 task :publish_snapshot => :unit_tests do
   abort("Version must contain '-SNAPSHOT'!") unless get_current_version.end_with?('-SNAPSHOT')
 
-  puts "Ensure all tests are passing (`rake tests`)."
+  puts "Ensure unit tests build above was successful."
+  puts "Ensure integration tests are passing by executing `rake integration_tests`."
+
   $stdin.gets
 
   prompt_for_sonatype_username_and_password
