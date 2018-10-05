@@ -1,5 +1,15 @@
 # Braintree Android SDK Release Notes
 
+## 2.17.0
+
+* Local Payments
+* Upgrade PayPal Data Collector to 4.0.3
+
+## 2.17.0
+
+* Local Payments
+* Upgrade PayPal Data Collector to 4.0.3
+
 ## Unreleased
 
 * Surface message on unexpected exception
