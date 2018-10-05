@@ -52,6 +52,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
 
         onDevice().typeText("test@paypal.com");
         onDevice().pressTab().typeText("password");
+        onDevice().pressBack();
         clickWebViewText("Log In");
         clickWebViewText("Agree");
 
@@ -71,6 +72,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
 
         onDevice().typeText("test@paypal.com");
         onDevice().pressTab().typeText("password");
+        onDevice().pressBack();
         clickWebViewText("Log In");
         clickWebViewText("Agree");
 
