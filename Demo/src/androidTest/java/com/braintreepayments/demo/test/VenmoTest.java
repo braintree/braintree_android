@@ -19,6 +19,7 @@ import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
+import static org.junit.Assume.assumeTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class VenmoTest extends TestHelper {
@@ -27,13 +28,11 @@ public class VenmoTest extends TestHelper {
 
     @Before
     public void setup() {
-        super.setup();
+        assumeTrue("The Venmo app is not installed.", isAppInstalled(VENMO_PACKAGE_NAME));
     }
 
     @Test(timeout = 120000)
     public void tokenizesVenmo() {
-        assertTrue("The Venmo app is not installed.", isAppInstalled(VENMO_PACKAGE_NAME));
-
         onDevice(withText("Venmo")).waitForEnabled().perform(click());
         onDevice(withContentDescription("Venmo")).perform(click());
         onDevice(withText("Authorize")).perform(click());
