@@ -41,7 +41,6 @@ desc "Publish current version as a SNAPSHOT"
 task :publish_snapshot => :unit_tests do
   abort("Version must contain '-SNAPSHOT'!") unless get_current_version.end_with?('-SNAPSHOT')
 
-  puts "Ensure unit tests build above was successful."
   puts "Ensure integration tests are passing by executing `rake integration_tests`."
 
   $stdin.gets
@@ -53,7 +52,7 @@ end
 
 desc "Interactive release to publish new version"
 task :release => :unit_tests do
-  puts "Ensure all tests are passing (`rake tests`)."
+  puts "Ensure integration tests are passing by executing `rake integration_tests`."
   $stdin.gets
 
   puts "What version are you releasing? (x.x.x format)"
