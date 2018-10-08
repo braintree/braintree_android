@@ -5,15 +5,6 @@
 * Local Payments
 * Upgrade PayPal Data Collector to 4.0.3
 
-## 2.17.0
-
-* Local Payments
-* Upgrade PayPal Data Collector to 4.0.3
-
-## Unreleased
-
-* Surface message on unexpected exception
-
 ## 2.16.0
 
 * Add optional merchant account Id to PayPalRequest
