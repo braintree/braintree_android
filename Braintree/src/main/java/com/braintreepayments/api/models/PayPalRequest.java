@@ -20,15 +20,6 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class PayPalRequest implements Parcelable {
 
-    /**
-     * Payment intent. Must be set to sale for immediate payment, authorize to authorize a payment for capture later, or
-     * order to create an order. Defaults to authorize. Only works in the Single Payment flow.
-     *
-     * @see <a href="https://developer.paypal.com/docs/integration/direct/payments/capture-payment/">Capture payments later</a>
-     * and
-     * <a href="https://developer.paypal.com/docs/integration/direct/payments/create-process-order/">Create and process orders</a>
-     * for more information
-     */
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalRequest.INTENT_ORDER, PayPalRequest.INTENT_SALE, PayPalRequest.INTENT_AUTHORIZE})
     @interface PayPalPaymentIntent {}
@@ -36,9 +27,6 @@ public class PayPalRequest implements Parcelable {
     public static final String INTENT_SALE = "sale";
     public static final String INTENT_AUTHORIZE = "authorize";
 
-    /**
-     * Use this option to specify the PayPal page to display when a user lands on the PayPal site to complete the payment.
-     */
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalRequest.LANDING_PAGE_TYPE_BILLING, PayPalRequest.LANDING_PAGE_TYPE_LOGIN})
     @interface PayPalLandingPageType {}
@@ -53,10 +41,6 @@ public class PayPalRequest implements Parcelable {
      */
     public static final String LANDING_PAGE_TYPE_LOGIN = "login";
 
-    /**
-     * @see <a href="https://developer.paypal.com/docs/classic/express-checkout/integration-guide/ECCustomizing/#allowing-buyers-to-complete-their-purchases-on-paypal">PayPal Express Checkout Guide</a>
-     * for more information
-     */
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalRequest.USER_ACTION_DEFAULT, PayPalRequest.USER_ACTION_COMMIT})
     @interface PayPalPaymentUserAction {}
@@ -222,10 +206,23 @@ public class PayPalRequest implements Parcelable {
     }
 
     /**
-     * Payment intent. Only applies when calling
-     * {@link com.braintreepayments.api.PayPal#requestOneTimePayment(BraintreeFragment, PayPalRequest)}.
+     * Payment intent. Must be set to {@link #INTENT_SALE} for immediate payment,
+     * {@link #INTENT_AUTHORIZE} to authorize a payment for capture later, or
+     * {@link #INTENT_ORDER} to create an order.
      *
-     * @param intent Can be either {@link PayPalRequest#INTENT_AUTHORIZE}, {@link PayPalRequest#INTENT_ORDER}, or {@link PayPalRequest#INTENT_SALE}.
+     * Defaults to authorize. Only works in the Single Payment flow.
+     *
+     * @param intent Must be a {@link PayPalPaymentIntent} value:
+     * <ul>
+     * <li>{@link PayPalRequest#INTENT_AUTHORIZE} to authorize a payment for capture later </li>
+     * <li>{@link PayPalRequest#INTENT_ORDER} to create an order </li>
+     * <li>{@link PayPalRequest#INTENT_SALE} for immediate payment </li>
+     * </ul>
+     *
+     * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-payment">"intent" under the "payment" definition</a>
+     * @see <a href="https://developer.paypal.com/docs/integration/direct/payments/create-process-order/">Create and process orders</a>
+     * for more information
+     *
      */
     public PayPalRequest intent(@PayPalPaymentIntent String intent) {
         mIntent = intent;
@@ -235,7 +232,12 @@ public class PayPalRequest implements Parcelable {
     /**
      * Use this option to specify the PayPal page to display when a user lands on the PayPal site to complete the payment.
      *
-     * @param landingPageType Can be either {@link PayPalRequest#LANDING_PAGE_TYPE_BILLING} or {@link PayPalRequest#LANDING_PAGE_TYPE_LOGIN}.
+     * @param landingPageType Must be a {@link PayPalLandingPageType} value:
+     * <ul>
+     * <li>{@link #LANDING_PAGE_TYPE_BILLING}</li>
+     * <li>{@link #LANDING_PAGE_TYPE_LOGIN}</li>
+     *
+     * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "landing_page" under the "application_context" definition</a>
      */
     public PayPalRequest landingPageType(@PayPalLandingPageType String landingPageType) {
         mLandingPageType = landingPageType;
@@ -243,9 +245,15 @@ public class PayPalRequest implements Parcelable {
     }
 
     /**
-     * Set the checkout user action.
+     * Set the checkout user action which determines the button text.
      *
-     * @param userAction Can be either {@link PayPalRequest#USER_ACTION_COMMIT} or {@link PayPalRequest#USER_ACTION_DEFAULT}.
+     * @param userAction Must be a be {@link PayPalPaymentUserAction} value:
+     * <ul>
+     * <li>{@link #USER_ACTION_COMMIT}</li>
+     * <li>{@link #USER_ACTION_DEFAULT}</li>
+     * </ul>
+     *
+     * @see <a href="https://developer.paypal.com/docs/api/payments/v1/#definition-application_context">See "user_action" under the "application_context" definition</a>
      */
     public PayPalRequest userAction(@PayPalPaymentUserAction String userAction) {
         mUserAction = userAction;
