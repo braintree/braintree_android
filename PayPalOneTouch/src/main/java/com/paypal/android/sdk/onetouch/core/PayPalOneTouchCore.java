@@ -18,8 +18,6 @@ import com.paypal.android.sdk.onetouch.core.sdk.AppSwitchHelper;
 import com.paypal.android.sdk.onetouch.core.sdk.BrowserSwitchHelper;
 import com.paypal.android.sdk.onetouch.core.sdk.PendingRequest;
 
-import java.util.Collections;
-
 /**
  * Central class for One Touch functionality.
  */

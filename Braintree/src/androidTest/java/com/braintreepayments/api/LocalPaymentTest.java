@@ -1,25 +1,13 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
-import android.os.SystemClock;
 import android.support.test.runner.AndroidJUnit4;
-import android.text.TextUtils;
 
-import com.braintreepayments.api.exceptions.BraintreeApiErrorResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.BraintreeErrorListener;
-import com.braintreepayments.api.interfaces.BraintreePaymentResultListener;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
-import com.braintreepayments.api.internal.BraintreeSharedPreferences;
-import com.braintreepayments.api.models.BraintreePaymentResult;
-import com.braintreepayments.api.models.IdealBank;
-import com.braintreepayments.api.models.IdealRequest;
-import com.braintreepayments.api.models.IdealResult;
 import com.braintreepayments.api.models.LocalPaymentRequest;
 import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
-import com.braintreepayments.api.test.TestClientTokenBuilder;
 import com.braintreepayments.testutils.Assumptions;
 
 import org.junit.Before;
@@ -27,15 +15,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWithAuthorization;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
 public class LocalPaymentTest {

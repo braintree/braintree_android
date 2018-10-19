@@ -1,13 +1,11 @@
 package com.braintreepayments.api.internal;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Build.VERSION;
-import android.provider.Settings.Secure;
 
 import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;

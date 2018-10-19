@@ -19,7 +19,6 @@ import com.braintreepayments.api.models.VenmoAccountNonce;
 import com.braintreepayments.api.test.VenmoInstalledContextFactory;
 import com.braintreepayments.testutils.SharedPreferencesHelper;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
-import com.braintreepayments.testutils.TestConfigurationBuilder.TestVenmoConfigurationBuilder;
 import com.braintreepayments.testutils.TestTokenizationKey;
 
 import org.json.JSONException;

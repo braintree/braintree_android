@@ -1,8 +1,6 @@
 package com.braintreepayments.api.models;
 
 import android.os.Parcel;
-import android.os.Parcelable;
-import android.os.Parcelable.Creator;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -7,7 +7,6 @@ import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.internal.GraphQLConstants.Keys;
-import com.braintreepayments.api.internal.GraphQLQueryHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;

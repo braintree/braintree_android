@@ -10,7 +10,6 @@ import org.robolectric.RobolectricTestRunner;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
 public class LocalPaymentResultUnitTest {

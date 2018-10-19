@@ -15,7 +15,6 @@ import java.util.concurrent.CountDownLatch;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
 import static junit.framework.Assert.fail;
-import static org.mockito.Mockito.spy;
 
 public class BraintreeFragmentTestUtils {
 

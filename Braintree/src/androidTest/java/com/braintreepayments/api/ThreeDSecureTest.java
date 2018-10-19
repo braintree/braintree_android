@@ -18,7 +18,6 @@ import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
-import com.braintreepayments.testutils.TestConfigurationBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;

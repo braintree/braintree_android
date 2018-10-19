@@ -12,8 +12,6 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.UnionPayCapabilities;
 
-import org.apache.tools.ant.types.resources.Union;
-
 import java.util.ArrayList;
 import java.util.List;
 

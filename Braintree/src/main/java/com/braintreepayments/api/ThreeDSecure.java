@@ -21,7 +21,6 @@ import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * 3D Secure is a protocol that enables cardholders and issuers to add a layer of security

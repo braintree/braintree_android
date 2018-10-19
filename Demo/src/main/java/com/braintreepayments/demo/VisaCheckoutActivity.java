@@ -16,7 +16,6 @@ import com.visa.checkout.PurchaseInfo;
 import com.visa.checkout.PurchaseInfo.PurchaseInfoBuilder;
 import com.visa.checkout.VisaCheckoutSdk;
 import com.visa.checkout.VisaPaymentSummary;
-import com.visa.checkout.widget.VisaCheckoutButton;
 
 import java.math.BigDecimal;
 
