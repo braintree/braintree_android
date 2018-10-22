@@ -1,7 +1,7 @@
 package com.braintreepayments.api.internal;
 
 import android.content.pm.ActivityInfo;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.test.ManifestTestActivity;
 import com.braintreepayments.api.test.MissingManifestTestActivity;
@@ -9,7 +9,7 @@ import com.braintreepayments.api.test.MissingManifestTestActivity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;

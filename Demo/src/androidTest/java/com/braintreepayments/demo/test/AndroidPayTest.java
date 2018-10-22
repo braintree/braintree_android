@@ -1,7 +1,7 @@
 package com.braintreepayments.demo.test;
 
-import android.support.test.filters.RequiresDevice;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.filters.RequiresDevice;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
 

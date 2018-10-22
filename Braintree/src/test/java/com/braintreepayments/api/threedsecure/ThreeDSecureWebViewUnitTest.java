@@ -1,7 +1,7 @@
 package com.braintreepayments.api.threedsecure;
 
 import android.os.Build.VERSION_CODES;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 

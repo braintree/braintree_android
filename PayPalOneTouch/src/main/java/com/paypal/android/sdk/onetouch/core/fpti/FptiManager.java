@@ -2,7 +2,7 @@ package com.paypal.android.sdk.onetouch.core.fpti;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import com.paypal.android.sdk.data.collector.InstallationIdentifier;
 import com.paypal.android.sdk.onetouch.core.BuildConfig;

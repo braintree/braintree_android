@@ -2,7 +2,7 @@ package com.braintreepayments.api.exceptions;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.braintreepayments.api.Json;
 

@@ -27,7 +27,7 @@
             android:visibility="gone"
             android:onClick="sendSms" />
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/text_input_layout"
             android:id="@+id/sms_code_container"
             android:layout_marginTop="20dp"
@@ -41,7 +41,7 @@
                 android:id="@+id/sms_code"
                 android:contentDescription="@string/sms_auth_code"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/purchase_button"

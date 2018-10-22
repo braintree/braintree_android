@@ -1,6 +1,6 @@
 package com.paypal.android.sdk.onetouch.core.network;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.internal.HttpClient;
 import com.braintreepayments.api.internal.TLSSocketFactory;

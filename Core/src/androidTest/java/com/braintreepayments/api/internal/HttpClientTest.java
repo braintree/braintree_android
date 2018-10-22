@@ -1,7 +1,7 @@
 package com.braintreepayments.api.internal;
 
 import android.os.Looper;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.core.BuildConfig;
 import com.braintreepayments.api.exceptions.AuthenticationException;

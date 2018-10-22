@@ -1,6 +1,6 @@
 package com.braintreepayments.api.interfaces;
 
-import android.support.annotation.MainThread;
+import androidx.annotation.MainThread;
 
 /**
  * Callback used by {@link com.braintreepayments.api.BraintreeFragment} to queue responses to various

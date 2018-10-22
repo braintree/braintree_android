@@ -1,14 +1,14 @@
 package com.braintreepayments.api.test;
 
-import android.support.test.espresso.ViewInteraction;
+import androidx.test.espresso.ViewInteraction;
 import android.view.View;
 
 import org.hamcrest.Matcher;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.internal.util.Checks.checkNotNull;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.internal.util.Checks.checkNotNull;
 
 /* http://stackoverflow.com/a/22563297 */
 public class ViewHelper {

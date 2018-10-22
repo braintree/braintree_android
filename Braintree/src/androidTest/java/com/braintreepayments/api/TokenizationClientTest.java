@@ -1,7 +1,7 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.PayPalAccountBuilder;

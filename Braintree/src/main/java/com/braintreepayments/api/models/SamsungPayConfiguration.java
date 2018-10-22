@@ -1,6 +1,6 @@
 package com.braintreepayments.api.models;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.braintreepayments.api.Json;
 import com.braintreepayments.api.internal.ClassHelper;

@@ -2,7 +2,7 @@ package com.paypal.android.sdk.onetouch.core.base;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 public class ContextInspector {
 

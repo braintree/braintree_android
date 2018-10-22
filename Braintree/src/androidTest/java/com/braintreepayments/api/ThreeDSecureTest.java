@@ -3,7 +3,7 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;

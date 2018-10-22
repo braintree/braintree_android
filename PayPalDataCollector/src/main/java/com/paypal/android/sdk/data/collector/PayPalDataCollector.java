@@ -1,7 +1,7 @@
 package com.paypal.android.sdk.data.collector;
 
 import android.content.Context;
-import android.support.annotation.MainThread;
+import androidx.annotation.MainThread;
 
 import lib.android.paypal.com.magnessdk.Environment;
 import lib.android.paypal.com.magnessdk.MagnesResult;

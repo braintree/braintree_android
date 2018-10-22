@@ -1,6 +1,6 @@
 package com.braintreepayments.api.internal;
 
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import java.net.HttpURLConnection;
 import java.util.concurrent.CountDownLatch;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)

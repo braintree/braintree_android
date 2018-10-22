@@ -1,6 +1,6 @@
 package com.braintreepayments.api.interfaces;
 
-import android.support.annotation.MainThread;
+import androidx.annotation.MainThread;
 
 /**
  * Communicates responses from a HTTP request on the main thread.

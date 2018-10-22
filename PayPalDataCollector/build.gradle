@@ -10,7 +10,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
-        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     packagingOptions {
@@ -32,9 +32,9 @@ repositories {
 
 dependencies {
     api files('libs/' + dataCollectorVersion)
-    compileOnly 'com.android.support:support-annotations:28.0.0'
+    compileOnly 'androidx.annotation:annotation:1.0.0'
 
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'androidx.test:runner:1.1.0-beta02'
 }
 
 /* maven deploy + signing */

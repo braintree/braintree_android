@@ -2,7 +2,7 @@ package com.paypal.android.sdk.onetouch.core;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.MainThread;
+import androidx.annotation.MainThread;
 
 import com.paypal.android.sdk.data.collector.PayPalDataCollector;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;

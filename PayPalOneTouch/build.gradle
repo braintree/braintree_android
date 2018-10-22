@@ -27,7 +27,7 @@ android {
 }
 
 dependencies {
-    compileOnly 'com.android.support:support-annotations:28.0.0'
+    compileOnly 'androidx.annotation:annotation:1.0.0'
 
     api project(':Core')
     api project(':PayPalDataCollector')

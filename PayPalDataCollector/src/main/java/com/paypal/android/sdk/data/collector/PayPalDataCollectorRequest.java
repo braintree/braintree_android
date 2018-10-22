@@ -1,8 +1,8 @@
 package com.paypal.android.sdk.data.collector;
 
-import android.support.annotation.NonNull;
-
 import java.util.HashMap;
+
+import androidx.annotation.NonNull;
 
 /**
  * Used to configuration the PayPalDataCollector request

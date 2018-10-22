@@ -2,7 +2,7 @@ package com.braintreepayments.demo.test;
 
 import android.annotation.SuppressLint;
 import android.preference.PreferenceManager;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 import android.widget.ScrollView;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.demo.test.utilities.UiTestActions.clickWebViewText;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_AUTHENTICATION_FAILED;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_LOOKUP_ERROR;
