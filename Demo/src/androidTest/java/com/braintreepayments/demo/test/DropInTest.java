@@ -17,7 +17,7 @@ import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAction.setText;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
+import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextContaining;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
@@ -36,11 +36,11 @@ public class DropInTest extends TestHelper {
     @Test(timeout = 60000)
     public void tokenizesACard() {
         onDevice(withText("Credit or Debit Card")).perform(click());
-        onDevice(withContentDescription("Card Number")).perform(setText(VISA));
+        onDevice(withText("Card Number")).perform(setText(VISA));
         onDevice(withText("12")).perform(click());
         onDevice(withText("2019")).perform(click());
-        onDevice(withContentDescription("CVV")).perform(setText("123"));
-        onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
+        onDevice(withText("CVV")).perform(setText("123"));
+        onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice().pressBack();
         onDevice(withTextContaining("Add Card")).perform(click());
 

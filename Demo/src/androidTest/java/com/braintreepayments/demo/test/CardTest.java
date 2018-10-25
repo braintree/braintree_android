@@ -23,7 +23,7 @@ import static com.lukekorth.deviceautomator.AutomatorAction.setText;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withClass;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
+import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextContaining;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
@@ -42,10 +42,10 @@ public class CardTest extends TestHelper {
 
     @Test(timeout = 60000)
     public void tokenizesACard() {
-        onDevice(withContentDescription("Card Number")).perform(setText("4111111111111111"));
+        onDevice(withText("Card Number")).perform(setText("4111111111111111"));
         fillInExpiration();
-        onDevice(withContentDescription("CVV")).perform(setText("123"));
-        onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
+        onDevice(withText("CVV")).perform(setText("123"));
+        onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
         getNonceDetails().check(text(containsString("Card Last Two: 11")));
@@ -56,16 +56,16 @@ public class CardTest extends TestHelper {
 
     @Test(timeout = 60000)
     public void tokenizesUnionPay() {
-        onDevice(withContentDescription("Card Number")).perform(setText(CardNumber.UNIONPAY_CREDIT));
+        onDevice(withText("Card Number")).perform(setText(CardNumber.UNIONPAY_CREDIT));
         fillInExpiration();
-        onDevice(withContentDescription("CVN")).perform(setText("123"));
-        onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
-        onDevice(withContentDescription("Country Code")).perform(setText("1"));
-        onDevice(withContentDescription("Mobile Number")).perform(setText("5555555555"));
+        onDevice(withText("CVN")).perform(setText("123"));
+        onDevice(withText("Postal Code")).perform(setText("12345"));
+        onDevice(withText("Country Code")).perform(setText("1"));
+        onDevice(withText("Mobile Number")).perform(setText("5555555555"));
         onDevice(withText("Send SMS")).perform(click());
 
         onDevice(withClass(ScrollView.class)).perform(scrollTextIntoView("SMS Auth Code"));
-        onDevice(withContentDescription("SMS Auth Code")).perform(setText("12345"));
+        onDevice(withText("SMS Auth Code")).perform(setText("12345"));
 
         onDevice(withClass(ScrollView.class)).perform(scrollTextIntoView("Purchase"));
         onDevice(withText("Purchase")).perform(click());
@@ -78,12 +78,12 @@ public class CardTest extends TestHelper {
 
     @Test(timeout = 60000)
     public void tokenizesUnionPay_whenEnrollmentIsNotRequired() {
-        onDevice(withContentDescription("Card Number")).perform(setText(CardNumber.UNIONPAY_SMS_NOT_REQUIRED));
+        onDevice(withText("Card Number")).perform(setText(CardNumber.UNIONPAY_SMS_NOT_REQUIRED));
         fillInExpiration();
-        onDevice(withContentDescription("CVN")).perform(setText("123"));
-        onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
-        onDevice(withContentDescription("Country Code")).perform(setText("1"));
-        onDevice(withContentDescription("Mobile Number")).perform(setText("5555555555"));
+        onDevice(withText("CVN")).perform(setText("123"));
+        onDevice(withText("Postal Code")).perform(setText("12345"));
+        onDevice(withText("Country Code")).perform(setText("1"));
+        onDevice(withText("Mobile Number")).perform(setText("5555555555"));
         onDevice(withText("Send SMS")).perform(click());
 
         getNonceDetails().check(text(containsString("Card Last Two: 85")));
@@ -99,10 +99,10 @@ public class CardTest extends TestHelper {
                 .putBoolean("enable_three_d_secure", true)
                 .commit();
 
-        onDevice(withContentDescription("Card Number")).perform(setText(THREE_D_SECURE_VERIFICATON));
+        onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_VERIFICATON));
         fillInExpiration();
-        onDevice(withContentDescription("CVV")).perform(setText("123"));
-        onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
+        onDevice(withText("CVV")).perform(setText("123"));
+        onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
         onDevice(withText("Authentication")).waitForExists();
@@ -128,10 +128,10 @@ public class CardTest extends TestHelper {
                 .putBoolean("enable_three_d_secure", true)
                 .commit();
 
-        onDevice(withContentDescription("Card Number")).perform(setText(THREE_D_SECURE_AUTHENTICATION_FAILED));
+        onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_AUTHENTICATION_FAILED));
         fillInExpiration();
-        onDevice(withContentDescription("CVV")).perform(setText("123"));
-        onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
+        onDevice(withText("CVV")).perform(setText("123"));
+        onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
         onDevice(withText("Authentication")).waitForExists();
@@ -152,10 +152,10 @@ public class CardTest extends TestHelper {
                 .putBoolean("enable_three_d_secure", true)
                 .commit();
 
-        onDevice(withContentDescription("Card Number")).perform(setText(THREE_D_SECURE_LOOKUP_ERROR));
+        onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_LOOKUP_ERROR));
         fillInExpiration();
-        onDevice(withContentDescription("CVV")).perform(setText("123"));
-        onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
+        onDevice(withText("CVV")).perform(setText("123"));
+        onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
         getNonceDetails().check(text(containsString("Card Last Two: 77")));
@@ -173,10 +173,10 @@ public class CardTest extends TestHelper {
                 .putBoolean("amex_rewards_balance", true)
                 .commit();
 
-        onDevice(withContentDescription("Card Number")).perform(setText("371260714673002"));
+        onDevice(withText("Card Number")).perform(setText("371260714673002"));
         fillInExpiration();
-        onDevice(withContentDescription("CID")).perform(setText("1234"));
-        onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
+        onDevice(withText("CID")).perform(setText("1234"));
+        onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
         onDevice(withTextStartingWith("Amex Rewards Balance:")).check(text(containsString("amount: 45256433")));
@@ -189,10 +189,10 @@ public class CardTest extends TestHelper {
                 .putBoolean("amex_rewards_balance", true)
                 .commit();
 
-        onDevice(withContentDescription("Card Number")).perform(setText("371544868764018"));
+        onDevice(withText("Card Number")).perform(setText("371544868764018"));
         fillInExpiration();
-        onDevice(withContentDescription("CID")).perform(setText("1234"));
-        onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
+        onDevice(withText("CID")).perform(setText("1234"));
+        onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
         onDevice(withTextStartingWith("Amex Rewards Balance:")).check(text(containsString("errorCode: INQ2003")));
@@ -205,10 +205,10 @@ public class CardTest extends TestHelper {
                 .putBoolean("amex_rewards_balance", true)
                 .commit();
 
-        onDevice(withContentDescription("Card Number")).perform(setText("378267515471109"));
+        onDevice(withText("Card Number")).perform(setText("378267515471109"));
         fillInExpiration();
-        onDevice(withContentDescription("CID")).perform(setText("1234"));
-        onDevice(withContentDescription("Postal Code")).perform(setText("12345"));
+        onDevice(withText("CID")).perform(setText("1234"));
+        onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
         onDevice(withTextStartingWith("Amex Rewards Balance:")).check(text(containsString("errorCode: INQ2002")));

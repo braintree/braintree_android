@@ -14,7 +14,7 @@ import static com.braintreepayments.demo.test.utilities.UiTestActions.clickWebVi
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
+import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.Matchers.containsString;
@@ -47,7 +47,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
         onDevice(withText("Future Payment")).waitForEnabled().perform(click());
 
         try {
-            onDevice(withContentDescription("Email")).perform(click());
+            onDevice(withText("Email")).perform(click());
         } catch (RuntimeException ignored) {}
 
         onDevice().typeText("test@paypal.com");
@@ -67,7 +67,7 @@ public class PayPalBrowserSwitchTest extends TestHelper {
         onDevice(withText("Future Payment (Address Scope)")).waitForEnabled().perform(click());
 
         try {
-            onDevice(withContentDescription("Email")).perform(click());
+            onDevice(withText("Email")).perform(click());
         } catch (RuntimeException ignored) {}
 
         onDevice().typeText("test@paypal.com");

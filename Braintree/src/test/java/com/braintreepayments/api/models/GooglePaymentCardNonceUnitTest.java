@@ -1,5 +1,6 @@
 package com.braintreepayments.api.models;
 
+import android.os.Bundle;
 import android.os.Parcel;
 
 import com.google.android.gms.identity.intents.model.UserAddress;
@@ -108,9 +109,9 @@ public class GooglePaymentCardNonceUnitTest {
         CardInfo cardInfo = cardInfoConstructor.newInstance("MasterCard 0276", null, null, 0, billingAddress);
 
         Constructor<PaymentData> paymentDataConstructor = PaymentData.class.getDeclaredConstructor(String.class,
-                CardInfo.class, UserAddress.class, PaymentMethodToken.class);
+                CardInfo.class, UserAddress.class, PaymentMethodToken.class, String.class, Bundle.class, String.class);
         paymentDataConstructor.setAccessible(true);
-        return paymentDataConstructor.newInstance(email, cardInfo, shippingAddress, paymentMethodToken);
+        return paymentDataConstructor.newInstance(email, cardInfo, shippingAddress, paymentMethodToken, null, null, null);
     }
 
     private UserAddress getAddressObject() throws Exception {

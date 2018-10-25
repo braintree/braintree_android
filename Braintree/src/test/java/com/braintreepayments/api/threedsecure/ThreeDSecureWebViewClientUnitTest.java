@@ -13,9 +13,9 @@ import org.robolectric.RobolectricTestRunner;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.stub;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureWebViewClientUnitTest {
@@ -41,7 +41,7 @@ public class ThreeDSecureWebViewClientUnitTest {
 
     @Test
     public void onPageFinished_setsTheActivityTitle() {
-        stub(mWebView.getTitle()).toReturn("TEST");
+        when(mWebView.getTitle()).thenReturn("TEST");
 
         mWebViewClient.onPageFinished(mWebView, null);
 

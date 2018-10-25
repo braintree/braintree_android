@@ -85,13 +85,13 @@ public class AnalyticsSenderUnitTest {
         assertEquals(Integer.toString(VERSION.SDK_INT), meta.getString("platformVersion"));
         assertEquals(BuildConfig.VERSION_NAME, meta.getString("sdkVersion"));
         assertEquals("com.braintreepayments.api", meta.getString("merchantAppId"));
-        assertEquals("ApplicationNameUnknown", meta.getString("merchantAppName"));
+        assertEquals("com.braintreepayments.api", meta.getString("merchantAppName"));
         assertEquals(Build.MANUFACTURER, meta.getString("deviceManufacturer"));
         assertEquals(Build.MODEL, meta.getString("deviceModel"));
         assertEquals(UUIDHelper.getPersistentUUID(RuntimeEnvironment.application),
                 meta.getString("deviceAppGeneratedPersistentUuid"));
         assertEquals("false", meta.getString("isSimulator"));
-        assertEquals("Unknown", meta.getString("userInterfaceOrientation"));
+        assertEquals("Portrait", meta.getString("userInterfaceOrientation"));
         assertEquals("custom", meta.getString("integrationType"));
         assertEquals("sessionId", meta.getString("sessionId"));
         assertFalse(meta.getString("sessionId").contains("-"));

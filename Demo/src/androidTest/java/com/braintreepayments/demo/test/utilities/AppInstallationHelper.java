@@ -10,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 
 public class AppInstallationHelper {
 
@@ -56,7 +58,7 @@ public class AppInstallationHelper {
             lock.await(90, TimeUnit.SECONDS);
         } catch (InterruptedException ignored) {}
 
-        assertTrue(packageName + " is not installed.", isAppInstalled(packageName));
+        assumeTrue(packageName + " is not installed.", isAppInstalled(packageName));
     }
 
     public static void uninstallApp(final String packageName) {
@@ -78,6 +80,6 @@ public class AppInstallationHelper {
             lock.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException ignored) {}
 
-        assertFalse(packageName + " is installed.", isAppInstalled(packageName));
+        assumeFalse(packageName + " is installed.", isAppInstalled(packageName));
     }
 }

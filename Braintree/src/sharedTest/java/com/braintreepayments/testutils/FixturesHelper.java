@@ -4,6 +4,7 @@ import com.braintreepayments.api.internal.StreamHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -19,7 +20,7 @@ public class FixturesHelper {
         try {
             try {
                 return stringFromAndroidFixture(filename);
-            } catch (RuntimeException | Error e) {
+            } catch (RuntimeException | FileNotFoundException | Error e) {
                 return stringFromUnitTestFixture(filename);
             }
         } catch (IOException e) {

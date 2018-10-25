@@ -68,8 +68,7 @@ configurations.all {
 }
 
 dependencies {
-    implementation 'com.android.support:support-v4:26.1.0'
-    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.android.support:support-v4:28.0.0'
 
     implementation('com.squareup.retrofit:retrofit:1.9.0') {
         exclude module: 'com.google.gson'
@@ -77,7 +76,7 @@ dependencies {
 
     implementation project(':Braintree')
 
-    implementation 'com.google.android.gms:play-services-wallet:11.4.0'
+    implementation 'com.google.android.gms:play-services-wallet:16.0.1'
 
     // Visa checkout dependencies
     implementation 'com.braintreepayments.api:visa-checkout:2.0.0'
@@ -86,13 +85,13 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.8.1'
     implementation 'com.google.code.gson:gson:2.8.1'
     implementation 'de.greenrobot:eventbus:2.4.1'
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
-    implementation 'com.android.support:cardview-v7:26.1.0'
-    implementation 'com.android.support:multidex:1.0.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:cardview-v7:28.0.0'
+    implementation 'com.android.support:multidex:1.0.3'
 
     implementation 'io.card:android-sdk:5.5.1'
-    implementation('com.braintreepayments.api:drop-in:3.1.0') {
+    implementation('com.braintreepayments.api:drop-in:3.7.0') {
         exclude group: 'com.braintreepayments.api', module: 'braintree'
     }
 
@@ -100,8 +99,8 @@ dependencies {
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4'
 
     androidTestImplementation 'com.lukekorth:device-automator:0.3.0'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.0'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-web:3.0.0'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-web:3.0.2'
     androidTestImplementation project(':TestUtils')
 
     testImplementation 'junit:junit:4.12'

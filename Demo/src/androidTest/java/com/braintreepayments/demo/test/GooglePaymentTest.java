@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
+import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.Matchers.containsString;
@@ -30,7 +30,7 @@ public class GooglePaymentTest extends TestHelper {
 
     @Test(timeout = 60000)
     public void tokenizesGooglePayment() {
-        onDevice(withContentDescription("Pay with Google")).perform(click());
+        onDevice(withText("Pay with Google")).perform(click());
         onDevice(withText("CONTINUE")).perform(click());
 
         getNonceDetails().check(text(containsString("Underlying Card Last Two")));

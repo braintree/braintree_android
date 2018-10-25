@@ -28,7 +28,7 @@ import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.api.test.Matchers.withId;
 import static com.braintreepayments.api.test.ViewHelper.waitForView;
@@ -87,7 +87,7 @@ public class ThreeDSecureVerificationTest {
         ThreeDSecure.performVerification(getFragment(), cardBuilder, TEST_AMOUNT);
 
         waitForView(withId(android.R.id.widget_frame));
-        onView(withContentDescription("Navigate up")).perform(click());
+        onView(withText("Navigate up")).perform(click());
 
         mCountDownLatch.await();
     }
