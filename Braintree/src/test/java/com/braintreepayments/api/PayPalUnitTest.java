@@ -511,7 +511,7 @@ public class PayPalUnitTest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Intent intent = new Intent()
-                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN"));
+                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&ba_token=EC-HERMES-SANDBOX-EC-TOKEN"));
                 PayPal.onActivityResult(fragment, Activity.RESULT_OK, intent);
                 return null;
             }
@@ -1002,7 +1002,7 @@ public class PayPalUnitTest {
     @Test
     public void requestOneTimePayment_userAction_setsUserActionToBlankStringonDefault() throws JSONException {
         BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_billing_agreement_response.json"))
+                .successResponse(stringFromFixture("paypal_hermes_response.json"))
                 .build();
 
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").userAction(PayPalRequest.USER_ACTION_DEFAULT));
@@ -1015,9 +1015,9 @@ public class PayPalUnitTest {
     }
 
     @Test
-    public void requestOneTimePayment_userAction_canBeSetToCommit() throws JSONException {
+    public void requestOneTimePayment_userAction_canBeSetToCommit() {
         BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_billing_agreement_response.json"))
+                .successResponse(stringFromFixture("paypal_hermes_response.json"))
                 .build();
 
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").userAction(PayPalRequest.USER_ACTION_COMMIT));

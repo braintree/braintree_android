@@ -7,6 +7,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
@@ -23,6 +24,7 @@ public class CardConfigurationUnitTest {
         assertTrue(cardConfiguration.getSupportedCardTypes().contains("JCB"));
         assertTrue(cardConfiguration.getSupportedCardTypes().contains("MasterCard"));
         assertTrue(cardConfiguration.getSupportedCardTypes().contains("Visa"));
+        assertFalse(cardConfiguration.isFraudDataCollectionEnabled());
     }
 
     @Test
@@ -31,4 +33,13 @@ public class CardConfigurationUnitTest {
 
         assertEquals(0, cardConfiguration.getSupportedCardTypes().size());
     }
+
+    @Test
+    public void isFraudDataCollectionEnabled_isTrueWhenEnabled() throws JSONException {
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_card_collect_device_data.json"));
+        CardConfiguration cardConfiguration = configuration.getCardConfiguration();
+
+        assertTrue(cardConfiguration.isFraudDataCollectionEnabled());
+    }
+
 }

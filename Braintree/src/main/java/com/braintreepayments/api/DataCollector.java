@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
@@ -8,12 +9,18 @@ import android.text.TextUtils;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.internal.UUIDHelper;
+import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.paypal.android.sdk.data.collector.InstallationIdentifier;
 import com.paypal.android.sdk.data.collector.PayPalDataCollector;
+import com.paypal.android.sdk.data.collector.PayPalDataCollectorRequest;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
 
 /**
  * DataCollector is used to collect device information to aid in fraud detection and prevention.
@@ -210,6 +217,35 @@ public class DataCollector {
                         }
                     }
                 });
+            }
+        });
+    }
+
+    static void collectRiskData(final BraintreeFragment fragment,
+                                @NonNull final PaymentMethodNonce paymentMethodNonce) {
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                if (configuration.getCardConfiguration().isFraudDataCollectionEnabled()) {
+                    HashMap<String,String> additionalProperties = new HashMap<>();
+                    additionalProperties.put("rda_tenant", "bt_card");
+                    additionalProperties.put("mid", configuration.getMerchantId());
+
+                    if (fragment.getAuthorization() instanceof ClientToken) {
+                        String customerId = ((ClientToken)fragment.getAuthorization()).getCustomerId();
+                        if (customerId != null) {
+                            additionalProperties.put("cid", customerId);
+                        }
+                    }
+
+                    PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
+                            .setApplicationGuid(InstallationIdentifier.getInstallationGUID(fragment.getApplicationContext()))
+                            .setClientMetadataId(paymentMethodNonce.getNonce())
+                            .setDisableBeacon(true)
+                            .setAdditionalData(additionalProperties);
+
+                    PayPalDataCollector.getClientMetadataId(fragment.getApplicationContext(), request);
+                }
             }
         });
     }

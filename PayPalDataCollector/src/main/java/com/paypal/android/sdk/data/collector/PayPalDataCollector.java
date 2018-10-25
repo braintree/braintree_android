@@ -3,6 +3,7 @@ package com.paypal.android.sdk.data.collector;
 import android.content.Context;
 import android.support.annotation.MainThread;
 
+import lib.android.paypal.com.magnessdk.Environment;
 import lib.android.paypal.com.magnessdk.MagnesResult;
 import lib.android.paypal.com.magnessdk.MagnesSDK;
 import lib.android.paypal.com.magnessdk.MagnesSettings;
@@ -70,11 +71,13 @@ public class PayPalDataCollector {
         MagnesSDK magnesInstance = MagnesSDK.getInstance();
         MagnesSettings.Builder magnesSettingsBuilder = new MagnesSettings.Builder(context)
                 .setMagnesSource(MagnesSource.BRAINTREE)
+                .disableBeacon(request.isDisableBeacon())
+                .setMagnesEnvironment(Environment.LIVE)
                 .setAppGuid(request.getApplicationGuid());
 
         magnesInstance.setUp(magnesSettingsBuilder.build());
 
-        MagnesResult result = magnesInstance.collectAndSubmit(context, request.getClientMetadataId(), null);
+        MagnesResult result = magnesInstance.collectAndSubmit(context, request.getClientMetadataId(), request.getAdditionalData());
 
         return result.getPaypalClientMetaDataId();
     }

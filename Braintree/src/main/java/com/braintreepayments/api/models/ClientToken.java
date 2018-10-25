@@ -59,6 +59,23 @@ public class ClientToken extends Authorization {
         return mAuthorizationFingerprint;
     }
 
+    /**
+     * @return The customer ID in the authorizationFingerprint if it is present
+     */
+    public String getCustomerId() {
+        String authorizationFingerprint = getAuthorizationFingerprint();
+        String[] components = authorizationFingerprint.split("&");
+        for (String component : components) {
+            if (component.contains("customer_id=")) {
+                String[] customerComponents = component.split("=");
+                if (customerComponents.length > 1) {
+                    return customerComponents[1];
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public int describeContents() {
         return 0;

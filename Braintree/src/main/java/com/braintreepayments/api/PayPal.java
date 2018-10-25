@@ -564,7 +564,12 @@ public class PayPal {
                 .approvalURL(redirectUrl);
 
         if (redirectUrl != null) {
-            request.pairingId(fragment.getApplicationContext(), Uri.parse(redirectUrl).getQueryParameter("token"));
+            Uri uri = Uri.parse(redirectUrl);
+            String pairingId = uri.getQueryParameter("token");
+
+            if (pairingId != null) {
+                request.pairingId(fragment.getApplicationContext(), pairingId);
+            }
         }
 
         return request;
@@ -576,7 +581,12 @@ public class PayPal {
                 .approvalURL(redirectUrl);
 
         if (redirectUrl != null) {
-            request.pairingId(fragment.getApplicationContext(), Uri.parse(redirectUrl).getQueryParameter("ba_token"));
+            Uri uri = Uri.parse(redirectUrl);
+            String pairingId = uri.getQueryParameter("ba_token");
+
+            if (pairingId != null) {
+                request.pairingId(fragment.getApplicationContext(), pairingId);
+            }
         }
 
         return request;

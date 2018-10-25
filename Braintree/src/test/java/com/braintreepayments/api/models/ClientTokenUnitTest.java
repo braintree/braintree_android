@@ -9,6 +9,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
 public class ClientTokenUnitTest {
@@ -39,5 +40,19 @@ public class ClientTokenUnitTest {
         ClientToken clientToken = (ClientToken) Authorization.fromString(stringFromFixture("client_token.json"));
 
         assertEquals(clientToken.getAuthorizationFingerprint(), clientToken.getBearer());
+    }
+
+    @Test
+    public void getCustomerId_returnsNull_whenCustomerIdNotPresent() throws InvalidArgumentException {
+        ClientToken clientToken = (ClientToken) Authorization.fromString(stringFromFixture("client_token_with_authorization_fingerprint_options.json"));
+
+        assertNull(clientToken.getCustomerId());
+    }
+
+    @Test
+    public void getCustomerId_returnsCustomerId() throws InvalidArgumentException {
+        ClientToken clientToken = (ClientToken) Authorization.fromString(stringFromFixture("client_token_with_customer_id_in_authorization_fingerprint.json"));
+
+        assertEquals("fake-customer-123", clientToken.getCustomerId());
     }
 }

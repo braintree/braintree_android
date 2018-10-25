@@ -1,8 +1,17 @@
 package com.braintreepayments.api;
 
+import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.ClientToken;
+import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.paypal.android.sdk.data.collector.InstallationIdentifier;
+import com.paypal.android.sdk.data.collector.PayPalDataCollector;
+import com.paypal.android.sdk.data.collector.PayPalDataCollectorRequest;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Used to tokenize credit or debit cards using a {@link CardBuilder}. For more information see the
@@ -30,6 +39,8 @@ public class Card {
         TokenizationClient.tokenize(fragment, cardBuilder, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
+                DataCollector.collectRiskData(fragment, paymentMethodNonce);
+
                 fragment.postCallback(paymentMethodNonce);
                 fragment.sendAnalyticsEvent("card.nonce-received");
             }

@@ -13,8 +13,10 @@ import java.util.Set;
 public class CardConfiguration {
 
     private static final String SUPPORTED_CARD_TYPES_KEY = "supportedCardTypes";
+    private static final String COLLECT_DEVICE_DATA_KEY = "collectDeviceData";
 
     private final Set<String> mSupportedCardTypes = new HashSet<>();
+    private boolean mCollectFraudData = false;
 
     /**
      * Parse a {@link CardConfiguration} from json.
@@ -35,7 +37,7 @@ public class CardConfiguration {
                 cardConfiguration.mSupportedCardTypes.add(jsonArray.optString(i, ""));
             }
         }
-
+        cardConfiguration.mCollectFraudData = json.optBoolean(COLLECT_DEVICE_DATA_KEY, false);
         return cardConfiguration;
     }
 
@@ -44,5 +46,12 @@ public class CardConfiguration {
      */
     public Set<String> getSupportedCardTypes() {
         return Collections.unmodifiableSet(mSupportedCardTypes);
+    }
+
+    /**
+     * @return if fraud data collection should occur.
+     */
+    public boolean isFraudDataCollectionEnabled() {
+        return mCollectFraudData;
     }
 }
