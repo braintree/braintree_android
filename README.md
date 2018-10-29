@@ -12,7 +12,7 @@ Add the dependency in your `build.gradle`:
 
 ```groovy
 dependencies {
-  compile 'com.braintreepayments.api:braintree:2.17.0'
+  compile 'com.braintreepayments.api:braintree:2.18.0'
 }
 ```
 

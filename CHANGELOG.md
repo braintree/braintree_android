@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 2.18.0
+
+* Upgrade Android SDK to 28
+* Fix PayPal JavaDoc
+
 ## 2.17.0
 
 * Local Payments
