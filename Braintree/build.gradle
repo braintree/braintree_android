@@ -58,6 +58,7 @@ dependencies {
     api project(':PayPalOneTouch')
 
     // TODO This aar needs to be hosted in a centralized location such as Maven
+    // TODO this should also be a 'com.braintreepayments.api:three-d-secure' dependency
     api(name: 'cardinal-sdk', version: '1.4.1', ext: 'aar')
     // TODO this is for cardinal-sdk. We need to remove this when they have solved the NoClassDef exception
     implementation 'com.google.android.gms:play-services-ads-identifier:16.0.0'
