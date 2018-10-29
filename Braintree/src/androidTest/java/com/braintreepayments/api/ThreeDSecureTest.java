@@ -57,7 +57,7 @@ public class ThreeDSecureTest {
 
     @Test(timeout = 10000)
     public void performVerification_postsPaymentMethodNonceToListenersWhenLookupReturnsACard()
-            throws InterruptedException, InvalidArgumentException {
+            throws InterruptedException {
         String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
         BraintreeFragment fragment = getFragmentWithAuthorization(mActivity, clientToken);
         String nonce = tokenize(fragment, new CardBuilder()

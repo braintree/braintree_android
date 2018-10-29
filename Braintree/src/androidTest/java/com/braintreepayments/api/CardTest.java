@@ -33,6 +33,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
 public class CardTest {
@@ -41,7 +42,7 @@ public class CardTest {
     private static final String GRAPHQL = "GRAPHQL";
 
     @Parameters(name="{0}")
-    public static Collection authorizationStrings() {
+    public static Collection requestProtocols() {
         return Arrays.asList(REST, GRAPHQL);
     }
 
@@ -313,6 +314,12 @@ public class CardTest {
                 assertFalse(cardNonce.getThreeDSecureInfo().wasVerified());
 
                 countDownLatch.countDown();
+            }
+        });
+        fragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onError(Exception error) {
+                throw new RuntimeException(error);
             }
         });
 

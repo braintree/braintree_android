@@ -5,6 +5,7 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
+import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 
@@ -24,7 +25,7 @@ public class UiTestActions {
             onDevice(withText(text)).perform(click());
         } catch (RuntimeException e) {
             if (e.getCause() instanceof UiObjectNotFoundException) {
-                onDevice(withText(text)).perform(click());
+                onDevice(withContentDescription(text)).perform(click());
             } else {
                 throw e;
             }
