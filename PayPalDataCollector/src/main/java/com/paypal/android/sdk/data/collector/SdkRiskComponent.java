@@ -16,8 +16,11 @@ public final class SdkRiskComponent {
     @MainThread
     public static String getClientMetadataId(Context context, String applicationGuid, String clientMetadataId) {
         PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
-                .setApplicationGuid(applicationGuid)
-                .setClientMetadataId(clientMetadataId);
+                .setApplicationGuid(applicationGuid);
+
+        if (clientMetadataId != null) {
+                request.setClientMetadataId(clientMetadataId);
+        }
 
         return PayPalDataCollector.getClientMetadataId(context, request);
     }
