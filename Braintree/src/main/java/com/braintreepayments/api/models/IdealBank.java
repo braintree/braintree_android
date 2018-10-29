@@ -13,8 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * @deprecated Use {@link com.braintreepayments.api.LocalPayment}
+ *
  * Class that contains details about an iDEAL issuing bank.
  */
+@Deprecated
 public class IdealBank implements Parcelable {
 
     private static final String DATA_KEY = "data";

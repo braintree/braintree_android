@@ -6,7 +6,6 @@ import android.support.test.runner.AndroidJUnit4;
 import android.text.TextUtils;
 
 import com.braintreepayments.api.exceptions.BraintreeApiErrorResponse;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreePaymentResultListener;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
@@ -21,6 +20,7 @@ import com.braintreepayments.api.test.TestClientTokenBuilder;
 import com.braintreepayments.testutils.Assumptions;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +34,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
+@Ignore("Ideal is deprecated")
 @RunWith(AndroidJUnit4.class)
 public class IdealTest {
 
@@ -45,7 +46,7 @@ public class IdealTest {
     private CountDownLatch mCountDownLatch;
 
     @Before
-    public void setUp() throws InvalidArgumentException {
+    public void setUp() {
         Assumptions.assumeDeviceCanConnectToBraintreeApi();
 
         mCountDownLatch = new CountDownLatch(1);

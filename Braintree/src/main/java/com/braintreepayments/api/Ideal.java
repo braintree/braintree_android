@@ -20,12 +20,14 @@ import org.json.JSONObject;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * @deprecated use {@link LocalPayment}
+ *
  * Used to integrate with iDEAL. For more information see the <a href="https://developers.braintreepayments.com/guides/ideal/overview">documentation</a>
  */
+@Deprecated
 public class Ideal {
 
     private static final String ASSET_SERVER_REDIRECT_PATH = "/mobile/ideal-redirect/0.0.0/index.html?redirect_url=";
@@ -42,6 +44,7 @@ public class Ideal {
      * @param fragment {@link BraintreeFragment}
      * @param listener {@link BraintreeResponseListener} the callback to which a list of issuing banks will be provided.
      */
+    @Deprecated
     public static void fetchIssuingBanks(final BraintreeFragment fragment,
             final BraintreeResponseListener<List<IdealBank>> listener) {
         fragment.waitForConfiguration(new ConfigurationListener() {
@@ -85,6 +88,7 @@ public class Ideal {
      * @param listener {@link BraintreeResponseListener} the callback to which the {@link IdealResult} will be sent
      * with a status of `PENDING` before the flow starts. This result contains the iDEAL payment ID.
      */
+    @Deprecated
     public static void startPayment(final BraintreeFragment fragment, final IdealRequest builder,
             final BraintreeResponseListener<IdealResult> listener) {
         fragment.waitForConfiguration(new ConfigurationListener() {
@@ -143,6 +147,7 @@ public class Ideal {
      * @param delay the number of milliseconds between polling attempts. Must be between 1000 and 10000.
      * @throws InvalidArgumentException If the `maxRetries` or `delay` are invalid.
      */
+    @Deprecated
     public static void pollForCompletion(BraintreeFragment fragment, String idealId, int maxRetries, long delay) throws
             InvalidArgumentException {
         if (delay < MIN_POLLING_DELAY || delay > MAX_POLLING_DELAY ||
@@ -180,6 +185,7 @@ public class Ideal {
         });
     }
 
+    @Deprecated
     static void onActivityResult(final BraintreeFragment fragment, int resultCode) {
         if (resultCode == Activity.RESULT_OK) {
             fragment.sendAnalyticsEvent("ideal.webswitch.succeeded");

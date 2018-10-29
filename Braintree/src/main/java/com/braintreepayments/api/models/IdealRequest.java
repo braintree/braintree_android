@@ -1,14 +1,14 @@
 package com.braintreepayments.api.models;
 
-import com.braintreepayments.api.BraintreeFragment;
-import com.braintreepayments.api.interfaces.BraintreeResponseListener;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * @deprecated Use {@link LocalPaymentRequest}
+ *
  * Builder used to construct an iDEAL payment request.
  */
+@Deprecated
 public class IdealRequest {
 
     private static final String ROUTE_ID_KEY = "route_id";
