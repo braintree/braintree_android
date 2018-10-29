@@ -58,7 +58,9 @@ dependencies {
     api project(':PayPalOneTouch')
 
     // TODO This aar needs to be hosted in a centralized location such as Maven
-    api(group: 'com.cardinalcommerce.cardinalmobilesdk', name: 'cardinal-sdk', version: '1.4.1', ext: 'aar')
+    api(name: 'cardinal-sdk', version: '1.4.1', ext: 'aar')
+    // TODO this is for cardinal-sdk. We need to remove this when they have solved the NoClassDef exception
+    implementation 'com.google.android.gms:play-services-ads-identifier:16.0.0'
 
     androidTestImplementation 'com.google.android.gms:play-services-wallet:16.0.1'
     androidTestImplementation project(':BraintreeDataCollector')

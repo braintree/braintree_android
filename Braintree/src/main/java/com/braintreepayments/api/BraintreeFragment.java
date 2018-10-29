@@ -49,6 +49,11 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.models.UnionPayCapabilities;
 import com.braintreepayments.browserswitch.BrowserSwitchFragment;
+import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
+import com.cardinalcommerce.cardinalmobilesdk.Models.Parameters.CardinalConfigurationParameters;
+import com.cardinalcommerce.cardinalmobilesdk.Models.Parameters.CardinalEnvironment;
+import com.cardinalcommerce.cardinalmobilesdk.Models.Parameters.CardinalRenderType;
+import com.cardinalcommerce.cardinalmobilesdk.Models.Parameters.CardinalUiType;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -56,6 +61,7 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayDeque;
@@ -105,6 +111,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     private String mIntegrationType;
     private String mSessionId;
     private AnalyticsDatabase mAnalyticsDatabase;
+    private Cardinal mCardinal;
 
     private ConfigurationListener mConfigurationListener;
     private BraintreeResponseListener<Exception> mConfigurationErrorListener;
@@ -218,6 +225,46 @@ public class BraintreeFragment extends BrowserSwitchFragment {
         }
 
         fetchConfiguration();
+
+        waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                CardinalEnvironment cardinalEnvironment = CardinalEnvironment.PRODUCTION;
+                switch (configuration.getEnvironment().toLowerCase()) {
+                    // TODO QA or Staging?
+                    case "sandbox":
+                        cardinalEnvironment = CardinalEnvironment.SANDBOX;
+                        break;
+                    case "production":
+                        cardinalEnvironment = CardinalEnvironment.PRODUCTION;
+                        break;
+                    case "development":
+                        cardinalEnvironment = CardinalEnvironment.DEV;
+                        break;
+                }
+
+                CardinalConfigurationParameters cardinalConfigurationParameters = new CardinalConfigurationParameters();
+                cardinalConfigurationParameters.setEnvironment(cardinalEnvironment);
+                // TODO what should timeout and "quick auth" be
+                cardinalConfigurationParameters.setTimeout(8000);
+                cardinalConfigurationParameters.setEnableQuickAuth(false);
+
+                // TODO what is an rType
+                JSONArray rType = new JSONArray();
+                rType.put(CardinalRenderType.OTP);
+                rType.put(CardinalRenderType.SINGLE_SELECT);
+                rType.put(CardinalRenderType.MULTI_SELECT);
+                rType.put(CardinalRenderType.OOB);
+                rType.put(CardinalRenderType.HTML);
+                cardinalConfigurationParameters.setRenderType(rType);
+
+                // TODO what UI type should we use
+                cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
+
+                mCardinal = Cardinal.getInstance();
+                mCardinal.configure(getApplicationContext(), cardinalConfigurationParameters);
+            }
+        });
     }
 
     @TargetApi(VERSION_CODES.M)
