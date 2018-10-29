@@ -57,6 +57,9 @@ dependencies {
     api project(':Core')
     api project(':PayPalOneTouch')
 
+    // TODO This aar needs to be hosted in a centralized location such as Maven
+    api(group: 'com.cardinalcommerce.cardinalmobilesdk', name: 'cardinal-sdk', version: '1.4.1', ext: 'aar')
+
     androidTestImplementation 'com.google.android.gms:play-services-wallet:16.0.1'
     androidTestImplementation project(':BraintreeDataCollector')
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
