@@ -15,21 +15,40 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureLookupUnitTest {
 
+    private ThreeDSecureLookup mLookupVersion1;
     private ThreeDSecureLookup mLookup;
 
     @Before
     public void setUp() throws JSONException {
-        mLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response.json"));
+        mLookupVersion1 = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response.json"));
+        mLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_version_2.json"));
     }
 
     @Test
     public void fromJson_parsesCorrectly() {
+        assertEquals("https://acs-url/", mLookupVersion1.getAcsUrl());
+        assertEquals("merchant-descriptor", mLookupVersion1.getMd());
+        assertEquals("https://term-url/", mLookupVersion1.getTermUrl());
+        assertEquals("pareq", mLookupVersion1.getPareq());
+        assertEquals("11", mLookupVersion1.getCardNonce().getLastTwo());
+        assertEquals("123456-12345-12345-a-adfa", mLookupVersion1.getCardNonce().getNonce());
+        assertEquals("", mLookupVersion1.getThreeDSecureVersion());
+        assertEquals("", mLookupVersion1.getTransactionId());
+        assertTrue(mLookupVersion1.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
+        assertTrue(mLookupVersion1.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertTrue(mLookupVersion1.getCardNonce().getThreeDSecureInfo().wasVerified());
+    }
+
+    @Test
+    public void fromJson_whenLookupVersion2_parsesCorrectly() {
         assertEquals("https://acs-url/", mLookup.getAcsUrl());
         assertEquals("merchant-descriptor", mLookup.getMd());
         assertEquals("https://term-url/", mLookup.getTermUrl());
         assertEquals("pareq", mLookup.getPareq());
         assertEquals("11", mLookup.getCardNonce().getLastTwo());
         assertEquals("123456-12345-12345-a-adfa", mLookup.getCardNonce().getNonce());
+        assertEquals("1.0.2", mLookup.getThreeDSecureVersion());
+        assertEquals("some-transaction-id", mLookup.getTransactionId());
         assertTrue(mLookup.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
         assertTrue(mLookup.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertTrue(mLookup.getCardNonce().getThreeDSecureInfo().wasVerified());
@@ -55,5 +74,7 @@ public class ThreeDSecureLookupUnitTest {
                 parceled.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertEquals(mLookup.getCardNonce().getThreeDSecureInfo().wasVerified(),
                 parceled.getCardNonce().getThreeDSecureInfo().wasVerified());
+        assertEquals(mLookup.getThreeDSecureVersion(), parceled.getThreeDSecureVersion());
+        assertEquals(mLookup.getTransactionId(), parceled.getTransactionId());
     }
 }

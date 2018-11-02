@@ -63,6 +63,11 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return this;
     }
 
+    public TestConfigurationBuilder cardinalAuthenticationJWT(String jwt) {
+        put(jwt);
+        return this;
+    }
+
     public TestConfigurationBuilder withAnalytics() {
         analytics("http://example.com");
         return this;

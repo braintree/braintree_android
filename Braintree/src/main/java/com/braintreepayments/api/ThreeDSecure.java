@@ -2,6 +2,8 @@ package com.braintreepayments.api;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
@@ -9,6 +11,7 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
+import com.braintreepayments.api.internal.ClassHelper;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.CardBuilder;
@@ -17,7 +20,15 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
+import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
+import com.cardinalcommerce.cardinalmobilesdk.Models.Parameters.CardinalConfigurationParameters;
+import com.cardinalcommerce.cardinalmobilesdk.Models.Parameters.CardinalEnvironment;
+import com.cardinalcommerce.cardinalmobilesdk.Models.Parameters.CardinalRenderType;
+import com.cardinalcommerce.cardinalmobilesdk.Models.Parameters.CardinalUiType;
+import com.cardinalcommerce.cardinalmobilesdk.Models.ValidateResponse;
+import com.cardinalcommerce.cardinalmobilesdk.Services.CardinalInitService;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -57,17 +68,39 @@ public class ThreeDSecure {
      */
     public static void performVerification(final BraintreeFragment fragment, final CardBuilder cardBuilder,
             final String amount) {
-        TokenizationClient.tokenize(fragment, cardBuilder, new PaymentMethodNonceCallback() {
-            @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
-                performVerification(fragment, paymentMethodNonce.getNonce(), amount);
-            }
 
+        fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
-            public void failure(Exception exception) {
-                fragment.postCallback(exception);
+            public void onConfigurationFetched(Configuration configuration) {
+                if (TextUtils.isEmpty(configuration.getCardinalAuthenticationJwt())) {
+                    TokenizationClient.tokenize(fragment, cardBuilder, new PaymentMethodNonceCallback() {
+                        @Override
+                        public void success(PaymentMethodNonce paymentMethodNonce) {
+                            performVerification(fragment, paymentMethodNonce.getNonce(), amount);
+                        }
+
+                        @Override
+                        public void failure(Exception exception) {
+                            fragment.postCallback(exception);
+                        }
+                    });
+                } else {
+                    Cardinal.getInstance().init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
+                        @Override
+                        public void onSetupCompleted(String s) {
+                            Log.d("setup-complete", s);
+
+                        }
+
+                        @Override
+                        public void onValidated(ValidateResponse validateResponse, String s) {
+                            Log.d("on-validated", s);
+                        }
+                    });
+                }
             }
         });
+
     }
 
     /**
@@ -193,5 +226,52 @@ public class ThreeDSecure {
                 .build();
 
         fragment.browserSwitch(BraintreeRequestCodes.THREE_D_SECURE, redirectUri.toString());
+    }
+
+    static void configureCardinal(final BraintreeFragment fragment) {
+        boolean cardinalSdkAvailable = ClassHelper.isClassAvailable(
+                "com.cardinalcommerce.cardinalmobilesdk.Cardinal");
+
+        if (cardinalSdkAvailable) {
+            fragment.waitForConfiguration(new ConfigurationListener() {
+                @Override
+                public void onConfigurationFetched(Configuration configuration) {
+                    CardinalEnvironment cardinalEnvironment = CardinalEnvironment.PRODUCTION;
+                    switch (configuration.getEnvironment().toLowerCase()) {
+                        // TODO QA or Staging?
+                        case "sandbox":
+                            cardinalEnvironment = CardinalEnvironment.SANDBOX;
+                            break;
+                        case "production":
+                            cardinalEnvironment = CardinalEnvironment.PRODUCTION;
+                            break;
+                        case "development":
+                            cardinalEnvironment = CardinalEnvironment.DEV;
+                            break;
+                    }
+
+                    CardinalConfigurationParameters cardinalConfigurationParameters = new CardinalConfigurationParameters();
+                    cardinalConfigurationParameters.setEnvironment(cardinalEnvironment);
+                    // TODO what should timeout and "quick auth" be
+                    cardinalConfigurationParameters.setTimeout(8000);
+                    cardinalConfigurationParameters.setEnableQuickAuth(false);
+
+                    // TODO what is an rType
+                    JSONArray rType = new JSONArray();
+                    rType.put(CardinalRenderType.OTP);
+                    rType.put(CardinalRenderType.SINGLE_SELECT);
+                    rType.put(CardinalRenderType.MULTI_SELECT);
+                    rType.put(CardinalRenderType.OOB);
+                    rType.put(CardinalRenderType.HTML);
+                    cardinalConfigurationParameters.setRenderType(rType);
+
+                    // TODO what UI type should we use
+                    cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
+
+                    Cardinal.getInstance()
+                            .configure(fragment.getApplicationContext(), cardinalConfigurationParameters);
+                }
+            });
+        }
     }
 }

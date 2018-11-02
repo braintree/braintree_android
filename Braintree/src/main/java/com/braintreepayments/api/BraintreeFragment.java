@@ -226,45 +226,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
 
         fetchConfiguration();
 
-        waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                CardinalEnvironment cardinalEnvironment = CardinalEnvironment.PRODUCTION;
-                switch (configuration.getEnvironment().toLowerCase()) {
-                    // TODO QA or Staging?
-                    case "sandbox":
-                        cardinalEnvironment = CardinalEnvironment.SANDBOX;
-                        break;
-                    case "production":
-                        cardinalEnvironment = CardinalEnvironment.PRODUCTION;
-                        break;
-                    case "development":
-                        cardinalEnvironment = CardinalEnvironment.DEV;
-                        break;
-                }
-
-                CardinalConfigurationParameters cardinalConfigurationParameters = new CardinalConfigurationParameters();
-                cardinalConfigurationParameters.setEnvironment(cardinalEnvironment);
-                // TODO what should timeout and "quick auth" be
-                cardinalConfigurationParameters.setTimeout(8000);
-                cardinalConfigurationParameters.setEnableQuickAuth(false);
-
-                // TODO what is an rType
-                JSONArray rType = new JSONArray();
-                rType.put(CardinalRenderType.OTP);
-                rType.put(CardinalRenderType.SINGLE_SELECT);
-                rType.put(CardinalRenderType.MULTI_SELECT);
-                rType.put(CardinalRenderType.OOB);
-                rType.put(CardinalRenderType.HTML);
-                cardinalConfigurationParameters.setRenderType(rType);
-
-                // TODO what UI type should we use
-                cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
-
-                mCardinal = Cardinal.getInstance();
-                mCardinal.configure(getApplicationContext(), cardinalConfigurationParameters);
-            }
-        });
+        ThreeDSecure.configureCardinal(this);
     }
 
     @TargetApi(VERSION_CODES.M)
