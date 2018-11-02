@@ -120,11 +120,30 @@ public class ThreeDSecure {
      * @param amount The amount of the transaction in the current merchant account's currency.
      */
     public static void performVerification(final BraintreeFragment fragment, final String nonce, final String amount) {
-        ThreeDSecureRequest request = new ThreeDSecureRequest()
-            .nonce(nonce)
-            .amount(amount);
+//        ThreeDSecureRequest request = new ThreeDSecureRequest()
+//            .nonce(nonce)
+//            .amount(amount);
+//
+//        performVerification(fragment, request);
 
-        performVerification(fragment, request);
+        // TODO this needs to support v1 and v2 flows
+        // Right now its hard coded for v2 for testing
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                Cardinal.getInstance().init(configuration.getCardinalAuthenticationJwt(), "4012000000010148", new CardinalInitService() {
+                    @Override
+                    public void onSetupCompleted(String s) {
+                        Log.d("setup-complete", "" + s);
+                    }
+
+                    @Override
+                    public void onValidated(ValidateResponse validateResponse, String s) {
+                        Log.d("on-validated", "" + s);
+                    }
+                });
+            }
+        });
     }
 
     /**
