@@ -54,6 +54,14 @@ public class ConfigurationUnitTest {
     }
 
     @Test
+    public void fromJson_parsesCardinalAuthenticationJwt() throws JSONException {
+        Configuration configuration = Configuration.fromJson(
+                stringFromFixture("configuration/with_cardinal_authentication_jwt.json"));
+
+        assertEquals("cardinal_authentication_jwt", configuration.getCardinalAuthenticationJwt());
+    }
+
+    @Test
     public void fromJson_handlesAbsentChallenges() throws JSONException {
         Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/without_challenge.json"));
 

@@ -36,6 +36,7 @@ public class Configuration {
     private static final String VISA_CHECKOUT_KEY = "visaCheckout";
     private static final String GRAPHQL_KEY = "graphQL";
     private static final String SAMSUNG_PAY_KEY = "samsungPay";
+    private static final String CARDINAL_AUTHENTICATION_JWT = "cardinalAuthenticationJWT";
 
     private String mAssetsUrl;
     private String mConfigurationString;
@@ -57,6 +58,7 @@ public class Configuration {
     private VisaCheckoutConfiguration mVisaCheckoutConfiguration;
     private GraphQLConfiguration mGraphQLConfiguration;
     private SamsungPayConfiguration mSamsungPayConfiguration;
+    private String mCardinalAuthenticationJwt;
 
     /**
      * Creates a new {@link com.braintreepayments.api.models.Configuration} instance from a json string.
@@ -95,6 +97,7 @@ public class Configuration {
         mVisaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(json.optJSONObject(VISA_CHECKOUT_KEY));
         mGraphQLConfiguration = GraphQLConfiguration.fromJson(json.optJSONObject(GRAPHQL_KEY));
         mSamsungPayConfiguration = SamsungPayConfiguration.fromJson(json.optJSONObject(SAMSUNG_PAY_KEY));
+        mCardinalAuthenticationJwt = Json.optString(json, CARDINAL_AUTHENTICATION_JWT, null);
     }
 
     public String toJson() {
@@ -250,5 +253,12 @@ public class Configuration {
                 mChallenges.add(jsonArray.optString(i, ""));
             }
         }
+    }
+
+    /**
+     * @return the JWT for Cardinal
+     */
+    public String getCardinalAuthenticationJwt() {
+        return mCardinalAuthenticationJwt;
     }
 }
