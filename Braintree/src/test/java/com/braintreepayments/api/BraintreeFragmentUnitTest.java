@@ -24,7 +24,6 @@ import com.braintreepayments.api.internal.AnalyticsSender;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.internal.HttpClient;
 import com.braintreepayments.api.models.AmericanExpressRewardsBalance;
-import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.BraintreePaymentResult;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
@@ -90,7 +89,7 @@ import static org.powermock.api.mockito.PowerMockito.verifyZeroInteractions;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*", "org.json.*" })
-@PrepareForTest({ AnalyticsSender.class, AndroidPay.class, ConfigurationManager.class, GooglePayment.class,
+@PrepareForTest({ AnalyticsSender.class, ConfigurationManager.class, GooglePayment.class,
         PayPal.class, ThreeDSecure.class, Venmo.class })
 public class BraintreeFragmentUnitTest {
 
@@ -723,30 +722,6 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void postCallback_onlyAllowsOneAndroidPayCardNonceToBePresent() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        assertEquals(0, fragment.getCachedPaymentMethodNonces().size());
-
-        fragment.postCallback(new CardNonce());
-        fragment.postCallback(new AndroidPayCardNonce());
-        fragment.postCallback(new AndroidPayCardNonce());
-
-        assertEquals(2, fragment.getCachedPaymentMethodNonces().size());
-        assertTrue(fragment.getCachedPaymentMethodNonces().get(0) instanceof AndroidPayCardNonce);
-    }
-
-    @Test
-    public void postCallback_doesNotRemoveAndroidPayCardNonceWhenAnotherNonceIsAdded() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        assertEquals(0, fragment.getCachedPaymentMethodNonces().size());
-
-        fragment.postCallback(new AndroidPayCardNonce());
-        fragment.postCallback(new CardNonce());
-
-        assertEquals(2, fragment.getCachedPaymentMethodNonces().size());
-    }
-
-    @Test
     public void postCallback_setsBooleanForFetchedPaymentMethodNonces() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         assertFalse(fragment.hasFetchedPaymentMethodNonces());
@@ -1039,18 +1014,6 @@ public class BraintreeFragmentUnitTest {
 
         verifyStatic();
         Venmo.onActivityResult(fragment, AppCompatActivity.RESULT_OK, intent);
-    }
-
-    @Test
-    public void onActivityResult_handlesAndroidPayResult() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        mockStatic(AndroidPay.class);
-        Intent intent = new Intent();
-
-        fragment.onActivityResult(BraintreeRequestCodes.ANDROID_PAY, AppCompatActivity.RESULT_OK, intent);
-
-        verifyStatic();
-        AndroidPay.onActivityResult(fragment, AppCompatActivity.RESULT_OK, intent);
     }
 
     @Test

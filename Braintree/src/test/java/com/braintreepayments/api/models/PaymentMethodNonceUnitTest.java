@@ -83,13 +83,6 @@ public class PaymentMethodNonceUnitTest {
     }
 
     @Test
-    public void parsePaymentMethod_doesNotParseAndroidPay() throws JSONException {
-        JSONObject androidPayCard = new JSONObject(stringFromFixture("payment_methods/android_pay_card.json"));
-
-        assertNull(parsePaymentMethodNonces(androidPayCard, AndroidPayCardNonce.TYPE));
-    }
-
-    @Test
     public void parsePaymentMethod_parsesCardResponses() throws JSONException {
         JSONObject card = new JSONObject(stringFromFixture("payment_methods/visa_credit_card_response.json"));
 
@@ -107,12 +100,5 @@ public class PaymentMethodNonceUnitTest {
 
         assertTrue(paymentMethodNonce instanceof PayPalAccountNonce);
         assertEquals("with email paypalaccount@example.com", paymentMethodNonce.getDescription());
-    }
-
-    @Test
-    public void parsePaymentMethod_doesNotParseAndroidPayCardResponses() throws JSONException {
-        JSONObject androidPayCard = new JSONObject(stringFromFixture("payment_methods/android_pay_card_response.json"));
-
-        assertNull(parsePaymentMethodNonces(androidPayCard, AndroidPayCardNonce.TYPE));
     }
 }

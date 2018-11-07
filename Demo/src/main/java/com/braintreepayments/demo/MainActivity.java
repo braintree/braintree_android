@@ -13,7 +13,6 @@ import com.braintreepayments.api.dropin.DropInActivity;
 import com.braintreepayments.api.dropin.DropInRequest;
 import com.braintreepayments.api.dropin.DropInResult;
 import com.braintreepayments.api.dropin.utils.PaymentMethodType;
-import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.BraintreePaymentResult;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.GooglePaymentCardNonce;
@@ -103,12 +102,6 @@ public class MainActivity extends BaseActivity {
 
     public void launchDropIn(View v) {
         startActivityForResult(getDropInRequest().getIntent(this), DROP_IN_REQUEST);
-    }
-
-    public void launchAndroidPay(View v) {
-        Intent intent = new Intent(this, AndroidPayActivity.class)
-                .putExtra(EXTRA_ANDROID_PAY_CART, getAndroidPayCart());
-        startActivityForResult(intent, ANDROID_PAY_REQUEST);
     }
 
     public void launchGooglePayment(View v) {
@@ -221,8 +214,6 @@ public class MainActivity extends BaseActivity {
             details = CardActivity.getDisplayString((CardNonce) mNonce);
         } else if (mNonce instanceof PayPalAccountNonce) {
             details = PayPalActivity.getDisplayString((PayPalAccountNonce) mNonce);
-        } else if (mNonce instanceof AndroidPayCardNonce) {
-            details = AndroidPayActivity.getDisplayString((AndroidPayCardNonce) mNonce);
         } else if (mNonce instanceof GooglePaymentCardNonce) {
             details = GooglePaymentActivity.getDisplayString((GooglePaymentCardNonce) mNonce);
         } else if (mNonce instanceof VisaCheckoutNonce) {

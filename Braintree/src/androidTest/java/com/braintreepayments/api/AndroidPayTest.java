@@ -1,12 +1,10 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
 import android.content.Intent;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.TokenizationParametersListener;
-import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;

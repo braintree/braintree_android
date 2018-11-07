@@ -4,8 +4,6 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application>
-        <activity android:name="com.braintreepayments.api.AndroidPayActivity"
-            android:theme="@style/bt_transparent_activity"/>
 
         <activity android:name="com.braintreepayments.api.GooglePaymentActivity"
             android:theme="@style/bt_transparent_activity"/>

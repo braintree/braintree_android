@@ -41,7 +41,6 @@ import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.internal.IntegrationType;
 import com.braintreepayments.api.internal.UUIDHelper;
 import com.braintreepayments.api.models.AmericanExpressRewardsBalance;
-import com.braintreepayments.api.models.AndroidPayCardNonce;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.BraintreePaymentResult;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
@@ -54,7 +53,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.dynamic.SupportFragmentWrapper;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 
@@ -370,9 +368,6 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             case BraintreeRequestCodes.VISA_CHECKOUT:
                 VisaCheckoutFacade.onActivityResult(this, resultCode, data);
                 break;
-            case BraintreeRequestCodes.ANDROID_PAY:
-                AndroidPay.onActivityResult(this, resultCode, data);
-                break;
             case BraintreeRequestCodes.IDEAL:
                 Ideal.onActivityResult(this, resultCode);
                 break;
@@ -601,14 +596,6 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     }
 
     protected void postCallback(final PaymentMethodNonce paymentMethodNonce) {
-        if (paymentMethodNonce instanceof AndroidPayCardNonce) {
-            for (PaymentMethodNonce cachedPaymentMethodNonce : new ArrayList<>(mCachedPaymentMethodNonces)) {
-                if (cachedPaymentMethodNonce instanceof AndroidPayCardNonce) {
-                    mCachedPaymentMethodNonces.remove(cachedPaymentMethodNonce);
-                }
-            }
-        }
-
         mCachedPaymentMethodNonces.add(0, paymentMethodNonce);
 
         postOrQueueCallback(new QueuedCallback() {
