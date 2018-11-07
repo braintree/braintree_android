@@ -2,6 +2,8 @@ package com.braintreepayments.api;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;

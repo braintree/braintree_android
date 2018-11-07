@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
@@ -32,7 +32,7 @@ public class BraintreeFragmentTest {
     public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
 
-    private Activity mActivity;
+    private AppCompatActivity mActivity;
     private String mClientToken;
     private CountDownLatch mCountDownLatch;
 

@@ -12,21 +12,23 @@ import com.braintreepayments.testutils.TestTokenizationKey;
 
 import java.util.concurrent.CountDownLatch;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
 import static junit.framework.Assert.fail;
 
 public class BraintreeFragmentTestUtils {
 
-    public static BraintreeFragment getFragmentWithAuthorization(Activity activity, String authorization) {
+    public static BraintreeFragment getFragmentWithAuthorization(AppCompatActivity activity, String authorization) {
         return getFragment(activity, authorization, null);
     }
 
-    public static BraintreeFragment getFragmentWithConfiguration(Activity activity, String configuration) {
+    public static BraintreeFragment getFragmentWithConfiguration(AppCompatActivity activity, String configuration) {
         return getFragment(activity, null, configuration);
     }
 
-    public static BraintreeFragment getFragment(Activity activity, String authorization, String configuration) {
+    public static BraintreeFragment getFragment(AppCompatActivity activity, String authorization, String configuration) {
         try {
             if (authorization == null) {
                 authorization = TestTokenizationKey.TOKENIZATION_KEY;

@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
@@ -45,7 +47,7 @@ public class ThreeDSecureTest {
     public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
 
-    private Activity mActivity;
+    private AppCompatActivity mActivity;
     private CountDownLatch mCountDownLatch;
 
     @Before

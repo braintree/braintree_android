@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.exceptions.AuthorizationException;
@@ -39,7 +39,7 @@ public class PaymentMethodTest {
     public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
 
-    private Activity mActivity;
+    private AppCompatActivity mActivity;
 
     @Before
     public void setUp() {

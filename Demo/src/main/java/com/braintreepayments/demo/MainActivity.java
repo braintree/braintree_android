@@ -22,8 +22,6 @@ import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VenmoAccountNonce;
 import com.braintreepayments.api.models.VisaCheckoutNonce;
-import com.google.android.gms.wallet.Cart;
-import com.google.android.gms.wallet.LineItem;
 
 import java.util.Collections;
 
@@ -35,16 +33,14 @@ public class MainActivity extends BaseActivity {
     static final String EXTRA_PAYMENT_RESULT = "payment_result";
     static final String EXTRA_DEVICE_DATA = "device_data";
     static final String EXTRA_COLLECT_DEVICE_DATA = "collect_device_data";
-    static final String EXTRA_ANDROID_PAY_CART = "android_pay_cart";
 
     private static final int DROP_IN_REQUEST = 1;
-    private static final int ANDROID_PAY_REQUEST = 2;
-    private static final int GOOGLE_PAYMENT_REQUEST = 3;
-    private static final int CARDS_REQUEST = 4;
-    private static final int PAYPAL_REQUEST = 5;
-    private static final int VENMO_REQUEST = 6;
-    private static final int VISA_CHECKOUT_REQUEST = 7;
-    private static final int IDEAL_REQUEST = 8;
+    private static final int GOOGLE_PAYMENT_REQUEST = 2;
+    private static final int CARDS_REQUEST = 3;
+    private static final int PAYPAL_REQUEST = 4;
+    private static final int VENMO_REQUEST = 5;
+    private static final int VISA_CHECKOUT_REQUEST = 6;
+    private static final int IDEAL_REQUEST = 7;
 
     private static final String KEY_NONCE = "nonce";
 
