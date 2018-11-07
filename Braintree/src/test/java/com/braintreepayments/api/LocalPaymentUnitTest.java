@@ -34,6 +34,8 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.util.concurrent.CountDownLatch;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -342,7 +344,7 @@ public class LocalPaymentUnitTest {
             }
         }).when(mMockHttpClient).post(eq("/v1/payment_methods/paypal_accounts"), any(String.class), any(HttpResponseCallback.class));
 
-        LocalPayment.onActivityResult(mBraintreeFragment, Activity.RESULT_OK, getSuccessResponseIntent());
+        LocalPayment.onActivityResult(mBraintreeFragment, AppCompatActivity.RESULT_OK, getSuccessResponseIntent());
 
         verify(mBraintreeFragment).sendAnalyticsEvent(eq("ideal.local-payment.tokenize.succeeded"));
     }
@@ -379,7 +381,7 @@ public class LocalPaymentUnitTest {
             }
         }).when(mMockHttpClient).post(eq("/v1/payment_methods/paypal_accounts"), any(String.class), any(HttpResponseCallback.class));
 
-        LocalPayment.onActivityResult(mBraintreeFragment, Activity.RESULT_OK, getCancelResponseIntent());
+        LocalPayment.onActivityResult(mBraintreeFragment, AppCompatActivity.RESULT_OK, getCancelResponseIntent());
 
         verify(mBraintreeFragment).sendAnalyticsEvent(eq("ideal.local-payment.webswitch.canceled"));
     }
@@ -399,7 +401,7 @@ public class LocalPaymentUnitTest {
             }
         }).when(mMockHttpClient).post(eq("/v1/payment_methods/paypal_accounts"), any(String.class), any(HttpResponseCallback.class));
 
-        LocalPayment.onActivityResult(mBraintreeFragment, Activity.RESULT_OK, getSuccessResponseIntent());
+        LocalPayment.onActivityResult(mBraintreeFragment, AppCompatActivity.RESULT_OK, getSuccessResponseIntent());
 
         latch.await();
 

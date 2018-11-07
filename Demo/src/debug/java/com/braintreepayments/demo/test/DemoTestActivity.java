@@ -1,6 +1,6 @@
 package com.braintreepayments.demo.test;
 
-import android.app.Activity;
+import androidx.appcompat.app.AppCompatActivity;
 
-public class DemoTestActivity extends Activity {
+public class DemoTestActivity extends AppCompatActivity {
 }

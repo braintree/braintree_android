@@ -15,6 +15,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Stack;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
  * Legacy Activity used for performing ThreeDSecure verifications.
  *
@@ -79,7 +81,7 @@ public class ThreeDSecureWebViewActivity extends Activity {
     }
 
     protected void finishWithResult(ThreeDSecureAuthenticationResponse threeDSecureAuthenticationResponse) {
-        setResult(Activity.RESULT_OK,  new Intent()
+        setResult(AppCompatActivity.RESULT_OK,  new Intent()
                 .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT,
                         threeDSecureAuthenticationResponse));
         finish();
@@ -113,7 +115,7 @@ public class ThreeDSecureWebViewActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            setResult(Activity.RESULT_CANCELED);
+            setResult(AppCompatActivity.RESULT_CANCELED);
             finish();
             return true;
         }

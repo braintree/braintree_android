@@ -20,20 +20,22 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.util.concurrent.CountDownLatch;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*" })
+@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*", "org.json.*" })
 @PrepareForTest({ ShadowVisaCheckout.class })
 public class VisaCheckoutFacadeTest {
 
     @Rule
     public PowerMockRule mPowerMockRule = new PowerMockRule();
 
-    private Activity mActivity;
+    private AppCompatActivity mActivity;
     private BraintreeFragment mFragment;
     private CountDownLatch mLatch;
     private Intent mIntent = new Intent();
@@ -51,9 +53,9 @@ public class VisaCheckoutFacadeTest {
 
         mockStatic(ShadowVisaCheckout.class);
 
-        mFragment.onActivityResult(BraintreeRequestCodes.VISA_CHECKOUT, Activity.RESULT_OK, mIntent);
+        mFragment.onActivityResult(BraintreeRequestCodes.VISA_CHECKOUT, AppCompatActivity.RESULT_OK, mIntent);
 
         verifyStatic();
-        ShadowVisaCheckout.onActivityResult(mFragment, Activity.RESULT_OK, mIntent);
+        ShadowVisaCheckout.onActivityResult(mFragment, AppCompatActivity.RESULT_OK, mIntent);
     }
 }

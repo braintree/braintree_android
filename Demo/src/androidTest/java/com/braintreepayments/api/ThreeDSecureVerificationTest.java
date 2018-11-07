@@ -1,6 +1,8 @@
 package com.braintreepayments.api;
 
 import android.app.Activity;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.exceptions.AuthorizationException;
@@ -61,7 +63,7 @@ public class ThreeDSecureVerificationTest {
     public final BraintreeActivityTestRule<DemoTestActivity> mActivityTestRule =
             new BraintreeActivityTestRule<>(DemoTestActivity.class);
 
-    private Activity mActivity;
+    private AppCompatActivity mActivity;
     private CountDownLatch mCountDownLatch;
 
     @Before

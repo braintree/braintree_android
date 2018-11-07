@@ -69,12 +69,14 @@ configurations.all {
 
 dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.preference:preference:1.0.0'
 
     implementation('com.squareup.retrofit:retrofit:1.9.0') {
         exclude module: 'com.google.gson'
     }
 
     implementation project(':Braintree')
+//    implementation 'com.braintreepayments.api:braintree:3.0.0-SNAPSHOT'
 
     implementation 'com.google.android.gms:play-services-wallet:16.0.1'
 
@@ -85,7 +87,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.8.1'
     implementation 'com.google.code.gson:gson:2.8.1'
     implementation 'de.greenrobot:eventbus:2.4.1'
-    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.1'
+    implementation 'androidx.preference:preference:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.multidex:multidex:2.0.0'

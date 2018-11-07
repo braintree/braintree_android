@@ -2,8 +2,6 @@ package com.braintreepayments.api;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,6 +11,8 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
@@ -54,6 +54,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.dynamic.SupportFragmentWrapper;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 
@@ -120,21 +121,21 @@ public class BraintreeFragment extends BrowserSwitchFragment {
 
     /**
      * Create a new instance of {@link BraintreeFragment} using the client token and add it to the
-     * {@link Activity}'s {@link FragmentManager}.
+     * {@link AppCompatActivity}'s {@link FragmentManager}.
      *
-     * @param activity The {@link Activity} to add the {@link Fragment} to.
+     * @param activity The {@link AppCompatActivity} to add the {@link BraintreeFragment} to.
      * @param authorization The tokenization key or client token to use.
      * @return {@link BraintreeFragment}
      * @throws InvalidArgumentException If the tokenization key or client token is not valid or cannot be
      *         parsed.
      */
-    public static BraintreeFragment newInstance(Activity activity, String authorization)
+    public static BraintreeFragment newInstance(AppCompatActivity activity, String authorization)
             throws InvalidArgumentException {
         if (activity == null) {
             throw new InvalidArgumentException("Activity is null");
         }
 
-        FragmentManager fm = activity.getFragmentManager();
+        FragmentManager fm = activity.getSupportFragmentManager();
         BraintreeFragment braintreeFragment = (BraintreeFragment) fm.findFragmentByTag(TAG);
         if (braintreeFragment == null) {
             braintreeFragment = new BraintreeFragment();
@@ -336,12 +337,12 @@ public class BraintreeFragment extends BrowserSwitchFragment {
                 break;
         }
 
-        int resultCode = Activity.RESULT_FIRST_USER;
+        int resultCode = AppCompatActivity.RESULT_FIRST_USER;
         if (browserSwitchResult == BrowserSwitchResult.OK) {
-            resultCode = Activity.RESULT_OK;
+            resultCode = AppCompatActivity.RESULT_OK;
             sendAnalyticsEvent(type + ".browser-switch.succeeded");
         } else if (browserSwitchResult == BrowserSwitchResult.CANCELED) {
-            resultCode = Activity.RESULT_CANCELED;
+            resultCode = AppCompatActivity.RESULT_CANCELED;
             sendAnalyticsEvent(type + ".browser-switch.canceled");
         } else if (browserSwitchResult == BrowserSwitchResult.ERROR) {
             if (browserSwitchResult.getErrorMessage().startsWith("No installed activities")) {
@@ -383,7 +384,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
                 break;
         }
 
-        if (resultCode == Activity.RESULT_CANCELED) {
+        if (resultCode == AppCompatActivity.RESULT_CANCELED) {
             postCancelCallback(requestCode);
         }
     }

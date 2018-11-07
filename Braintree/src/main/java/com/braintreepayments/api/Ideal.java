@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
-
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
@@ -21,6 +19,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * @deprecated use {@link LocalPayment}
@@ -187,7 +187,7 @@ public class Ideal {
 
     @Deprecated
     static void onActivityResult(final BraintreeFragment fragment, int resultCode) {
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == AppCompatActivity.RESULT_OK) {
             fragment.sendAnalyticsEvent("ideal.webswitch.succeeded");
 
             String idealResultId = BraintreeSharedPreferences.getString(fragment.getApplicationContext(),
@@ -205,7 +205,7 @@ public class Ideal {
                     fragment.postCallback(throwable);
                 }
             });
-        } else if (resultCode == Activity.RESULT_CANCELED) {
+        } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
             fragment.sendAnalyticsEvent("ideal.webswitch.canceled");
         }
     }

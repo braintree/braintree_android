@@ -1,17 +1,18 @@
 package com.braintreepayments.api.test;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardLock;
 import android.content.Context;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.rule.ActivityTestRule;
 
 import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.SharedPreferencesHelper.getSharedPreferences;
 
 @SuppressWarnings("deprecation")
-public class BraintreeActivityTestRule<T extends Activity> extends ActivityTestRule<T> {
+public class BraintreeActivityTestRule<T extends AppCompatActivity> extends ActivityTestRule<T> {
 
     private KeyguardLock mKeyguardLock;
 

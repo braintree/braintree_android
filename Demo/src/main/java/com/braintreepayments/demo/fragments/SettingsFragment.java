@@ -3,19 +3,19 @@ package com.braintreepayments.demo.fragments;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
 
 import com.braintreepayments.demo.R;
 import com.braintreepayments.demo.views.SummaryEditTestPreference;
 
-public class SettingsFragment extends PreferenceFragment
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+
+public class SettingsFragment extends PreferenceFragmentCompat
         implements OnSharedPreferenceChangeListener {
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.settings);
 
         SharedPreferences preferences = getPreferenceManager().getSharedPreferences();

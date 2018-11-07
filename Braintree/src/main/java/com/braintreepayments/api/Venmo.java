@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +23,8 @@ import com.braintreepayments.api.models.VenmoConfiguration;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Used to create and tokenize Venmo accounts. For more information see the <a href="https://developers.braintreepayments.com/guides/venmo/overview">documentation</a>
@@ -174,7 +175,7 @@ public class Venmo {
     }
 
     static void onActivityResult(final BraintreeFragment fragment, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == AppCompatActivity.RESULT_OK) {
             fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.success");
             String nonce = data.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
 
@@ -185,7 +186,7 @@ public class Venmo {
                 VenmoAccountNonce venmoAccountNonce = new VenmoAccountNonce(nonce, venmoUsername, venmoUsername);
                 fragment.postCallback(venmoAccountNonce);
             }
-        } else if (resultCode == Activity.RESULT_CANCELED) {
+        } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
             fragment.sendAnalyticsEvent("pay-with-venmo.app-switch.canceled");
         }
     }

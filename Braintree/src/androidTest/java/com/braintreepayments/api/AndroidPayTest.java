@@ -228,7 +228,7 @@ public class AndroidPayTest {
     public void onActivityResult_sendsAnalyticsEventOnCancel() {
         BraintreeFragment fragment = getSetupFragment();
 
-        AndroidPay.onActivityResult(fragment, Activity.RESULT_CANCELED, new Intent());
+        AndroidPay.onActivityResult(fragment, AppCompatActivity.RESULT_CANCELED, new Intent());
 
         verify(fragment).sendAnalyticsEvent("android-pay.canceled");
     }
@@ -237,7 +237,7 @@ public class AndroidPayTest {
     public void onActivityResult_sendsAnalyticsEventOnNonOkOrCanceledResult() {
         BraintreeFragment fragment = getSetupFragment();
 
-        AndroidPay.onActivityResult(fragment, Activity.RESULT_FIRST_USER, new Intent());
+        AndroidPay.onActivityResult(fragment, AppCompatActivity.RESULT_FIRST_USER, new Intent());
 
         verify(fragment).sendAnalyticsEvent("android-pay.failed");
     }
@@ -250,7 +250,7 @@ public class AndroidPayTest {
         Intent intent = new Intent()
                 .putExtra(WalletConstants.EXTRA_FULL_WALLET, wallet);
 
-        AndroidPay.onActivityResult(fragment, Activity.RESULT_OK, intent);
+        AndroidPay.onActivityResult(fragment, AppCompatActivity.RESULT_OK, intent);
 
         verify(fragment).sendAnalyticsEvent("android-pay.authorized");
     }

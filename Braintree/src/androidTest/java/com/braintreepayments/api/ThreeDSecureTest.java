@@ -171,7 +171,7 @@ public class ThreeDSecureTest {
                 .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT,
                         ThreeDSecureAuthenticationResponse.fromJson(authResponse.toString()));
 
-        ThreeDSecure.onActivityResult(fragment, Activity.RESULT_OK, data);
+        ThreeDSecure.onActivityResult(fragment, AppCompatActivity.RESULT_OK, data);
 
         mCountDownLatch.await();
     }
@@ -197,7 +197,7 @@ public class ThreeDSecureTest {
         Intent data = new Intent()
                 .setData(responseUri);
 
-        ThreeDSecure.onActivityResult(fragment, Activity.RESULT_OK, data);
+        ThreeDSecure.onActivityResult(fragment, AppCompatActivity.RESULT_OK, data);
 
         mCountDownLatch.await();
     }
@@ -218,7 +218,7 @@ public class ThreeDSecureTest {
         Intent data = new Intent()
                 .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT, authResponse);
 
-        ThreeDSecure.onActivityResult(fragment, Activity.RESULT_OK, data);
+        ThreeDSecure.onActivityResult(fragment, AppCompatActivity.RESULT_OK, data);
 
         mCountDownLatch.await();
     }
@@ -240,7 +240,7 @@ public class ThreeDSecureTest {
                         ThreeDSecureAuthenticationResponse.fromJson(
                                 stringFromFixture("errors/three_d_secure_error.json")));
 
-        ThreeDSecure.onActivityResult(fragment, Activity.RESULT_OK, data);
+        ThreeDSecure.onActivityResult(fragment, AppCompatActivity.RESULT_OK, data);
 
         mCountDownLatch.await();
     }
@@ -249,7 +249,7 @@ public class ThreeDSecureTest {
     public void onActivityResult_doesNothingWhenResultCodeNotOk() {
         Intent intent = mock(Intent.class);
 
-        ThreeDSecure.onActivityResult(mock(BraintreeFragment.class), Activity.RESULT_CANCELED,
+        ThreeDSecure.onActivityResult(mock(BraintreeFragment.class), AppCompatActivity.RESULT_CANCELED,
                 intent);
 
         verifyZeroInteractions(intent);

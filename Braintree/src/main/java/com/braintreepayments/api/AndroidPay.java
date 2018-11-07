@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.braintreepayments.api.exceptions.AndroidPayException;
 import com.braintreepayments.api.exceptions.BraintreeException;
@@ -247,13 +248,13 @@ public class AndroidPay {
     }
 
     static void onActivityResult(BraintreeFragment fragment, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == AppCompatActivity.RESULT_OK) {
             if (data.hasExtra(WalletConstants.EXTRA_FULL_WALLET)) {
                 fragment.sendAnalyticsEvent("android-pay.authorized");
                 tokenize(fragment, (FullWallet) data.getParcelableExtra(WalletConstants.EXTRA_FULL_WALLET),
                         (Cart) data.getParcelableExtra(EXTRA_CART));
             }
-        } else if (resultCode == Activity.RESULT_CANCELED) {
+        } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
             fragment.sendAnalyticsEvent("android-pay.canceled");
         } else {
             if (data != null) {

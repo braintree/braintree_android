@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +7,8 @@ import android.net.Uri;
 import android.os.Parcel;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.text.TextUtils;
 import android.util.Base64;
 
@@ -375,7 +376,7 @@ public class PayPal {
             callback = new PayPalApprovalCallback() {
                 @Override
                 public void onComplete(Intent data) {
-                    PayPal.onActivityResult(fragment, Activity.RESULT_OK, data);
+                    PayPal.onActivityResult(fragment, AppCompatActivity.RESULT_OK, data);
                 }
 
                 @Override
@@ -441,7 +442,7 @@ public class PayPal {
      */
     protected static void onActivityResult(final BraintreeFragment fragment, int resultCode, Intent data) {
         Request request = getPersistedRequest(fragment.getApplicationContext());
-        if (resultCode == Activity.RESULT_OK && data != null && request != null) {
+        if (resultCode == AppCompatActivity.RESULT_OK && data != null && request != null) {
             boolean isAppSwitch = isAppSwitch(data);
             Result result = PayPalOneTouchCore.parseResponse(fragment.getApplicationContext(), request, data);
             switch (result.getResultType()) {
@@ -468,7 +469,7 @@ public class PayPal {
             }
             fragment.sendAnalyticsEvent(type + ".canceled");
 
-            if (resultCode != Activity.RESULT_CANCELED) {
+            if (resultCode != AppCompatActivity.RESULT_CANCELED) {
                 fragment.postCancelCallback(BraintreeRequestCodes.PAYPAL);
             }
         }

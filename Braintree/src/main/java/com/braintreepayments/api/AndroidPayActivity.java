@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -146,11 +147,11 @@ public class AndroidPayActivity extends Activity implements ConnectionCallbacks,
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == Activity.RESULT_OK && (requestCode == AUTHORIZE || requestCode == CHANGE_PAYMENT_METHOD)) {
+        if (resultCode == AppCompatActivity.RESULT_OK && (requestCode == AUTHORIZE || requestCode == CHANGE_PAYMENT_METHOD)) {
             String googleTransactionId = ((MaskedWallet) data.getParcelableExtra(WalletConstants.EXTRA_MASKED_WALLET))
                     .getGoogleTransactionId();
             loadFullWallet(googleTransactionId);
-        } else if (resultCode == Activity.RESULT_OK && requestCode == FULL_WALLET_REQUEST) {
+        } else if (resultCode == AppCompatActivity.RESULT_OK && requestCode == FULL_WALLET_REQUEST) {
             data.putExtra(EXTRA_CART, getCart());
             setResult(resultCode, data);
             finish();

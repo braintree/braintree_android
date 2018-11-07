@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -61,6 +60,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.verifyAnalyticsEvent;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.ReflectionHelper.getField;
@@ -88,7 +89,7 @@ import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 import static org.powermock.api.mockito.PowerMockito.verifyZeroInteractions;
 
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*" })
+@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*", "org.json.*" })
 @PrepareForTest({ AnalyticsSender.class, AndroidPay.class, ConfigurationManager.class, GooglePayment.class,
         PayPal.class, ThreeDSecure.class, Venmo.class })
 public class BraintreeFragmentUnitTest {
@@ -96,7 +97,7 @@ public class BraintreeFragmentUnitTest {
     @Rule
     public PowerMockRule mPowerMockRule = new PowerMockRule();
 
-    private Activity mActivity;
+    private AppCompatActivity mActivity;
     private AtomicBoolean mCalled;
 
     @Before
@@ -146,7 +147,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test(expected = InvalidArgumentException.class)
     public void newInstance_throwsAnExceptionWhenActivityIsDestroyed() throws InvalidArgumentException {
-        Activity activity = Robolectric.buildActivity(FragmentTestActivity.class)
+        AppCompatActivity activity = Robolectric.buildActivity(FragmentTestActivity.class)
                 .create()
                 .start()
                 .resume()
@@ -330,8 +331,8 @@ public class BraintreeFragmentUnitTest {
         mockConfigurationManager(configuration);
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
 
-        mActivity.getFragmentManager().beginTransaction().detach(fragment).commit();
-        mActivity.getFragmentManager().executePendingTransactions();
+        mActivity.getSupportFragmentManager().beginTransaction().detach(fragment).commit();
+        mActivity.getSupportFragmentManager().executePendingTransactions();
 
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
@@ -918,7 +919,7 @@ public class BraintreeFragmentUnitTest {
         fragment.onBrowserSwitchResult(42, BrowserSwitchResult.OK, Uri.parse("http://example.com"));
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).onActivityResult(eq(42), eq(Activity.RESULT_OK), captor.capture());
+        verify(fragment).onActivityResult(eq(42), eq(AppCompatActivity.RESULT_OK), captor.capture());
         assertEquals("http://example.com", captor.getValue().getData().toString());
     }
 
@@ -929,7 +930,7 @@ public class BraintreeFragmentUnitTest {
         fragment.onBrowserSwitchResult(42, BrowserSwitchResult.CANCELED, Uri.parse("http://example.com"));
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).onActivityResult(eq(42), eq(Activity.RESULT_CANCELED), captor.capture());
+        verify(fragment).onActivityResult(eq(42), eq(AppCompatActivity.RESULT_CANCELED), captor.capture());
         assertEquals("http://example.com", captor.getValue().getData().toString());
     }
 
@@ -940,7 +941,7 @@ public class BraintreeFragmentUnitTest {
         fragment.onBrowserSwitchResult(42, BrowserSwitchResult.ERROR, Uri.parse("http://example.com"));
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).onActivityResult(eq(42), eq(Activity.RESULT_FIRST_USER), captor.capture());
+        verify(fragment).onActivityResult(eq(42), eq(AppCompatActivity.RESULT_FIRST_USER), captor.capture());
         assertEquals("http://example.com", captor.getValue().getData().toString());
     }
 
@@ -1001,17 +1002,17 @@ public class BraintreeFragmentUnitTest {
         mockStatic(PayPal.class);
         Intent intent = new Intent();
 
-        fragment.onActivityResult(BraintreeRequestCodes.PAYPAL, Activity.RESULT_FIRST_USER, intent);
+        fragment.onActivityResult(BraintreeRequestCodes.PAYPAL, AppCompatActivity.RESULT_FIRST_USER, intent);
 
         verifyStatic();
-        PayPal.onActivityResult(fragment, Activity.RESULT_FIRST_USER, intent);
+        PayPal.onActivityResult(fragment, AppCompatActivity.RESULT_FIRST_USER, intent);
     }
 
     @Test
     public void onActivityResult_callsCancelListenerOnlyOnceForPayPal() throws InvalidArgumentException {
         BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY));
 
-        fragment.onActivityResult(BraintreeRequestCodes.PAYPAL, Activity.RESULT_CANCELED, new Intent());
+        fragment.onActivityResult(BraintreeRequestCodes.PAYPAL, AppCompatActivity.RESULT_CANCELED, new Intent());
 
         verify(fragment, times(1)).postCancelCallback(BraintreeRequestCodes.PAYPAL);
     }
@@ -1022,10 +1023,10 @@ public class BraintreeFragmentUnitTest {
         mockStatic(ThreeDSecure.class);
         Intent intent = new Intent();
 
-        fragment.onActivityResult(BraintreeRequestCodes.THREE_D_SECURE, Activity.RESULT_OK, intent);
+        fragment.onActivityResult(BraintreeRequestCodes.THREE_D_SECURE, AppCompatActivity.RESULT_OK, intent);
 
         verifyStatic();
-        ThreeDSecure.onActivityResult(fragment, Activity.RESULT_OK, intent);
+        ThreeDSecure.onActivityResult(fragment, AppCompatActivity.RESULT_OK, intent);
     }
 
     @Test
@@ -1034,10 +1035,10 @@ public class BraintreeFragmentUnitTest {
         mockStatic(Venmo.class);
         Intent intent = new Intent();
 
-        fragment.onActivityResult(BraintreeRequestCodes.VENMO, Activity.RESULT_OK, intent);
+        fragment.onActivityResult(BraintreeRequestCodes.VENMO, AppCompatActivity.RESULT_OK, intent);
 
         verifyStatic();
-        Venmo.onActivityResult(fragment, Activity.RESULT_OK, intent);
+        Venmo.onActivityResult(fragment, AppCompatActivity.RESULT_OK, intent);
     }
 
     @Test
@@ -1046,10 +1047,10 @@ public class BraintreeFragmentUnitTest {
         mockStatic(AndroidPay.class);
         Intent intent = new Intent();
 
-        fragment.onActivityResult(BraintreeRequestCodes.ANDROID_PAY, Activity.RESULT_OK, intent);
+        fragment.onActivityResult(BraintreeRequestCodes.ANDROID_PAY, AppCompatActivity.RESULT_OK, intent);
 
         verifyStatic();
-        AndroidPay.onActivityResult(fragment, Activity.RESULT_OK, intent);
+        AndroidPay.onActivityResult(fragment, AppCompatActivity.RESULT_OK, intent);
     }
 
     @Test
@@ -1058,10 +1059,10 @@ public class BraintreeFragmentUnitTest {
         mockStatic(GooglePayment.class);
         Intent intent = new Intent();
 
-        fragment.onActivityResult(BraintreeRequestCodes.GOOGLE_PAYMENT, Activity.RESULT_OK, intent);
+        fragment.onActivityResult(BraintreeRequestCodes.GOOGLE_PAYMENT, AppCompatActivity.RESULT_OK, intent);
 
         verifyStatic();
-        GooglePayment.onActivityResult(fragment, Activity.RESULT_OK, intent);
+        GooglePayment.onActivityResult(fragment, AppCompatActivity.RESULT_OK, intent);
     }
 
     @Test
@@ -1075,7 +1076,7 @@ public class BraintreeFragmentUnitTest {
             }
         });
 
-        fragment.onActivityResult(42, Activity.RESULT_CANCELED, null);
+        fragment.onActivityResult(42, AppCompatActivity.RESULT_CANCELED, null);
 
         assertTrue(mCalled.get());
     }
@@ -1083,8 +1084,8 @@ public class BraintreeFragmentUnitTest {
     @Test
     public void startActivityForResult_postsExceptionWhenNotAttached() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        mActivity.getFragmentManager().beginTransaction().detach(fragment).commit();
-        mActivity.getFragmentManager().executePendingTransactions();
+        mActivity.getSupportFragmentManager().beginTransaction().detach(fragment).commit();
+        mActivity.getSupportFragmentManager().executePendingTransactions();
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {

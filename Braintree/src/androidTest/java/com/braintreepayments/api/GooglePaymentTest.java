@@ -274,7 +274,7 @@ public class GooglePaymentTest {
     public void onActivityResult_sendsAnalyticsEventOnCancel() {
         BraintreeFragment fragment = getSetupFragment();
 
-        GooglePayment.onActivityResult(fragment, Activity.RESULT_CANCELED, new Intent());
+        GooglePayment.onActivityResult(fragment, AppCompatActivity.RESULT_CANCELED, new Intent());
 
         verify(fragment).sendAnalyticsEvent("google-payment.canceled");
     }
@@ -283,7 +283,7 @@ public class GooglePaymentTest {
     public void onActivityResult_sendsAnalyticsEventOnNonOkOrCanceledResult() {
         BraintreeFragment fragment = getSetupFragment();
 
-        GooglePayment.onActivityResult(fragment, Activity.RESULT_FIRST_USER, new Intent());
+        GooglePayment.onActivityResult(fragment, AppCompatActivity.RESULT_FIRST_USER, new Intent());
 
         verify(fragment).sendAnalyticsEvent("google-payment.failed");
     }
@@ -292,7 +292,7 @@ public class GooglePaymentTest {
     public void onActivityResult_sendsAnalyticsEventOnOkResponse() {
         BraintreeFragment fragment = getSetupFragment();
 
-        GooglePayment.onActivityResult(fragment, Activity.RESULT_OK, new Intent());
+        GooglePayment.onActivityResult(fragment, AppCompatActivity.RESULT_OK, new Intent());
 
         verify(fragment).sendAnalyticsEvent("google-payment.authorized");
     }

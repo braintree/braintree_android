@@ -95,7 +95,7 @@ public class IdealTest {
             SystemClock.sleep(500);
         } while (savedId.equals(""));
 
-        Ideal.onActivityResult(mBraintreeFragment, Activity.RESULT_OK);
+        Ideal.onActivityResult(mBraintreeFragment, AppCompatActivity.RESULT_OK);
 
         mBraintreeFragment.addListener(new BraintreeErrorListener() {
             @Override

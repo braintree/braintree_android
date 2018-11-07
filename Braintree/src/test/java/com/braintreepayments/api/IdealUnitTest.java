@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import static com.braintreepayments.api.Ideal.IDEAL_RESULT_ID;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
@@ -400,7 +402,7 @@ public class IdealUnitTest {
             }
         }).when(mMockApiClient).get(eq("/ideal-payments/ideal_payment_id/status"), any(HttpResponseCallback.class));
 
-        Ideal.onActivityResult(mBraintreeFragment, Activity.RESULT_OK);
+        Ideal.onActivityResult(mBraintreeFragment, AppCompatActivity.RESULT_OK);
 
         latch.await();
 
@@ -421,7 +423,7 @@ public class IdealUnitTest {
             }
         }).when(mMockApiClient).get(eq("/ideal-payments/ideal_payment_id/status"), any(HttpResponseCallback.class));
 
-        Ideal.onActivityResult(mBraintreeFragment, Activity.RESULT_OK);
+        Ideal.onActivityResult(mBraintreeFragment, AppCompatActivity.RESULT_OK);
 
         ArgumentCaptor<IdealResult> captor = ArgumentCaptor.forClass(IdealResult.class);
         verify(mBraintreeFragment).postCallback(captor.capture());
@@ -435,7 +437,7 @@ public class IdealUnitTest {
     public void onActivityResult_resultOk_sendsAnalyticsEvent() throws JSONException {
         putResultIdInPrefs("ideal_payment_id");
 
-        Ideal.onActivityResult(mBraintreeFragment, Activity.RESULT_OK);
+        Ideal.onActivityResult(mBraintreeFragment, AppCompatActivity.RESULT_OK);
 
         verify(mBraintreeFragment).sendAnalyticsEvent(eq("ideal.webswitch.succeeded"));
     }
@@ -444,7 +446,7 @@ public class IdealUnitTest {
     public void onActivityResult_resultCanceled_sendsAnalyticsEvent() throws JSONException {
         putResultIdInPrefs("ideal_payment_id");
 
-        Ideal.onActivityResult(mBraintreeFragment, Activity.RESULT_CANCELED);
+        Ideal.onActivityResult(mBraintreeFragment, AppCompatActivity.RESULT_CANCELED);
 
         verify(mBraintreeFragment).sendAnalyticsEvent(eq("ideal.webswitch.canceled"));
     }
@@ -465,7 +467,7 @@ public class IdealUnitTest {
             }
         }).when(mMockApiClient).get(eq("/ideal-payments/ideal_payment_id/status"), any(HttpResponseCallback.class));
 
-        Ideal.onActivityResult(mBraintreeFragment, Activity.RESULT_OK);
+        Ideal.onActivityResult(mBraintreeFragment, AppCompatActivity.RESULT_OK);
 
         latch.await();
 
@@ -514,7 +516,7 @@ public class IdealUnitTest {
 
         IdealResult idealResult = IdealResult.fromJson(resultFixture);
         putResultIdInPrefs(idealResult.getId());
-        Ideal.onActivityResult(fragment, Activity.RESULT_OK);
+        Ideal.onActivityResult(fragment, AppCompatActivity.RESULT_OK);
 
         latch.await();
     }

@@ -22,6 +22,8 @@ import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
 
 import org.json.JSONException;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 /**
  * 3D Secure is a protocol that enables cardholders and issuers to add a layer of security
  * to e-commerce transactions via password entry at checkout.
@@ -166,7 +168,7 @@ public class ThreeDSecure {
     }
 
     protected static void onActivityResult(BraintreeFragment fragment, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == AppCompatActivity.RESULT_OK) {
             ThreeDSecureAuthenticationResponse authenticationResponse;
             Uri resultUri = data.getData();
             if (resultUri != null) {

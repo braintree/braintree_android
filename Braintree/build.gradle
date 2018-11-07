@@ -52,6 +52,7 @@ dependencies {
     }
     compileOnly 'androidx.legacy:legacy-support-v4:1.0.0'
     compileOnly 'androidx.annotation:annotation:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.1'
 
     /* Google Payment has been moved to braintree-android-google-payment.
      * Version 1.0.0 is a direct move of files to the new module, and to maintain backward compability we offer google payment 1.0.0 here.
@@ -72,8 +73,8 @@ dependencies {
     androidTestImplementation 'com.google.android.gms:play-services-wallet:16.0.1'
     androidTestImplementation project(':BraintreeDataCollector')
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
-    androidTestImplementation 'androidx.test:rules:1.1.0-beta02'
-    androidTestImplementation 'androidx.test:runner:1.1.0-beta02'
+    androidTestImplementation 'androidx.test:rules:1.1.0'
+    androidTestImplementation 'androidx.test:runner:1.1.0'
     androidTestImplementation project(':TestUtils')
 
     testImplementation 'com.google.android.gms:play-services-wallet:16.0.1'

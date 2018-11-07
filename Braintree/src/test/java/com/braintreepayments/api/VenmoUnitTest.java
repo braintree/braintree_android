@@ -37,6 +37,8 @@ import org.robolectric.RuntimeEnvironment;
 
 import java.security.NoSuchAlgorithmException;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import static com.braintreepayments.api.internal.SignatureVerificationUnitTestUtils.disableSignatureVerification;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.SharedPreferencesHelper.clearSharedPreferences;
@@ -428,7 +430,7 @@ public class VenmoUnitTest {
                 .putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE, "123456-12345-12345-a-adfa")
                 .putExtra(Venmo.EXTRA_USERNAME, "username");
 
-        Venmo.onActivityResult(fragment, Activity.RESULT_OK, intent);
+        Venmo.onActivityResult(fragment, AppCompatActivity.RESULT_OK, intent);
 
         ArgumentCaptor<VenmoAccountNonce> captor = ArgumentCaptor.forClass(VenmoAccountNonce.class);
         verify(fragment).postCallback(captor.capture());
@@ -445,7 +447,7 @@ public class VenmoUnitTest {
                 .putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE, "123456-12345-12345-a-adfa")
                 .putExtra(Venmo.EXTRA_USERNAME, "username");
 
-        Venmo.onActivityResult(fragment, Activity.RESULT_OK, intent);
+        Venmo.onActivityResult(fragment, AppCompatActivity.RESULT_OK, intent);
 
         verify(fragment).sendAnalyticsEvent("pay-with-venmo.app-switch.success");
     }
@@ -455,7 +457,7 @@ public class VenmoUnitTest {
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .build();
 
-        Venmo.onActivityResult(fragment, Activity.RESULT_CANCELED, new Intent());
+        Venmo.onActivityResult(fragment, AppCompatActivity.RESULT_CANCELED, new Intent());
 
         verify(fragment).sendAnalyticsEvent("pay-with-venmo.app-switch.canceled");
     }
@@ -477,7 +479,7 @@ public class VenmoUnitTest {
         Venmo.authorizeAccount(fragment, true);
 
         mockStatic(TokenizationClient.class);
-        Venmo.onActivityResult(fragment, Activity.RESULT_OK, new Intent());
+        Venmo.onActivityResult(fragment, AppCompatActivity.RESULT_OK, new Intent());
 
         verifyStatic();
         TokenizationClient.tokenize(eq(fragment), any(VenmoAccountBuilder.class), any(PaymentMethodNonceCallback.class));
@@ -497,7 +499,7 @@ public class VenmoUnitTest {
                 .build();
 
         Venmo.authorizeAccount(fragment, true);
-        Venmo.onActivityResult(fragment, Activity.RESULT_OK, new Intent());
+        Venmo.onActivityResult(fragment, AppCompatActivity.RESULT_OK, new Intent());
 
         verifyStatic(times(0));
         TokenizationClient.tokenize(eq(fragment), any(VenmoAccountBuilder.class), any(PaymentMethodNonceCallback.class));
@@ -523,7 +525,7 @@ public class VenmoUnitTest {
 
         Intent responseIntent = new Intent()
                 .putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE, "nonce");
-        Venmo.onActivityResult(fragment, Activity.RESULT_OK, responseIntent);
+        Venmo.onActivityResult(fragment, AppCompatActivity.RESULT_OK, responseIntent);
 
         verify(fragment).postCallback(responseCaptor.capture());
         PaymentMethodNonce capturedNonce = responseCaptor.getValue();
@@ -554,7 +556,7 @@ public class VenmoUnitTest {
 
         Intent responseIntent = new Intent()
                 .putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE, "nonce");
-        Venmo.onActivityResult(fragment, Activity.RESULT_OK, responseIntent);
+        Venmo.onActivityResult(fragment, AppCompatActivity.RESULT_OK, responseIntent);
 
         verify(fragment).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.success"));
     }
@@ -580,7 +582,7 @@ public class VenmoUnitTest {
 
         Intent responseIntent = new Intent()
                 .putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE, "nonce");
-        Venmo.onActivityResult(fragment, Activity.RESULT_OK, responseIntent);
+        Venmo.onActivityResult(fragment, AppCompatActivity.RESULT_OK, responseIntent);
 
         verify(fragment).postCallback(responseCaptor.capture());
         Exception exception = responseCaptor.getValue();
@@ -607,7 +609,7 @@ public class VenmoUnitTest {
 
         Intent responseIntent = new Intent()
                 .putExtra(Venmo.EXTRA_PAYMENT_METHOD_NONCE, "nonce");
-        Venmo.onActivityResult(fragment, Activity.RESULT_OK, responseIntent);
+        Venmo.onActivityResult(fragment, AppCompatActivity.RESULT_OK, responseIntent);
 
         verify(fragment).sendAnalyticsEvent(endsWith("pay-with-venmo.vault.failed"));
     }
