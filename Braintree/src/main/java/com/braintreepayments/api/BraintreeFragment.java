@@ -883,7 +883,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                     .addApi(Wallet.API, new Wallet.WalletOptions.Builder()
-                            .setEnvironment(GooglePayment.getEnvironment(getConfiguration().getAndroidPay()))
+                            .setEnvironment(GooglePayment.getEnvironment(getConfiguration().getGooglePayment()))
                             .setTheme(WalletConstants.THEME_LIGHT)
                             .build())
                     .build();

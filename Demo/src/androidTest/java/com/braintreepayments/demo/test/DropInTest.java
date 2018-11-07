@@ -62,16 +62,4 @@ public class DropInTest extends TestHelper {
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
-
-    @RequiresDevice
-    @Test(timeout = 60000)
-    public void tokenizesAndroidPay() {
-        onDevice(withText("Android Pay")).perform(click());
-        onDevice(withText("CONTINUE")).perform(click());
-
-        getNonceDetails().check(text(containsString("Underlying Card Last Two")));
-
-        onDevice(withText("Create a Transaction")).perform(click());
-        onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
-    }
 }

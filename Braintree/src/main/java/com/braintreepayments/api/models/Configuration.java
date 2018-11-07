@@ -176,11 +176,10 @@ public class Configuration {
     }
 
     /**
-     * @deprecated Use {@link #getGooglePayment()}.
+     * @deprecated Use {@link #getGooglePayment()}
      */
-    @Deprecated
     public AndroidPayConfiguration getAndroidPay() {
-        return getGooglePayment();
+        return mGooglePaymentConfiguration;
     }
 
     /**

@@ -147,17 +147,6 @@ public class ConfigurationUnitTest {
     }
 
     @Test
-    public void returnsNewAndroidPayConfigurationWhenAndroidPayIsNull() throws JSONException {
-        Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration/without_android_pay.json"));
-
-        assertNotNull(configuration.getAndroidPay());
-        assertFalse(configuration.getAndroidPay().isEnabled(null));
-        assertEquals("", configuration.getAndroidPay().getDisplayName());
-        assertNull(configuration.getAndroidPay().getEnvironment());
-    }
-
-    @Test
     public void returnsNewGooglePaymentConfigurationWhenGooglePaymentIsNull() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration/without_android_pay.json"));

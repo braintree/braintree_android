@@ -56,7 +56,6 @@ public class MainActivity extends BaseActivity {
     private TextView mDeviceData;
 
     private Button mDropInButton;
-    private Button mAndroidPayButton;
     private Button mGooglePaymentButton;
     private Button mCardsButton;
     private Button mPayPalButton;
@@ -76,7 +75,6 @@ public class MainActivity extends BaseActivity {
         mDeviceData = findViewById(R.id.device_data);
 
         mDropInButton = findViewById(R.id.drop_in);
-        mAndroidPayButton = findViewById(R.id.android_pay);
         mGooglePaymentButton = findViewById(R.id.google_payment);
         mCardsButton = findViewById(R.id.card);
         mPayPalButton = findViewById(R.id.paypal);
@@ -141,11 +139,7 @@ public class MainActivity extends BaseActivity {
                 .amount("1.00")
                 .clientToken(mAuthorization)
                 .collectDeviceData(Settings.shouldCollectDeviceData(this))
-                .requestThreeDSecureVerification(Settings.isThreeDSecureEnabled(this))
-                .androidPayCart(getAndroidPayCart())
-                .androidPayShippingAddressRequired(Settings.isAndroidPayShippingAddressRequired(this))
-                .androidPayPhoneNumberRequired(Settings.isAndroidPayPhoneNumberRequired(this))
-                .androidPayAllowedCountriesForShipping(Settings.getAndroidPayAllowedCountriesForShipping(this));
+                .requestThreeDSecureVerification(Settings.isThreeDSecureEnabled(this));
 
         if (Settings.isPayPalAddressScopeRequested(this)) {
             dropInRequest.paypalAdditionalScopes(Collections.singletonList(PayPal.SCOPE_ADDRESS));
@@ -254,23 +248,8 @@ public class MainActivity extends BaseActivity {
         mCreateTransactionButton.setEnabled(false);
     }
 
-    private Cart getAndroidPayCart() {
-        return Cart.newBuilder()
-                .setCurrencyCode(Settings.getAndroidPayCurrency(this))
-                .setTotalPrice("1.00")
-                .addLineItem(LineItem.newBuilder()
-                        .setCurrencyCode("USD")
-                        .setDescription("Description")
-                        .setQuantity("1")
-                        .setUnitPrice("1.00")
-                        .setTotalPrice("1.00")
-                        .build())
-                .build();
-    }
-
     private void enableButtons(boolean enable) {
         mDropInButton.setEnabled(enable);
-        mAndroidPayButton.setEnabled(enable);
         mGooglePaymentButton.setEnabled(enable);
         mCardsButton.setEnabled(enable);
         mPayPalButton.setEnabled(enable);

@@ -1,10 +1,6 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
-<<<<<<< HEAD
-=======
-
->>>>>>> 58bb6743... Androidx (#374)
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;

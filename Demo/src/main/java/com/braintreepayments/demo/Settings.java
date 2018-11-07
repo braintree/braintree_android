@@ -111,27 +111,6 @@ public class Settings {
         }
     }
 
-    public static boolean isAndroidPayShippingAddressRequired(Context context) {
-        return getPreferences(context).getBoolean("android_pay_require_shipping_address", false);
-    }
-
-    public static boolean isAndroidPayPhoneNumberRequired(Context context) {
-        return getPreferences(context).getBoolean("android_pay_require_phone_number", false);
-    }
-
-    public static String getAndroidPayCurrency(Context context) {
-        return getPreferences(context).getString("android_pay_currency", "USD");
-    }
-
-    public static String[] getAndroidPayAllowedCountriesForShipping(Context context) {
-        String[] countries = getPreferences(context).getString("android_pay_allowed_countries_for_shipping", "US").split(",");
-        for(int i = 0; i < countries.length; i++) {
-            countries[i] = countries[i].trim();
-        }
-
-        return countries;
-    }
-
     public static boolean areGooglePaymentPrepaidCardsAllowed(Context context) {
         return getPreferences(context).getBoolean("google_payment_allow_prepaid_cards", true);
     }

@@ -11,7 +11,7 @@ public class BraintreeRequestCodesUnitTest {
 
     @Test
     public void expectedNumberOfRequestCodes() {
-        assertEquals(9, BraintreeRequestCodes.class.getDeclaredFields().length);
+        assertEquals(8, BraintreeRequestCodes.class.getDeclaredFields().length);
     }
 
     @Test
@@ -22,11 +22,6 @@ public class BraintreeRequestCodesUnitTest {
     @Test
     public void venmo() {
         assertEquals(13488, BraintreeRequestCodes.VENMO);
-    }
-
-    @Test
-    public void androidPay() {
-        assertEquals(13489, BraintreeRequestCodes.ANDROID_PAY);
     }
 
     @Test

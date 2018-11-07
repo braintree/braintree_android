@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.test.runner.AndroidJUnit4;
@@ -39,6 +38,9 @@ import org.mockito.InOrder;
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_FIRST_USER;
+import static android.app.Activity.RESULT_OK;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWithConfiguration;
 import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_ENVIRONMENT;
@@ -77,7 +79,7 @@ public class GooglePaymentTest {
     }
 
     @Test(timeout = 5000)
-    public void isReadyToPay_returnsFalseWhenAndroidPayIsNotEnabled() throws Exception {
+    public void isReadyToPay_returnsFalseWhenGooglePaymentIsNotEnabled() throws Exception {
         String configuration = new TestConfigurationBuilder()
                 .googlePayment(new TestGooglePaymentConfigurationBuilder().enabled(false))
                 .build();
@@ -274,7 +276,7 @@ public class GooglePaymentTest {
     public void onActivityResult_sendsAnalyticsEventOnCancel() {
         BraintreeFragment fragment = getSetupFragment();
 
-        GooglePayment.onActivityResult(fragment, AppCompatActivity.RESULT_CANCELED, new Intent());
+        GooglePayment.onActivityResult(fragment, RESULT_CANCELED, new Intent());
 
         verify(fragment).sendAnalyticsEvent("google-payment.canceled");
     }
@@ -283,7 +285,7 @@ public class GooglePaymentTest {
     public void onActivityResult_sendsAnalyticsEventOnNonOkOrCanceledResult() {
         BraintreeFragment fragment = getSetupFragment();
 
-        GooglePayment.onActivityResult(fragment, AppCompatActivity.RESULT_FIRST_USER, new Intent());
+        GooglePayment.onActivityResult(fragment, RESULT_FIRST_USER, new Intent());
 
         verify(fragment).sendAnalyticsEvent("google-payment.failed");
     }
@@ -292,7 +294,7 @@ public class GooglePaymentTest {
     public void onActivityResult_sendsAnalyticsEventOnOkResponse() {
         BraintreeFragment fragment = getSetupFragment();
 
-        GooglePayment.onActivityResult(fragment, AppCompatActivity.RESULT_OK, new Intent());
+        GooglePayment.onActivityResult(fragment, RESULT_OK, new Intent());
 
         verify(fragment).sendAnalyticsEvent("google-payment.authorized");
     }

@@ -111,7 +111,7 @@ public class PaymentMethodUnitTest {
     }
 
     @Test
-    public void getPaymentMethodNonces_doesNotParseAndroidPayPaymentMethods() {
+    public void getPaymentMethodNonces_doesNotParseGooglePaymentMethods() {
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .successResponse(stringFromFixture("payment_methods/get_payment_methods_android_pay_response.json"))
                 .build();
