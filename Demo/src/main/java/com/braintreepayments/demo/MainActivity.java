@@ -13,10 +13,8 @@ import com.braintreepayments.api.dropin.DropInActivity;
 import com.braintreepayments.api.dropin.DropInRequest;
 import com.braintreepayments.api.dropin.DropInResult;
 import com.braintreepayments.api.dropin.utils.PaymentMethodType;
-import com.braintreepayments.api.models.BraintreePaymentResult;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.GooglePaymentCardNonce;
-import com.braintreepayments.api.models.IdealResult;
 import com.braintreepayments.api.models.LocalPaymentResult;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
@@ -40,7 +38,6 @@ public class MainActivity extends BaseActivity {
     private static final int PAYPAL_REQUEST = 4;
     private static final int VENMO_REQUEST = 5;
     private static final int VISA_CHECKOUT_REQUEST = 6;
-    private static final int IDEAL_REQUEST = 7;
 
     private static final String KEY_NONCE = "nonce";
 
@@ -58,7 +55,6 @@ public class MainActivity extends BaseActivity {
     private Button mVenmoButton;
     private Button mVisaCheckoutButton;
     private Button mCreateTransactionButton;
-    private Button mIdealButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +72,6 @@ public class MainActivity extends BaseActivity {
         mPayPalButton = findViewById(R.id.paypal);
         mVenmoButton = findViewById(R.id.venmo);
         mVisaCheckoutButton = findViewById(R.id.visa_checkout);
-        mIdealButton = (Button) findViewById(R.id.ideal);
         mCreateTransactionButton = findViewById(R.id.create_transaction);
 
         if (savedInstanceState != null) {
@@ -125,11 +120,6 @@ public class MainActivity extends BaseActivity {
         startActivityForResult(intent, VISA_CHECKOUT_REQUEST);
     }
 
-    public void launchIdeal(View v) {
-        Intent intent = new Intent(this, IdealActivity.class);
-        startActivityForResult(intent, IDEAL_REQUEST);
-    }
-
     private DropInRequest getDropInRequest() {
         DropInRequest dropInRequest = new DropInRequest()
                 .amount("1.00")
@@ -166,8 +156,6 @@ public class MainActivity extends BaseActivity {
                 String deviceData = data.getStringExtra(EXTRA_DEVICE_DATA);
                 if (returnedData instanceof PaymentMethodNonce) {
                     displayNonce((PaymentMethodNonce) returnedData, deviceData);
-                } else if (returnedData instanceof BraintreePaymentResult) {
-                    displayBraintreeResult((BraintreePaymentResult) returnedData);
                 }
 
                 mCreateTransactionButton.setEnabled(true);
@@ -211,7 +199,7 @@ public class MainActivity extends BaseActivity {
         } else if (mNonce instanceof VenmoAccountNonce) {
             details = VenmoActivity.getDisplayString((VenmoAccountNonce) mNonce);
         } else if (mNonce instanceof LocalPaymentResult) {
-            details = IdealActivity.getDisplayString((LocalPaymentResult) mNonce);
+            details = LocalPaymentsActivity.getDisplayString((LocalPaymentResult) mNonce);
         }
 
         mNonceDetails.setText(details);
@@ -221,19 +209,6 @@ public class MainActivity extends BaseActivity {
         mDeviceData.setVisibility(VISIBLE);
 
         mCreateTransactionButton.setEnabled(true);
-    }
-
-    private void displayBraintreeResult(BraintreePaymentResult result) {
-        if (result instanceof IdealResult) {
-            IdealResult idealResult = (IdealResult) result;
-            mNonceString.setText(getString(R.string.ideal_id_placeholder, idealResult.getId()));
-            mNonceString.setVisibility(VISIBLE);
-
-            mNonceDetails.setText(getString(R.string.ideal_status_placeholder, idealResult.getStatus()));
-            mNonceDetails.setVisibility(VISIBLE);
-
-            mCreateTransactionButton.setEnabled(false);
-        }
     }
 
     private void clearNonce() {
@@ -251,6 +226,5 @@ public class MainActivity extends BaseActivity {
         mPayPalButton.setEnabled(enable);
         mVenmoButton.setEnabled(enable);
         mVisaCheckoutButton.setEnabled(enable);
-        mIdealButton.setEnabled(enable);
     }
 }

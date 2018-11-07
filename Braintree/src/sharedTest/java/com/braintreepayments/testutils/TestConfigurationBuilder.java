@@ -142,13 +142,6 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return this;
     }
 
-    public TestConfigurationBuilder ideal(TestIdealConfigurationBuilder idealConfigurationBuilder) {
-        try {
-            put(new JSONObject(idealConfigurationBuilder.build()));
-        } catch (JSONException ignored) {}
-        return this;
-    }
-
     public TestConfigurationBuilder graphQL(TestGraphQLConfigurationBuilder graphQLConfigurationBuilder) {
         try {
             put(new JSONObject(graphQLConfigurationBuilder.build()));
@@ -437,27 +430,6 @@ public class TestConfigurationBuilder extends JSONBuilder {
             }
 
             put(jsonFeatures);
-            return this;
-        }
-    }
-
-    public static class TestIdealConfigurationBuilder extends JSONBuilder {
-
-        public TestIdealConfigurationBuilder() {
-            super();
-        }
-
-        protected TestIdealConfigurationBuilder(JSONObject json) {
-            super(json);
-        }
-
-        public TestIdealConfigurationBuilder routeId(String routeId) {
-            put(routeId);
-            return this;
-        }
-
-        public TestIdealConfigurationBuilder assetsUrl(String assetsUrl) {
-            put(assetsUrl);
             return this;
         }
     }

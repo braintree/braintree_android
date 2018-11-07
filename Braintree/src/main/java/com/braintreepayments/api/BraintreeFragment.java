@@ -327,9 +327,6 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             case BraintreeRequestCodes.THREE_D_SECURE:
                 type =  "three-d-secure";
                 break;
-            case BraintreeRequestCodes.IDEAL:
-                type = "ideal";
-                break;
             case BraintreeRequestCodes.LOCAL_PAYMENT:
                 type = "local-payment";
                 break;
@@ -367,9 +364,6 @@ public class BraintreeFragment extends BrowserSwitchFragment {
                 break;
             case BraintreeRequestCodes.VISA_CHECKOUT:
                 VisaCheckoutFacade.onActivityResult(this, resultCode, data);
-                break;
-            case BraintreeRequestCodes.IDEAL:
-                Ideal.onActivityResult(this, resultCode);
                 break;
             case BraintreeRequestCodes.LOCAL_PAYMENT:
                 LocalPayment.onActivityResult(this, resultCode, data);

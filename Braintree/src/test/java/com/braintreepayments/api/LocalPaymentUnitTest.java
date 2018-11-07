@@ -49,7 +49,6 @@ import static org.powermock.api.mockito.PowerMockito.doAnswer;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.json.*", "org.mockito.*", "org.robolectric.*", "android.*", "com.google.gms.*"})
-@PrepareForTest({Ideal.class})
 public class LocalPaymentUnitTest {
 
     @Rule
@@ -60,7 +59,7 @@ public class LocalPaymentUnitTest {
     private BraintreeHttpClient mMockHttpClient;
 
     @Before
-    public void setUp() throws InvalidArgumentException {
+    public void setUp() {
         mConfiguration = new TestConfigurationBuilder()
                 .assetsUrl("http://assets.example.com")
                 .paypal(new TestPayPalConfigurationBuilder(true)
@@ -87,8 +86,7 @@ public class LocalPaymentUnitTest {
     }
 
     @Test
-    public void startPayment_postsParameters_startsBrowserWithProperRequestCode()
-            throws InterruptedException, InvalidArgumentException {
+    public void startPayment_postsParameters_startsBrowserWithProperRequestCode() {
         final CountDownLatch latch = new CountDownLatch(1);
 
         doAnswer(new Answer() {
@@ -137,7 +135,7 @@ public class LocalPaymentUnitTest {
     }
 
     @Test
-    public void startPayment_success_sendsAnalyticsEvent() throws JSONException {
+    public void startPayment_success_sendsAnalyticsEvent() {
         final CountDownLatch latch = new CountDownLatch(1);
 
         doAnswer(new Answer() {
@@ -162,7 +160,7 @@ public class LocalPaymentUnitTest {
     }
 
     @Test
-    public void startPayment_failure_sendsAnalyticsEvent() throws JSONException, InvalidArgumentException {
+    public void startPayment_failure_sendsAnalyticsEvent() {
         final CountDownLatch latch = new CountDownLatch(1);
 
         doAnswer(new Answer() {
@@ -187,7 +185,7 @@ public class LocalPaymentUnitTest {
     }
 
     @Test
-    public void startPayment_setsApprovalUrl_andPaymentId_beforeListener_isCalled() throws InvalidArgumentException, JSONException {
+    public void startPayment_setsApprovalUrl_andPaymentId_beforeListener_isCalled() {
         final CountDownLatch latch = new CountDownLatch(1);
 
         doAnswer(new Answer() {
@@ -212,7 +210,7 @@ public class LocalPaymentUnitTest {
     }
 
     @Test
-    public void startPayment_callsExceptionListener_whenApprovalUrlIsSet() throws InvalidArgumentException, JSONException {
+    public void startPayment_callsExceptionListener_whenApprovalUrlIsSet() {
         LocalPaymentRequest request = getIdealLocalPaymentRequest()
                 .approvalUrl("aUrl");
 
@@ -227,7 +225,7 @@ public class LocalPaymentUnitTest {
     }
 
     @Test
-    public void startPayment_callsExceptionListener_whenPaymentIdIsSet() throws InvalidArgumentException, JSONException {
+    public void startPayment_callsExceptionListener_whenPaymentIdIsSet() {
         LocalPaymentRequest request = getIdealLocalPaymentRequest()
                 .paymentId("pid");
 
@@ -242,14 +240,14 @@ public class LocalPaymentUnitTest {
     }
 
     @Test
-    public void startPayment_callsExceptionListener_whenListenerIsNull() throws InvalidArgumentException, JSONException {
+    public void startPayment_callsExceptionListener_whenListenerIsNull() {
         LocalPayment.startPayment(mBraintreeFragment, getIdealLocalPaymentRequest(),null);
 
         verify(mBraintreeFragment).postCallback(any(BraintreeException.class));
     }
 
     @Test
-    public void startPayment_callsExceptionListener_amountIsNull() throws InvalidArgumentException, JSONException {
+    public void startPayment_callsExceptionListener_amountIsNull() {
         LocalPaymentRequest request = getIdealLocalPaymentRequest()
                 .amount(null);
 
@@ -264,7 +262,7 @@ public class LocalPaymentUnitTest {
     }
 
     @Test
-    public void startPayment_callsExceptionListener_paymentTypeIsNull() throws InvalidArgumentException, JSONException {
+    public void startPayment_callsExceptionListener_paymentTypeIsNull() {
         LocalPaymentRequest request = getIdealLocalPaymentRequest()
                 .paymentType(null);
 
@@ -279,7 +277,7 @@ public class LocalPaymentUnitTest {
     }
 
     @Test
-    public void startPayment_callsExceptionListener_localPaymentRequestIsNull() throws InvalidArgumentException, JSONException {
+    public void startPayment_callsExceptionListener_localPaymentRequestIsNull() {
         LocalPayment.startPayment(mBraintreeFragment, null, new BraintreeResponseListener<LocalPaymentRequest>() {
             @Override
             public void onResponse(LocalPaymentRequest localPaymentRequest) {
@@ -291,7 +289,7 @@ public class LocalPaymentUnitTest {
     }
 
     @Test
-    public void startPayment_callsExceptionListenerOnHttpError() throws InvalidArgumentException, JSONException {
+    public void startPayment_callsExceptionListenerOnHttpError() {
         final Exception expectedException = new Exception();
         doAnswer(new Answer() {
             @Override
@@ -313,7 +311,7 @@ public class LocalPaymentUnitTest {
     }
 
     @Test
-    public void onActivityResult_tokenize_sendsAnalyticsEvent() throws JSONException, InterruptedException {
+    public void onActivityResult_tokenize_sendsAnalyticsEvent() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
 
         doAnswer(new Answer() {
@@ -350,7 +348,7 @@ public class LocalPaymentUnitTest {
     }
 
     @Test
-    public void onActivityResult_cancel_sendsAnalyticsEvent() throws JSONException, InterruptedException {
+    public void onActivityResult_cancel_sendsAnalyticsEvent() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
 
         doAnswer(new Answer() {

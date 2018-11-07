@@ -34,7 +34,6 @@ public class Configuration {
     private static final String UNIONPAY_KEY = "unionPay";
     private static final String CARD_KEY = "creditCards";
     private static final String VISA_CHECKOUT_KEY = "visaCheckout";
-    private static final String IDEAL_KEY = "ideal";
     private static final String GRAPHQL_KEY = "graphQL";
     private static final String SAMSUNG_PAY_KEY = "samsungPay";
 
@@ -46,7 +45,6 @@ public class Configuration {
     private String mMerchantId;
     private String mMerchantAccountId;
     private BraintreeApiConfiguration mBraintreeApiConfiguration;
-    private IdealConfiguration mIdealConfiguration;
     private AnalyticsConfiguration mAnalyticsConfiguration;
     private CardConfiguration mCardConfiguration;
     private boolean mPaypalEnabled;
@@ -95,7 +93,6 @@ public class Configuration {
         mKountConfiguration = KountConfiguration.fromJson(json.optJSONObject(KOUNT_KEY));
         mUnionPayConfiguration = UnionPayConfiguration.fromJson(json.optJSONObject(UNIONPAY_KEY));
         mVisaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(json.optJSONObject(VISA_CHECKOUT_KEY));
-        mIdealConfiguration = IdealConfiguration.fromJson(json.optJSONObject(IDEAL_KEY));
         mGraphQLConfiguration = GraphQLConfiguration.fromJson(json.optJSONObject(GRAPHQL_KEY));
         mSamsungPayConfiguration = SamsungPayConfiguration.fromJson(json.optJSONObject(SAMSUNG_PAY_KEY));
     }
@@ -237,13 +234,6 @@ public class Configuration {
      */
     public KountConfiguration getKount() {
         return mKountConfiguration;
-    }
-
-    /**
-     * @return instance of {@link IdealConfiguration}.
-     */
-    public IdealConfiguration getIdealConfiguration() {
-        return mIdealConfiguration;
     }
 
     /**

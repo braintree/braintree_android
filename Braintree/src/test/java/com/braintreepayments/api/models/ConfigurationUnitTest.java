@@ -213,22 +213,6 @@ public class ConfigurationUnitTest {
     }
 
     @Test
-    public void returnsNewIdealConfigurationWhenIdealConfigurationAbsent() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
-
-        assertNotNull(configuration.getIdealConfiguration());
-        assertFalse(configuration.getIdealConfiguration().isEnabled());
-    }
-
-    @Test
-    public void returnsIdealConfigurationWhenIdealConfigurationPresent() throws JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_ideal.json"));
-
-        assertNotNull(configuration.getIdealConfiguration());
-        assertTrue(configuration.getIdealConfiguration().isEnabled());
-    }
-
-    @Test
     public void returnsGraphQLConfiguration_whenGraphQLConfigurationIsPresent() throws JSONException {
         Configuration configuration = Configuration.fromJson(
                 stringFromFixture("configuration/with_graphql.json"));

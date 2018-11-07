@@ -15,7 +15,7 @@ import com.braintreepayments.api.models.LocalPaymentResult;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
 
-public class IdealActivity extends BaseActivity implements PaymentMethodNonceCreatedListener {
+public class LocalPaymentsActivity extends BaseActivity implements PaymentMethodNonceCreatedListener {
 
     private Button mIdealButton;
 

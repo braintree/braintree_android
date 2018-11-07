@@ -11,7 +11,7 @@ public class BraintreeRequestCodesUnitTest {
 
     @Test
     public void expectedNumberOfRequestCodes() {
-        assertEquals(8, BraintreeRequestCodes.class.getDeclaredFields().length);
+        assertEquals(7, BraintreeRequestCodes.class.getDeclaredFields().length);
     }
 
     @Test
@@ -37,11 +37,6 @@ public class BraintreeRequestCodesUnitTest {
     @Test
     public void googlePayment() {
         assertEquals(13593, BraintreeRequestCodes.GOOGLE_PAYMENT);
-    }
-
-    @Test
-    public void ideal() {
-        assertEquals(13594, BraintreeRequestCodes.IDEAL);
     }
 
     @Test

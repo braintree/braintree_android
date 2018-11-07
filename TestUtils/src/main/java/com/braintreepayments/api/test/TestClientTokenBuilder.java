@@ -26,7 +26,6 @@ public class TestClientTokenBuilder {
     private static final int MERCHANT_WITH_THREE_D_SECURE_ENABLED = 5;
     private static final int MERCHANT_WITH_UNIONPAY = 6;
     private static final int MERCHANT_WITH_VISA_CHECKOUT = 7;
-    private static final int MERCHANT_WITH_IDEAL = 8;
 
     private boolean mWithCustomer = true;
     private int mMerchantType = MERCHANT_WITHOUT_PAYPAL;
@@ -74,12 +73,6 @@ public class TestClientTokenBuilder {
         return this;
     }
 
-    public TestClientTokenBuilder withIdeal() {
-        mMerchantType = MERCHANT_WITH_IDEAL;
-        mMerchantAccount = "ideal_merchant_account";
-        return this;
-    }
-
     public TestClientTokenBuilder withAnalytics() {
         mAnalytics = true;
         return this;
@@ -122,7 +115,6 @@ public class TestClientTokenBuilder {
             case MERCHANT_WITH_PAYPAL:
             case MERCHANT_WITH_THREE_D_SECURE_ENABLED:
             case MERCHANT_WITH_UNIONPAY:
-            case MERCHANT_WITH_IDEAL:
                 return getClientTokenFromGateway("integration_merchant_id", "integration_public_key");
             case MERCHANT_WITH_CVV_VERIFICATION:
             case MERCHANT_WITH_VISA_CHECKOUT:
