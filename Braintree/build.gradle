@@ -47,12 +47,12 @@ android {
 }
 
 dependencies {
+    compileOnly 'androidx.annotation:annotation:1.0.0'
+    compileOnly 'androidx.legacy:legacy-support-v4:1.0.0'
+    compileOnly 'com.braintreepayments.api:visa-checkout:1.0.0'
     compileOnly('com.google.android.gms:play-services-wallet:16.0.1') {
         exclude module: 'support-v4'
     }
-    compileOnly 'androidx.legacy:legacy-support-v4:1.0.0'
-    compileOnly 'androidx.annotation:annotation:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.0.1'
 
     /* Google Payment has been moved to braintree-android-google-payment.
      * Version 1.0.0 is a direct move of files to the new module, and to maintain backward compability we offer google payment 1.0.0 here.
@@ -60,14 +60,11 @@ dependencies {
      * their dependencies and specify the version they wish to use.
      */
     api 'com.braintreepayments.api:google-payment:1.0.0'
-
-    /* Visa Checkout being included in braintree-android is deprecated and will continue to
-     * stay at version 1.0.0. Merchants should include Visa Checkout as a seperate dependency
-     * in addition to braintree-android.
-     */
-    api 'com.braintreepayments.api:visa-checkout:1.0.0'
-    api project(':Core')
     compileOnly project(':BraintreeDataCollector')
+
+    implementation 'androidx.appcompat:appcompat:1.0.1'
+
+    api project(':Core')
     api project(':PayPalOneTouch')
 
     androidTestImplementation 'com.google.android.gms:play-services-wallet:16.0.1'
@@ -143,20 +140,6 @@ uploadArchives {
                 groupId = 'com.braintreepayments.api'
                 version = "${android.defaultConfig.versionName}"
                 description 'This is Braintree\'s Android SDK. Integrate this library to accept payments in your Android app.'
-            }
-
-            pom.whenConfigured { MavenPom pom ->
-                def ignoredDependencies = [
-                        'com.android.support:support-v4',
-                        'com.android.support:appcompat-v7',
-                        'com.android.support:design'
-                ]
-                pom.dependencies.each { dependency ->
-                    def dependencyNotation = dependency.groupId + ':' + dependency.artifactId
-                    dependency.optional = ignoredDependencies.contains(dependencyNotation)
-
-                    logger.warn(dependency.toString() + ' optional? ' + dependency.optional)
-                }
             }
         }
     }

@@ -43,17 +43,6 @@ public class VisaCheckoutConfigurationUnitTest {
     }
 
     @Test
-    public void isEnabled_returnsFalseWhenVisaCheckoutModuleIsNotPresent() throws JSONException {
-        mockStatic(ClassHelper.class);
-        when(ClassHelper.isClassAvailable(eq("com.braintreepayments.api.VisaCheckout"))).thenReturn(false);
-
-        VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
-                mVisaCheckoutConfigurationJson);
-
-        assertFalse(visaCheckoutConfiguration.isEnabled());
-    }
-
-    @Test
     public void isEnabled_returnsTrueWhenConfigurationApiKeyExists() throws JSONException {
         VisaCheckoutConfiguration visaCheckoutConfiguration = VisaCheckoutConfiguration.fromJson(
                 mVisaCheckoutConfigurationJson);

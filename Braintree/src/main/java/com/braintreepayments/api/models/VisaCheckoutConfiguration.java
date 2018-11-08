@@ -29,8 +29,7 @@ public class VisaCheckoutConfiguration {
         }
 
         visaCheckoutConfiguration.mApiKey = Json.optString(json, "apikey", "");
-        visaCheckoutConfiguration.mIsEnabled = ClassHelper.isClassAvailable(VisaCheckoutConstants.VISA_CHECKOUT_CLASSNAME) &&
-                !visaCheckoutConfiguration.mApiKey.equals("");
+        visaCheckoutConfiguration.mIsEnabled = !visaCheckoutConfiguration.mApiKey.equals("");
         visaCheckoutConfiguration.mExternalClientId = Json.optString(json, "externalClientId", "");
         visaCheckoutConfiguration.mCardBrands = supportedCardTypesToAcceptedCardBrands(
                 CardConfiguration.fromJson(json).getSupportedCardTypes());
