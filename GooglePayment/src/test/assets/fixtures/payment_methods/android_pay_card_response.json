@@ -1,0 +1,25 @@
+{
+  "androidPayCards": [
+    {
+      "type": "AndroidPayCard",
+      "nonce": "fake-android-pay-nonce",
+      "description": "Android Pay",
+      "details": {
+        "cardType": "Visa",
+        "lastTwo": "11",
+        "lastFour": "1234"
+      },
+      "binData": {
+        "prepaid": "Unknown",
+        "healthcare": "Yes",
+        "debit": "No",
+        "durbinRegulated": "Unknown",
+        "commercial": "Unknown",
+        "payroll": "Unknown",
+        "issuingBank": "Unknown",
+        "countryOfIssuance": "Something",
+        "productId": "123"
+      }
+    }
+  ]
+}
