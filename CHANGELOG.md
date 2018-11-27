@@ -618,6 +618,10 @@
   * Fix BraintreeDataCollector as an optional dependency
   * Fix `PaymentRequest` crash when Google Play Services is not present
 
+## 2.0.1
+
+* Update Visa Checkout to 6.6.1
+
 ## 2.0.0
 
 * Increase `minSdkVersion` to 15 (see [Platform Versions](http://developer.android.com/about/dashboards/index.html#Platform) for the current distribution of Android versions)
