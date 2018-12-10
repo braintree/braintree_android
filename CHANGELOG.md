@@ -1,5 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## 2.19.0
+
+* Move Google Payment to a separate module
+* Downgrade browser-switch to 0.1.6
+* Exclude customtabs from browser-switch dependency
+
 ## 2.18.1
 
 * Upgrade browser-switch to 0.1.7 fixes Chrome Custom Tab integration when using Jetifier to use AndroidX
