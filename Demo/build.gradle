@@ -95,6 +95,8 @@ dependencies {
         exclude group: 'com.braintreepayments.api', module: 'braintree'
     }
 
+    implementation 'com.braintreepayments.api:google-payment:1.0.0'
+
     debugImplementation 'com.facebook.stetho:stetho:1.5.0'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4'
 
