@@ -9,6 +9,8 @@ import com.braintreepayments.api.BraintreeFragment;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Represents the parameters that are needed to start a Checkout with PayPal
@@ -72,7 +74,7 @@ public class PayPalRequest implements Parcelable {
     private String mDisplayName;
     private boolean mOfferCredit;
     private String mMerchantAccountId;
-    private ArrayList<PayPalLineItem> mLineItems;
+    private ArrayList<PayPalLineItem> mLineItems = new ArrayList<>();
 
     /**
      * Constructs a description of a PayPal checkout for Single Payment and Billing Agreements.
@@ -286,10 +288,11 @@ public class PayPalRequest implements Parcelable {
     /**
      * The line items for this transaction. It can include up to 249 line items.
      *
-     * @param lineItems a list of {@link PayPalLineItem}
+     * @param lineItems a collection of {@link PayPalLineItem}
      */
-    public PayPalRequest lineItems(ArrayList<PayPalLineItem> lineItems) {
-        mLineItems = lineItems;
+    public PayPalRequest lineItems(Collection<PayPalLineItem> lineItems) {
+        mLineItems.clear();
+        mLineItems.addAll(lineItems);
         return this;
     }
 

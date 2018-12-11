@@ -322,7 +322,7 @@ public class PayPal {
                     .put(CURRENCY_ISO_CODE_KEY, currencyCode)
                     .put(INTENT_KEY, request.getIntent());
 
-            if (request.getLineItems() != null && request.getLineItems().size() > 0) {
+            if (!request.getLineItems().isEmpty()) {
                 JSONArray lineItems = new JSONArray();
                 for (PayPalLineItem lineItem : request.getLineItems()) {
                     lineItems.put(lineItem.toJson());
