@@ -18,6 +18,7 @@ import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PayPalAccountNonce;
+import com.braintreepayments.api.models.PayPalLineItem;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
@@ -45,6 +46,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.skyscreamer.jsonassert.JSONAssert;
 
+import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
@@ -915,6 +917,30 @@ public class PayPalUnitTest {
 
         JSONObject json = new JSONObject(dataCaptor.getValue());
         assertTrue(json.getBoolean("offer_paypal_credit"));
+    }
+
+    @Test
+    public void requestOneTimePayment_containsLineItemParams() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPalRequest request = new PayPalRequest("2");
+        ArrayList<PayPalLineItem> lineItems = new ArrayList<PayPalLineItem>();
+        lineItems.add(new PayPalLineItem(PayPalLineItem.KIND_DEBIT, "An Item", "1", "2"));
+        request.lineItems(lineItems);
+        PayPal.requestOneTimePayment(fragment, request);
+
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/create_payment_resource"),
+                dataCaptor.capture(), any(HttpResponseCallback.class));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        assertNotNull(json.getJSONArray("line_items"));
+
+        JSONObject itemJson = json.getJSONArray("line_items").getJSONObject(0);
+        assertEquals("debit", itemJson.getString("kind"));
+        assertEquals("An Item", itemJson.getString("name"));
+        assertEquals("1", itemJson.getString("quantity"));
+        assertEquals("2", itemJson.getString("unit_amount"));
     }
 
     @Test

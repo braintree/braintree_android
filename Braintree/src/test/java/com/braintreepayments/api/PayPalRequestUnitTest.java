@@ -5,6 +5,7 @@ import android.os.Parcel;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.models.PayPalLineItem;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PostalAddress;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
@@ -20,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
@@ -207,6 +209,10 @@ public class PayPalRequestUnitTest {
                 .offerCredit(true)
                 .merchantAccountId("merchant_account_id");
 
+        ArrayList<PayPalLineItem> lineItems = new ArrayList<PayPalLineItem>();
+        lineItems.add(new PayPalLineItem(PayPalLineItem.KIND_DEBIT, "An Item", "1", "1"));
+        request.lineItems(lineItems);
+
         Parcel parcel = Parcel.obtain();
         request.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -227,7 +233,8 @@ public class PayPalRequestUnitTest {
         assertEquals("Display Name", result.getDisplayName());
         assertTrue(result.shouldOfferCredit());
         assertEquals("merchant_account_id", result.getMerchantAccountId());
-
+        assertEquals(1, result.getLineItems().size());
+        assertEquals("An Item", result.getLineItems().get(0).getName());
     }
 }
 

@@ -27,6 +27,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PayPalConfiguration;
+import com.braintreepayments.api.models.PayPalLineItem;
 import com.braintreepayments.api.models.PayPalPaymentResource;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
@@ -42,6 +43,7 @@ import com.paypal.android.sdk.onetouch.core.network.EnvironmentManager;
 import com.paypal.android.sdk.onetouch.core.sdk.PayPalScope;
 import com.paypal.android.sdk.onetouch.core.sdk.PendingRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -97,6 +99,7 @@ public class PayPal {
     private static final String DISPLAY_NAME_KEY = "brand_name";
     private static final String SHIPPING_ADDRESS_KEY = "shipping_address";
     private static final String MERCHANT_ACCOUNT_ID = "merchant_account_id";
+    private static final String LINE_ITEMS_KEY = "line_items";
 
     /**
      * Starts the Pay With PayPal flow. This will launch the PayPal app if installed or switch to
@@ -318,6 +321,14 @@ public class PayPal {
             parameters.put(AMOUNT_KEY, request.getAmount())
                     .put(CURRENCY_ISO_CODE_KEY, currencyCode)
                     .put(INTENT_KEY, request.getIntent());
+
+            if (request.getLineItems() != null && request.getLineItems().size() > 0) {
+                JSONArray lineItems = new JSONArray();
+                for (PayPalLineItem lineItem : request.getLineItems()) {
+                    lineItems.put(lineItem.toJson());
+                }
+                parameters.put(LINE_ITEMS_KEY, lineItems);
+            }
         } else {
             if (!TextUtils.isEmpty(request.getBillingAgreementDescription())) {
                 parameters.put(DESCRIPTION_KEY, request.getBillingAgreementDescription());
