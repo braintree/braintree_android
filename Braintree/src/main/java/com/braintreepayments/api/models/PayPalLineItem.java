@@ -44,7 +44,7 @@ public class PayPalLineItem implements Parcelable {
      * @param quantity The quantity of the item.
      * @param unitAmount The unit amount.
      */
-    public PayPalLineItem(@PayPalLineItemKind  String kind, String name, String quantity, String unitAmount) {
+    public PayPalLineItem(@PayPalLineItemKind String kind, String name, String quantity, String unitAmount) {
         mKind = kind;
         mName = name;
         mQuantity = quantity;
