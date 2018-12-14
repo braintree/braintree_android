@@ -1,10 +1,8 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Parcel;
+import android.support.v7.app.AppCompatActivity;
 
-import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
@@ -14,13 +12,9 @@ import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.VisaCheckoutConfiguration;
 import com.braintreepayments.api.models.VisaCheckoutNonce;
 import com.braintreepayments.api.test.TestConfigurationBuilder;
-import com.visa.checkout.Environment;
 import com.visa.checkout.Profile;
 import com.visa.checkout.Profile.CardBrand;
-import com.visa.checkout.Profile.DataLevel;
 import com.visa.checkout.Profile.ProfileBuilder;
-import com.visa.checkout.PurchaseInfo.PurchaseInfoBuilder;
-import com.visa.checkout.VisaCheckoutSdk;
 import com.visa.checkout.VisaPaymentSummary;
 
 import org.json.JSONException;
@@ -37,26 +31,20 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.api.models.BraintreeRequestCodes.VISA_CHECKOUT;
 import static com.braintreepayments.api.test.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.doAnswer;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(RobolectricTestRunner.class)
@@ -86,7 +74,7 @@ public class VisaCheckoutUnitTest {
             }
         });
 
-        when(mBraintreeFragment.getActivity()).thenReturn(mock(Activity.class));
+        when(mBraintreeFragment.getActivity()).thenReturn(mock(AppCompatActivity.class));
     }
 
     @Test
