@@ -1,7 +1,7 @@
 package com.braintreepayments.api;
 
 import android.os.Parcel;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
