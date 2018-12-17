@@ -1,5 +1,14 @@
 # Braintree Android SDK Release Notes
 
+## 2.20.0
+
+* Google Pay
+  * Add groundwork for v2 compatibility
+* Split PostalAddress into PostalAddress and PostalAddressParser
+  * Deprecates PostalAddress.fromJson - use PostalAddressParser.fromJson
+  * Add fromUserAddressJsonn to PostalAddressParser
+  * Add additional fields
+
 ## 2.19.0
 
 * Move Google Payment to a separate module
