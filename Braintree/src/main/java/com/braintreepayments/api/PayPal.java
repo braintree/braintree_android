@@ -31,6 +31,7 @@ import com.braintreepayments.api.models.PayPalPaymentResource;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
+import com.braintreepayments.api.models.PostalAddressParser;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.BillingAgreementRequest;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
@@ -349,13 +350,13 @@ public class PayPal {
             }
 
             PostalAddress shippingAddress = request.getShippingAddressOverride();
-            shippingAddressJson.put(PostalAddress.LINE_1_KEY, shippingAddress.getStreetAddress());
-            shippingAddressJson.put(PostalAddress.LINE_2_KEY, shippingAddress.getExtendedAddress());
-            shippingAddressJson.put(PostalAddress.LOCALITY_KEY, shippingAddress.getLocality());
-            shippingAddressJson.put(PostalAddress.REGION_KEY, shippingAddress.getRegion());
-            shippingAddressJson.put(PostalAddress.POSTAL_CODE_UNDERSCORE_KEY, shippingAddress.getPostalCode());
-            shippingAddressJson.put(PostalAddress.COUNTRY_CODE_UNDERSCORE_KEY, shippingAddress.getCountryCodeAlpha2());
-            shippingAddressJson.put(PostalAddress.RECIPIENT_NAME_UNDERSCORE_KEY, shippingAddress.getRecipientName());
+            shippingAddressJson.put(PostalAddressParser.LINE_1_KEY, shippingAddress.getStreetAddress());
+            shippingAddressJson.put(PostalAddressParser.LINE_2_KEY, shippingAddress.getExtendedAddress());
+            shippingAddressJson.put(PostalAddressParser.LOCALITY_KEY, shippingAddress.getLocality());
+            shippingAddressJson.put(PostalAddressParser.REGION_KEY, shippingAddress.getRegion());
+            shippingAddressJson.put(PostalAddressParser.POSTAL_CODE_UNDERSCORE_KEY, shippingAddress.getPostalCode());
+            shippingAddressJson.put(PostalAddressParser.COUNTRY_CODE_UNDERSCORE_KEY, shippingAddress.getCountryCodeAlpha2());
+            shippingAddressJson.put(PostalAddressParser.RECIPIENT_NAME_UNDERSCORE_KEY, shippingAddress.getRecipientName());
         } else {
             experienceProfile.put(ADDRESS_OVERRIDE_KEY, false);
         }

@@ -1,0 +1,75 @@
+{
+  "apiVersion": 2,
+  "apiVersionMinor": 0,
+  "allowedPaymentMethods": [
+    {
+      "type": "CARD",
+      "parameters": {
+        "billingAddressRequired": true,
+        "billingAddressParameters": {
+          "format": "MIN",
+          "phoneNumberRequired": true
+        },
+        "allowPrepaidCards": true,
+        "allowedAuthMethods": [
+          "PAN_ONLY",
+          "CRYPTOGRAM_3DS"
+        ],
+        "allowedCardNetworks": [
+          "VISA",
+          "AMEX",
+          "JCB",
+          "DISCOVER",
+          "MASTERCARD"
+        ]
+      },
+      "tokenizationSpecification": {
+        "type": "PAYMENT_GATEWAY",
+        "parameters": {
+          "gateway": "braintree",
+          "braintree:apiVersion": "v1",
+          "braintree:sdkVersion": "BETA",
+          "braintree:merchantId": "BRAINTREE_MERCHANT_ID",
+          "braintree:authorizationFingerprint": "BRAINTREE_AUTH_FINGERPRINT"
+        }
+      }
+    },
+    {
+      "type": "PAYPAL",
+      "parameters": {
+        "purchase_context": "{\"purchase_context\":{\"purchase_units\":[{\"payee\":{\"client_id\":\"FAKE_PAYPAL_CLIENT_ID\"},\"recurring_payment\":false}]}}"
+      },
+      "tokenizationSpecification": {
+        "type": "PAYMENT_GATEWAY",
+        "parameters": {
+          "gateway": "braintree",
+          "braintree:apiVersion": "v1",
+          "braintree:sdkVersion": "BETA",
+          "braintree:merchantId": "BRAINTREE_MERCHANT_ID",
+          "braintree:authorizationFingerprint": "BRAINTREE_AUTH_FINGERPRINT"
+        }
+      }
+    }
+  ],
+  "emailRequired": true,
+  "shippingAddressRequired": true,
+  "shippingAddressParameters": {
+    "allowedCountryCodes": [
+      "US",
+      "CA",
+      "MX",
+      "GB"
+    ],
+    "phoneNumberRequired": true
+  },
+  "environment": "PRODUCTION",
+  "merchantInfo": {
+    "merchantId": "GOOGLE_MERCHANT_ID",
+    "merchantName": "GOOGLE_MERCHANT_NAME"
+  },
+  "transactionInfo": {
+    "totalPriceStatus": "FINAL",
+    "totalPrice": "12.24",
+    "currencyCode": "USD"
+  }
+}

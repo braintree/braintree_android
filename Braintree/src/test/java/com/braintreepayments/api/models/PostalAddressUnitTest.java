@@ -42,7 +42,7 @@ public class PostalAddressUnitTest {
     public void testCanCreatePostalAddress_fromStandardJson() throws JSONException {
         String accountAddressJson = stringFromFixture("payment_methods/paypal_address.json");
 
-        PostalAddress postalAddress = PostalAddress.fromJson(new JSONObject(accountAddressJson));
+        PostalAddress postalAddress = PostalAddressParser.fromJson(new JSONObject(accountAddressJson));
 
         assertEquals("123 Fake St.", postalAddress.getStreetAddress());
         assertEquals("Apt. 3", postalAddress.getExtendedAddress());
@@ -57,7 +57,7 @@ public class PostalAddressUnitTest {
     public void testCanCreatePostalAddress_fromAlternateJson() throws JSONException {
         String accountAddressJson = stringFromFixture("payment_methods/paypal_address_alternate.json");
 
-        PostalAddress postalAddress = PostalAddress.fromJson(new JSONObject(accountAddressJson));
+        PostalAddress postalAddress = PostalAddressParser.fromJson(new JSONObject(accountAddressJson));
 
         assertEquals("123 Fake St.", postalAddress.getStreetAddress());
         assertEquals("Apt. 3", postalAddress.getExtendedAddress());
@@ -72,7 +72,7 @@ public class PostalAddressUnitTest {
     public void testCanPostalAddressHandleMissingFieldsInJson() throws JSONException {
         String accountAddressJson = stringFromFixture("random_json.json");
 
-        PostalAddress postalAddress = PostalAddress.fromJson(new JSONObject(accountAddressJson));
+        PostalAddress postalAddress = PostalAddressParser.fromJson(new JSONObject(accountAddressJson));
 
         assertNull(postalAddress.getStreetAddress());
         assertNull(postalAddress.getExtendedAddress());
@@ -86,7 +86,7 @@ public class PostalAddressUnitTest {
     public void testWriteToParcel_serializesCorrectly() throws JSONException{
         String accountAddressJson = stringFromFixture("payment_methods/paypal_address.json");
 
-        PostalAddress preSerialized = PostalAddress.fromJson(new JSONObject(accountAddressJson));
+        PostalAddress preSerialized = PostalAddressParser.fromJson(new JSONObject(accountAddressJson));
 
         Parcel parcel = Parcel.obtain();
         preSerialized.writeToParcel(parcel, 0);
