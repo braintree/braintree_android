@@ -6,10 +6,18 @@ import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.skyscreamer.jsonassert.JSONAssert;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static com.braintreepayments.api.test.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
@@ -35,7 +43,9 @@ public class GooglePaymentRequestUnitTest {
                 .shippingAddressRequired(true)
                 .shippingAddressRequirements(shippingAddressRequirements)
                 .transactionInfo(transactionInfo)
-                .uiRequired(true);
+                .environment("production")
+                .googleMerchantId("google-merchant-id")
+                .googleMerchantName("google-merchant-name");
 
         assertEquals(true, request.getAllowPrepaidCards().booleanValue());
         assertEquals(WalletConstants.BILLING_ADDRESS_FORMAT_FULL, request.getBillingAddressFormat().intValue());
@@ -45,7 +55,9 @@ public class GooglePaymentRequestUnitTest {
         assertEquals(true, request.isShippingAddressRequired().booleanValue());
         assertEquals(shippingAddressRequirements, request.getShippingAddressRequirements());
         assertEquals(transactionInfo, request.getTransactionInfo());
-        assertEquals(true, request.isUiRequired().booleanValue());
+        assertEquals("PRODUCTION", request.getEnvironment());
+        assertEquals("google-merchant-id", request.getGoogleMerchantId());
+        assertEquals("google-merchant-name", request.getGoogleMerchantName());
     }
 
     @Test
@@ -60,11 +72,14 @@ public class GooglePaymentRequestUnitTest {
         assertNull(request.isShippingAddressRequired());
         assertNull(request.getShippingAddressRequirements());
         assertNull(request.getTransactionInfo());
-        assertNull(request.isUiRequired());
+        assertNull(request.getEnvironment());
+        assertNull(request.getEnvironment());
+        assertNull(request.getGoogleMerchantId());
+        assertNull(request.getGoogleMerchantName());
     }
 
     @Test
-    public void parcelsCorrectly_allFieldsPopulated_truthy() {
+    public void parcelsCorrectly() {
         GooglePaymentRequest request = new GooglePaymentRequest();
 
         TransactionInfo info = TransactionInfo.newBuilder()
@@ -86,7 +101,7 @@ public class GooglePaymentRequestUnitTest {
 
         request.shippingAddressRequirements(requirements);
         request.allowPrepaidCards(true);
-        request.uiRequired(true);
+        request.environment("production");
 
         Parcel parcel = Parcel.obtain();
         request.writeToParcel(parcel, 0);
@@ -104,55 +119,11 @@ public class GooglePaymentRequestUnitTest {
         assertEquals(WalletConstants.BILLING_ADDRESS_FORMAT_FULL, (int) parceled.getBillingAddressFormat());
         assertTrue(parceled.getShippingAddressRequirements().getAllowedCountryCodes().contains("US"));
         assertTrue(parceled.getAllowPrepaidCards());
-        assertTrue(parceled.isUiRequired());
+        assertEquals("PRODUCTION", parceled.getEnvironment());
     }
 
     @Test
-    public void parcelsCorrectly_allFieldsPopulated_falsey() {
-        GooglePaymentRequest request = new GooglePaymentRequest();
-
-        TransactionInfo info = TransactionInfo.newBuilder()
-                .setCurrencyCode("USD")
-                .setTotalPrice("10")
-                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                .build();
-
-        request.transactionInfo(info);
-        request.emailRequired(false);
-        request.phoneNumberRequired(false);
-        request.shippingAddressRequired(false);
-        request.billingAddressRequired(false);
-        request.billingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL);
-
-        ShippingAddressRequirements requirements = ShippingAddressRequirements.newBuilder()
-                .addAllowedCountryCode("US")
-                .build();
-
-        request.shippingAddressRequirements(requirements);
-        request.allowPrepaidCards(false);
-        request.uiRequired(false);
-
-        Parcel parcel = Parcel.obtain();
-        request.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-
-        GooglePaymentRequest parceled = GooglePaymentRequest.CREATOR.createFromParcel(parcel);
-
-        assertEquals("USD", parceled.getTransactionInfo().getCurrencyCode());
-        assertEquals("10", parceled.getTransactionInfo().getTotalPrice());
-        assertEquals(WalletConstants.TOTAL_PRICE_STATUS_FINAL, parceled.getTransactionInfo().getTotalPriceStatus());
-        assertFalse(parceled.isEmailRequired());
-        assertFalse(parceled.isPhoneNumberRequired());
-        assertFalse(parceled.isShippingAddressRequired());
-        assertFalse(parceled.isBillingAddressRequired());
-        assertEquals(WalletConstants.BILLING_ADDRESS_FORMAT_FULL, (int) parceled.getBillingAddressFormat());
-        assertTrue(parceled.getShippingAddressRequirements().getAllowedCountryCodes().contains("US"));
-        assertFalse(parceled.getAllowPrepaidCards());
-        assertFalse(parceled.isUiRequired());
-    }
-
-    @Test
-    public void parcelsCorrectly_allFieldsPopulated_null() {
+    public void parcelsCorrectly_allFieldsPopulated_null() throws NoSuchFieldException{
         GooglePaymentRequest request = new GooglePaymentRequest();
 
         TransactionInfo info = TransactionInfo.newBuilder()
@@ -186,6 +157,74 @@ public class GooglePaymentRequestUnitTest {
         assertEquals(WalletConstants.BILLING_ADDRESS_FORMAT_FULL, (int) parceled.getBillingAddressFormat());
         assertTrue(parceled.getShippingAddressRequirements().getAllowedCountryCodes().contains("US"));
         assertNull(parceled.getAllowPrepaidCards());
-        assertNull(parceled.isUiRequired());
+        assertNull(parceled.getEnvironment());
+        assertNull(parceled.getGoogleMerchantId());
+        assertNull(parceled.getGoogleMerchantName());
+    }
+
+    @Test
+    public void generatesToJsonRequest() throws JSONException {
+        GooglePaymentRequest request = new GooglePaymentRequest();
+        String expected = stringFromFixture("payment_methods/google_payment_request.json");
+        List<String> shippingAllowedCountryCodes = Arrays.asList("US", "CA", "MX", "GB");
+
+        ShippingAddressRequirements shippingAddressRequirements = ShippingAddressRequirements.newBuilder()
+                .addAllowedCountryCodes(shippingAllowedCountryCodes)
+                .build();
+
+
+        TransactionInfo info = TransactionInfo.newBuilder()
+                .setCurrencyCode("USD")
+                .setTotalPrice("12.24")
+                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                .build();
+
+        JSONObject tokenizationSpecificationParams = new JSONObject()
+                .put("type", "PAYMENT_GATEWAY")
+                .put("parameters", new JSONObject()
+                        .put("gateway", "braintree")
+                        .put("braintree:apiVersion", "v1")
+                        .put("braintree:sdkVersion", "BETA")
+                        .put("braintree:merchantId", "BRAINTREE_MERCHANT_ID")
+                        .put("braintree:authorizationFingerprint", "BRAINTREE_AUTH_FINGERPRINT")
+                );
+
+        JSONArray cardAllowedAuthMethods = new JSONArray()
+                .put("PAN_ONLY")
+                .put("CRYPTOGRAM_3DS");
+
+        JSONArray cardAllowedCardNetworks = new JSONArray()
+                .put("VISA")
+                .put("AMEX")
+                .put("JCB")
+                .put("DISCOVER")
+                .put("MASTERCARD");
+
+        JSONObject cardAllowedPaymentMethodParams = new JSONObject()
+                .put("allowedAuthMethods", cardAllowedAuthMethods)
+                .put("allowedCardNetworks", cardAllowedCardNetworks);
+
+        JSONObject paypalAllowedPaymentMethodParams = new JSONObject()
+                .put("purchase_context", "{\"purchase_context\":{\"purchase_units\":[{\"payee\":{\"client_id\":\"FAKE_PAYPAL_CLIENT_ID\"},\"recurring_payment\":false}]}}");
+
+        request.transactionInfo(info)
+                .phoneNumberRequired(true)
+                .emailRequired(true)
+                .shippingAddressRequired(true)
+                .shippingAddressRequirements(shippingAddressRequirements)
+                .billingAddressRequired(true)
+                .allowPrepaidCards(true)
+                .setAllowedPaymentMethod("CARD", cardAllowedPaymentMethodParams)
+                .setTokenizationSpecificationForType("CARD", tokenizationSpecificationParams)
+                .setAllowedPaymentMethod("PAYPAL", paypalAllowedPaymentMethodParams)
+                .setTokenizationSpecificationForType("PAYPAL", tokenizationSpecificationParams);
+
+        request.environment("production");
+        request.googleMerchantId("GOOGLE_MERCHANT_ID");
+        request.googleMerchantName("GOOGLE_MERCHANT_NAME");
+
+        String actual = request.toJson();
+
+        JSONAssert.assertEquals(expected, actual, false);
     }
 }

@@ -17,11 +17,13 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.TokenizationParametersListener;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.AndroidPayConfiguration;
+import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.GooglePaymentCardNonce;
 import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.models.MetadataBuilder;
+import com.braintreepayments.api.models.PaymentMethodNonceFactory;
 import com.braintreepayments.api.models.TokenizationKey;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -36,6 +38,7 @@ import com.google.android.gms.wallet.PaymentsClient;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,6 +59,9 @@ public class GooglePayment {
     private static final String AMEX_NETWORK = "amex";
     private static final String DISCOVER_NETWORK = "discover";
 
+    private static final String CARD_PAYMENT_TYPE = "CARD";
+    private static final String PAYPAL_PAYMENT_TYPE = "PAYPAL";
+
     /**
      * Before starting the Google Payments flow, use
      * {@link #isReadyToPay(BraintreeFragment, BraintreeResponseListener)} to check whether the
@@ -67,7 +73,8 @@ public class GooglePayment {
      * @param listener Instance of {@link BraintreeResponseListener<Boolean>} to receive the
      *                 isReadyToPay response.
      */
-    public static void isReadyToPay(final BraintreeFragment fragment, final BraintreeResponseListener<Boolean> listener) {
+    public static void isReadyToPay(final BraintreeFragment fragment,
+                                    final BraintreeResponseListener<Boolean> listener) {
         try {
             Class.forName(PaymentsClient.class.getName());
         } catch (ClassNotFoundException | NoClassDefFoundError e) {
@@ -92,10 +99,30 @@ public class GooglePayment {
                                 .setEnvironment(getEnvironment(configuration.getAndroidPay()))
                                 .build());
 
-                IsReadyToPayRequest request = IsReadyToPayRequest.newBuilder()
-                        .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_CARD)
-                        .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_TOKENIZED_CARD)
-                        .build();
+
+                JSONObject json = new JSONObject();
+                JSONArray allowedCardNetworks = new JSONArray();
+
+                for (String cardnetwork : configuration.getAndroidPay().getSupportedNetworks()) {
+                    allowedCardNetworks.put(cardnetwork);
+                }
+
+                try {
+                    json
+                            .put("apiVersion", 2)
+                            .put("apiVersionMinor", 0)
+                            .put("allowedPaymentMethods", new JSONArray()
+                                    .put(new JSONObject()
+                                            .put("type", "CARD")
+                                            .put("parameters", new JSONObject()
+                                                    .put("allowedAuthMethods", new JSONArray()
+                                                            .put("PAN_ONLY")
+                                                            .put("CRYPTOGRAM_3DS"))
+                                                    .put("allowedCardNetworks", allowedCardNetworks))));
+                } catch (JSONException ignored) {
+                }
+
+                IsReadyToPayRequest request = IsReadyToPayRequest.fromJson(json.toString());
 
                 paymentsClient.isReadyToPay(request).addOnCompleteListener(new OnCompleteListener<Boolean>() {
                     @Override
@@ -127,7 +154,7 @@ public class GooglePayment {
      *                 {@link PaymentMethodTokenizationParameters}.
      */
     public static void getTokenizationParameters(final BraintreeFragment fragment,
-            final TokenizationParametersListener listener) {
+                                                 final TokenizationParametersListener listener) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
@@ -141,7 +168,7 @@ public class GooglePayment {
      * Launch a Google Payments request. This method will show the payment instrument chooser to the user.
      *
      * @param fragment The current {@link BraintreeFragment}.
-     * @param request The {@link GooglePaymentRequest} containing options for the transaction.
+     * @param request  The {@link GooglePaymentRequest} containing options for the transaction.
      */
     public static void requestPayment(final BraintreeFragment fragment, final @NonNull GooglePaymentRequest request) {
         fragment.sendAnalyticsEvent("google-payment.selected");
@@ -153,7 +180,13 @@ public class GooglePayment {
             return;
         }
 
-        if (request == null || request.getTransactionInfo() == null) {
+        if (request == null) {
+            fragment.postCallback(new BraintreeException("Cannot pass null GooglePaymentRequest to requestPayment"));
+            fragment.sendAnalyticsEvent("google-payment.failed");
+            return;
+        }
+
+        if (request.getTransactionInfo() == null) {
             fragment.postCallback(new BraintreeException("Cannot pass null TransactionInfo to requestPayment"));
             fragment.sendAnalyticsEvent("google-payment.failed");
             return;
@@ -162,53 +195,16 @@ public class GooglePayment {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                PaymentDataRequest.Builder paymentDataRequest = PaymentDataRequest.newBuilder()
-                        .setTransactionInfo(request.getTransactionInfo())
-                        .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_CARD)
-                        .addAllowedPaymentMethod(WalletConstants.PAYMENT_METHOD_TOKENIZED_CARD)
-                        .setPaymentMethodTokenizationParameters(getTokenizationParameters(fragment));
 
-                CardRequirements.Builder cardRequirements = CardRequirements.newBuilder()
-                        .addAllowedCardNetworks(getAllowedCardNetworks(fragment));
-                if (request.getAllowPrepaidCards() != null) {
-                    cardRequirements.setAllowPrepaidCards(request.getAllowPrepaidCards());
-                }
-
-                if (request.getBillingAddressFormat() != null) {
-                    cardRequirements.setBillingAddressFormat(request.getBillingAddressFormat());
-                }
-
-                if (request.isBillingAddressRequired() != null) {
-                    cardRequirements.setBillingAddressRequired(request.isBillingAddressRequired());
-                }
-
-                paymentDataRequest.setCardRequirements(cardRequirements.build());
-
-                if (request.isEmailRequired() != null) {
-                    paymentDataRequest.setEmailRequired(request.isEmailRequired());
-                }
-
-                if (request.isPhoneNumberRequired() != null) {
-                    paymentDataRequest.setPhoneNumberRequired(request.isPhoneNumberRequired());
-                }
-
-                if (request.isShippingAddressRequired() != null) {
-                    paymentDataRequest.setShippingAddressRequired(request.isShippingAddressRequired());
-                }
-
-                if (request.getShippingAddressRequirements() != null) {
-                    paymentDataRequest.setShippingAddressRequirements(request.getShippingAddressRequirements());
-                }
-
-                if (request.isUiRequired() != null) {
-                    paymentDataRequest.setUiRequired(request.isUiRequired());
-                }
+                setGooglePaymentRequestDefaults(fragment, configuration, request);
 
                 fragment.sendAnalyticsEvent("google-payment.started");
 
+                PaymentDataRequest paymentDataRequest = PaymentDataRequest.fromJson(request.toJson());
+
                 Intent intent = new Intent(fragment.getApplicationContext(), GooglePaymentActivity.class)
                         .putExtra(EXTRA_ENVIRONMENT, getEnvironment(configuration.getAndroidPay()))
-                        .putExtra(EXTRA_PAYMENT_DATA_REQUEST, paymentDataRequest.build());
+                        .putExtra(EXTRA_PAYMENT_DATA_REQUEST, paymentDataRequest);
                 fragment.startActivityForResult(intent, BraintreeRequestCodes.GOOGLE_PAYMENT);
             }
         });
@@ -218,18 +214,22 @@ public class GooglePayment {
      * Call this method when you've received a successful {@link PaymentData} response in your activity's
      * {@link Activity#onActivityResult(int, int, Intent)} to get a {@link GooglePaymentCardNonce}.
      *
-     * @param fragment An instance of {@link BraintreeFragment}.
+     * @param fragment    An instance of {@link BraintreeFragment}.
      * @param paymentData {@link PaymentData} from the Intent in {@link Activity#onActivityResult(int, int, Intent)}.
      */
     public static void tokenize(BraintreeFragment fragment, PaymentData paymentData) {
         try {
-            fragment.postCallback(GooglePaymentCardNonce.fromPaymentData(paymentData));
+            fragment.postCallback(PaymentMethodNonceFactory.fromString(paymentData.toJson()));
             fragment.sendAnalyticsEvent("google-payment.nonce-received");
         } catch (JSONException | NullPointerException e) {
             fragment.sendAnalyticsEvent("google-payment.failed");
 
             try {
-                fragment.postCallback(ErrorWithResponse.fromJson(paymentData.getPaymentMethodToken().getToken()));
+                String token = new JSONObject(paymentData.toJson())
+                        .getJSONObject("paymentMethodData")
+                        .getJSONObject("tokenizationData")
+                        .getString("token");
+                fragment.postCallback(ErrorWithResponse.fromJson(token));
             } catch (JSONException | NullPointerException e1) {
                 fragment.postCallback(e1);
             }
@@ -307,10 +307,216 @@ public class GooglePayment {
                 case DISCOVER_NETWORK:
                     allowedNetworks.add(WalletConstants.CARD_NETWORK_DISCOVER);
                     break;
+                default:
+                    break;
             }
         }
 
         return allowedNetworks;
+    }
+
+    private static JSONObject buildCardPaymentMethodParameters(GooglePaymentRequest request,
+                                                               BraintreeFragment fragment) {
+        JSONObject defaultParameters = new JSONObject();
+
+        try {
+            if (request.getAllowedCardNetworksForType(CARD_PAYMENT_TYPE) == null) {
+                JSONArray cardNetworkStrings = new JSONArray();
+
+                for (int network : getAllowedCardNetworks(fragment)) {
+                    switch (network) {
+                        case WalletConstants.CARD_NETWORK_AMEX:
+                            cardNetworkStrings.put("AMEX");
+                            break;
+                        case WalletConstants.CARD_NETWORK_DISCOVER:
+                            cardNetworkStrings.put("DISCOVER");
+                            break;
+                        case WalletConstants.CARD_NETWORK_JCB:
+                            cardNetworkStrings.put("JCB");
+                            break;
+                        case WalletConstants.CARD_NETWORK_MASTERCARD:
+                            cardNetworkStrings.put("MASTERCARD");
+                            break;
+                        case WalletConstants.CARD_NETWORK_VISA:
+                            cardNetworkStrings.put("VISA");
+                            break;
+                    }
+                }
+
+                if (request.getAllowedAuthMethodsForType(CARD_PAYMENT_TYPE) == null) {
+                    request.setAllowedAuthMethods(CARD_PAYMENT_TYPE,
+                            new JSONArray()
+                                    .put("PAN_ONLY")
+                                    .put("CRYPTOGRAM_3DS"));
+                } else {
+                    request.setAllowedAuthMethods(CARD_PAYMENT_TYPE,
+                            request.getAllowedAuthMethodsForType(CARD_PAYMENT_TYPE));
+                }
+
+                request.setAllowedCardNetworks(CARD_PAYMENT_TYPE, cardNetworkStrings);
+            }
+
+            defaultParameters
+                    .put("billingAddressRequired", request.isBillingAddressRequired())
+                    .put("allowPrepaidCards", request.getAllowPrepaidCards())
+                    .put("allowedAuthMethods",
+                            request.getAllowedAuthMethodsForType(CARD_PAYMENT_TYPE))
+                    .put("allowedCardNetworks",
+                            request.getAllowedCardNetworksForType(CARD_PAYMENT_TYPE));
+
+            if (request.isBillingAddressRequired()) {
+                defaultParameters
+                        .put("billingAddressParameters", new JSONObject()
+                                .put("format", request.billingAddressFormatToString())
+                                .put("phoneNumberRequired", request.isPhoneNumberRequired()));
+            }
+        } catch (JSONException ignored) {
+        }
+        return defaultParameters;
+    }
+
+    private static JSONObject buildPayPalPaymentMethodParameters(BraintreeFragment fragment) {
+        JSONObject defaultParameters = new JSONObject();
+
+        try {
+            JSONObject purchaseContext = new JSONObject()
+                    .put("purchase_units", new JSONArray()
+                            .put(new JSONObject()
+                                    .put("payee", new JSONObject()
+                                            .put("client_id", fragment.getConfiguration().getPayPal().getClientId())
+                                    )
+                                    .put("recurring_payment", "true")
+                            )
+                    );
+
+            defaultParameters.put("purchase_context", purchaseContext);
+        } catch (JSONException ignored) {
+        }
+
+        return defaultParameters;
+
+    }
+
+    private static JSONObject buildCardTokenizationSpecification(BraintreeFragment fragment) {
+        JSONObject cardJson = new JSONObject();
+        JSONObject parameters = new JSONObject();
+
+        try {
+            parameters
+                    .put("gateway", "braintree")
+                    .put("braintree:apiVersion", "v1")
+                    .put("braintree:sdkVersion", BuildConfig.VERSION_NAME)
+                    .put("braintree:merchantId", fragment.getConfiguration().getMerchantId())
+                    .put("braintree:metadata", (new JSONObject()
+                            .put("source", "client")
+                            .put("integration", fragment.getIntegrationType())
+                            .put("sessionId", fragment.getSessionId())
+                            .put("version", BuildConfig.VERSION_NAME)
+                            .put("platform", "android")).toString());
+
+            if (Authorization.isTokenizationKey(fragment.getAuthorization().toString())) {
+                parameters
+                        .put("braintree:clientKey",
+                                fragment
+                                        .getAuthorization()
+                                        .toString());
+            } else {
+                parameters
+                        .put("braintree:authorizationFingerprint",
+                                fragment
+                                        .getConfiguration()
+                                        .getAndroidPay()
+                                        .getGoogleAuthorizationFingerprint());
+            }
+        } catch (JSONException ignored) {
+        }
+
+        try {
+            cardJson
+                    .put("type", "PAYMENT_GATEWAY")
+                    .put("parameters", parameters);
+        } catch (JSONException ignored) {
+        }
+
+        return cardJson;
+    }
+
+    private static JSONObject buildPayPalTokenizationSpecification(BraintreeFragment fragment) {
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("type", "PAYMENT_GATEWAY")
+                    .put("parameters", new JSONObject()
+                            .put("gateway", "braintree")
+                            .put("braintree:apiVersion", "v1")
+                            .put("braintree:sdkVersion", BuildConfig.VERSION_NAME)
+                            .put("braintree:merchantId",
+                                    fragment.getConfiguration().getMerchantId())
+                            .put("braintree:paypalClientId",
+                                    fragment.getConfiguration().getPayPal().getClientId())
+                            .put("braintree:metadata", (new JSONObject()
+                                    .put("source", "client")
+                                    .put("integration", fragment.getIntegrationType())
+                                    .put("sessionId", fragment.getSessionId())
+                                    .put("version", BuildConfig.VERSION_NAME)
+                                    .put("platform", "android")).toString()));
+        } catch (JSONException ignored) {
+        }
+
+        return json;
+    }
+
+    private static void setGooglePaymentRequestDefaults(BraintreeFragment fragment,
+                                                        Configuration configuration,
+                                                        GooglePaymentRequest request) {
+        if (request.isEmailRequired() == null) {
+            request.emailRequired(false);
+        }
+
+        if (request.isPhoneNumberRequired() == null) {
+            request.phoneNumberRequired(false);
+        }
+
+        if (request.isBillingAddressRequired() == null) {
+            request.billingAddressRequired(false);
+        }
+
+        if (request.isBillingAddressRequired() &&
+                request.getBillingAddressFormat() == null) {
+            request.billingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_MIN);
+        }
+
+        if (request.isShippingAddressRequired() == null) {
+            request.shippingAddressRequired(false);
+        }
+
+        if (request.getAllowPrepaidCards() == null) {
+            request.allowPrepaidCards(true);
+        }
+
+        if (request.getAllowedPaymentMethod(CARD_PAYMENT_TYPE) == null) {
+            request.setAllowedPaymentMethod(CARD_PAYMENT_TYPE,
+                    buildCardPaymentMethodParameters(request, fragment));
+        }
+
+        if (request.isPayPalEnabled() &&
+                configuration.isPayPalEnabled() &&
+                request.getAllowedPaymentMethod("PAYPAL") == null) {
+            request.setAllowedPaymentMethod(PAYPAL_PAYMENT_TYPE,
+                    buildPayPalPaymentMethodParameters(fragment));
+        }
+
+        if (request.getTokenizationSpecificationForType(CARD_PAYMENT_TYPE) == null) {
+            request.setTokenizationSpecificationForType("CARD",
+                    buildCardTokenizationSpecification(fragment));
+        }
+
+        if (request.getTokenizationSpecificationForType(PAYPAL_PAYMENT_TYPE) == null) {
+            request.setTokenizationSpecificationForType("PAYPAL",
+                    buildPayPalTokenizationSpecification(fragment));
+        }
+
+        request.environment(configuration.getAndroidPay().getEnvironment());
     }
 
     private static boolean validateManifest(Context context) {

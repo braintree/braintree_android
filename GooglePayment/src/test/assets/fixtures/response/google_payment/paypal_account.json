@@ -1,0 +1,12 @@
+{
+  "apiVersionMinor": 0,
+  "apiVersion": 2,
+  "paymentMethodData": {
+    "description": "PayPal: quinn@neumiiller.com",
+    "tokenizationData": {
+      "type": "PAYMENT_GATEWAY",
+      "token": "{\n  \"paypalAccounts\": [\n    {\n      \"type\": \"PayPalAccount\",\n      \"nonce\": \"6f1bec22-ca87-0a24-6180-0a21c73235eb\",\n      \"description\": \"PayPal\",\n      \"consumed\": false,\n      \"details\": {\n        \"correlationId\": \"EC-HERMES-SANDBOX-EC-TOKEN\",\n        \"payerInfo\": {\n          \"email\": \"bt_buyer_us@paypal.com\",\n          \"payerId\": \"FAKE_PAYER_ID\",\n          \"firstName\": \"John\",\n          \"lastName\": \"Doe\",\n          \"phone\": \"312-123-4567\",\n          \"countryCode\": \"US\",\n          \"shippingAddress\": {\n            \"line1\": \"123 Division Street\",\n            \"line2\": \"Apt. #1\",\n            \"city\": \"Chicago\",\n            \"state\": \"IL\",\n            \"postalCode\": \"60618\",\n            \"countryCode\": \"US\",\n            \"recipientName\": \"John Doe\"\n          },\n          \"billingAddress\": {\n            \"line1\": \"123 Billing Street\",\n            \"line2\": \"Apt. #1\",\n            \"city\": \"Chicago\",\n            \"state\": \"IL\",\n            \"postalCode\": \"60618\",\n            \"countryCode\": \"US\"\n          }\n        }\n      }\n    }\n  ]\n}"
+    },
+    "type": "PAYPAL"
+  }
+}

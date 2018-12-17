@@ -4,8 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
-import com.google.android.gms.identity.intents.model.UserAddress;
-import com.google.android.gms.wallet.PaymentData;
+import com.braintreepayments.api.Json;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,11 +13,12 @@ import static com.braintreepayments.api.models.BinData.BIN_DATA_KEY;
 
 /**
  * {@link PaymentMethodNonce} representing a Google Payments card.
+ *
  * @see PaymentMethodNonce
  */
 public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcelable {
 
-    private static final String API_RESOURCE_KEY = "androidPayCards";
+    protected static final String API_RESOURCE_KEY = "androidPayCards";
     private static final String CARD_DETAILS_KEY = "details";
     private static final String CARD_TYPE_KEY = "cardType";
     private static final String LAST_TWO_KEY = "lastTwo";
@@ -28,27 +28,9 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
     private String mLastTwo;
     private String mLastFour;
     private String mEmail;
-    private UserAddress mBillingAddress;
-    private UserAddress mShippingAddress;
+    private PostalAddress mBillingAddress;
+    private PostalAddress mShippingAddress;
     private BinData mBinData;
-
-    /**
-     * Convert {@link PaymentData} to a {@link GooglePaymentCardNonce}.
-     *
-     * @param paymentData the {@link PaymentData} from a Google Payments response.
-     * @return {@link GooglePaymentCardNonce}.
-     * @throws JSONException when parsing the response fails.
-     */
-    public static GooglePaymentCardNonce fromPaymentData(PaymentData paymentData) throws JSONException {
-        GooglePaymentCardNonce googlePaymentCardNonce = GooglePaymentCardNonce
-                .fromJson(paymentData.getPaymentMethodToken().getToken());
-        googlePaymentCardNonce.mDescription = paymentData.getCardInfo().getCardDescription();
-        googlePaymentCardNonce.mEmail = paymentData.getEmail();
-        googlePaymentCardNonce.mBillingAddress = paymentData.getCardInfo().getBillingAddress();
-        googlePaymentCardNonce.mShippingAddress = paymentData.getShippingAddress();
-
-        return googlePaymentCardNonce;
-    }
 
     /**
      * Convert an API response to a {@link GooglePaymentCardNonce}.
@@ -59,21 +41,72 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
      */
     public static GooglePaymentCardNonce fromJson(String json) throws JSONException {
         GooglePaymentCardNonce googlePaymentCardNonce = new GooglePaymentCardNonce();
-        googlePaymentCardNonce.fromJson(GooglePaymentCardNonce.getJsonObjectForType(API_RESOURCE_KEY,
-                new JSONObject(json)));
+        googlePaymentCardNonce.fromJson(new JSONObject(json));
 
         return googlePaymentCardNonce;
     }
 
     protected void fromJson(JSONObject json) throws JSONException {
-        super.fromJson(json);
 
-        mDescription = getTypeLabel();
+        JSONObject billingAddressJson = new JSONObject();
+        JSONObject shippingAddressJson = new JSONObject();
+
+        JSONObject token = PaymentMethodNonceFactory.extractPaymentMethodToken(json.toString());
+
+        JSONObject androidPayCardObject = new JSONObject(token.getJSONArray(API_RESOURCE_KEY).get(0).toString());
+        super.fromJson(androidPayCardObject);
+        JSONObject details = androidPayCardObject.getJSONObject(CARD_DETAILS_KEY);
+
+        JSONObject info = json
+                .getJSONObject("paymentMethodData")
+                .getJSONObject("info");
+
+        if (info.has("billingAddress")) {
+            billingAddressJson = info.getJSONObject("billingAddress");
+        }
+
+        if (json.has("shippingAddress")) {
+            shippingAddressJson = json.getJSONObject("shippingAddress");
+        }
+
+        mDescription = json
+                .getJSONObject("paymentMethodData")
+                .get("description").toString();
+        mEmail = Json.optString(json, "email", "");
+        mBillingAddress = postalAddressFromJson(billingAddressJson);
+        mShippingAddress = postalAddressFromJson(shippingAddressJson);
+
         mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
-        JSONObject details = json.getJSONObject(CARD_DETAILS_KEY);
         mLastTwo = details.getString(LAST_TWO_KEY);
         mLastFour = details.getString(LAST_FOUR_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
+    }
+
+    public static PostalAddress postalAddressFromJson(JSONObject json) {
+        PostalAddress address = new PostalAddress();
+
+        address
+                .recipientName(Json.optString(json, "name", ""))
+                .phoneNumber(Json.optString(json, "phoneNumber", ""))
+                .streetAddress(Json.optString(json, "address1", ""))
+                .extendedAddress(formatExtendedAddress(json))
+                .locality(Json.optString(json, "locality", ""))
+                .region(Json.optString(json, "administrativeArea", ""))
+                .countryCodeAlpha2(Json.optString(json, "countryCode", ""))
+                .postalCode(Json.optString(json, "postalCode", ""))
+                .sortingCode(Json.optString(json, "sortingCode", ""));
+
+        return address;
+    }
+
+    private static String formatExtendedAddress(JSONObject address) {
+        String extendedAddress = "" +
+                Json.optString(address, "address2", "") + "\n" +
+                Json.optString(address, "address3", "") + "\n" +
+                Json.optString(address, "address4", "") + "\n" +
+                Json.optString(address, "address5", "");
+
+        return extendedAddress.trim();
     }
 
     /**
@@ -109,7 +142,7 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
      * @return The user's billing address.
      */
     @Nullable
-    public UserAddress getBillingAddress() {
+    public PostalAddress getBillingAddress() {
         return mBillingAddress;
     }
 
@@ -117,7 +150,7 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
      * @return The user's shipping address.
      */
     @Nullable
-    public UserAddress getShippingAddress() {
+    public PostalAddress getShippingAddress() {
         return mShippingAddress;
     }
 
@@ -133,7 +166,8 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
         return "Google Pay";
     }
 
-    public GooglePaymentCardNonce() {}
+    public GooglePaymentCardNonce() {
+    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
@@ -153,8 +187,8 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
         mLastTwo = in.readString();
         mLastFour = in.readString();
         mEmail = in.readString();
-        mBillingAddress = in.readParcelable(UserAddress.class.getClassLoader());
-        mShippingAddress = in.readParcelable(UserAddress.class.getClassLoader());
+        mBillingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
+        mShippingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
         mBinData = in.readParcelable(BinData.class.getClassLoader());
     }
 

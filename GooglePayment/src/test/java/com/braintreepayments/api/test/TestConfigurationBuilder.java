@@ -36,10 +36,44 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return this;
     }
 
-    public TestConfigurationBuilder visaCheckout(TestVisaCheckoutConfigurationBuilder visaCheckoutConfigurationBuilder) {
+    public TestConfigurationBuilder withAnalytics() {
+        analytics("http://example.com");
+        return this;
+    }
+
+    public TestConfigurationBuilder analytics(String analyticsUrl) {
         try {
-            put(new JSONObject(visaCheckoutConfigurationBuilder.build()));
+            JSONObject analyticsJson = new JSONObject();
+            analyticsJson.put("url", analyticsUrl);
+            put(analyticsJson);
         } catch (JSONException ignored) {}
+        return this;
+    }
+
+    public TestConfigurationBuilder androidPay(TestAndroidPayConfigurationBuilder builder) {
+        try {
+            put(new JSONObject(builder.build()));
+        } catch (JSONException ignored) {}
+        return this;
+    }
+
+    public TestConfigurationBuilder paypal(TestPayPalConfigurationBuilder builder) {
+        try {
+            paypalEnabled(true);
+            put(new JSONObject(builder.build()));
+        } catch (JSONException ignored) {}
+        return this;
+    }
+
+    public TestConfigurationBuilder paypalEnabled(boolean enabled) {
+        put(enabled);
+
+        if (enabled) {
+            try {
+                put("paypal", new JSONObject(new TestPayPalConfigurationBuilder(true).build()));
+            } catch (JSONException ignored) {}
+        }
+
         return this;
     }
 
@@ -57,28 +91,64 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return (T) build();
     }
 
-    public static class TestVisaCheckoutConfigurationBuilder extends JSONBuilder {
+    public static class TestAndroidPayConfigurationBuilder extends JSONBuilder {
 
-        public TestVisaCheckoutConfigurationBuilder() {
+        public TestAndroidPayConfigurationBuilder() {
             super();
         }
 
-        protected TestVisaCheckoutConfigurationBuilder(JSONObject json) {
-            super(json);
-        }
-
-        public TestVisaCheckoutConfigurationBuilder apikey(String apikey) {
-            put(apikey);
+        public TestAndroidPayConfigurationBuilder googleAuthorizationFingerprint(String fingerprint) {
+            put(fingerprint);
             return this;
         }
 
-        public TestVisaCheckoutConfigurationBuilder externalClientId(String externalClientId) {
-            put(externalClientId);
+        public TestAndroidPayConfigurationBuilder environment(String environment) {
+            put(environment);
             return this;
         }
 
-        public TestVisaCheckoutConfigurationBuilder supportedCardTypes(String... supportedCardTypes) {
-            put(new JSONArray(Arrays.asList(supportedCardTypes)));
+        public TestAndroidPayConfigurationBuilder supportedNetworks(String[] supportedNetworks) {
+            put(new JSONArray(Arrays.asList(supportedNetworks)));
+            return this;
+        }
+    }
+
+    public static class TestPayPalConfigurationBuilder extends JSONBuilder {
+
+        public TestPayPalConfigurationBuilder(boolean enabled) {
+            super();
+
+            if (enabled) {
+                environment("test");
+                displayName("displayName");
+                clientId("clientId");
+                privacyUrl("http://privacy.gov");
+                userAgreementUrl("http://i.agree.biz");
+            }
+        }
+
+        public TestPayPalConfigurationBuilder displayName(String displayName) {
+            put(displayName);
+            return this;
+        }
+
+        public TestPayPalConfigurationBuilder clientId(String clientId) {
+            put(clientId);
+            return this;
+        }
+
+        public TestPayPalConfigurationBuilder privacyUrl(String privacyUrl) {
+            put(privacyUrl);
+            return this;
+        }
+
+        public TestPayPalConfigurationBuilder userAgreementUrl(String userAgreementUrl) {
+            put(userAgreementUrl);
+            return this;
+        }
+
+        public TestPayPalConfigurationBuilder environment(String environment) {
+            put(environment);
             return this;
         }
     }
