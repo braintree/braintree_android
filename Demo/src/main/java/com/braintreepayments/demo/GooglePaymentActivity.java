@@ -14,7 +14,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.GooglePaymentCardNonce;
 import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.PostalAddress;
+import com.google.android.gms.identity.intents.model.UserAddress;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
@@ -99,33 +99,35 @@ public class GooglePaymentActivity extends BaseActivity implements Configuration
                 .shippingAddressRequirements(ShippingAddressRequirements.newBuilder()
                         .addAllowedCountryCodes(Settings.getGooglePaymentAllowedCountriesForShipping(this))
                         .build())
-                .googleMerchantId(Settings.getGooglePaymentMerchantId(this));
+                .uiRequired(true);
 
         GooglePayment.requestPayment(mBraintreeFragment, googlePaymentRequest);
     }
 
     public static String getDisplayString(GooglePaymentCardNonce nonce) {
         return "Underlying Card Last Two: " + nonce.getLastTwo() + "\n" +
-                "Card Description: " + nonce.getDescription() + "\n" +
                 "Email: " + nonce.getEmail() + "\n" +
                 "Billing address: " + formatAddress(nonce.getBillingAddress()) + "\n" +
                 "Shipping address: " + formatAddress(nonce.getShippingAddress()) + "\n" +
                 getDisplayString(nonce.getBinData());
     }
 
-    private static String formatAddress(PostalAddress address) {
+    private static String formatAddress(UserAddress address) {
         if (address == null) {
             return "null";
         }
 
-        return address.getRecipientName() + " " +
-                address.getStreetAddress() + " " +
-                address.getExtendedAddress() + " " +
+        return address.getName() + " " +
+                address.getAddress1() + " " +
+                address.getAddress2() + " " +
+                address.getAddress3() + " " +
+                address.getAddress4() + " " +
+                address.getAddress5() + " " +
                 address.getLocality() + " " +
-                address.getRegion() + " " +
+                address.getAdministrativeArea() + " " +
                 address.getPostalCode() + " " +
                 address.getSortingCode() + " " +
-                address.getCountryCodeAlpha2() + " " +
+                address.getCountryCode() + " " +
                 address.getPhoneNumber();
     }
 }

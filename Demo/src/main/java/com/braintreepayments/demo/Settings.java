@@ -156,10 +156,6 @@ public class Settings {
         return getPreferences(context).getString("google_payment_currency", "USD");
     }
 
-    public static String getGooglePaymentMerchantId(Context context) {
-        return getPreferences(context).getString("google_payment_merchant_id", "18278000977346790994");
-    }
-
     public static List<String> getGooglePaymentAllowedCountriesForShipping(Context context) {
         String[] preference = getPreferences(context).getString("google_payment_allowed_countries_for_shipping", "US")
                 .split(",");
