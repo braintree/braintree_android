@@ -891,6 +891,14 @@
 * Fixes
   * Attach Javadocs and sources to Maven Central build.
 
+## 2.0.0
+
+* Add support for Google Pay v2
+* Remove support for Google Pay v1
+  * To continue using v1, add google-payment:1.0.0 to your build.gradle
+  * v1 will remain the defaul for braintree android until the next major version bump
+* Replace all UserAddress objects with PostalAddress objects
+
 ## 1.0.0
 
 * Public release of [v.zero](https://www.braintreepayments.com/v.zero) SDK
