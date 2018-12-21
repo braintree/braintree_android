@@ -2,6 +2,7 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringDef;
 
 import org.json.JSONException;
@@ -44,7 +45,10 @@ public class PayPalLineItem implements Parcelable {
      * @param quantity The quantity of the item.
      * @param unitAmount The unit amount.
      */
-    public PayPalLineItem(@PayPalLineItemKind String kind, String name, String quantity, String unitAmount) {
+    public PayPalLineItem(@NonNull @PayPalLineItemKind String kind,
+                          @NonNull String name,
+                          @NonNull String quantity,
+                          @NonNull String unitAmount) {
         mKind = kind;
         mName = name;
         mQuantity = quantity;
@@ -56,7 +60,7 @@ public class PayPalLineItem implements Parcelable {
      *
      * @param description The description to display.
      */
-    public void setDescription(String description) {
+    public void setDescription(@NonNull String description) {
         mDescription = description;
     }
 
@@ -65,7 +69,7 @@ public class PayPalLineItem implements Parcelable {
      *
      * @param kind The {@link PayPalLineItemKind} kind.
      */
-    public void setKind(@PayPalLineItemKind String kind) {
+    public void setKind(@NonNull @PayPalLineItemKind String kind) {
         mKind = kind;
     }
 
@@ -74,7 +78,7 @@ public class PayPalLineItem implements Parcelable {
      *
      * @param name The name to display
      */
-    public void setName(String name) {
+    public void setName(@NonNull String name) {
         mName = name;
     }
 
@@ -83,7 +87,7 @@ public class PayPalLineItem implements Parcelable {
      *
      * @param productCode The product code.
      */
-    public void setProductCode(String productCode) {
+    public void setProductCode(@NonNull String productCode) {
         mProductCode = productCode;
     }
 
@@ -92,7 +96,7 @@ public class PayPalLineItem implements Parcelable {
      *
      * @param quantity The quantity.
      */
-    public void setQuantity(String quantity) {
+    public void setQuantity(@NonNull String quantity) {
         mQuantity = quantity;
     }
 
@@ -101,7 +105,7 @@ public class PayPalLineItem implements Parcelable {
      *
      * @param unitAmount The unit amount.
      */
-    public void setUnitAmount(String unitAmount) {
+    public void setUnitAmount(@NonNull String unitAmount) {
         mUnitAmount = unitAmount;
     }
 
@@ -110,7 +114,7 @@ public class PayPalLineItem implements Parcelable {
      *
      * @param unitTaxAmount The unit tax amount.
      */
-    public void setUnitTaxAmount(String unitTaxAmount) {
+    public void setUnitTaxAmount(@NonNull String unitTaxAmount) {
         mUnitTaxAmount = unitTaxAmount;
     }
 
@@ -119,7 +123,7 @@ public class PayPalLineItem implements Parcelable {
      *
      * @param url The URL with additional information.
      */
-    public void setUrl(String url) {
+    public void setUrl(@NonNull String url) {
         mUrl = url;
     }
 
