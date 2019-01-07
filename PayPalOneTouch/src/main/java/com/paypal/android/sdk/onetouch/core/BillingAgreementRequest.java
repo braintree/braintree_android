@@ -14,15 +14,6 @@ public class BillingAgreementRequest extends CheckoutRequest {
 
     public BillingAgreementRequest() {}
 
-    /**
-     * @deprecated use {@link BillingAgreementRequest#pairingId(Context, String)} instead.
-     */
-    @Deprecated
-    @Override
-    public BillingAgreementRequest pairingId(String pairingId) {
-        return pairingId(null, pairingId);
-    }
-
     public BillingAgreementRequest pairingId(Context context, String pairingId) {
         super.pairingId(context, pairingId);
         return this;

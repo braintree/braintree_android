@@ -41,14 +41,6 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
         return mPairingId;
     }
 
-    /**
-     * @deprecated use {@link CheckoutRequest#pairingId(Context, String)} instead.
-     */
-    @Deprecated
-    public CheckoutRequest pairingId(String pairingId) {
-        return pairingId(null, pairingId);
-    }
-
     public CheckoutRequest pairingId(Context context, String pairingId) {
         mPairingId = pairingId;
         clientMetadataId(PayPalOneTouchCore.getClientMetadataId(context, pairingId));
