@@ -1,7 +1,5 @@
 package com.braintreepayments.demo.test;
 
-import androidx.test.filters.RequiresDevice;
-import androidx.test.filters.SdkSuppress;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
@@ -49,7 +47,6 @@ public class DropInTest extends TestHelper {
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
-    @SdkSuppress(minSdkVersion = 21)
     @Test(timeout = 60000)
     public void tokenizesPayPal() {
         uninstallPayPalWallet();

@@ -21,7 +21,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Config(sdk = 21, shadows = BraintreeShadowCookieManager.class)
+@Config(shadows = BraintreeShadowCookieManager.class)
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureWebViewUnitTest {
 
@@ -59,7 +59,6 @@ public class ThreeDSecureWebViewUnitTest {
         assertTrue(settings.getDatabaseEnabled());
     }
 
-    @RequiresApi(api = VERSION_CODES.LOLLIPOP)
     @Test
     public void init_setsCookieManagerToAcceptThirdPartyCookies() {
         mThreeDSecureWebView.init(mActivity);

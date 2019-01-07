@@ -1,6 +1,5 @@
 package com.braintreepayments.demo.test;
 
-import androidx.test.filters.SdkSuppress;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
@@ -20,7 +19,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 
 @RunWith(AndroidJUnit4.class)
-@SdkSuppress(minSdkVersion = 21)
 public class PayPalBrowserSwitchTest extends TestHelper {
 
     @Before

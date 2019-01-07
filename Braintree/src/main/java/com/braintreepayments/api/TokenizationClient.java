@@ -45,7 +45,6 @@ class TokenizationClient {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 if (paymentMethodBuilder instanceof CardBuilder &&
-                        VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP &&
                         configuration.getGraphQL().isFeatureEnabled(Features.TOKENIZE_CREDIT_CARDS)) {
                     tokenizeGraphQL(fragment, (CardBuilder) paymentMethodBuilder, callback);
                 } else {

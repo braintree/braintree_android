@@ -14,12 +14,7 @@ import java.util.Locale;
  */
 public class EncryptionUtils {
 
-    private static final SecureRandom RANDOM;
-
-    static {
-        PRNGFixes.apply();
-        RANDOM = new SecureRandom();
-    }
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     public static byte[] generateRandomData(int size) {
         byte[] output = new byte[size];

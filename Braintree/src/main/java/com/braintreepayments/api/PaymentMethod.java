@@ -111,11 +111,6 @@ public class PaymentMethod {
             return;
         }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            fragment.postCallback(new BraintreeException("Payment Method Nonce deletion is not supported for API < 21"));
-            return;
-        }
-
         JSONObject base = new JSONObject();
         JSONObject variables = new JSONObject();
         JSONObject input = new JSONObject();

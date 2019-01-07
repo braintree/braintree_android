@@ -50,9 +50,7 @@ public class ThreeDSecureWebView extends WebView {
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
 
-       if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-          CookieManager.getInstance().setAcceptThirdPartyCookies(this, true);
-       }
+        CookieManager.getInstance().setAcceptThirdPartyCookies(this, true);
 
         setWebChromeClient(new ThreeDSecureWebChromeClient(activity));
         setWebViewClient(new ThreeDSecureWebViewClient(activity));
