@@ -40,6 +40,19 @@ public class DataCollectorUnitTest {
 
     @Rule
     public PowerMockRule mPowerMockRule = new PowerMockRule();
+    private BraintreeFragment mBraintreeFragment;
+
+    @Before
+    public void setup() {
+        mBraintreeFragment = new MockFragmentBuilder()
+                .configuration(new TestConfigurationBuilder()
+                        .kount(new TestKountConfigurationBuilder()
+                                .kountMerchantId("600000"))
+                        .build())
+                .build();
+
+        mockKount(true);
+    }
 
     @Test
     public void getDeviceCollectorEnvironment_returnsCorrectEnvironment() {
@@ -50,61 +63,57 @@ public class DataCollectorUnitTest {
     }
 
     @Test
-    public void collectDeviceData() throws JSONException {
-        BraintreeFragment fragment = new MockFragmentBuilder().build();
+    public void collectDeviceData() throws Exception {
+        final CountDownLatch latch = new CountDownLatch(1);
 
-        String deviceData = DataCollector.collectDeviceData(fragment);
+        DataCollector.collectDeviceData(mBraintreeFragment, new BraintreeResponseListener<String>() {
+            @Override
+            public void onResponse(String deviceData) {
+                try {
+                    JSONObject json = new JSONObject(deviceData);
+                    assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));
+                    assertEquals("600000", json.getString("fraud_merchant_id"));
+                    assertNotNull(json.getString("correlation_id"));
+                    latch.countDown();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
 
-        JSONObject json = new JSONObject(deviceData);
-        assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));
-        assertEquals("600000", json.getString("fraud_merchant_id"));
-        assertNotNull(json.getString("correlation_id"));
+        latch.await();
+
     }
 
     @Test
-    public void collectDeviceData_usesDirectMerchantId() throws JSONException {
-        BraintreeFragment fragment = new MockFragmentBuilder().build();
+    public void collectDeviceData_usesDirectMerchantId() throws Exception {
+        final CountDownLatch latch = new CountDownLatch(1);
+        DataCollector.collectDeviceData(mBraintreeFragment, "100", new BraintreeResponseListener<String>() {
+            @Override
+            public void onResponse(String deviceData) {
+                try {
+                    JSONObject json = new JSONObject(deviceData);
+                    assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));
+                    assertEquals("100", json.getString("fraud_merchant_id"));
+                    latch.countDown();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
 
-        String deviceData = DataCollector.collectDeviceData(fragment, "100");
-
-        JSONObject json = new JSONObject(deviceData);
-        assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));
-        assertEquals("100", json.getString("fraud_merchant_id"));
+        latch.await();
     }
 
     @Test
     public void collectDeviceData_sendsAnalyticsEventsWhenSuccessful() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final BraintreeFragment fragment = new MockFragmentBuilder()
-                .configuration(new TestConfigurationBuilder()
-                        .kount(new TestKountConfigurationBuilder()
-                                .kountMerchantId("600000"))
-                        .build())
-                .build();
 
-        final com.kount.api.DataCollector mockDataCollector = mock(com.kount.api.DataCollector.class);
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                ((CompletionHandler) invocation.getArguments()[1]).completed((String) invocation.getArguments()[0]);
-                return null;
-            }
-        }).when(mockDataCollector).collectForSession(anyString(), any(CompletionHandler.class));
-
-        mockStatic(com.kount.api.DataCollector.class);
-        doAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                return mockDataCollector;
-            }
-        }).when(com.kount.api.DataCollector.class);
-        com.kount.api.DataCollector.getInstance();
-
-        DataCollector.collectDeviceData(fragment, new BraintreeResponseListener<String>() {
+        DataCollector.collectDeviceData(mBraintreeFragment, new BraintreeResponseListener<String>() {
             @Override
             public void onResponse(String s) {
-                verify(fragment).sendAnalyticsEvent("data-collector.kount.started");
-                verify(fragment).sendAnalyticsEvent("data-collector.kount.succeeded");
+                verify(mBraintreeFragment).sendAnalyticsEvent("data-collector.kount.started");
+                verify(mBraintreeFragment).sendAnalyticsEvent("data-collector.kount.succeeded");
 
                 latch.countDown();
             }
@@ -115,37 +124,14 @@ public class DataCollectorUnitTest {
 
     @Test
     public void collectDeviceData_sendsAnalyticsEventsWhenFailed() throws InterruptedException {
+        mockKount(false);
         final CountDownLatch latch = new CountDownLatch(1);
-        final BraintreeFragment fragment = new MockFragmentBuilder()
-                .configuration(new TestConfigurationBuilder()
-                        .kount(new TestKountConfigurationBuilder()
-                                .kountMerchantId("600000"))
-                        .build())
-                .build();
 
-        final com.kount.api.DataCollector mockDataCollector = mock(com.kount.api.DataCollector.class);
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                ((CompletionHandler) invocation.getArguments()[1]).failed((String) invocation.getArguments()[0], null);
-                return null;
-            }
-        }).when(mockDataCollector).collectForSession(anyString(), any(CompletionHandler.class));
-
-        mockStatic(com.kount.api.DataCollector.class);
-        doAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                return mockDataCollector;
-            }
-        }).when(com.kount.api.DataCollector.class);
-        com.kount.api.DataCollector.getInstance();
-
-        DataCollector.collectDeviceData(fragment, new BraintreeResponseListener<String>() {
+        DataCollector.collectDeviceData(mBraintreeFragment, new BraintreeResponseListener<String>() {
             @Override
             public void onResponse(String s) {
-                verify(fragment).sendAnalyticsEvent("data-collector.kount.started");
-                verify(fragment).sendAnalyticsEvent("data-collector.kount.failed");
+                verify(mBraintreeFragment).sendAnalyticsEvent("data-collector.kount.started");
+                verify(mBraintreeFragment).sendAnalyticsEvent("data-collector.kount.failed");
 
                 latch.countDown();
             }
@@ -178,5 +164,33 @@ public class DataCollectorUnitTest {
             }
         });
         latch.await();
+    }
+
+    private void mockKount(final boolean kountIsSuccessful) {
+        final com.kount.api.DataCollector mockDataCollector = mock(com.kount.api.DataCollector.class);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                CompletionHandler handler = ((CompletionHandler) invocation.getArguments()[1]);
+                String id = (String) invocation.getArguments()[0];
+
+                if (kountIsSuccessful) {
+                    handler.completed(id);
+                } else {
+                    handler.failed(id, null);
+
+                }
+                return null;
+            }
+        }).when(mockDataCollector).collectForSession(anyString(), any(CompletionHandler.class));
+
+        mockStatic(com.kount.api.DataCollector.class);
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return mockDataCollector;
+            }
+        }).when(com.kount.api.DataCollector.class);
+        com.kount.api.DataCollector.getInstance();
     }
 }

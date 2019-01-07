@@ -31,9 +31,6 @@ public class DataCollector {
     private static final String FRAUD_MERCHANT_ID_KEY = "fraud_merchant_id";
     private static final String CORRELATION_ID_KEY = "correlation_id";
 
-    private static final String BRAINTREE_MERCHANT_ID = "600000";
-
-
     /**
      * Collect device information for fraud identification purposes.
      *
@@ -114,54 +111,6 @@ public class DataCollector {
         } catch (JSONException ignored) {}
 
         listener.onResponse(deviceData.toString());
-    }
-
-    /**
-     * @deprecated Use {@link #collectDeviceData(BraintreeFragment, BraintreeResponseListener)} instead.
-     */
-    @Deprecated
-    public static String collectDeviceData(BraintreeFragment fragment) {
-        return collectDeviceData(fragment, BRAINTREE_MERCHANT_ID);
-    }
-
-    /**
-     * @deprecated Use {@link #collectDeviceData(BraintreeFragment, String, BraintreeResponseListener)} instead.
-     */
-    @Deprecated
-    public static String collectDeviceData(BraintreeFragment fragment, String merchantId) {
-        JSONObject deviceData = new JSONObject();
-
-        try {
-            String deviceSessionId = UUIDHelper.getFormattedUUID();
-            startDeviceCollector(fragment, merchantId, deviceSessionId, null);
-            deviceData.put(DEVICE_SESSION_ID_KEY, deviceSessionId);
-            deviceData.put(FRAUD_MERCHANT_ID_KEY, merchantId);
-        } catch (ClassNotFoundException | NoClassDefFoundError | NumberFormatException | JSONException ignored) {}
-
-        try {
-            String clientMetadataId = getPayPalClientMetadataId(fragment.getApplicationContext());
-            if (!TextUtils.isEmpty(clientMetadataId)) {
-                deviceData.put(CORRELATION_ID_KEY, clientMetadataId);
-            }
-        } catch (JSONException ignored) {}
-
-        return deviceData.toString();
-    }
-
-    /**
-     * @deprecated Use {@link #collectDeviceData(BraintreeFragment)} instead.
-     */
-    @Deprecated
-    public static String collectDeviceData(Context context, BraintreeFragment fragment) {
-        return collectDeviceData(fragment);
-    }
-
-    /**
-     * @deprecated Use {@link #collectDeviceData(BraintreeFragment, String)} instead.
-     */
-    @Deprecated
-    public static String collectDeviceData(Context context, BraintreeFragment fragment, String merchantId) {
-        return collectDeviceData(fragment, merchantId);
     }
 
     /**
