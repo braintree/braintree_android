@@ -54,10 +54,6 @@ public class CardTest {
 
     public CardTest(String requestProtocol) {
         mRequestProtocol = requestProtocol;
-
-        if (GRAPHQL.equals(mRequestProtocol)) {
-            Assumptions.assumeDeviceCanConnectToBraintreeApi();
-        }
     }
 
     @Test(timeout = 10000)

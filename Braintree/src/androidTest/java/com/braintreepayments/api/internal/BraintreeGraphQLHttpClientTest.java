@@ -39,8 +39,6 @@ public class BraintreeGraphQLHttpClientTest {
 
     @Before
     public void setup() throws Exception {
-        Assumptions.assumeDeviceCanConnectToBraintreeApi();
-
         mCountDownLatch = new CountDownLatch(1);
     }
 

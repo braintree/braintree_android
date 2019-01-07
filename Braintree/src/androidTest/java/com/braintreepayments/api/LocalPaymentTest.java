@@ -33,8 +33,6 @@ public class LocalPaymentTest {
 
     @Before
     public void setUp() throws InvalidArgumentException {
-        Assumptions.assumeDeviceCanConnectToBraintreeApi();
-
         mCountDownLatch = new CountDownLatch(1);
 
         mBraintreeFragment = getFragmentWithAuthorization(mActivityTestRule.getActivity(),

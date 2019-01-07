@@ -29,11 +29,6 @@ import static org.mockito.Mockito.verify;
 @RunWith(AndroidJUnit4.class)
 public class BraintreeApiHttpClientTest {
 
-    @Before
-    public void setup() {
-        Assumptions.assumeDeviceCanConnectToBraintreeApi();
-    }
-
     @Test(timeout = 1000)
     public void setsBaseUrl() throws IOException, InterruptedException {
         BraintreeApiHttpClient client = spy(new BraintreeApiHttpClient("http://localhost", null));
