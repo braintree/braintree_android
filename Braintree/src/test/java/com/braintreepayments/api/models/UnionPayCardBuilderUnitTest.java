@@ -114,7 +114,6 @@ public class UnionPayCardBuilderUnitTest {
                 .locality("")
                 .postalCode("")
                 .region("")
-                .countryName("")
                 .enrollmentId("")
                 .mobileCountryCode("")
                 .mobilePhoneNumber("")
