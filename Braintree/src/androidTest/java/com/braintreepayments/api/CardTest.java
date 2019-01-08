@@ -278,10 +278,7 @@ public class CardTest {
                 .locality("Some Town")
                 .postalCode("12345")
                 .region("Some Region")
-                .countryName("United States")
-                .countryCodeAlpha2("US")
-                .countryCodeAlpha3("USA")
-                .countryCodeNumeric("840");
+                .countryCode("USA");
 
         assertTokenizationSuccessful(new TestClientTokenBuilder().build(), cardBuilder);
     }
