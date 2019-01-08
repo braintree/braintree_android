@@ -1,12 +1,17 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 
+import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.Authorization;
+import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
@@ -23,13 +28,19 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.spy;
 
@@ -43,11 +54,11 @@ public class ThreeDSecureUnitTest {
 
     private MockFragmentBuilder mMockFragmentBuilder;
     private BraintreeFragment mFragment;
+    public ThreeDSecureRequest mBasicRequest;
 
     @Before
     public void setup() throws Exception {
-        spy(ManifestValidator.class);
-        doReturn(true).when(ManifestValidator.class, "isUrlSchemeDeclaredInAndroidManifest", any(Context.class), anyString(), any(Class.class));
+        mockUrlSchemeDeclaredInAndroidManifest(true);
 
         Configuration configuration = new TestConfigurationBuilder()
                 .threeDSecureEnabled(true)
@@ -58,12 +69,21 @@ public class ThreeDSecureUnitTest {
                 .configuration(configuration);
         mFragment = mMockFragmentBuilder.build();
 
-        mFragment.addListener(new BraintreeErrorListener() {
-            @Override
-            public void onError(Exception error) {
-                fail(error.getMessage());
-            }
-        });
+        mBasicRequest = new ThreeDSecureRequest()
+                .nonce("a-nonce")
+                .amount("1.00");
+    }
+
+    @Test
+    public void performVerification_withInvalidRequest_postsException() {
+        ThreeDSecure.performVerification(mFragment, new ThreeDSecureRequest()
+                .amount("5"));
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(mFragment).postCallback(captor.capture());
+
+        assertEquals("The ThreeDSecureRequest nonce and amount cannot be null",
+                captor.getValue().getMessage());
     }
 
     @Test
@@ -115,11 +135,7 @@ public class ThreeDSecureUnitTest {
 
     @Test
     public void performVerification_sendsMinimumParamatersInLookupRequest() throws InterruptedException, JSONException {
-        ThreeDSecureRequest request = new ThreeDSecureRequest()
-                .nonce("a-nonce")
-                .amount("1.00");
-
-        ThreeDSecure.performVerification(mFragment, request);
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(mFragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));
@@ -178,4 +194,86 @@ public class ThreeDSecureUnitTest {
         assertEquals("US", billingAddress.getString("countryCode"));
         assertTrue(billingAddress.isNull("phoneNumber"));
     }
+
+    @Test
+    public void performVerification_whenBrowserSwitchNotSetup_postsException() {
+        mockUrlSchemeDeclaredInAndroidManifest(false);
+
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(mFragment).postCallback(captor.capture());
+
+        assertEquals("BraintreeBrowserSwitchActivity missing, " +
+                "incorrectly configured in AndroidManifest.xml or another app defines the same browser " +
+                "switch url as this app. See " +
+                "https://developers.braintreepayments.com/guides/client-sdk/android/v2#browser-switch " +
+                "for the correct configuration", captor.getValue().getMessage());
+    }
+
+    @Test
+    public void performVerification_whenBrowserSwitchNotSetup_sendsAnalyticEvent() {
+        mockUrlSchemeDeclaredInAndroidManifest(false);
+
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.invalid-manifest"));
+    }
+
+    @Test
+    public void onActivityResult_whenResultNotOk_doesNothing() {
+        verifyNoMoreInteractions(mFragment);
+        ThreeDSecure.onActivityResult(mFragment, AppCompatActivity.RESULT_CANCELED, null);
+        verifyNoMoreInteractions(mFragment);
+    }
+
+    @Test
+    public void onActivityResult_whenSuccessful_postsPayment() throws Exception {
+        Uri uri = Uri.parse("http://demo-app.com")
+                .buildUpon()
+                .appendQueryParameter("auth_response", stringFromFixture("three_d_secure/authentication_response.json"))
+                .build();
+        Intent data = new Intent();
+        data.setData(uri);
+
+        ThreeDSecure.onActivityResult(mFragment, AppCompatActivity.RESULT_OK, data);
+
+        ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
+        verify(mFragment).postCallback(captor.capture());
+        PaymentMethodNonce paymentMethodNonce = captor.getValue();
+
+        assertIsANonce(paymentMethodNonce.getNonce());
+        assertEquals("11", ((CardNonce) paymentMethodNonce).getLastTwo());
+        assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
+    }
+
+    @Test
+    public void onActivityResult_whenFailure_postsException() throws Exception {
+        JSONObject json = new JSONObject();
+        json.put("success", false);
+
+        Uri uri = Uri.parse("https://.com?auth_response=" + json.toString());
+        Intent data = new Intent();
+        data.setData(uri);
+
+        ThreeDSecure.onActivityResult(mFragment, AppCompatActivity.RESULT_OK, data);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(mFragment).postCallback(captor.capture());
+
+        ErrorWithResponse error = (ErrorWithResponse) captor.getValue();
+        assertEquals(422, error.getStatusCode());
+    }
+
+    private void mockUrlSchemeDeclaredInAndroidManifest(boolean returnValue) {
+        spy(ManifestValidator.class);
+        try {
+            doReturn(returnValue).when(ManifestValidator.class,
+                    "isUrlSchemeDeclaredInAndroidManifest", any(Context.class),
+                    anyString(), any(Class.class));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

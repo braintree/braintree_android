@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
@@ -18,7 +17,6 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
-import com.braintreepayments.api.threedsecure.ThreeDSecureWebViewActivity;
 
 import org.json.JSONException;
 
@@ -34,8 +32,6 @@ import androidx.appcompat.app.AppCompatActivity;
  * for a full explanation of 3D Secure.
  */
 public class ThreeDSecure {
-
-    protected static boolean sWebViewOverride = false;
 
     /**
      * The versioned path of the 3D Secure assets to use. Hosted by Braintree.
@@ -128,12 +124,15 @@ public class ThreeDSecure {
                 }
 
                 final boolean supportsBrowserSwitch = ManifestValidator.isUrlSchemeDeclaredInAndroidManifest(
-                        fragment.getApplicationContext(), fragment.getReturnUrlScheme(), BraintreeBrowserSwitchActivity.class) && !sWebViewOverride;
+                        fragment.getApplicationContext(), fragment.getReturnUrlScheme(), BraintreeBrowserSwitchActivity.class);
 
-                if (!supportsBrowserSwitch && !ManifestValidator.isActivityDeclaredInAndroidManifest(
-                        fragment.getApplicationContext(), ThreeDSecureWebViewActivity.class)) {
-                    fragment.postCallback(new BraintreeException("ThreeDSecureWebViewActivity is not declared in " +
-                            "AndroidManifest.xml"));
+                if (!supportsBrowserSwitch) {
+                    fragment.sendAnalyticsEvent("three-d-secure.invalid-manifest");
+                    fragment.postCallback(new BraintreeException("BraintreeBrowserSwitchActivity missing, " +
+                            "incorrectly configured in AndroidManifest.xml or another app defines the same browser " +
+                            "switch url as this app. See " +
+                            "https://developers.braintreepayments.com/guides/client-sdk/android/v2#browser-switch " +
+                            "for the correct configuration"));
                     return;
                 }
 
@@ -145,11 +144,7 @@ public class ThreeDSecure {
                         try {
                             ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(responseBody);
                             if (threeDSecureLookup.getAcsUrl() != null) {
-                                if (supportsBrowserSwitch) {
-                                    launchBrowserSwitch(fragment, threeDSecureLookup);
-                                } else {
-                                    launchWebView(fragment, threeDSecureLookup);
-                                }
+                                launchBrowserSwitch(fragment, threeDSecureLookup);
                             } else {
                                 fragment.postCallback(threeDSecureLookup.getCardNonce());
                             }
@@ -169,14 +164,10 @@ public class ThreeDSecure {
 
     protected static void onActivityResult(BraintreeFragment fragment, int resultCode, Intent data) {
         if (resultCode == AppCompatActivity.RESULT_OK) {
-            ThreeDSecureAuthenticationResponse authenticationResponse;
             Uri resultUri = data.getData();
-            if (resultUri != null) {
-                authenticationResponse = ThreeDSecureAuthenticationResponse.fromJson(resultUri.getQueryParameter("auth_response"));
-            } else {
-                authenticationResponse =
-                        data.getParcelableExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_RESULT);
-            }
+            ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse
+                    .fromJson(resultUri.getQueryParameter("auth_response"));
+
             if (authenticationResponse.isSuccess()) {
                 fragment.postCallback(authenticationResponse.getCardNonce());
             } else if (authenticationResponse.getException() != null) {
@@ -185,13 +176,6 @@ public class ThreeDSecure {
                 fragment.postCallback(new ErrorWithResponse(422, authenticationResponse.getErrors()));
             }
         }
-    }
-
-    private static void launchWebView(BraintreeFragment fragment, ThreeDSecureLookup threeDSecureLookup) {
-        Intent intent = new Intent(fragment.getApplicationContext(), ThreeDSecureWebViewActivity.class)
-                .putExtra(ThreeDSecureWebViewActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup);
-
-        fragment.startActivityForResult(intent, BraintreeRequestCodes.THREE_D_SECURE);
     }
 
     private static void launchBrowserSwitch(BraintreeFragment fragment, ThreeDSecureLookup threeDSecureLookup) {
