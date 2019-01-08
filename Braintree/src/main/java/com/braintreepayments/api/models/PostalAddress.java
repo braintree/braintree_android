@@ -26,12 +26,6 @@ public class PostalAddress implements Parcelable {
     public PostalAddress() {
     }
 
-    /** @deprecated: Use PostalAddressParser#fromJson(JSONObject) */
-    @Deprecated
-    public static PostalAddress fromJson(JSONObject accountAddress) {
-        return PostalAddressParser.fromJson(accountAddress);
-    }
-
     public PostalAddress recipientName(String name) {
         mRecipientName = name;
         return this;
