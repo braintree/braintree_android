@@ -78,12 +78,4 @@ public class VenmoConfiguration {
     public boolean isAccessTokenValid() {
         return !TextUtils.isEmpty(mAccessToken);
     }
-
-    /**
-     * @deprecated Venmo no longer requires a user whitelist
-     */
-    @Deprecated
-    public boolean isVenmoWhitelisted(ContentResolver contentResolver) {
-        return true;
-    }
 }

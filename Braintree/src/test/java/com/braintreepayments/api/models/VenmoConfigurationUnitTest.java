@@ -27,12 +27,6 @@ public class VenmoConfigurationUnitTest {
     }
 
     @Test
-    public void isVenmoWhitelisted_returnsTrueForWhitelist() {
-        assertTrue(mConfiguration.getPayWithVenmo().isVenmoWhitelisted(VenmoInstalledContextFactory
-                .venmoInstalledContext(true).getContentResolver()));
-    }
-
-    @Test
     public void fromJson_parsesPayWithVenmoConfiguration() throws JSONException {
         assertEquals("access-token", mConfiguration.getPayWithVenmo().getAccessToken());
         assertEquals("environment", mConfiguration.getPayWithVenmo().getEnvironment());
