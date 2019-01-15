@@ -98,23 +98,13 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
 
             JSONObject payerInfo = details.getJSONObject(PAYER_INFO_KEY);
 
-            JSONObject billingAddress;
+            JSONObject billingAddress = payerInfo.optJSONObject(BILLING_ADDRESS_KEY);
             if (payerInfo.has(ACCOUNT_ADDRESS_KEY)) {
                 billingAddress = payerInfo.optJSONObject(ACCOUNT_ADDRESS_KEY);
-            } else {
-                billingAddress = payerInfo.optJSONObject(BILLING_ADDRESS_KEY);
             }
 
-            JSONObject shippingAddress = payerInfo.optJSONObject(SHIPPING_ADDRESS_KEY);
-
-            if (shippingAddress != null) {
-                mShippingAddress = PostalAddressParser.fromJson(shippingAddress);
-            }
-
-            if (billingAddress != null) {
-                mBillingAddress = PostalAddressParser.fromJson(billingAddress);
-            }
-
+            mShippingAddress = PostalAddressParser.fromJson(payerInfo.optJSONObject(SHIPPING_ADDRESS_KEY));
+            mBillingAddress = PostalAddressParser.fromJson(billingAddress);
             mFirstName = Json.optString(payerInfo, FIRST_NAME_KEY, "");
             mLastName = Json.optString(payerInfo, LAST_NAME_KEY, "");
             mPhone = Json.optString(payerInfo, PHONE_KEY, "");
