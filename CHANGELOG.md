@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 2.20.1
+
+* Fix null address properties on PayPalAccountNonce
+  * Those addresses should always be at least an empty PostalAddress
+
 ## 2.20.0
 
 * Google Pay
