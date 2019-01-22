@@ -66,15 +66,16 @@ public class PayPal {
     public static final String SCOPE_EMAIL = PayPalScope.EMAIL.getScopeUri();
 
     /**
-     * PayPal Scope for obtaining the accounts address. Optional, can be specified in the optional
-     * scopes when using {@link #authorizeAccount(BraintreeFragment, List)}.
+     * Use {@link #requestBillingAgreement(BraintreeFragment, PayPalRequest)}.
      */
+    @Deprecated
     public static final String SCOPE_ADDRESS = PayPalScope.ADDRESS.getScopeUri();
 
     private static final String REQUEST_KEY = "com.braintreepayments.api.PayPal.REQUEST_KEY";
     private static final String REQUEST_TYPE_KEY = "com.braintreepayments.api.PayPal.REQUEST_TYPE_KEY";
     private static final String PAYPAL_REQUEST_KEY = "com.braintreepayments.api.PayPal.PAYPAL_REQUEST_KEY";
 
+    @Deprecated
     protected static boolean sFuturePaymentsOverride = false;
 
     private static final String SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement";
@@ -100,25 +101,17 @@ public class PayPal {
     private static final String MERCHANT_ACCOUNT_ID = "merchant_account_id";
 
     /**
-     * Starts the Pay With PayPal flow. This will launch the PayPal app if installed or switch to
-     * the browser for user authorization. The Billing Agreement flow will be used if enabled,
-     * otherwise the Future Payment flow will be used.
-     *
-     * @param fragment A {@link BraintreeFragment} used to process the request.
+     * @deprecated Use {@link #requestBillingAgreement(BraintreeFragment, PayPalRequest)}.
      */
+    @Deprecated
     public static void authorizeAccount(BraintreeFragment fragment) {
         authorizeAccount(fragment, null);
     }
 
     /**
-     * Starts the Pay With PayPal flow with additional scopes. This will launch the PayPal app if
-     * installed or switch to the browser for user authorization. The Billing Agreement flow will be
-     * used if enabled, otherwise the Future Payment flow will be used.
-     *
-     * @param fragment A {@link BraintreeFragment} used to process the request.
-     * @param additionalScopes A {@link java.util.List} of additional scopes. Ex: {@link
-     * #SCOPE_ADDRESS}. Acceptable scopes are defined in {@link com.braintreepayments.api.PayPal}.
+     * @deprecated Use {@link #requestBillingAgreement(BraintreeFragment, PayPalRequest)}.
      */
+    @Deprecated
     public static void authorizeAccount(final BraintreeFragment fragment, final List<String> additionalScopes) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
@@ -594,6 +587,7 @@ public class PayPal {
     }
 
     @VisibleForTesting
+    @Deprecated
     static AuthorizationRequest getAuthorizationRequest(BraintreeFragment fragment) {
         return populateRequestData(fragment, new AuthorizationRequest(fragment.getApplicationContext()))
                 .privacyUrl(fragment.getConfiguration().getPayPal().getPrivacyUrl())

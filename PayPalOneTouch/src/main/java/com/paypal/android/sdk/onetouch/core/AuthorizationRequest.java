@@ -54,6 +54,10 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+/**
+ * @deprecated Use {@link BillingAgreementRequest} to create a billing agreement flow.
+ */
+@Deprecated
 public class AuthorizationRequest extends Request<AuthorizationRequest> implements Parcelable {
 
     private final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
