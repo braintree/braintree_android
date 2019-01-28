@@ -137,7 +137,7 @@ public class PayPal {
                     return;
                 }
 
-                fragment.sendAnalyticsEvent("paypal.future-payments.selected");
+                fragment.sendAnalyticsEvent("paypal.future-payment.selected");
 
                 AuthorizationRequest request = getAuthorizationRequest(fragment);
 
@@ -206,7 +206,7 @@ public class PayPal {
     public static void requestOneTimePayment(BraintreeFragment fragment, PayPalRequest request,
             PayPalApprovalHandler handler) {
         if (request.getAmount() != null) {
-            fragment.sendAnalyticsEvent("paypal.one-time-payment.selected");
+            fragment.sendAnalyticsEvent("paypal.single-payment.selected");
             if (request.shouldOfferCredit()) {
                 fragment.sendAnalyticsEvent("paypal.single-payment.credit.offered");
             }
@@ -394,44 +394,22 @@ public class PayPal {
             public void handleApproval(Request request, PayPalApprovalCallback paypalApprovalCallback) {
                 PendingRequest pendingRequest =
                         PayPalOneTouchCore.getStartIntent(fragment.getApplicationContext(), request);
+
+                String paymentType = paymentTypeForRequest(request);
+
                 if (pendingRequest.isSuccess() && pendingRequest.getRequestTarget() == RequestTarget.wallet) {
-                    sendAnalyticsForPayPal(fragment, request, true, RequestTarget.wallet);
+                    fragment.sendAnalyticsEvent(paymentType + ".app-switch.started");
 
                     fragment.startActivityForResult(pendingRequest.getIntent(), BraintreeRequestCodes.PAYPAL);
                 } else if (pendingRequest.isSuccess() && pendingRequest.getRequestTarget() == RequestTarget.browser) {
-                    sendAnalyticsForPayPal(fragment, request, true, RequestTarget.browser);
+                    fragment.sendAnalyticsEvent(paymentType + ".browser-switch.started");
 
                     fragment.browserSwitch(BraintreeRequestCodes.PAYPAL, pendingRequest.getIntent());
                 } else {
-                    sendAnalyticsForPayPal(fragment, request, false, null);
+                    fragment.sendAnalyticsEvent(paymentType + ".initiate.failed");
                 }
             }
         };
-    }
-
-    private static void sendAnalyticsForPayPal(BraintreeFragment fragment, Request request, boolean success,
-            RequestTarget target) {
-        String eventFragment;
-        String paymentType = paymentTypeForRequest(request);
-        String switchType = target == RequestTarget.wallet ? "appswitch" : "webswitch";
-        if (success) {
-            eventFragment = String.format("%s.%s.started", paymentType, switchType);
-        } else {
-            eventFragment = String.format("%s.initiate.failed", paymentType);
-        }
-        /**
-         * Possible values:
-         * paypal-billing-agreement.webswitch.started
-         * paypal-billing-agreement.appswitch.started
-         * paypal-billing-agreement.initiate.failed
-         * paypal-single-payment.webswitch.started
-         * paypal-single-payment.appswitch.started
-         * paypal-single-payment.initiate.failed
-         * paypal-future-payments.webswitch.started
-         * paypal-future-payments.appswitch.started
-         * paypal-future-payments.initiate.failed
-         */
-        fragment.sendAnalyticsEvent(eventFragment);
     }
 
     /**
@@ -442,32 +420,28 @@ public class PayPal {
      */
     protected static void onActivityResult(final BraintreeFragment fragment, int resultCode, Intent data) {
         Request request = getPersistedRequest(fragment.getApplicationContext());
+        String paymentType = paymentTypeForRequest(request);
+        String switchType = switchTypeForIntent(data);
+        String eventPrefix = paymentType + "." + switchType;
+
         if (resultCode == AppCompatActivity.RESULT_OK && data != null && request != null) {
-            boolean isAppSwitch = isAppSwitch(data);
             Result result = PayPalOneTouchCore.parseResponse(fragment.getApplicationContext(), request, data);
             switch (result.getResultType()) {
                 case Error:
                     fragment.postCallback(new BrowserSwitchException(result.getError().getMessage()));
-                    sendAnalyticsEventForSwitchResult(fragment, request, isAppSwitch, "failed");
+                    fragment.sendAnalyticsEvent(eventPrefix + ".failed");
                     break;
                 case Cancel:
-                    sendAnalyticsEventForSwitchResult(fragment, request, isAppSwitch, "canceled");
                     fragment.postCancelCallback(BraintreeRequestCodes.PAYPAL);
+                    fragment.sendAnalyticsEvent(eventPrefix + ".canceled");
                     break;
                 case Success:
                     onSuccess(fragment, data, request, result);
-                    sendAnalyticsEventForSwitchResult(fragment, request, isAppSwitch, "succeeded");
+                    fragment.sendAnalyticsEvent(eventPrefix + ".succeeded");
                     break;
             }
         } else {
-            String type;
-
-            if (request != null) {
-                type = paymentTypeForRequest(request);
-            } else {
-                type = "unknown";
-            }
-            fragment.sendAnalyticsEvent(type + ".canceled");
+            fragment.sendAnalyticsEvent(eventPrefix + ".canceled");
 
             if (resultCode != AppCompatActivity.RESULT_CANCELED) {
                 fragment.postCancelCallback(BraintreeRequestCodes.PAYPAL);
@@ -537,21 +511,6 @@ public class PayPal {
         paypalAccountBuilder.oneTouchCoreData(payload);
 
         return paypalAccountBuilder;
-    }
-
-    /**
-     * Send analytics for PayPal app switch result.
-     *
-     * @param fragment A {@link BraintreeFragment} used to process the request.
-     * @param isAppSwitch True if the request switched to the PayPal app. False if browser switch.
-     * @param eventFragment A {@link String} describing the result.
-     */
-    private static void sendAnalyticsEventForSwitchResult(BraintreeFragment fragment, Request request,
-            boolean isAppSwitch, String eventFragment) {
-        String paymentType = paymentTypeForRequest(request);
-        String switchType = isAppSwitch ? "appswitch" : "webswitch";
-        String event = String.format("%s.%s.%s", paymentType, switchType, eventFragment);
-        fragment.sendAnalyticsEvent(event);
     }
 
     @VisibleForTesting
@@ -702,12 +661,29 @@ public class PayPal {
                 fragment.getReturnUrlScheme(), BraintreeBrowserSwitchActivity.class);
     }
 
+    private static String switchTypeForIntent(Intent data) {
+        String switchType = "unknown";
+
+        if (data != null) {
+            if (data.getData() != null || data.getBooleanExtra(BraintreeFragment.EXTRA_WAS_BROWSER_SWITCH_RESULT, false)) {
+                switchType = "browser-switch";
+            } else {
+                switchType = "app-switch";
+            }
+        }
+
+        return switchType;
+    }
+
     private static String paymentTypeForRequest(Request request) {
         if (request instanceof BillingAgreementRequest) {
-            return "paypal-billing-agreement";
+            return "paypal.billing-agreement";
         } else if (request instanceof CheckoutRequest) {
-            return "paypal-single-payment";
+            return "paypal.single-payment";
+        } else if (request instanceof AuthorizationRequest) {
+            return "paypal.future-payment";
+        } else {
+            return "paypal.unknown";
         }
-        return "paypal-future-payments";
     }
 }

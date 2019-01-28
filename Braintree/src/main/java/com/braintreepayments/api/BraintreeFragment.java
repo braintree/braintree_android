@@ -72,6 +72,8 @@ public class BraintreeFragment extends BrowserSwitchFragment {
 
     public static final String TAG = "com.braintreepayments.api.BraintreeFragment";
 
+    public static final String EXTRA_WAS_BROWSER_SWITCH_RESULT = "com.braintreepayments.api.WAS_BROWSER_SWITCH_RESULT";
+
     private static final String EXTRA_AUTHORIZATION_TOKEN = "com.braintreepayments.api.EXTRA_AUTHORIZATION_TOKEN";
     private static final String EXTRA_INTEGRATION_TYPE = "com.braintreepayments.api.EXTRA_INTEGRATION_TYPE";
     private static final String EXTRA_SESSION_ID = "com.braintreepayments.api.EXTRA_SESSION_ID";
@@ -320,6 +322,9 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     @Override
     public void onBrowserSwitchResult(int requestCode, BrowserSwitchResult browserSwitchResult, @Nullable Uri uri) {
         String type = "";
+        Intent intent = new Intent()
+                .putExtra(EXTRA_WAS_BROWSER_SWITCH_RESULT, true);
+
         switch (requestCode) {
             case BraintreeRequestCodes.PAYPAL:
                 type = "paypal";
@@ -347,7 +352,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             }
         }
 
-        onActivityResult(requestCode, resultCode, new Intent().setData(uri));
+        onActivityResult(requestCode, resultCode, intent.setData(uri));
     }
 
     @Override
