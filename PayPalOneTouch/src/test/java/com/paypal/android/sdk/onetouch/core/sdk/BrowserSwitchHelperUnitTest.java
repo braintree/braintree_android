@@ -45,7 +45,7 @@ public class BrowserSwitchHelperUnitTest {
     }
 
     @Test
-    public void getBrowserIntent_returnsIntent() throws Exception {
+    public void getBrowserIntent_returnsIntent() {
         CheckoutRequest request = spy(new CheckoutRequest());
         doNothing().when(request).trackFpti(any(Context.class), any(TrackingPoint.class),
                 any(Protocol.class));
@@ -64,7 +64,7 @@ public class BrowserSwitchHelperUnitTest {
     public void handleBrowserResponse_parsesResponse() {
         Result expectedResult = new Result();
         CheckoutRequest request = mock(CheckoutRequest.class);
-        when(request.parseBrowserResponse(any(ContextInspector.class), any(Uri.class)))
+        when(request.parseBrowserResponse(any(Uri.class)))
                 .thenReturn(expectedResult);
 
         Result result = BrowserSwitchHelper.parseBrowserSwitchResponse(mContextInspector, request,
@@ -77,7 +77,7 @@ public class BrowserSwitchHelperUnitTest {
     public void handleBrowserResponse_sendsEventForError() {
         Result expectedResult = new Result(new Exception());
         CheckoutRequest request = mock(CheckoutRequest.class);
-        when(request.parseBrowserResponse(any(ContextInspector.class), any(Uri.class)))
+        when(request.parseBrowserResponse(any(Uri.class)))
                 .thenReturn(expectedResult);
 
         BrowserSwitchHelper.parseBrowserSwitchResponse(mContextInspector, request, mock(Uri.class));
@@ -90,7 +90,7 @@ public class BrowserSwitchHelperUnitTest {
     public void handleBrowserResponse_sendsEventForCancel() {
         Result expectedResult = new Result();
         CheckoutRequest request = mock(CheckoutRequest.class);
-        when(request.parseBrowserResponse(any(ContextInspector.class), any(Uri.class)))
+        when(request.parseBrowserResponse(any(Uri.class)))
                 .thenReturn(expectedResult);
 
         BrowserSwitchHelper.parseBrowserSwitchResponse(mContextInspector, request, mock(Uri.class));
@@ -103,7 +103,7 @@ public class BrowserSwitchHelperUnitTest {
     public void handleBrowserResponse_sendsEventForReturn() {
         Result expectedResult = new Result("test", ResponseType.web, new JSONObject(), "");
         CheckoutRequest request = mock(CheckoutRequest.class);
-        when(request.parseBrowserResponse(any(ContextInspector.class), any(Uri.class)))
+        when(request.parseBrowserResponse(any(Uri.class)))
                 .thenReturn(expectedResult);
 
         BrowserSwitchHelper.parseBrowserSwitchResponse(mContextInspector, request, mock(Uri.class));

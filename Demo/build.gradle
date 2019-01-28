@@ -94,7 +94,7 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.0'
 
     implementation 'io.card:android-sdk:5.5.1'
-    implementation('com.braintreepayments.api:drop-in:3.7.0') {
+    implementation('com.braintreepayments.api:drop-in:4.0.0-SNAPSHOT') {
         exclude group: 'com.braintreepayments.api', module: 'braintree'
     }
 
@@ -103,7 +103,7 @@ dependencies {
     debugImplementation 'com.facebook.stetho:stetho:1.5.0'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4'
 
-    androidTestImplementation 'com.lukekorth:device-automator:0.3.0'
+    androidTestImplementation 'com.lukekorth:device-automator:1.0.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-beta02'
     androidTestImplementation 'androidx.test.espresso:espresso-web:3.1.0-beta02'
     androidTestImplementation project(':TestUtils')

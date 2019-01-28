@@ -2,13 +2,6 @@ package com.paypal.android.sdk.onetouch.core.fpti;
 
 public enum TrackingPoint {
 
-    WalletIsPresent("checkwallet", "present"),
-    WalletIsAbsent("checkwallet", "absent"),
-
-    PreflightBrowser("preflight", "browser"),
-    PreflightWallet("preflight", "wallet"),
-    PreflightNone("preflight", "none"),
-
     SwitchToBrowser("switchaway", "browser"),
     SwitchToWallet("switchaway", "wallet"),
 

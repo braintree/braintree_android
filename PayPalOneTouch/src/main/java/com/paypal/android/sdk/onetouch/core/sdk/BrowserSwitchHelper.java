@@ -29,7 +29,7 @@ public class BrowserSwitchHelper {
             ConfigManager configManager, Request request) {
         OtcConfiguration configuration = configManager.getConfig();
         try {
-            String url = request.getBrowserSwitchUrl(contextInspector.getContext(), configuration);
+            String url = request.getBrowserSwitchUrl();
 
             Recipe<?> recipe = request.getBrowserSwitchRecipe(configuration);
 
@@ -52,7 +52,7 @@ public class BrowserSwitchHelper {
 
     public static Result parseBrowserSwitchResponse(ContextInspector contextInspector,
             Request request, Uri uri) {
-        Result result = request.parseBrowserResponse(contextInspector, uri);
+        Result result = request.parseBrowserResponse(uri);
         switch (result.getResultType()) {
             case Error:
                 request.trackFpti(contextInspector.getContext(), TrackingPoint.Error, null);

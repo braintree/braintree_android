@@ -37,7 +37,7 @@ public class PayPalDataCollectorRequest {
      * @param clientMetadataId The desired pairing ID, trimmed to 32 characters.
      */
     public PayPalDataCollectorRequest setClientMetadataId(@NonNull String clientMetadataId) {
-        this.mClientMetadataId = clientMetadataId.substring(0, Math.min(clientMetadataId.length(), 32));;
+        this.mClientMetadataId = clientMetadataId.substring(0, Math.min(clientMetadataId.length(), 32));
 
         return this;
     }

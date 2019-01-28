@@ -34,7 +34,7 @@ public class BillingAgreementRequest extends CheckoutRequest {
                     return recipe;
                 }
             } else if (RequestTarget.browser == recipe.getTarget()) {
-                String browserSwitchUrl = getBrowserSwitchUrl(context, config);
+                String browserSwitchUrl = getBrowserSwitchUrl();
 
                 if (recipe.isValidBrowserTarget(context, browserSwitchUrl)) {
                     return recipe;

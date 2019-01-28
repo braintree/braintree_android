@@ -33,7 +33,6 @@ import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.models.PostalAddressParser;
-import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.BillingAgreementRequest;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
@@ -41,44 +40,21 @@ import com.paypal.android.sdk.onetouch.core.Request;
 import com.paypal.android.sdk.onetouch.core.Result;
 import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
 import com.paypal.android.sdk.onetouch.core.network.EnvironmentManager;
-import com.paypal.android.sdk.onetouch.core.sdk.PayPalScope;
 import com.paypal.android.sdk.onetouch.core.sdk.PendingRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Used to create and tokenize PayPal accounts. For more information see the
  * <a href="https://developers.braintreepayments.com/guides/paypal/overview/android/v2">documentation</a>
  */
 public class PayPal {
-
-    /**
-     * PayPal Scope for Future Payments. Always enabled for the future payments flow.
-     */
-    public static final String SCOPE_FUTURE_PAYMENTS = PayPalScope.FUTURE_PAYMENTS.getScopeUri();
-
-    /**
-     * PayPal Scope for email. Always enabled for the future payments flow.
-     */
-    public static final String SCOPE_EMAIL = PayPalScope.EMAIL.getScopeUri();
-
-    /**
-     * Use {@link #requestBillingAgreement(BraintreeFragment, PayPalRequest)}.
-     */
-    @Deprecated
-    public static final String SCOPE_ADDRESS = PayPalScope.ADDRESS.getScopeUri();
-
     private static final String REQUEST_KEY = "com.braintreepayments.api.PayPal.REQUEST_KEY";
     private static final String REQUEST_TYPE_KEY = "com.braintreepayments.api.PayPal.REQUEST_TYPE_KEY";
     private static final String PAYPAL_REQUEST_KEY = "com.braintreepayments.api.PayPal.PAYPAL_REQUEST_KEY";
-
-    @Deprecated
-    protected static boolean sFuturePaymentsOverride = false;
-
     private static final String SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement";
     private static final String CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource";
     private static final String NO_SHIPPING_KEY = "no_shipping";
@@ -93,64 +69,12 @@ public class PayPal {
     private static final String EXPERIENCE_PROFILE_KEY = "experience_profile";
     private static final String AMOUNT_KEY = "amount";
     private static final String CURRENCY_ISO_CODE_KEY = "currency_iso_code";
-    private static final String PAYLOAD_CLIENT_TOKEN_KEY = "client_token";
     private static final String INTENT_KEY = "intent";
     private static final String LANDING_PAGE_TYPE_KEY = "landing_page_type";
     private static final String USER_ACTION_KEY = "useraction";
     private static final String DISPLAY_NAME_KEY = "brand_name";
     private static final String SHIPPING_ADDRESS_KEY = "shipping_address";
     private static final String MERCHANT_ACCOUNT_ID = "merchant_account_id";
-
-    /**
-     * @deprecated Use {@link #requestBillingAgreement(BraintreeFragment, PayPalRequest)}.
-     */
-    @Deprecated
-    public static void authorizeAccount(BraintreeFragment fragment) {
-        authorizeAccount(fragment, null);
-    }
-
-    /**
-     * @deprecated Use {@link #requestBillingAgreement(BraintreeFragment, PayPalRequest)}.
-     */
-    @Deprecated
-    public static void authorizeAccount(final BraintreeFragment fragment, final List<String> additionalScopes) {
-        fragment.waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                if (!configuration.isPayPalEnabled()) {
-                    fragment.postCallback(new BraintreeException("PayPal is not enabled"));
-                    return;
-                }
-
-                if (!isManifestValid(fragment)) {
-                    fragment.sendAnalyticsEvent("paypal.invalid-manifest");
-                    fragment.postCallback(new BraintreeException("BraintreeBrowserSwitchActivity missing, " +
-                            "incorrectly configured in AndroidManifest.xml or another app defines the same browser " +
-                            "switch url as this app. See " +
-                            "https://developers.braintreepayments.com/guides/client-sdk/android/v2#browser-switch " +
-                            "for the correct configuration"));
-                    return;
-                }
-
-                if (configuration.getPayPal().shouldUseBillingAgreement() && !sFuturePaymentsOverride) {
-                    requestBillingAgreement(fragment, new PayPalRequest());
-                    return;
-                }
-
-                fragment.sendAnalyticsEvent("paypal.future-payment.selected");
-
-                AuthorizationRequest request = getAuthorizationRequest(fragment);
-
-                if (additionalScopes != null) {
-                    for (String scope : additionalScopes) {
-                        request.withScopeValue(scope);
-                    }
-                }
-
-                startPayPal(fragment, request, null);
-            }
-        });
-    }
 
     /**
      * Starts the Billing Agreement flow for PayPal. This will launch the PayPal app if installed or
@@ -496,19 +420,7 @@ public class PayPal {
             paypalAccountBuilder.source("paypal-browser");
         }
 
-        JSONObject payload = result.getResponse();
-        // Modify payload in 'mock' mode to scope the response
-        try {
-            JSONObject clientJson = payload.getJSONObject("client");
-            JSONObject response = payload.getJSONObject("response");
-            if (EnvironmentManager.MOCK.equalsIgnoreCase(clientJson.getString("client"))
-                    && response.getString("code") != null && !(request instanceof CheckoutRequest)) {
-                payload.put("response", new JSONObject().put("code",
-                        "fake-code:" + ((AuthorizationRequest) request).getScopeString()));
-            }
-        } catch (JSONException ignored) {}
-
-        paypalAccountBuilder.oneTouchCoreData(payload);
+        paypalAccountBuilder.oneTouchCoreData(result.getResponse());
 
         return paypalAccountBuilder;
     }
@@ -545,17 +457,6 @@ public class PayPal {
         }
 
         return request;
-    }
-
-    @VisibleForTesting
-    @Deprecated
-    static AuthorizationRequest getAuthorizationRequest(BraintreeFragment fragment) {
-        return populateRequestData(fragment, new AuthorizationRequest(fragment.getApplicationContext()))
-                .privacyUrl(fragment.getConfiguration().getPayPal().getPrivacyUrl())
-                .userAgreementUrl(fragment.getConfiguration().getPayPal().getUserAgreementUrl())
-                .withScopeValue(SCOPE_FUTURE_PAYMENTS)
-                .withScopeValue(SCOPE_EMAIL)
-                .withAdditionalPayloadAttribute(PAYLOAD_CLIENT_TOKEN_KEY, fragment.getAuthorization().toString());
     }
 
     private static <T extends Request> T populateRequestData(BraintreeFragment fragment, T request) {
@@ -638,9 +539,7 @@ public class PayPal {
             parcel.setDataPosition(0);
 
             String type = prefs.getString(REQUEST_TYPE_KEY, "");
-            if (AuthorizationRequest.class.getSimpleName().equals(type)) {
-                return AuthorizationRequest.CREATOR.createFromParcel(parcel);
-            } else if (BillingAgreementRequest.class.getSimpleName().equals(type)) {
+            if (BillingAgreementRequest.class.getSimpleName().equals(type)) {
                 return BillingAgreementRequest.CREATOR.createFromParcel(parcel);
             } else if (CheckoutRequest.class.getSimpleName().equals(type)) {
                 return CheckoutRequest.CREATOR.createFromParcel(parcel);
@@ -680,8 +579,6 @@ public class PayPal {
             return "paypal.billing-agreement";
         } else if (request instanceof CheckoutRequest) {
             return "paypal.single-payment";
-        } else if (request instanceof AuthorizationRequest) {
-            return "paypal.future-payment";
         } else {
             return "paypal.unknown";
         }

@@ -59,7 +59,7 @@ public class PayPalRequestUnitTest {
     }
 
     @Test
-    public void testWriteToParcel_serializesCorrectly() throws JSONException {
+    public void testWriteToParcel_serializesCorrectly() {
         PostalAddress postalAddress = new PostalAddress();
         PayPalRequest expected = new PayPalRequest("1.00")
                 .currencyCode("USD")

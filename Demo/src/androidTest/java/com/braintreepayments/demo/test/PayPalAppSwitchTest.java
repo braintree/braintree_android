@@ -34,20 +34,6 @@ public class PayPalAppSwitchTest extends TestHelper {
     }
 
     @Test(timeout = 120000)
-    public void appSwitch_forFuturePayment() {
-        onDevice(withText("Future Payment")).waitForEnabled().perform(click());
-
-        onDevice().checkForegroundAppIs(PAYPAL_WALLET_PACKAGE_NAME);
-    }
-
-    @Test(timeout = 120000)
-    public void appSwitch_forFuturePaymentWithAddressScope() {
-        onDevice(withText("Future Payment (Address Scope)")).waitForEnabled().perform(click());
-
-        onDevice().checkForegroundAppIs(PAYPAL_WALLET_PACKAGE_NAME);
-    }
-
-    @Test(timeout = 120000)
     public void appSwitch_forBillingAgreement() {
         onDevice(withText("Billing Agreement")).waitForEnabled().perform(click());
 
@@ -60,6 +46,7 @@ public class PayPalAppSwitchTest extends TestHelper {
         onDevice().checkForegroundAppIs(PAYPAL_WALLET_PACKAGE_NAME);
 
         onDevice(withText("Email")).waitForExists();
+        onDevice().pressBack();
         onDevice().pressBack();
 
         onDevice().checkForegroundAppIs("com.braintreepayments.demo");

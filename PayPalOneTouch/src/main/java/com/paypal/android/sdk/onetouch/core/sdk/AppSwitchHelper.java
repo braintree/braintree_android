@@ -7,7 +7,6 @@ import android.text.TextUtils;
 
 import com.braintreepayments.api.internal.SignatureVerification;
 import com.paypal.android.sdk.data.collector.InstallationIdentifier;
-import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
 import com.paypal.android.sdk.onetouch.core.Request;
 import com.paypal.android.sdk.onetouch.core.Result;
@@ -53,26 +52,17 @@ public class AppSwitchHelper {
                 .putExtra("environment", request.getEnvironment())
                 .putExtra("environment_url", EnvironmentManager.getEnvironmentUrl(request.getEnvironment()));
 
-        if (request instanceof AuthorizationRequest) {
-            AuthorizationRequest authorizationRequest = (AuthorizationRequest) request;
-            intent.putExtra("scope", authorizationRequest.getScopeString())
-                    .putExtra("response_type", "code")
-                    .putExtra("privacy_url", authorizationRequest.getPrivacyUrl())
-                    .putExtra("agreement_url", authorizationRequest.getUserAgreementUrl());
-        } else {
-            CheckoutRequest checkoutRequest = (CheckoutRequest) request;
-            String webURL = checkoutRequest.getBrowserSwitchUrl(contextInspector.getContext(),
-                    configManager.getConfig());
-            intent.putExtra("response_type", "web")
-                    .putExtra("webURL", webURL);
-        }
+        CheckoutRequest checkoutRequest = (CheckoutRequest) request;
+        String webURL = checkoutRequest.getBrowserSwitchUrl();
+        intent.putExtra("response_type", "web")
+            .putExtra("webURL", webURL);
 
         return intent;
     }
 
     public static Result parseAppSwitchResponse(ContextInspector contextInspector, Request request, Intent data) {
         Bundle bundle = data.getExtras();
-        if (request.validateV1V2Response(contextInspector, bundle)) {
+        if (request.validateV1V2Response(bundle)) {
             request.trackFpti(contextInspector.getContext(), TrackingPoint.Return, null);
             return processResponseIntent(bundle);
         } else {

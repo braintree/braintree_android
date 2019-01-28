@@ -75,8 +75,6 @@
     <string name="require_three_d_secure_summary">Requires a successful authentication for 3D Secure transactions</string>
     <string name="paypal_disable_signature_verification">Disable app switch signature verification</string>
     <string name="paypal_disable_signature_verification_summary">Allows app switch with a PayPal Wallet app that is not signed</string>
-    <string name="paypal_future_payment">Future Payment</string>
-    <string name="paypal_future_payment_address_scope">Future Payment (Address Scope)</string>
     <string name="paypal_single_payment">Single Payment</string>
     <string name="paypal_billing_agreement">Billing Agreement</string>
     <string name="paypal_intent_type">Intent Type</string>

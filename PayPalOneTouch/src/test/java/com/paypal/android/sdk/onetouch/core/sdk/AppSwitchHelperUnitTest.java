@@ -1,29 +1,17 @@
 package com.paypal.android.sdk.onetouch.core.sdk;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Bundle;
 
 import com.braintreepayments.api.internal.SignatureVerificationOverrides;
-import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
 import com.paypal.android.sdk.onetouch.core.Request;
-import com.paypal.android.sdk.onetouch.core.Result;
 import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.config.ConfigManager;
-import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
 import com.paypal.android.sdk.onetouch.core.enums.Protocol;
-import com.paypal.android.sdk.onetouch.core.enums.ResponseType;
-import com.paypal.android.sdk.onetouch.core.enums.ResultType;
-import com.paypal.android.sdk.onetouch.core.exception.ResponseParsingException;
-import com.paypal.android.sdk.onetouch.core.exception.WalletSwitchException;
-import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
 import com.paypal.android.sdk.onetouch.core.network.PayPalHttpClient;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -107,27 +95,10 @@ public class AppSwitchHelperUnitTest {
     }
 
     @Test
-    public void buildAppSwitchIntent_buildsIntentForAuthorizationRequest() {
-        AuthorizationRequest request = mock(AuthorizationRequest.class);
-        when(request.getEnvironment()).thenReturn("test");
-        when(request.getScopeString()).thenReturn("scope-string");
-        when(request.getPrivacyUrl()).thenReturn("privacy-url");
-        when(request.getUserAgreementUrl()).thenReturn("agreement-url");
-
-        Intent intent = AppSwitchHelper.getAppSwitchIntent(mContextInspector, mConfigManager,
-                request, getMockRecipe(2));
-
-        assertEquals("scope-string", intent.getStringExtra("scope"));
-        assertEquals("code", intent.getStringExtra("response_type"));
-        assertEquals("privacy-url", intent.getStringExtra("privacy_url"));
-        assertEquals("agreement-url", intent.getStringExtra("agreement_url"));
-    }
-
-    @Test
     public void buildAppSwitchIntent_buildsIntentForCheckoutRequest() {
         CheckoutRequest request = mock(CheckoutRequest.class);
         when(request.getEnvironment()).thenReturn("test");
-        when(request.getBrowserSwitchUrl(any(Context.class), any(OtcConfiguration.class)))
+        when(request.getBrowserSwitchUrl())
                 .thenReturn("web-url");
 
         Intent intent = AppSwitchHelper.getAppSwitchIntent(mContextInspector, mConfigManager,
@@ -153,102 +124,6 @@ public class AppSwitchHelperUnitTest {
         assertEquals("application-name", intent.getStringExtra("app_name"));
         assertEquals("test", intent.getStringExtra("environment"));
         assertEquals("test", intent.getStringExtra("environment_url"));
-    }
-
-    @Test
-    public void parseAppSwitchResponse_parsesAuthorizationCodeResponseAndReturnsResult()
-            throws JSONException {
-        Request request = mock(AuthorizationRequest.class);
-        when(request.validateV1V2Response(any(ContextInspector.class), any(Bundle.class)))
-                .thenReturn(true);
-        Intent intent = new Intent()
-                .putExtra("environment", "test")
-                .putExtra("response_type", "code")
-                .putExtra("authorization_code", "auth-code")
-                .putExtra("email", "test@paypal.com");
-
-        Result result = AppSwitchHelper.parseAppSwitchResponse(mContextInspector, request, intent);
-
-        verify(request).trackFpti(any(Context.class), eq(TrackingPoint.Return), isNull(Protocol.class));
-        assertEquals(ResultType.Success, result.getResultType());
-
-        assertEquals(ResponseType.authorization_code.name(),
-                result.getResponse().getString("response_type"));
-
-        JSONObject client = result.getResponse().getJSONObject("client");
-        assertEquals("test", client.getString("environment"));
-
-        assertEquals("auth-code", result.getResponse().getJSONObject("response").getString("code"));
-
-        assertEquals("test@paypal.com", result.getResponse().getJSONObject("user").getString("display_string"));
-    }
-
-    @Test
-    public void parseAppSwitchResponse_parsesWebResponseAndReturnsResult() throws JSONException {
-        Request request = mock(AuthorizationRequest.class);
-        when(request.validateV1V2Response(any(ContextInspector.class), any(Bundle.class)))
-                .thenReturn(true);
-        Intent intent = new Intent()
-                .putExtra("environment", "test")
-                .putExtra("response_type", "web")
-                .putExtra("webURL", "web-url");
-
-        Result result = AppSwitchHelper.parseAppSwitchResponse(mContextInspector, request, intent);
-
-        verify(request).trackFpti(any(Context.class), eq(TrackingPoint.Return), isNull(Protocol.class));
-        assertEquals(ResultType.Success, result.getResultType());
-
-        assertEquals(ResponseType.web.name(), result.getResponse().getString("response_type"));
-
-        JSONObject client = result.getResponse().getJSONObject("client");
-        assertEquals("test", client.getString("environment"));
-
-        assertEquals("web-url", result.getResponse().getJSONObject("response").getString("webURL"));
-    }
-
-    @Test
-    public void parseAppSwitchResponse_parsesErrorForErrorResponses() {
-        Request request = mock(AuthorizationRequest.class);
-        when(request.validateV1V2Response(any(ContextInspector.class), any(Bundle.class)))
-                .thenReturn(false);
-        Intent intent = new Intent()
-                .putExtra("error", "there was an error");
-
-        Result result = AppSwitchHelper.parseAppSwitchResponse(mContextInspector, request, intent);
-
-        verify(request).trackFpti(any(Context.class), eq(TrackingPoint.Error), isNull(Protocol.class));
-        assertTrue(result.getError() instanceof WalletSwitchException);
-        assertEquals("there was an error", result.getError().getMessage());
-    }
-
-    @Test
-    public void parseAppSwitchResponse_returnsErrorWhenResponseCouldNotBeParsed() {
-        Request request = mock(AuthorizationRequest.class);
-        when(request.validateV1V2Response(any(ContextInspector.class), any(Bundle.class)))
-                .thenReturn(false);
-        Intent intent = new Intent()
-                .putExtra("braintree", "nonce");
-
-        Result result = AppSwitchHelper.parseAppSwitchResponse(mContextInspector, request, intent);
-
-        verify(request).trackFpti(any(Context.class), eq(TrackingPoint.Error), isNull(Protocol.class));
-        assertTrue(result.getError() instanceof ResponseParsingException);
-        assertEquals("invalid wallet response", result.getError().getMessage());
-    }
-
-    @Test
-    public void parseAppSwitchResponse_parsesErrorAndReturnsResult() {
-        Request request = mock(AuthorizationRequest.class);
-        when(request.validateV1V2Response(any(ContextInspector.class), any(Bundle.class)))
-                .thenReturn(true);
-        Intent intent = new Intent()
-                .putExtra("error", "there was an error");
-
-        Result result = AppSwitchHelper.parseAppSwitchResponse(mContextInspector, request, intent);
-
-        verify(request).trackFpti(any(Context.class), eq(TrackingPoint.Return), isNull(Protocol.class));
-        assertTrue(result.getError() instanceof WalletSwitchException);
-        assertEquals("there was an error", result.getError().getMessage());
     }
 
     private Recipe getMockRecipe(int version) {

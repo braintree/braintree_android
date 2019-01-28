@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
 import com.paypal.android.sdk.onetouch.core.enums.Protocol;
@@ -94,15 +93,15 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
         return "onetouch/v1/";
     }
 
-    public abstract String getBrowserSwitchUrl(Context context, OtcConfiguration config) throws CertificateException,
+    public abstract String getBrowserSwitchUrl() throws CertificateException,
             UnsupportedEncodingException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException,
             JSONException, BadPaddingException, InvalidEncryptionDataException, InvalidKeyException;
 
     public abstract Recipe getBrowserSwitchRecipe(OtcConfiguration config);
 
-    public abstract Result parseBrowserResponse(ContextInspector contextInspector, Uri uri);
+    public abstract Result parseBrowserResponse(Uri uri);
 
-    public abstract boolean validateV1V2Response(ContextInspector contextInspector, Bundle extras);
+    public abstract boolean validateV1V2Response(Bundle extras);
 
     public abstract Recipe getRecipeToExecute(Context context, OtcConfiguration config);
 

@@ -10,7 +10,6 @@ import android.widget.TextView;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.PayPal;
-import com.braintreepayments.api.PayPalOverrides;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
@@ -35,8 +34,6 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
 
     private TextView mPayPalAppIndicator;
     private Button mBillingAgreementButton;
-    private Button mFuturePaymentAddressScopeButton;
-    private Button mFuturePaymentButton;
     private Button mSinglePaymentButton;
 
     @Override
@@ -46,11 +43,9 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
         setContentView(R.layout.paypal_activity);
         setUpAsBack();
 
-        mPayPalAppIndicator = (TextView) findViewById(R.id.paypal_wallet_app_indicator);
-        mBillingAgreementButton = (Button) findViewById(R.id.paypal_billing_agreement_button);
-        mFuturePaymentAddressScopeButton = (Button) findViewById(R.id.paypal_future_payment_address_scope_button);
-        mFuturePaymentButton = (Button) findViewById(R.id.paypal_future_payment_button);
-        mSinglePaymentButton = (Button) findViewById(R.id.paypal_single_payment_button);
+        mPayPalAppIndicator = findViewById(R.id.paypal_wallet_app_indicator);
+        mBillingAgreementButton = findViewById(R.id.paypal_billing_agreement_button);
+        mSinglePaymentButton = findViewById(R.id.paypal_single_payment_button);
     }
 
     @Override
@@ -59,13 +54,6 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
 
         mPayPalAppIndicator.setText(getString(R.string.paypal_wallet_available,
                 PayPalOneTouchCore.isWalletAppInstalled(this)));
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        PayPalOverrides.setFuturePaymentsOverride(false);
     }
 
     @Override
@@ -86,23 +74,7 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
 
     private void enableButtons(boolean enabled) {
         mBillingAgreementButton.setEnabled(enabled);
-        mFuturePaymentAddressScopeButton.setEnabled(enabled);
-        mFuturePaymentButton.setEnabled(enabled);
         mSinglePaymentButton.setEnabled(enabled);
-    }
-
-    public void launchFuturePayment(View v) {
-        setProgressBarIndeterminateVisibility(true);
-
-        PayPalOverrides.setFuturePaymentsOverride(true);
-        PayPal.authorizeAccount(mBraintreeFragment);
-    }
-
-    public void launchFuturePaymentAddressScope(View v) {
-        setProgressBarIndeterminateVisibility(true);
-
-        PayPalOverrides.setFuturePaymentsOverride(true);
-        PayPal.authorizeAccount(mBraintreeFragment, Collections.singletonList(PayPal.SCOPE_ADDRESS));
     }
 
     public void launchSinglePayment(View v) {

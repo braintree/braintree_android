@@ -26,22 +26,6 @@
             android:enabled="false" />
 
         <Button
-            android:id="@+id/paypal_future_payment_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/paypal_future_payment"
-            android:onClick="launchFuturePayment"
-            android:enabled="false" />
-
-        <Button
-            android:id="@+id/paypal_future_payment_address_scope_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/paypal_future_payment_address_scope"
-            android:onClick="launchFuturePaymentAddressScope"
-            android:enabled="false" />
-
-        <Button
             android:id="@+id/paypal_billing_agreement_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

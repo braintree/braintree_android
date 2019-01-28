@@ -121,17 +121,11 @@ public class MainActivity extends BaseActivity {
     }
 
     private DropInRequest getDropInRequest() {
-        DropInRequest dropInRequest = new DropInRequest()
+        return new DropInRequest()
                 .amount("1.00")
                 .clientToken(mAuthorization)
                 .collectDeviceData(Settings.shouldCollectDeviceData(this))
                 .requestThreeDSecureVerification(Settings.isThreeDSecureEnabled(this));
-
-        if (Settings.isPayPalAddressScopeRequested(this)) {
-            dropInRequest.paypalAdditionalScopes(Collections.singletonList(PayPal.SCOPE_ADDRESS));
-        }
-
-        return dropInRequest;
     }
 
     public void createTransaction(View v) {

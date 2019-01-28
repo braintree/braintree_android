@@ -150,10 +150,6 @@ public class Settings {
         return countries;
     }
 
-    public static boolean isPayPalAddressScopeRequested(Context context) {
-        return getPreferences(context).getBoolean("paypal_request_address_scope", false);
-    }
-
     public static String getPayPalIntentType(Context context) {
         return getPreferences(context).getString("paypal_intent_type", context.getString(R.string.paypal_intent_authorize));
     }

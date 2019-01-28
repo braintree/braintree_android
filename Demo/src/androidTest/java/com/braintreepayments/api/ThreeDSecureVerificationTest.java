@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.runner.AndroidJUnit4;
 
@@ -68,7 +66,6 @@ public class ThreeDSecureVerificationTest {
 
     @Before
     public void setUp() {
-        ThreeDSecure.sWebViewOverride = true;
         mActivity = mActivityTestRule.getActivity();
         mCountDownLatch = new CountDownLatch(1);
     }

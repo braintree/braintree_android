@@ -16,7 +16,7 @@ import static junit.framework.Assert.assertNull;
 public class PayPalCreditFinancingAmountUnitTest {
 
     @Test
-    public void fromJson_returnsEmptyObjectWhenNull() throws JSONException {
+    public void fromJson_returnsEmptyObjectWhenNull() {
         PayPalCreditFinancingAmount creditFinancingAmount = PayPalCreditFinancingAmount.fromJson(null);
         assertNotNull(creditFinancingAmount);
         assertNull(creditFinancingAmount.getCurrency());

@@ -7,7 +7,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.config.CheckoutRecipe;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
@@ -54,7 +53,7 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
     }
 
     @Override
-    public String getBrowserSwitchUrl(Context context, OtcConfiguration config) {
+    public String getBrowserSwitchUrl() {
         return mApprovalUrl;
     }
 
@@ -64,7 +63,7 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
     }
 
     @Override
-    public Result parseBrowserResponse(ContextInspector contextInspector, Uri uri) {
+    public Result parseBrowserResponse(Uri uri) {
         String status = uri.getLastPathSegment();
 
         if (!Uri.parse(getSuccessUrl()).getLastPathSegment().equals(status)) {
@@ -93,14 +92,12 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
     }
 
     @Override
-    public boolean validateV1V2Response(ContextInspector contextInspector, Bundle extras) {
+    public boolean validateV1V2Response(Bundle extras) {
         String requestXoToken = Uri.parse(mApprovalUrl).getQueryParameter(mTokenQueryParamKey);
         String webUrl = extras.getString("webURL");
         if (webUrl != null) {
             String responseXoToken = Uri.parse(webUrl).getQueryParameter(mTokenQueryParamKey);
-            if (responseXoToken != null && TextUtils.equals(requestXoToken, responseXoToken)) {
-                return true;
-            }
+            return responseXoToken != null && TextUtils.equals(requestXoToken, responseXoToken);
         }
 
         return false;
@@ -114,7 +111,7 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
                     return recipe;
                 }
             } else if (RequestTarget.browser == recipe.getTarget()) {
-                String browserSwitchUrl = getBrowserSwitchUrl(context, config);
+                String browserSwitchUrl = getBrowserSwitchUrl();
 
                 if (recipe.isValidBrowserTarget(context, browserSwitchUrl)) {
                     return recipe;
