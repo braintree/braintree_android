@@ -24,7 +24,7 @@ allprojects {
             url 'https://oss.sonatype.org/content/repositories/snapshots/'
         }
         maven {
-            url 'file:///tmp/maven'
+            url 'file:///tmp/maven/'
         }
     }
 
@@ -33,21 +33,30 @@ allprojects {
     def sonatypeUsername = System.env['SONATYPE_USERNAME']
     def sonatypePassword = System.env['SONATYPE_PASSWORD']
 
+    version = '3.0.0-DEVELOPMENT'
+    ext {
+        compileSdkVersion = 28
+        minSdkVersion = 21
+        targetSdkVersion = 28
+        versionCode = 97
+        versionName = version
+    }
+
     uploadArchives {
         repositories {
             mavenDeployer {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-                repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                if (version.endsWith("DEVELOPMENT")) {
+                    repository(url: 'file:///tmp/maven/')
+                } else {
+                    repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+                        authentication(userName: sonatypeUsername, password: sonatypePassword)
+                    }
                 }
 
-                if (sonatypeUsername == null) {
-                  snapshotRepository(url: 'file:///tmp/maven')
-                } else {
-                  snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
+                snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
                     authentication(userName: sonatypeUsername, password: sonatypePassword)
-                  }
                 }
 
                 pom.project {
@@ -82,17 +91,8 @@ allprojects {
     apply plugin: 'signing'
     signing {
         required {
-          !version.endsWith("SNAPSHOT") && sonatypeUsername != null
+          !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
         }
         sign configurations.archives
-    }
-
-    version = '3.0.0-SNAPSHOT'
-    ext {
-        compileSdkVersion = 28
-        minSdkVersion = 21
-        targetSdkVersion = 28
-        versionCode = 97
-        versionName = version
     }
 }
