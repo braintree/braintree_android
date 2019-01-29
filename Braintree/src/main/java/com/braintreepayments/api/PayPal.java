@@ -460,12 +460,13 @@ public class PayPal {
             }
         } else {
             String type;
+
             if (request != null) {
-                type = request.getClass().getSimpleName().toLowerCase(Locale.ROOT);
+                type = paymentTypeForRequest(request);
             } else {
                 type = "unknown";
             }
-            fragment.sendAnalyticsEvent("paypal." + type + ".canceled");
+            fragment.sendAnalyticsEvent(type + ".canceled");
 
             if (resultCode != Activity.RESULT_CANCELED) {
                 fragment.postCancelCallback(BraintreeRequestCodes.PAYPAL);
