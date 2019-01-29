@@ -246,7 +246,7 @@ public class ThreeDSecureTest {
         mCountDownLatch.await();
     }
 
-    @Test(timeout = 2000)
+    @Test(timeout = 5000)
     public void onActivityResult_doesNothingWhenResultCodeNotOk() {
         Intent intent = mock(Intent.class);
 
