@@ -14,8 +14,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Contains the remote Android Pay configuration for the Braintree SDK.
+ * @deprecated Use {@link GooglePaymentConfiguration}
  */
+@Deprecated
 public class AndroidPayConfiguration {
 
     private static final String ENABLED_KEY = "enabled";
@@ -24,11 +25,11 @@ public class AndroidPayConfiguration {
     private static final String DISPLAY_NAME_KEY = "displayName";
     private static final String SUPPORTED_NETWORKS_KEY = "supportedNetworks";
 
-    private boolean mEnabled;
-    private String mGoogleAuthorizationFingerprint;
-    private String mEnvironment;
-    private String mDisplayName;
-    private String[] mSupportedNetworks;
+    boolean mEnabled;
+    String mGoogleAuthorizationFingerprint;
+    String mEnvironment;
+    String mDisplayName;
+    String[] mSupportedNetworks;
 
     /**
      * Parse an {@link AndroidPayConfiguration} from json.
@@ -37,31 +38,31 @@ public class AndroidPayConfiguration {
      * @return An {@link AndroidPayConfiguration} instance with data that was able to be parsed from
      *         the {@link JSONObject}.
      */
-    public static AndroidPayConfiguration fromJson(JSONObject json) {
+    public static GooglePaymentConfiguration fromJson(JSONObject json) {
         if (json == null) {
             json = new JSONObject();
         }
 
-        AndroidPayConfiguration androidPayConfiguration = new AndroidPayConfiguration();
-        androidPayConfiguration.mEnabled = json.optBoolean(ENABLED_KEY, false);
-        androidPayConfiguration.mGoogleAuthorizationFingerprint = Json.optString(json,
+        GooglePaymentConfiguration googlePaymentConfiguration = new GooglePaymentConfiguration();
+        googlePaymentConfiguration.mEnabled = json.optBoolean(ENABLED_KEY, false);
+        googlePaymentConfiguration.mGoogleAuthorizationFingerprint = Json.optString(json,
                 GOOGLE_AUTHORIZATION_FINGERPRINT_KEY, null);
-        androidPayConfiguration.mEnvironment = Json.optString(json, ENVIRONMENT_KEY, null);
-        androidPayConfiguration.mDisplayName = Json.optString(json, DISPLAY_NAME_KEY, "");
+        googlePaymentConfiguration.mEnvironment = Json.optString(json, ENVIRONMENT_KEY, null);
+        googlePaymentConfiguration.mDisplayName = Json.optString(json, DISPLAY_NAME_KEY, "");
 
         JSONArray supportedNetworks = json.optJSONArray(SUPPORTED_NETWORKS_KEY);
         if (supportedNetworks != null) {
-            androidPayConfiguration.mSupportedNetworks = new String[supportedNetworks.length()];
+            googlePaymentConfiguration.mSupportedNetworks = new String[supportedNetworks.length()];
             for (int i = 0; i < supportedNetworks.length(); i++) {
                 try {
-                    androidPayConfiguration.mSupportedNetworks[i] = supportedNetworks.getString(i);
+                    googlePaymentConfiguration.mSupportedNetworks[i] = supportedNetworks.getString(i);
                 } catch (JSONException ignored) {}
             }
         } else {
-            androidPayConfiguration.mSupportedNetworks = new String[0];
+            googlePaymentConfiguration.mSupportedNetworks = new String[0];
         }
 
-        return androidPayConfiguration;
+        return googlePaymentConfiguration;
     }
 
     /**

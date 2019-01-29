@@ -16,7 +16,7 @@ import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
-import com.braintreepayments.testutils.TestConfigurationBuilder.TestAndroidPayConfigurationBuilder;
+import com.braintreepayments.testutils.TestConfigurationBuilder.TestGooglePaymentConfigurationBuilder;
 import com.google.android.gms.wallet.CardRequirements;
 import com.google.android.gms.wallet.PaymentDataRequest;
 import com.google.android.gms.wallet.PaymentMethodTokenizationParameters;
@@ -36,9 +36,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
@@ -73,7 +71,7 @@ public class GooglePaymentTest {
     public void setup() {
         mLatch = new CountDownLatch(1);
         mBaseConfiguration = new TestConfigurationBuilder()
-                .androidPay(new TestAndroidPayConfigurationBuilder()
+                .googlePayment(new TestGooglePaymentConfigurationBuilder()
                         .googleAuthorizationFingerprint("google-auth-fingerprint"))
                 .merchantId("android-pay-merchant-id");
     }
@@ -81,7 +79,7 @@ public class GooglePaymentTest {
     @Test(timeout = 5000)
     public void isReadyToPay_returnsFalseWhenAndroidPayIsNotEnabled() throws Exception {
         String configuration = new TestConfigurationBuilder()
-                .androidPay(new TestAndroidPayConfigurationBuilder().enabled(false))
+                .googlePayment(new TestGooglePaymentConfigurationBuilder().enabled(false))
                 .build();
 
         BraintreeFragment fragment = getFragment(mActivityTestRule.getActivity(), TOKENIZATION_KEY, configuration);
@@ -312,7 +310,7 @@ public class GooglePaymentTest {
 
                 assertEquals("braintree", tokenizationParameters.getString("gateway"));
                 assertEquals(configuration.getMerchantId(), tokenizationParameters.getString("braintree:merchantId"));
-                assertEquals(configuration.getAndroidPay().getGoogleAuthorizationFingerprint(),
+                assertEquals(configuration.getGooglePayment().getGoogleAuthorizationFingerprint(),
                         tokenizationParameters.getString("braintree:authorizationFingerprint"));
                 assertEquals("v1", tokenizationParameters.getString("braintree:apiVersion"));
                 assertEquals(BuildConfig.VERSION_NAME, tokenizationParameters.getString("braintree:sdkVersion"));
@@ -364,7 +362,7 @@ public class GooglePaymentTest {
 
     @Test(timeout = 5000)
     public void getAllowedCardNetworks_returnsSupportedNetworks() throws InterruptedException {
-        String configuration = mBaseConfiguration.androidPay(mBaseConfiguration.androidPay()
+        String configuration = mBaseConfiguration.googlePayment(mBaseConfiguration.googlePayment()
                 .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"}))
                 .build();
 
@@ -390,7 +388,7 @@ public class GooglePaymentTest {
 
     @Test(timeout = 5000)
     public void getTokenizationParameters_returnsCorrectParametersInCallback() throws Exception {
-        String config = mBaseConfiguration.androidPay(mBaseConfiguration.androidPay()
+        String config = mBaseConfiguration.googlePayment(mBaseConfiguration.googlePayment()
                 .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"}))
                 .build();
         final Configuration configuration = Configuration.fromJson(config);
@@ -404,7 +402,7 @@ public class GooglePaymentTest {
                 assertEquals("braintree", parameters.getParameters().getString("gateway"));
                 assertEquals(configuration.getMerchantId(),
                         parameters.getParameters().getString("braintree:merchantId"));
-                assertEquals(configuration.getAndroidPay().getGoogleAuthorizationFingerprint(),
+                assertEquals(configuration.getGooglePayment().getGoogleAuthorizationFingerprint(),
                         parameters.getParameters().getString("braintree:authorizationFingerprint"));
                 assertEquals("v1",
                         parameters.getParameters().getString("braintree:apiVersion"));
@@ -436,7 +434,7 @@ public class GooglePaymentTest {
     }
 
     private BraintreeFragment getSetupFragment() {
-        String configuration = mBaseConfiguration.androidPay(mBaseConfiguration.androidPay()
+        String configuration = mBaseConfiguration.googlePayment(mBaseConfiguration.googlePayment()
                 .environment("sandbox")
                 .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"}))
                 .paypal(new TestConfigurationBuilder.TestPayPalConfigurationBuilder(true)

@@ -17,13 +17,14 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class AndroidPayConfigurationTest {
 
     @Test(timeout = 1000)
     public void parsesAndroidPayConfigurationFromToken() throws JSONException {
-        failIfNotGooglePlayServicesDevice();
+        assumeTrue("Not using a Google Play Services device", hasGooglePlayServices());
 
         Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_android_pay.json"));
 
@@ -41,7 +42,7 @@ public class AndroidPayConfigurationTest {
 
     @Test(timeout = 1000)
     public void fromJson_parsesConfiguration() throws JSONException {
-        failIfNotGooglePlayServicesDevice();
+        assumeTrue("Not using a Google Play Services device", hasGooglePlayServices());
 
         JSONObject json = new JSONObject(stringFromFixture("configuration/with_android_pay.json"))
                 .getJSONObject("androidPay");
@@ -80,10 +81,8 @@ public class AndroidPayConfigurationTest {
         assertEquals(0, androidPayConfiguration.getSupportedNetworks().length);
     }
 
-    private static void failIfNotGooglePlayServicesDevice(){
-        if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getTargetContext()) !=
-                ConnectionResult.SUCCESS) {
-            fail("Not using a Google Play Services device.");
-        }
+    private static boolean hasGooglePlayServices() {
+        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getTargetContext()) ==
+                ConnectionResult.SUCCESS;
     }
 }

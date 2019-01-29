@@ -52,7 +52,7 @@ public class GooglePaymentActivity extends BaseActivity implements Configuration
 
     @Override
     public void onConfigurationFetched(Configuration configuration) {
-        if (configuration.getAndroidPay().isEnabled(this)) {
+        if (configuration.getGooglePayment().isEnabled(this)) {
             GooglePayment.isReadyToPay(mBraintreeFragment, new BraintreeResponseListener<Boolean>() {
                 @Override
                 public void onResponse(Boolean isReadyToPay) {

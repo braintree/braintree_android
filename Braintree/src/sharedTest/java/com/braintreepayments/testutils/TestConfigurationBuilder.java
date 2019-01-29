@@ -97,9 +97,9 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return this;
     }
 
-    public TestConfigurationBuilder androidPay(TestAndroidPayConfigurationBuilder builder) {
+    public TestConfigurationBuilder googlePayment(TestGooglePaymentConfigurationBuilder builder) {
         try {
-            put(new JSONObject(builder.build()));
+            put("androidPay", new JSONObject(builder.build()));
         } catch (JSONException ignored) {}
         return this;
     }
@@ -184,11 +184,11 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return new TestVenmoConfigurationBuilder();
     }
 
-    public TestAndroidPayConfigurationBuilder androidPay() {
+    public TestGooglePaymentConfigurationBuilder googlePayment() {
         try {
-            return new TestAndroidPayConfigurationBuilder(mJsonBody.getJSONObject("androidPay"));
+            return new TestGooglePaymentConfigurationBuilder(mJsonBody.getJSONObject("androidPay"));
         } catch (JSONException ignored) {}
-        return new TestAndroidPayConfigurationBuilder();
+        return new TestGooglePaymentConfigurationBuilder();
     }
 
     public TestPayPalConfigurationBuilder paypal() {
@@ -316,37 +316,37 @@ public class TestConfigurationBuilder extends JSONBuilder {
         }
     }
 
-    public static class TestAndroidPayConfigurationBuilder extends JSONBuilder {
+    public static class TestGooglePaymentConfigurationBuilder extends JSONBuilder {
 
-        public TestAndroidPayConfigurationBuilder() {
+        public TestGooglePaymentConfigurationBuilder() {
             super();
         }
 
-        protected TestAndroidPayConfigurationBuilder(JSONObject json) {
+        protected TestGooglePaymentConfigurationBuilder(JSONObject json) {
             super(json);
         }
 
-        public TestAndroidPayConfigurationBuilder enabled(boolean enabled) {
+        public TestGooglePaymentConfigurationBuilder enabled(boolean enabled) {
             put(Boolean.toString(enabled));
             return this;
         }
 
-        public TestAndroidPayConfigurationBuilder googleAuthorizationFingerprint(String fingerprint) {
+        public TestGooglePaymentConfigurationBuilder googleAuthorizationFingerprint(String fingerprint) {
             put(fingerprint);
             return this;
         }
 
-        public TestAndroidPayConfigurationBuilder environment(String environment) {
+        public TestGooglePaymentConfigurationBuilder environment(String environment) {
             put(environment);
             return this;
         }
 
-        public TestAndroidPayConfigurationBuilder displayName(String dislayName) {
+        public TestGooglePaymentConfigurationBuilder displayName(String dislayName) {
             put(dislayName);
             return this;
         }
 
-        public TestAndroidPayConfigurationBuilder supportedNetworks(String[] supportedNetworks) {
+        public TestGooglePaymentConfigurationBuilder supportedNetworks(String[] supportedNetworks) {
             put(new JSONArray(Arrays.asList(supportedNetworks)));
             return this;
         }

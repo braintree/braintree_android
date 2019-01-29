@@ -1,0 +1,87 @@
+package com.braintreepayments.api.models;
+
+import android.support.test.runner.AndroidJUnit4;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
+
+@RunWith(AndroidJUnit4.class)
+public class GooglePaymentConfigurationTest {
+
+    @Test(timeout = 1000)
+    public void parsesGooglePaymentConfigurationFromToken() throws JSONException {
+        assumeTrue("Not using a Google Play Services device", hasGooglePlayServices());
+
+        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_android_pay.json"));
+
+        GooglePaymentConfiguration googlePaymentConfiguration = configuration.getGooglePayment();
+
+        assertTrue(googlePaymentConfiguration.isEnabled(getTargetContext()));
+        assertEquals("google-auth-fingerprint", googlePaymentConfiguration.getGoogleAuthorizationFingerprint());
+        assertEquals("Android Pay Merchant", googlePaymentConfiguration.getDisplayName());
+        assertEquals("sandbox", googlePaymentConfiguration.getEnvironment());
+        assertEquals("visa", googlePaymentConfiguration.getSupportedNetworks()[0]);
+        assertEquals("mastercard", googlePaymentConfiguration.getSupportedNetworks()[1]);
+        assertEquals("amex", googlePaymentConfiguration.getSupportedNetworks()[2]);
+        assertEquals("discover", googlePaymentConfiguration.getSupportedNetworks()[3]);
+    }
+
+    @Test(timeout = 1000)
+    public void fromJson_parsesConfiguration() throws JSONException {
+        assumeTrue("Not using a Google Play Services device", hasGooglePlayServices());
+
+        JSONObject json = new JSONObject(stringFromFixture("configuration/with_android_pay.json"))
+                .getJSONObject("androidPay");
+
+        GooglePaymentConfiguration googlePaymentConfiguration = GooglePaymentConfiguration.fromJson(json);
+
+        assertTrue(googlePaymentConfiguration.isEnabled(getTargetContext()));
+        assertEquals("google-auth-fingerprint", googlePaymentConfiguration.getGoogleAuthorizationFingerprint());
+        assertEquals("Android Pay Merchant", googlePaymentConfiguration.getDisplayName());
+        assertEquals("sandbox", googlePaymentConfiguration.getEnvironment());
+        assertEquals("visa", googlePaymentConfiguration.getSupportedNetworks()[0]);
+        assertEquals("mastercard", googlePaymentConfiguration.getSupportedNetworks()[1]);
+        assertEquals("amex", googlePaymentConfiguration.getSupportedNetworks()[2]);
+        assertEquals("discover", googlePaymentConfiguration.getSupportedNetworks()[3]);
+    }
+
+    @Test(timeout = 1000)
+    public void fromJson_returnsNewGooglePaymentConfigurationWithDefaultValuesWhenJSONObjectIsNull() {
+        GooglePaymentConfiguration googlePaymentConfiguration = GooglePaymentConfiguration.fromJson(null);
+
+        assertFalse(googlePaymentConfiguration.isEnabled(getTargetContext()));
+        assertNull(googlePaymentConfiguration.getGoogleAuthorizationFingerprint());
+        assertEquals("", googlePaymentConfiguration.getDisplayName());
+        assertNull(googlePaymentConfiguration.getEnvironment());
+        assertEquals(0, googlePaymentConfiguration.getSupportedNetworks().length);
+    }
+
+    @Test(timeout = 1000)
+    public void fromJson_returnsNewGooglePaymentConfigurationWithDefaultValuesWhenNoDataIsPresent() {
+        GooglePaymentConfiguration googlePaymentConfiguration = GooglePaymentConfiguration.fromJson(new JSONObject());
+
+        assertFalse(googlePaymentConfiguration.isEnabled(getTargetContext()));
+        assertNull(googlePaymentConfiguration.getGoogleAuthorizationFingerprint());
+        assertEquals("", googlePaymentConfiguration.getDisplayName());
+        assertNull(googlePaymentConfiguration.getEnvironment());
+        assertEquals(0, googlePaymentConfiguration.getSupportedNetworks().length);
+    }
+
+    private static boolean hasGooglePlayServices() {
+        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getTargetContext()) ==
+                ConnectionResult.SUCCESS;
+    }
+}
