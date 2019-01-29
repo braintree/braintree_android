@@ -3,11 +3,14 @@ package com.braintreepayments.demo;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+
+import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.google.android.material.textfield.TextInputLayout;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.braintreepayments.api.AmericanExpress;
 import com.braintreepayments.api.BraintreeFragment;
@@ -155,6 +158,8 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
         super.onCancel(requestCode);
 
         mThreeDSecureRequested = false;
+
+        Toast.makeText(this, "3DS canceled", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -307,7 +312,8 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
                 getDisplayString(nonce.getBinData()) + "\n" +
                 "3DS: \n" +
                 "         - isLiabilityShifted: " + nonce.getThreeDSecureInfo().isLiabilityShifted() + "\n" +
-                "         - isLiabilityShiftPossible: " + nonce.getThreeDSecureInfo().isLiabilityShiftPossible();
+                "         - isLiabilityShiftPossible: " + nonce.getThreeDSecureInfo().isLiabilityShiftPossible() + "\n" +
+                "         - wasVerified: " + nonce.getThreeDSecureInfo().wasVerified();
     }
 
     public static String getAmexRewardsBalanceString(AmericanExpressRewardsBalance rewardsBalance) {

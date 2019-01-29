@@ -82,4 +82,15 @@ public class TestHelper {
         onDevice(withText("OK")).perform(click());
         onDevice().pressBack();
     }
+
+    protected void fillInExpiration() {
+        try {
+            onDevice(withText("Expiration Date")).perform(click());
+            onDevice(withText("04")).perform(click());
+            onDevice(withText("2020")).perform(click());
+            onDevice().pressBack();
+        } catch (RuntimeException e) {
+            fillInExpiration();
+        }
+    }
 }
