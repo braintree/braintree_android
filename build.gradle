@@ -23,6 +23,9 @@ allprojects {
         maven {
             url 'https://oss.sonatype.org/content/repositories/snapshots/'
         }
+        maven {
+            url 'file:///tmp/maven'
+        }
     }
 
     apply plugin: 'maven'
@@ -38,8 +41,13 @@ allprojects {
                 repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
                     authentication(userName: sonatypeUsername, password: sonatypePassword)
                 }
-                snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
+
+                if (sonatypeUsername == null) {
+                  snapshotRepository(url: 'file:///tmp/maven')
+                } else {
+                  snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
                     authentication(userName: sonatypeUsername, password: sonatypePassword)
+                  }
                 }
 
                 pom.project {
@@ -73,7 +81,9 @@ allprojects {
 
     apply plugin: 'signing'
     signing {
-        required { !version.endsWith("SNAPSHOT") }
+        required {
+          !version.endsWith("SNAPSHOT") && sonatypeUsername != null
+        }
         sign configurations.archives
     }
 
