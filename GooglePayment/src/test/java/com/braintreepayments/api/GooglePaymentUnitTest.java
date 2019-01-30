@@ -156,7 +156,7 @@ public class GooglePaymentUnitTest {
 
     private BraintreeFragment getSetupFragment(String environment) {
         String configuration = new TestConfigurationBuilder()
-                .androidPay(new TestConfigurationBuilder.TestAndroidPayConfigurationBuilder()
+                .googlePayment(new TestConfigurationBuilder.TestGooglePaymentConfigurationBuilder()
                         .environment(environment)
                         .googleAuthorizationFingerprint("google-auth-fingerprint")
                         .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"}))

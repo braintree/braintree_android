@@ -14,11 +14,11 @@ import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.TokenizationParametersListener;
 import com.braintreepayments.api.internal.ManifestValidator;
-import com.braintreepayments.api.models.AndroidPayConfiguration;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.GooglePaymentCardNonce;
+import com.braintreepayments.api.models.GooglePaymentConfiguration;
 import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.models.MetadataBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonceFactory;
@@ -86,7 +86,7 @@ public class GooglePayment {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                if (!configuration.getAndroidPay().isEnabled(fragment.getApplicationContext())) {
+                if (!configuration.getGooglePayment().isEnabled(fragment.getApplicationContext())) {
                     listener.onResponse(false);
                     return;
                 }
@@ -97,14 +97,14 @@ public class GooglePayment {
 
                 PaymentsClient paymentsClient = Wallet.getPaymentsClient(fragment.getActivity(),
                         new Wallet.WalletOptions.Builder()
-                                .setEnvironment(getEnvironment(configuration.getAndroidPay()))
+                                .setEnvironment(getEnvironment(configuration.getGooglePayment()))
                                 .build());
 
 
                 JSONObject json = new JSONObject();
                 JSONArray allowedCardNetworks = new JSONArray();
 
-                for (String cardnetwork : configuration.getAndroidPay().getSupportedNetworks()) {
+                for (String cardnetwork : configuration.getGooglePayment().getSupportedNetworks()) {
                     allowedCardNetworks.put(cardnetwork);
                 }
 
@@ -204,7 +204,7 @@ public class GooglePayment {
                 PaymentDataRequest paymentDataRequest = PaymentDataRequest.fromJson(request.toJson());
 
                 Intent intent = new Intent(fragment.getApplicationContext(), GooglePaymentActivity.class)
-                        .putExtra(EXTRA_ENVIRONMENT, getEnvironment(configuration.getAndroidPay()))
+                        .putExtra(EXTRA_ENVIRONMENT, getEnvironment(configuration.getGooglePayment()))
                         .putExtra(EXTRA_PAYMENT_DATA_REQUEST, paymentDataRequest);
                 fragment.startActivityForResult(intent, BraintreeRequestCodes.GOOGLE_PAYMENT);
             }
@@ -252,7 +252,7 @@ public class GooglePayment {
         }
     }
 
-    static int getEnvironment(AndroidPayConfiguration configuration) {
+    static int getEnvironment(GooglePaymentConfiguration configuration) {
         if ("production".equals(configuration.getEnvironment())) {
             return WalletConstants.ENVIRONMENT_PRODUCTION;
         } else {
@@ -280,7 +280,7 @@ public class GooglePayment {
                 .addParameter("gateway", "braintree")
                 .addParameter("braintree:merchantId", fragment.getConfiguration().getMerchantId())
                 .addParameter("braintree:authorizationFingerprint",
-                        fragment.getConfiguration().getAndroidPay().getGoogleAuthorizationFingerprint())
+                        fragment.getConfiguration().getGooglePayment().getGoogleAuthorizationFingerprint())
                 .addParameter("braintree:apiVersion", "v1")
                 .addParameter("braintree:sdkVersion", version)
                 .addParameter("braintree:metadata", metadata.toString());
@@ -294,7 +294,7 @@ public class GooglePayment {
 
     static ArrayList<Integer> getAllowedCardNetworks(BraintreeFragment fragment) {
         ArrayList<Integer> allowedNetworks = new ArrayList<>();
-        for (String network : fragment.getConfiguration().getAndroidPay().getSupportedNetworks()) {
+        for (String network : fragment.getConfiguration().getGooglePayment().getSupportedNetworks()) {
             switch (network) {
                 case VISA_NETWORK:
                     allowedNetworks.add(WalletConstants.CARD_NETWORK_VISA);
@@ -426,7 +426,7 @@ public class GooglePayment {
                         .put("braintree:authorizationFingerprint",
                                 fragment
                                         .getConfiguration()
-                                        .getAndroidPay()
+                                        .getGooglePayment()
                                         .getGoogleAuthorizationFingerprint());
             }
         } catch (JSONException ignored) {
@@ -517,7 +517,7 @@ public class GooglePayment {
                     buildPayPalTokenizationSpecification(fragment));
         }
 
-        request.environment(configuration.getAndroidPay().getEnvironment());
+        request.environment(configuration.getGooglePayment().getEnvironment());
     }
 
     private static boolean validateManifest(Context context) {

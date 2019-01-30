@@ -50,9 +50,9 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return this;
     }
 
-    public TestConfigurationBuilder androidPay(TestAndroidPayConfigurationBuilder builder) {
+    public TestConfigurationBuilder googlePayment(TestGooglePaymentConfigurationBuilder builder) {
         try {
-            put(new JSONObject(builder.build()));
+            put("androidPay", new JSONObject(builder.build()));
         } catch (JSONException ignored) {}
         return this;
     }
@@ -91,23 +91,23 @@ public class TestConfigurationBuilder extends JSONBuilder {
         return (T) build();
     }
 
-    public static class TestAndroidPayConfigurationBuilder extends JSONBuilder {
+    public static class TestGooglePaymentConfigurationBuilder extends JSONBuilder {
 
-        public TestAndroidPayConfigurationBuilder() {
+        public TestGooglePaymentConfigurationBuilder() {
             super();
         }
 
-        public TestAndroidPayConfigurationBuilder googleAuthorizationFingerprint(String fingerprint) {
+        public TestGooglePaymentConfigurationBuilder googleAuthorizationFingerprint(String fingerprint) {
             put(fingerprint);
             return this;
         }
 
-        public TestAndroidPayConfigurationBuilder environment(String environment) {
+        public TestGooglePaymentConfigurationBuilder environment(String environment) {
             put(environment);
             return this;
         }
 
-        public TestAndroidPayConfigurationBuilder supportedNetworks(String[] supportedNetworks) {
+        public TestGooglePaymentConfigurationBuilder supportedNetworks(String[] supportedNetworks) {
             put(new JSONArray(Arrays.asList(supportedNetworks)));
             return this;
         }
