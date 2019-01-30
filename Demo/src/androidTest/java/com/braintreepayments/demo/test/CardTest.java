@@ -107,10 +107,8 @@ public class CardTest extends TestHelper {
         onDevice(withText("Purchase")).perform(click());
 
         onDevice(withText("Authentication")).waitForExists();
-
-        onDevice().pressTab();
         onDevice().typeText("1234");
-        onDevice().pressTab().pressTab().pressEnter();
+        onDevice(withText("Submit")).perform(click());
 
         ensureThreeDSecureRedirect();
 
@@ -136,10 +134,8 @@ public class CardTest extends TestHelper {
         onDevice(withText("Purchase")).perform(click());
 
         onDevice(withText("Authentication")).waitForExists();
-
-        onDevice().pressTab();
         onDevice().typeText("1234");
-        onDevice().pressTab().pressTab().pressEnter();
+        onDevice(withText("Submit")).perform(click());
 
         ensureThreeDSecureRedirect();
 
