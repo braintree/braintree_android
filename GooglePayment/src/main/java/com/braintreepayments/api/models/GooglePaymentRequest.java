@@ -2,11 +2,8 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.braintreepayments.api.BraintreeFragment;
-import com.braintreepayments.api.GooglePayment;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
@@ -19,6 +16,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import androidx.annotation.Nullable;
 
 /**
  * Represents the parameters that are needed to use the Google Payments API.

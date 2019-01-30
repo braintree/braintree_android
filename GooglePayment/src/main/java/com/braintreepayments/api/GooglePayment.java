@@ -1,10 +1,8 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.support.annotation.NonNull;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
@@ -44,6 +42,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_ENVIRONMENT;
 import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_PAYMENT_DATA_REQUEST;
@@ -212,10 +213,10 @@ public class GooglePayment {
 
     /**
      * Call this method when you've received a successful {@link PaymentData} response in your activity's
-     * {@link Activity#onActivityResult(int, int, Intent)} to get a {@link GooglePaymentCardNonce}.
+     * {@link AppCompatActivity#onActivityResult(int, int, Intent)} to get a {@link GooglePaymentCardNonce}.
      *
      * @param fragment    An instance of {@link BraintreeFragment}.
-     * @param paymentData {@link PaymentData} from the Intent in {@link Activity#onActivityResult(int, int, Intent)}.
+     * @param paymentData {@link PaymentData} from the Intent in {@link AppCompatActivity#onActivityResult(int, int, Intent)}.
      */
     public static void tokenize(BraintreeFragment fragment, PaymentData paymentData) {
         try {
@@ -237,7 +238,7 @@ public class GooglePayment {
     }
 
     static void onActivityResult(BraintreeFragment fragment, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == AppCompatActivity.RESULT_OK) {
             fragment.sendAnalyticsEvent("google-payment.authorized");
             tokenize(fragment, PaymentData.getFromIntent(data));
         } else if (resultCode == AutoResolveHelper.RESULT_ERROR) {
@@ -246,7 +247,7 @@ public class GooglePayment {
             fragment.postCallback(new GooglePaymentException("An error was encountered during the Google Payments " +
                     "flow. See the status object in this exception for more details.",
                     AutoResolveHelper.getStatusFromIntent(data)));
-        } else if (resultCode == Activity.RESULT_CANCELED) {
+        } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
             fragment.sendAnalyticsEvent("google-payment.canceled");
         }
     }

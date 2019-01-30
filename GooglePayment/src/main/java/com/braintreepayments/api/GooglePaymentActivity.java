@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -10,7 +9,9 @@ import com.google.android.gms.wallet.PaymentsClient;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 
-public class GooglePaymentActivity extends Activity {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class GooglePaymentActivity extends AppCompatActivity {
 
     protected static final String EXTRA_ENVIRONMENT = "com.braintreepayments.api.EXTRA_ENVIRONMENT";
     protected static final String EXTRA_PAYMENT_DATA_REQUEST = "com.braintreepayments.api.EXTRA_PAYMENT_DATA_REQUEST";

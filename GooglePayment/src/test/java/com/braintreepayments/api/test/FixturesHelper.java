@@ -3,10 +3,11 @@ package com.braintreepayments.api.test;
 import com.braintreepayments.api.internal.StreamHelper;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static android.support.test.InstrumentationRegistry.getTargetContext;
+import static androidx.test.InstrumentationRegistry.getTargetContext;
 
 public class FixturesHelper {
 
@@ -17,7 +18,7 @@ public class FixturesHelper {
         try {
             try {
                 return stringFromAndroidFixture(filename);
-            } catch (RuntimeException | Error e) {
+            } catch (FileNotFoundException | RuntimeException | Error e) {
                 return stringFromUnitTestFixture(filename);
             }
         } catch (IOException e) {
