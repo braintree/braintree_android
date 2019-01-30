@@ -11,6 +11,8 @@ buildscript {
 }
 
 allprojects {
+    version = '2.20.2-SNAPSHOT'
+
     repositories {
         flatDir {
             dirs "${rootDir}/libs"
@@ -22,6 +24,9 @@ allprojects {
         }
         maven {
             url 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
+        maven {
+            url 'file:///tmp/maven/'
         }
     }
 
@@ -35,8 +40,12 @@ allprojects {
             mavenDeployer {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-                repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                if (version.endsWith("DEVELOPMENT")) {
+                    repository(url: 'file:///tmp/maven/')
+                } else {
+                    repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+                        authentication(userName: sonatypeUsername, password: sonatypePassword)
+                    }
                 }
                 snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
                     authentication(userName: sonatypeUsername, password: sonatypePassword)
@@ -73,11 +82,12 @@ allprojects {
 
     apply plugin: 'signing'
     signing {
-        required { !version.endsWith("SNAPSHOT") }
+        required {
+            !version.endsWith("SNAPSHOT")  && !version.endsWith("DEVELOPMENT")
+        }
         sign configurations.archives
     }
 
-    version = '2.20.2-SNAPSHOT'
     ext {
         compileSdkVersion = 28
         minSdkVersion = 16
