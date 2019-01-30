@@ -173,13 +173,6 @@ public class Configuration {
     }
 
     /**
-     * @deprecated Use {@link #getGooglePayment()}
-     */
-    public AndroidPayConfiguration getAndroidPay() {
-        return mGooglePaymentConfiguration;
-    }
-
-    /**
      * @return {@code true} if 3D Secure is enabled and supported for the current merchant account,
      *         {@code false} otherwise.
      */
