@@ -49,7 +49,6 @@ android {
 dependencies {
     compileOnly 'androidx.annotation:annotation:1.0.0'
     compileOnly 'androidx.legacy:legacy-support-v4:1.0.0'
-    compileOnly 'com.braintreepayments.api:visa-checkout:1.0.0'
     compileOnly('com.google.android.gms:play-services-wallet:16.0.1') {
         exclude module: 'support-v4'
     }
