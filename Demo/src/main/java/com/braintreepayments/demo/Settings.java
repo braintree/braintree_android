@@ -171,6 +171,9 @@ public class Settings {
         return countries;
     }
 
+    /**
+     * @deprecated Future Payments are deprecated
+     */
     public static boolean isPayPalAddressScopeRequested(Context context) {
         return getPreferences(context).getBoolean("paypal_request_address_scope", false);
     }

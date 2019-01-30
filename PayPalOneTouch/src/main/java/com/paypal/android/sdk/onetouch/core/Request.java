@@ -94,14 +94,32 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
         return "onetouch/v1/";
     }
 
+    public abstract String getBrowserSwitchUrl();
+
+    /**
+     * @deprecated In the next major version, use {@link #getBrowserSwitchUrl()}.
+     */
+    @Deprecated
     public abstract String getBrowserSwitchUrl(Context context, OtcConfiguration config) throws CertificateException,
             UnsupportedEncodingException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException,
             JSONException, BadPaddingException, InvalidEncryptionDataException, InvalidKeyException;
 
     public abstract Recipe getBrowserSwitchRecipe(OtcConfiguration config);
 
+    public abstract Result parseBrowserResponse(Uri uri);
+
+    /**
+     * @deprecated In the next major version, use {@link #parseBrowserResponse(Uri)}.
+     */
+    @Deprecated
     public abstract Result parseBrowserResponse(ContextInspector contextInspector, Uri uri);
 
+    public abstract boolean validateV1V2Response(Bundle extras);
+
+    /**
+     * @deprecated In the next major version, use {@link #validateV1V2Response(Bundle)}.
+     */
+    @Deprecated
     public abstract boolean validateV1V2Response(ContextInspector contextInspector, Bundle extras);
 
     public abstract Recipe getRecipeToExecute(Context context, OtcConfiguration config);

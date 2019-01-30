@@ -125,6 +125,25 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         return mUserAgreementUrl;
     }
 
+
+    /**
+     * @deprecated Use {@link #getBrowserSwitchUrl(Context, OtcConfiguration)} until the next
+     * major version when this class is removed.
+     *
+     * This method will return an empty string.
+     *
+     * @return empty string
+     */
+    @Deprecated
+    @Override
+    public String getBrowserSwitchUrl() {
+        return "";
+    }
+
+    /**
+     * @deprecated This class will be removed in the next major version.
+     */
+    @Deprecated
     @Override
     public String getBrowserSwitchUrl(Context context, OtcConfiguration config) throws CertificateException,
             UnsupportedEncodingException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException,
@@ -209,7 +228,7 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
     }
 
     @Override
-    public Result parseBrowserResponse(ContextInspector contextInspector, Uri uri) {
+    public Result parseBrowserResponse(Uri uri) {
         String status = uri.getLastPathSegment();
         String payloadEnc = uri.getQueryParameter("payloadEnc");
         JSONObject payload;
@@ -259,9 +278,26 @@ public class AuthorizationRequest extends Request<AuthorizationRequest> implemen
         }
     }
 
+    /**
+     * @deprecated Use {@link #parseBrowserResponse(Uri)}.
+     */
+    @Deprecated
+    @Override
+    public Result parseBrowserResponse(ContextInspector contextInspector, Uri uri) {
+        return parseBrowserResponse(uri);
+    }
+
+    @Override
+    public boolean validateV1V2Response(Bundle extras) {
+        return true;
+    }
+
+    /**
+     * @deprecated Use {@link #validateV1V2Response(Bundle)}.
+     */
     @Override
     public boolean validateV1V2Response(ContextInspector contextInspector, Bundle extras) {
-        return true;
+        return validateV1V2Response(extras);
     }
 
     @Override

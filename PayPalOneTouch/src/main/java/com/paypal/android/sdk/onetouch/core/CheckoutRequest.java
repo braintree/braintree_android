@@ -62,8 +62,17 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
     }
 
     @Override
-    public String getBrowserSwitchUrl(Context context, OtcConfiguration config) {
+    public String getBrowserSwitchUrl() {
         return mApprovalUrl;
+    }
+
+    /**
+     * @deprecated Use {@link #getBrowserSwitchUrl()} instead.
+     */
+    @Deprecated
+    @Override
+    public String getBrowserSwitchUrl(Context context, OtcConfiguration config) {
+        return getBrowserSwitchUrl();
     }
 
     @Override
@@ -72,8 +81,8 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
     }
 
     @Override
-    public Result parseBrowserResponse(ContextInspector contextInspector, Uri uri) {
-        String status = uri.getLastPathSegment();
+    public Result parseBrowserResponse(Uri uri) {
+         String status = uri.getLastPathSegment();
 
         if (!Uri.parse(getSuccessUrl()).getLastPathSegment().equals(status)) {
             // return cancel result
@@ -100,8 +109,17 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
         }
     }
 
+    /**
+     * @deprecated Use {@link #parseBrowserResponse(Uri)} instead.
+     */
+    @Deprecated
     @Override
-    public boolean validateV1V2Response(ContextInspector contextInspector, Bundle extras) {
+    public Result parseBrowserResponse(ContextInspector contextInspector, Uri uri) {
+        return parseBrowserResponse(uri);
+    }
+
+    @Override
+    public boolean validateV1V2Response(Bundle extras) {
         String requestXoToken = Uri.parse(mApprovalUrl).getQueryParameter(mTokenQueryParamKey);
         String webUrl = extras.getString("webURL");
         if (webUrl != null) {
@@ -112,6 +130,15 @@ public class CheckoutRequest extends Request<CheckoutRequest> implements Parcela
         }
 
         return false;
+    }
+
+    /**
+     * @deprecated Use {@link #validateV1V2Response(Bundle)} instead.
+     */
+    @Deprecated
+    @Override
+    public boolean validateV1V2Response(ContextInspector contextInspector, Bundle extras) {
+        return validateV1V2Response(extras);
     }
 
     @Override

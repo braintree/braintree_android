@@ -10,8 +10,9 @@ import java.security.cert.X509Certificate;
 import java.util.Locale;
 
 /**
- * Very basic string manipulation methods useful for encryption.
+ * @deprecated Used for Future Payment requests, which are deprecated.
  */
+@Deprecated
 public class EncryptionUtils {
 
     private static final SecureRandom RANDOM;

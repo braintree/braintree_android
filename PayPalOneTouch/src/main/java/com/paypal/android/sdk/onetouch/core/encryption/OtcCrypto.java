@@ -16,6 +16,10 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+/**
+ * @deprecated Used for Future Payment requests, which are deprecated.
+ */
+@Deprecated
 public class OtcCrypto {
 
     private static final int ENCRYPTION_KEY_SIZE = 32;

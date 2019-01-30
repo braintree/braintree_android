@@ -9,6 +9,7 @@ public class WalletSwitchException extends Exception {
         super(detailMessage);
     }
 
+    @Deprecated
     public WalletSwitchException(Throwable throwable) {
         super(throwable);
     }

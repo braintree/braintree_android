@@ -34,11 +34,9 @@ public class OtcConfiguration {
     }
 
     /**
-     * Returns the browser recipe that can handle these scopes, or null if there is none.
-     *
-     * @param scopes
-     * @return
+     * @deprecated Future payments are deprecated
      */
+    @Deprecated
     public OAuth2Recipe getBrowserOauth2Config(Set<String> scopes) {
         for (OAuth2Recipe recipe : mOauth2RecipesInDecreasingPriorityOrder) {
             if (recipe.getTarget() == RequestTarget.browser

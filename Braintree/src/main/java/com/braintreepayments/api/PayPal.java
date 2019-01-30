@@ -56,13 +56,15 @@ import java.util.Locale;
 public class PayPal {
 
     /**
-     * PayPal Scope for Future Payments. Always enabled for the future payments flow.
+     * Use {@link #requestBillingAgreement(BraintreeFragment, PayPalRequest)}.
      */
+    @Deprecated
     public static final String SCOPE_FUTURE_PAYMENTS = PayPalScope.FUTURE_PAYMENTS.getScopeUri();
 
     /**
-     * PayPal Scope for email. Always enabled for the future payments flow.
+     * Use {@link #requestBillingAgreement(BraintreeFragment, PayPalRequest)}.
      */
+    @Deprecated
     public static final String SCOPE_EMAIL = PayPalScope.EMAIL.getScopeUri();
 
     /**
@@ -92,6 +94,7 @@ public class PayPal {
     private static final String EXPERIENCE_PROFILE_KEY = "experience_profile";
     private static final String AMOUNT_KEY = "amount";
     private static final String CURRENCY_ISO_CODE_KEY = "currency_iso_code";
+    @Deprecated
     private static final String PAYLOAD_CLIENT_TOKEN_KEY = "client_token";
     private static final String INTENT_KEY = "intent";
     private static final String LANDING_PAGE_TYPE_KEY = "landing_page_type";

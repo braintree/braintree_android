@@ -1,8 +1,9 @@
 package com.paypal.android.sdk.onetouch.core.sdk;
 
 /**
- * Scopes that a user may be asked to consented to.  This class is for internal use only.
+ * @deprecated Used for Future Payment requests, which are deprecated.
  */
+@Deprecated
 public enum PayPalScope {
 
     /**
