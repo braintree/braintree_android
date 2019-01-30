@@ -4,13 +4,17 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
+import org.junit.Assume;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeThat;
 import static org.junit.Assume.assumeTrue;
 
 public class AppInstallationHelper {
@@ -81,5 +85,13 @@ public class AppInstallationHelper {
         } catch (InterruptedException ignored) {}
 
         assumeFalse(packageName + " is installed.", isAppInstalled(packageName));
+    }
+
+    public static void assumeAppInstalled(boolean expectedInstalled, String packageName) {
+        assumeThat(packageName + " is installed.", expectedInstalled, is(isAppInstalled(packageName)));
+    }
+
+    public static void assumePayPalAppInstalled(boolean expectPayPalInstalled) {
+        assumeAppInstalled(expectPayPalInstalled, PAYPAL_WALLET_PACKAGE_NAME);
     }
 }
