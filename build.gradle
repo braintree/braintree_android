@@ -11,7 +11,7 @@ buildscript {
 }
 
 allprojects {
-    version = '2.21.0'
+    version = '2.21.1-SNAPSHOT'
 
     repositories {
         flatDir {
@@ -92,7 +92,7 @@ allprojects {
         compileSdkVersion = 28
         minSdkVersion = 16
         targetSdkVersion = 28
-        versionCode = 97
+        versionCode = 98
         versionName = version
     }
 }
