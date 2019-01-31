@@ -41,11 +41,12 @@ dependencies {
       exclude module: 'support-v4'
     }
     implementation 'androidx.annotation:annotation:1.0.0-beta01'
+    implementation 'androidx.appcompat:appcompat:1.0.1'
 
-    compileOnly('com.braintreepayments.api:braintree:2.21.0') {
+    compileOnly('com.braintreepayments.api:braintree:3.0.0-DEVELOPMENT') {
         exclude module: 'google-payment'
     }
-    testImplementation('com.braintreepayments.api:braintree:2.21.0') {
+    testImplementation('com.braintreepayments.api:braintree:3.0.0-DEVELOPMENT') {
         exclude module: 'google-payment'
     }
 
