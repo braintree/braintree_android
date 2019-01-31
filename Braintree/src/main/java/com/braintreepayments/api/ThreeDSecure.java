@@ -21,12 +21,13 @@ import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
-import com.cardinalcommerce.cardinalmobilesdk.Models.Parameters.CardinalConfigurationParameters;
-import com.cardinalcommerce.cardinalmobilesdk.Models.Parameters.CardinalEnvironment;
-import com.cardinalcommerce.cardinalmobilesdk.Models.Parameters.CardinalRenderType;
-import com.cardinalcommerce.cardinalmobilesdk.Models.Parameters.CardinalUiType;
-import com.cardinalcommerce.cardinalmobilesdk.Models.ValidateResponse;
-import com.cardinalcommerce.cardinalmobilesdk.Services.CardinalInitService;
+import com.cardinalcommerce.cardinalmobilesdk.models.response.InitResponse;
+import com.cardinalcommerce.cardinalmobilesdk.models.response.ValidateResponse;
+import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
+import com.cardinalcommerce.shared.models.parameters.CardinalConfigurationParameters;
+import com.cardinalcommerce.shared.models.parameters.CardinalEnvironment;
+import com.cardinalcommerce.shared.models.parameters.CardinalRenderType;
+import com.cardinalcommerce.shared.models.parameters.CardinalUiType;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -88,7 +89,7 @@ public class ThreeDSecure {
                     Cardinal.getInstance().init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
                         @Override
                         public void onSetupCompleted(String s) {
-                            Log.d("setup-complete", s);
+                            Log.d("setup-complete cardBuilder", s);
 
                         }
 
@@ -131,10 +132,17 @@ public class ThreeDSecure {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                Cardinal.getInstance().init(configuration.getCardinalAuthenticationJwt(), "4012000000010148", new CardinalInitService() {
+                Log.d("onConfigurationFetched", configuration.getCardinalAuthenticationJwt());
+                Cardinal.getInstance().init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
                     @Override
-                    public void onSetupCompleted(String s) {
-                        Log.d("setup-complete", "" + s);
+                    public void onSetupCompleted(String dfReferenceId) {
+                        Log.d("setup-complete nonce", "" + dfReferenceId);
+
+                        ThreeDSecureRequest request = new ThreeDSecureRequest()
+                            .nonce(nonce)
+                            .amount(amount);
+
+                        performVerification(fragment, request, dfReferenceId);
                     }
 
                     @Override
@@ -161,7 +169,7 @@ public class ThreeDSecure {
      *                  also be responsible for handling callbacks to it's listeners
      * @param request the {@link ThreeDSecureRequest} with information used for authentication.
      */
-    public static void performVerification(final BraintreeFragment fragment, final ThreeDSecureRequest request) {
+    public static void performVerification(final BraintreeFragment fragment, final ThreeDSecureRequest request, final String dfReferenceId) {
         if (request.getAmount() == null || request.getNonce() == null) {
             fragment.postCallback(new InvalidArgumentException("The ThreeDSecureRequest nonce and amount cannot be null"));
             return;
@@ -188,11 +196,13 @@ public class ThreeDSecure {
                     return;
                 }
 
+                Log.d("performing lookup", "performing lookup");
                 fragment.getHttpClient().post(TokenizationClient.versionedPath(
                         TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() +
-                                "/three_d_secure/lookup"), request.build(), new HttpResponseCallback() {
+                                "/three_d_secure/lookup"), request.build(dfReferenceId), new HttpResponseCallback() {
                     @Override
                     public void success(String responseBody) {
+                        Log.d("response", responseBody);
                         try {
                             ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(responseBody);
                             if (threeDSecureLookup.getAcsUrl() != null) {
@@ -257,15 +267,11 @@ public class ThreeDSecure {
                 public void onConfigurationFetched(Configuration configuration) {
                     CardinalEnvironment cardinalEnvironment = CardinalEnvironment.PRODUCTION;
                     switch (configuration.getEnvironment().toLowerCase()) {
-                        // TODO QA or Staging?
-                        case "sandbox":
-                            cardinalEnvironment = CardinalEnvironment.SANDBOX;
-                            break;
                         case "production":
                             cardinalEnvironment = CardinalEnvironment.PRODUCTION;
                             break;
-                        case "development":
-                            cardinalEnvironment = CardinalEnvironment.DEV;
+                        default:
+                            cardinalEnvironment = CardinalEnvironment.STAGING;
                             break;
                     }
 

@@ -2,6 +2,7 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -173,7 +174,7 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return String representation of {@link ThreeDSecureRequest} for API use.
      */
-    public String build() {
+    public String build(String dfReferenceId) {
         JSONObject base = new JSONObject();
         JSONObject customer = new JSONObject();
 
@@ -189,6 +190,8 @@ public class ThreeDSecureRequest implements Parcelable {
             }
 
             base.put(CUSTOMER_KEY, customer);
+            Log.d("request", dfReferenceId);
+            base.put("df_reference_id", dfReferenceId);
         } catch (JSONException ignored) {}
 
         return base.toString();
