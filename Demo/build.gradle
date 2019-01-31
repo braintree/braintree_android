@@ -100,7 +100,7 @@ dependencies {
     implementation visaCheckoutDependencies
 
     implementation 'io.card:android-sdk:5.5.1'
-    implementation('com.braintreepayments.api:drop-in:4.0.0-DEVELOPMENT-SNAPSHOT') {
+    implementation('com.braintreepayments.api:drop-in:4.0.0-SNAPSHOT') {
         exclude group: 'com.braintreepayments.api', module: 'braintree'
         because 'Use the development version of Braintree'
     }

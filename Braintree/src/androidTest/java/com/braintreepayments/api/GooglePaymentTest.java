@@ -125,7 +125,6 @@ public class GooglePaymentTest {
                 .phoneNumberRequired(true)
                 .shippingAddressRequired(true)
                 .shippingAddressRequirements(ShippingAddressRequirements.newBuilder().addAllowedCountryCode("USA").build())
-                .uiRequired(true)
                 .transactionInfo(TransactionInfo.newBuilder()
                         .setTotalPrice("1.00")
                         .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
