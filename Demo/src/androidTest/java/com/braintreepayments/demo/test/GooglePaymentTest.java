@@ -24,7 +24,7 @@ public class GooglePaymentTest extends TestHelper {
     @Before
     public void setup() {
         super.setup();
-        onDevice(withText("Google Payments")).waitForEnabled().perform(click());
+        onDevice(withText("Google Pay")).waitForEnabled().perform(click());
     }
 
     @Test(timeout = 60000)
