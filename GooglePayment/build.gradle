@@ -29,9 +29,8 @@ android {
 }
 
 dependencies {
-    compileOnly('com.google.android.gms:play-services-wallet:16.0.1') {
-        because 'play-services-wallet symbols required for development'
-    }
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'com.google.android.gms:play-services-wallet:16.0.1'
 
     compileOnly('com.braintreepayments.api:braintree:3.0.0-SNAPSHOT') {
         exclude module: 'google-payment'
