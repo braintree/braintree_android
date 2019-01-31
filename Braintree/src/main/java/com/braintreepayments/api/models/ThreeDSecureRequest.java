@@ -7,6 +7,8 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Iterator;
+
 /**
  * A class to contain 3D Secure request information used for authentication
  */
@@ -174,26 +176,46 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return String representation of {@link ThreeDSecureRequest} for API use.
      */
+
+    //Todo: Finish this method and figure out why no ThreeDSecureRequest parameters are being initialized
     public String build(String dfReferenceId) {
         JSONObject base = new JSONObject();
-        JSONObject customer = new JSONObject();
+        JSONObject additionalInformation = new JSONObject();
 
         try {
             base.put(AMOUNT_KEY, mAmount);
 
-            customer.putOpt(MOBILE_PHONE_NUMBER_KEY, mMobilePhoneNumber);
-            customer.putOpt(EMAIL_KEY, mEmail);
-            customer.putOpt(SHIPPING_METHOD_KEY, mShippingMethod);
+            additionalInformation.putOpt(MOBILE_PHONE_NUMBER_KEY, mMobilePhoneNumber);
+            additionalInformation.putOpt(EMAIL_KEY, mEmail);
+            additionalInformation.putOpt(SHIPPING_METHOD_KEY, mShippingMethod);
+            Log.d("AdditionalInfo Log 1: ", additionalInformation.toString());
 
             if (mBillingAddress != null) {
-                customer.put(BILLING_ADDRESS_KEY, mBillingAddress.toJson());
+                JSONObject postalAddress = mBillingAddress.toJson();
+
+                // Merge postal address fields into additional information
+                JSONObject[] mergedAdditionalInformation = new JSONObject[] {additionalInformation, postalAddress};
+                for (JSONObject obj : mergedAdditionalInformation) {
+                    Iterator iterator = obj.keys();
+                    while (iterator.hasNext()) {
+                        String key = (String)iterator.next();
+                        additionalInformation.put(key, obj.get(key));
+                        // Log.d("Added: ", key);
+                    }
+                }
+            } else {
+                Log.d("mBillingAddress: ", "NIL");
             }
 
-            base.put(CUSTOMER_KEY, customer);
-            Log.d("request", dfReferenceId);
+            base.put("additionalInformation", additionalInformation);
             base.put("df_reference_id", dfReferenceId);
+
+            Log.d("AdditionalInfo Log 2: ", additionalInformation.toString());
+            Log.d("request", dfReferenceId);
         } catch (JSONException ignored) {}
 
+        Log.d("3DS Request Params: ", base.toString());
         return base.toString();
     }
+
 }

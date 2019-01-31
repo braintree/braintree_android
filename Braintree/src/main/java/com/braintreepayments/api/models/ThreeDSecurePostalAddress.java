@@ -20,6 +20,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     protected static final String POSTAL_CODE_KEY = "postalCode";
     protected static final String COUNTRY_CODE_ALPHA_2_KEY = "countryCode";
     protected static final String PHONE_NUMBER_KEY = "phoneNumber";
+    protected static final String BILLING_ADDRESS_KEY = "billingAddress";
 
     private String mFirstName;
     private String mLastName;
@@ -234,17 +235,21 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      */
     public JSONObject toJson() {
         JSONObject base = new JSONObject();
+        JSONObject billingAddress = new JSONObject();
 
         try {
             base.putOpt(ThreeDSecurePostalAddress.FIRST_NAME_KEY, mFirstName);
             base.putOpt(ThreeDSecurePostalAddress.LAST_NAME_KEY, mLastName);
-            base.putOpt(ThreeDSecurePostalAddress.STREET_ADDRESS_KEY, mStreetAddress);
-            base.putOpt(ThreeDSecurePostalAddress.EXTENDED_ADDRESS_KEY, mExtendedAddress);
-            base.putOpt(ThreeDSecurePostalAddress.LOCALITY_KEY, mLocality);
-            base.putOpt(ThreeDSecurePostalAddress.REGION_KEY, mRegion);
-            base.putOpt(ThreeDSecurePostalAddress.POSTAL_CODE_KEY, mPostalCode);
-            base.putOpt(ThreeDSecurePostalAddress.COUNTRY_CODE_ALPHA_2_KEY, mCountryCodeAlpha2);
             base.putOpt(ThreeDSecurePostalAddress.PHONE_NUMBER_KEY, mPhoneNumber);
+
+            billingAddress.putOpt(ThreeDSecurePostalAddress.STREET_ADDRESS_KEY, mStreetAddress);
+            billingAddress.putOpt(ThreeDSecurePostalAddress.EXTENDED_ADDRESS_KEY, mExtendedAddress);
+            billingAddress.putOpt(ThreeDSecurePostalAddress.LOCALITY_KEY, mLocality);
+            billingAddress.putOpt(ThreeDSecurePostalAddress.REGION_KEY, mRegion);
+            billingAddress.putOpt(ThreeDSecurePostalAddress.POSTAL_CODE_KEY, mPostalCode);
+            billingAddress.putOpt(ThreeDSecurePostalAddress.COUNTRY_CODE_ALPHA_2_KEY, mCountryCodeAlpha2);
+
+            base.putOpt(ThreeDSecurePostalAddress.BILLING_ADDRESS_KEY, billingAddress);
         } catch (JSONException ignored) {}
 
         return base;
