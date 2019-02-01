@@ -19,6 +19,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
+import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 import com.cardinalcommerce.cardinalmobilesdk.models.response.InitResponse;
@@ -138,9 +139,23 @@ public class ThreeDSecure {
                     public void onSetupCompleted(String dfReferenceId) {
                         Log.d("setup-complete nonce", "" + dfReferenceId);
 
+                        // TODO: Remove hard coded customer info
+                        ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
+                        billingAddress.firstName("John");
+                        billingAddress.lastName("Smith");
+                        billingAddress.streetAddress("123 River Lane");
+                        billingAddress.extendedAddress("Unit 1");
+                        billingAddress.locality("Chicago");
+                        billingAddress.postalCode("12345");
+                        billingAddress.region("IL");
+
                         ThreeDSecureRequest request = new ThreeDSecureRequest()
                             .nonce(nonce)
-                            .amount(amount);
+                            .amount(amount)
+                            .mobilePhoneNumber("5551234567")
+                            .shippingMethod("01")
+                            .billingAddress(billingAddress)
+                            .email("email@email.com");
 
                         performVerification(fragment, request, dfReferenceId);
                     }

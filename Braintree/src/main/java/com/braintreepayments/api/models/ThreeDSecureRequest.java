@@ -177,7 +177,6 @@ public class ThreeDSecureRequest implements Parcelable {
      * @return String representation of {@link ThreeDSecureRequest} for API use.
      */
 
-    //Todo: Finish this method and figure out why no ThreeDSecureRequest parameters are being initialized
     public String build(String dfReferenceId) {
         JSONObject base = new JSONObject();
         JSONObject additionalInformation = new JSONObject();
@@ -188,7 +187,6 @@ public class ThreeDSecureRequest implements Parcelable {
             additionalInformation.putOpt(MOBILE_PHONE_NUMBER_KEY, mMobilePhoneNumber);
             additionalInformation.putOpt(EMAIL_KEY, mEmail);
             additionalInformation.putOpt(SHIPPING_METHOD_KEY, mShippingMethod);
-            Log.d("AdditionalInfo Log 1: ", additionalInformation.toString());
 
             if (mBillingAddress != null) {
                 JSONObject postalAddress = mBillingAddress.toJson();
@@ -200,17 +198,15 @@ public class ThreeDSecureRequest implements Parcelable {
                     while (iterator.hasNext()) {
                         String key = (String)iterator.next();
                         additionalInformation.put(key, obj.get(key));
-                        // Log.d("Added: ", key);
                     }
                 }
             } else {
-                Log.d("mBillingAddress: ", "NIL");
+                Log.d("Billing Address: ", String.valueOf(mBillingAddress = null));
             }
 
             base.put("additionalInformation", additionalInformation);
             base.put("df_reference_id", dfReferenceId);
 
-            Log.d("AdditionalInfo Log 2: ", additionalInformation.toString());
             Log.d("request", dfReferenceId);
         } catch (JSONException ignored) {}
 
