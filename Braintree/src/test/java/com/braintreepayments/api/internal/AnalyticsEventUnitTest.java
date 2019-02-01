@@ -4,7 +4,9 @@ import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.Venmo;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
+import org.apache.tools.ant.taskdefs.EchoXML;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -22,7 +24,7 @@ public class AnalyticsEventUnitTest {
         AnalyticsEvent analyticsEvent = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
                 "custom", "card.nonce-received");
 
-        assertEquals("android.custom.card.nonce-received", analyticsEvent.event);
+        assertEquals("android.card.nonce-received", analyticsEvent.event);
         assertTrue(analyticsEvent.timestamp > 0);
 
         assertEquals("sessionId", analyticsEvent.metadata.getString("sessionId"));
@@ -33,5 +35,7 @@ public class AnalyticsEventUnitTest {
                 analyticsEvent.metadata.getBoolean("paypalInstalled"));
         assertEquals(Venmo.isVenmoInstalled(RuntimeEnvironment.application),
                 analyticsEvent.metadata.getBoolean("venmoInstalled"));
+        assertEquals("custom",
+                analyticsEvent.metadata.getString("integrationType"));
     }
 }

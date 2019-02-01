@@ -37,10 +37,8 @@ public class AnalyticsSender {
     private static final String DEVICE_ROOTED_KEY = "deviceRooted";
     private static final String DEVICE_MANUFACTURER_KEY = "deviceManufacturer";
     private static final String DEVICE_MODEL_KEY = "deviceModel";
-    private static final String ANDROID_ID_KEY = "androidId";
     private static final String DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY = "deviceAppGeneratedPersistentUuid";
     private static final String IS_SIMULATOR_KEY = "isSimulator";
-    private static final String INTEGRATION_TYPE_KEY = "integrationType";
 
     public static void send(Context context, Authorization authorization, BraintreeHttpClient httpClient,
             String analyticsUrl, boolean synchronous) {
@@ -85,7 +83,6 @@ public class AnalyticsSender {
 
         JSONObject meta = primeEvent.metadata
                 .put(PLATFORM_KEY, "Android")
-                .put(INTEGRATION_TYPE_KEY, primeEvent.getIntegrationType())
                 .put(PLATFORM_VERSION_KEY, Integer.toString(VERSION.SDK_INT))
                 .put(SDK_VERSION_KEY, BuildConfig.VERSION_NAME)
                 .put(MERCHANT_APP_ID_KEY, context.getPackageName())
