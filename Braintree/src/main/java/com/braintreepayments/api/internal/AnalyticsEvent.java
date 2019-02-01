@@ -20,37 +20,27 @@ public class AnalyticsEvent {
     private static final String MERCHANT_APP_VERSION_KEY = "merchantAppVersion";
     private static final String PAYPAL_INSTALLED_KEY = "paypalInstalled";
     private static final String VENMO_INSTALLED_KEY = "venmoInstalled";
+    private static final String INTEGRATION_TYPE_KEY = "integrationType";
 
     int id;
     String event;
     long timestamp;
-    JSONObject metadata;
+    JSONObject metadata = new JSONObject();
+
+    public AnalyticsEvent() {}
 
     public AnalyticsEvent(Context context, String sessionId, String integration, String event) {
-        this.event = "android." + integration + "." + event;
+        this.event = "android." + event;
         this.timestamp = System.currentTimeMillis() / 1000;
-        metadata = new JSONObject();
         try {
             metadata.put(SESSION_ID_KEY, sessionId)
+                    .put(INTEGRATION_TYPE_KEY, integration)
                     .put(DEVICE_NETWORK_TYPE_KEY, getNetworkType(context))
                     .put(USER_INTERFACE_ORIENTATION_KEY, getUserOrientation(context))
                     .put(MERCHANT_APP_VERSION_KEY, getAppVersion(context))
                     .put(PAYPAL_INSTALLED_KEY, isPayPalInstalled(context))
                     .put(VENMO_INSTALLED_KEY, Venmo.isVenmoInstalled(context));
         } catch (JSONException ignored) {}
-    }
-
-    public AnalyticsEvent() {
-        metadata = new JSONObject();
-    }
-
-    public String getIntegrationType() {
-        String[] eventSegments = this.event.split("\\.");
-        if (eventSegments.length > 1) {
-            return eventSegments[1];
-        } else {
-            return "";
-        }
     }
 
     private String getNetworkType(Context context) {

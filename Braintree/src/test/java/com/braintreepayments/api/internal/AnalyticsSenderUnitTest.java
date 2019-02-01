@@ -120,10 +120,10 @@ public class AnalyticsSenderUnitTest {
         JSONArray array = analyticsJson.getJSONArray("analytics");
         assertEquals(2, array.length());
         JSONObject eventOne = array.getJSONObject(0);
-        assertEquals("android.custom.started", eventOne.getString("kind"));
+        assertEquals("android.started", eventOne.getString("kind"));
 
         JSONObject eventTwo = array.getJSONObject(1);
-        assertEquals("android.custom.finished", eventTwo.getString("kind"));
+        assertEquals("android.finished", eventTwo.getString("kind"));
     }
 
     @Test
@@ -148,14 +148,14 @@ public class AnalyticsSenderUnitTest {
         assertEquals(1, requestJson.getJSONArray("analytics").length());
         JSONObject analyticsEvent = requestJson.getJSONArray("analytics").getJSONObject(0);
         JSONObject meta = requestJson.getJSONObject("_meta");
-        assertEquals("android.custom.started", analyticsEvent.getString("kind"));
+        assertEquals("android.started", analyticsEvent.getString("kind"));
         assertEquals("sessionId", meta.getString("sessionId"));
 
         requestJson = new JSONObject(values.get(1));
         assertEquals(1, requestJson.getJSONArray("analytics").length());
         analyticsEvent = requestJson.getJSONArray("analytics").getJSONObject(0);
         meta = requestJson.getJSONObject("_meta");
-        assertEquals("android.custom.finished", analyticsEvent.getString("kind"));
+        assertEquals("android.finished", analyticsEvent.getString("kind"));
         assertEquals("sessionIdTwo", meta.getString("sessionId"));
     }
 
