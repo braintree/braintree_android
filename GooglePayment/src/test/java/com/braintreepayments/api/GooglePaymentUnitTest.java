@@ -1,6 +1,8 @@
 package com.braintreepayments.api;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.models.Authorization;
@@ -16,6 +18,7 @@ import com.google.android.gms.wallet.PaymentDataRequest;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -28,6 +31,8 @@ import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_ENVIRONMENT;
 import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_PAYMENT_DATA_REQUEST;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -122,6 +127,91 @@ public class GooglePaymentUnitTest {
     }
 
     @Test
+    public void requestPayment_whenGooglePayCanProcessPayPal_tokenizationPropertiesIncludePayPal() throws JSONException {
+        BraintreeFragment fragment = getSetupFragment();
+        GooglePaymentRequest googlePaymentRequest = mBaseRequest
+                .googleMerchantName("google-merchant-name-override");
+
+        GooglePayment.requestPayment(fragment, googlePaymentRequest);
+
+        JSONArray allowedPaymentMethods = getPaymentDataRequestJsonSentToGooglePayment(fragment)
+                .getJSONArray("allowedPaymentMethods");
+
+
+        assertEquals(2, allowedPaymentMethods.length());
+        assertEquals("PAYPAL", allowedPaymentMethods.getJSONObject(0)
+                .getString("type"));
+        assertEquals("CARD", allowedPaymentMethods.getJSONObject(1)
+                .getString("type"));
+    }
+
+    @Test
+    public void requestPayment_whenPayPalDisabledByRequest_tokenizationPropertiesLackPayPal() throws JSONException {
+        BraintreeFragment fragment = getSetupFragment();
+        GooglePaymentRequest googlePaymentRequest = mBaseRequest
+                .googleMerchantName("google-merchant-name-override")
+                .paypalEnabled(false);
+
+        GooglePayment.requestPayment(fragment, googlePaymentRequest);
+
+        JSONArray allowedPaymentMethods = getPaymentDataRequestJsonSentToGooglePayment(fragment)
+                .getJSONArray("allowedPaymentMethods");
+
+        assertEquals(1, allowedPaymentMethods.length());
+        assertEquals("CARD", allowedPaymentMethods.getJSONObject(0)
+                .getString("type"));
+    }
+
+    @Test
+    public void requestPayment_whenPayPalDisabledInConfiguration_tokenizationPropertiesLackPayPal() throws JSONException {
+        TestConfigurationBuilder configuration = new TestConfigurationBuilder()
+                .androidPay(new TestConfigurationBuilder.TestAndroidPayConfigurationBuilder()
+                        .environment("sandbox")
+                        .googleAuthorizationFingerprint("google-auth-fingerprint")
+                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"}))
+                .paypalEnabled(false)
+                .paypal(new TestConfigurationBuilder.TestPayPalConfigurationBuilder(false))
+                .withAnalytics();
+
+        BraintreeFragment fragment = getSetupFragment(configuration);
+        GooglePaymentRequest googlePaymentRequest = mBaseRequest
+                .googleMerchantName("google-merchant-name-override");
+
+        GooglePayment.requestPayment(fragment, googlePaymentRequest);
+
+        JSONArray allowedPaymentMethods = getPaymentDataRequestJsonSentToGooglePayment(fragment)
+                .getJSONArray("allowedPaymentMethods");
+
+        assertEquals(1, allowedPaymentMethods.length());
+        assertEquals("CARD", allowedPaymentMethods.getJSONObject(0)
+                .getString("type"));
+    }
+
+    @Test
+    public void requestPayment_whenPayPalConfigurationLacksClientId_tokenizationPropertiesLackPayPal() throws JSONException {
+        TestConfigurationBuilder configuration = new TestConfigurationBuilder()
+                .androidPay(new TestConfigurationBuilder.TestAndroidPayConfigurationBuilder()
+                        .environment("sandbox")
+                        .googleAuthorizationFingerprint("google-auth-fingerprint")
+                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"}))
+                .paypal(new TestConfigurationBuilder.TestPayPalConfigurationBuilder(true))
+                .withAnalytics();
+
+        BraintreeFragment fragment = getSetupFragment(configuration);
+        GooglePaymentRequest googlePaymentRequest = mBaseRequest
+                .googleMerchantName("google-merchant-name-override");
+
+        GooglePayment.requestPayment(fragment, googlePaymentRequest);
+
+        JSONArray allowedPaymentMethods = getPaymentDataRequestJsonSentToGooglePayment(fragment)
+                .getJSONArray("allowedPaymentMethods");
+
+        assertEquals(1, allowedPaymentMethods.length());
+        assertEquals("CARD", allowedPaymentMethods.getJSONObject(0)
+                .getString("type"));
+    }
+
+    @Test
     public void tokenize_withCardToken_returnsGooglePaymentNonce() {
         String paymentDataJson = FixturesHelper.stringFromFixture("response/google_payment/card.json");
         BraintreeFragment fragment = getSetupFragment();
@@ -176,5 +266,36 @@ public class GooglePaymentUnitTest {
         }
 
         return fragment;
+    }
+
+    private BraintreeFragment getSetupFragment(TestConfigurationBuilder configurationBuilder) {
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .configuration(configurationBuilder.build())
+                .build();
+
+        try {
+            when(fragment.getAuthorization()).thenReturn(Authorization.fromString("sandbox_tokenization_key"));
+        } catch (InvalidArgumentException e) {
+            throw new RuntimeException(e);
+        }
+
+        return fragment;
+    }
+
+    @NonNull
+    private JSONObject getPaymentDataRequestJsonSentToGooglePayment(BraintreeFragment fragment) {
+        JSONObject result = new JSONObject();
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(fragment).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.GOOGLE_PAYMENT));
+
+        Intent intent = captor.getValue();
+        PaymentDataRequest paymentDataRequest = intent.getParcelableExtra(EXTRA_PAYMENT_DATA_REQUEST);
+        try {
+            result = new JSONObject(paymentDataRequest.toJson());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 }

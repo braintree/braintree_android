@@ -19,7 +19,6 @@ import java.util.List;
 
 import static com.braintreepayments.api.test.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 

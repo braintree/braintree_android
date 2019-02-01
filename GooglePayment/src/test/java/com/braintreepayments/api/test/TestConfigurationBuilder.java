@@ -121,7 +121,6 @@ public class TestConfigurationBuilder extends JSONBuilder {
             if (enabled) {
                 environment("test");
                 displayName("displayName");
-                clientId("clientId");
                 privacyUrl("http://privacy.gov");
                 userAgreementUrl("http://i.agree.biz");
             }
