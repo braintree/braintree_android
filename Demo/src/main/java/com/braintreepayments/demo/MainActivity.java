@@ -15,11 +15,15 @@ import com.braintreepayments.api.dropin.DropInResult;
 import com.braintreepayments.api.dropin.utils.PaymentMethodType;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.GooglePaymentCardNonce;
+import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.models.LocalPaymentResult;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VenmoAccountNonce;
 import com.braintreepayments.api.models.VisaCheckoutNonce;
+import com.google.android.gms.wallet.ShippingAddressRequirements;
+import com.google.android.gms.wallet.TransactionInfo;
+import com.google.android.gms.wallet.WalletConstants;
 
 import java.util.Collections;
 
@@ -121,11 +125,29 @@ public class MainActivity extends BaseActivity {
     }
 
     private DropInRequest getDropInRequest() {
+        GooglePaymentRequest googlePaymentRequest = new GooglePaymentRequest()
+                .transactionInfo(TransactionInfo.newBuilder()
+                        .setCurrencyCode(Settings.getGooglePaymentCurrency(this))
+                        .setTotalPrice("1.00")
+                        .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                        .build())
+                .allowPrepaidCards(Settings.areGooglePaymentPrepaidCardsAllowed(this))
+                .billingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL)
+                .billingAddressRequired(Settings.isGooglePaymentBillingAddressRequired(this))
+                .emailRequired(Settings.isGooglePaymentEmailRequired(this))
+                .phoneNumberRequired(Settings.isGooglePaymentPhoneNumberRequired(this))
+                .shippingAddressRequired(Settings.isGooglePaymentShippingAddressRequired(this))
+                .shippingAddressRequirements(ShippingAddressRequirements.newBuilder()
+                        .addAllowedCountryCodes(Settings.getGooglePaymentAllowedCountriesForShipping(this))
+                        .build())
+                .googleMerchantId(Settings.getGooglePaymentMerchantId(this));
+
         return new DropInRequest()
                 .amount("1.00")
                 .clientToken(mAuthorization)
                 .collectDeviceData(Settings.shouldCollectDeviceData(this))
-                .requestThreeDSecureVerification(Settings.isThreeDSecureEnabled(this));
+                .requestThreeDSecureVerification(Settings.isThreeDSecureEnabled(this))
+                .googlePaymentRequest(googlePaymentRequest);
     }
 
     public void createTransaction(View v) {
