@@ -1,5 +1,24 @@
 # Braintree Android SDK Release Notes
 
+## 3.0.0
+
+* Bump minSdkVersion to 21
+* Convert to AndroidX
+* BraintreeFragment moves to the support fragment
+  * Requires AppCompatActivity to attach the BraintreeFragment to
+* Removed Visa Checkout 1.0.0 as a dependency
+  * Add Visa Checkout's dependency to your app to get the latest version
+* Removed deprecated ThreeDSecureWebView flow
+* Removed deprecated Venmo#isVenmoWhitelisted(ContentResolver)
+* Removed deprecated method from PostalAddress
+* Removed deprecated country setters
+* Removed deprecated methods from DataCollector
+* Removed deprecated PayPalOneTouchActivity
+* Removed deprecated Ideal
+* Rename AndroidPay classes to GooglePayment
+
+
+
 ## 2.21.0
 
 * Deprecate PayPal Future Payments, use PayPal Billing Agreements
