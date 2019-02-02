@@ -115,45 +115,7 @@ public class GooglePaymentTest {
     }
 
     @Test
-    public void requestPayment_startsActivityWithOptionalValues_GooglePaymentV1() {
-        BraintreeFragment fragment = getSetupFragment();
-        GooglePaymentRequest googlePaymentRequest = new GooglePaymentRequest()
-                .allowPrepaidCards(true)
-                .billingAddressFormat(1)
-                .billingAddressRequired(true)
-                .emailRequired(true)
-                .phoneNumberRequired(true)
-                .shippingAddressRequired(true)
-                .shippingAddressRequirements(ShippingAddressRequirements.newBuilder().addAllowedCountryCode("USA").build())
-                .transactionInfo(TransactionInfo.newBuilder()
-                        .setTotalPrice("1.00")
-                        .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                        .setCurrencyCode("USD")
-                        .build());
-
-        GooglePayment.requestPayment(fragment, googlePaymentRequest);
-
-        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
-        verify(fragment).startActivityForResult(captor.capture(), eq(BraintreeRequestCodes.GOOGLE_PAYMENT));
-        Intent intent = captor.getValue();
-        PaymentDataRequest paymentDataRequest = intent.getParcelableExtra(EXTRA_PAYMENT_DATA_REQUEST);
-        CardRequirements cardRequirements = paymentDataRequest.getCardRequirements();
-        assertNotNull(cardRequirements);
-        assertTrue(cardRequirements.allowPrepaidCards());
-        assertEquals(1, cardRequirements.getBillingAddressFormat());
-        assertTrue(cardRequirements.isBillingAddressRequired());
-        assertTrue(paymentDataRequest.isEmailRequired());
-        assertTrue(paymentDataRequest.isPhoneNumberRequired());
-        assertTrue(paymentDataRequest.isShippingAddressRequired());
-        assertNotNull(paymentDataRequest.getShippingAddressRequirements());
-        assertNotNull(paymentDataRequest.getShippingAddressRequirements().getAllowedCountryCodes());
-        assertTrue(paymentDataRequest.getShippingAddressRequirements().getAllowedCountryCodes().contains("USA"));
-        assertTrue(paymentDataRequest.isUiRequired());
-    }
-
-    @Ignore("Requires Google-Payment@2+")
-    @Test
-    public void requestPayment_startsActivityWithOptionalValues_GooglePaymentV2() throws JSONException {
+    public void requestPayment_startsActivityWithOptionalValues() throws JSONException {
         BraintreeFragment fragment = getSetupFragment();
         GooglePaymentRequest googlePaymentRequest = new GooglePaymentRequest()
                 .allowPrepaidCards(true)
