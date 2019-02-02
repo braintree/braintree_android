@@ -891,6 +891,11 @@
 * Fixes
   * Attach Javadocs and sources to Maven Central build.
 
+## 3.0.0
+
+* Convert to AndroidX
+* Replace AndroidPayConfiguration with GooglePaymentConfiguration
+
 ## 2.0.1
 
 * Disable PayPal payment method in Google Payment when the merchant is not able to process PayPal
