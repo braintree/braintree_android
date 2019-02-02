@@ -1,7 +1,6 @@
 package com.paypal.android.sdk.onetouch.core.fpti;
 
 public enum TrackingPoint {
-
     SwitchToBrowser("switchaway", "browser"),
     SwitchToWallet("switchaway", "wallet"),
 

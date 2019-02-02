@@ -93,9 +93,7 @@ public abstract class Request<T extends Request<T>> implements Parcelable {
         return "onetouch/v1/";
     }
 
-    public abstract String getBrowserSwitchUrl() throws CertificateException,
-            UnsupportedEncodingException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException,
-            JSONException, BadPaddingException, InvalidEncryptionDataException, InvalidKeyException;
+    public abstract String getBrowserSwitchUrl();
 
     public abstract Recipe getBrowserSwitchRecipe(OtcConfiguration config);
 

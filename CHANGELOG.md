@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 2.21.0
+
+* Deprecate PayPal Future Payments, use PayPal Billing Agreements
+* Deprecate AndroidPayConfiguration, use the GooglePaymentConfiguration alias
+
 ## 2.20.1
 
 * Fix null address properties on PayPalAccountNonce

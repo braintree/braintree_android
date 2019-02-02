@@ -12,7 +12,15 @@ Add the dependency in your `build.gradle`:
 
 ```groovy
 dependencies {
-  compile 'com.braintreepayments.api:braintree:3.0.0-SNAPSHOT'
+  compile 'com.braintreepayments.api:braintree:3.0.0'
+}
+```
+
+To use the latest build from the `master` branch use:
+
+```groovy
+dependencies {
+  compile 'com.braintreepayments.api:braintree:3.0.1-SNAPSHOT'
 }
 ```
 

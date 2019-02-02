@@ -9,43 +9,26 @@ import com.paypal.android.sdk.onetouch.core.base.ContextInspector;
 import com.paypal.android.sdk.onetouch.core.config.ConfigManager;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
-import com.paypal.android.sdk.onetouch.core.exception.InvalidEncryptionDataException;
 import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
-
-import org.json.JSONException;
-
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 public class BrowserSwitchHelper {
 
     public static Intent getBrowserSwitchIntent(ContextInspector contextInspector,
             ConfigManager configManager, Request request) {
         OtcConfiguration configuration = configManager.getConfig();
-        try {
-            String url = request.getBrowserSwitchUrl();
+        String url = request.getBrowserSwitchUrl();
 
-            Recipe<?> recipe = request.getBrowserSwitchRecipe(configuration);
+        Recipe<?> recipe = request.getBrowserSwitchRecipe(configuration);
 
-            for (String allowedBrowserPackage : recipe.getTargetPackagesInReversePriorityOrder()) {
-                boolean canIntentBeResolved = Recipe.isValidBrowserTarget(contextInspector.getContext(), url,
-                        allowedBrowserPackage);
-                if (canIntentBeResolved) {
-                    request.trackFpti(contextInspector.getContext(), TrackingPoint.SwitchToBrowser,
-                            recipe.getProtocol());
-                    return Recipe.getBrowserIntent(contextInspector.getContext(), url, allowedBrowserPackage);
-                }
+        for (String allowedBrowserPackage : recipe.getTargetPackagesInReversePriorityOrder()) {
+            boolean canIntentBeResolved = Recipe.isValidBrowserTarget(contextInspector.getContext(), url,
+                    allowedBrowserPackage);
+            if (canIntentBeResolved) {
+                request.trackFpti(contextInspector.getContext(), TrackingPoint.SwitchToBrowser,
+                        recipe.getProtocol());
+                return Recipe.getBrowserIntent(contextInspector.getContext(), url, allowedBrowserPackage);
             }
-        } catch (CertificateException | UnsupportedEncodingException | NoSuchPaddingException
-                | NoSuchAlgorithmException | IllegalBlockSizeException | JSONException
-                | BadPaddingException | InvalidEncryptionDataException
-                | InvalidKeyException ignored) {}
+        }
 
         return null;
     }
