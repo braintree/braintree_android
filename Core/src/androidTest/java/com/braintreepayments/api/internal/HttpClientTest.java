@@ -294,7 +294,7 @@ public class HttpClientTest {
         assertExceptionIsPosted(httpClient, IOException.class, null);
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 3000)
     public void postsServerErrorWhenServerReturns500() throws IOException, InterruptedException {
         HttpClient httpClient = clientWithExpectedResponse(500, "");
 
