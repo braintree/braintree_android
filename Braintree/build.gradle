@@ -53,7 +53,7 @@ dependencies {
     }
     compileOnly project(':BraintreeDataCollector')
 
-    api 'com.braintreepayments.api:google-payment:3.0.0-SNAPSHOT'
+    api 'com.braintreepayments.api:google-payment:3.0.0'
     api project(':Core')
     api project(':PayPalOneTouch')
 

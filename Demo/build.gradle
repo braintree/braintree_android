@@ -63,7 +63,7 @@ android {
 }
 
 def googlePayDependencies = [
-        'com.braintreepayments.api:google-payment:3.0.0-SNAPSHOT',
+        'com.braintreepayments.api:google-payment:3.0.0',
         'com.google.android.gms:play-services-wallet:16.0.1'
 ]
 
@@ -94,7 +94,7 @@ dependencies {
     implementation visaCheckoutDependencies
 
     implementation 'io.card:android-sdk:5.5.1'
-    implementation('com.braintreepayments.api:drop-in:4.0.0-SNAPSHOT') {
+    implementation('com.braintreepayments.api:drop-in:4.0.0') {
         exclude group: 'com.braintreepayments.api', module: 'braintree'
         because 'Use the development version of Braintree'
     }
