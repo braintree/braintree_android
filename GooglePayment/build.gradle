@@ -32,12 +32,12 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'com.google.android.gms:play-services-wallet:16.0.1'
 
-    compileOnly('com.braintreepayments.api:braintree:3.0.0-SNAPSHOT') {
+    compileOnly('com.braintreepayments.api:braintree:3.0.0') {
         exclude module: 'google-payment'
         because 'Use this development version'
     }
 
-    testImplementation('com.braintreepayments.api:braintree:3.0.0-SNAPSHOT') {
+    testImplementation('com.braintreepayments.api:braintree:3.0.0') {
         exclude module: 'google-payment'
         because 'Use this development version'
     }
