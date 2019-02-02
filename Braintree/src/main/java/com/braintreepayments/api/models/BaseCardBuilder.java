@@ -277,7 +277,6 @@ public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> impleme
         billingAddressJson.put(FIRST_NAME_KEY, mFirstName);
         billingAddressJson.put(LAST_NAME_KEY, mLastName);
         billingAddressJson.put(COMPANY_KEY, mCompany);
-        billingAddressJson.put(COUNTRY_CODE_KEY, mCountryCode);
         billingAddressJson.put(LOCALITY_KEY, mLocality);
         billingAddressJson.put(POSTAL_CODE_KEY, mPostalCode);
         billingAddressJson.put(REGION_KEY, mRegion);

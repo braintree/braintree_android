@@ -15,6 +15,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import static com.braintreepayments.api.models.PostalAddressParser.COUNTRY_CODE_KEY;
+
 /**
  * Builder used to construct a card tokenization request.
  */

@@ -500,7 +500,6 @@ public class CardBuilderUnitTest {
         assertEquals("Some Town", jsonBillingAddress.getString("locality"));
         assertEquals("12345", jsonBillingAddress.getString("postalCode"));
         assertEquals("Some Region", jsonBillingAddress.getString("region"));
-        assertEquals("USA", jsonBillingAddress.getString("countryCode"));
         assertEquals("USA", jsonBillingAddress.getString("countryCodeAlpha3"));
 
         assertEquals("test-integration", jsonMetadata.getString("integration"));
