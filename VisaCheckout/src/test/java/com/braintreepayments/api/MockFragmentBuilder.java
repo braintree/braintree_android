@@ -13,7 +13,9 @@ import com.braintreepayments.api.test.TestConfigurationBuilder;
 import org.json.JSONException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.robolectric.RuntimeEnvironment;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.test.core.app.ApplicationProvider;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -24,6 +26,7 @@ import static org.mockito.Mockito.when;
 public class MockFragmentBuilder {
 
     private Context mContext;
+    private AppCompatActivity mActivity;
     private Authorization mAuthorization;
     private Configuration mConfiguration;
     private String mSessionId;
@@ -33,7 +36,7 @@ public class MockFragmentBuilder {
     private Exception mGraphQLErrorResponse;
 
     public MockFragmentBuilder() {
-        mContext = RuntimeEnvironment.application;
+        mContext = ApplicationProvider.getApplicationContext();
         mConfiguration = TestConfigurationBuilder.basicConfig();
     }
 
@@ -49,9 +52,15 @@ public class MockFragmentBuilder {
         return this;
     }
 
+    public MockFragmentBuilder activity(AppCompatActivity activity) {
+        mActivity = activity;
+        return this;
+    }
+
     public BraintreeFragment build() {
         BraintreeFragment fragment = mock(BraintreeFragment.class);
         when(fragment.getApplicationContext()).thenReturn(mContext);
+        when(fragment.getActivity()).thenReturn(mActivity);
         when(fragment.getAuthorization()).thenReturn(mAuthorization);
         when(fragment.getSessionId()).thenReturn(mSessionId);
         when(fragment.getReturnUrlScheme()).thenReturn("com.braintreepayments.api.braintree");

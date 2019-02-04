@@ -15,25 +15,9 @@ public class FixturesHelper {
 
     public static String stringFromFixture(String filename) {
         try {
-            try {
-                return stringFromAndroidFixture(filename);
-            } catch (RuntimeException | Error e) {
-                return stringFromUnitTestFixture(filename);
-            }
+            return stringFromUnitTestFixture(filename);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private static String stringFromAndroidFixture(String filename) throws IOException {
-        InputStream inputStream = null;
-        try {
-            inputStream = getTargetContext().getResources().getAssets().open(FIXTURES_PATH + filename);
-            return StreamHelper.getString(inputStream);
-        } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
         }
     }
 

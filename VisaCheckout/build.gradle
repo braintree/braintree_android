@@ -30,28 +30,21 @@ android {
     }
 }
 
-android.buildTypes.debug {
-    dependencies {
-        implementation 'com.android.support:support-v4:28.0.0'
-        implementation 'com.android.support:appcompat-v7:28.0.0'
-        implementation 'com.android.support:design:28.0.0'
-    }
-}
-
 dependencies {
     implementation 'androidx.annotation:annotation:1.0.1'
-    implementation 'com.braintreepayments.api:braintree:3.0.0-SNAPSHOT'
+    implementation 'com.braintreepayments.api:braintree:3.0.0'
 
     implementation(group: 'com.visa.checkout', name: 'visacheckout-android-sdk', version: '6.6.1', ext: 'aar')
 
     testImplementation 'com.google.android.gms:play-services-wallet:16.0.1'
+    testImplementation 'androidx.test:core:1.1.0'
     testImplementation 'androidx.test:runner:1.1.1'
     testImplementation 'androidx.test:rules:1.1.1'
     testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
     testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'
     testImplementation 'org.powermock:powermock-api-mockito:1.6.6'
     testImplementation 'org.powermock:powermock-classloading-xstream:1.6.6'
-    testImplementation 'org.robolectric:robolectric:4.0-alpha-3'
+    testImplementation 'org.robolectric:robolectric:4.0'
     testImplementation 'org.skyscreamer:jsonassert:1.4.0'
     testImplementation 'com.squareup.assertj:assertj-android:1.1.1'
 }

@@ -11,6 +11,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.VisaCheckoutConfiguration;
 import com.braintreepayments.api.models.VisaCheckoutNonce;
+import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestConfigurationBuilder;
 import com.visa.checkout.Profile;
 import com.visa.checkout.Profile.CardBrand;
@@ -29,6 +30,7 @@ import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
+import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 
 import java.util.Arrays;
@@ -48,7 +50,8 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "com.visa.*" })
+@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*", "org.json.*",
+        "com.visa.*" })
 @PrepareForTest({ TokenizationClient.class, VisaCheckoutConfiguration.class, VisaCheckout.class })
 public class VisaCheckoutUnitTest {
 
@@ -57,13 +60,17 @@ public class VisaCheckoutUnitTest {
 
     private Configuration mConfigurationWithVisaCheckout;
     private BraintreeFragment mBraintreeFragment;
+    private TestActivity mActivity;
 
     @Before
     public void setup() throws JSONException {
         JSONObject visaConfiguration = new JSONObject(stringFromFixture("configuration/with_visa_checkout.json"));
         mConfigurationWithVisaCheckout = Configuration.fromJson(visaConfiguration.toString());
 
+        mActivity = Robolectric.setupActivity(TestActivity.class);
+
         mBraintreeFragment = new MockFragmentBuilder()
+                .activity(mActivity)
                 .configuration(mConfigurationWithVisaCheckout)
                 .build();
 
@@ -73,8 +80,6 @@ public class VisaCheckoutUnitTest {
                 throw new RuntimeException(error);
             }
         });
-
-        when(mBraintreeFragment.getActivity()).thenReturn(mock(AppCompatActivity.class));
     }
 
     @Test
