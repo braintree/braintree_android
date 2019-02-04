@@ -249,7 +249,9 @@ public class ThreeDSecurePostalAddress implements Parcelable {
             billingAddress.putOpt(ThreeDSecurePostalAddress.POSTAL_CODE_KEY, mPostalCode);
             billingAddress.putOpt(ThreeDSecurePostalAddress.COUNTRY_CODE_ALPHA_2_KEY, mCountryCodeAlpha2);
 
-            base.putOpt(ThreeDSecurePostalAddress.BILLING_ADDRESS_KEY, billingAddress);
+            if (billingAddress.length() != 0) {
+                base.putOpt(ThreeDSecurePostalAddress.BILLING_ADDRESS_KEY, billingAddress);
+            }
         } catch (JSONException ignored) {}
 
         return base;

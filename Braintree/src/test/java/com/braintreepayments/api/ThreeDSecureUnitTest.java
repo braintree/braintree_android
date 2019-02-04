@@ -105,7 +105,7 @@ public class ThreeDSecureUnitTest {
                         .countryCodeAlpha2("US")
                         .phoneNumber("12345678"));
 
-        ThreeDSecure.performVerification(mFragment, request);
+        ThreeDSecure.performVerification(mFragment, request, "123");
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(mFragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));
@@ -114,23 +114,23 @@ public class ThreeDSecureUnitTest {
 
         assertEquals("1.00", body.getString("amount"));
 
-        JSONObject customer = body.getJSONObject("customer");
+        JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInformation");
 
-        assertEquals("8101234567", customer.getString("mobilePhoneNumber"));
-        assertEquals("test@example.com", customer.getString("email"));
-        assertEquals("01", customer.getString("shippingMethod"));
+        assertEquals("8101234567", jsonAdditionalInformation.getString("mobilePhoneNumber"));
+        assertEquals("test@example.com", jsonAdditionalInformation.getString("email"));
+        assertEquals("01", jsonAdditionalInformation.getString("shippingMethod"));
+        assertEquals("Joe", jsonAdditionalInformation.getString("firstName"));
+        assertEquals("Guy", jsonAdditionalInformation.getString("lastName"));
+        assertEquals("12345678", jsonAdditionalInformation.getString("phoneNumber"));
 
-        JSONObject billingAddress = customer.getJSONObject("billingAddress");
+        JSONObject jsonBillingAddress = jsonAdditionalInformation.getJSONObject("billingAddress");
 
-        assertEquals("Joe", billingAddress.getString("firstName"));
-        assertEquals("Guy", billingAddress.getString("lastName"));
-        assertEquals("555 Smith Street", billingAddress.getString("line1"));
-        assertEquals("#5", billingAddress.getString("line2"));
-        assertEquals("Oakland", billingAddress.getString("city"));
-        assertEquals("CA", billingAddress.getString("state"));
-        assertEquals("12345", billingAddress.getString("postalCode"));
-        assertEquals("US", billingAddress.getString("countryCode"));
-        assertEquals("12345678", billingAddress.getString("phoneNumber"));
+        assertEquals("555 Smith Street", jsonBillingAddress.getString("line1"));
+        assertEquals("#5", jsonBillingAddress.getString("line2"));
+        assertEquals("Oakland", jsonBillingAddress.getString("city"));
+        assertEquals("CA", jsonBillingAddress.getString("state"));
+        assertEquals("12345", jsonBillingAddress.getString("postalCode"));
+        assertEquals("US", jsonBillingAddress.getString("countryCode"));
     }
 
     @Test
@@ -144,12 +144,12 @@ public class ThreeDSecureUnitTest {
 
         assertEquals("1.00", body.getString("amount"));
 
-        JSONObject customer = body.getJSONObject("customer");
+        JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInformation");
 
-        assertTrue(customer.isNull("mobilePhoneNumber"));
-        assertTrue(customer.isNull("email"));
-        assertTrue(customer.isNull("shippingMethod"));
-        assertTrue(customer.isNull("billingAddress"));
+        assertTrue(jsonAdditionalInformation.isNull("mobilePhoneNumber"));
+        assertTrue(jsonAdditionalInformation.isNull("email"));
+        assertTrue(jsonAdditionalInformation.isNull("shippingMethod"));
+        assertTrue(jsonAdditionalInformation.isNull("billingAddress"));
     }
 
     @Test
@@ -167,7 +167,7 @@ public class ThreeDSecureUnitTest {
                         .postalCode("12345")
                         .countryCodeAlpha2("US"));
 
-        ThreeDSecure.performVerification(mFragment, request);
+        ThreeDSecure.performVerification(mFragment, request, "123");
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(mFragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));
@@ -176,23 +176,23 @@ public class ThreeDSecureUnitTest {
 
         assertEquals("1.00", body.getString("amount"));
 
-        JSONObject customer = body.getJSONObject("customer");
+        JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInformation");
 
-        assertTrue(customer.isNull("mobilePhoneNumber"));
-        assertEquals("test@example.com", customer.getString("email"));
-        assertTrue(customer.isNull("shippingMethod"));
+        assertTrue(jsonAdditionalInformation.isNull("mobilePhoneNumber"));
+        assertEquals("test@example.com", jsonAdditionalInformation.getString("email"));
+        assertTrue(jsonAdditionalInformation.isNull("shippingMethod"));
+        assertEquals("Joe", jsonAdditionalInformation.getString("firstName"));
+        assertEquals("Guy", jsonAdditionalInformation.getString("lastName"));
+        assertTrue(jsonAdditionalInformation.isNull("phoneNumber"));
 
-        JSONObject billingAddress = customer.getJSONObject("billingAddress");
+        JSONObject jsonBillingAddress = jsonAdditionalInformation.getJSONObject("billingAddress");
 
-        assertEquals("Joe", billingAddress.getString("firstName"));
-        assertEquals("Guy", billingAddress.getString("lastName"));
-        assertEquals("555 Smith Street", billingAddress.getString("line1"));
-        assertTrue(billingAddress.isNull("line2"));
-        assertEquals("Oakland", billingAddress.getString("city"));
-        assertEquals("CA", billingAddress.getString("state"));
-        assertEquals("12345", billingAddress.getString("postalCode"));
-        assertEquals("US", billingAddress.getString("countryCode"));
-        assertTrue(billingAddress.isNull("phoneNumber"));
+        assertEquals("555 Smith Street", jsonBillingAddress.getString("line1"));
+        assertTrue(jsonBillingAddress.isNull("line2"));
+        assertEquals("Oakland", jsonBillingAddress.getString("city"));
+        assertEquals("CA", jsonBillingAddress.getString("state"));
+        assertEquals("12345", jsonBillingAddress.getString("postalCode"));
+        assertEquals("US", jsonBillingAddress.getString("countryCode"));
     }
 
     @Test

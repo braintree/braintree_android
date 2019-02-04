@@ -84,16 +84,17 @@ public class ThreeDSecurePostalAddressUnitTest {
                 .phoneNumber("5151231234");
 
         JSONObject jsonParams = address.toJson();
+        JSONObject jsonBillingAddress = jsonParams.getJSONObject("billingAddress");
 
-        assertEquals("123 Fake St.", jsonParams.get("line1"));
-        assertEquals("Apt. 3", jsonParams.get("line2"));
-        assertEquals("Oakland", jsonParams.get("city"));
-        assertEquals("CA", jsonParams.get("state"));
-        assertEquals("94602", jsonParams.get("postalCode"));
-        assertEquals("US", jsonParams.get("countryCode"));
         assertEquals("John", jsonParams.get("firstName"));
         assertEquals("Fakerson", jsonParams.get("lastName"));
         assertEquals("5151231234", jsonParams.get("phoneNumber"));
+        assertEquals("123 Fake St.", jsonBillingAddress.get("line1"));
+        assertEquals("Apt. 3", jsonBillingAddress.get("line2"));
+        assertEquals("Oakland", jsonBillingAddress.get("city"));
+        assertEquals("CA", jsonBillingAddress.get("state"));
+        assertEquals("94602", jsonBillingAddress.get("postalCode"));
+        assertEquals("US", jsonBillingAddress.get("countryCode"));
     }
 
     @Test
@@ -108,16 +109,17 @@ public class ThreeDSecurePostalAddressUnitTest {
                 .lastName("Fakerson");
 
         JSONObject jsonParams = address.toJson();
+        JSONObject jsonBillingAddress = jsonParams.getJSONObject("billingAddress");
 
-        assertEquals("123 Fake St.", jsonParams.get("line1"));
-        assertEquals("Apt. 3", jsonParams.get("line2"));
-        assertEquals("Oakland", jsonParams.get("city"));
-        assertEquals("CA", jsonParams.get("state"));
-        assertEquals("94602", jsonParams.get("postalCode"));
-        assertTrue(jsonParams.isNull("countryCode"));
         assertEquals("John", jsonParams.get("firstName"));
         assertEquals("Fakerson", jsonParams.get("lastName"));
         assertTrue(jsonParams.isNull("phoneNumber"));
+        assertEquals("123 Fake St.", jsonBillingAddress.get("line1"));
+        assertEquals("Apt. 3", jsonBillingAddress.get("line2"));
+        assertEquals("Oakland", jsonBillingAddress.get("city"));
+        assertEquals("CA", jsonBillingAddress.get("state"));
+        assertEquals("94602", jsonBillingAddress.get("postalCode"));
+        assertTrue(jsonBillingAddress.isNull("countryCode"));
     }
 
     @Test
@@ -126,12 +128,7 @@ public class ThreeDSecurePostalAddressUnitTest {
 
         JSONObject jsonParams = address.toJson();
 
-        assertTrue(jsonParams.isNull("line1"));
-        assertTrue(jsonParams.isNull("line2"));
-        assertTrue(jsonParams.isNull("city"));
-        assertTrue(jsonParams.isNull("state"));
-        assertTrue(jsonParams.isNull("postalCode"));
-        assertTrue(jsonParams.isNull("countryCode"));
+        assertTrue(jsonParams.isNull("billingAddress"));
         assertTrue(jsonParams.isNull("firstName"));
         assertTrue(jsonParams.isNull("lastName"));
         assertTrue(jsonParams.isNull("phoneNumber"));
