@@ -618,6 +618,10 @@
   * Fix BraintreeDataCollector as an optional dependency
   * Fix `PaymentRequest` crash when Google Play Services is not present
 
+## 3.0.0
+
+* Convert to AndroidX
+
 ## 2.0.1
 
 * Update Visa Checkout to 6.6.1
