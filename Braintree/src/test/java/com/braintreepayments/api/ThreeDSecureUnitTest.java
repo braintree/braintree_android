@@ -105,7 +105,7 @@ public class ThreeDSecureUnitTest {
                         .countryCodeAlpha2("US")
                         .phoneNumber("12345678"));
 
-        ThreeDSecure.performVerification(mFragment, request, "123");
+        ThreeDSecure.performVerification(mFragment, request);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(mFragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));
@@ -167,7 +167,7 @@ public class ThreeDSecureUnitTest {
                         .postalCode("12345")
                         .countryCodeAlpha2("US"));
 
-        ThreeDSecure.performVerification(mFragment, request, "123");
+        ThreeDSecure.performVerification(mFragment, request);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(mFragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));

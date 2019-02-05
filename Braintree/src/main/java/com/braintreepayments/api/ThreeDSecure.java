@@ -122,51 +122,11 @@ public class ThreeDSecure {
      * @param amount The amount of the transaction in the current merchant account's currency.
      */
     public static void performVerification(final BraintreeFragment fragment, final String nonce, final String amount) {
-//        ThreeDSecureRequest request = new ThreeDSecureRequest()
-//            .nonce(nonce)
-//            .amount(amount);
-//
-//        performVerification(fragment, request);
+        ThreeDSecureRequest request = new ThreeDSecureRequest()
+            .nonce(nonce)
+            .amount(amount);
 
-        // TODO this needs to support v1 and v2 flows
-        // Right now its hard coded for v2 for testing
-        fragment.waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                Log.d("onConfigurationFetched", configuration.getCardinalAuthenticationJwt());
-                Cardinal.getInstance().init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
-                    @Override
-                    public void onSetupCompleted(String dfReferenceId) {
-                        Log.d("setup-complete nonce", "" + dfReferenceId);
-
-                        // TODO: Remove hard coded customer info
-                        ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress();
-                        billingAddress.firstName("John");
-                        billingAddress.lastName("Smith");
-                        billingAddress.streetAddress("123 River Lane");
-                        billingAddress.extendedAddress("Unit 1");
-                        billingAddress.locality("Chicago");
-                        billingAddress.postalCode("12345");
-                        billingAddress.region("IL");
-
-                        ThreeDSecureRequest request = new ThreeDSecureRequest()
-                            .nonce(nonce)
-                            .amount(amount)
-                            .mobilePhoneNumber("5551234567")
-                            .shippingMethod("01")
-                            .billingAddress(billingAddress)
-                            .email("email@email.com");
-
-                        performVerification(fragment, request, dfReferenceId);
-                    }
-
-                    @Override
-                    public void onValidated(ValidateResponse validateResponse, String s) {
-                        Log.d("on-validated", "" + s);
-                    }
-                });
-            }
-        });
+        performVerification(fragment, request);
     }
 
     /**
@@ -184,7 +144,7 @@ public class ThreeDSecure {
      *                  also be responsible for handling callbacks to it's listeners
      * @param request the {@link ThreeDSecureRequest} with information used for authentication.
      */
-    public static void performVerification(final BraintreeFragment fragment, final ThreeDSecureRequest request, final String dfReferenceId) {
+    public static void performVerification(final BraintreeFragment fragment, final ThreeDSecureRequest request) {
         if (request.getAmount() == null || request.getNonce() == null) {
             fragment.postCallback(new InvalidArgumentException("The ThreeDSecureRequest nonce and amount cannot be null"));
             return;
@@ -211,28 +171,40 @@ public class ThreeDSecure {
                     return;
                 }
 
-                Log.d("performing lookup", "performing lookup");
-                fragment.getHttpClient().post(TokenizationClient.versionedPath(
-                        TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() +
-                                "/three_d_secure/lookup"), request.build(dfReferenceId), new HttpResponseCallback() {
+                Cardinal.getInstance().init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
                     @Override
-                    public void success(String responseBody) {
-                        Log.d("response", responseBody);
-                        try {
-                            ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(responseBody);
-                            if (threeDSecureLookup.getAcsUrl() != null) {
-                                launchBrowserSwitch(fragment, threeDSecureLookup);
-                            } else {
-                                fragment.postCallback(threeDSecureLookup.getCardNonce());
+                    public void onSetupCompleted(String dfReferenceId) {
+                        Log.d("setup-complete nonce", "" + dfReferenceId);
+
+                        Log.d("performing lookup", "performing lookup");
+                        fragment.getHttpClient().post(TokenizationClient.versionedPath(
+                                TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() +
+                                        "/three_d_secure/lookup"), request.build(dfReferenceId), new HttpResponseCallback() {
+                            @Override
+                            public void success(String responseBody) {
+                                Log.d("response", responseBody);
+                                try {
+                                    ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(responseBody);
+                                    if (threeDSecureLookup.getAcsUrl() != null) {
+                                        launchBrowserSwitch(fragment, threeDSecureLookup);
+                                    } else {
+                                        fragment.postCallback(threeDSecureLookup.getCardNonce());
+                                    }
+                                } catch (JSONException e) {
+                                    fragment.postCallback(e);
+                                }
                             }
-                        } catch (JSONException e) {
-                            fragment.postCallback(e);
-                        }
+
+                            @Override
+                            public void failure(Exception exception) {
+                                fragment.postCallback(exception);
+                            }
+                        });
                     }
 
                     @Override
-                    public void failure(Exception exception) {
-                        fragment.postCallback(exception);
+                    public void onValidated(ValidateResponse validateResponse, String s) {
+                        Log.d("on-validated", "" + s);
                     }
                 });
             }
