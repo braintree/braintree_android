@@ -6,6 +6,9 @@ import android.content.Intent;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
+import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
+import com.cardinalcommerce.cardinalmobilesdk.services.CruiseService;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 import com.paypal.android.sdk.onetouch.core.Request;
 import com.paypal.android.sdk.onetouch.core.Result;
@@ -17,15 +20,47 @@ import com.paypal.android.sdk.onetouch.core.sdk.PendingRequest;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.doAnswer;
+import static org.powermock.api.mockito.PowerMockito.doNothing;
+import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 class BraintreePowerMockHelper {
+    static class MockStaticCardinal {
+        static void initCompletesSuccessfully(final String dfReferenceId) {
+            Cardinal cruiseService = mock(Cardinal.class);
+            Mockito.doAnswer(new Answer() {
+                @Override
+                public Object answer(InvocationOnMock invocation) {
+                    CardinalInitService cardinalInitService = (CardinalInitService) invocation.getArguments()[1];
+
+                    cardinalInitService.onSetupCompleted(dfReferenceId);
+                    return null;
+                }
+            }).when(cruiseService).init(anyString(), any(CardinalInitService.class));
+
+            mockStatic(Cardinal.class);
+            doReturn(cruiseService).when(Cardinal.class);
+            Cardinal.getInstance();
+        }
+
+        static void initCompletesWithFailure() {
+            // TODO
+        }
+    }
+
+    static class MockStaticThreeDSecure {
+        static void mockCardinalSdk() {
+            mockStatic(ThreeDSecure.class);
+            doNothing().when(ThreeDSecure.class);
+            ThreeDSecure.configureCardinal(any(BraintreeFragment.class));
+        }
+    }
+
     static class MockStaticPayPalOneTouch {
         static void parseResponse(final ResultType wantedResultType) {
             mockStatic(PayPalOneTouchCore.class);

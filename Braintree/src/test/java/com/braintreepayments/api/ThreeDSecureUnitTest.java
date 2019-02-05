@@ -15,6 +15,7 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
+import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,7 +47,7 @@ import static org.powermock.api.mockito.PowerMockito.spy;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "javax.crypto.*" })
-@PrepareForTest({ ManifestValidator.class })
+@PrepareForTest({ Cardinal.class, ManifestValidator.class })
 public class ThreeDSecureUnitTest {
 
     @Rule
@@ -88,6 +89,8 @@ public class ThreeDSecureUnitTest {
 
     @Test
     public void performVerification_sendsAllParamatersInLookupRequest() throws InterruptedException, JSONException {
+        BraintreePowerMockHelper.MockStaticCardinal.initCompletesSuccessfully("fake-df");
+
         ThreeDSecureRequest request = new ThreeDSecureRequest()
                 .nonce("a-nonce")
                 .amount("1.00")
@@ -113,6 +116,7 @@ public class ThreeDSecureUnitTest {
         JSONObject body = new JSONObject(captor.getValue());
 
         assertEquals("1.00", body.getString("amount"));
+        assertEquals("fake-df", body.getString("df_reference_id"));
 
         JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInformation");
 
@@ -135,6 +139,7 @@ public class ThreeDSecureUnitTest {
 
     @Test
     public void performVerification_sendsMinimumParamatersInLookupRequest() throws InterruptedException, JSONException {
+        BraintreePowerMockHelper.MockStaticCardinal.initCompletesSuccessfully("fake-df");
         ThreeDSecure.performVerification(mFragment, mBasicRequest);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -143,6 +148,7 @@ public class ThreeDSecureUnitTest {
         JSONObject body = new JSONObject(captor.getValue());
 
         assertEquals("1.00", body.getString("amount"));
+        assertEquals("fake-df", body.getString("df_reference_id"));
 
         JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInformation");
 
@@ -154,6 +160,8 @@ public class ThreeDSecureUnitTest {
 
     @Test
     public void performVerification_sendsPartialParamatersInLookupRequest() throws InterruptedException, JSONException {
+        BraintreePowerMockHelper.MockStaticCardinal.initCompletesSuccessfully("fake-df");
+
         ThreeDSecureRequest request = new ThreeDSecureRequest()
                 .nonce("a-nonce")
                 .amount("1.00")
@@ -175,6 +183,7 @@ public class ThreeDSecureUnitTest {
         JSONObject body = new JSONObject(captor.getValue());
 
         assertEquals("1.00", body.getString("amount"));
+        assertEquals("fake-df", body.getString("df_reference_id"));
 
         JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInformation");
 

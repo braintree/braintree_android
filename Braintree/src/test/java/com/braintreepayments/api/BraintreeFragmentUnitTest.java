@@ -101,6 +101,8 @@ public class BraintreeFragmentUnitTest {
 
     @Before
     public void setup() {
+        BraintreePowerMockHelper.MockStaticThreeDSecure.mockCardinalSdk();
+
         mActivity = spy(Robolectric.setupActivity(FragmentTestActivity.class));
         doNothing().when(mActivity).startActivity(any(Intent.class));
         AnalyticsDatabaseTestUtils.clearAllEvents(mActivity);
