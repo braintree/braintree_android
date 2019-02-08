@@ -45,6 +45,7 @@ import androidx.appcompat.app.AppCompatActivity;
  * for a full explanation of 3D Secure.
  */
 public class ThreeDSecure {
+    private static String mDFReferenceId;
 
     /**
      * The versioned path of the 3D Secure assets to use. Hosted by Braintree.
@@ -69,37 +70,22 @@ public class ThreeDSecure {
      * @param amount The amount of the transaction in the current merchant account's currency
      */
     public static void performVerification(final BraintreeFragment fragment, final CardBuilder cardBuilder,
-            final String amount) {
+                                           final String amount) {
 
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
-                if (TextUtils.isEmpty(configuration.getCardinalAuthenticationJwt())) {
-                    TokenizationClient.tokenize(fragment, cardBuilder, new PaymentMethodNonceCallback() {
-                        @Override
-                        public void success(PaymentMethodNonce paymentMethodNonce) {
-                            performVerification(fragment, paymentMethodNonce.getNonce(), amount);
-                        }
+                TokenizationClient.tokenize(fragment, cardBuilder, new PaymentMethodNonceCallback() {
+                    @Override
+                    public void success(PaymentMethodNonce paymentMethodNonce) {
+                        performVerification(fragment, paymentMethodNonce.getNonce(), amount);
+                    }
 
-                        @Override
-                        public void failure(Exception exception) {
-                            fragment.postCallback(exception);
-                        }
-                    });
-                } else {
-                    Cardinal.getInstance().init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
-                        @Override
-                        public void onSetupCompleted(String s) {
-                            Log.d("setup-complete cardBuilder", s);
-
-                        }
-
-                        @Override
-                        public void onValidated(ValidateResponse validateResponse, String s) {
-                            Log.d("on-validated", s);
-                        }
-                    });
-                }
+                    @Override
+                    public void failure(Exception exception) {
+                        fragment.postCallback(exception);
+                    }
+                });
             }
         });
 
@@ -171,42 +157,33 @@ public class ThreeDSecure {
                     return;
                 }
 
-                Cardinal.getInstance().init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
+                // TODO: Ensure that we alreayd have mDFReferenceId before continuing
+                Log.d("DFReferenceId", "" + mDFReferenceId);
+                Log.d("performing lookup", "performing lookup");
+                fragment.getHttpClient().post(TokenizationClient.versionedPath(
+                        TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() +
+                                "/three_d_secure/lookup"), request.build(mDFReferenceId), new HttpResponseCallback() {
                     @Override
-                    public void onSetupCompleted(String dfReferenceId) {
-                        Log.d("setup-complete nonce", "" + dfReferenceId);
-
-                        Log.d("performing lookup", "performing lookup");
-                        fragment.getHttpClient().post(TokenizationClient.versionedPath(
-                                TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() +
-                                        "/three_d_secure/lookup"), request.build(dfReferenceId), new HttpResponseCallback() {
-                            @Override
-                            public void success(String responseBody) {
-                                Log.d("response", responseBody);
-                                try {
-                                    ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(responseBody);
-                                    if (threeDSecureLookup.getAcsUrl() != null) {
-                                        launchBrowserSwitch(fragment, threeDSecureLookup);
-                                    } else {
-                                        fragment.postCallback(threeDSecureLookup.getCardNonce());
-                                    }
-                                } catch (JSONException e) {
-                                    fragment.postCallback(e);
-                                }
+                    public void success(String responseBody) {
+                        Log.d("response", responseBody);
+                        try {
+                            ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(responseBody);
+                            if (threeDSecureLookup.getAcsUrl() != null) {
+                                launchBrowserSwitch(fragment, threeDSecureLookup);
+                            } else {
+                                fragment.postCallback(threeDSecureLookup.getCardNonce());
                             }
-
-                            @Override
-                            public void failure(Exception exception) {
-                                fragment.postCallback(exception);
-                            }
-                        });
+                        } catch (JSONException e) {
+                            fragment.postCallback(e);
+                        }
                     }
 
                     @Override
-                    public void onValidated(ValidateResponse validateResponse, String s) {
-                        Log.d("on-validated", "" + s);
+                    public void failure(Exception exception) {
+                        fragment.postCallback(exception);
                     }
                 });
+
             }
         });
     }
@@ -280,8 +257,19 @@ public class ThreeDSecure {
                     // TODO what UI type should we use
                     cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
 
-                    Cardinal.getInstance()
-                            .configure(fragment.getApplicationContext(), cardinalConfigurationParameters);
+                    Cardinal cardinal = Cardinal.getInstance();
+                    cardinal.configure(fragment.getApplicationContext(), cardinalConfigurationParameters);
+                    cardinal.init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
+                        @Override
+                        public void onSetupCompleted(String consumerSessionId) {
+                            mDFReferenceId = consumerSessionId;
+                        }
+
+                        @Override
+                        public void onValidated(ValidateResponse validateResponse, String serverJwt) {
+                            Log.d("ERROR", "Cardinal could not be initialized");
+                        }
+                    });
                 }
             });
         }

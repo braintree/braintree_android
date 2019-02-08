@@ -59,7 +59,10 @@ dependencies {
 
     // TODO This aar needs to be hosted in a centralized location such as Maven
     // TODO this should also be a 'com.braintreepayments.api:three-d-secure' dependency
-    api(name: 'cardinal-sdk', version: '2.1.1', ext: 'aar')
+    api(name: 'cardinal-sdk', version: '2.1.2', ext: 'aar')
+    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '4.39'
+    implementation group: 'com.madgag.spongycastle', name: 'core', version: '1.58.0.0'
+    implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.59'
 
     androidTestImplementation 'com.google.android.gms:play-services-wallet:16.0.1'
     androidTestImplementation project(':BraintreeDataCollector')

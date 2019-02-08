@@ -20,22 +20,23 @@ public class DemoApplication extends Application implements UncaughtExceptionHan
 
     @Override
     public void onCreate() {
-        if (BuildConfig.DEBUG) {
-            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                    .detectCustomSlowCalls()
-                    .detectNetwork()
-                    .penaltyLog()
-                    .build());
-            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                    .detectLeakedSqlLiteObjects()
-                    .detectLeakedRegistrationObjects()
-                    .detectLeakedClosableObjects()
-                    .detectActivityLeaks()
-                    .detectFileUriExposure()
-                    .penaltyLog()
-                    .penaltyDeath()
-                    .build());
-        }
+        // TODO: This is causing the Cardinal SDK to crash, we need to get them to fix it.
+//        if (BuildConfig.DEBUG) {
+//            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+//                    .detectCustomSlowCalls()
+//                    .detectNetwork()
+//                    .penaltyLog()
+//                    .build());
+//            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+//                    .detectLeakedSqlLiteObjects()
+//                    .detectLeakedRegistrationObjects()
+//                    .detectLeakedClosableObjects()
+//                    .detectActivityLeaks()
+//                    .detectFileUriExposure()
+//                    .penaltyLog()
+//                    .penaltyDeath()
+//                    .build());
+//        }
 
         super.onCreate();
 
