@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 2.22.0
+
+* Add support for `PayPalLineItem`
+
 ## 2.21.0
 
 * Deprecate PayPal Future Payments, use PayPal Billing Agreements
