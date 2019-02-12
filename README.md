@@ -20,7 +20,7 @@ To use the latest build from the `master` branch use:
 
 ```groovy
 dependencies {
-  compile 'com.braintreepayments.api:braintree:2.21.1-SNAPSHOT'
+  compile 'com.braintreepayments.api:braintree:2.22.1-SNAPSHOT'
 }
 ```
 
