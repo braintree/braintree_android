@@ -7,6 +7,7 @@ import android.os.Bundle;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.google.android.material.textfield.TextInputLayout;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,6 +39,8 @@ import com.braintreepayments.cardform.OnCardFormSubmitListener;
 import com.braintreepayments.cardform.utils.CardType;
 import com.braintreepayments.cardform.view.CardEditText;
 import com.braintreepayments.cardform.view.CardForm;
+
+import androidx.annotation.Nullable;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -320,5 +323,11 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
         return  "Amex Rewards Balance: \n" +
                 "- amount: " + rewardsBalance.getRewardsAmount() + "\n" +
                 "- errorCode: " + rewardsBalance.getErrorCode();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("data", "here");
     }
 }

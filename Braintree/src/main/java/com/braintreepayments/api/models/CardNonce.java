@@ -49,7 +49,8 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         if (jsonObject.has(DATA_KEY)) {
             cardNonce.fromGraphQLJson(jsonObject);
         } else {
-            cardNonce.fromJson(CardNonce.getJsonObjectForType(API_RESOURCE_KEY, jsonObject));
+            // cardNonce.fromJson(CardNonce.getJsonObjectForType(API_RESOURCE_KEY, jsonObject));
+            cardNonce.fromJson(jsonObject.getJSONObject("paymentMethod"));
         }
 
         return cardNonce;

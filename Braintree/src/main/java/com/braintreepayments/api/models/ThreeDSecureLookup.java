@@ -109,6 +109,10 @@ public class ThreeDSecureLookup implements Parcelable {
         return mThreeDSecureVersion;
     }
 
+    public Boolean isThreeDSecureVersion2() {
+        return this.mThreeDSecureVersion.startsWith("2.");
+    }
+
     /**
      * TODO JavaDoc
      */

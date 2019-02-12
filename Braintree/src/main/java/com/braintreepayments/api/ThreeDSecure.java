@@ -1,5 +1,7 @@
 package com.braintreepayments.api;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -15,9 +17,11 @@ import com.braintreepayments.api.internal.ClassHelper;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
+import com.braintreepayments.api.models.ThreeDSecureInfo;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
@@ -25,6 +29,10 @@ import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 import com.cardinalcommerce.cardinalmobilesdk.models.response.InitResponse;
 import com.cardinalcommerce.cardinalmobilesdk.models.response.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
+import com.cardinalcommerce.cardinalmobilesdk.services.CardinalReceiver;
+import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
+import com.cardinalcommerce.shared.models.challenge.StepUpData;
+import com.cardinalcommerce.shared.models.enums.DirectoryServerID;
 import com.cardinalcommerce.shared.models.parameters.CardinalConfigurationParameters;
 import com.cardinalcommerce.shared.models.parameters.CardinalEnvironment;
 import com.cardinalcommerce.shared.models.parameters.CardinalRenderType;
@@ -32,6 +40,7 @@ import com.cardinalcommerce.shared.models.parameters.CardinalUiType;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -71,20 +80,17 @@ public class ThreeDSecure {
      */
     public static void performVerification(final BraintreeFragment fragment, final CardBuilder cardBuilder,
                                            final String amount) {
-        @Override
-        public void onConfigurationFetched(Configuration configuration) {
-            TokenizationClient.tokenize(fragment, cardBuilder, new PaymentMethodNonceCallback() {
-                @Override
-                public void success(PaymentMethodNonce paymentMethodNonce) {
-                    performVerification(fragment, paymentMethodNonce.getNonce(), amount);
-                }
+        TokenizationClient.tokenize(fragment, cardBuilder, new PaymentMethodNonceCallback() {
+            @Override
+            public void success(PaymentMethodNonce paymentMethodNonce) {
+                performVerification(fragment, paymentMethodNonce.getNonce(), amount);
+            }
 
-                @Override
-                public void failure(Exception exception) {
-                    fragment.postCallback(exception);
-                }
-            });
-        }
+            @Override
+            public void failure(Exception exception) {
+                fragment.postCallback(exception);
+            }
+        });
     }
 
     /**
@@ -163,9 +169,60 @@ public class ThreeDSecure {
                     public void success(String responseBody) {
                         Log.d("response", responseBody);
                         try {
-                            ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(responseBody);
+                            final ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(responseBody);
                             if (threeDSecureLookup.getAcsUrl() != null) {
-                                launchBrowserSwitch(fragment, threeDSecureLookup);
+
+                                if (threeDSecureLookup.isThreeDSecureVersion2()) {
+                                    Cardinal.getInstance().cca_continue(threeDSecureLookup.getTransactionId(),
+                                            threeDSecureLookup.getPareq(),
+                                            threeDSecureLookup.getAcsUrl(),
+                                            DirectoryServerID.VISA01,
+                                            fragment.getActivity(),
+                                            new CardinalValidateReceiver() {
+                                                @Override
+                                                public void onValidated(Context currentContext, ValidateResponse validateResponse, String serverJWT) {
+                                                    // TODO: Handle 3DS responses (error, cancel, failure, success)
+                                                    Log.d("validate: ", validateResponse.errorDescription);
+                                                    switch (validateResponse.getActionCode()) {
+                                                        case FAILURE:
+                                                        case SUCCESS:
+                                                        case NOACTION:
+                                                            JSONObject body = new JSONObject();
+
+                                                            try {
+                                                                body.put("jwt", serverJWT);
+                                                                body.put("paymentMethodNonce", threeDSecureLookup.getCardNonce().getNonce());
+
+                                                                fragment.getHttpClient().post(TokenizationClient.versionedPath(
+                                                                    TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + threeDSecureLookup.getCardNonce().getNonce() +
+                                                                            "/three_d_secure/authenticate_from_jwt"), body.toString(), new HttpResponseCallback() {
+                                                                    @Override
+                                                                    public void success(String responseBody) {
+                                                                        Log.d("Response: ", responseBody);
+                                                                        try {
+                                                                            CardNonce cardNonce = CardNonce.fromJson(responseBody);
+                                                                            fragment.postCallback(cardNonce);
+                                                                        } catch (JSONException e) { }
+                                                                    }
+
+                                                                    @Override
+                                                                    public void failure(Exception exception) {
+                                                                        fragment.postCallback(exception);
+                                                                    }
+                                                                });
+
+
+                                                            } catch (JSONException ignored) {}
+//
+                                                        case ERROR:
+                                                        case CANCEL:
+                                                    }
+
+                                                }
+                                            });
+                                } else {
+                                    launchBrowserSwitch(fragment, threeDSecureLookup);
+                                }
                             } else {
                                 fragment.postCallback(threeDSecureLookup.getCardNonce());
                             }
