@@ -26,6 +26,8 @@ import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestPayPalConfigurationBuilder;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
+import com.paypal.android.sdk.onetouch.core.BillingAgreementRequest;
+import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
 import com.paypal.android.sdk.onetouch.core.Request;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
 import com.paypal.android.sdk.onetouch.core.encryption.EncryptionUtils;
@@ -47,6 +49,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.ArrayList;
+import java.lang.reflect.Method;
 import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
@@ -1513,5 +1516,49 @@ public class PayPalUnitTest {
         PayPal.onActivityResult(fragment, Activity.RESULT_OK, null);
 
         verify(fragment).postCancelCallback(BraintreeRequestCodes.PAYPAL);
+    }
+
+    @Test
+    public void onActivityResult_NotOkAndAuthorizationRequestPersisted_sendsAnalyticsEvent() {
+        persistRequest(new AuthorizationRequest(RuntimeEnvironment.application));
+
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPal.onActivityResult(fragment, Activity.RESULT_CANCELED, null);
+
+        verify(fragment).sendAnalyticsEvent("paypal-future-payments.canceled");
+    }
+
+    @Test
+    public void onActivityResult_NotOkAndBillingAgreementRequestPersisted_sendsAnalyticsEvent() {
+        persistRequest(new BillingAgreementRequest());
+
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPal.onActivityResult(fragment, Activity.RESULT_CANCELED, null);
+
+        verify(fragment).sendAnalyticsEvent("paypal-billing-agreement.canceled");
+    }
+
+    @Test
+    public void onActivityResult_NotOkAndCheckoutRequestPersisted_sendsAnalyticsEvent() {
+        persistRequest(new CheckoutRequest());
+
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPal.onActivityResult(fragment, Activity.RESULT_CANCELED, null);
+
+        verify(fragment).sendAnalyticsEvent("paypal-single-payment.canceled");
+    }
+
+    private void persistRequest(Request request) {
+        try {
+            Method method = PayPal.class.getDeclaredMethod("persistRequest",
+                    Context.class, Request.class);
+            method.setAccessible(true);
+            method.invoke(null, RuntimeEnvironment.application, request);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

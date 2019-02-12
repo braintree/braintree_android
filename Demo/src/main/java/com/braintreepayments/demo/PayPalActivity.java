@@ -23,7 +23,10 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
 
 public class PayPalActivity extends BaseActivity implements ConfigurationListener,
         PaymentMethodNonceCreatedListener, BraintreeErrorListener {
@@ -192,12 +195,26 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
     }
 
     private static String formatAddress(PostalAddress address) {
-        return address.getRecipientName() + " " +
-                address.getStreetAddress() + " " +
-                address.getExtendedAddress() + " " +
-                address.getLocality() + " " +
-                address.getRegion() + " " +
-                address.getPostalCode() + " " +
-                address.getCountryCodeAlpha2();
+        String addressString = "";
+        List<String> addresses = Arrays.asList(
+                address.getRecipientName(),
+                address.getStreetAddress(),
+                address.getExtendedAddress(),
+                address.getLocality(),
+                address.getRegion(),
+                address.getPostalCode(),
+                address.getCountryCodeAlpha2()
+        );
+
+        for (String line : addresses) {
+            if (line == null) {
+                addressString += "null";
+            } else {
+                addressString += line;
+            }
+            addressString += " ";
+        }
+
+        return addressString;
     }
 }

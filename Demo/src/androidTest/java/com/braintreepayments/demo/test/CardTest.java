@@ -23,6 +23,7 @@ import static com.lukekorth.deviceautomator.AutomatorAction.setText;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withClass;
+import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextContaining;
@@ -64,8 +65,8 @@ public class CardTest extends TestHelper {
         onDevice(withText("Mobile Number")).perform(setText("5555555555"));
         onDevice(withText("Send SMS")).perform(click());
 
-        onDevice(withClass(ScrollView.class)).perform(scrollTextIntoView("SMS Auth Code"));
-        onDevice(withText("SMS Auth Code")).perform(setText("12345"));
+        onDevice(withClass(ScrollView.class)).perform(scrollTextIntoView("Purchase"));
+        onDevice(withContentDescription("SMS Auth Code")).perform(setText("12345"));
 
         onDevice(withClass(ScrollView.class)).perform(scrollTextIntoView("Purchase"));
         onDevice(withText("Purchase")).perform(click());
@@ -106,10 +107,8 @@ public class CardTest extends TestHelper {
         onDevice(withText("Purchase")).perform(click());
 
         onDevice(withText("Authentication")).waitForExists();
-
-        onDevice().pressTab();
         onDevice().typeText("1234");
-        onDevice().pressTab().pressTab().pressEnter();
+        onDevice(withText("Submit")).perform(click());
 
         ensureThreeDSecureRedirect();
 
@@ -135,10 +134,8 @@ public class CardTest extends TestHelper {
         onDevice(withText("Purchase")).perform(click());
 
         onDevice(withText("Authentication")).waitForExists();
-
-        onDevice().pressTab();
         onDevice().typeText("1234");
-        onDevice().pressTab().pressTab().pressEnter();
+        onDevice(withText("Submit")).perform(click());
 
         ensureThreeDSecureRedirect();
 

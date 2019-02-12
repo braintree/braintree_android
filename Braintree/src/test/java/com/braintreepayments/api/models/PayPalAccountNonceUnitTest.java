@@ -75,6 +75,15 @@ public class PayPalAccountNonceUnitTest {
     }
 
     @Test
+    public void fromJson_whenNoAddresses_returnsEmptyPostalAddress() throws JSONException {
+        JSONObject response = new JSONObject(stringFromFixture("payment_methods/paypal_account_response_without_addresses.json"));
+        PayPalAccountNonce paypalAccount = PayPalAccountNonce.fromJson(response.toString());
+
+        assertNotNull(paypalAccount.getShippingAddress());
+        assertNotNull(paypalAccount.getBillingAddress());
+    }
+
+    @Test
     public void getDescription_usesGetEmailIfDescriptionIsPayPalAndEmailIsNotEmpty() {
         PayPalAccountNonce payPalAccountNonce = spy(new PayPalAccountNonce());
         payPalAccountNonce.mDescription = "PayPal";

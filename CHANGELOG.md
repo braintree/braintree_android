@@ -1,5 +1,30 @@
 # Braintree Android SDK Release Notes
 
+## 2.21.0
+
+* Deprecate PayPal Future Payments, use PayPal Billing Agreements
+* Deprecate AndroidPayConfiguration, use the GooglePaymentConfiguration alias
+
+## 2.20.1
+
+* Fix null address properties on PayPalAccountNonce
+  * Those addresses should always be at least an empty PostalAddress
+
+## 2.20.0
+
+* Google Pay
+  * Add groundwork for v2 compatibility
+* Split PostalAddress into PostalAddress and PostalAddressParser
+  * Deprecates PostalAddress.fromJson - use PostalAddressParser.fromJson
+  * Add fromUserAddressJsonn to PostalAddressParser
+  * Add additional fields
+
+## 2.19.0
+
+* Move Google Payment to a separate module
+* Downgrade browser-switch to 0.1.6
+* Exclude customtabs from browser-switch dependency
+
 ## 2.18.1
 
 * Upgrade browser-switch to 0.1.7 fixes Chrome Custom Tab integration when using Jetifier to use AndroidX

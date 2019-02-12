@@ -81,8 +81,8 @@ public class LocalPaymentResult extends PaymentMethodNonce implements Parcelable
 
             JSONObject shippingAddress = payerInfo.optJSONObject(SHIPPING_ADDRESS_KEY);
 
-            mBillingAddress = PostalAddress.fromJson(billingAddress);
-            mShippingAddress = PostalAddress.fromJson(shippingAddress);
+            mBillingAddress = PostalAddressParser.fromJson(billingAddress);
+            mShippingAddress = PostalAddressParser.fromJson(shippingAddress);
 
             mGivenName = Json.optString(payerInfo, FIRST_NAME_KEY, "");
             mSurname = Json.optString(payerInfo, LAST_NAME_KEY, "");

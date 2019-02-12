@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.braintreepayments.api.Json;
+import com.braintreepayments.api.models.PostalAddressParser;
 
 import org.json.JSONObject;
 
@@ -13,63 +13,32 @@ import org.json.JSONObject;
  */
 public class PostalAddress implements Parcelable {
 
-    public static final String RECIPIENT_NAME_KEY = "recipientName";
-    public static final String STREET_ADDRESS_KEY = "street1";
-    public static final String EXTENDED_ADDRESS_KEY = "street2";
-    public static final String LOCALITY_KEY = "city";
-    public static final String COUNTRY_CODE_ALPHA_2_KEY = "country";
-    public static final String POSTAL_CODE_KEY = "postalCode";
-    public static final String REGION_KEY = "state";
-    public static final String LINE_1_KEY = "line1";
-    public static final String LINE_2_KEY = "line2";
-    public static final String COUNTRY_CODE_KEY = "countryCode";
-
-    public static final String COUNTRY_CODE_UNDERSCORE_KEY = "country_code";
-    public static final String POSTAL_CODE_UNDERSCORE_KEY = "postal_code";
-    public static final String RECIPIENT_NAME_UNDERSCORE_KEY = "recipient_name";
-
     private String mRecipientName;
+    private String mPhoneNumber;
     private String mStreetAddress;
     private String mExtendedAddress;
     private String mLocality;
     private String mRegion;
     private String mPostalCode;
+    private String mSortingCode;
     private String mCountryCodeAlpha2;
 
-    public PostalAddress() {}
+    public PostalAddress() {
+    }
 
+    /** @deprecated: Use PostalAddressParser#fromJson(JSONObject) */
+    @Deprecated
     public static PostalAddress fromJson(JSONObject accountAddress) {
-        // If we don't have an account address, return an empty PostalAddress.
-        if (accountAddress == null) {
-            return new PostalAddress();
-        }
-
-        String streetAddress = Json.optString(accountAddress, STREET_ADDRESS_KEY, null);
-        String extendedAddress = Json.optString(accountAddress, EXTENDED_ADDRESS_KEY, null);
-        String countryCodeAlpha2 = Json.optString(accountAddress, COUNTRY_CODE_ALPHA_2_KEY, null);
-
-        //Check alternate keys
-        if (streetAddress == null) {
-            streetAddress = Json.optString(accountAddress, LINE_1_KEY, null);
-        }
-        if (extendedAddress == null) {
-            extendedAddress = Json.optString(accountAddress, LINE_2_KEY, null);
-        }
-        if (countryCodeAlpha2 == null) {
-            countryCodeAlpha2 = Json.optString(accountAddress, COUNTRY_CODE_KEY, null);
-        }
-
-        return new PostalAddress().recipientName(Json.optString(accountAddress, RECIPIENT_NAME_KEY, null))
-                .streetAddress(streetAddress)
-                .extendedAddress(extendedAddress)
-                .locality(Json.optString(accountAddress, LOCALITY_KEY, null))
-                .region(Json.optString(accountAddress, REGION_KEY, null))
-                .postalCode(Json.optString(accountAddress, POSTAL_CODE_KEY, null))
-                .countryCodeAlpha2(countryCodeAlpha2);
+        return PostalAddressParser.fromJson(accountAddress);
     }
 
     public PostalAddress recipientName(String name) {
         mRecipientName = name;
+        return this;
+    }
+
+    public PostalAddress phoneNumber(String phoneNumber) {
+        mPhoneNumber = phoneNumber;
         return this;
     }
 
@@ -98,6 +67,11 @@ public class PostalAddress implements Parcelable {
         return this;
     }
 
+    public PostalAddress sortingCode(String sortingCode) {
+        mSortingCode = sortingCode;
+        return this;
+    }
+
     public PostalAddress countryCodeAlpha2(String countryCodeAlpha2) {
         mCountryCodeAlpha2 = countryCodeAlpha2;
         return this;
@@ -105,6 +79,10 @@ public class PostalAddress implements Parcelable {
 
     public String getRecipientName() {
         return mRecipientName;
+    }
+
+    public String getPhoneNumber() {
+        return mPhoneNumber;
     }
 
     public String getStreetAddress() {
@@ -125,6 +103,10 @@ public class PostalAddress implements Parcelable {
 
     public String getPostalCode() {
         return mPostalCode;
+    }
+
+    public String getSortingCode() {
+        return mSortingCode;
     }
 
     public String getCountryCodeAlpha2() {
@@ -160,6 +142,8 @@ public class PostalAddress implements Parcelable {
         dest.writeString(mPostalCode);
         dest.writeString(mCountryCodeAlpha2);
         dest.writeString(mRecipientName);
+        dest.writeString(mPhoneNumber);
+        dest.writeString(mSortingCode);
     }
 
     private PostalAddress(Parcel in) {
@@ -170,6 +154,8 @@ public class PostalAddress implements Parcelable {
         mPostalCode = in.readString();
         mCountryCodeAlpha2 = in.readString();
         mRecipientName = in.readString();
+        mPhoneNumber = in.readString();
+        mSortingCode = in.readString();
     }
 
     public static final Creator<PostalAddress> CREATOR = new Creator<PostalAddress>() {

@@ -52,12 +52,10 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
     }
 
     /**
-     * Used to handle exceptions that occur during 3D Secure authentication.
-     *
-     * @param exception The message of the exception that occurred.
-     * @return The {@link ThreeDSecureAuthenticationResponse} to be handled by
-     * {@link com.braintreepayments.api.threedsecure.ThreeDSecureWebViewClient}
+     * @deprecated ThreeDSecure WebView flow is deprecated. Use the browser-switch flow.
+     * {@see https://developers.braintreepayments.com/guides/3d-secure/client-side/android/v2}
      */
+    @Deprecated
     public static ThreeDSecureAuthenticationResponse fromException(String exception) {
         ThreeDSecureAuthenticationResponse authenticationResponse = new ThreeDSecureAuthenticationResponse();
 

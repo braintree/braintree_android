@@ -6,9 +6,11 @@ import android.support.test.runner.AndroidJUnit4;
 import com.braintreepayments.demo.test.utilities.TestHelper;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.assumePayPalAppInstalled;
 import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.uninstallPayPalWallet;
 import static com.braintreepayments.demo.test.utilities.UiTestActions.clickWebViewText;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
@@ -24,10 +26,15 @@ import static org.hamcrest.Matchers.endsWith;
 @SdkSuppress(minSdkVersion = 21)
 public class PayPalBrowserSwitchTest extends TestHelper {
 
+    @BeforeClass
+    public static void uninstallPayPal() {
+        uninstallPayPalWallet();
+    }
+
     @Before
     public void setup() {
         super.setup();
-        uninstallPayPalWallet();
+        assumePayPalAppInstalled(false);
         onDevice(withText("PayPal")).waitForEnabled().perform(click());
     }
 

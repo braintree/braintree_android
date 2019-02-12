@@ -32,6 +32,7 @@ import com.braintreepayments.api.models.PayPalPaymentResource;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
+import com.braintreepayments.api.models.PostalAddressParser;
 import com.paypal.android.sdk.onetouch.core.AuthorizationRequest;
 import com.paypal.android.sdk.onetouch.core.BillingAgreementRequest;
 import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
@@ -57,25 +58,28 @@ import java.util.Locale;
 public class PayPal {
 
     /**
-     * PayPal Scope for Future Payments. Always enabled for the future payments flow.
+     * Use {@link #requestBillingAgreement(BraintreeFragment, PayPalRequest)}.
      */
+    @Deprecated
     public static final String SCOPE_FUTURE_PAYMENTS = PayPalScope.FUTURE_PAYMENTS.getScopeUri();
 
     /**
-     * PayPal Scope for email. Always enabled for the future payments flow.
+     * Use {@link #requestBillingAgreement(BraintreeFragment, PayPalRequest)}.
      */
+    @Deprecated
     public static final String SCOPE_EMAIL = PayPalScope.EMAIL.getScopeUri();
 
     /**
-     * PayPal Scope for obtaining the accounts address. Optional, can be specified in the optional
-     * scopes when using {@link #authorizeAccount(BraintreeFragment, List)}.
+     * Use {@link #requestBillingAgreement(BraintreeFragment, PayPalRequest)}.
      */
+    @Deprecated
     public static final String SCOPE_ADDRESS = PayPalScope.ADDRESS.getScopeUri();
 
     private static final String REQUEST_KEY = "com.braintreepayments.api.PayPal.REQUEST_KEY";
     private static final String REQUEST_TYPE_KEY = "com.braintreepayments.api.PayPal.REQUEST_TYPE_KEY";
     private static final String PAYPAL_REQUEST_KEY = "com.braintreepayments.api.PayPal.PAYPAL_REQUEST_KEY";
 
+    @Deprecated
     protected static boolean sFuturePaymentsOverride = false;
 
     private static final String SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement";
@@ -92,6 +96,7 @@ public class PayPal {
     private static final String EXPERIENCE_PROFILE_KEY = "experience_profile";
     private static final String AMOUNT_KEY = "amount";
     private static final String CURRENCY_ISO_CODE_KEY = "currency_iso_code";
+    @Deprecated
     private static final String PAYLOAD_CLIENT_TOKEN_KEY = "client_token";
     private static final String INTENT_KEY = "intent";
     private static final String LANDING_PAGE_TYPE_KEY = "landing_page_type";
@@ -102,25 +107,17 @@ public class PayPal {
     private static final String LINE_ITEMS_KEY = "line_items";
 
     /**
-     * Starts the Pay With PayPal flow. This will launch the PayPal app if installed or switch to
-     * the browser for user authorization. The Billing Agreement flow will be used if enabled,
-     * otherwise the Future Payment flow will be used.
-     *
-     * @param fragment A {@link BraintreeFragment} used to process the request.
+     * @deprecated Use {@link #requestBillingAgreement(BraintreeFragment, PayPalRequest)}.
      */
+    @Deprecated
     public static void authorizeAccount(BraintreeFragment fragment) {
         authorizeAccount(fragment, null);
     }
 
     /**
-     * Starts the Pay With PayPal flow with additional scopes. This will launch the PayPal app if
-     * installed or switch to the browser for user authorization. The Billing Agreement flow will be
-     * used if enabled, otherwise the Future Payment flow will be used.
-     *
-     * @param fragment A {@link BraintreeFragment} used to process the request.
-     * @param additionalScopes A {@link java.util.List} of additional scopes. Ex: {@link
-     * #SCOPE_ADDRESS}. Acceptable scopes are defined in {@link com.braintreepayments.api.PayPal}.
+     * @deprecated Use {@link #requestBillingAgreement(BraintreeFragment, PayPalRequest)}.
      */
+    @Deprecated
     public static void authorizeAccount(final BraintreeFragment fragment, final List<String> additionalScopes) {
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
@@ -360,13 +357,13 @@ public class PayPal {
             }
 
             PostalAddress shippingAddress = request.getShippingAddressOverride();
-            shippingAddressJson.put(PostalAddress.LINE_1_KEY, shippingAddress.getStreetAddress());
-            shippingAddressJson.put(PostalAddress.LINE_2_KEY, shippingAddress.getExtendedAddress());
-            shippingAddressJson.put(PostalAddress.LOCALITY_KEY, shippingAddress.getLocality());
-            shippingAddressJson.put(PostalAddress.REGION_KEY, shippingAddress.getRegion());
-            shippingAddressJson.put(PostalAddress.POSTAL_CODE_UNDERSCORE_KEY, shippingAddress.getPostalCode());
-            shippingAddressJson.put(PostalAddress.COUNTRY_CODE_UNDERSCORE_KEY, shippingAddress.getCountryCodeAlpha2());
-            shippingAddressJson.put(PostalAddress.RECIPIENT_NAME_UNDERSCORE_KEY, shippingAddress.getRecipientName());
+            shippingAddressJson.put(PostalAddressParser.LINE_1_KEY, shippingAddress.getStreetAddress());
+            shippingAddressJson.put(PostalAddressParser.LINE_2_KEY, shippingAddress.getExtendedAddress());
+            shippingAddressJson.put(PostalAddressParser.LOCALITY_KEY, shippingAddress.getLocality());
+            shippingAddressJson.put(PostalAddressParser.REGION_KEY, shippingAddress.getRegion());
+            shippingAddressJson.put(PostalAddressParser.POSTAL_CODE_UNDERSCORE_KEY, shippingAddress.getPostalCode());
+            shippingAddressJson.put(PostalAddressParser.COUNTRY_CODE_UNDERSCORE_KEY, shippingAddress.getCountryCodeAlpha2());
+            shippingAddressJson.put(PostalAddressParser.RECIPIENT_NAME_UNDERSCORE_KEY, shippingAddress.getRecipientName());
         } else {
             experienceProfile.put(ADDRESS_OVERRIDE_KEY, false);
         }
@@ -477,12 +474,13 @@ public class PayPal {
             }
         } else {
             String type;
+
             if (request != null) {
-                type = request.getClass().getSimpleName().toLowerCase(Locale.ROOT);
+                type = paymentTypeForRequest(request);
             } else {
                 type = "unknown";
             }
-            fragment.sendAnalyticsEvent("paypal." + type + ".canceled");
+            fragment.sendAnalyticsEvent(type + ".canceled");
 
             if (resultCode != Activity.RESULT_CANCELED) {
                 fragment.postCancelCallback(BraintreeRequestCodes.PAYPAL);
@@ -604,6 +602,7 @@ public class PayPal {
     }
 
     @VisibleForTesting
+    @Deprecated
     static AuthorizationRequest getAuthorizationRequest(BraintreeFragment fragment) {
         return populateRequestData(fragment, new AuthorizationRequest(fragment.getApplicationContext()))
                 .privacyUrl(fragment.getConfiguration().getPayPal().getPrivacyUrl())

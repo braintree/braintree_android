@@ -19,6 +19,7 @@ public class PayPalConfiguration {
     private static final String ENVIRONMENT_KEY = "environment";
     private static final String TOUCH_DISABLED_KEY = "touchDisabled";
     private static final String CURRENCY_ISO_CODE_KEY = "currencyIsoCode";
+    @Deprecated
     private static final String BILLING_AGREEMENT_KEY = "billingAgreementsEnabled";
 
     private String mDisplayName;
@@ -29,6 +30,7 @@ public class PayPalConfiguration {
     private String mEnvironment;
     private boolean mTouchDisabled;
     private String mCurrencyIsoCode;
+    @Deprecated
     private boolean mUseBillingAgreement;
 
     /**
@@ -128,7 +130,7 @@ public class PayPalConfiguration {
     }
 
     /**
-     * @return if billing agreements are enabled.
+     * @deprecated Future Payments is deprecated, and Billing Agreements should always be used.
      */
     public boolean shouldUseBillingAgreement() {
         return mUseBillingAgreement;

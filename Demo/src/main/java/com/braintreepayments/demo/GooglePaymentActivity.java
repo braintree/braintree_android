@@ -14,7 +14,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.GooglePaymentCardNonce;
 import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.google.android.gms.identity.intents.model.UserAddress;
+import com.braintreepayments.api.models.PostalAddress;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
@@ -52,7 +52,7 @@ public class GooglePaymentActivity extends BaseActivity implements Configuration
 
     @Override
     public void onConfigurationFetched(Configuration configuration) {
-        if (configuration.getAndroidPay().isEnabled(this)) {
+        if (configuration.getGooglePayment().isEnabled(this)) {
             GooglePayment.isReadyToPay(mBraintreeFragment, new BraintreeResponseListener<Boolean>() {
                 @Override
                 public void onResponse(Boolean isReadyToPay) {
@@ -99,35 +99,33 @@ public class GooglePaymentActivity extends BaseActivity implements Configuration
                 .shippingAddressRequirements(ShippingAddressRequirements.newBuilder()
                         .addAllowedCountryCodes(Settings.getGooglePaymentAllowedCountriesForShipping(this))
                         .build())
-                .uiRequired(true);
+                .googleMerchantId(Settings.getGooglePaymentMerchantId(this));
 
         GooglePayment.requestPayment(mBraintreeFragment, googlePaymentRequest);
     }
 
     public static String getDisplayString(GooglePaymentCardNonce nonce) {
         return "Underlying Card Last Two: " + nonce.getLastTwo() + "\n" +
+                "Card Description: " + nonce.getDescription() + "\n" +
                 "Email: " + nonce.getEmail() + "\n" +
                 "Billing address: " + formatAddress(nonce.getBillingAddress()) + "\n" +
                 "Shipping address: " + formatAddress(nonce.getShippingAddress()) + "\n" +
                 getDisplayString(nonce.getBinData());
     }
 
-    private static String formatAddress(UserAddress address) {
+    private static String formatAddress(PostalAddress address) {
         if (address == null) {
             return "null";
         }
 
-        return address.getName() + " " +
-                address.getAddress1() + " " +
-                address.getAddress2() + " " +
-                address.getAddress3() + " " +
-                address.getAddress4() + " " +
-                address.getAddress5() + " " +
+        return address.getRecipientName() + " " +
+                address.getStreetAddress() + " " +
+                address.getExtendedAddress() + " " +
                 address.getLocality() + " " +
-                address.getAdministrativeArea() + " " +
+                address.getRegion() + " " +
                 address.getPostalCode() + " " +
                 address.getSortingCode() + " " +
-                address.getCountryCode() + " " +
+                address.getCountryCodeAlpha2() + " " +
                 address.getPhoneNumber();
     }
 }

@@ -28,6 +28,7 @@ import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.api.test.Matchers.withId;
@@ -87,7 +88,7 @@ public class ThreeDSecureVerificationTest {
         ThreeDSecure.performVerification(getFragment(), cardBuilder, TEST_AMOUNT);
 
         waitForView(withId(android.R.id.widget_frame));
-        onView(withText("Navigate up")).perform(click());
+        onView(withContentDescription("Navigate up")).perform(click());
 
         mCountDownLatch.await();
     }
@@ -291,11 +292,7 @@ public class ThreeDSecureVerificationTest {
         ThreeDSecure.performVerification(fragment, cardBuilder, TEST_AMOUNT);
 
         waitForView(withId(android.R.id.widget_frame));
-
-        clickWebViewText("Password:");
-
-        onDevice().pressTab().typeText("1234");
-        clickWebViewText("Submit");
+        enterThreeDSPasswordAndReturnToApp();
 
         mCountDownLatch.await();
     }
@@ -317,11 +314,7 @@ public class ThreeDSecureVerificationTest {
         ThreeDSecure.performVerification(fragment, cardBuilder, TEST_AMOUNT);
 
         waitForView(withId(android.R.id.widget_frame));
-
-        clickWebViewText("Password:");
-
-        onDevice().pressTab().typeText("1234");
-        clickWebViewText("Submit");
+        enterThreeDSPasswordAndReturnToApp();
 
         mCountDownLatch.await();
     }
@@ -371,11 +364,7 @@ public class ThreeDSecureVerificationTest {
         ThreeDSecure.performVerification(fragment, cardBuilder, TEST_AMOUNT);
 
         waitForView(withId(android.R.id.widget_frame));
-
-        clickWebViewText("Password:");
-
-        onDevice().pressTab().typeText("1234");
-        clickWebViewText("Submit");
+        enterThreeDSPasswordAndReturnToApp();
 
         mCountDownLatch.await();
     }
@@ -396,11 +385,7 @@ public class ThreeDSecureVerificationTest {
         ThreeDSecure.performVerification(fragment, cardBuilder, TEST_AMOUNT);
 
         waitForView(withId(android.R.id.widget_frame));
-
-        clickWebViewText("Password:");
-
-        onDevice().pressTab().typeText("1234");
-        clickWebViewText("Submit");
+        enterThreeDSPasswordAndReturnToApp();
 
         mCountDownLatch.await();
     }
@@ -422,11 +407,8 @@ public class ThreeDSecureVerificationTest {
         ThreeDSecure.performVerification(fragment, cardBuilder, TEST_AMOUNT);
 
         waitForView(withId(android.R.id.widget_frame));
+        enterThreeDSPasswordAndReturnToApp();
 
-        clickWebViewText("Password:");
-
-        onDevice().pressTab().typeText("1234");
-        clickWebViewText("Submit");
 
         mCountDownLatch.await();
     }
@@ -455,5 +437,10 @@ public class ThreeDSecureVerificationTest {
             fail(e.getMessage());
             return new BraintreeFragment();
         }
+    }
+
+    private void enterThreeDSPasswordAndReturnToApp() {
+        onDevice().typeText("1234");
+        clickWebViewText("Submit");
     }
 }
