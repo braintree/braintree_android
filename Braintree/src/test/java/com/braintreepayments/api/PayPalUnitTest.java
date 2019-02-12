@@ -18,7 +18,7 @@ import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PayPalAccountNonce;
-import com.braintreepayments.api.models.PayPalLineItem;
+import com.paypal.android.sdk.onetouch.core.PayPalLineItem;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;

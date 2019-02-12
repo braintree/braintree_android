@@ -4,13 +4,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.StringDef;
 
-import com.braintreepayments.api.BraintreeFragment;
+import com.paypal.android.sdk.onetouch.core.PayPalLineItem;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Represents the parameters that are needed to start a Checkout with PayPal
