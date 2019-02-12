@@ -5,7 +5,7 @@ import android.os.Parcel;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PayPalLineItem;
+import com.paypal.android.sdk.onetouch.core.PayPalLineItem;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PostalAddress;
 import com.paypal.android.sdk.onetouch.core.BillingAgreementRequest;

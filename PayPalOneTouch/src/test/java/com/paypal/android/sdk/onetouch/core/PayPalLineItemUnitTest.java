@@ -1,4 +1,4 @@
-package com.braintreepayments.api.models;
+package com.paypal.android.sdk.onetouch.core;
 
 import android.os.Parcel;
 
