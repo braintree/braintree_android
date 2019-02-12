@@ -71,24 +71,20 @@ public class ThreeDSecure {
      */
     public static void performVerification(final BraintreeFragment fragment, final CardBuilder cardBuilder,
                                            final String amount) {
+        @Override
+        public void onConfigurationFetched(Configuration configuration) {
+            TokenizationClient.tokenize(fragment, cardBuilder, new PaymentMethodNonceCallback() {
+                @Override
+                public void success(PaymentMethodNonce paymentMethodNonce) {
+                    performVerification(fragment, paymentMethodNonce.getNonce(), amount);
+                }
 
-        fragment.waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                TokenizationClient.tokenize(fragment, cardBuilder, new PaymentMethodNonceCallback() {
-                    @Override
-                    public void success(PaymentMethodNonce paymentMethodNonce) {
-                        performVerification(fragment, paymentMethodNonce.getNonce(), amount);
-                    }
-
-                    @Override
-                    public void failure(Exception exception) {
-                        fragment.postCallback(exception);
-                    }
-                });
-            }
-        });
-
+                @Override
+                public void failure(Exception exception) {
+                    fragment.postCallback(exception);
+                }
+            });
+        }
     }
 
     /**

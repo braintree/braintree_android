@@ -49,7 +49,6 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.models.UnionPayCapabilities;
 import com.braintreepayments.browserswitch.BrowserSwitchFragment;
-import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -57,7 +56,6 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayDeque;
@@ -107,7 +105,6 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     private String mIntegrationType;
     private String mSessionId;
     private AnalyticsDatabase mAnalyticsDatabase;
-    private Cardinal mCardinal;
 
     private ConfigurationListener mConfigurationListener;
     private BraintreeResponseListener<Exception> mConfigurationErrorListener;

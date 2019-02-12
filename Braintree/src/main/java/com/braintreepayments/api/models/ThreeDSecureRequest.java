@@ -200,17 +200,12 @@ public class ThreeDSecureRequest implements Parcelable {
                         additionalInformation.put(key, obj.get(key));
                     }
                 }
-            } else {
-                Log.d("Billing Address: ", String.valueOf(mBillingAddress = null));
             }
-
             base.put("additionalInformation", additionalInformation);
             base.put("df_reference_id", dfReferenceId);
 
-            Log.d("request", dfReferenceId);
         } catch (JSONException ignored) {}
 
-        Log.d("3DS Request Params: ", base.toString());
         return base.toString();
     }
 
