@@ -8,6 +8,9 @@ import com.braintreepayments.api.BraintreeFragment;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Represents the parameters that are needed to start a Checkout with PayPal
@@ -71,6 +74,7 @@ public class PayPalRequest implements Parcelable {
     private String mDisplayName;
     private boolean mOfferCredit;
     private String mMerchantAccountId;
+    private ArrayList<PayPalLineItem> mLineItems = new ArrayList<>();
 
     /**
      * Constructs a description of a PayPal checkout for Single Payment and Billing Agreements.
@@ -281,6 +285,17 @@ public class PayPalRequest implements Parcelable {
         return this;
     }
 
+    /**
+     * The line items for this transaction. It can include up to 249 line items.
+     *
+     * @param lineItems a collection of {@link PayPalLineItem}
+     */
+    public PayPalRequest lineItems(Collection<PayPalLineItem> lineItems) {
+        mLineItems.clear();
+        mLineItems.addAll(lineItems);
+        return this;
+    }
+
     public String getAmount() {
         return mAmount;
     }
@@ -321,6 +336,10 @@ public class PayPalRequest implements Parcelable {
         return mMerchantAccountId;
     }
 
+    public ArrayList<PayPalLineItem> getLineItems() {
+        return mLineItems;
+    }
+
     @PayPalPaymentIntent
     public String getIntent() {
         return mIntent;
@@ -356,6 +375,7 @@ public class PayPalRequest implements Parcelable {
         parcel.writeString(mDisplayName);
         parcel.writeByte(mOfferCredit ? (byte) 1:0);
         parcel.writeString(mMerchantAccountId);
+        parcel.writeList(mLineItems);
     }
 
     public PayPalRequest(Parcel in) {
@@ -372,6 +392,7 @@ public class PayPalRequest implements Parcelable {
         mDisplayName = in.readString();
         mOfferCredit = in.readByte() > 0;
         mMerchantAccountId = in.readString();
+        mLineItems = in.readArrayList(PayPalLineItem.class.getClassLoader());
     }
 
     public static final Creator<PayPalRequest> CREATOR = new Creator<PayPalRequest>() {
