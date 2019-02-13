@@ -201,7 +201,6 @@ public class ThreeDSecure {
                 new CardinalValidateReceiver() {
                     @Override
                     public void onValidated(Context currentContext, ValidateResponse validateResponse, String serverJWT) {
-                        Log.d("validate: ", validateResponse.errorDescription);
                         switch (validateResponse.getActionCode()) {
                             case FAILURE:
                             case SUCCESS:
@@ -210,7 +209,7 @@ public class ThreeDSecure {
                                 break;
 
                             case ERROR:
-                                Log.d("cardinalError", validateResponse.errorDescription);
+                                fragment.postCallback(new BraintreeException(validateResponse.errorDescription));
                                 break;
                             case CANCEL:
                                 fragment.postCancelCallback(BraintreeRequestCodes.THREE_D_SECURE);
@@ -237,12 +236,14 @@ public class ThreeDSecure {
             @Override
             public void success(String responseBody) {
                 Log.d("Response: ", responseBody);
-                try {
-                    CardNonce cardNonce = CardNonce.fromJson(responseBody);
-                    fragment.postCallback(cardNonce);
-                } catch (JSONException exception) {
-                    fragment.postCallback(exception);
-                }
+                    ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse.fromJson(responseBody);
+                    if (authenticationResponse.getErrors() != null) {
+                        // TODO: This isn't a GraphQL request, but the response uses GraphQL style errors. How do we want to parse them?
+                        fragment.postCallback(ErrorWithResponse.fromGraphQLJson(authenticationResponse.getErrors()));
+                    }
+                    else {
+                        fragment.postCallback(authenticationResponse.getCardNonce());
+                    }
             }
 
             @Override
