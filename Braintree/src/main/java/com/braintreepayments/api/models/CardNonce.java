@@ -18,6 +18,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
 
     protected static final String TYPE = "CreditCard";
     protected static final String API_RESOURCE_KEY = "creditCards";
+    protected static final String PAYMENT_METHOD_KEY = "paymentMethod";
 
     private static final String GRAPHQL_TOKENIZE_CREDIT_CARD_KEY = "tokenizeCreditCard";
     private static final String GRAPHQL_CREDIT_CARD_KEY = "creditCard";
@@ -48,9 +49,10 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
 
         if (jsonObject.has(DATA_KEY)) {
             cardNonce.fromGraphQLJson(jsonObject);
+        } else if (jsonObject.has(PAYMENT_METHOD_KEY)) {
+            cardNonce.fromJson(jsonObject.getJSONObject(PAYMENT_METHOD_KEY));
         } else {
-            // cardNonce.fromJson(CardNonce.getJsonObjectForType(API_RESOURCE_KEY, jsonObject));
-            cardNonce.fromJson(jsonObject.getJSONObject("paymentMethod"));
+            cardNonce.fromJson(CardNonce.getJsonObjectForType(API_RESOURCE_KEY, jsonObject));
         }
 
         return cardNonce;
