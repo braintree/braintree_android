@@ -235,15 +235,13 @@ public class ThreeDSecure {
                         "/three_d_secure/authenticate_from_jwt"), body.toString(), new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
-                Log.d("Response: ", responseBody);
-                    ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse.fromJson(responseBody);
-                    if (authenticationResponse.getErrors() != null) {
-                        // TODO: This isn't a GraphQL request, but the response uses GraphQL style errors. How do we want to parse them?
-                        fragment.postCallback(ErrorWithResponse.fromGraphQLJson(authenticationResponse.getErrors()));
-                    }
-                    else {
-                        fragment.postCallback(authenticationResponse.getCardNonce());
-                    }
+                ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse.fromJson(responseBody);
+                if (authenticationResponse.getErrors() != null) {
+                    // TODO: This isn't a GraphQL request, but the response uses GraphQL style errors. How do we want to parse them?
+                    fragment.postCallback(ErrorWithResponse.fromGraphQLJson(authenticationResponse.getErrors()));
+                } else {
+                    fragment.postCallback(authenticationResponse.getCardNonce());
+                }
             }
 
             @Override
@@ -332,6 +330,7 @@ public class ThreeDSecure {
 
                         @Override
                         public void onValidated(ValidateResponse validateResponse, String serverJwt) {
+                            // TODO: What doe we want to do with error
                             Log.d("ERROR", "Cardinal could not be initialized");
                         }
                     });
