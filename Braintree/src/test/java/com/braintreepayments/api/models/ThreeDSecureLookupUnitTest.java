@@ -10,6 +10,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
@@ -18,12 +19,14 @@ public class ThreeDSecureLookupUnitTest {
     private ThreeDSecureLookup mLookupWithoutVersion;
     private ThreeDSecureLookup mLookupWithVersion1;
     private ThreeDSecureLookup mLookupWithVersion2;
+    private ThreeDSecureLookup mLookupWithoutAcsURL;
 
     @Before
     public void setUp() throws JSONException {
         mLookupWithoutVersion = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response.json")); // Lookup doesn't contain a 3DS version number
         mLookupWithVersion1 = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number1.json"));
         mLookupWithVersion2 = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+        mLookupWithoutAcsURL = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_noAcsUrl.json"));
     }
 
     @Test
@@ -69,6 +72,19 @@ public class ThreeDSecureLookupUnitTest {
         assertTrue(mLookupWithVersion2.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
         assertTrue(mLookupWithVersion2.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertTrue(mLookupWithVersion2.getCardNonce().getThreeDSecureInfo().wasVerified());
+    }
+
+    @Test
+    public void fromJson_whenNoAcsURL_parsesCorrectly() {
+        assertNull(mLookupWithoutAcsURL.getAcsUrl());
+        assertEquals("merchant-descriptor", mLookupWithoutAcsURL.getMd());
+        assertEquals("https://term-url/", mLookupWithoutAcsURL.getTermUrl());
+        assertEquals("pareq", mLookupWithoutAcsURL.getPareq());
+        assertEquals("11", mLookupWithoutAcsURL.getCardNonce().getLastTwo());
+        assertEquals("123456-12345-12345-a-adfa", mLookupWithoutAcsURL.getCardNonce().getNonce());
+        assertTrue(mLookupWithoutAcsURL.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
+        assertTrue(mLookupWithoutAcsURL.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertTrue(mLookupWithoutAcsURL.getCardNonce().getThreeDSecureInfo().wasVerified());
     }
 
     @Test
