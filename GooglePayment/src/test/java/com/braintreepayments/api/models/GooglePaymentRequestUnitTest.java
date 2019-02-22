@@ -226,4 +226,26 @@ public class GooglePaymentRequestUnitTest {
 
         JSONAssert.assertEquals(expected, actual, false);
     }
+
+    @Test
+    public void allowsNullyOptionalParameters() throws JSONException {
+        GooglePaymentRequest request = new GooglePaymentRequest();
+        String expected = "{\"apiVersion\":2,\"apiVersionMinor\":0,\"allowedPaymentMethods\":[],\"shippingAddressRequired\":true,\"merchantInfo\":{},\"transactionInfo\":{\"totalPriceStatus\":\"FINAL\",\"totalPrice\":\"12.24\",\"currencyCode\":\"USD\"},\"shippingAddressParameters\":{}}";
+
+        ShippingAddressRequirements nullyShippingAddressRequirements = ShippingAddressRequirements.newBuilder().build();
+
+        TransactionInfo info = TransactionInfo.newBuilder()
+                .setCurrencyCode("USD")
+                .setTotalPrice("12.24")
+                .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                .build();
+
+        request.transactionInfo(info)
+                .shippingAddressRequired(true)
+                .shippingAddressRequirements(nullyShippingAddressRequirements);
+
+        String actual = request.toJson();
+
+        JSONAssert.assertEquals(expected, actual, false);
+    }
 }

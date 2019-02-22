@@ -224,26 +224,19 @@ public class GooglePaymentRequest implements Parcelable {
         JSONArray allowedPaymentMethods = new JSONArray();
         JSONObject shippingAddressParameters = new JSONObject();
         JSONArray allowedCountryCodes = new JSONArray();
-        ArrayList<String> allowedCountryCodeList = new ArrayList<>();
-
-        if (mShippingAddressRequirements != null) {
-            allowedCountryCodeList.addAll(mShippingAddressRequirements.getAllowedCountryCodes());
-
-            if (allowedCountryCodeList.size() > 0) {
-                for (String country : allowedCountryCodeList) {
-                    allowedCountryCodes
-                            .put(country);
-                }
-            }
-        }
+        ArrayList<String> allowedCountryCodeList;
 
         if (isShippingAddressRequired()) {
-            try {
-                shippingAddressParameters
-                        .put("allowedCountryCodes", allowedCountryCodes)
-                        .put("phoneNumberRequired", isPhoneNumberRequired());
-            } catch (JSONException ignored) {
+            allowedCountryCodeList = mShippingAddressRequirements.getAllowedCountryCodes();
+
+            if (allowedCountryCodeList != null && allowedCountryCodeList.size() > 0) {
+                try {
+                    shippingAddressParameters.put("allowedCountryCodes", new JSONArray(allowedCountryCodeList));
+                } catch (JSONException ignored) { }
             }
+            try {
+                shippingAddressParameters.put("phoneNumberRequired", isPhoneNumberRequired());
+            } catch (JSONException ignored) { }
         }
 
         try {
