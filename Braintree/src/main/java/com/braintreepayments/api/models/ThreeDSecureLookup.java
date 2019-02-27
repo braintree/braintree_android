@@ -103,14 +103,10 @@ public class ThreeDSecureLookup implements Parcelable {
     }
 
     /**
-     * TODO JavaDoc
+     * @return The version of 3D Secure for this merchant
      */
     public String getThreeDSecureVersion() {
         return mThreeDSecureVersion;
-    }
-
-    public Boolean isThreeDSecureVersion2() {
-        return this.mThreeDSecureVersion.startsWith("2.");
     }
 
     /**

@@ -88,11 +88,6 @@ public class ThreeDSecureLookupUnitTest {
     }
 
     @Test
-    public void fromJson_isThreeDSecureVersion2CheckPasses() {
-        assertTrue(mLookupWithVersion2.isThreeDSecureVersion2());
-    }
-
-    @Test
     public void isParcelable() {
         Parcel parcel = Parcel.obtain();
         mLookupWithVersion1.writeToParcel(parcel, 0);

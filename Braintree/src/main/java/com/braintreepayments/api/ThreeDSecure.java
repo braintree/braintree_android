@@ -169,7 +169,7 @@ public class ThreeDSecure {
                         try {
                             final ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(responseBody);
                             if (threeDSecureLookup.getAcsUrl() != null) {
-                                if (threeDSecureLookup.isThreeDSecureVersion2()) {
+                                if (threeDSecureLookup.getThreeDSecureVersion().startsWith("2.")) {
                                     performCardinalAuthentication(fragment, threeDSecureLookup);
                                 } else {
                                     launchBrowserSwitch(fragment, threeDSecureLookup);
