@@ -6,15 +6,19 @@ import android.net.Uri;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
+import com.cardinalcommerce.cardinalmobilesdk.models.response.CardinalActionCode;
+import com.cardinalcommerce.cardinalmobilesdk.models.response.ValidateResponse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +27,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
@@ -30,6 +36,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import static com.braintreepayments.api.BraintreePowerMockHelper.*;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
@@ -37,8 +44,10 @@ import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.spy;
 
@@ -73,6 +82,24 @@ public class ThreeDSecureUnitTest {
     }
 
     @Test
+    public void configureCardinal_whenSetupCompleted_sendsAnalyticEvent() {
+        MockStaticCardinal.initCompletesSuccessfully("df-reference-id");
+
+        ThreeDSecure.configureCardinal(mFragment);
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.cardinal.init.setup-complete"));
+    }
+
+    @Test
+    public void configureCardinal_whenOnValidated_sendsAnalyticEvent() {
+        MockStaticCardinal.initCallsOnValidated();
+
+        ThreeDSecure.configureCardinal(mFragment);
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.cardinal.init.on-validated"));
+    }
+
+    @Test
     public void performVerification_withInvalidRequest_postsException() {
         ThreeDSecure.performVerification(mFragment, new ThreeDSecureRequest()
                 .amount("5"));
@@ -86,7 +113,7 @@ public class ThreeDSecureUnitTest {
 
     @Test
     public void performVerification_sendsAllParamatersInLookupRequest() throws InterruptedException, JSONException {
-        BraintreePowerMockHelper.MockStaticCardinal.initCompletesSuccessfully("fake-df");
+        MockStaticCardinal.initCompletesSuccessfully("fake-df");
 
         ThreeDSecureRequest request = new ThreeDSecureRequest()
                 .nonce("a-nonce")
@@ -137,7 +164,7 @@ public class ThreeDSecureUnitTest {
 
     @Test
     public void performVerification_sendsMinimumParamatersInLookupRequest() throws JSONException {
-        BraintreePowerMockHelper.MockStaticCardinal.initCompletesSuccessfully("fake-df");
+        MockStaticCardinal.initCompletesSuccessfully("fake-df");
 
         ThreeDSecure.configureCardinal(mFragment);
         ThreeDSecure.performVerification(mFragment, mBasicRequest);
@@ -160,7 +187,7 @@ public class ThreeDSecureUnitTest {
 
     @Test
     public void performVerification_sendsPartialParamatersInLookupRequest() throws JSONException {
-        BraintreePowerMockHelper.MockStaticCardinal.initCompletesSuccessfully("fake-df");
+        MockStaticCardinal.initCompletesSuccessfully("fake-df");
 
         ThreeDSecureRequest request = new ThreeDSecureRequest()
                 .nonce("a-nonce")
@@ -228,6 +255,83 @@ public class ThreeDSecureUnitTest {
         ThreeDSecure.performVerification(mFragment, mBasicRequest);
 
         verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.invalid-manifest"));
+    }
+
+    @Test
+    public void performVerification_whenAuthenticatingWithCardinal_sendsAnalyticsEvent() {
+        MockStaticCardinal.initCompletesSuccessfully("reference-id");
+
+        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+        mFragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verify-card.started"));
+    }
+
+    @Test
+    public void performVerification_whenCardinalCardVerificationCompletes_sendsAnalyticsEvent() {
+        MockStaticCardinal.initCompletesSuccessfully("reference-id");
+        MockStaticCardinal.cca_continue(CardinalActionCode.NOACTION);
+
+        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+        mFragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verify-card.completed"));
+    }
+
+    @Test
+    public void performVerification_whenCardinalCardVerificationIsCanceled_sendsAnalyticsEvent() {
+        MockStaticCardinal.initCompletesSuccessfully("reference-id");
+        MockStaticCardinal.cca_continue(CardinalActionCode.CANCEL);
+
+        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+        mFragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verify-card.canceled"));
+    }
+
+    @Test
+    public void performVerification_whenCardinalCardVerificationErrors_sendsAnalyticsEvent() {
+        MockStaticCardinal.initCompletesSuccessfully("reference-id");
+        MockStaticCardinal.cca_continue(CardinalActionCode.ERROR);
+
+        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+        mFragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verify-card.error"));
+    }
+
+    @Test
+    public void authenticateCardinalJWT_whenSuccess_sendsAnalyticsEvent() throws JSONException {
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+
+        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/authentication_response.json"));
+        mFragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.authenticateCardinalJWT(mFragment, threeDSecureLookup, "jwt");
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.jwt-authenticate.started"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.jwt-authenticate.success"));
+    }
+
+    @Test
+    public void authenticateCardinalJWT_whenFailure_sendsAnalyticsEvent() throws JSONException {
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+
+        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/authentication_response_with_error.json"));
+        mFragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.authenticateCardinalJWT(mFragment, threeDSecureLookup, "jwt");
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.jwt-authenticate.started"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.jwt-authenticate.error"));
     }
 
     @Test

@@ -193,6 +193,8 @@ public class ThreeDSecure {
     }
 
     protected static void performCardinalAuthentication(final BraintreeFragment fragment, final ThreeDSecureLookup threeDSecureLookup) {
+        fragment.sendAnalyticsEvent("three-d-secure.verify-card.started");
+
         Cardinal.getInstance().cca_continue(threeDSecureLookup.getTransactionId(),
                 threeDSecureLookup.getPareq(),
                 threeDSecureLookup.getAcsUrl(),
@@ -206,29 +208,32 @@ public class ThreeDSecure {
                             case SUCCESS:
                             case NOACTION:
                                 authenticateCardinalJWT(fragment, threeDSecureLookup, serverJWT);
+                                fragment.sendAnalyticsEvent("three-d-secure.verify-card.completed");
                                 break;
 
                             case ERROR:
                                 fragment.postCallback(new BraintreeException(validateResponse.errorDescription));
-                                break;
-                            case CANCEL:
-                                fragment.postCancelCallback(BraintreeRequestCodes.THREE_D_SECURE);
+                                fragment.sendAnalyticsEvent("three-d-secure.verify-card.error");
                                 break;
 
+                            case CANCEL:
+                                fragment.postCancelCallback(BraintreeRequestCodes.THREE_D_SECURE);
+                                fragment.sendAnalyticsEvent("three-d-secure.verify-card.canceled");
+                                break;
                         }
                     }
                 });
     }
 
     protected static void authenticateCardinalJWT(final BraintreeFragment fragment, final ThreeDSecureLookup threeDSecureLookup, final String cardinalJWT) {
+        fragment.sendAnalyticsEvent("three-d-secure.jwt-authenticate.started");
+
         final String nonce = threeDSecureLookup.getCardNonce().getNonce();
         JSONObject body = new JSONObject();
         try {
             body.put("jwt", cardinalJWT);
             body.put("paymentMethodNonce", nonce);
-        } catch (JSONException exception) {
-            fragment.postCallback(exception);
-        }
+        } catch (JSONException ignored) {}
 
         fragment.getHttpClient().post(TokenizationClient.versionedPath(
                 TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + nonce +
@@ -239,8 +244,12 @@ public class ThreeDSecure {
                 if (authenticationResponse.getErrors() != null) {
                     // TODO: This isn't a GraphQL request, but the response uses GraphQL style errors. How do we want to parse them?
                     fragment.postCallback(ErrorWithResponse.fromGraphQLJson(authenticationResponse.getErrors()));
+
+                    fragment.sendAnalyticsEvent("three-d-secure.jwt-authenticate.error");
                 } else {
                     fragment.postCallback(authenticationResponse.getCardNonce());
+
+                    fragment.sendAnalyticsEvent("three-d-secure.jwt-authenticate.success");
                 }
             }
 
@@ -292,19 +301,13 @@ public class ThreeDSecure {
             fragment.waitForConfiguration(new ConfigurationListener() {
                 @Override
                 public void onConfigurationFetched(Configuration configuration) {
-                    CardinalEnvironment cardinalEnvironment = CardinalEnvironment.PRODUCTION;
-                    switch (configuration.getEnvironment().toLowerCase()) {
-                        case "production":
-                            cardinalEnvironment = CardinalEnvironment.PRODUCTION;
-                            break;
-                        default:
-                            cardinalEnvironment = CardinalEnvironment.STAGING;
-                            break;
+                    CardinalEnvironment cardinalEnvironment = CardinalEnvironment.STAGING;
+                    if ("production".equals(configuration.getEnvironment().toLowerCase())) {
+                        cardinalEnvironment = CardinalEnvironment.PRODUCTION;
                     }
 
                     CardinalConfigurationParameters cardinalConfigurationParameters = new CardinalConfigurationParameters();
                     cardinalConfigurationParameters.setEnvironment(cardinalEnvironment);
-                    // TODO what should timeout and "quick auth" be
                     cardinalConfigurationParameters.setTimeout(8000);
                     cardinalConfigurationParameters.setEnableQuickAuth(false);
 
@@ -326,12 +329,14 @@ public class ThreeDSecure {
                         @Override
                         public void onSetupCompleted(String consumerSessionId) {
                             mDFReferenceId = consumerSessionId;
+
+                            fragment.sendAnalyticsEvent("three-d-secure.cardinal.init.setup-complete");
                         }
 
                         @Override
                         public void onValidated(ValidateResponse validateResponse, String serverJwt) {
-                            // TODO: What doe we want to do with error
-                            Log.d("ERROR", "Cardinal could not be initialized");
+                            // TODO what does onValidated being called mean for us?
+                            fragment.sendAnalyticsEvent("three-d-secure.cardinal.init.on-validated");
                         }
                     });
                 }

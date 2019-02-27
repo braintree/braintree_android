@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
@@ -7,8 +8,12 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
+import com.cardinalcommerce.cardinalmobilesdk.models.response.CardinalActionCode;
+import com.cardinalcommerce.cardinalmobilesdk.models.response.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
+import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
 import com.cardinalcommerce.cardinalmobilesdk.services.CruiseService;
+import com.cardinalcommerce.shared.models.enums.DirectoryServerID;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 import com.paypal.android.sdk.onetouch.core.Request;
 import com.paypal.android.sdk.onetouch.core.Result;
@@ -48,8 +53,52 @@ class BraintreePowerMockHelper {
             Cardinal.getInstance();
         }
 
-        static void initCompletesWithFailure() {
-            // TODO
+        static void initCallsOnValidated() {
+            Cardinal cruiseService = mock(Cardinal.class);
+            Mockito.doAnswer(new Answer() {
+                @Override
+                public Object answer(InvocationOnMock invocation) {
+                    CardinalInitService cardinalInitService = (CardinalInitService) invocation.getArguments()[1];
+
+                    cardinalInitService.onValidated(null, null);
+                    return null;
+                }
+            }).when(cruiseService).init(anyString(), any(CardinalInitService.class));
+
+            mockStatic(Cardinal.class);
+            doReturn(cruiseService).when(Cardinal.class);
+            Cardinal.getInstance();
+        }
+
+        public static void cca_continue(final CardinalActionCode actionCode) {
+            Cardinal cruiseService = mock(Cardinal.class);
+            Mockito.doAnswer(new Answer() {
+                @Override
+                public Object answer(InvocationOnMock invocation) {
+                    CardinalValidateReceiver callback = invocation.getArgumentAt(5, CardinalValidateReceiver.class);
+
+                    ValidateResponse validateResponse = new ValidateResponse(
+                            false,
+                            actionCode,
+                            0,
+                            ""
+                    );
+
+                    callback.onValidated(null, validateResponse, "");
+                    return null;
+                }
+            }).when(cruiseService).cca_continue(
+                    anyString(),
+                    anyString(),
+                    anyString(),
+                    any(DirectoryServerID.class),
+                    any(Activity.class),
+                    any(CardinalValidateReceiver.class)
+            );
+
+            mockStatic(Cardinal.class);
+            doReturn(cruiseService).when(Cardinal.class);
+            Cardinal.getInstance();
         }
     }
 
