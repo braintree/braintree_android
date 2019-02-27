@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.Authorization;
@@ -35,13 +34,11 @@ import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.spy;
 
@@ -108,6 +105,7 @@ public class ThreeDSecureUnitTest {
                         .countryCodeAlpha2("US")
                         .phoneNumber("12345678"));
 
+        ThreeDSecure.configureCardinal(mFragment);
         ThreeDSecure.performVerification(mFragment, request);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -138,8 +136,10 @@ public class ThreeDSecureUnitTest {
     }
 
     @Test
-    public void performVerification_sendsMinimumParamatersInLookupRequest() throws InterruptedException, JSONException {
+    public void performVerification_sendsMinimumParamatersInLookupRequest() throws JSONException {
         BraintreePowerMockHelper.MockStaticCardinal.initCompletesSuccessfully("fake-df");
+
+        ThreeDSecure.configureCardinal(mFragment);
         ThreeDSecure.performVerification(mFragment, mBasicRequest);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -159,7 +159,7 @@ public class ThreeDSecureUnitTest {
     }
 
     @Test
-    public void performVerification_sendsPartialParamatersInLookupRequest() throws InterruptedException, JSONException {
+    public void performVerification_sendsPartialParamatersInLookupRequest() throws JSONException {
         BraintreePowerMockHelper.MockStaticCardinal.initCompletesSuccessfully("fake-df");
 
         ThreeDSecureRequest request = new ThreeDSecureRequest()
@@ -175,6 +175,7 @@ public class ThreeDSecureUnitTest {
                         .postalCode("12345")
                         .countryCodeAlpha2("US"));
 
+        ThreeDSecure.configureCardinal(mFragment);
         ThreeDSecure.performVerification(mFragment, request);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
