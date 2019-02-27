@@ -103,14 +103,14 @@ public class ThreeDSecureLookup implements Parcelable {
     }
 
     /**
-     * @return The version of 3D Secure for this merchant
+     * @return The version of 3D Secure this merchant is using
      */
     public String getThreeDSecureVersion() {
         return mThreeDSecureVersion;
     }
 
     /**
-     * TODO JavaDoc
+     * @return The transaction ID for this 3D Secure lookup
      */
     public String getTransactionId() {
         return mTransactionId;
