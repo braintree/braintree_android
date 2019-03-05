@@ -89,6 +89,7 @@ dependencies {
     }
 
     implementation project(':Braintree')
+    implementation project(':ThreeDSecure')
 
     implementation googlePayDependencies
     implementation visaCheckoutDependencies
