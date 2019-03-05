@@ -302,7 +302,7 @@ public class ThreeDSecure {
                 @Override
                 public void onConfigurationFetched(Configuration configuration) {
                     CardinalEnvironment cardinalEnvironment = CardinalEnvironment.STAGING;
-                    if ("production".equals(configuration.getEnvironment().toLowerCase())) {
+                    if ("production".equalsIgnoreCase(configuration.getEnvironment())) {
                         cardinalEnvironment = CardinalEnvironment.PRODUCTION;
                     }
 
