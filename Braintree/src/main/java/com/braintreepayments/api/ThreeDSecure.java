@@ -335,6 +335,8 @@ public class ThreeDSecure {
 
                         @Override
                         public void onValidated(ValidateResponse validateResponse, String serverJwt) {
+                            // TODO we should use this callback for accessing the consumerSessionId or if thats not here, its an error.
+
                             // TODO what does onValidated being called mean for us?
                             fragment.sendAnalyticsEvent("three-d-secure.cardinal.init.on-validated");
                         }
