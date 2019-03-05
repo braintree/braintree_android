@@ -208,7 +208,7 @@ public class ThreeDSecure {
                             case SUCCESS:
                             case NOACTION:
                                 authenticateCardinalJWT(fragment, threeDSecureLookup, serverJWT);
-                                fragment.sendAnalyticsEvent("three-d-secure.verify-card.completed");
+                                fragment.sendAnalyticsEvent("three-d-secure.authenticated");
                                 break;
 
                             case ERROR:

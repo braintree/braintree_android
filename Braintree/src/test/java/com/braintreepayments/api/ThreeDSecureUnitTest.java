@@ -279,7 +279,7 @@ public class ThreeDSecureUnitTest {
 
         ThreeDSecure.performVerification(mFragment, mBasicRequest);
 
-        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verify-card.completed"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.authenticated"));
     }
 
     @Test
