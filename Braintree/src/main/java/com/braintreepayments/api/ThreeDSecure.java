@@ -168,14 +168,20 @@ public class ThreeDSecure {
                     public void success(String responseBody) {
                         try {
                             final ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(responseBody);
-                            if (threeDSecureLookup.getAcsUrl() != null) {
-                                if (threeDSecureLookup.getThreeDSecureVersion().startsWith("2.")) {
+                            Boolean showChallenge = threeDSecureLookup.getAcsUrl() != null;
+                            String threeDSecureVersion = threeDSecureLookup.getThreeDSecureVersion();
+
+                            fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.challenge-presented.%b", showChallenge));
+                            fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.3ds-version.%s", threeDSecureVersion));
+
+                            if (showChallenge) {
+                                if (threeDSecureVersion.startsWith("2.")) {
                                     performCardinalAuthentication(fragment, threeDSecureLookup);
                                 } else {
                                     launchBrowserSwitch(fragment, threeDSecureLookup);
                                 }
                             } else {
-                                fragment.postCallback(threeDSecureLookup.getCardNonce());
+                                completeVerificationFlowWithNoncePayload(fragment, threeDSecureLookup.getCardNonce());
                             }
                         } catch (JSONException exception) {
                             fragment.postCallback(exception);
@@ -193,32 +199,37 @@ public class ThreeDSecure {
     }
 
     protected static void performCardinalAuthentication(final BraintreeFragment fragment, final ThreeDSecureLookup threeDSecureLookup) {
-        fragment.sendAnalyticsEvent("three-d-secure.verify-card.started");
+        fragment.sendAnalyticsEvent("three-d-secure.verification-flow.started");
 
         Cardinal.getInstance().cca_continue(threeDSecureLookup.getTransactionId(),
                 threeDSecureLookup.getPareq(),
                 threeDSecureLookup.getAcsUrl(),
-                DirectoryServerID.VISA01, // TODO: Does this matter?
+                DirectoryServerID.VISA01,
                 fragment.getActivity(),
                 new CardinalValidateReceiver() {
                     @Override
                     public void onValidated(Context currentContext, ValidateResponse validateResponse, String serverJWT) {
+                        fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.cardinal-sdk.action-code.%s", validateResponse.getActionCode().name().toLowerCase()));
+
                         switch (validateResponse.getActionCode()) {
                             case FAILURE:
                             case SUCCESS:
                             case NOACTION:
                                 authenticateCardinalJWT(fragment, threeDSecureLookup, serverJWT);
-                                fragment.sendAnalyticsEvent("three-d-secure.authenticated");
+
+                                fragment.sendAnalyticsEvent("three-d-secure.verification-flow.completed");
                                 break;
 
                             case ERROR:
+                                fragment.sendAnalyticsEvent("three-d-secure.verification-flow.failed");
+
                                 fragment.postCallback(new BraintreeException(validateResponse.errorDescription));
-                                fragment.sendAnalyticsEvent("three-d-secure.verify-card.error");
                                 break;
 
                             case CANCEL:
+                                fragment.sendAnalyticsEvent("three-d-secure.verification-flow.canceled");
+
                                 fragment.postCancelCallback(BraintreeRequestCodes.THREE_D_SECURE);
-                                fragment.sendAnalyticsEvent("three-d-secure.verify-card.canceled");
                                 break;
                         }
                     }
@@ -226,7 +237,7 @@ public class ThreeDSecure {
     }
 
     protected static void authenticateCardinalJWT(final BraintreeFragment fragment, final ThreeDSecureLookup threeDSecureLookup, final String cardinalJWT) {
-        fragment.sendAnalyticsEvent("three-d-secure.jwt-authenticate.started");
+        fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
 
         final String nonce = threeDSecureLookup.getCardNonce().getNonce();
         JSONObject body = new JSONObject();
@@ -243,18 +254,21 @@ public class ThreeDSecure {
                 ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse.fromJson(responseBody);
                 if (authenticationResponse.getErrors() != null) {
                     // TODO: This isn't a GraphQL request, but the response uses GraphQL style errors. How do we want to parse them?
+                    fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
+
                     fragment.postCallback(ErrorWithResponse.fromGraphQLJson(authenticationResponse.getErrors()));
-
-                    fragment.sendAnalyticsEvent("three-d-secure.jwt-authenticate.error");
                 } else {
-                    fragment.postCallback(authenticationResponse.getCardNonce());
+                    fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
 
-                    fragment.sendAnalyticsEvent("three-d-secure.jwt-authenticate.success");
+                    completeVerificationFlowWithNoncePayload(fragment, authenticationResponse.getCardNonce());
                 }
             }
 
             @Override
             public void failure(Exception exception) {
+                // TODO is it correct to send this analytic event here? We're sending the same one up above
+                fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
+
                 fragment.postCallback(exception);
             }
         });
@@ -267,13 +281,21 @@ public class ThreeDSecure {
                     .fromJson(resultUri.getQueryParameter("auth_response"));
 
             if (authenticationResponse.isSuccess()) {
-                fragment.postCallback(authenticationResponse.getCardNonce());
+                completeVerificationFlowWithNoncePayload(fragment, authenticationResponse.getCardNonce());
             } else if (authenticationResponse.getException() != null) {
                 fragment.postCallback(new BraintreeException(authenticationResponse.getException()));
             } else {
                 fragment.postCallback(new ErrorWithResponse(422, authenticationResponse.getErrors()));
             }
         }
+    }
+
+    private static void completeVerificationFlowWithNoncePayload(BraintreeFragment fragment, CardNonce noncePayload) {
+        ThreeDSecureInfo info = noncePayload.getThreeDSecureInfo();
+        fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
+        fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
+
+        fragment.postCallback(noncePayload);
     }
 
     private static void launchBrowserSwitch(BraintreeFragment fragment, ThreeDSecureLookup threeDSecureLookup) {
@@ -311,17 +333,17 @@ public class ThreeDSecure {
                     cardinalConfigurationParameters.setTimeout(8000);
                     cardinalConfigurationParameters.setEnableQuickAuth(false);
 
-                    // TODO what is an rType
-                    JSONArray rType = new JSONArray();
-                    rType.put(CardinalRenderType.OTP);
-                    rType.put(CardinalRenderType.SINGLE_SELECT);
-                    rType.put(CardinalRenderType.MULTI_SELECT);
-                    rType.put(CardinalRenderType.OOB);
-                    rType.put(CardinalRenderType.HTML);
-                    cardinalConfigurationParameters.setRenderType(rType);
+                    // // TODO what is an rType Apparently, setting nothing will default to below.
+                    // JSONArray rType = new JSONArray();
+                    // rType.put(CardinalRenderType.OTP);
+                    // rType.put(CardinalRenderType.SINGLE_SELECT);
+                    // rType.put(CardinalRenderType.MULTI_SELECT);
+                    // rType.put(CardinalRenderType.OOB);
+                    // rType.put(CardinalRenderType.HTML);
+                    // cardinalConfigurationParameters.setRenderType(rType);
 
-                    // TODO what UI type should we use
-                    cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
+                    // TODO what UI type should we use - same as above
+                    // cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
 
                     Cardinal cardinal = Cardinal.getInstance();
                     cardinal.configure(fragment.getApplicationContext(), cardinalConfigurationParameters);
@@ -330,15 +352,16 @@ public class ThreeDSecure {
                         public void onSetupCompleted(String consumerSessionId) {
                             mDFReferenceId = consumerSessionId;
 
-                            fragment.sendAnalyticsEvent("three-d-secure.cardinal.init.setup-complete");
+                            fragment.sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-completed");
                         }
 
                         @Override
-                        public void onValidated(ValidateResponse validateResponse, String serverJwt) {
-                            // TODO we should use this callback for accessing the consumerSessionId or if thats not here, its an error.
+                        public void onValidated(ValidateResponse validateResponse, String serverJWT) {
+                            // TODO does callin this callback always indicate that setup failed?
+                            fragment.sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-failed");
 
+                            // TODO we should use this callback for accessing the consumerSessionId or if thats not here, its an error.
                             // TODO what does onValidated being called mean for us?
-                            fragment.sendAnalyticsEvent("three-d-secure.cardinal.init.on-validated");
                         }
                     });
                 }

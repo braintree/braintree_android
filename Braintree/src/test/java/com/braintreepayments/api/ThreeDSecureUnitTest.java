@@ -87,16 +87,16 @@ public class ThreeDSecureUnitTest {
 
         ThreeDSecure.configureCardinal(mFragment);
 
-        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.cardinal.init.setup-complete"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.cardinal-sdk.init.setup-completed"));
     }
 
     @Test
-    public void configureCardinal_whenOnValidated_sendsAnalyticEvent() {
+    public void configureCardinal_whenSetupFailed_sendsAnalyticEvent() {
         MockStaticCardinal.initCallsOnValidated();
 
         ThreeDSecure.configureCardinal(mFragment);
 
-        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.cardinal.init.on-validated"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.cardinal-sdk.init.setup-failed"));
     }
 
     @Test
@@ -266,7 +266,55 @@ public class ThreeDSecureUnitTest {
 
         ThreeDSecure.performVerification(mFragment, mBasicRequest);
 
-        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verify-card.started"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.started"));
+    }
+
+    @Test
+    public void performVerification_whenChallengeIsPresented_sendsAnalyticsEvent() {
+        MockStaticCardinal.initCompletesSuccessfully("reference-id");
+
+        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/lookup_response.json"));
+        mFragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.challenge-presented.true"));
+    }
+
+    @Test
+    public void performVerification_whenChallengeIsNotPresented_sendsAnalyticsEvent() {
+        MockStaticCardinal.initCompletesSuccessfully("reference-id");
+
+        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/lookup_response_noAcsUrl.json"));
+        mFragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.challenge-presented.false"));
+    }
+
+    @Test
+    public void performVerification_when3DSVersionIsVersion1_sendsAnalyticsEvent() {
+        MockStaticCardinal.initCompletesSuccessfully("reference-id");
+
+        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/lookup_response_with_version_number1.json"));
+        mFragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.3ds-version.1.0.2"));
+    }
+
+    @Test
+    public void performVerification_when3DSVersionIsVersion2_sendsAnalyticsEvent() {
+        MockStaticCardinal.initCompletesSuccessfully("reference-id");
+
+        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+        mFragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.3ds-version.2.1.0"));
     }
 
     @Test
@@ -279,7 +327,8 @@ public class ThreeDSecureUnitTest {
 
         ThreeDSecure.performVerification(mFragment, mBasicRequest);
 
-        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.authenticated"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.completed"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.cardinal-sdk.action-code.noaction"));
     }
 
     @Test
@@ -292,7 +341,7 @@ public class ThreeDSecureUnitTest {
 
         ThreeDSecure.performVerification(mFragment, mBasicRequest);
 
-        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verify-card.canceled"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.canceled"));
     }
 
     @Test
@@ -305,7 +354,7 @@ public class ThreeDSecureUnitTest {
 
         ThreeDSecure.performVerification(mFragment, mBasicRequest);
 
-        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verify-card.error"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.failed"));
     }
 
     @Test
@@ -317,8 +366,8 @@ public class ThreeDSecureUnitTest {
 
         ThreeDSecure.authenticateCardinalJWT(mFragment, threeDSecureLookup, "jwt");
 
-        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.jwt-authenticate.started"));
-        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.jwt-authenticate.success"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.started"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.succeeded"));
     }
 
     @Test
@@ -330,8 +379,8 @@ public class ThreeDSecureUnitTest {
 
         ThreeDSecure.authenticateCardinalJWT(mFragment, threeDSecureLookup, "jwt");
 
-        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.jwt-authenticate.started"));
-        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.jwt-authenticate.error"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.started"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.errored"));
     }
 
     @Test
@@ -359,6 +408,25 @@ public class ThreeDSecureUnitTest {
         assertIsANonce(paymentMethodNonce.getNonce());
         assertEquals("11", ((CardNonce) paymentMethodNonce).getLastTwo());
         assertTrue(((CardNonce) paymentMethodNonce).getThreeDSecureInfo().wasVerified());
+    }
+
+    @Test
+    public void onActivityResult_whenSuccessful_sendAnalyticsEvents() throws Exception {
+        Uri uri = Uri.parse("http://demo-app.com")
+                .buildUpon()
+                .appendQueryParameter("auth_response", stringFromFixture("three_d_secure/authentication_response.json"))
+                .build();
+        Intent data = new Intent();
+        data.setData(uri);
+
+        ThreeDSecure.onActivityResult(mFragment, AppCompatActivity.RESULT_OK, data);
+
+        ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
+
+        verify(mFragment).postCallback(captor.capture());
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.liability-shifted.true"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.liability-shift-possible.true"));
     }
 
     @Test
