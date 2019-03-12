@@ -332,18 +332,6 @@ public class ThreeDSecure {
                     cardinalConfigurationParameters.setTimeout(8000);
                     cardinalConfigurationParameters.setEnableQuickAuth(false);
 
-                    // // TODO what is an rType Apparently, setting nothing will default to below.
-                    // JSONArray rType = new JSONArray();
-                    // rType.put(CardinalRenderType.OTP);
-                    // rType.put(CardinalRenderType.SINGLE_SELECT);
-                    // rType.put(CardinalRenderType.MULTI_SELECT);
-                    // rType.put(CardinalRenderType.OOB);
-                    // rType.put(CardinalRenderType.HTML);
-                    // cardinalConfigurationParameters.setRenderType(rType);
-
-                    // TODO what UI type should we use - same as above
-                    // cardinalConfigurationParameters.setUiType(CardinalUiType.BOTH);
-
                     Cardinal cardinal = Cardinal.getInstance();
                     cardinal.configure(fragment.getApplicationContext(), cardinalConfigurationParameters);
                     cardinal.init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
