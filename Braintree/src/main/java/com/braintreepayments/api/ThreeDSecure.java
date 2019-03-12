@@ -266,7 +266,6 @@ public class ThreeDSecure {
 
             @Override
             public void failure(Exception exception) {
-                // TODO is it correct to send this analytic event here? We're sending the same one up above
                 fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
 
                 fragment.postCallback(exception);
@@ -357,11 +356,7 @@ public class ThreeDSecure {
 
                         @Override
                         public void onValidated(ValidateResponse validateResponse, String serverJWT) {
-                            // TODO does callin this callback always indicate that setup failed?
                             fragment.sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-failed");
-
-                            // TODO we should use this callback for accessing the consumerSessionId or if thats not here, its an error.
-                            // TODO what does onValidated being called mean for us?
                         }
                     });
                 }
