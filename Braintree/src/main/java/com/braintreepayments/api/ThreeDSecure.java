@@ -267,7 +267,7 @@ public class ThreeDSecure {
 
             fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.cardinal-sdk.action-code.%s", validateResponse.getActionCode().name().toLowerCase()));
 
-            switch (validateResponse.actionCode) {
+            switch (validateResponse.getActionCode()) {
                 case FAILURE:
                 case SUCCESS:
                 case NOACTION:

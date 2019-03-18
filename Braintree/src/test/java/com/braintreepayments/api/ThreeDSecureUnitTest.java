@@ -6,7 +6,6 @@ import android.net.Uri;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.CardNonce;
@@ -27,8 +26,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
@@ -36,7 +33,8 @@ import org.robolectric.RobolectricTestRunner;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import static com.braintreepayments.api.BraintreePowerMockHelper.*;
+import static androidx.appcompat.app.AppCompatActivity.RESULT_OK;
+import static com.braintreepayments.api.BraintreePowerMockHelper.MockStaticCardinal;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
@@ -44,7 +42,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -318,41 +316,88 @@ public class ThreeDSecureUnitTest {
     }
 
     @Test
-    public void performVerification_whenCardinalCardVerificationCompletes_sendsAnalyticsEvent() {
-        MockStaticCardinal.initCompletesSuccessfully("reference-id");
-        MockStaticCardinal.cca_continue(CardinalActionCode.NOACTION);
-
-        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+    public void onActivityResult_whenCardinalCardVerificationReportsSuccess_sendsAnalyticsEvent() throws JSONException {
         mFragment = mMockFragmentBuilder.build();
 
-        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+
+        ValidateResponse validateResponse = mock(ValidateResponse.class);
+        when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.SUCCESS);
+
+        Intent data = new Intent();
+        data.putExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE, validateResponse);
+        data.putExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup);
+
+        ThreeDSecure.onActivityResult(mFragment, RESULT_OK, data);
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.completed"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.cardinal-sdk.action-code.success"));
+    }
+
+    @Test
+    public void onActivityResult_whenCardinalCardVerificationReportsNoAction_sendsAnalyticsEvent() throws JSONException {
+        mFragment = mMockFragmentBuilder.build();
+
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+
+        ValidateResponse validateResponse = mock(ValidateResponse.class);
+        when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.NOACTION);
+
+        Intent data = new Intent();
+        data.putExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE, validateResponse);
+        data.putExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup);
+
+        ThreeDSecure.onActivityResult(mFragment, RESULT_OK, data);
 
         verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.completed"));
         verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.cardinal-sdk.action-code.noaction"));
     }
 
     @Test
-    public void performVerification_whenCardinalCardVerificationIsCanceled_sendsAnalyticsEvent() {
-        MockStaticCardinal.initCompletesSuccessfully("reference-id");
-        MockStaticCardinal.cca_continue(CardinalActionCode.CANCEL);
-
-        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+    public void onActivityResult_whenCardinalCardVerificationReportsFailure_sendsAnalyticsEvent() throws JSONException {
         mFragment = mMockFragmentBuilder.build();
 
-        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+
+        ValidateResponse validateResponse = mock(ValidateResponse.class);
+        when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.FAILURE);
+
+        Intent data = new Intent();
+        data.putExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE, validateResponse);
+        data.putExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup);
+
+        ThreeDSecure.onActivityResult(mFragment, RESULT_OK, data);
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.completed"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.cardinal-sdk.action-code.failure"));
+    }
+
+    @Test
+    public void onActivityResult_whenCardinalCardVerificationIsCanceled_sendsAnalyticsEvent() {
+        mFragment = mMockFragmentBuilder.build();
+
+        ValidateResponse validateResponse = mock(ValidateResponse.class);
+        when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.CANCEL);
+
+        Intent data = new Intent();
+        data.putExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE, validateResponse);
+
+        ThreeDSecure.onActivityResult(mFragment, RESULT_OK, data);
 
         verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.canceled"));
     }
 
     @Test
-    public void performVerification_whenCardinalCardVerificationErrors_sendsAnalyticsEvent() {
-        MockStaticCardinal.initCompletesSuccessfully("reference-id");
-        MockStaticCardinal.cca_continue(CardinalActionCode.ERROR);
-
-        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+    public void onActivityResult_whenCardinalCardVerificationErrors_sendsAnalyticsEvent() {
         mFragment = mMockFragmentBuilder.build();
 
-        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+        ValidateResponse validateResponse = mock(ValidateResponse.class);
+        when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.ERROR);
+
+        Intent data = new Intent();
+        data.putExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE, validateResponse);
+
+        ThreeDSecure.onActivityResult(mFragment, RESULT_OK, data);
 
         verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.failed"));
     }
@@ -399,7 +444,7 @@ public class ThreeDSecureUnitTest {
         Intent data = new Intent();
         data.setData(uri);
 
-        ThreeDSecure.onActivityResult(mFragment, AppCompatActivity.RESULT_OK, data);
+        ThreeDSecure.onActivityResult(mFragment, RESULT_OK, data);
 
         ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
         verify(mFragment).postCallback(captor.capture());
@@ -419,7 +464,7 @@ public class ThreeDSecureUnitTest {
         Intent data = new Intent();
         data.setData(uri);
 
-        ThreeDSecure.onActivityResult(mFragment, AppCompatActivity.RESULT_OK, data);
+        ThreeDSecure.onActivityResult(mFragment, RESULT_OK, data);
 
         ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
 
@@ -438,7 +483,7 @@ public class ThreeDSecureUnitTest {
         Intent data = new Intent();
         data.setData(uri);
 
-        ThreeDSecure.onActivityResult(mFragment, AppCompatActivity.RESULT_OK, data);
+        ThreeDSecure.onActivityResult(mFragment, RESULT_OK, data);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(mFragment).postCallback(captor.capture());

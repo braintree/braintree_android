@@ -70,7 +70,7 @@ class BraintreePowerMockHelper {
             Cardinal.getInstance();
         }
 
-        public static void cca_continue(final CardinalActionCode actionCode) {
+        public static Cardinal cca_continue(final CardinalActionCode actionCode) {
             Cardinal cruiseService = mock(Cardinal.class);
             Mockito.doAnswer(new Answer() {
                 @Override
@@ -84,7 +84,7 @@ class BraintreePowerMockHelper {
                             ""
                     );
 
-                    callback.onValidated(null, validateResponse, "");
+                    callback.onValidated(null, validateResponse, "jwt");
                     return null;
                 }
             }).when(cruiseService).cca_continue(
@@ -99,6 +99,8 @@ class BraintreePowerMockHelper {
             mockStatic(Cardinal.class);
             doReturn(cruiseService).when(Cardinal.class);
             Cardinal.getInstance();
+
+            return cruiseService;
         }
     }
 
