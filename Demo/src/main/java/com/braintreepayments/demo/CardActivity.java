@@ -328,6 +328,5 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d("data", "here");
     }
 }

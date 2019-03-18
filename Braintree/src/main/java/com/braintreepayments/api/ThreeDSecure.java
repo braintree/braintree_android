@@ -1,11 +1,9 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.text.TextUtils;
-import android.util.Log;
+import android.os.Bundle;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
@@ -23,26 +21,21 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecureAuthenticationResponse;
 import com.braintreepayments.api.models.ThreeDSecureInfo;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
-import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
-import com.cardinalcommerce.cardinalmobilesdk.models.response.InitResponse;
 import com.cardinalcommerce.cardinalmobilesdk.models.response.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
-import com.cardinalcommerce.cardinalmobilesdk.services.CardinalReceiver;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
-import com.cardinalcommerce.shared.models.challenge.StepUpData;
 import com.cardinalcommerce.shared.models.enums.DirectoryServerID;
 import com.cardinalcommerce.shared.models.parameters.CardinalConfigurationParameters;
 import com.cardinalcommerce.shared.models.parameters.CardinalEnvironment;
-import com.cardinalcommerce.shared.models.parameters.CardinalRenderType;
-import com.cardinalcommerce.shared.models.parameters.CardinalUiType;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import androidx.appcompat.app.AppCompatActivity;
+import java.io.Serializable;
+
+import static androidx.appcompat.app.AppCompatActivity.RESULT_OK;
 
 import static com.braintreepayments.api.models.BraintreeRequestCodes.THREE_D_SECURE;
 
@@ -201,39 +194,16 @@ public class ThreeDSecure {
     protected static void performCardinalAuthentication(final BraintreeFragment fragment, final ThreeDSecureLookup threeDSecureLookup) {
         fragment.sendAnalyticsEvent("three-d-secure.verification-flow.started");
 
-        Cardinal.getInstance().cca_continue(threeDSecureLookup.getTransactionId(),
-                threeDSecureLookup.getPareq(),
-                threeDSecureLookup.getAcsUrl(),
-                DirectoryServerID.VISA01,
-                fragment.getActivity(),
-                new CardinalValidateReceiver() {
-                    @Override
-                    public void onValidated(Context currentContext, ValidateResponse validateResponse, String serverJWT) {
-                        fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.cardinal-sdk.action-code.%s", validateResponse.getActionCode().name().toLowerCase()));
+        Bundle extras = new Bundle();
+        extras.putString(ThreeDSecureActivity.EXTRA_TRANSACTION_ID, threeDSecureLookup.getTransactionId());
+        extras.putString(ThreeDSecureActivity.EXTRA_PAREQ, threeDSecureLookup.getPareq());
+        extras.putString(ThreeDSecureActivity.EXTRA_ACS_URL, threeDSecureLookup.getAcsUrl());
+        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup);
 
-                        switch (validateResponse.getActionCode()) {
-                            case FAILURE:
-                            case SUCCESS:
-                            case NOACTION:
-                                authenticateCardinalJWT(fragment, threeDSecureLookup, serverJWT);
+        Intent intent = new Intent(fragment.getApplicationContext(), ThreeDSecureActivity.class);
+        intent.putExtras(extras);
 
-                                fragment.sendAnalyticsEvent("three-d-secure.verification-flow.completed");
-                                break;
-
-                            case ERROR:
-                                fragment.sendAnalyticsEvent("three-d-secure.verification-flow.failed");
-
-                                fragment.postCallback(new BraintreeException(validateResponse.errorDescription));
-                                break;
-
-                            case CANCEL:
-                                fragment.sendAnalyticsEvent("three-d-secure.verification-flow.canceled");
-
-                                fragment.postCancelCallback(BraintreeRequestCodes.THREE_D_SECURE);
-                                break;
-                        }
-                    }
-                });
+        fragment.startActivityForResult(intent, BraintreeRequestCodes.THREE_D_SECURE);
     }
 
     protected static void authenticateCardinalJWT(final BraintreeFragment fragment, final ThreeDSecureLookup threeDSecureLookup, final String cardinalJWT) {
@@ -274,8 +244,14 @@ public class ThreeDSecure {
     }
 
     protected static void onActivityResult(BraintreeFragment fragment, int resultCode, Intent data) {
-        if (resultCode == AppCompatActivity.RESULT_OK) {
-            Uri resultUri = data.getData();
+        if (resultCode != RESULT_OK) {
+            return;
+
+        }
+        Uri resultUri = data.getData();
+
+        if (resultUri != null) {
+            // V1 flow
             ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse
                     .fromJson(resultUri.getQueryParameter("auth_response"));
 
@@ -286,11 +262,40 @@ public class ThreeDSecure {
             } else {
                 fragment.postCallback(new ErrorWithResponse(422, authenticationResponse.getErrors()));
             }
+        } else {
+            // V2 flow
+            ThreeDSecureLookup threeDSecureLookup = data.getParcelableExtra(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP);
+            ValidateResponse validateResponse = (ValidateResponse) data.getSerializableExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE);
+            String jwt = data.getStringExtra(ThreeDSecureActivity.EXTRA_JWT);
+
+            fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.cardinal-sdk.action-code.%s", validateResponse.getActionCode().name().toLowerCase()));
+
+            switch (validateResponse.actionCode) {
+                case FAILURE:
+                case SUCCESS:
+                case NOACTION:
+                    authenticateCardinalJWT(fragment, threeDSecureLookup, jwt);
+
+                    fragment.sendAnalyticsEvent("three-d-secure.verification-flow.completed");
+                    break;
+
+                case ERROR:
+                    fragment.postCallback(new BraintreeException(validateResponse.errorDescription));
+                    fragment.sendAnalyticsEvent("three-d-secure.verification-flow.failed");
+                    break;
+
+                case CANCEL:
+                    fragment.postCancelCallback(BraintreeRequestCodes.THREE_D_SECURE);
+                    fragment.sendAnalyticsEvent("three-d-secure.verification-flow.canceled");
+                    break;
+
+            }
         }
     }
 
     private static void completeVerificationFlowWithNoncePayload(BraintreeFragment fragment, CardNonce noncePayload) {
         ThreeDSecureInfo info = noncePayload.getThreeDSecureInfo();
+
         fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shifted.%b", info.isLiabilityShifted()));
         fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
 
