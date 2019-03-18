@@ -195,9 +195,6 @@ public class ThreeDSecure {
         fragment.sendAnalyticsEvent("three-d-secure.verification-flow.started");
 
         Bundle extras = new Bundle();
-        extras.putString(ThreeDSecureActivity.EXTRA_TRANSACTION_ID, threeDSecureLookup.getTransactionId());
-        extras.putString(ThreeDSecureActivity.EXTRA_PAREQ, threeDSecureLookup.getPareq());
-        extras.putString(ThreeDSecureActivity.EXTRA_ACS_URL, threeDSecureLookup.getAcsUrl());
         extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup);
 
         Intent intent = new Intent(fragment.getApplicationContext(), ThreeDSecureActivity.class);

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 import com.cardinalcommerce.cardinalmobilesdk.models.response.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
@@ -15,9 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 public class ThreeDSecureActivity extends AppCompatActivity implements CardinalValidateReceiver {
 
     static final String EXTRA_THREE_D_SECURE_LOOKUP = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP";
-    static final String EXTRA_TRANSACTION_ID = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_TRANSACTION_ID";
-    static final String EXTRA_PAREQ = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_PAREQ";
-    static final String EXTRA_ACS_URL = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_ACS_URL";
     static final String EXTRA_VALIDATION_RESPONSE = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE";
     static final String EXTRA_JWT = "com.braintreepayments.api.ThreeDSecureActivity.EXTRA_JWT";
 
@@ -31,17 +29,14 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
             extras = new Bundle();
         }
 
-        String transactionId = extras.getString(EXTRA_TRANSACTION_ID);
-        String pareq = extras.getString(EXTRA_PAREQ);
-        String acsUrl = extras.getString(EXTRA_ACS_URL);
+        ThreeDSecureLookup threeDSecureLookup = extras.getParcelable(EXTRA_THREE_D_SECURE_LOOKUP);
 
         Cardinal.getInstance().cca_continue(
-                transactionId,
-                pareq,
-                acsUrl,
+                threeDSecureLookup.getTransactionId(),
+                threeDSecureLookup.getPareq(),
+                threeDSecureLookup.getAcsUrl(),
                 DirectoryServerID.VISA01,
                 this,
-                fragment,
                 this
         );
     }
