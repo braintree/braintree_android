@@ -20,6 +20,7 @@ public class ThreeDSecureRequest implements Parcelable {
     protected static final String MOBILE_PHONE_NUMBER_KEY = "mobilePhoneNumber";
     protected static final String EMAIL_KEY = "email";
     protected static final String SHIPPING_METHOD_KEY = "shippingMethod";
+    protected static final String BIN_NUMBER_KEY = "binNumber";
 
     private String mNonce;
     private String mAmount;
@@ -27,6 +28,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private String mEmail;
     private String mShippingMethod;
     private ThreeDSecurePostalAddress mBillingAddress;
+    private String mBinNumber;
 
     /**
      * Set the nonce
@@ -96,6 +98,16 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
+     * Optional. Set the BIN number
+     *
+     * @param binNumber The BIN number of the tokenized card.
+     * */
+    public ThreeDSecureRequest binNumber(String binNumber) {
+        mBinNumber = binNumber;
+        return this;
+    }
+
+    /**
      * @return The nonce to use for 3D Secure verification
      */
     public String getNonce() {
@@ -137,6 +149,13 @@ public class ThreeDSecureRequest implements Parcelable {
         return mBillingAddress;
     }
 
+    /**
+     * @return The BIN number of the tokenized card
+     */
+    public String getBinNumber() {
+        return mBinNumber;
+    }
+
     public ThreeDSecureRequest() {}
 
     @Override
@@ -152,6 +171,7 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeString(mEmail);
         dest.writeString(mShippingMethod);
         dest.writeParcelable(mBillingAddress, flags);
+        dest.writeString(mBinNumber);
     }
 
     public ThreeDSecureRequest(Parcel in) {
@@ -161,6 +181,7 @@ public class ThreeDSecureRequest implements Parcelable {
         mEmail = in.readString();
         mShippingMethod = in.readString();
         mBillingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
+        mBinNumber = in.readString();
     }
 
     public static final Creator<ThreeDSecureRequest> CREATOR = new Creator<ThreeDSecureRequest>() {
@@ -187,6 +208,7 @@ public class ThreeDSecureRequest implements Parcelable {
             additionalInformation.putOpt(MOBILE_PHONE_NUMBER_KEY, mMobilePhoneNumber);
             additionalInformation.putOpt(EMAIL_KEY, mEmail);
             additionalInformation.putOpt(SHIPPING_METHOD_KEY, mShippingMethod);
+            additionalInformation.putOpt(BIN_NUMBER_KEY, mBinNumber);
 
             if (mBillingAddress != null) {
                 JSONObject postalAddress = mBillingAddress.toJson();
