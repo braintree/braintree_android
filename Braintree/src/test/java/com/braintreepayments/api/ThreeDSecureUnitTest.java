@@ -39,6 +39,7 @@ import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -426,6 +427,36 @@ public class ThreeDSecureUnitTest {
 
         verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.started"));
         verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.errored"));
+    }
+
+    @Test
+    public void authenticateCardinalJWT_whenFailureAndLiabilityShiftPossible_returnsCardNonce() throws JSONException {
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/2.0/lookup_response_without_liability_with_liability_shift_possible.json"));
+
+        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/2.0/authentication_response_with_liability_shift_possible.json"));
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.authenticateCardinalJWT(fragment, threeDSecureLookup, "jwt");
+
+        ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
+        verify(fragment).postCallback(captor.capture());
+
+        CardNonce cardNonce = (CardNonce) captor.getValue();
+
+        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+        assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+    }
+
+    @Test
+    public void authenticateCardinalJWT_whenFailureAndLiabilityShiftPossible_sendsAnalyticEvent() throws JSONException {
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/2.0/lookup_response_without_liability_with_liability_shift_possible.json"));
+
+        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/2.0/authentication_response_with_liability_shift_possible.json"));
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.authenticateCardinalJWT(fragment, threeDSecureLookup, "jwt");
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.liability-shift-possible"));
     }
 
     @Test

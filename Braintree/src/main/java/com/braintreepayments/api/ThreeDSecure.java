@@ -204,9 +204,11 @@ public class ThreeDSecure {
     }
 
     protected static void authenticateCardinalJWT(final BraintreeFragment fragment, final ThreeDSecureLookup threeDSecureLookup, final String cardinalJWT) {
+        final CardNonce cardNonce = threeDSecureLookup.getCardNonce();
+
         fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
 
-        final String nonce = threeDSecureLookup.getCardNonce().getNonce();
+        final String nonce = cardNonce.getNonce();
         JSONObject body = new JSONObject();
         try {
             body.put("jwt", cardinalJWT);
@@ -219,15 +221,23 @@ public class ThreeDSecure {
             @Override
             public void success(String responseBody) {
                 ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse.fromJson(responseBody);
-                if (authenticationResponse.getErrors() != null) {
+                ThreeDSecureInfo authenticationResponseThreeDSecureInfo = authenticationResponse.getThreeDSecureInfo();
+
+                if (authenticationResponse.getErrors() == null) { // TODO replace with authenticationResponse.isSuccessful()
+                    // 3DS was successful
+
+                    fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
+
+                    completeVerificationFlowWithNoncePayload(fragment, authenticationResponse.getCardNonce());
+                } else if (authenticationResponseThreeDSecureInfo != null && authenticationResponseThreeDSecureInfo.isLiabilityShiftPossible()) {
+                    fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.liability-shift-possible");
+
+                    completeVerificationFlowWithNoncePayload(fragment, cardNonce);
+                } else {
                     // TODO: This isn't a GraphQL request, but the response uses GraphQL style errors. How do we want to parse them?
                     fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
 
                     fragment.postCallback(ErrorWithResponse.fromGraphQLJson(authenticationResponse.getErrors()));
-                } else {
-                    fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
-
-                    completeVerificationFlowWithNoncePayload(fragment, authenticationResponse.getCardNonce());
                 }
             }
 
