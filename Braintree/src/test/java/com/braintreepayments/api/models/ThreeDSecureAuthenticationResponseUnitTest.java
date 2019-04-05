@@ -25,6 +25,8 @@ public class ThreeDSecureAuthenticationResponseUnitTest {
         assertEquals("11", authResponse.getCardNonce().getLastTwo());
         assertTrue(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
         assertTrue(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertTrue(authResponse.getThreeDSecureInfo().isLiabilityShifted());
+        assertTrue(authResponse.getThreeDSecureInfo().isLiabilityShiftPossible());
         assertTrue(authResponse.isSuccess());
     }
 
@@ -45,6 +47,8 @@ public class ThreeDSecureAuthenticationResponseUnitTest {
 
         assertNull(authResponse.getCardNonce());
         assertFalse(authResponse.isSuccess());
+        assertFalse(authResponse.getThreeDSecureInfo().isLiabilityShifted());
+        assertFalse(authResponse.getThreeDSecureInfo().isLiabilityShiftPossible());
         assertEquals("Failed to authenticate, please try a different form of payment", errors.getMessage());
     }
 
@@ -65,6 +69,9 @@ public class ThreeDSecureAuthenticationResponseUnitTest {
                 parceled.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertEquals(authResponse.isSuccess(), parceled.isSuccess());
         assertEquals(authResponse.getException(), parceled.getException());
+        assertEquals(authResponse.getThreeDSecureInfo().isLiabilityShifted(), parceled.getThreeDSecureInfo().isLiabilityShifted());
+        assertEquals(authResponse.getThreeDSecureInfo().isLiabilityShiftPossible(),
+                parceled.getThreeDSecureInfo().isLiabilityShiftPossible());
     }
 
     @Test
