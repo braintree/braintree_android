@@ -343,6 +343,7 @@ public class ThreeDSecure {
                     cardinalConfigurationParameters.setEnvironment(cardinalEnvironment);
                     cardinalConfigurationParameters.setTimeout(8000);
                     cardinalConfigurationParameters.setEnableQuickAuth(false);
+                    cardinalConfigurationParameters.setEnableDFSync(true);
 
                     Cardinal cardinal = Cardinal.getInstance();
                     cardinal.configure(fragment.getApplicationContext(), cardinalConfigurationParameters);
