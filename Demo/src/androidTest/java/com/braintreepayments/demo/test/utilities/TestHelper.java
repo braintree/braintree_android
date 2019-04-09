@@ -90,8 +90,8 @@ public class TestHelper {
     protected void fillInExpiration(String month, String year) {
         try {
             onDevice(withText("Expiration Date")).perform(click());
-            onDevice(withText("04")).perform(click());
-            onDevice(withText("2020")).perform(click());
+            onDevice(withText(month)).perform(click());
+            onDevice(withText(year)).perform(click());
             onDevice().pressBack();
         } catch (RuntimeException e) {
             fillInExpiration();
