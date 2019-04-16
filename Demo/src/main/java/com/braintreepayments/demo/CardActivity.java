@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
+import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.google.android.material.textfield.TextInputLayout;
 import android.text.TextUtils;
 import android.util.Log;
@@ -285,7 +286,11 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
         if (!mThreeDSecureRequested && paymentMethodNonce instanceof CardNonce && Settings.isThreeDSecureEnabled(this)) {
             mThreeDSecureRequested = true;
             mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
-            ThreeDSecure.performVerification(mBraintreeFragment, paymentMethodNonce.getNonce(), "1");
+            ThreeDSecure.performVerification(mBraintreeFragment, new ThreeDSecureRequest()
+                    .amount("1")
+                    .nonce(paymentMethodNonce.getNonce())
+                    .versionRequested(2)
+            );
         } else if (paymentMethodNonce instanceof CardNonce && Settings.isAmexRewardsBalanceEnabled(this)) {
             mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
             AmericanExpress.getRewardsBalance(mBraintreeFragment, paymentMethodNonce.getNonce(), "USD");

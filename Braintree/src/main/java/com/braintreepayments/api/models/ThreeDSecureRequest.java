@@ -29,6 +29,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private String mShippingMethod;
     private ThreeDSecurePostalAddress mBillingAddress;
     private String mBinNumber;
+    private int mVersionRequested = 1;
 
     /**
      * Set the nonce
@@ -108,6 +109,21 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
+     * Optional. Set the desired ThreeDSecure version.
+     * Possible Values:
+     * 02 if ThreeDSecure V2 flows are desired, when possible.
+     * 01 if only ThreeDSecure V1 flows are desired.
+     *
+     * Will default to V1 flows unless set.
+     *
+     * @param versionRequested The desired ThreeDSecure version.
+     * */
+    public ThreeDSecureRequest versionRequested(int versionRequested) {
+        mVersionRequested = versionRequested;
+        return this;
+    }
+
+    /**
      * @return The nonce to use for 3D Secure verification
      */
     public String getNonce() {
@@ -156,6 +172,13 @@ public class ThreeDSecureRequest implements Parcelable {
         return mBinNumber;
     }
 
+    /**
+     * @return The requested ThreeDSecure version
+     */
+    public int getVersionRequested() {
+        return mVersionRequested;
+    }
+
     public ThreeDSecureRequest() {}
 
     @Override
@@ -172,6 +195,7 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeString(mShippingMethod);
         dest.writeParcelable(mBillingAddress, flags);
         dest.writeString(mBinNumber);
+        dest.writeInt(mVersionRequested);
     }
 
     public ThreeDSecureRequest(Parcel in) {
@@ -182,6 +206,7 @@ public class ThreeDSecureRequest implements Parcelable {
         mShippingMethod = in.readString();
         mBillingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
         mBinNumber = in.readString();
+        mVersionRequested = in.readInt();
     }
 
     public static final Creator<ThreeDSecureRequest> CREATOR = new Creator<ThreeDSecureRequest>() {
@@ -224,7 +249,10 @@ public class ThreeDSecureRequest implements Parcelable {
                 }
             }
             base.put("additionalInformation", additionalInformation);
-            base.put("df_reference_id", dfReferenceId);
+            if (mVersionRequested == 2) {
+                // Formats proper POST url by excluding dfReferenceId if V1 is desired, even when V2 is possible
+                base.put("df_reference_id", dfReferenceId);
+            }
 
         } catch (JSONException ignored) {}
 
