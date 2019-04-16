@@ -16,7 +16,7 @@ android {
 }
 
 dependencies {
-    api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.1.3'
+    api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.1.3-2'
     implementation 'com.nimbusds:nimbus-jose-jwt:4.39'
 }
 
