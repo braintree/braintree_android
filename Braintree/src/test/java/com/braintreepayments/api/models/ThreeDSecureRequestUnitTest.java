@@ -34,7 +34,8 @@ public class ThreeDSecureRequestUnitTest {
                 .email("tester@example.com")
                 .shippingMethod("03")
                 .binNumber("12345")
-                .billingAddress(billingAddress);
+                .billingAddress(billingAddress)
+                .versionRequested(2);
 
         assertEquals("1.00", request.getAmount());
         assertEquals("a-nonce", request.getNonce());
@@ -42,6 +43,7 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals("tester@example.com", request.getEmail());
         assertEquals("12345", request.getBinNumber());
         assertEquals("03", request.getShippingMethod());
+        assertEquals(2, request.getVersionRequested());
         assertEquals(billingAddress, request.getBillingAddress());
     }
 
@@ -65,6 +67,7 @@ public class ThreeDSecureRequestUnitTest {
                 .email("tester@example.com")
                 .shippingMethod("03")
                 .binNumber("12345")
+                .versionRequested(2)
                 .billingAddress(billingAddress);
 
         Parcel parcel = Parcel.obtain();
@@ -79,6 +82,7 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals(expected.getEmail(), actual.getEmail());
         assertEquals(expected.getBinNumber(), actual.getBinNumber());
         assertEquals(expected.getShippingMethod(), actual.getShippingMethod());
+        assertEquals(expected.getVersionRequested(), actual.getVersionRequested());
         assertEquals(expected.getBillingAddress().getFirstName(), actual.getBillingAddress().getFirstName());
         assertEquals(expected.getBillingAddress().getLastName(), actual.getBillingAddress().getLastName());
         assertEquals(expected.getBillingAddress().getPhoneNumber(), actual.getBillingAddress().getPhoneNumber());
@@ -167,5 +171,16 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals("CA", jsonBillingAddress.get("state"));
         assertEquals("94602", jsonBillingAddress.get("postalCode"));
         assertTrue(jsonBillingAddress.isNull("countryCode"));
+    }
+
+    @Test
+    public void setsDefaultThreeDSecureVersionRequestedAsV1() {
+        ThreeDSecureRequest request = new ThreeDSecureRequest()
+                .nonce("a-nonce")
+                .amount("1.00");
+
+        assertEquals("1.00", request.getAmount());
+        assertEquals("a-nonce", request.getNonce());
+        assertEquals(1, request.getVersionRequested());
     }
 }
