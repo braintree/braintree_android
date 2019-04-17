@@ -183,4 +183,85 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals("a-nonce", request.getNonce());
         assertEquals(1, request.getVersionRequested());
     }
+
+    @Test
+    public void buildsAllV2Parameters() throws JSONException{
+        ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
+                .streetAddress("street-address")
+                .extendedAddress("extended-address")
+                .locality("locality")
+                .region("region")
+                .postalCode("postal-code")
+                .countryCodeAlpha2("country")
+                .phoneNumber("phone-number");
+
+        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
+                .billingGivenName("billing-given-name")
+                .billingSurname("billing-surname")
+                .email("email")
+                .billingPhoneNumber("billing-phone-number")
+                .shippingMethod("shipping-method")
+                .billingAddress(billingAddress);
+
+        ThreeDSecureRequest request = new ThreeDSecureRequest()
+                .nonce("a-nonce")
+                .amount("amount")
+                .additionalInformation(additionalInformation);
+
+        JSONObject jsonParams = new JSONObject(request.buildV2("df-reference-id"));
+        JSONObject jsonAdditionalInformation = jsonParams.getJSONObject("additionalInformation");
+
+        assertEquals("amount", jsonParams.get("amount"));
+        assertEquals("billing-phone-number", jsonAdditionalInformation.get("mobilePhoneNumber"));
+        assertEquals("email", jsonAdditionalInformation.get("email"));
+        assertEquals("shipping-method", jsonAdditionalInformation.get("shippingMethod"));
+        assertEquals("billing-given-name", jsonAdditionalInformation.get("firstName"));
+        assertEquals("billing-surname", jsonAdditionalInformation.get("lastName"));
+        assertEquals("phone-number", jsonAdditionalInformation.get("phoneNumber"));
+        assertEquals("street-address", jsonAdditionalInformation.get("line1"));
+        assertEquals("extended-address", jsonAdditionalInformation.get("line2"));
+        assertEquals("locality", jsonAdditionalInformation.get("city"));
+        assertEquals("region", jsonAdditionalInformation.get("state"));
+        assertEquals("postal-code", jsonAdditionalInformation.get("postalCode"));
+        assertEquals("country", jsonAdditionalInformation.get("countryCode"));
+    }
+
+    @Test
+    public void buildsPartialV2Parameters() throws JSONException{
+        ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
+                .streetAddress("street-address")
+                .extendedAddress("extended-address")
+                .locality("locality")
+                .region("region")
+                .postalCode("postal-code");
+
+        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
+                .billingGivenName("billing-given-name")
+                .billingSurname("billing-surname")
+                .billingPhoneNumber("billing-phone-number")
+                .shippingMethod("shipping-method")
+                .billingAddress(billingAddress);
+
+        ThreeDSecureRequest request = new ThreeDSecureRequest()
+                .nonce("a-nonce")
+                .amount("amount")
+                .additionalInformation(additionalInformation);
+
+        JSONObject jsonParams = new JSONObject(request.buildV2("123"));
+        JSONObject jsonAdditionalInformation = jsonParams.getJSONObject("additionalInformation");
+
+        assertEquals("amount", jsonParams.get("amount"));
+        assertEquals("billing-phone-number", jsonAdditionalInformation.get("mobilePhoneNumber"));
+        assertTrue(jsonAdditionalInformation.isNull("email"));
+        assertEquals("shipping-method", jsonAdditionalInformation.get("shippingMethod"));
+        assertEquals("billing-given-name", jsonAdditionalInformation.get("firstName"));
+        assertEquals("billing-surname", jsonAdditionalInformation.get("lastName"));
+        assertTrue(jsonAdditionalInformation.isNull("phoneNumber"));
+        assertEquals("street-address", jsonAdditionalInformation.get("line1"));
+        assertEquals("extended-address", jsonAdditionalInformation.get("line2"));
+        assertEquals("locality", jsonAdditionalInformation.get("city"));
+        assertEquals("region", jsonAdditionalInformation.get("state"));
+        assertEquals("postal-code", jsonAdditionalInformation.get("postalCode"));
+        assertTrue(jsonAdditionalInformation.isNull("countryCode"));
+    }
 }

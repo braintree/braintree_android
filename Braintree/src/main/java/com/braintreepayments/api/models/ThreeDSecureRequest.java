@@ -21,6 +21,7 @@ public class ThreeDSecureRequest implements Parcelable {
     protected static final String EMAIL_KEY = "email";
     protected static final String SHIPPING_METHOD_KEY = "shippingMethod";
     protected static final String BIN_NUMBER_KEY = "binNumber";
+    protected static final String ADDITIONAL_INFORMATION_KEY = "additionalInformation";
 
     private String mNonce;
     private String mAmount;
@@ -30,6 +31,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private ThreeDSecurePostalAddress mBillingAddress;
     private String mBinNumber;
     private int mVersionRequested = 1;
+    private ThreeDSecureAdditionalInformation mAdditionalInformation;
 
     /**
      * Set the nonce
@@ -124,6 +126,16 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
+     * Optional. The additional information used for verification
+     *
+     * @param additionalInformation Additional information.
+     * */
+    public ThreeDSecureRequest additionalInformation(ThreeDSecureAdditionalInformation additionalInformation) {
+        mAdditionalInformation = additionalInformation;
+        return this;
+    }
+
+    /**
      * @return The nonce to use for 3D Secure verification
      */
     public String getNonce() {
@@ -179,6 +191,13 @@ public class ThreeDSecureRequest implements Parcelable {
         return mVersionRequested;
     }
 
+    /**
+     * @return The additional information used for verification
+     */
+    public ThreeDSecureAdditionalInformation getAdditionalInformation() {
+        return mAdditionalInformation;
+    }
+
     public ThreeDSecureRequest() {}
 
     @Override
@@ -196,6 +215,7 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeParcelable(mBillingAddress, flags);
         dest.writeString(mBinNumber);
         dest.writeInt(mVersionRequested);
+        dest.writeParcelable(mAdditionalInformation, flags);
     }
 
     public ThreeDSecureRequest(Parcel in) {
@@ -207,6 +227,7 @@ public class ThreeDSecureRequest implements Parcelable {
         mBillingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
         mBinNumber = in.readString();
         mVersionRequested = in.readInt();
+        mAdditionalInformation = in.readParcelable(ThreeDSecureAdditionalInformation.class.getClassLoader());
     }
 
     public static final Creator<ThreeDSecureRequest> CREATOR = new Creator<ThreeDSecureRequest>() {
@@ -222,11 +243,9 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return String representation of {@link ThreeDSecureRequest} for API use.
      */
-
     public String build(String dfReferenceId) {
         JSONObject base = new JSONObject();
         JSONObject additionalInformation = new JSONObject();
-
         try {
             base.put(AMOUNT_KEY, mAmount);
 
@@ -248,12 +267,36 @@ public class ThreeDSecureRequest implements Parcelable {
                     }
                 }
             }
-            base.put("additionalInformation", additionalInformation);
+            base.put(ADDITIONAL_INFORMATION_KEY, additionalInformation);
             if (mVersionRequested == 2) {
-                // Formats proper POST url by excluding dfReferenceId if V1 is desired, even when V2 is possible
+                // Formats proper POST url by excluding dfReferenceId if 3DS 1.0 is desired (even when 2.0 is possible)
                 base.put("df_reference_id", dfReferenceId);
             }
 
+        } catch (JSONException ignored) {}
+
+        return base.toString();
+    }
+
+    /**
+     * @return String representation of {@link ThreeDSecureRequest} 2.0 for API use.
+     */
+    public String buildV2(String dfReferenceId) {
+        JSONObject base = new JSONObject();
+        JSONObject additionalInformation = new JSONObject();
+
+        if (mAdditionalInformation != null) {
+            additionalInformation = mAdditionalInformation.toJson();
+        }
+
+        try {
+            base.put(AMOUNT_KEY, mAmount);
+            base.put(ADDITIONAL_INFORMATION_KEY, additionalInformation);
+
+            if (mVersionRequested == 2) {
+                // Formats proper POST url by excluding dfReferenceId if 3DS 1.0 is desired (even when 2.0 is possible)
+                base.put("df_reference_id", dfReferenceId);
+            }
         } catch (JSONException ignored) {}
 
         return base.toString();
