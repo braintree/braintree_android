@@ -185,7 +185,7 @@ public class ThreeDSecureRequestUnitTest {
     }
 
     @Test
-    public void buildsAllV2Parameters() throws JSONException{
+    public void buildsAllV2ParametersWithAdditionalInformation() throws JSONException{
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
                 .streetAddress("street-address")
                 .extendedAddress("extended-address")
@@ -208,7 +208,7 @@ public class ThreeDSecureRequestUnitTest {
                 .amount("amount")
                 .additionalInformation(additionalInformation);
 
-        JSONObject jsonParams = new JSONObject(request.buildV2("df-reference-id"));
+        JSONObject jsonParams = new JSONObject(request.build("df-reference-id"));
         JSONObject jsonAdditionalInformation = jsonParams.getJSONObject("additionalInformation");
 
         assertEquals("amount", jsonParams.get("amount"));
@@ -227,7 +227,7 @@ public class ThreeDSecureRequestUnitTest {
     }
 
     @Test
-    public void buildsPartialV2Parameters() throws JSONException{
+    public void buildsPartialParametersV2WithAdditionalInformation() throws JSONException{
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
                 .streetAddress("street-address")
                 .extendedAddress("extended-address")
@@ -247,7 +247,7 @@ public class ThreeDSecureRequestUnitTest {
                 .amount("amount")
                 .additionalInformation(additionalInformation);
 
-        JSONObject jsonParams = new JSONObject(request.buildV2("123"));
+        JSONObject jsonParams = new JSONObject(request.build("123"));
         JSONObject jsonAdditionalInformation = jsonParams.getJSONObject("additionalInformation");
 
         assertEquals("amount", jsonParams.get("amount"));

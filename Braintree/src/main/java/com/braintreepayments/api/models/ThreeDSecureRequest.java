@@ -249,6 +249,27 @@ public class ThreeDSecureRequest implements Parcelable {
         try {
             base.put(AMOUNT_KEY, mAmount);
 
+            if (mAdditionalInformation != null) {
+                additionalInformation = buildAdditionalInformationV2();
+            } else {
+                additionalInformation = buildAdditionalInformationV1();
+            }
+
+            base.put(ADDITIONAL_INFORMATION_KEY, additionalInformation);
+            if (mVersionRequested == 2) {
+                // Formats proper POST url by excluding dfReferenceId if 3DS 1.0 is desired (even when 2.0 is possible)
+                base.put("df_reference_id", dfReferenceId);
+            }
+
+        } catch (JSONException ignored) {}
+
+        return base.toString();
+    }
+
+    private JSONObject buildAdditionalInformationV1 () {
+        JSONObject additionalInformation = new JSONObject();
+
+        try {
             additionalInformation.putOpt(MOBILE_PHONE_NUMBER_KEY, mMobilePhoneNumber);
             additionalInformation.putOpt(EMAIL_KEY, mEmail);
             additionalInformation.putOpt(SHIPPING_METHOD_KEY, mShippingMethod);
@@ -267,39 +288,13 @@ public class ThreeDSecureRequest implements Parcelable {
                     }
                 }
             }
-            base.put(ADDITIONAL_INFORMATION_KEY, additionalInformation);
-            if (mVersionRequested == 2) {
-                // Formats proper POST url by excluding dfReferenceId if 3DS 1.0 is desired (even when 2.0 is possible)
-                base.put("df_reference_id", dfReferenceId);
-            }
-
         } catch (JSONException ignored) {}
 
-        return base.toString();
+        return additionalInformation;
     }
 
-    /**
-     * @return String representation of {@link ThreeDSecureRequest} 2.0 for API use.
-     */
-    public String buildV2(String dfReferenceId) {
-        JSONObject base = new JSONObject();
-        JSONObject additionalInformation = new JSONObject();
-
-        if (mAdditionalInformation != null) {
-            additionalInformation = mAdditionalInformation.toJson();
-        }
-
-        try {
-            base.put(AMOUNT_KEY, mAmount);
-            base.put(ADDITIONAL_INFORMATION_KEY, additionalInformation);
-
-            if (mVersionRequested == 2) {
-                // Formats proper POST url by excluding dfReferenceId if 3DS 1.0 is desired (even when 2.0 is possible)
-                base.put("df_reference_id", dfReferenceId);
-            }
-        } catch (JSONException ignored) {}
-
-        return base.toString();
+    private JSONObject buildAdditionalInformationV2 () {
+        return mAdditionalInformation.toJson();
     }
 
 }
