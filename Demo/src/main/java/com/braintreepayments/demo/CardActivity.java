@@ -290,6 +290,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
                     .amount("1")
                     .nonce(paymentMethodNonce.getNonce())
                     .versionRequested(2)
+                    .binNumber(((CardNonce) paymentMethodNonce).getBinNumber())
             );
         } else if (paymentMethodNonce instanceof CardNonce && Settings.isAmexRewardsBalanceEnabled(this)) {
             mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);

@@ -25,6 +25,7 @@ import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 import com.cardinalcommerce.cardinalmobilesdk.models.response.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
+import com.cardinalcommerce.cardinalmobilesdk.services.CardinalProcessBinService;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
 import com.cardinalcommerce.shared.models.enums.DirectoryServerID;
 import com.cardinalcommerce.shared.models.parameters.CardinalConfigurationParameters;
@@ -50,6 +51,7 @@ import static com.braintreepayments.api.models.BraintreeRequestCodes.THREE_D_SEC
  */
 public class ThreeDSecure {
     private static String mDFReferenceId;
+    private static Cardinal mCardinalSession;
 
     /**
      * The versioned path of the 3D Secure assets to use. Hosted by Braintree.
@@ -193,11 +195,29 @@ public class ThreeDSecure {
                             fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.3ds-version.%s", threeDSecureVersion));
 
                             if (showChallenge) {
+                                // Confirmed 3DS 2.0 FLOW
                                 if (threeDSecureVersion.startsWith("2.") && request.getVersionRequested() == 2) {
-                                    performCardinalAuthentication(fragment, threeDSecureLookup);
+
+                                    // If bin details, process
+                                    if (request.getBinNumber() != null) {
+                                        mCardinalSession.processBin(request.getBinNumber(), new CardinalProcessBinService() {
+                                            @Override
+                                            public void onComplete() {
+                                                performCardinalAuthentication(fragment, threeDSecureLookup);
+                                            }
+                                        });
+
+                                    } else {
+                                        // No bin details, still process 3DS 2.0
+                                        performCardinalAuthentication(fragment, threeDSecureLookup);
+                                    }
+
+                                // 3DS 1.0 Flow
                                 } else {
                                     launchBrowserSwitch(fragment, threeDSecureLookup);
                                 }
+
+                            // No 3DS challenge. Return original nonce
                             } else {
                                 completeVerificationFlowWithNoncePayload(fragment, threeDSecureLookup.getCardNonce());
                             }
@@ -370,9 +390,9 @@ public class ThreeDSecure {
                     cardinalConfigurationParameters.setEnableQuickAuth(false);
                     cardinalConfigurationParameters.setEnableDFSync(true);
 
-                    Cardinal cardinal = Cardinal.getInstance();
-                    cardinal.configure(fragment.getApplicationContext(), cardinalConfigurationParameters);
-                    cardinal.init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
+                    mCardinalSession = Cardinal.getInstance();
+                    mCardinalSession.configure(fragment.getApplicationContext(), cardinalConfigurationParameters);
+                    mCardinalSession.init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
                         @Override
                         public void onSetupCompleted(String consumerSessionId) {
                             mDFReferenceId = consumerSessionId;
