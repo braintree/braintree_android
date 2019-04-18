@@ -80,7 +80,8 @@ public class ThreeDSecureUnitTest {
 
         mBasicRequest = new ThreeDSecureRequest()
                 .nonce("a-nonce")
-                .amount("1.00");
+                .amount("1.00")
+                .versionRequested(2);
     }
 
     @Test
@@ -176,6 +177,7 @@ public class ThreeDSecureUnitTest {
         ThreeDSecureRequest request = new ThreeDSecureRequest()
                 .nonce("a-nonce")
                 .amount("1.00")
+                .versionRequested(2)
                 .shippingMethod("01")
                 .mobilePhoneNumber("8101234567")
                 .email("test@example.com")
@@ -251,6 +253,7 @@ public class ThreeDSecureUnitTest {
                 .nonce("a-nonce")
                 .amount("1.00")
                 .email("test@example.com")
+                .versionRequested(2)
                 .billingAddress(new ThreeDSecurePostalAddress()
                         .firstName("Joe")
                         .lastName("Guy")
