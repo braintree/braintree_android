@@ -125,6 +125,48 @@ public class ThreeDSecure {
      *
      * @param fragment the {@link BraintreeFragment} backing the http request. This fragment will
      *                  also be responsible for handling callbacks to it's listeners
+     * @param cardBuilder The cardBuilder created from raw details. Will be tokenized before
+     *                    the 3D Secure verification if performed.
+     * @param request the {@link ThreeDSecureRequest} with information used for authentication.
+     *                Note that the nonce will be replaced with the nonce generated from the
+     *                cardBuilder.
+     */
+    public static void performVerification(final BraintreeFragment fragment,
+                                           final CardBuilder cardBuilder,
+                                           final ThreeDSecureRequest request) {
+        if (request.getAmount() == null) {
+            fragment.postCallback(new InvalidArgumentException("The ThreeDSecureRequest amount cannot be null"));
+            return;
+        }
+
+        TokenizationClient.tokenize(fragment, cardBuilder, new PaymentMethodNonceCallback() {
+            @Override
+            public void success(PaymentMethodNonce paymentMethodNonce) {
+                request.nonce(paymentMethodNonce.getNonce());
+
+                performVerification(fragment, request);
+            }
+
+            @Override
+            public void failure(Exception exception) {
+                fragment.postCallback(exception);
+            }
+        });
+    }
+
+    /**
+     * Verification is associated with a transaction amount and your merchant account. To specify a
+     * different merchant account (or, in turn, currency), you will need to specify the merchant
+     * account id when <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">
+     *     generating a client token</a>
+     *
+     * During lookup the original payment method nonce is consumed and a new one is returned,
+     * which points to the original payment method, as well as the 3D Secure verification.
+     * Transactions created with this nonce will be 3D Secure, and benefit from the appropriate
+     * liability shift if authentication is successful or fail with a 3D Secure failure.
+     *
+     * @param fragment the {@link BraintreeFragment} backing the http request. This fragment will
+     *                  also be responsible for handling callbacks to it's listeners
      * @param request the {@link ThreeDSecureRequest} with information used for authentication.
      */
     public static void performVerification(final BraintreeFragment fragment, final ThreeDSecureRequest request) {

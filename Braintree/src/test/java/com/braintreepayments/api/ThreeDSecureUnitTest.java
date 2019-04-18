@@ -8,6 +8,7 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.Authorization;
+import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
@@ -35,6 +36,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import static androidx.appcompat.app.AppCompatActivity.RESULT_OK;
 import static com.braintreepayments.api.BraintreePowerMockHelper.MockStaticCardinal;
+import static com.braintreepayments.api.BraintreePowerMockHelper.MockStaticTokenizationClient;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
@@ -49,10 +51,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.spy;
+import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "javax.crypto.*" })
-@PrepareForTest({ Cardinal.class, ManifestValidator.class })
+@PrepareForTest({ Cardinal.class, ManifestValidator.class, TokenizationClient.class })
 public class ThreeDSecureUnitTest {
 
     @Rule
@@ -78,6 +81,62 @@ public class ThreeDSecureUnitTest {
         mBasicRequest = new ThreeDSecureRequest()
                 .nonce("a-nonce")
                 .amount("1.00");
+    }
+
+    @Test
+    public void performVerification_withCardBuilder_errorsWhenNoAmount() {
+        MockStaticTokenizationClient.mockTokenizeSuccess(null);
+
+        CardBuilder cardBuilder = new CardBuilder();
+        ThreeDSecureRequest request = new ThreeDSecureRequest();
+
+        ThreeDSecure.performVerification(mFragment, cardBuilder, request);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(mFragment).postCallback(captor.capture());
+
+        assertEquals("The ThreeDSecureRequest amount cannot be null",
+                captor.getValue().getMessage());
+    }
+
+    @Test
+    public void performVerification_withCardBuilderFailsToTokenize_postsError() {
+        MockStaticTokenizationClient.mockTokenizeFailure(new RuntimeException("Tokenization Failed"));
+
+        CardBuilder cardBuilder = new CardBuilder();
+        ThreeDSecureRequest request = new ThreeDSecureRequest()
+                .amount("10");
+
+        ThreeDSecure.performVerification(mFragment, cardBuilder, request);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(mFragment).postCallback(captor.capture());
+
+        assertEquals("Tokenization Failed",
+                captor.getValue().getMessage());
+    }
+
+    @Test
+    public void performVerification_withCardBuilder_tokenizesAndPerformsVerification() {
+        CardNonce cardNonce = mock(CardNonce.class);
+        when(cardNonce.getNonce()).thenReturn("card-nonce");
+        MockStaticTokenizationClient.mockTokenizeSuccess(cardNonce);
+
+        MockStaticCardinal.initCompletesSuccessfully("fake-df");
+        ThreeDSecure.configureCardinal(mFragment);
+
+        CardBuilder cardBuilder = new CardBuilder();
+        ThreeDSecureRequest request = new ThreeDSecureRequest()
+                .amount("10");
+
+        ThreeDSecure.performVerification(mFragment, cardBuilder, request);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+
+        verifyStatic();
+        TokenizationClient.versionedPath(captor.capture());
+
+        assertTrue(captor.getValue().contains("card-nonce"));
     }
 
     @Test

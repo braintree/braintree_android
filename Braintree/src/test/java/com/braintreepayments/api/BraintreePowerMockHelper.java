@@ -142,8 +142,20 @@ class BraintreePowerMockHelper {
             mockStatic(TokenizationClient.class);
             doAnswer(new Answer<Void>() {
                 @Override
-                public Void answer(InvocationOnMock invocation) throws Throwable {
+                public Void answer(InvocationOnMock invocation) {
                     ((PaymentMethodNonceCallback) invocation.getArguments()[2]).success(paymentMethodNonce);
+                    return null;
+                }
+            }).when(TokenizationClient.class);
+            TokenizationClient.tokenize(any(BraintreeFragment.class), any(PaymentMethodBuilder.class),
+                    any(PaymentMethodNonceCallback.class));
+        }
+        static void mockTokenizeFailure(final Exception ex) {
+            mockStatic(TokenizationClient.class);
+            doAnswer(new Answer<Void>() {
+                @Override
+                public Void answer(InvocationOnMock invocation) {
+                    ((PaymentMethodNonceCallback) invocation.getArguments()[2]).failure(ex);
                     return null;
                 }
             }).when(TokenizationClient.class);
