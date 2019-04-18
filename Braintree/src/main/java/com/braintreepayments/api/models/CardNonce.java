@@ -71,7 +71,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         mLastFour = details.getString(LAST_FOUR_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
         mThreeDSecureInfo = ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY));
-        mBinNumber = details.getString(BIN_NUMBER_KEY);
+        mBinNumber = Json.optString(details, BIN_NUMBER_KEY, "");
         mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
     }
 
@@ -87,7 +87,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
             mCardType = Json.optString(creditCard, GRAPHQL_BRAND_KEY, "Unknown");
             mThreeDSecureInfo = ThreeDSecureInfo.fromJson(null);
             // TODO: Why isn't there any bin number on this jsonObject?
-            // mBinNumber = Json.optString(creditCard, "bin", "");
+            mBinNumber = Json.optString(creditCard, "bin", "");
             mBinData = BinData.fromJson(creditCard.optJSONObject(BIN_DATA_KEY));
             mNonce = payload.getString(TOKEN_KEY);
             mDescription = TextUtils.isEmpty(mLastTwo) ? "" : "ending in ••" + mLastTwo;
