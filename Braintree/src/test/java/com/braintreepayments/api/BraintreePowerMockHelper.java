@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
+import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
@@ -33,6 +34,7 @@ import static org.powermock.api.mockito.PowerMockito.doAnswer;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.spy;
 
 class BraintreePowerMockHelper {
     static class MockStaticCardinal {
@@ -161,6 +163,19 @@ class BraintreePowerMockHelper {
             }).when(TokenizationClient.class);
             TokenizationClient.tokenize(any(BraintreeFragment.class), any(PaymentMethodBuilder.class),
                     any(PaymentMethodNonceCallback.class));
+        }
+    }
+
+    static class MockManifestValidator {
+        static void mockUrlSchemeDeclaredInAndroidManifest(boolean returnValue) {
+            spy(ManifestValidator.class);
+            try {
+                doReturn(returnValue).when(ManifestValidator.class,
+                        "isUrlSchemeDeclaredInAndroidManifest", any(Context.class),
+                        anyString(), any(Class.class));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
