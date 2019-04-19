@@ -4,7 +4,7 @@ set -e
 
 SLUG="braintree/braintree_android"
 JDK="oraclejdk8"
-BRANCH="3.x"
+BRANCH="master"
 
 if [ "$TRAVIS_REPO_SLUG" != "$SLUG" ]; then
   echo "Skipping snapshot deployment: wrong repository. Expected '$SLUG' but was '$TRAVIS_REPO_SLUG'."
