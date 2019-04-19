@@ -44,27 +44,11 @@ public class ThreeDSecureCardinalTest extends TestHelper {
         onDevice(withText("Code")).perform(setText("1234"));
         onDevice(withText("Submit")).perform(click());
 
-        workAroundForCardinalUiNotClosing();
-
         getNonceDetails().check(text(containsString("Card Last Two: 91")));
         getNonceDetails().check(text(containsString("isLiabilityShifted: true")));
         getNonceDetails().check(text(containsString("isLiabilityShiftPossible: true")));
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
-    }
-
-    /**
-     * Cardinal SDKs UI does not close on submit.
-     * They're working on a fix but in the meantime,
-     * pressing back to exit out of the UI works.
-     */
-    private void workAroundForCardinalUiNotClosing() {
-        try {
-            // We need to sleep for a bit or Cardinal considers this a cancel
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {}
-
-        onDevice().pressBack();
     }
 }
