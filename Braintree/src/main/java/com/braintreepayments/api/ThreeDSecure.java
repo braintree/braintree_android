@@ -181,39 +181,33 @@ public class ThreeDSecure {
                     public void success(String responseBody) {
                         try {
                             final ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(responseBody);
-                            Boolean showChallenge = threeDSecureLookup.getAcsUrl() != null;
+                            boolean showChallenge = threeDSecureLookup.getAcsUrl() != null;
                             String threeDSecureVersion = threeDSecureLookup.getThreeDSecureVersion();
 
                             fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.challenge-presented.%b", showChallenge));
                             fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.3ds-version.%s", threeDSecureVersion));
 
-                            if (showChallenge) {
-                                // Confirmed 3DS 2.0 FLOW
-                                if (threeDSecureVersion.startsWith("2.") && request.getVersionRequested() == 2) {
-
-                                    // If bin details, process
-                                    if (request.getBin() != null) {
-                                        mCardinalSession.processBin(request.getBin(), new CardinalProcessBinService() {
-                                            @Override
-                                            public void onComplete() {
-                                                performCardinalAuthentication(fragment, threeDSecureLookup);
-                                            }
-                                        });
-
-                                    } else {
-                                        // No bin details, still process 3DS 2.0
-                                        performCardinalAuthentication(fragment, threeDSecureLookup);
-                                    }
-
-                                // 3DS 1.0 Flow
-                                } else {
-                                    launchBrowserSwitch(fragment, threeDSecureLookup);
-                                }
-
-                            // No 3DS challenge. Return original nonce
-                            } else {
+                            if (!showChallenge) {
                                 completeVerificationFlowWithNoncePayload(fragment, threeDSecureLookup.getCardNonce());
+                                return;
                             }
+
+                            if (!threeDSecureVersion.startsWith("2.")) {
+                                launchBrowserSwitch(fragment, threeDSecureLookup);
+                                return;
+                            }
+
+                            if (request.getBin() == null) {
+                                performCardinalAuthentication(fragment, threeDSecureLookup);
+                                return;
+                            }
+
+                            mCardinalSession.processBin(request.getBin(), new CardinalProcessBinService() {
+                                @Override
+                                public void onComplete() {
+                                    performCardinalAuthentication(fragment, threeDSecureLookup);
+                                }
+                            });
                         } catch (JSONException exception) {
                             fragment.postCallback(exception);
                         }
@@ -224,7 +218,6 @@ public class ThreeDSecure {
                         fragment.postCallback(exception);
                     }
                 });
-
             }
         });
     }
