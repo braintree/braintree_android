@@ -1,8 +1,5 @@
 # Only Required for Demo App
 
-## Cardinal SDK
--dontwarn org.bouncycastle.**
-
 ## Mailable_Log
 -dontwarn ch.qos.logback.core.net.**
 -dontwarn org.slf4j.**

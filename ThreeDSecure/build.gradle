@@ -21,10 +21,11 @@ android {
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
 
-        consumerProguardFiles 'proguard.pro'
-
+        consumerProguardFiles 'proguard-rules.pro'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
+
+    buildTypes.release.minifyEnabled = true
 }
 
 dependencies {
