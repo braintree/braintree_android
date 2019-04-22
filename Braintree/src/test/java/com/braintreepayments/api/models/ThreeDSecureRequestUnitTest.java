@@ -33,7 +33,7 @@ public class ThreeDSecureRequestUnitTest {
                 .mobilePhoneNumber("5151234321")
                 .email("tester@example.com")
                 .shippingMethod("03")
-                .binNumber("12345")
+                .bin("12345")
                 .billingAddress(billingAddress)
                 .versionRequested(2);
 
@@ -41,7 +41,7 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals("a-nonce", request.getNonce());
         assertEquals("5151234321", request.getMobilePhoneNumber());
         assertEquals("tester@example.com", request.getEmail());
-        assertEquals("12345", request.getBinNumber());
+        assertEquals("12345", request.getBin());
         assertEquals("03", request.getShippingMethod());
         assertEquals(2, request.getVersionRequested());
         assertEquals(billingAddress, request.getBillingAddress());
@@ -66,7 +66,7 @@ public class ThreeDSecureRequestUnitTest {
                 .mobilePhoneNumber("5151234321")
                 .email("tester@example.com")
                 .shippingMethod("03")
-                .binNumber("12345")
+                .bin("12345")
                 .versionRequested(2)
                 .billingAddress(billingAddress);
 
@@ -80,7 +80,7 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals(expected.getNonce(), actual.getNonce());
         assertEquals(expected.getMobilePhoneNumber(), actual.getMobilePhoneNumber());
         assertEquals(expected.getEmail(), actual.getEmail());
-        assertEquals(expected.getBinNumber(), actual.getBinNumber());
+        assertEquals(expected.getBin(), actual.getBin());
         assertEquals(expected.getShippingMethod(), actual.getShippingMethod());
         assertEquals(expected.getVersionRequested(), actual.getVersionRequested());
         assertEquals(expected.getBillingAddress().getFirstName(), actual.getBillingAddress().getFirstName());
@@ -113,7 +113,7 @@ public class ThreeDSecureRequestUnitTest {
                 .mobilePhoneNumber("5151234321")
                 .email("tester@example.com")
                 .shippingMethod("03")
-                .binNumber("12345")
+                .bin("12345")
                 .billingAddress(billingAddress);
 
         JSONObject jsonParams = new JSONObject(request.build("123"));
@@ -123,7 +123,7 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals("1.00", jsonParams.get("amount"));
         assertEquals("5151234321", jsonAdditionalInformation.get("mobilePhoneNumber"));
         assertEquals("tester@example.com", jsonAdditionalInformation.get("email"));
-        assertEquals("12345", jsonAdditionalInformation.get("binNumber"));
+        assertEquals("12345", jsonAdditionalInformation.get("bin"));
         assertEquals("03", jsonAdditionalInformation.get("shippingMethod"));
         assertEquals("John", jsonAdditionalInformation.get("firstName"));
         assertEquals("Fakerson", jsonAdditionalInformation.get("lastName"));

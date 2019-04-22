@@ -2,7 +2,6 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,7 +19,7 @@ public class ThreeDSecureRequest implements Parcelable {
     protected static final String MOBILE_PHONE_NUMBER_KEY = "mobilePhoneNumber";
     protected static final String EMAIL_KEY = "email";
     protected static final String SHIPPING_METHOD_KEY = "shippingMethod";
-    protected static final String BIN_NUMBER_KEY = "binNumber";
+    protected static final String BIN_KEY = "bin";
     protected static final String ADDITIONAL_INFORMATION_KEY = "additionalInformation";
 
     private String mNonce;
@@ -29,7 +28,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private String mEmail;
     private String mShippingMethod;
     private ThreeDSecurePostalAddress mBillingAddress;
-    private String mBinNumber;
+    private String mBin;
     private int mVersionRequested = 1;
     private ThreeDSecureAdditionalInformation mAdditionalInformation;
 
@@ -101,12 +100,12 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * Optional. Set the BIN number
+     * Optional. Set the BIN
      *
-     * @param binNumber The BIN number of the tokenized card.
+     * @param bin The BIN (Bank Identification Number) of the tokenized card.
      * */
-    public ThreeDSecureRequest binNumber(String binNumber) {
-        mBinNumber = binNumber;
+    public ThreeDSecureRequest bin(String bin) {
+        mBin = bin;
         return this;
     }
 
@@ -178,10 +177,10 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * @return The BIN number of the tokenized card
+     * @return The BIN of the tokenized card
      */
-    public String getBinNumber() {
-        return mBinNumber;
+    public String getBin() {
+        return mBin;
     }
 
     /**
@@ -213,7 +212,7 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeString(mEmail);
         dest.writeString(mShippingMethod);
         dest.writeParcelable(mBillingAddress, flags);
-        dest.writeString(mBinNumber);
+        dest.writeString(mBin);
         dest.writeInt(mVersionRequested);
         dest.writeParcelable(mAdditionalInformation, flags);
     }
@@ -225,7 +224,7 @@ public class ThreeDSecureRequest implements Parcelable {
         mEmail = in.readString();
         mShippingMethod = in.readString();
         mBillingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
-        mBinNumber = in.readString();
+        mBin = in.readString();
         mVersionRequested = in.readInt();
         mAdditionalInformation = in.readParcelable(ThreeDSecureAdditionalInformation.class.getClassLoader());
     }
@@ -273,7 +272,7 @@ public class ThreeDSecureRequest implements Parcelable {
             additionalInformation.putOpt(MOBILE_PHONE_NUMBER_KEY, mMobilePhoneNumber);
             additionalInformation.putOpt(EMAIL_KEY, mEmail);
             additionalInformation.putOpt(SHIPPING_METHOD_KEY, mShippingMethod);
-            additionalInformation.putOpt(BIN_NUMBER_KEY, mBinNumber);
+            additionalInformation.putOpt(BIN_KEY, mBin);
 
             if (mBillingAddress != null) {
                 JSONObject postalAddress = mBillingAddress.toJson();

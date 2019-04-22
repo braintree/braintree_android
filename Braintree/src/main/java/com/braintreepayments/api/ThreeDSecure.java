@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,15 +25,11 @@ import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 import com.cardinalcommerce.cardinalmobilesdk.models.response.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalProcessBinService;
-import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
-import com.cardinalcommerce.shared.models.enums.DirectoryServerID;
 import com.cardinalcommerce.shared.models.parameters.CardinalConfigurationParameters;
 import com.cardinalcommerce.shared.models.parameters.CardinalEnvironment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.Serializable;
 
 import static androidx.appcompat.app.AppCompatActivity.RESULT_OK;
 
@@ -199,8 +194,8 @@ public class ThreeDSecure {
                                 if (threeDSecureVersion.startsWith("2.") && request.getVersionRequested() == 2) {
 
                                     // If bin details, process
-                                    if (request.getBinNumber() != null) {
-                                        mCardinalSession.processBin(request.getBinNumber(), new CardinalProcessBinService() {
+                                    if (request.getBin() != null) {
+                                        mCardinalSession.processBin(request.getBin(), new CardinalProcessBinService() {
                                             @Override
                                             public void onComplete() {
                                                 performCardinalAuthentication(fragment, threeDSecureLookup);

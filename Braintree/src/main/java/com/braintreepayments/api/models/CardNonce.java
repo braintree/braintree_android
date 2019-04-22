@@ -28,13 +28,13 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     private static final String CARD_TYPE_KEY = "cardType";
     private static final String LAST_TWO_KEY = "lastTwo";
     private static final String LAST_FOUR_KEY = "lastFour";
-    private static final String BIN_NUMBER_KEY = "bin";
+    private static final String BIN_KEY = "bin";
 
     private String mCardType;
     private String mLastTwo;
     private String mLastFour;
     private ThreeDSecureInfo mThreeDSecureInfo;
-    private String mBinNumber;
+    private String mBin;
     private BinData mBinData;
 
     /**
@@ -71,7 +71,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         mLastFour = details.getString(LAST_FOUR_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
         mThreeDSecureInfo = ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY));
-        mBinNumber = Json.optString(details, BIN_NUMBER_KEY, "");
+        mBin = Json.optString(details, BIN_KEY, "");
         mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
     }
 
@@ -86,7 +86,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
             mLastTwo = mLastFour.length() < 4 ? "" : mLastFour.substring(2);
             mCardType = Json.optString(creditCard, GRAPHQL_BRAND_KEY, "Unknown");
             mThreeDSecureInfo = ThreeDSecureInfo.fromJson(null);
-            mBinNumber = Json.optString(creditCard, "bin", "");
+            mBin = Json.optString(creditCard, "bin", "");
             mBinData = BinData.fromJson(creditCard.optJSONObject(BIN_DATA_KEY));
             mNonce = payload.getString(TOKEN_KEY);
             mDescription = TextUtils.isEmpty(mLastTwo) ? "" : "ending in ••" + mLastTwo;
@@ -134,10 +134,10 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     }
 
     /**
-     * @return Bin number of the card.
+     * @return BIN of the card.
      */
-    public String getBinNumber() {
-        return mBinNumber;
+    public String getBin() {
+        return mBin;
     }
 
     /**

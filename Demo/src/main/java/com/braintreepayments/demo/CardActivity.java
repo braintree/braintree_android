@@ -4,13 +4,11 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.models.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.google.android.material.textfield.TextInputLayout;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -356,7 +354,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
                 .amount("10")
                 .versionRequested(2)
                 .nonce(cardNonce.getNonce())
-                .binNumber(cardNonce.getBinNumber())
+                .bin(cardNonce.getBin())
                 .additionalInformation(additionalInformation);
 
         return threeDSecureRequest;
