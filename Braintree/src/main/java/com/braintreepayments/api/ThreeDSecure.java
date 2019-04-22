@@ -254,9 +254,7 @@ public class ThreeDSecure {
                 ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse.fromJson(responseBody);
                 ThreeDSecureInfo authenticationResponseThreeDSecureInfo = authenticationResponse.getThreeDSecureInfo();
 
-                if (authenticationResponse.getErrors() == null) { // TODO replace with authenticationResponse.isSuccessful()
-                    // 3DS was successful
-
+                if (authenticationResponse.isSuccess()) {
                     fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
 
                     completeVerificationFlowWithNoncePayload(fragment, authenticationResponse.getCardNonce());
@@ -265,9 +263,9 @@ public class ThreeDSecure {
 
                     completeVerificationFlowWithNoncePayload(fragment, cardNonce);
                 } else {
-                    // TODO: This isn't a GraphQL request, but the response uses GraphQL style errors. How do we want to parse them?
                     fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
 
+                    // TODO: This isn't a GraphQL request, but the response uses GraphQL style errors. How do we want to parse them?
                     fragment.postCallback(ErrorWithResponse.fromGraphQLJson(authenticationResponse.getErrors()));
                 }
             }

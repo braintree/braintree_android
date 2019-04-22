@@ -46,7 +46,7 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
             if (json.has(SUCCESS_KEY)) {
                 authenticationResponse.mSuccess = json.getBoolean(SUCCESS_KEY);
             }
-            else if (! json.has("errors")) {
+            else if (!json.has("errors")) {
                 authenticationResponse.mSuccess = true;
             }
 
