@@ -21,6 +21,7 @@ public class AnalyticsEvent {
     private static final String PAYPAL_INSTALLED_KEY = "paypalInstalled";
     private static final String VENMO_INSTALLED_KEY = "venmoInstalled";
     private static final String INTEGRATION_TYPE_KEY = "integrationType";
+    private static final String DROP_IN_VERSION_KEY = "dropinVersion";
 
     int id;
     String event;
@@ -39,7 +40,8 @@ public class AnalyticsEvent {
                     .put(USER_INTERFACE_ORIENTATION_KEY, getUserOrientation(context))
                     .put(MERCHANT_APP_VERSION_KEY, getAppVersion(context))
                     .put(PAYPAL_INSTALLED_KEY, isPayPalInstalled(context))
-                    .put(VENMO_INSTALLED_KEY, Venmo.isVenmoInstalled(context));
+                    .put(VENMO_INSTALLED_KEY, Venmo.isVenmoInstalled(context))
+                    .put(DROP_IN_VERSION_KEY, getDropInVersion());
         } catch (JSONException ignored) {}
     }
 
@@ -84,5 +86,18 @@ public class AnalyticsEvent {
         } catch (ClassNotFoundException | NoClassDefFoundError ignored) {
             return false;
         }
+    }
+
+    /**
+     * Gets the current Drop-in version or null.
+     *
+     * @return string representation of the current Drop-in version, or null if
+     * Drop-in is unavailable
+     */
+    private static String getDropInVersion() {
+        return ClassHelper.getFieldValue(
+                "com.braintreepayments.api.dropin.BuildConfig",
+                "VERSION_NAME"
+        );
     }
 }
