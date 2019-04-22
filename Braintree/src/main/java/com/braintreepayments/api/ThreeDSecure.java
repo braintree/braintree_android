@@ -185,8 +185,6 @@ public class ThreeDSecure {
                             String threeDSecureVersion = threeDSecureLookup.getThreeDSecureVersion();
 
                             fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.challenge-presented.%b", showChallenge));
-
-                            // TODO: Move this analytic event. Instead, now we want to track with 3ds version path we actually take, not what is possible.
                             fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.3ds-version.%s", threeDSecureVersion));
 
                             if (showChallenge) {

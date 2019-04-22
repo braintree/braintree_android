@@ -327,11 +327,6 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
                 "- errorCode: " + rewardsBalance.getErrorCode();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
     private ThreeDSecureRequest threeDSecureRequest(PaymentMethodNonce paymentMethodNonce) {
         CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
