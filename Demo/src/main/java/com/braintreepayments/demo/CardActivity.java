@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
+import com.braintreepayments.api.models.ThreeDSecureAdditionalInformation;
+import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.google.android.material.textfield.TextInputLayout;
 import android.text.TextUtils;
@@ -273,6 +275,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
                     .expirationMonth(mCardForm.getExpirationMonth())
                     .expirationYear(mCardForm.getExpirationYear())
                     .cvv(mCardForm.getCvv())
+                    .validate(false) // TODO GQL currently only returns the bin if validate = false
                     .postalCode(mCardForm.getPostalCode());
 
             Card.tokenize(mBraintreeFragment, cardBuilder);
@@ -286,12 +289,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
         if (!mThreeDSecureRequested && paymentMethodNonce instanceof CardNonce && Settings.isThreeDSecureEnabled(this)) {
             mThreeDSecureRequested = true;
             mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
-            ThreeDSecure.performVerification(mBraintreeFragment, new ThreeDSecureRequest()
-                    .amount("1")
-                    .nonce(paymentMethodNonce.getNonce())
-                    .versionRequested(2)
-                    .binNumber(((CardNonce) paymentMethodNonce).getBinNumber())
-            );
+            ThreeDSecure.performVerification(mBraintreeFragment, threeDSecureRequest(paymentMethodNonce));
         } else if (paymentMethodNonce instanceof CardNonce && Settings.isAmexRewardsBalanceEnabled(this)) {
             mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
             AmericanExpress.getRewardsBalance(mBraintreeFragment, paymentMethodNonce.getNonce(), "USD");
@@ -334,5 +332,33 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private ThreeDSecureRequest threeDSecureRequest(PaymentMethodNonce paymentMethodNonce) {
+        CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+
+        ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
+                .streetAddress("555 Smith St")
+                .extendedAddress("#2")
+                .locality("Chicago")
+                .region("IL")
+                .postalCode("12345")
+                .countryCodeAlpha2("US");
+
+        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
+                .billingSurname("Jill")
+                .billingGivenName("Doe")
+                .billingPhoneNumber("5551234567")
+                .email("test@email.com")
+                .billingAddress(billingAddress);
+
+        ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest()
+                .amount("10")
+                .versionRequested(2)
+                .nonce(cardNonce.getNonce())
+                .binNumber(cardNonce.getBinNumber())
+                .additionalInformation(additionalInformation);
+
+        return threeDSecureRequest;
     }
 }
