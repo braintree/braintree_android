@@ -6,6 +6,8 @@ Thanks for considering contributing to this project. Ways you can help:
 * [Add an issue](https://github.com/braintree/braintree_android/issues)
 * [Contact us](README.md#feedback) with feedback
 
+__Note on Translations:__ We cannot accept language translation requests. We support the same [languages that are supported by PayPal](https://developer.paypal.com/docs/api/reference/locale-codes/) and have a dedicated localization team to provide the translations.
+
 ## Development
 
 Clone this repo and open it with Android Studio.
