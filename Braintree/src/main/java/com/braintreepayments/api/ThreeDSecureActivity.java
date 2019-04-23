@@ -34,7 +34,6 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
         Cardinal.getInstance().cca_continue(
                 threeDSecureLookup.getTransactionId(),
                 threeDSecureLookup.getPareq(),
-                threeDSecureLookup.getAcsUrl(),
                 DirectoryServerID.VISA01,
                 this,
                 this

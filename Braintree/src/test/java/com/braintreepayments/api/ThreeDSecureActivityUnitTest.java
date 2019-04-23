@@ -55,7 +55,6 @@ public class ThreeDSecureActivityUnitTest {
         verify(cruiseService).cca_continue(
                 eq(threeDSecureLookup.getTransactionId()),
                 eq(threeDSecureLookup.getPareq()),
-                eq(threeDSecureLookup.getAcsUrl()),
                 eq(DirectoryServerID.VISA01),
                 eq(activityController.get()),
                 eq(activityController.get())

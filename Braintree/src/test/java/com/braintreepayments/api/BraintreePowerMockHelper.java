@@ -77,7 +77,7 @@ class BraintreePowerMockHelper {
             Mockito.doAnswer(new Answer() {
                 @Override
                 public Object answer(InvocationOnMock invocation) {
-                    CardinalValidateReceiver callback = invocation.getArgumentAt(5, CardinalValidateReceiver.class);
+                    CardinalValidateReceiver callback = invocation.getArgumentAt(4, CardinalValidateReceiver.class);
 
                     ValidateResponse validateResponse = new ValidateResponse(
                             false,
@@ -90,7 +90,6 @@ class BraintreePowerMockHelper {
                     return null;
                 }
             }).when(cruiseService).cca_continue(
-                    anyString(),
                     anyString(),
                     anyString(),
                     any(DirectoryServerID.class),
