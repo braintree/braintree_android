@@ -4,7 +4,9 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.braintreepayments.api.interfaces.ThreeDSecureLookupListener;
 import com.braintreepayments.api.models.ThreeDSecureAdditionalInformation;
+import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.google.android.material.textfield.TextInputLayout;
@@ -287,7 +289,13 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
         if (!mThreeDSecureRequested && paymentMethodNonce instanceof CardNonce && Settings.isThreeDSecureEnabled(this)) {
             mThreeDSecureRequested = true;
             mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
-            ThreeDSecure.performVerification(mBraintreeFragment, threeDSecureRequest(paymentMethodNonce));
+
+            ThreeDSecure.performVerification(mBraintreeFragment, threeDSecureRequest(paymentMethodNonce), new ThreeDSecureLookupListener() {
+                @Override
+                public void onLookupComplete(ThreeDSecureRequest request, ThreeDSecureLookup lookup) {
+                    ThreeDSecure.continuePerformVerification(mBraintreeFragment, request, lookup);
+                }
+            });
         } else if (paymentMethodNonce instanceof CardNonce && Settings.isAmexRewardsBalanceEnabled(this)) {
             mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
             AmericanExpress.getRewardsBalance(mBraintreeFragment, paymentMethodNonce.getNonce(), "USD");

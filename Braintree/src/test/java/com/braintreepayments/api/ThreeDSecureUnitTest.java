@@ -1,56 +1,52 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.interfaces.ThreeDSecureLookupListener;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.ThreeDSecureInfo;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
-import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
-import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
-import com.cardinalcommerce.cardinalmobilesdk.models.response.CardinalActionCode;
-import com.cardinalcommerce.cardinalmobilesdk.models.response.ValidateResponse;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-import static com.braintreepayments.api.BraintreePowerMockHelper.*;
 import static androidx.appcompat.app.AppCompatActivity.RESULT_OK;
-import static com.braintreepayments.api.BraintreePowerMockHelper.MockStaticCardinal;
+import static com.braintreepayments.api.BraintreePowerMockHelper.MockManifestValidator;
 import static com.braintreepayments.api.BraintreePowerMockHelper.MockStaticTokenizationClient;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 
@@ -138,6 +134,24 @@ public class ThreeDSecureUnitTest {
         TokenizationClient.versionedPath(captor.capture());
 
         assertTrue(captor.getValue().contains("card-nonce"));
+    }
+
+    @Test
+    public void performVerification_callsLookupListener() throws InterruptedException {
+        MockStaticTokenizationClient.mockTokenizeSuccess(null);
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        ThreeDSecureLookupListener lookupListener = new ThreeDSecureLookupListener() {
+            @Override
+            public void onLookupComplete(ThreeDSecureRequest request, ThreeDSecureLookup lookup) {
+                latch.countDown();
+            }
+        };
+
+        ThreeDSecure.performVerification(mFragment, mBasicRequest, lookupListener);
+
+        latch.await(1, TimeUnit.SECONDS);
     }
 
     @Test

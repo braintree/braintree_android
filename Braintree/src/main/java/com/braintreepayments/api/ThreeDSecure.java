@@ -10,6 +10,7 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
+import com.braintreepayments.api.interfaces.ThreeDSecureLookupListener;
 import com.braintreepayments.api.internal.ClassHelper;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
@@ -148,6 +149,36 @@ public class ThreeDSecure {
      * @param request the {@link ThreeDSecureRequest} with information used for authentication.
      */
     public static void performVerification(final BraintreeFragment fragment, final ThreeDSecureRequest request) {
+        ThreeDSecureLookupListener lookupListener = new ThreeDSecureLookupListener() {
+            @Override
+            public void onLookupComplete(ThreeDSecureRequest request, ThreeDSecureLookup lookup) {
+                fragment.sendAnalyticsEvent("three-d-secure.perform-verification.default-lookup-listener");
+
+                continuePerformVerification(fragment, request, lookup);
+            }
+        };
+
+        performVerification(fragment, request, lookupListener);
+    }
+
+    /**
+     * Verification is associated with a transaction amount and your merchant account. To specify a
+     * different merchant account (or, in turn, currency), you will need to specify the merchant
+     * account id when <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">
+     *     generating a client token</a>
+     *
+     * During lookup the original payment method nonce is consumed and a new one is returned,
+     * which points to the original payment method, as well as the 3D Secure verification.
+     * Transactions created with this nonce will be 3D Secure, and benefit from the appropriate
+     * liability shift if authentication is successful or fail with a 3D Secure failure.
+     *
+     * @param fragment the {@link BraintreeFragment} backing the http request. This fragment will
+     *                  also be responsible for handling callbacks to it's listeners
+     * @param request the {@link ThreeDSecureRequest} with information used for authentication.
+     */
+    public static void performVerification(final BraintreeFragment fragment,
+                                           final ThreeDSecureRequest request,
+                                           final ThreeDSecureLookupListener lookupListener) {
         if (request.getAmount() == null || request.getNonce() == null) {
             fragment.postCallback(new InvalidArgumentException("The ThreeDSecureRequest nonce and amount cannot be null"));
             return;
@@ -181,33 +212,8 @@ public class ThreeDSecure {
                     public void success(String responseBody) {
                         try {
                             final ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(responseBody);
-                            boolean showChallenge = threeDSecureLookup.getAcsUrl() != null;
-                            String threeDSecureVersion = threeDSecureLookup.getThreeDSecureVersion();
 
-                            fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.challenge-presented.%b", showChallenge));
-                            fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.3ds-version.%s", threeDSecureVersion));
-
-                            if (!showChallenge) {
-                                completeVerificationFlowWithNoncePayload(fragment, threeDSecureLookup.getCardNonce());
-                                return;
-                            }
-
-                            if (!threeDSecureVersion.startsWith("2.")) {
-                                launchBrowserSwitch(fragment, threeDSecureLookup);
-                                return;
-                            }
-
-                            if (request.getBin() == null) {
-                                performCardinalAuthentication(fragment, threeDSecureLookup);
-                                return;
-                            }
-
-                            mCardinalSession.processBin(request.getBin(), new CardinalProcessBinService() {
-                                @Override
-                                public void onComplete() {
-                                    performCardinalAuthentication(fragment, threeDSecureLookup);
-                                }
-                            });
+                            lookupListener.onLookupComplete(request, threeDSecureLookup);
                         } catch (JSONException exception) {
                             fragment.postCallback(exception);
                         }
@@ -218,6 +224,48 @@ public class ThreeDSecure {
                         fragment.postCallback(exception);
                     }
                 });
+            }
+        });
+    }
+
+    /**
+     * Continues the 3DS verification. Should be called from {@link ThreeDSecureLookupListener#onLookupComplete(ThreeDSecureRequest, ThreeDSecureLookup)}
+     *
+     * @param fragment the {@link BraintreeFragment} backing the http request. This fragment will
+     *                  also be responsible for handling callbacks to it's listeners
+     * @param request the {@link ThreeDSecureRequest} with information used for authentication.
+     * @param threeDSecureLookup the {@link ThreeDSecureLookup} returned for this request.
+     *                           Contains information about the 3DS verification request that will
+     *                           be invoked in this method.
+     */
+    public static void continuePerformVerification(final BraintreeFragment fragment,
+                                                   final ThreeDSecureRequest request,
+                                                   final ThreeDSecureLookup threeDSecureLookup) {
+        boolean showChallenge = threeDSecureLookup.getAcsUrl() != null;
+        String threeDSecureVersion = threeDSecureLookup.getThreeDSecureVersion();
+
+        fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.challenge-presented.%b", showChallenge));
+        fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.3ds-version.%s", threeDSecureVersion));
+
+        if (!showChallenge) {
+            completeVerificationFlowWithNoncePayload(fragment, threeDSecureLookup.getCardNonce());
+            return;
+        }
+
+        if (!threeDSecureVersion.startsWith("2.")) {
+            launchBrowserSwitch(fragment, threeDSecureLookup);
+            return;
+        }
+
+        if (request.getBin() == null) {
+            performCardinalAuthentication(fragment, threeDSecureLookup);
+            return;
+        }
+
+        mCardinalSession.processBin(request.getBin(), new CardinalProcessBinService() {
+            @Override
+            public void onComplete() {
+                performCardinalAuthentication(fragment, threeDSecureLookup);
             }
         });
     }
