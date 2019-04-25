@@ -16,7 +16,7 @@ import static junit.framework.Assert.assertTrue;
 public class ThreeDSecureAdditionalInformationTest {
 
     @Test
-    public void constructsCorrectly() throws JSONException {
+    public void constructsCorrectly() {
         ThreeDSecurePostalAddress postalAddress = new ThreeDSecurePostalAddress()
                 .streetAddress("123 Fake St.")
                 .extendedAddress("Apt. 3")
@@ -44,7 +44,7 @@ public class ThreeDSecureAdditionalInformationTest {
     }
 
     @Test
-    public void testWriteToParcel_serializesCorrectly() throws JSONException {
+    public void testWriteToParcel_serializesCorrectly() {
         ThreeDSecurePostalAddress postalAddress = new ThreeDSecurePostalAddress()
                 .streetAddress("street-address")
                 .extendedAddress("extended-address")
@@ -151,7 +151,7 @@ public class ThreeDSecureAdditionalInformationTest {
     }
 
     @Test
-    public void testToJson_buildsAllParameters() throws JSONException{
+    public void testToJson_buildsAllParameters() throws JSONException {
         ThreeDSecurePostalAddress postalAddress = new ThreeDSecurePostalAddress()
                 .streetAddress("street-address")
                 .extendedAddress("extended-address")
@@ -178,7 +178,7 @@ public class ThreeDSecureAdditionalInformationTest {
     }
 
     @Test
-    public void testToJson_buildsPartialParameters() throws JSONException{
+    public void testToJson_buildsPartialParameters() throws JSONException {
         ThreeDSecurePostalAddress postalAddress = new ThreeDSecurePostalAddress()
                 .streetAddress("street-address")
                 .extendedAddress("extended-address")
@@ -188,7 +188,44 @@ public class ThreeDSecureAdditionalInformationTest {
                 .billingAddress(postalAddress)
                 .billingSurname("billing-surname")
                 .email("email")
-                .shippingMethod("shipping-method");
+                .shippingMethod("shipping-method")
+                .shippingMethodIndicator("shipping-method-indicator")
+                .productCode("productCode")
+                .deliveryTimeframe("deliveryTimeframe")
+                .deliveryEmail("deliveryEmail")
+                .reorderIndicator("reorderIndicator")
+                .preorderIndicator("preorderIndicator")
+                .preorderDate("preorderDate")
+                .giftCardAmount("giftCardAmount")
+                .giftCardCurrencyCode("giftCardCurrencyCode")
+                .giftCardCount("giftCardCount")
+                .accountAgeIndicator("accountAgeIndicator")
+                .accountCreateDate("accountCreateDate")
+                .accountChangeIndicator("accountChangeIndicator")
+                .accountChangeDate("accountChangeDate")
+                .accountPwdChangeIndicator("accountPwdChangeIndicator")
+                .accountPwdChangeDate("accountPwdChangeDate")
+                .shippingAddressUsageIndicator("shippingAddressUsageIndicator")
+                .shippingAddressUsageDate("shippingAddressUsageDate")
+                .transactionCountDay("transactionCountDay")
+                .transactionCountYear("transactionCountYear")
+                .addCardAttempts("addCardAttempts")
+                .accountPurchases("accountPurchases")
+                .fraudActivity("fraudActivity")
+                .shippingNameIndicator("shippingNameIndicator")
+                .paymentAccountIndicator("paymentAccountIndicator")
+                .paymentAccountAge("paymentAccountAge")
+                .addressMatch("addressMatch")
+                .accountId("accountId")
+                .ipAddress("ipAddress")
+                .orderDescription("orderDescription")
+                .taxAmount("taxAmount")
+                .userAgent("userAgent")
+                .authenticationIndicator("authenticationIndicator")
+                .installment("installment")
+                .purchaseDate("purchaseDate")
+                .recurringEnd("recurringEnd")
+                .recurringFrequency("recurringFrequency");
 
         JSONObject jsonParams = additionalInformation.toJson();
 
@@ -200,10 +237,47 @@ public class ThreeDSecureAdditionalInformationTest {
         assertTrue(jsonParams.isNull("postalCode"));
         assertTrue(jsonParams.isNull("state"));
         assertTrue(jsonParams.isNull("countryCode"));
+        assertEquals("shipping-method-indicator", jsonParams.getString("shippingMethodIndicator"));
+        assertEquals("productCode", jsonParams.getString("productCode"));
+        assertEquals("deliveryTimeframe", jsonParams.getString("deliveryTimeframe"));
+        assertEquals("deliveryEmail", jsonParams.getString("deliveryEmail"));
+        assertEquals("reorderIndicator", jsonParams.getString("reorderIndicator"));
+        assertEquals("preorderIndicator", jsonParams.getString("preorderIndicator"));
+        assertEquals("preorderDate", jsonParams.getString("preorderDate"));
+        assertEquals("giftCardAmount", jsonParams.getString("giftCardAmount"));
+        assertEquals("giftCardCurrencyCode", jsonParams.getString("giftCardCurrencyCode"));
+        assertEquals("giftCardCount", jsonParams.getString("giftCardCount"));
+        assertEquals("accountAgeIndicator", jsonParams.getString("accountAgeIndicator"));
+        assertEquals("accountCreateDate", jsonParams.getString("accountCreateDate"));
+        assertEquals("accountChangeIndicator", jsonParams.getString("accountChangeIndicator"));
+        assertEquals("accountChangeDate", jsonParams.getString("accountChangeDate"));
+        assertEquals("accountPwdChangeIndicator", jsonParams.getString("accountPwdChangeIndicator"));
+        assertEquals("accountPwdChangeDate", jsonParams.getString("accountPwdChangeDate"));
+        assertEquals("shippingAddressUsageIndicator", jsonParams.getString("shippingAddressUsageIndicator"));
+        assertEquals("shippingAddressUsageDate", jsonParams.getString("shippingAddressUsageDate"));
+        assertEquals("transactionCountDay", jsonParams.getString("transactionCountDay"));
+        assertEquals("transactionCountYear", jsonParams.getString("transactionCountYear"));
+        assertEquals("addCardAttempts", jsonParams.getString("addCardAttempts"));
+        assertEquals("accountPurchases", jsonParams.getString("accountPurchases"));
+        assertEquals("fraudActivity", jsonParams.getString("fraudActivity"));
+        assertEquals("shippingNameIndicator", jsonParams.getString("shippingNameIndicator"));
+        assertEquals("paymentAccountIndicator", jsonParams.getString("paymentAccountIndicator"));
+        assertEquals("paymentAccountAge", jsonParams.getString("paymentAccountAge"));
+        assertEquals("addressMatch", jsonParams.getString("addressMatch"));
+        assertEquals("accountId", jsonParams.getString("accountId"));
+        assertEquals("ipAddress", jsonParams.getString("ipAddress"));
+        assertEquals("orderDescription", jsonParams.getString("orderDescription"));
+        assertEquals("taxAmount", jsonParams.getString("taxAmount"));
+        assertEquals("userAgent", jsonParams.getString("userAgent"));
+        assertEquals("authenticationIndicator", jsonParams.getString("authenticationIndicator"));
+        assertEquals("installment", jsonParams.getString("installment"));
+        assertEquals("purchaseDate", jsonParams.getString("purchaseDate"));
+        assertEquals("recurringEnd", jsonParams.getString("recurringEnd"));
+        assertEquals("recurringFrequency", jsonParams.getString("recurringFrequency"));
     }
 
     @Test
-    public void testToJson_buildsEmptyParameters() throws JSONException{
+    public void testToJson_buildsEmptyParameters() {
         ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation();
 
         JSONObject jsonParams = additionalInformation.toJson();
@@ -213,5 +287,42 @@ public class ThreeDSecureAdditionalInformationTest {
         assertTrue(jsonParams.isNull("lastName"));
         assertTrue(jsonParams.isNull("shippingMethod"));
         assertTrue(jsonParams.isNull("mobilePhoneNumber"));
+        assertTrue(jsonParams.isNull("shippingMethodIndicator"));
+        assertTrue(jsonParams.isNull("productCode"));
+        assertTrue(jsonParams.isNull("deliveryTimeframe"));
+        assertTrue(jsonParams.isNull("deliveryEmail"));
+        assertTrue(jsonParams.isNull("reorderIndicator"));
+        assertTrue(jsonParams.isNull("preorderIndicator"));
+        assertTrue(jsonParams.isNull("preorderDate"));
+        assertTrue(jsonParams.isNull("giftCardAmount"));
+        assertTrue(jsonParams.isNull("giftCardCurrencyCode"));
+        assertTrue(jsonParams.isNull("giftCardCount"));
+        assertTrue(jsonParams.isNull("accountAgeIndicator"));
+        assertTrue(jsonParams.isNull("accountCreateDate"));
+        assertTrue(jsonParams.isNull("accountChangeIndicator"));
+        assertTrue(jsonParams.isNull("accountChangeDate"));
+        assertTrue(jsonParams.isNull("accountPwdChangeIndicator"));
+        assertTrue(jsonParams.isNull("accountPwdChangeDate"));
+        assertTrue(jsonParams.isNull("shippingAddressUsageIndicator"));
+        assertTrue(jsonParams.isNull("shippingAddressUsageDate"));
+        assertTrue(jsonParams.isNull("transactionCountDay"));
+        assertTrue(jsonParams.isNull("transactionCountYear"));
+        assertTrue(jsonParams.isNull("addCardAttempts"));
+        assertTrue(jsonParams.isNull("accountPurchases"));
+        assertTrue(jsonParams.isNull("fraudActivity"));
+        assertTrue(jsonParams.isNull("shippingNameIndicator"));
+        assertTrue(jsonParams.isNull("paymentAccountIndicator"));
+        assertTrue(jsonParams.isNull("paymentAccountAge"));
+        assertTrue(jsonParams.isNull("addressMatch"));
+        assertTrue(jsonParams.isNull("accountId"));
+        assertTrue(jsonParams.isNull("ipAddress"));
+        assertTrue(jsonParams.isNull("orderDescription"));
+        assertTrue(jsonParams.isNull("taxAmount"));
+        assertTrue(jsonParams.isNull("userAgent"));
+        assertTrue(jsonParams.isNull("authenticationIndicator"));
+        assertTrue(jsonParams.isNull("installment"));
+        assertTrue(jsonParams.isNull("purchaseDate"));
+        assertTrue(jsonParams.isNull("recurringEnd"));
+        assertTrue(jsonParams.isNull("recurringFrequency"));
     }
 }

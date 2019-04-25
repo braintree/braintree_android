@@ -935,6 +935,44 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
                 additionalInformation.putOpt(ThreeDSecurePostalAddress.COUNTRY_CODE_ALPHA_2_KEY, mBillingAddress.getCountryCodeAlpha2());
                 additionalInformation.putOpt(ThreeDSecurePostalAddress.PHONE_NUMBER_KEY, mBillingAddress.getPhoneNumber());
             }
+
+            additionalInformation.putOpt("shippingMethodIndicator", mShippingMethodIndicator);
+            additionalInformation.putOpt("productCode", mProductCode);
+            additionalInformation.putOpt("deliveryTimeframe", mDeliveryTimeframe);
+            additionalInformation.putOpt("deliveryEmail", mDeliveryEmail);
+            additionalInformation.putOpt("reorderIndicator", mReorderIndicator);
+            additionalInformation.putOpt("preorderIndicator", mPreorderIndicator);
+            additionalInformation.putOpt("preorderDate", mPreorderDate);
+            additionalInformation.putOpt("giftCardAmount", mGiftCardAmount);
+            additionalInformation.putOpt("giftCardCurrencyCode", mGiftCardCurrencyCode);
+            additionalInformation.putOpt("giftCardCount", mGiftCardCount);
+            additionalInformation.putOpt("accountAgeIndicator", mAccountAgeIndicator);
+            additionalInformation.putOpt("accountCreateDate", mAccountCreateDate);
+            additionalInformation.putOpt("accountChangeIndicator", mAccountChangeIndicator);
+            additionalInformation.putOpt("accountChangeDate", mAccountChangeDate);
+            additionalInformation.putOpt("accountPwdChangeIndicator", mAccountPwdChangeIndicator);
+            additionalInformation.putOpt("accountPwdChangeDate", mAccountPwdChangeDate);
+            additionalInformation.putOpt("shippingAddressUsageIndicator", mShippingAddressUsageIndicator);
+            additionalInformation.putOpt("shippingAddressUsageDate", mShippingAddressUsageDate);
+            additionalInformation.putOpt("transactionCountDay", mTransactionCountDay);
+            additionalInformation.putOpt("transactionCountYear", mTransactionCountYear);
+            additionalInformation.putOpt("addCardAttempts", mAddCardAttempts);
+            additionalInformation.putOpt("accountPurchases", mAccountPurchases);
+            additionalInformation.putOpt("fraudActivity", mFraudActivity);
+            additionalInformation.putOpt("shippingNameIndicator", mShippingNameIndicator);
+            additionalInformation.putOpt("paymentAccountIndicator", mPaymentAccountIndicator);
+            additionalInformation.putOpt("paymentAccountAge", mPaymentAccountAge);
+            additionalInformation.putOpt("addressMatch", mAddressMatch);
+            additionalInformation.putOpt("accountId", mAccountId);
+            additionalInformation.putOpt("ipAddress", mIpAddress);
+            additionalInformation.putOpt("orderDescription", mOrderDescription);
+            additionalInformation.putOpt("taxAmount", mTaxAmount);
+            additionalInformation.putOpt("userAgent", mUserAgent);
+            additionalInformation.putOpt("authenticationIndicator", mAuthenticationIndicator);
+            additionalInformation.putOpt("installment", mInstallment);
+            additionalInformation.putOpt("purchaseDate", mPurchaseDate);
+            additionalInformation.putOpt("recurringEnd", mRecurringEnd);
+            additionalInformation.putOpt("recurringFrequency", mRecurringFrequency);
         } catch (JSONException ignored) {}
 
         return additionalInformation;
