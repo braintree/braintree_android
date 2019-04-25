@@ -355,7 +355,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
 
         ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest()
                 .amount("10")
-                .versionRequested(2)
+                .versionRequested(ThreeDSecureRequest.VERSION_2)
                 .nonce(cardNonce.getNonce())
                 .bin(cardNonce.getBin())
                 .additionalInformation(additionalInformation);

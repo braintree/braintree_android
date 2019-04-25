@@ -8,6 +8,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
+import static com.braintreepayments.api.models.ThreeDSecureRequest.VERSION_1;
+import static com.braintreepayments.api.models.ThreeDSecureRequest.VERSION_2;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
@@ -35,7 +37,7 @@ public class ThreeDSecureRequestUnitTest {
                 .shippingMethod("03")
                 .bin("12345")
                 .billingAddress(billingAddress)
-                .versionRequested(2);
+                .versionRequested(VERSION_2);
 
         assertEquals("1.00", request.getAmount());
         assertEquals("a-nonce", request.getNonce());
@@ -43,7 +45,7 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals("tester@example.com", request.getEmail());
         assertEquals("12345", request.getBin());
         assertEquals("03", request.getShippingMethod());
-        assertEquals(2, request.getVersionRequested());
+        assertEquals(VERSION_2, request.getVersionRequested());
         assertEquals(billingAddress, request.getBillingAddress());
     }
 
@@ -67,7 +69,7 @@ public class ThreeDSecureRequestUnitTest {
                 .email("tester@example.com")
                 .shippingMethod("03")
                 .bin("12345")
-                .versionRequested(2)
+                .versionRequested(VERSION_2)
                 .billingAddress(billingAddress);
 
         Parcel parcel = Parcel.obtain();
@@ -181,7 +183,7 @@ public class ThreeDSecureRequestUnitTest {
 
         assertEquals("1.00", request.getAmount());
         assertEquals("a-nonce", request.getNonce());
-        assertEquals(1, request.getVersionRequested());
+        assertEquals(VERSION_1, request.getVersionRequested());
     }
 
     @Test

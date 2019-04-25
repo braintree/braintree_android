@@ -6,12 +6,21 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Iterator;
+
+import androidx.annotation.StringDef;
 
 /**
  * A class to contain 3D Secure request information used for authentication
  */
 public class ThreeDSecureRequest implements Parcelable {
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({VERSION_1, VERSION_2})
+    @interface ThreeDSecureVersion {}
+    public static final String VERSION_1 = "1";
+    public static final String VERSION_2 = "2";
 
     protected static final String AMOUNT_KEY = "amount";
     protected static final String CUSTOMER_KEY = "customer";
@@ -29,7 +38,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private String mShippingMethod;
     private ThreeDSecurePostalAddress mBillingAddress;
     private String mBin;
-    private int mVersionRequested = 1;
+    private @ThreeDSecureVersion String mVersionRequested = VERSION_1;
     private ThreeDSecureAdditionalInformation mAdditionalInformation;
 
     /**
@@ -111,15 +120,18 @@ public class ThreeDSecureRequest implements Parcelable {
 
     /**
      * Optional. Set the desired ThreeDSecure version.
-     * Possible Values:
-     * 02 if ThreeDSecure V2 flows are desired, when possible.
-     * 01 if only ThreeDSecure V1 flows are desired.
+     * Possible Values defined at {@link ThreeDSecureVersion}.
+     * <ul>
+     * <li>{@link #VERSION_2} if ThreeDSecure V2 flows are desired, when possible.</li>
+     * <li>{@link #VERSION_1} if only ThreeDSecure V1 flows are desired. Default value.</li>
+     * </ul>
      *
-     * Will default to V1 flows unless set.
+     * Will default to {@link #VERSION_1}.
      *
-     * @param versionRequested The desired ThreeDSecure version.
+     * @param versionRequested {@link ThreeDSecureVersion} The desired ThreeDSecure version.
      * */
-    public ThreeDSecureRequest versionRequested(int versionRequested) {
+    public ThreeDSecureRequest versionRequested(
+            @ThreeDSecureVersion String versionRequested) {
         mVersionRequested = versionRequested;
         return this;
     }
@@ -186,7 +198,7 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return The requested ThreeDSecure version
      */
-    public int getVersionRequested() {
+    public @ThreeDSecureVersion String getVersionRequested() {
         return mVersionRequested;
     }
 
@@ -213,7 +225,7 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeString(mShippingMethod);
         dest.writeParcelable(mBillingAddress, flags);
         dest.writeString(mBin);
-        dest.writeInt(mVersionRequested);
+        dest.writeString(mVersionRequested);
         dest.writeParcelable(mAdditionalInformation, flags);
     }
 
@@ -225,7 +237,7 @@ public class ThreeDSecureRequest implements Parcelable {
         mShippingMethod = in.readString();
         mBillingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
         mBin = in.readString();
-        mVersionRequested = in.readInt();
+        mVersionRequested = in.readString();
         mAdditionalInformation = in.readParcelable(ThreeDSecureAdditionalInformation.class.getClassLoader());
     }
 
@@ -244,7 +256,7 @@ public class ThreeDSecureRequest implements Parcelable {
      */
     public String build(String dfReferenceId) {
         JSONObject base = new JSONObject();
-        JSONObject additionalInformation = new JSONObject();
+        JSONObject additionalInformation;
         try {
             base.put(AMOUNT_KEY, mAmount);
 
@@ -255,7 +267,7 @@ public class ThreeDSecureRequest implements Parcelable {
             }
 
             base.put(ADDITIONAL_INFORMATION_KEY, additionalInformation);
-            if (mVersionRequested == 2) {
+            if (VERSION_2.equals(mVersionRequested)) {
                 // Formats proper POST url by excluding dfReferenceId if 3DS 1.0 is desired (even when 2.0 is possible)
                 base.put("df_reference_id", dfReferenceId);
             }
