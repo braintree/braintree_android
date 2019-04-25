@@ -56,7 +56,44 @@ public class ThreeDSecureAdditionalInformationTest {
                 .billingGivenName("billing-given-name")
                 .billingSurname("billing-surname")
                 .email("email")
-                .shippingMethod("shipping-method");
+                .shippingMethod("shipping-method")
+                .shippingMethodIndicator("shipping-method-indicator")
+                .productCode("productCode")
+                .deliveryTimeframe("deliveryTimeframe")
+                .deliveryEmail("deliveryEmail")
+                .reorderIndicator("reorderIndicator")
+                .preorderIndicator("preorderIndicator")
+                .preorderDate("preorderDate")
+                .giftCardAmount("giftCardAmount")
+                .giftCardCurrencyCode("giftCardCurrencyCode")
+                .giftCardCount("giftCardCount")
+                .accountAgeIndicator("accountAgeIndicator")
+                .accountCreateDate("accountCreateDate")
+                .accountChangeIndicator("accountChangeIndicator")
+                .accountChangeDate("accountChangeDate")
+                .accountPwdChangeIndicator("accountPwdChangeIndicator")
+                .accountPwdChangeDate("accountPwdChangeDate")
+                .shippingAddressUsageIndicator("shippingAddressUsageIndicator")
+                .shippingAddressUsageDate("shippingAddressUsageDate")
+                .transactionCountDay("transactionCountDay")
+                .transactionCountYear("transactionCountYear")
+                .addCardAttempts("addCardAttempts")
+                .accountPurchases("accountPurchases")
+                .fraudActivity("fraudActivity")
+                .shippingNameIndicator("shippingNameIndicator")
+                .paymentAccountIndicator("paymentAccountIndicator")
+                .paymentAccountAge("paymentAccountAge")
+                .addressMatch("addressMatch")
+                .accountId("accountId")
+                .ipAddress("ipAddress")
+                .orderDescription("orderDescription")
+                .taxAmount("taxAmount")
+                .userAgent("userAgent")
+                .authenticationIndicator("authenticationIndicator")
+                .installment("installment")
+                .purchaseDate("purchaseDate")
+                .recurringEnd("recurringEnd")
+                .recurringFrequency("recurringFrequency");
 
         Parcel parcel = Parcel.obtain();
         preSerialized.writeToParcel(parcel, 0);
@@ -73,6 +110,44 @@ public class ThreeDSecureAdditionalInformationTest {
         assertEquals("country-code", postSerialized.getBillingAddress().getCountryCodeAlpha2());
         assertEquals("street-address", postSerialized.getBillingAddress().getStreetAddress());
         assertEquals("extended-address", postSerialized.getBillingAddress().getExtendedAddress());
+        assertEquals("shipping-method", postSerialized.getShippingMethod());
+        assertEquals("shipping-method-indicator", postSerialized.getShippingMethodIndicator());
+        assertEquals("productCode", postSerialized.getProductCode());
+        assertEquals("deliveryTimeframe", postSerialized.getDeliveryTimeframe());
+        assertEquals("deliveryEmail", postSerialized.getDeliveryEmail());
+        assertEquals("reorderIndicator", postSerialized.getReorderIndicator());
+        assertEquals("preorderIndicator", postSerialized.getPreorderIndicator());
+        assertEquals("preorderDate", postSerialized.getPreorderDate());
+        assertEquals("giftCardAmount", postSerialized.getGiftCardAmount());
+        assertEquals("giftCardCurrencyCode", postSerialized.getGiftCardCurrencyCode());
+        assertEquals("giftCardCount", postSerialized.getGiftCardCount());
+        assertEquals("accountAgeIndicator", postSerialized.getAccountAgeIndicator());
+        assertEquals("accountCreateDate", postSerialized.getAccountCreateDate());
+        assertEquals("accountChangeIndicator", postSerialized.getAccountChangeIndicator());
+        assertEquals("accountChangeDate", postSerialized.getAccountChangeDate());
+        assertEquals("accountPwdChangeIndicator", postSerialized.getAccountPwdChangeIndicator());
+        assertEquals("accountPwdChangeDate", postSerialized.getAccountPwdChangeDate());
+        assertEquals("shippingAddressUsageIndicator", postSerialized.getShippingAddressUsageIndicator());
+        assertEquals("shippingAddressUsageDate", postSerialized.getShippingAddressUsageDate());
+        assertEquals("transactionCountDay", postSerialized.getTransactionCountDay());
+        assertEquals("transactionCountYear", postSerialized.getTransactionCountYear());
+        assertEquals("addCardAttempts", postSerialized.getAddCardAttempts());
+        assertEquals("accountPurchases", postSerialized.getAccountPurchases());
+        assertEquals("fraudActivity", postSerialized.getFraudActivity());
+        assertEquals("shippingNameIndicator", postSerialized.getShippingNameIndicator());
+        assertEquals("paymentAccountIndicator", postSerialized.getPaymentAccountIdicator());
+        assertEquals("paymentAccountAge", postSerialized.getPaymentAccountAge());
+        assertEquals("addressMatch", postSerialized.getAddressMatch());
+        assertEquals("accountId", postSerialized.getAccountId());
+        assertEquals("ipAddress", postSerialized.getIpAddress());
+        assertEquals("orderDescription", postSerialized.getOrderDescription());
+        assertEquals("taxAmount", postSerialized.getTaxAmount());
+        assertEquals("userAgent", postSerialized.getUserAgent());
+        assertEquals("authenticationIndicator", postSerialized.getAuthenticationIndicator());
+        assertEquals("installment", postSerialized.getInstallment());
+        assertEquals("purchaseDate", postSerialized.getPurchaseDate());
+        assertEquals("recurringEnd", postSerialized.getRecurringEnd());
+        assertEquals("recurringFrequency", postSerialized.getRecurringFrequency());
     }
 
     @Test
