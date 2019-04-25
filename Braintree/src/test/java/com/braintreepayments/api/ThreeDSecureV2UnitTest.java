@@ -147,7 +147,7 @@ public class ThreeDSecureV2UnitTest {
         assertEquals("1.00", body.getString("amount"));
         assertEquals("fake-df", body.getString("df_reference_id"));
 
-        JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInformation");
+        JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInfo");
 
         assertEquals("8101234567", jsonAdditionalInformation.getString("mobilePhoneNumber"));
         assertEquals("test@example.com", jsonAdditionalInformation.getString("email"));
@@ -181,7 +181,7 @@ public class ThreeDSecureV2UnitTest {
         assertEquals("1.00", body.getString("amount"));
         assertEquals("fake-df", body.getString("df_reference_id"));
 
-        JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInformation");
+        JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInfo");
 
         assertTrue(jsonAdditionalInformation.isNull("mobilePhoneNumber"));
         assertTrue(jsonAdditionalInformation.isNull("email"));
@@ -217,7 +217,7 @@ public class ThreeDSecureV2UnitTest {
         assertEquals("1.00", body.getString("amount"));
         assertEquals("fake-df", body.getString("df_reference_id"));
 
-        JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInformation");
+        JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInfo");
 
         assertTrue(jsonAdditionalInformation.isNull("mobilePhoneNumber"));
         assertEquals("test@example.com", jsonAdditionalInformation.getString("email"));

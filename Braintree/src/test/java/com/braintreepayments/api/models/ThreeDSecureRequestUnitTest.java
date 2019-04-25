@@ -119,7 +119,7 @@ public class ThreeDSecureRequestUnitTest {
                 .billingAddress(billingAddress);
 
         JSONObject jsonParams = new JSONObject(request.build("123"));
-        JSONObject jsonAdditionalInformation = jsonParams.getJSONObject("additionalInformation");
+        JSONObject jsonAdditionalInformation = jsonParams.getJSONObject("additionalInfo");
         JSONObject jsonBillingAddress = jsonAdditionalInformation.getJSONObject("billingAddress");
 
         assertEquals("1.00", jsonParams.get("amount"));
@@ -157,7 +157,7 @@ public class ThreeDSecureRequestUnitTest {
                 .billingAddress(billingAddress);
 
         JSONObject jsonParams = new JSONObject(request.build("123"));
-        JSONObject jsonAdditionalInformation = jsonParams.getJSONObject("additionalInformation");
+        JSONObject jsonAdditionalInformation = jsonParams.getJSONObject("additionalInfo");
         JSONObject jsonBillingAddress = jsonAdditionalInformation.getJSONObject("billingAddress");
 
         assertEquals("1.00", jsonParams.get("amount"));
@@ -211,7 +211,7 @@ public class ThreeDSecureRequestUnitTest {
                 .additionalInformation(additionalInformation);
 
         JSONObject jsonParams = new JSONObject(request.build("df-reference-id"));
-        JSONObject jsonAdditionalInformation = jsonParams.getJSONObject("additionalInformation");
+        JSONObject jsonAdditionalInformation = jsonParams.getJSONObject("additionalInfo");
 
         assertEquals("amount", jsonParams.get("amount"));
         assertEquals("billing-phone-number", jsonAdditionalInformation.get("mobilePhoneNumber"));
@@ -250,7 +250,7 @@ public class ThreeDSecureRequestUnitTest {
                 .additionalInformation(additionalInformation);
 
         JSONObject jsonParams = new JSONObject(request.build("123"));
-        JSONObject jsonAdditionalInformation = jsonParams.getJSONObject("additionalInformation");
+        JSONObject jsonAdditionalInformation = jsonParams.getJSONObject("additionalInfo");
 
         assertEquals("amount", jsonParams.get("amount"));
         assertEquals("billing-phone-number", jsonAdditionalInformation.get("mobilePhoneNumber"));

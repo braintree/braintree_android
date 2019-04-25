@@ -29,7 +29,7 @@ public class ThreeDSecureRequest implements Parcelable {
     protected static final String EMAIL_KEY = "email";
     protected static final String SHIPPING_METHOD_KEY = "shippingMethod";
     protected static final String BIN_KEY = "bin";
-    protected static final String ADDITIONAL_INFORMATION_KEY = "additionalInformation";
+    protected static final String ADDITIONAL_INFORMATION_KEY = "additionalInfo";
 
     private String mNonce;
     private String mAmount;

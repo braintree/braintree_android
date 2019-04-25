@@ -117,7 +117,7 @@ public class ThreeDSecureV1UnitTest {
 
         assertEquals("1.00", body.getString("amount"));
 
-        JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInformation");
+        JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInfo");
 
         assertEquals("8101234567", jsonAdditionalInformation.getString("mobilePhoneNumber"));
         assertEquals("test@example.com", jsonAdditionalInformation.getString("email"));
@@ -147,7 +147,7 @@ public class ThreeDSecureV1UnitTest {
 
         assertEquals("1.00", body.getString("amount"));
 
-        JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInformation");
+        JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInfo");
 
         assertTrue(jsonAdditionalInformation.isNull("mobilePhoneNumber"));
         assertTrue(jsonAdditionalInformation.isNull("email"));
@@ -179,7 +179,7 @@ public class ThreeDSecureV1UnitTest {
 
         assertEquals("1.00", body.getString("amount"));
 
-        JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInformation");
+        JSONObject jsonAdditionalInformation = body.getJSONObject("additionalInfo");
 
         assertTrue(jsonAdditionalInformation.isNull("mobilePhoneNumber"));
         assertEquals("test@example.com", jsonAdditionalInformation.getString("email"));
