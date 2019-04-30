@@ -25,7 +25,6 @@ import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 import com.cardinalcommerce.cardinalmobilesdk.models.response.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
-import com.cardinalcommerce.cardinalmobilesdk.services.CardinalProcessBinService;
 import com.cardinalcommerce.shared.models.parameters.CardinalConfigurationParameters;
 import com.cardinalcommerce.shared.models.parameters.CardinalEnvironment;
 
@@ -33,7 +32,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static androidx.appcompat.app.AppCompatActivity.RESULT_OK;
-
 import static com.braintreepayments.api.models.BraintreeRequestCodes.THREE_D_SECURE;
 
 /**
@@ -46,8 +44,7 @@ import static com.braintreepayments.api.models.BraintreeRequestCodes.THREE_D_SEC
  * for a full explanation of 3D Secure.
  */
 public class ThreeDSecure {
-    private static String mDFReferenceId;
-    private static Cardinal mCardinalSession;
+    private static String sDFReferenceId;
 
     /**
      * The versioned path of the 3D Secure assets to use. Hosted by Braintree.
@@ -207,7 +204,7 @@ public class ThreeDSecure {
 
                 fragment.getHttpClient().post(TokenizationClient.versionedPath(
                         TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() +
-                                "/three_d_secure/lookup"), request.build(mDFReferenceId), new HttpResponseCallback() {
+                                "/three_d_secure/lookup"), request.build(sDFReferenceId), new HttpResponseCallback() {
                     @Override
                     public void success(String responseBody) {
                         try {
@@ -257,17 +254,7 @@ public class ThreeDSecure {
             return;
         }
 
-        if (request.getBin() == null) {
-            performCardinalAuthentication(fragment, threeDSecureLookup);
-            return;
-        }
-
-        mCardinalSession.processBin(request.getBin(), new CardinalProcessBinService() {
-            @Override
-            public void onComplete() {
-                performCardinalAuthentication(fragment, threeDSecureLookup);
-            }
-        });
+        performCardinalAuthentication(fragment, threeDSecureLookup);
     }
 
     protected static void performCardinalAuthentication(final BraintreeFragment fragment, final ThreeDSecureLookup threeDSecureLookup) {
@@ -422,12 +409,12 @@ public class ThreeDSecure {
                     cardinalConfigurationParameters.setEnableQuickAuth(false);
                     cardinalConfigurationParameters.setEnableDFSync(true);
 
-                    mCardinalSession = Cardinal.getInstance();
-                    mCardinalSession.configure(fragment.getApplicationContext(), cardinalConfigurationParameters);
-                    mCardinalSession.init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
+                    Cardinal cardinal= Cardinal.getInstance();
+                    cardinal.configure(fragment.getApplicationContext(), cardinalConfigurationParameters);
+                    cardinal.init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
                         @Override
                         public void onSetupCompleted(String consumerSessionId) {
-                            mDFReferenceId = consumerSessionId;
+                            sDFReferenceId = consumerSessionId;
 
                             fragment.sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-completed");
                         }
