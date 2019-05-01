@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.ThreeDSecureLookupListener;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.Authorization;
@@ -13,9 +14,11 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecureInfo;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
+import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
@@ -80,7 +83,27 @@ public class ThreeDSecureUnitTest {
 
         mBasicRequest = new ThreeDSecureRequest()
                 .nonce("a-nonce")
-                .amount("1.00");
+                .amount("amount")
+                .billingAddress(new ThreeDSecurePostalAddress()
+                        .firstName("billing-given-name"));
+    }
+
+    @Test
+    public void performVerification_sendsParamsInLookupRequest() throws JSONException {
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(mFragment.getHttpClient()).post(urlCaptor.capture(), captor.capture(), any(HttpResponseCallback.class));
+
+        String url = urlCaptor.getValue();
+        JSONObject body = new JSONObject(captor.getValue());
+
+        assertTrue(url.contains("a-nonce"));
+        assertEquals("amount", body.getString("amount"));
+
+        assertEquals("billing-given-name", body.getJSONObject("additional_info")
+                .getString("billing_given_name"));
     }
 
     @Test

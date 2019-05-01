@@ -339,6 +339,9 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
         CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
+                .firstName("Jill")
+                .lastName("Doe")
+                .phoneNumber("5551234567")
                 .streetAddress("555 Smith St")
                 .extendedAddress("#2")
                 .locality("Chicago")
@@ -347,17 +350,15 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
                 .countryCodeAlpha2("US");
 
         ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
-                .billingSurname("Jill")
-                .billingGivenName("Doe")
-                .billingPhoneNumber("5551234567")
-                .email("test@email.com")
-                .billingAddress(billingAddress);
+                .accountId("account-id");
 
         ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest()
                 .amount("10")
-                .versionRequested(ThreeDSecureRequest.VERSION_2)
+                .email("test@email.com")
+                .billingAddress(billingAddress)
                 .nonce(cardNonce.getNonce())
                 .bin(cardNonce.getBin())
+                .versionRequested(ThreeDSecureRequest.VERSION_2)
                 .additionalInformation(additionalInformation);
 
         return threeDSecureRequest;

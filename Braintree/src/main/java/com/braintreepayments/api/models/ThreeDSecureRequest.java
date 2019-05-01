@@ -8,7 +8,6 @@ import org.json.JSONObject;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Iterator;
 
 import androidx.annotation.StringDef;
 
@@ -21,15 +20,6 @@ public class ThreeDSecureRequest implements Parcelable {
     @interface ThreeDSecureVersion {}
     public static final String VERSION_1 = "1";
     public static final String VERSION_2 = "2";
-
-    protected static final String AMOUNT_KEY = "amount";
-    protected static final String CUSTOMER_KEY = "customer";
-    protected static final String BILLING_ADDRESS_KEY = "billingAddress";
-    protected static final String MOBILE_PHONE_NUMBER_KEY = "mobilePhoneNumber";
-    protected static final String EMAIL_KEY = "email";
-    protected static final String SHIPPING_METHOD_KEY = "shippingMethod";
-    protected static final String BIN_KEY = "bin";
-    protected static final String ADDITIONAL_INFORMATION_KEY = "additionalInfo";
 
     private String mNonce;
     private String mAmount;
@@ -255,57 +245,40 @@ public class ThreeDSecureRequest implements Parcelable {
      * @return String representation of {@link ThreeDSecureRequest} for API use.
      */
     public String build(String dfReferenceId) {
+        JSONObject additionalInfo;
         JSONObject base = new JSONObject();
-        JSONObject additionalInformation;
+        ThreeDSecurePostalAddress billing = getBillingAddress();
+
+        if (getAdditionalInformation() == null) {
+            additionalInfo = new JSONObject();
+        } else {
+            additionalInfo = getAdditionalInformation().toJson();
+        }
+
         try {
-            base.put(AMOUNT_KEY, mAmount);
+            base.put("amount", mAmount);
+            base.putOpt("df_reference_id", dfReferenceId);
+            base.put("additional_info", additionalInfo);
 
-            if (mAdditionalInformation != null) {
-                additionalInformation = buildAdditionalInformationV2();
-            } else {
-                additionalInformation = buildAdditionalInformationV1();
+            additionalInfo.putOpt("mobile_phone_number", getMobilePhoneNumber());
+            additionalInfo.putOpt("shipping_method", getShippingMethod());
+            additionalInfo.putOpt("email", getEmail());
+
+            if (billing != null) {
+                additionalInfo.putOpt("billing_given_name", billing.getFirstName());
+                additionalInfo.putOpt("billing_surname", billing.getLastName());
+                additionalInfo.putOpt("billing_line1", billing.getStreetAddress());
+                additionalInfo.putOpt("billing_line2", billing.getExtendedAddress());
+                // TODO we dont have line3
+                additionalInfo.putOpt("billing_line3", null);
+                additionalInfo.putOpt("billing_city", billing.getLocality());
+                additionalInfo.putOpt("billing_state", billing.getRegion());
+                additionalInfo.putOpt("billing_postal_code", billing.getPostalCode());
+                additionalInfo.putOpt("billing_country_code", billing.getCountryCodeAlpha2());
+                additionalInfo.putOpt("billing_phone_number", billing.getPhoneNumber());
             }
-
-            base.put(ADDITIONAL_INFORMATION_KEY, additionalInformation);
-            if (VERSION_2.equals(mVersionRequested)) {
-                // Formats proper POST url by excluding dfReferenceId if 3DS 1.0 is desired (even when 2.0 is possible)
-                base.put("df_reference_id", dfReferenceId);
-            }
-
         } catch (JSONException ignored) {}
 
         return base.toString();
     }
-
-    private JSONObject buildAdditionalInformationV1 () {
-        JSONObject additionalInformation = new JSONObject();
-
-        try {
-            additionalInformation.putOpt(MOBILE_PHONE_NUMBER_KEY, mMobilePhoneNumber);
-            additionalInformation.putOpt(EMAIL_KEY, mEmail);
-            additionalInformation.putOpt(SHIPPING_METHOD_KEY, mShippingMethod);
-            additionalInformation.putOpt(BIN_KEY, mBin);
-
-            if (mBillingAddress != null) {
-                JSONObject postalAddress = mBillingAddress.toJson();
-
-                // Merge postal address fields into additional information
-                JSONObject[] mergedAdditionalInformation = new JSONObject[] {additionalInformation, postalAddress};
-                for (JSONObject obj : mergedAdditionalInformation) {
-                    Iterator iterator = obj.keys();
-                    while (iterator.hasNext()) {
-                        String key = (String)iterator.next();
-                        additionalInformation.put(key, obj.get(key));
-                    }
-                }
-            }
-        } catch (JSONException ignored) {}
-
-        return additionalInformation;
-    }
-
-    private JSONObject buildAdditionalInformationV2 () {
-        return mAdditionalInformation.toJson();
-    }
-
 }

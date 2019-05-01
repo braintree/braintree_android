@@ -13,50 +13,10 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class ThreeDSecureAdditionalInformationTest {
-
+public class ThreeDSecureAdditionalInformationUnitTest {
     @Test
-    public void constructsCorrectly() {
-        ThreeDSecurePostalAddress postalAddress = new ThreeDSecurePostalAddress()
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. 3")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("94602")
-                .countryCodeAlpha2("US")
-                .firstName("John")
-                .lastName("Fakerson");
-
-        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
-                .billingAddress(postalAddress)
-                .billingPhoneNumber("billing-phone-number")
-                .billingGivenName("billing-given-name")
-                .billingSurname("billing-surname")
-                .email("email")
-                .shippingMethod("shipping-method");
-
-        assertEquals("billing-phone-number", additionalInformation.getBillingPhoneNumber());
-        assertEquals("billing-given-name", additionalInformation.getBillingGivenName());
-        assertEquals("billing-surname", additionalInformation.getBillingSurname());
-        assertEquals("email", additionalInformation.getEmail());
-        assertEquals("shipping-method", additionalInformation.getShippingMethod());
-        assertEquals(postalAddress, additionalInformation.getBillingAddress());
-    }
-
-    @Test
-    public void testWriteToParcel_serializesCorrectly() {
-        ThreeDSecurePostalAddress postalAddress = new ThreeDSecurePostalAddress()
-                .streetAddress("street-address")
-                .extendedAddress("extended-address")
-                .countryCodeAlpha2("country-code");
-
+    public void writeToParcel() {
         ThreeDSecureAdditionalInformation preSerialized = new ThreeDSecureAdditionalInformation()
-                .billingAddress(postalAddress)
-                .billingPhoneNumber("billing-phone-number")
-                .billingGivenName("billing-given-name")
-                .billingSurname("billing-surname")
-                .email("email")
-                .shippingMethod("shipping-method")
                 .shippingMethodIndicator("shipping-method-indicator")
                 .productCode("productCode")
                 .deliveryTimeframe("deliveryTimeframe")
@@ -101,16 +61,6 @@ public class ThreeDSecureAdditionalInformationTest {
 
         ThreeDSecureAdditionalInformation postSerialized = ThreeDSecureAdditionalInformation.CREATOR.createFromParcel(parcel);
 
-        assertNotNull(postSerialized);
-        assertEquals("billing-phone-number", postSerialized.getBillingPhoneNumber());
-        assertEquals("billing-given-name", postSerialized.getBillingGivenName());
-        assertEquals("billing-surname", postSerialized.getBillingSurname());
-        assertEquals("email", postSerialized.getEmail());
-        assertEquals("shipping-method", postSerialized.getShippingMethod());
-        assertEquals("country-code", postSerialized.getBillingAddress().getCountryCodeAlpha2());
-        assertEquals("street-address", postSerialized.getBillingAddress().getStreetAddress());
-        assertEquals("extended-address", postSerialized.getBillingAddress().getExtendedAddress());
-        assertEquals("shipping-method", postSerialized.getShippingMethod());
         assertEquals("shipping-method-indicator", postSerialized.getShippingMethodIndicator());
         assertEquals("productCode", postSerialized.getProductCode());
         assertEquals("deliveryTimeframe", postSerialized.getDeliveryTimeframe());
@@ -151,44 +101,8 @@ public class ThreeDSecureAdditionalInformationTest {
     }
 
     @Test
-    public void testToJson_buildsAllParameters() throws JSONException {
-        ThreeDSecurePostalAddress postalAddress = new ThreeDSecurePostalAddress()
-                .streetAddress("street-address")
-                .extendedAddress("extended-address")
-                .locality("locality");
-
+    public void toJson() throws JSONException {
         ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
-                .billingAddress(postalAddress)
-                .billingPhoneNumber("billing-phone-number")
-                .billingGivenName("billing-given-name")
-                .billingSurname("billing-surname")
-                .email("email")
-                .shippingMethod("shipping-method");
-
-        JSONObject jsonParams = additionalInformation.toJson();
-
-        assertEquals("billing-given-name", jsonParams.get("firstName"));
-        assertEquals("billing-surname", jsonParams.get("lastName"));
-        assertEquals("billing-phone-number", jsonParams.get("mobilePhoneNumber"));
-        assertEquals("email", jsonParams.get("email"));
-        assertEquals("shipping-method", jsonParams.get("shippingMethod"));
-        assertEquals("street-address", jsonParams.get("line1"));
-        assertEquals("extended-address", jsonParams.get("line2"));
-        assertEquals("locality", jsonParams.get("city"));
-    }
-
-    @Test
-    public void testToJson_buildsPartialParameters() throws JSONException {
-        ThreeDSecurePostalAddress postalAddress = new ThreeDSecurePostalAddress()
-                .streetAddress("street-address")
-                .extendedAddress("extended-address")
-                .locality("locality");
-
-        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
-                .billingAddress(postalAddress)
-                .billingSurname("billing-surname")
-                .email("email")
-                .shippingMethod("shipping-method")
                 .shippingMethodIndicator("shipping-method-indicator")
                 .productCode("productCode")
                 .deliveryTimeframe("deliveryTimeframe")
@@ -229,14 +143,6 @@ public class ThreeDSecureAdditionalInformationTest {
 
         JSONObject jsonParams = additionalInformation.toJson();
 
-        assertTrue(jsonParams.isNull("firstName"));
-        assertEquals("billing-surname", jsonParams.get("lastName"));
-        assertTrue(jsonParams.isNull("mobilePhoneNumber"));
-        assertEquals("street-address", jsonParams.get("line1"));
-        assertEquals("extended-address", jsonParams.get("line2"));
-        assertTrue(jsonParams.isNull("postalCode"));
-        assertTrue(jsonParams.isNull("state"));
-        assertTrue(jsonParams.isNull("countryCode"));
         assertEquals("shipping-method-indicator", jsonParams.getString("shippingMethodIndicator"));
         assertEquals("productCode", jsonParams.getString("productCode"));
         assertEquals("deliveryTimeframe", jsonParams.getString("deliveryTimeframe"));
