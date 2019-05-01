@@ -122,7 +122,7 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals("email", additionalInfoJson.get("email"));
         assertEquals("shipping-method", additionalInfoJson.get("shipping_method"));
 
-        assertEquals("account-id", additionalInfoJson.get("accountId"));
+        assertEquals("account-id", additionalInfoJson.get("account_id"));
     }
 
     @Test
