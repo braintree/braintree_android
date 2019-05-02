@@ -85,7 +85,7 @@ public class ThreeDSecureUnitTest {
                 .nonce("a-nonce")
                 .amount("amount")
                 .billingAddress(new ThreeDSecurePostalAddress()
-                        .firstName("billing-given-name"));
+                        .givenName("billing-given-name"));
     }
 
     @Test

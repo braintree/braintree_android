@@ -264,8 +264,8 @@ public class ThreeDSecureRequest implements Parcelable {
             additionalInfo.putOpt("email", getEmail());
 
             if (billing != null) {
-                additionalInfo.putOpt("billing_given_name", billing.getFirstName());
-                additionalInfo.putOpt("billing_surname", billing.getLastName());
+                additionalInfo.putOpt("billing_given_name", billing.getGivenName());
+                additionalInfo.putOpt("billing_surname", billing.getSurname());
                 additionalInfo.putOpt("billing_line1", billing.getStreetAddress());
                 additionalInfo.putOpt("billing_line2", billing.getExtendedAddress());
                 // TODO we dont have line3

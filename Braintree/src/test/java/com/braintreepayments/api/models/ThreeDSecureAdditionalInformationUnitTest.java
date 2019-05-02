@@ -18,7 +18,7 @@ public class ThreeDSecureAdditionalInformationUnitTest {
     @Test
     public void writeToParcel() {
         ThreeDSecurePostalAddress shippingAddress = new ThreeDSecurePostalAddress()
-                .firstName("shipping-given-name");
+                .givenName("shipping-given-name");
 
         ThreeDSecureAdditionalInformation preSerialized = new ThreeDSecureAdditionalInformation()
                 .shippingAddress(shippingAddress)
@@ -66,7 +66,7 @@ public class ThreeDSecureAdditionalInformationUnitTest {
 
         ThreeDSecureAdditionalInformation postSerialized = ThreeDSecureAdditionalInformation.CREATOR.createFromParcel(parcel);
 
-        assertEquals("shipping-given-name", postSerialized.getShippingAddress().getFirstName());
+        assertEquals("shipping-given-name", postSerialized.getShippingAddress().getGivenName());
         assertEquals("shipping-method-indicator", postSerialized.getShippingMethodIndicator());
         assertEquals("product_code", postSerialized.getProductCode());
         assertEquals("delivery_timeframe", postSerialized.getDeliveryTimeframe());
@@ -109,8 +109,8 @@ public class ThreeDSecureAdditionalInformationUnitTest {
     @Test
     public void toJson() throws JSONException {
         ThreeDSecurePostalAddress shippingAddress = new ThreeDSecurePostalAddress()
-                .firstName("shipping-given-name")
-                .lastName("shipping-surname")
+                .givenName("shipping-given-name")
+                .surname("shipping-surname")
                 .phoneNumber("shipping-phone")
                 .streetAddress("shipping-line1")
                 .extendedAddress("shipping-line2")

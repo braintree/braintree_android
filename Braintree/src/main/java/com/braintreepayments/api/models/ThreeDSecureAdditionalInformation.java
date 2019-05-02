@@ -814,8 +814,8 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
         JSONObject additionalInformation = new JSONObject();
         try {
             if (mShippingAddress != null) {
-                additionalInformation.putOpt("shipping_given_name", mShippingAddress.getFirstName());
-                additionalInformation.putOpt("shipping_surname", mShippingAddress.getLastName());
+                additionalInformation.putOpt("shipping_given_name", mShippingAddress.getGivenName());
+                additionalInformation.putOpt("shipping_surname", mShippingAddress.getSurname());
                 additionalInformation.putOpt("shipping_phone", mShippingAddress.getPhoneNumber());
 
                 additionalInformation.putOpt("shipping_line1", mShippingAddress.getStreetAddress());

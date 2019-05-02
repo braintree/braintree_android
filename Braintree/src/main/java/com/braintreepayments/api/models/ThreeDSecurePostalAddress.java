@@ -22,8 +22,8 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     protected static final String PHONE_NUMBER_KEY = "phoneNumber";
     protected static final String BILLING_ADDRESS_KEY = "billingAddress";
 
-    private String mFirstName;
-    private String mLastName;
+    private String mGivenName;
+    private String mSurname;
     private String mStreetAddress;
     private String mExtendedAddress;
     private String mLocality;
@@ -35,22 +35,40 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     public ThreeDSecurePostalAddress() {}
 
     /**
-     * Optional. Set the firstName
-     *
-     * @param firstName First name associated with the address.
-     * */
+     * @deprecated Use {@link #givenName(String)}.
+     */
+    @Deprecated
     public ThreeDSecurePostalAddress firstName(String firstName) {
-        mFirstName = firstName;
+        givenName(firstName);
         return this;
     }
 
     /**
-     * Optional. Set the lastName
+     * Optional. Set the given name
      *
-     * @param lastName Last name associated with the address.
-     * */
+     * @param givenName Given name associated with the address.
+     */
+    public ThreeDSecurePostalAddress givenName(String givenName) {
+        mGivenName = givenName;
+        return this;
+    }
+
+    /**
+     * @deprecated Use {@link #surname(String)}.
+     */
+    @Deprecated
     public ThreeDSecurePostalAddress lastName(String lastName) {
-        mLastName = lastName;
+        surname(lastName);
+        return this;
+    }
+
+    /**
+     * Optional. Set the surname
+     *
+     * @param surname Surname associated with the address.
+     */
+    public ThreeDSecurePostalAddress surname(String surname) {
+        mSurname = surname;
         return this;
     }
 
@@ -126,17 +144,33 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     }
 
     /**
-     * @return First name associated with the address.
+     * @deprecated Use {@link #getGivenName()}.
      */
+    @Deprecated
     public String getFirstName() {
-        return mFirstName;
+        return mGivenName;
     }
 
     /**
-     * @return Last name associated with the address.
+     * @return Given name associated with the address.
      */
+    public String getGivenName() {
+        return mGivenName;
+    }
+
+    /**
+     * @deprecated Use {@link #getSurname()}.
+     */
+    @Deprecated
     public String getLastName() {
-        return mLastName;
+        return mSurname;
+    }
+
+    /**
+     * @return Surname associated with the address.
+     */
+    public String getSurname() {
+        return mSurname;
     }
 
     /**
@@ -189,8 +223,8 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     }
 
     public ThreeDSecurePostalAddress(Parcel in) {
-        mFirstName = in.readString();
-        mLastName = in.readString();
+        mGivenName = in.readString();
+        mSurname = in.readString();
         mStreetAddress = in.readString();
         mExtendedAddress = in.readString();
         mLocality = in.readString();
@@ -202,8 +236,8 @@ public class ThreeDSecurePostalAddress implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mFirstName);
-        dest.writeString(mLastName);
+        dest.writeString(mGivenName);
+        dest.writeString(mSurname);
         dest.writeString(mStreetAddress);
         dest.writeString(mExtendedAddress);
         dest.writeString(mLocality);
@@ -238,8 +272,8 @@ public class ThreeDSecurePostalAddress implements Parcelable {
         JSONObject billingAddress = new JSONObject();
 
         try {
-            base.putOpt(ThreeDSecurePostalAddress.FIRST_NAME_KEY, mFirstName);
-            base.putOpt(ThreeDSecurePostalAddress.LAST_NAME_KEY, mLastName);
+            base.putOpt(ThreeDSecurePostalAddress.FIRST_NAME_KEY, mGivenName);
+            base.putOpt(ThreeDSecurePostalAddress.LAST_NAME_KEY, mSurname);
             base.putOpt(ThreeDSecurePostalAddress.PHONE_NUMBER_KEY, mPhoneNumber);
 
             billingAddress.putOpt(ThreeDSecurePostalAddress.STREET_ADDRESS_KEY, mStreetAddress);

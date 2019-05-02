@@ -16,7 +16,25 @@ import static junit.framework.Assert.assertTrue;
 public class ThreeDSecurePostalAddressUnitTest {
 
     @Test
-    public void constructsCorrectly() throws JSONException {
+    public void firstName_setsGivenName() {
+        ThreeDSecurePostalAddress postalAddress = new ThreeDSecurePostalAddress()
+                .firstName("given-name");
+
+        assertEquals("given-name", postalAddress.getFirstName());
+        assertEquals("given-name", postalAddress.getGivenName());
+    }
+
+    @Test
+    public void lastName_setsSurname() {
+        ThreeDSecurePostalAddress postalAddress = new ThreeDSecurePostalAddress()
+                .lastName("surname");
+
+        assertEquals("surname", postalAddress.getLastName());
+        assertEquals("surname", postalAddress.getSurname());
+    }
+
+    @Test
+    public void constructsCorrectly() {
         ThreeDSecurePostalAddress postalAddress = new ThreeDSecurePostalAddress()
                 .streetAddress("123 Fake St.")
                 .extendedAddress("Apt. 3")
@@ -24,8 +42,8 @@ public class ThreeDSecurePostalAddressUnitTest {
                 .region("CA")
                 .postalCode("94602")
                 .countryCodeAlpha2("US")
-                .firstName("John")
-                .lastName("Fakerson")
+                .givenName("John")
+                .surname("Fakerson")
                 .phoneNumber("5151231234");
 
         assertEquals("123 Fake St.", postalAddress.getStreetAddress());
@@ -34,13 +52,13 @@ public class ThreeDSecurePostalAddressUnitTest {
         assertEquals("CA", postalAddress.getRegion());
         assertEquals("94602", postalAddress.getPostalCode());
         assertEquals("US", postalAddress.getCountryCodeAlpha2());
-        assertEquals("John", postalAddress.getFirstName());
-        assertEquals("Fakerson", postalAddress.getLastName());
+        assertEquals("John", postalAddress.getGivenName());
+        assertEquals("Fakerson", postalAddress.getSurname());
         assertEquals("5151231234", postalAddress.getPhoneNumber());
     }
 
     @Test
-    public void testWriteToParcel_serializesCorrectly() throws JSONException {
+    public void testWriteToParcel_serializesCorrectly() {
         ThreeDSecurePostalAddress preSerialized = new ThreeDSecurePostalAddress()
                 .streetAddress("123 Fake St.")
                 .extendedAddress("Apt. 3")
@@ -48,8 +66,8 @@ public class ThreeDSecurePostalAddressUnitTest {
                 .region("CA")
                 .postalCode("94602")
                 .countryCodeAlpha2("US")
-                .firstName("John")
-                .lastName("Fakerson")
+                .givenName("John")
+                .surname("Fakerson")
                 .phoneNumber("5151231234");
 
         Parcel parcel = Parcel.obtain();
@@ -65,8 +83,8 @@ public class ThreeDSecurePostalAddressUnitTest {
         assertEquals("CA", postSerialized.getRegion());
         assertEquals("94602", postSerialized.getPostalCode());
         assertEquals("US", postSerialized.getCountryCodeAlpha2());
-        assertEquals("John", postSerialized.getFirstName());
-        assertEquals("Fakerson", postSerialized.getLastName());
+        assertEquals("John", postSerialized.getGivenName());
+        assertEquals("Fakerson", postSerialized.getSurname());
         assertEquals("5151231234", postSerialized.getPhoneNumber());
     }
 
@@ -79,8 +97,8 @@ public class ThreeDSecurePostalAddressUnitTest {
                 .region("CA")
                 .postalCode("94602")
                 .countryCodeAlpha2("US")
-                .firstName("John")
-                .lastName("Fakerson")
+                .givenName("John")
+                .surname("Fakerson")
                 .phoneNumber("5151231234");
 
         JSONObject jsonParams = address.toJson();
@@ -105,8 +123,8 @@ public class ThreeDSecurePostalAddressUnitTest {
                 .locality("Oakland")
                 .region("CA")
                 .postalCode("94602")
-                .firstName("John")
-                .lastName("Fakerson");
+                .givenName("John")
+                .surname("Fakerson");
 
         JSONObject jsonParams = address.toJson();
         JSONObject jsonBillingAddress = jsonParams.getJSONObject("billingAddress");

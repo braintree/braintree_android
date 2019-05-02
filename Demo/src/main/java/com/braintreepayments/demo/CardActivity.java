@@ -339,8 +339,8 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
         CardNonce cardNonce = (CardNonce) paymentMethodNonce;
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
-                .firstName("Jill")
-                .lastName("Doe")
+                .givenName("Jill")
+                .surname("Doe")
                 .phoneNumber("5551234567")
                 .streetAddress("555 Smith St")
                 .extendedAddress("#2")

@@ -29,8 +29,8 @@ public class ThreeDSecureRequestUnitTest {
                 .accountId("account-id");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
-                .firstName("Joe")
-                .lastName("Guy")
+                .givenName("Joe")
+                .surname("Guy")
                 .phoneNumber("12345678")
                 .streetAddress("555 Smith St.")
                 .extendedAddress("#5")
@@ -63,8 +63,8 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals(expected.getBin(), actual.getBin());
         assertEquals(expected.getShippingMethod(), actual.getShippingMethod());
         assertEquals(expected.getVersionRequested(), actual.getVersionRequested());
-        assertEquals(expected.getBillingAddress().getFirstName(), actual.getBillingAddress().getFirstName());
-        assertEquals(expected.getBillingAddress().getLastName(), actual.getBillingAddress().getLastName());
+        assertEquals(expected.getBillingAddress().getGivenName(), actual.getBillingAddress().getGivenName());
+        assertEquals(expected.getBillingAddress().getSurname(), actual.getBillingAddress().getSurname());
         assertEquals(expected.getBillingAddress().getPhoneNumber(), actual.getBillingAddress().getPhoneNumber());
         assertEquals(expected.getBillingAddress().getStreetAddress(), actual.getBillingAddress().getStreetAddress());
         assertEquals(expected.getBillingAddress().getExtendedAddress(), actual.getBillingAddress().getExtendedAddress());
@@ -81,8 +81,8 @@ public class ThreeDSecureRequestUnitTest {
                 .accountId("account-id");
 
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
-                .firstName("billing-given-name")
-                .lastName("billing-surname")
+                .givenName("billing-given-name")
+                .surname("billing-surname")
                 .streetAddress("billing-line1")
                 .extendedAddress("billing-line2")
                 .locality("billing-city")
