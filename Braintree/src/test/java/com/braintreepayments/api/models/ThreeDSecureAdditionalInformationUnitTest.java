@@ -11,12 +11,17 @@ import org.robolectric.RobolectricTestRunner;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureAdditionalInformationUnitTest {
     @Test
     public void writeToParcel() {
+        ThreeDSecurePostalAddress shippingAddress = new ThreeDSecurePostalAddress()
+                .firstName("shipping-given-name");
+
         ThreeDSecureAdditionalInformation preSerialized = new ThreeDSecureAdditionalInformation()
+                .shippingAddress(shippingAddress)
                 .shippingMethodIndicator("shipping-method-indicator")
                 .productCode("product_code")
                 .deliveryTimeframe("delivery_timeframe")
@@ -61,6 +66,7 @@ public class ThreeDSecureAdditionalInformationUnitTest {
 
         ThreeDSecureAdditionalInformation postSerialized = ThreeDSecureAdditionalInformation.CREATOR.createFromParcel(parcel);
 
+        assertEquals("shipping-given-name", postSerialized.getShippingAddress().getFirstName());
         assertEquals("shipping-method-indicator", postSerialized.getShippingMethodIndicator());
         assertEquals("product_code", postSerialized.getProductCode());
         assertEquals("delivery_timeframe", postSerialized.getDeliveryTimeframe());
@@ -102,7 +108,19 @@ public class ThreeDSecureAdditionalInformationUnitTest {
 
     @Test
     public void toJson() throws JSONException {
+        ThreeDSecurePostalAddress shippingAddress = new ThreeDSecurePostalAddress()
+                .firstName("shipping-given-name")
+                .lastName("shipping-surname")
+                .phoneNumber("shipping-phone")
+                .streetAddress("shipping-line1")
+                .extendedAddress("shipping-line2")
+                .locality("shipping-city")
+                .region("shipping-state")
+                .postalCode("shipping-postal-code")
+                .countryCodeAlpha2("shipping-country-code");
+
         ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
+                .shippingAddress(shippingAddress)
                 .shippingMethodIndicator("shipping-method-indicator")
                 .productCode("product_code")
                 .deliveryTimeframe("delivery_timeframe")
@@ -143,6 +161,16 @@ public class ThreeDSecureAdditionalInformationUnitTest {
 
         JSONObject jsonParams = additionalInformation.toJson();
 
+        assertEquals("shipping-given-name", jsonParams.getString("shipping_given_name"));
+        assertEquals("shipping-surname", jsonParams.getString("shipping_surname"));
+        assertEquals("shipping-phone", jsonParams.getString("shipping_phone"));
+        assertEquals("shipping-line1", jsonParams.getString("shipping_line1"));
+        assertEquals("shipping-line2", jsonParams.getString("shipping_line2"));
+        assertFalse(jsonParams.has("shipping_line3"));
+        assertEquals("shipping-city", jsonParams.getString("shipping_city"));
+        assertEquals("shipping-state", jsonParams.getString("shipping_state"));
+        assertEquals("shipping-postal-code", jsonParams.getString("shipping_postal_code"));
+        assertEquals("shipping-country-code", jsonParams.getString("shipping_country_code"));
         assertEquals("shipping-method-indicator", jsonParams.getString("shipping_method_indicator"));
         assertEquals("product_code", jsonParams.getString("product_code"));
         assertEquals("delivery_timeframe", jsonParams.getString("delivery_timeframe"));
@@ -188,6 +216,7 @@ public class ThreeDSecureAdditionalInformationUnitTest {
 
         JSONObject jsonParams = additionalInformation.toJson();
 
+        assertTrue(jsonParams.isNull("shipping_given_name"));
         assertTrue(jsonParams.isNull("billingAddress"));
         assertTrue(jsonParams.isNull("firstName"));
         assertTrue(jsonParams.isNull("lastName"));

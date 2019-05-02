@@ -11,6 +11,7 @@ import org.json.JSONObject;
  */
 public class ThreeDSecureAdditionalInformation implements Parcelable {
 
+    private ThreeDSecurePostalAddress mShippingAddress;
     private String mShippingMethodIndicator;
     private String mProductCode;
     private String mDeliveryTimeframe;
@@ -50,6 +51,17 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
     private String mRecurringFrequency;
 
     public ThreeDSecureAdditionalInformation() {}
+
+    /**
+     * Optional. Set the shipping address
+     *
+     * @param shippingAddress The shipping address used for verification.
+     *
+     * */
+    public ThreeDSecureAdditionalInformation shippingAddress(ThreeDSecurePostalAddress shippingAddress) {
+        mShippingAddress = shippingAddress;
+        return this;
+    }
 
     /**
      * Optional. The 2-digit string indicating the shipping method chosen for the transaction
@@ -430,6 +442,13 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
     }
 
     /**
+     * @return shipping address
+     */
+    public ThreeDSecurePostalAddress getShippingAddress() {
+        return mShippingAddress;
+    }
+
+    /**
      * @return shipping method indicator
      */
     public String getShippingMethodIndicator() {
@@ -689,6 +708,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
     }
 
     public ThreeDSecureAdditionalInformation(Parcel in) {
+        mShippingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
         mShippingMethodIndicator = in.readString();
         mProductCode = in.readString();
         mDeliveryTimeframe = in.readString();
@@ -730,6 +750,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(mShippingAddress, flags);
         dest.writeString(mShippingMethodIndicator);
         dest.writeString(mProductCode);
         dest.writeString(mDeliveryTimeframe);
@@ -791,8 +812,22 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
      */
     public JSONObject toJson() {
         JSONObject additionalInformation = new JSONObject();
-
         try {
+            if (mShippingAddress != null) {
+                additionalInformation.putOpt("shipping_given_name", mShippingAddress.getFirstName());
+                additionalInformation.putOpt("shipping_surname", mShippingAddress.getLastName());
+                additionalInformation.putOpt("shipping_phone", mShippingAddress.getPhoneNumber());
+
+                additionalInformation.putOpt("shipping_line1", mShippingAddress.getStreetAddress());
+                additionalInformation.putOpt("shipping_line2", mShippingAddress.getExtendedAddress());
+                // TODO we dont have line3
+                additionalInformation.putOpt("shipping_line3", null);
+                additionalInformation.putOpt("shipping_city", mShippingAddress.getLocality());
+                additionalInformation.putOpt("shipping_state", mShippingAddress.getRegion());
+                additionalInformation.putOpt("shipping_postal_code", mShippingAddress.getPostalCode());
+                additionalInformation.putOpt("shipping_country_code", mShippingAddress.getCountryCodeAlpha2());
+            }
+
             additionalInformation.putOpt("shipping_method_indicator", mShippingMethodIndicator);
             additionalInformation.putOpt("product_code", mProductCode);
             additionalInformation.putOpt("delivery_timeframe", mDeliveryTimeframe);
