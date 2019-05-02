@@ -257,7 +257,6 @@ public class ThreeDSecureRequest implements Parcelable {
 
         try {
             base.put("amount", mAmount);
-            base.putOpt("df_reference_id", dfReferenceId);
             base.put("additional_info", additionalInfo);
 
             additionalInfo.putOpt("mobile_phone_number", getMobilePhoneNumber());
@@ -276,6 +275,10 @@ public class ThreeDSecureRequest implements Parcelable {
                 additionalInfo.putOpt("billing_postal_code", billing.getPostalCode());
                 additionalInfo.putOpt("billing_country_code", billing.getCountryCodeAlpha2());
                 additionalInfo.putOpt("billing_phone_number", billing.getPhoneNumber());
+            }
+
+            if (VERSION_2.equals(getVersionRequested())) {
+                base.putOpt("df_reference_id", dfReferenceId);
             }
         } catch (JSONException ignored) {}
 

@@ -92,6 +92,7 @@ public class ThreeDSecureRequestUnitTest {
                 .phoneNumber("billing-phone-number");
 
         ThreeDSecureRequest request = new ThreeDSecureRequest()
+                .versionRequested(VERSION_2)
                 .amount("amount")
                 .mobilePhoneNumber("mobile-phone-number")
                 .email("email")
@@ -124,5 +125,20 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals("account-id", additionalInfoJson.get("accountId"));
     }
 
+    @Test
+    public void build_withVersion1_doesNotContainDfReferenceId() throws JSONException {
+        JSONObject json = new JSONObject(new ThreeDSecureRequest()
+                .build("df-reference-id"));
 
+        assertFalse(json.has("df_reference_id"));
+    }
+
+    @Test
+    public void build_withVersion2_containsDfReferenceId() throws JSONException {
+        JSONObject json = new JSONObject(new ThreeDSecureRequest()
+                .versionRequested(VERSION_2)
+                .build("df-reference-id"));
+
+        assertEquals("df-reference-id", json.getString("df_reference_id"));
+    }
 }
