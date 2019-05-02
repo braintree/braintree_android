@@ -26,6 +26,11 @@ android {
     }
 
     buildTypes.release.minifyEnabled = true
+
+    // TODO Temporary disable InvalidPackage.
+    // The Cardinal SDK is referencing the `javax.naming` package but it is
+    // unavailable in the classpath.
+    lintOptions.disable 'InvalidPackage'
 }
 
 dependencies {
