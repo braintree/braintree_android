@@ -89,6 +89,13 @@ public class ThreeDSecureUnitTest {
     }
 
     @Test
+    public void performVerification_sendsAnalyticEvent() {
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.initialized"));
+    }
+
+    @Test
     public void performVerification_sendsParamsInLookupRequest() throws JSONException {
         ThreeDSecure.performVerification(mFragment, mBasicRequest);
 

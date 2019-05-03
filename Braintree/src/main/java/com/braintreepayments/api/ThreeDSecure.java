@@ -202,6 +202,8 @@ public class ThreeDSecure {
                     return;
                 }
 
+                fragment.sendAnalyticsEvent("three-d-secure.initialized");
+
                 fragment.getHttpClient().post(TokenizationClient.versionedPath(
                         TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + request.getNonce() +
                                 "/three_d_secure/lookup"), request.build(sDFReferenceId), new HttpResponseCallback() {
