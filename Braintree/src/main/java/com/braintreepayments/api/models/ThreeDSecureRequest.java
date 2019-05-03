@@ -30,6 +30,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private String mBin;
     private @ThreeDSecureVersion String mVersionRequested = VERSION_1;
     private ThreeDSecureAdditionalInformation mAdditionalInformation;
+    private boolean mChallengeRequested = false;
 
     /**
      * Set the nonce
@@ -137,6 +138,16 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
+     * Optional. If set to true, a challenge will be forced if possible.
+     * @param challengeRequested decides if a challenge will be forced.
+     * @return
+     */
+    public ThreeDSecureRequest challengeRequested(boolean challengeRequested) {
+        mChallengeRequested = challengeRequested;
+        return this;
+    }
+
+    /**
      * @return The nonce to use for 3D Secure verification
      */
     public String getNonce() {
@@ -199,6 +210,13 @@ public class ThreeDSecureRequest implements Parcelable {
         return mAdditionalInformation;
     }
 
+    /**
+     * @return If the challenge has been requested
+     */
+    public boolean isChallengeRequested() {
+        return mChallengeRequested;
+    }
+
     public ThreeDSecureRequest() {}
 
     @Override
@@ -217,6 +235,7 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeString(mBin);
         dest.writeString(mVersionRequested);
         dest.writeParcelable(mAdditionalInformation, flags);
+        dest.writeByte(mChallengeRequested ? (byte)1:0);
     }
 
     public ThreeDSecureRequest(Parcel in) {
@@ -229,6 +248,7 @@ public class ThreeDSecureRequest implements Parcelable {
         mBin = in.readString();
         mVersionRequested = in.readString();
         mAdditionalInformation = in.readParcelable(ThreeDSecureAdditionalInformation.class.getClassLoader());
+        mChallengeRequested = in.readByte() > 0;
     }
 
     public static final Creator<ThreeDSecureRequest> CREATOR = new Creator<ThreeDSecureRequest>() {
@@ -280,6 +300,8 @@ public class ThreeDSecureRequest implements Parcelable {
             if (VERSION_2.equals(getVersionRequested())) {
                 base.putOpt("df_reference_id", dfReferenceId);
             }
+
+            base.put("challenge_requested", mChallengeRequested);
         } catch (JSONException ignored) {}
 
         return base.toString();
