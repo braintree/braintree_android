@@ -402,8 +402,11 @@ public class GooglePaymentTest {
         String configuration = mBaseConfiguration.googlePayment(mBaseConfiguration.googlePayment()
                 .environment("sandbox")
                 .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"}))
+                .googlePayment(new TestGooglePaymentConfigurationBuilder()
+                        .environment("sandbox")
+                        .paypalClientId("paypal-client-id-for-google-payment"))
                 .paypal(new TestConfigurationBuilder.TestPayPalConfigurationBuilder(true)
-                        .clientId("paypal-client-id"))
+                        .clientId("paypal-client-id-for-paypal"))
                 .withAnalytics()
                 .build();
 
