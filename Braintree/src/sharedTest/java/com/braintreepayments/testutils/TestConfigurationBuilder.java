@@ -343,6 +343,11 @@ public class TestConfigurationBuilder extends JSONBuilder {
             put(new JSONArray(Arrays.asList(supportedNetworks)));
             return this;
         }
+
+        public TestGooglePaymentConfigurationBuilder paypalClientId(String paypalClientId) {
+            put(paypalClientId);
+            return this;
+        }
     }
 
     public static class TestKountConfigurationBuilder extends JSONBuilder {

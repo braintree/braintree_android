@@ -22,12 +22,14 @@ public class GooglePaymentConfiguration {
     private static final String ENVIRONMENT_KEY = "environment";
     private static final String DISPLAY_NAME_KEY = "displayName";
     private static final String SUPPORTED_NETWORKS_KEY = "supportedNetworks";
+    private static final String PAYPAL_CLIENT_ID_KEY = "paypalClientId";
 
     boolean mEnabled;
     String mGoogleAuthorizationFingerprint;
     String mEnvironment;
     String mDisplayName;
     String[] mSupportedNetworks;
+    String mPayPalClientId;
 
     /**
      * Parse an {@link GooglePaymentConfiguration} from json.
@@ -47,6 +49,7 @@ public class GooglePaymentConfiguration {
                 GOOGLE_AUTHORIZATION_FINGERPRINT_KEY, null);
         googlePaymentConfiguration.mEnvironment = Json.optString(json, ENVIRONMENT_KEY, null);
         googlePaymentConfiguration.mDisplayName = Json.optString(json, DISPLAY_NAME_KEY, "");
+        googlePaymentConfiguration.mPayPalClientId = Json.optString(json, PAYPAL_CLIENT_ID_KEY, "");
 
         JSONArray supportedNetworks = json.optJSONArray(SUPPORTED_NETWORKS_KEY);
         if (supportedNetworks != null) {
@@ -106,5 +109,12 @@ public class GooglePaymentConfiguration {
      */
     public String[] getSupportedNetworks() {
         return mSupportedNetworks;
+    }
+
+    /**
+     * @return the PayPal Client ID.
+     */
+    public String getPaypalClientId() {
+        return mPayPalClientId;
     }
 }
