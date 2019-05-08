@@ -351,17 +351,14 @@ public class ThreeDSecure {
 
                     fragment.sendAnalyticsEvent("three-d-secure.verification-flow.completed");
                     break;
-
                 case ERROR:
                     fragment.postCallback(new BraintreeException(validateResponse.errorDescription));
                     fragment.sendAnalyticsEvent("three-d-secure.verification-flow.failed");
                     break;
-
                 case CANCEL:
                     fragment.postCancelCallback(BraintreeRequestCodes.THREE_D_SECURE);
                     fragment.sendAnalyticsEvent("three-d-secure.verification-flow.canceled");
                     break;
-
             }
         }
     }
