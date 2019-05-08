@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## Unreleased
+
+* Update endpoint for creating local payments
+
 ## 3.0.0
 
 * Bump minSdkVersion to 21
