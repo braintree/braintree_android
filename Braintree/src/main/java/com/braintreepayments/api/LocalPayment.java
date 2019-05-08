@@ -70,7 +70,7 @@ public class LocalPayment {
 
                 fragment.sendAnalyticsEvent(paymentTypeForAnalytics() + ".local-payment.start-payment.selected");
 
-                fragment.getHttpClient().post("/v1/paypal_hermes/create_payment_resource", request.build(returnUrl, cancel),
+                fragment.getHttpClient().post("/v1/local_payments/create", request.build(returnUrl, cancel),
                         new HttpResponseCallback() {
                             @Override
                             public void success(String responseBody) {
