@@ -138,7 +138,7 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * Optional. If set to true, a challenge will be forced if possible.
+     * Optional If set to true, the customer will be asked to complete authentication challenge if possible
      * @param challengeRequested decides if a challenge will be forced.
      * @return
      */
@@ -205,13 +205,15 @@ public class ThreeDSecureRequest implements Parcelable {
 
     /**
      * @return The additional information used for verification
+     * {@link ThreeDSecureAdditionalInformation} is only used for
+     * {@link ThreeDSecureRequest#VERSION_2} requests.
      */
     public ThreeDSecureAdditionalInformation getAdditionalInformation() {
         return mAdditionalInformation;
     }
 
     /**
-     * @return If the challenge has been requested
+     * @return If a challenge has been requested
      */
     public boolean isChallengeRequested() {
         return mChallengeRequested;
