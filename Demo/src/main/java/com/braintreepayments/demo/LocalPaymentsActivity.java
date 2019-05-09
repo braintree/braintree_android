@@ -57,6 +57,7 @@ public class LocalPaymentsActivity extends BaseActivity implements PaymentMethod
                 .givenName("Linh")
                 .surname("Ngo")
                 .shippingAddressRequired(true)
+                .merchantAccountId("customer-nl-merchant-account")
                 .currencyCode("EUR");
         LocalPayment.startPayment(mBraintreeFragment, request, new BraintreeResponseListener<LocalPaymentRequest>() {
             @Override

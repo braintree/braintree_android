@@ -32,7 +32,7 @@ public class LocalPaymentTest {
     private CountDownLatch mCountDownLatch;
 
     @Before
-    public void setUp() throws InvalidArgumentException {
+    public void setUp() {
         mCountDownLatch = new CountDownLatch(1);
 
         mBraintreeFragment = getFragmentWithAuthorization(mActivityTestRule.getActivity(),
