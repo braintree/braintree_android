@@ -42,6 +42,7 @@ public class MainActivity extends BaseActivity {
     private static final int PAYPAL_REQUEST = 4;
     private static final int VENMO_REQUEST = 5;
     private static final int VISA_CHECKOUT_REQUEST = 6;
+    private static final int LOCAL_PAYMENTS_REQUEST = 7;
 
     private static final String KEY_NONCE = "nonce";
 
@@ -59,6 +60,7 @@ public class MainActivity extends BaseActivity {
     private Button mVenmoButton;
     private Button mVisaCheckoutButton;
     private Button mCreateTransactionButton;
+    private Button mLocalPayments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +78,7 @@ public class MainActivity extends BaseActivity {
         mPayPalButton = findViewById(R.id.paypal);
         mVenmoButton = findViewById(R.id.venmo);
         mVisaCheckoutButton = findViewById(R.id.visa_checkout);
+        mLocalPayments = findViewById(R.id.local_payments);
         mCreateTransactionButton = findViewById(R.id.create_transaction);
 
         if (savedInstanceState != null) {
@@ -122,6 +125,11 @@ public class MainActivity extends BaseActivity {
     public void launchVisaCheckout(View v) {
         Intent intent = new Intent(this, VisaCheckoutActivity.class);
         startActivityForResult(intent, VISA_CHECKOUT_REQUEST);
+    }
+
+    public void launchLocalPayments(View v) {
+        Intent intent = new Intent(this, LocalPaymentsActivity.class);
+        startActivityForResult(intent, LOCAL_PAYMENTS_REQUEST);
     }
 
     private DropInRequest getDropInRequest() {
@@ -242,5 +250,6 @@ public class MainActivity extends BaseActivity {
         mPayPalButton.setEnabled(enable);
         mVenmoButton.setEnabled(enable);
         mVisaCheckoutButton.setEnabled(enable);
+        mLocalPayments.setEnabled(enable);
     }
 }

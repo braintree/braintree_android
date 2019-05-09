@@ -120,7 +120,7 @@ public class LocalPaymentUnitTest {
                 callback.success(stringFromFixture("payment_methods/local_payment_create_response.json"));
                 return null;
             }
-        }).when(mMockHttpClient).post(eq("/v1/paypal_hermes/create_payment_resource"), any(String.class), any(HttpResponseCallback.class));
+        }).when(mMockHttpClient).post(eq("/v1/local_payments/create"), any(String.class), any(HttpResponseCallback.class));
 
         LocalPayment.startPayment(mBraintreeFragment, getIdealLocalPaymentRequest(), new BraintreeResponseListener<LocalPaymentRequest>() {
             @Override
@@ -145,7 +145,7 @@ public class LocalPaymentUnitTest {
                 callback.success(stringFromFixture("payment_methods/local_payment_create_response.json"));
                 return null;
             }
-        }).when(mMockHttpClient).post(eq("/v1/paypal_hermes/create_payment_resource"), any(String.class), any(HttpResponseCallback.class));
+        }).when(mMockHttpClient).post(eq("/v1/local_payments/create"), any(String.class), any(HttpResponseCallback.class));
 
         LocalPayment.startPayment(mBraintreeFragment, getIdealLocalPaymentRequest(), new BraintreeResponseListener<LocalPaymentRequest>() {
             @Override
@@ -170,7 +170,7 @@ public class LocalPaymentUnitTest {
                 callback.success(stringFromFixture("error_response.json"));
                 return null;
             }
-        }).when(mMockHttpClient).post(eq("/v1/paypal_hermes/create_payment_resource"), any(String.class), any(HttpResponseCallback.class));
+        }).when(mMockHttpClient).post(eq("/v1/local_payments/create"), any(String.class), any(HttpResponseCallback.class));
 
         LocalPayment.startPayment(mBraintreeFragment, getIdealLocalPaymentRequest(), new BraintreeResponseListener<LocalPaymentRequest>() {
             @Override
@@ -195,7 +195,7 @@ public class LocalPaymentUnitTest {
                 callback.success(stringFromFixture("payment_methods/local_payment_create_response.json"));
                 return null;
             }
-        }).when(mMockHttpClient).post(eq("/v1/paypal_hermes/create_payment_resource"), any(String.class), any(HttpResponseCallback.class));
+        }).when(mMockHttpClient).post(eq("/v1/local_payments/create"), any(String.class), any(HttpResponseCallback.class));
 
         LocalPayment.startPayment(mBraintreeFragment, getIdealLocalPaymentRequest(), new BraintreeResponseListener<LocalPaymentRequest>() {
             @Override
@@ -298,7 +298,7 @@ public class LocalPaymentUnitTest {
                 callback.failure(expectedException);
                 return null;
             }
-        }).when(mMockHttpClient).post(eq("/v1/paypal_hermes/create_payment_resource"), any(String.class), any(HttpResponseCallback.class));
+        }).when(mMockHttpClient).post(eq("/v1/local_payments/create"), any(String.class), any(HttpResponseCallback.class));
 
         LocalPayment.startPayment(mBraintreeFragment, getIdealLocalPaymentRequest(), new BraintreeResponseListener<LocalPaymentRequest>() {
             @Override
@@ -322,7 +322,7 @@ public class LocalPaymentUnitTest {
                 latch.countDown();
                 return null;
             }
-        }).when(mMockHttpClient).post(eq("/v1/paypal_hermes/create_payment_resource"), any(String.class), any(HttpResponseCallback.class));
+        }).when(mMockHttpClient).post(eq("/v1/local_payments/create"), any(String.class), any(HttpResponseCallback.class));
 
         LocalPayment.startPayment(mBraintreeFragment, getIdealLocalPaymentRequest(), new BraintreeResponseListener<LocalPaymentRequest>() {
             @Override
@@ -359,7 +359,7 @@ public class LocalPaymentUnitTest {
                 latch.countDown();
                 return null;
             }
-        }).when(mMockHttpClient).post(eq("/v1/paypal_hermes/create_payment_resource"), any(String.class), any(HttpResponseCallback.class));
+        }).when(mMockHttpClient).post(eq("/v1/local_payments/create"), any(String.class), any(HttpResponseCallback.class));
 
         LocalPayment.startPayment(mBraintreeFragment, getIdealLocalPaymentRequest(), new BraintreeResponseListener<LocalPaymentRequest>() {
             @Override
