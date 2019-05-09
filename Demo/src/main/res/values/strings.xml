@@ -13,7 +13,7 @@
     <string name="google_pay">Google Pay</string>
     <string name="paypal_button">@string/paypal</string>
     <string name="visa_checkout_button">Visa Checkout</string>
-    <string name="ideal_button">iDEAL</string>
+    <string name="ideal_button">Pay with iDEAL</string>
     <string name="ideal_bank_icon">iDEAL bank icon</string>
     <string name="local_payments_button">Local Payments</string>
     <string name="cards">Credit or Debit Cards</string>

@@ -10,8 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:enabled="false"
+        android:onClick="launchIdeal"
         android:padding="10dp"
         android:text="@string/ideal_button"
-        android:enabled="false"
-        android:onClick="launchIdeal" />
+        android:drawableStart="@drawable/ideal"/>
 </RelativeLayout>
