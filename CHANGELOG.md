@@ -891,6 +891,11 @@
 * Fixes
   * Attach Javadocs and sources to Maven Central build.
 
+## 3.0.1
+
+* Resolve issue where optional shipping parameters were treated as if they were required
+* Use GooglePayment PayPal client ID
+
 ## Unreleased
 
 * Resolve issue where optional shipping parameters were treated as if they were required
