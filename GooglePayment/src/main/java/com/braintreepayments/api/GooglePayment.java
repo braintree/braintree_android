@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.text.TextUtils;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
@@ -384,7 +385,7 @@ public class GooglePayment {
                     .put("purchase_units", new JSONArray()
                             .put(new JSONObject()
                                     .put("payee", new JSONObject()
-                                            .put("client_id", fragment.getConfiguration().getPayPal().getClientId())
+                                            .put("client_id", fragment.getConfiguration().getGooglePayment().getPaypalClientId())
                                     )
                                     .put("recurring_payment", "true")
                             )
@@ -454,7 +455,7 @@ public class GooglePayment {
                             .put("braintree:merchantId",
                                     fragment.getConfiguration().getMerchantId())
                             .put("braintree:paypalClientId",
-                                    fragment.getConfiguration().getPayPal().getClientId())
+                                    fragment.getConfiguration().getGooglePayment().getPaypalClientId())
                             .put("braintree:metadata", (new JSONObject()
                                     .put("source", "client")
                                     .put("integration", fragment.getIntegrationType())
@@ -500,21 +501,25 @@ public class GooglePayment {
                     buildCardPaymentMethodParameters(request, fragment));
         }
 
-        if (request.isPayPalEnabled() &&
-                configuration.isPayPalEnabled() &&
-                request.getAllowedPaymentMethod("PAYPAL") == null) {
-            request.setAllowedPaymentMethod(PAYPAL_PAYMENT_TYPE,
-                    buildPayPalPaymentMethodParameters(fragment));
-        }
-
         if (request.getTokenizationSpecificationForType(CARD_PAYMENT_TYPE) == null) {
             request.setTokenizationSpecificationForType("CARD",
                     buildCardTokenizationSpecification(fragment));
         }
 
-        if (request.getTokenizationSpecificationForType(PAYPAL_PAYMENT_TYPE) == null) {
-            request.setTokenizationSpecificationForType("PAYPAL",
-                    buildPayPalTokenizationSpecification(fragment));
+        boolean googlePaymentCanProcessPayPal = request.isPayPalEnabled() &&
+                !TextUtils.isEmpty(configuration.getGooglePayment().getPaypalClientId());
+
+        if (googlePaymentCanProcessPayPal) {
+            if (request.getAllowedPaymentMethod("PAYPAL") == null) {
+                request.setAllowedPaymentMethod(PAYPAL_PAYMENT_TYPE,
+                        buildPayPalPaymentMethodParameters(fragment));
+            }
+
+
+            if (request.getTokenizationSpecificationForType(PAYPAL_PAYMENT_TYPE) == null) {
+                request.setTokenizationSpecificationForType("PAYPAL",
+                        buildPayPalTokenizationSpecification(fragment));
+            }
         }
 
         request.environment(configuration.getGooglePayment().getEnvironment());

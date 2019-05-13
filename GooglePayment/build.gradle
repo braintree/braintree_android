@@ -28,16 +28,18 @@ android {
     }
 }
 
+def braintreeVersion = '3.0.1-SNAPSHOT'
+
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'com.google.android.gms:play-services-wallet:16.0.1'
 
-    compileOnly('com.braintreepayments.api:braintree:3.0.0') {
+    compileOnly("com.braintreepayments.api:braintree:$braintreeVersion") {
         exclude module: 'google-payment'
         because 'Use this development version'
     }
 
-    testImplementation('com.braintreepayments.api:braintree:3.0.0') {
+    testImplementation("com.braintreepayments.api:braintree:$braintreeVersion") {
         exclude module: 'google-payment'
         because 'Use this development version'
     }
