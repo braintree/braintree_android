@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## 3.0.1
+
+* Update google-payment to 3.0.1
+* Update endpoint for creating local payments
+
 ## 3.0.0
 
 * Bump minSdkVersion to 21
