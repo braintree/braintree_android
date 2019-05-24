@@ -1,18 +1,18 @@
 package com.braintreepayments.api.internal;
 
-import android.app.Activity;
+import android.content.Context;
 
 public class IntegrationType {
 
-    public static String get(Activity activity) {
+    public static String get(Context context) {
         try {
-            if (Class.forName("com.braintreepayments.api.BraintreePaymentActivity").isInstance(activity)) {
+            if (Class.forName("com.braintreepayments.api.BraintreePaymentActivity").isInstance(context)) {
                 return "dropin";
             }
         } catch (ClassNotFoundException ignored) {}
 
         try {
-            if (Class.forName("com.braintreepayments.api.dropin.DropInActivity").isInstance(activity)) {
+            if (Class.forName("com.braintreepayments.api.dropin.DropInActivity").isInstance(context)) {
                 return "dropin2";
             }
         } catch (ClassNotFoundException ignored) {}
