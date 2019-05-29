@@ -259,6 +259,43 @@ public class ThreeDSecure {
         performCardinalAuthentication(fragment, threeDSecureLookup);
     }
 
+    /**
+     * Creates a stringified JSON object containing the information necessary to perform a lookup
+     *
+     * @param fragment the {@link BraintreeFragment} backing the http request.
+     * @param nonce The nonce representing the card from a tokenization payload.
+     */
+    public static String prepareLookup(final BraintreeFragment fragment, final String nonce) {
+        JSONObject lookupJSON = new JSONObject();
+
+        try {
+            lookupJSON
+                    .put("authorizationFingerprint", fragment.getAuthorization().getBearer())
+                    .put("braintreeLibraryVersion", "Android-" + BuildConfig.VERSION_NAME)
+                    .put("dfReferenceId", sDFReferenceId)
+                    .put("nonce", nonce)
+                    .put("clientMetadata", new JSONObject()
+                            .put("requestedThreeDSecureVersion", "2")
+                            .put("sdkVersion", BuildConfig.VERSION_NAME));
+        } catch (JSONException ignored) {}
+
+        return lookupJSON.toString();
+    }
+
+    /**
+     * Initialize a challenge from a server side lookup call.
+     *
+     * @param fragment the {@link BraintreeFragment} backing the http request.
+     * @param lookupResponse The lookup response from the server side call to lookup the 3D Secure information.
+     */
+    public static void initializeChallengeWithLookupResponse (final BraintreeFragment fragment, final String lookupResponse) {
+        try {
+            performCardinalAuthentication(fragment, ThreeDSecureLookup.fromJson(lookupResponse));
+        } catch (JSONException e){
+           fragment.postCallback(e);
+        }
+    }
+
     protected static void performCardinalAuthentication(final BraintreeFragment fragment, final ThreeDSecureLookup threeDSecureLookup) {
         fragment.sendAnalyticsEvent("three-d-secure.verification-flow.started");
 
@@ -408,7 +445,7 @@ public class ThreeDSecure {
                     cardinalConfigurationParameters.setEnableQuickAuth(false);
                     cardinalConfigurationParameters.setEnableDFSync(true);
 
-                    Cardinal cardinal= Cardinal.getInstance();
+                    Cardinal cardinal = Cardinal.getInstance();
                     cardinal.configure(fragment.getApplicationContext(), cardinalConfigurationParameters);
                     cardinal.init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
                         @Override
