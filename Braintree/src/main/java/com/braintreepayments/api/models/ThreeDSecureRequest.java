@@ -31,6 +31,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private @ThreeDSecureVersion String mVersionRequested = VERSION_1;
     private ThreeDSecureAdditionalInformation mAdditionalInformation;
     private boolean mChallengeRequested = false;
+    private boolean mExemptionRequested = false;
 
     /**
      * Set the nonce
@@ -138,12 +139,21 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * Optional If set to true, the customer will be asked to complete authentication challenge if possible
+     * Optional If set to true, the customer will be asked to complete the authentication challenge if possible
      * @param challengeRequested decides if a challenge will be forced.
      * @return
      */
     public ThreeDSecureRequest challengeRequested(boolean challengeRequested) {
         mChallengeRequested = challengeRequested;
+        return this;
+    }
+    /**
+     * Optional If set to true, an exemption to the authentication challenge will be requested
+     * @param exemptionRequested decides if a exemption will be requested.
+     * @return
+     */
+    public ThreeDSecureRequest exemptionRequested(boolean exemptionRequested) {
+        mExemptionRequested = exemptionRequested;
         return this;
     }
 
@@ -219,6 +229,13 @@ public class ThreeDSecureRequest implements Parcelable {
         return mChallengeRequested;
     }
 
+    /**
+     * @return If a exemption has been requested
+     */
+    public boolean isExemptionRequested() {
+        return mExemptionRequested;
+    }
+
     public ThreeDSecureRequest() {}
 
     @Override
@@ -238,6 +255,7 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeString(mVersionRequested);
         dest.writeParcelable(mAdditionalInformation, flags);
         dest.writeByte(mChallengeRequested ? (byte)1:0);
+        dest.writeByte(mExemptionRequested ? (byte)1:0);
     }
 
     public ThreeDSecureRequest(Parcel in) {
@@ -251,6 +269,7 @@ public class ThreeDSecureRequest implements Parcelable {
         mVersionRequested = in.readString();
         mAdditionalInformation = in.readParcelable(ThreeDSecureAdditionalInformation.class.getClassLoader());
         mChallengeRequested = in.readByte() > 0;
+        mExemptionRequested = in.readByte() > 0;
     }
 
     public static final Creator<ThreeDSecureRequest> CREATOR = new Creator<ThreeDSecureRequest>() {
@@ -304,6 +323,7 @@ public class ThreeDSecureRequest implements Parcelable {
             }
 
             base.put("challenge_requested", mChallengeRequested);
+            base.put("exemption_requested", mExemptionRequested);
         } catch (JSONException ignored) {}
 
         return base.toString();

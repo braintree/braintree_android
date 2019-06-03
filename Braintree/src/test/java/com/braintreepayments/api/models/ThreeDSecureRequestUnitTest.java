@@ -49,7 +49,8 @@ public class ThreeDSecureRequestUnitTest {
                 .versionRequested(VERSION_2)
                 .billingAddress(billingAddress)
                 .additionalInformation(additionalInformation)
-                .challengeRequested(true);
+                .challengeRequested(true)
+                .exemptionRequested(true);
 
         Parcel parcel = Parcel.obtain();
         expected.writeToParcel(parcel, 0);
@@ -75,6 +76,7 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals(expected.getBillingAddress().getPostalCode(), actual.getBillingAddress().getPostalCode());
         assertEquals(expected.getAdditionalInformation().getAccountId(), actual.getAdditionalInformation().getAccountId());
         assertEquals(expected.isChallengeRequested(), actual.isChallengeRequested());
+        assertEquals(expected.isExemptionRequested(), actual.isExemptionRequested());
     }
 
     @Test
@@ -102,7 +104,8 @@ public class ThreeDSecureRequestUnitTest {
                 .bin("bin")
                 .billingAddress(billingAddress)
                 .additionalInformation(additionalInformation)
-                .challengeRequested(true);
+                .challengeRequested(true)
+                .exemptionRequested(true);
 
         JSONObject json = new JSONObject(request.build("df-reference-id"));
         JSONObject additionalInfoJson = json.getJSONObject("additional_info");
@@ -110,6 +113,7 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals("df-reference-id", json.get("df_reference_id"));
         assertEquals("amount", json.get("amount"));
         assertTrue(json.getBoolean("challenge_requested"));
+        assertTrue(json.getBoolean("exemption_requested"));
 
         assertEquals("billing-given-name", additionalInfoJson.get("billing_given_name"));
         assertEquals("billing-surname", additionalInfoJson.get("billing_surname"));
