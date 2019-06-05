@@ -12,6 +12,7 @@ import android.os.Parcelable;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
@@ -135,8 +136,39 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             throw new InvalidArgumentException("Activity is null");
         }
 
-        FragmentManager fm = activity.getSupportFragmentManager();
-        BraintreeFragment braintreeFragment = (BraintreeFragment) fm.findFragmentByTag(TAG);
+        return newInstance(activity, activity.getSupportFragmentManager(), authorization);
+    }
+
+    /**
+     * Create a new instance of {@link BraintreeFragment} using the client token and add it to the
+     * {@link Fragment}'s child {@link FragmentManager}.
+     *
+     * @param fragment The {@link Fragment} to add the {@link BraintreeFragment} to.
+     * @param authorization The tokenization key or client token to use.
+     * @return {@link BraintreeFragment}
+     * @throws InvalidArgumentException If the tokenization key or client token is not valid or cannot be
+     *         parsed.
+     */
+    public static BraintreeFragment newInstance(Fragment fragment, String authorization)
+            throws InvalidArgumentException {
+        if (fragment == null) {
+            throw new InvalidArgumentException("Fragment is null");
+        }
+
+        return newInstance(fragment.getContext(), fragment.getChildFragmentManager(), authorization);
+    }
+
+    private static BraintreeFragment newInstance(Context context, FragmentManager fragmentManager, String authorization)
+            throws InvalidArgumentException {
+        if (context == null) {
+            throw new InvalidArgumentException("Context is null");
+        }
+
+        if (fragmentManager == null) {
+            throw new InvalidArgumentException("FragmentManager is null");
+        }
+
+        BraintreeFragment braintreeFragment = (BraintreeFragment) fragmentManager.findFragmentByTag(TAG);
         if (braintreeFragment == null) {
             braintreeFragment = new BraintreeFragment();
             Bundle bundle = new Bundle();
@@ -149,23 +181,23 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             }
 
             bundle.putString(EXTRA_SESSION_ID, UUIDHelper.getFormattedUUID());
-            bundle.putString(EXTRA_INTEGRATION_TYPE, IntegrationType.get(activity));
+            bundle.putString(EXTRA_INTEGRATION_TYPE, IntegrationType.get(context));
             braintreeFragment.setArguments(bundle);
 
             try {
                 if (VERSION.SDK_INT >= VERSION_CODES.N) {
                     try {
-                        fm.beginTransaction().add(braintreeFragment, TAG).commitNow();
+                        fragmentManager.beginTransaction().add(braintreeFragment, TAG).commitNow();
                     } catch (IllegalStateException | NullPointerException e) {
-                        fm.beginTransaction().add(braintreeFragment, TAG).commit();
+                        fragmentManager.beginTransaction().add(braintreeFragment, TAG).commit();
                         try {
-                            fm.executePendingTransactions();
+                            fragmentManager.executePendingTransactions();
                         } catch (IllegalStateException ignored) {}
                     }
                 } else {
-                    fm.beginTransaction().add(braintreeFragment, TAG).commit();
+                    fragmentManager.beginTransaction().add(braintreeFragment, TAG).commit();
                     try {
-                        fm.executePendingTransactions();
+                        fragmentManager.executePendingTransactions();
                     } catch (IllegalStateException ignored) {}
                 }
             } catch (IllegalStateException e) {
@@ -173,7 +205,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             }
         }
 
-        braintreeFragment.mContext = activity.getApplicationContext();
+        braintreeFragment.mContext = context.getApplicationContext();
 
         return braintreeFragment;
     }
