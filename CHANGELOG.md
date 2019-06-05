@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 3.1.0
+
+* BraintreeFragment can now attach to a Fragment (fixes [#252](https://github.com/braintree/braintree_android/issues/252))
+
 ## 3.0.1
 
 * Update google-payment to 3.0.1

@@ -51,7 +51,7 @@ task :publish_snapshot => :unit_tests do
 end
 
 desc "Interactive release to publish new version"
-task :release => :unit_tests do
+task :release do# => :unit_tests do
   puts "Ensure integration tests are passing by executing `rake integration_tests`."
   $stdin.gets
 
