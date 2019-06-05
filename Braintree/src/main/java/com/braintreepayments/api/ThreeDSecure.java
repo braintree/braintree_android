@@ -290,7 +290,22 @@ public class ThreeDSecure {
      */
     public static void initializeChallengeWithLookupResponse (final BraintreeFragment fragment, final String lookupResponse) {
         try {
-            performCardinalAuthentication(fragment, ThreeDSecureLookup.fromJson(lookupResponse));
+            ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(lookupResponse);
+
+            boolean showChallenge = threeDSecureLookup.getAcsUrl() != null;
+            String threeDSecureVersion = threeDSecureLookup.getThreeDSecureVersion();
+
+            if (!showChallenge) {
+                completeVerificationFlowWithNoncePayload(fragment, threeDSecureLookup.getCardNonce());
+                return;
+            }
+
+            if (!threeDSecureVersion.startsWith("2.")) {
+                launchBrowserSwitch(fragment, threeDSecureLookup);
+                return;
+            }
+
+            performCardinalAuthentication(fragment, threeDSecureLookup);
         } catch (JSONException e){
            fragment.postCallback(e);
         }
