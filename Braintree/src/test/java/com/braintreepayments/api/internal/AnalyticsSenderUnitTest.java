@@ -159,7 +159,8 @@ public class AnalyticsSenderUnitTest {
         JSONObject meta = requestJson.getJSONObject("_meta");
         assertEquals("android.started", analyticsEvent.getString("kind"));
         assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) >= mCurrentTime);
-        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) <= mTwoSecondsLater);        assertEquals("sessionId", meta.getString("sessionId"));
+        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) <= mTwoSecondsLater);
+        assertEquals("sessionId", meta.getString("sessionId"));
 
         requestJson = new JSONObject(values.get(1));
         assertEquals(1, requestJson.getJSONArray("analytics").length());
@@ -167,7 +168,8 @@ public class AnalyticsSenderUnitTest {
         meta = requestJson.getJSONObject("_meta");
         assertEquals("android.finished", analyticsEvent.getString("kind"));
         assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) >= mCurrentTime);
-        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) <= mTwoSecondsLater);        assertEquals("sessionIdTwo", meta.getString("sessionId"));
+        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) <= mTwoSecondsLater);
+        assertEquals("sessionIdTwo", meta.getString("sessionId"));
     }
 
     @Test
