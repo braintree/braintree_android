@@ -46,13 +46,15 @@ public class AnalyticsSenderUnitTest {
 
     private Authorization mAuthorization;
     private BraintreeHttpClient mHttpClient;
-    private long mOneMinuteAgo;
+    private long mCurrentTime;
+    private long mTwoSecondsLater;
 
     @Before
     public void setup() throws InvalidArgumentException {
         mAuthorization = Authorization.fromString(TOKENIZATION_KEY);
         mHttpClient = mock(BraintreeHttpClient.class);
-        mOneMinuteAgo = System.currentTimeMillis() - 60000;
+        mCurrentTime = System.currentTimeMillis();
+        mTwoSecondsLater = mCurrentTime + 2000;
     }
 
     @After
@@ -124,11 +126,13 @@ public class AnalyticsSenderUnitTest {
         assertEquals(2, array.length());
         JSONObject eventOne = array.getJSONObject(0);
         assertEquals("android.started", eventOne.getString("kind"));
-        assertTrue(Long.parseLong(eventOne.getString("timestamp")) >= mOneMinuteAgo);
+        assertTrue(Long.parseLong(eventOne.getString("timestamp")) >= mCurrentTime);
+        assertTrue(Long.parseLong(eventOne.getString("timestamp")) <= mTwoSecondsLater);
 
         JSONObject eventTwo = array.getJSONObject(1);
         assertEquals("android.finished", eventTwo.getString("kind"));
-        assertTrue(Long.parseLong(eventTwo.getString("timestamp")) >= mOneMinuteAgo);
+        assertTrue(Long.parseLong(eventTwo.getString("timestamp")) >= mCurrentTime);
+        assertTrue(Long.parseLong(eventTwo.getString("timestamp")) <= mTwoSecondsLater);
     }
 
     @Test
@@ -154,16 +158,16 @@ public class AnalyticsSenderUnitTest {
         JSONObject analyticsEvent = requestJson.getJSONArray("analytics").getJSONObject(0);
         JSONObject meta = requestJson.getJSONObject("_meta");
         assertEquals("android.started", analyticsEvent.getString("kind"));
-        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) >= mOneMinuteAgo);
-        assertEquals("sessionId", meta.getString("sessionId"));
+        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) >= mCurrentTime);
+        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) <= mTwoSecondsLater);        assertEquals("sessionId", meta.getString("sessionId"));
 
         requestJson = new JSONObject(values.get(1));
         assertEquals(1, requestJson.getJSONArray("analytics").length());
         analyticsEvent = requestJson.getJSONArray("analytics").getJSONObject(0);
         meta = requestJson.getJSONObject("_meta");
         assertEquals("android.finished", analyticsEvent.getString("kind"));
-        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) >= mOneMinuteAgo);
-        assertEquals("sessionIdTwo", meta.getString("sessionId"));
+        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) >= mCurrentTime);
+        assertTrue(Long.parseLong(analyticsEvent.getString("timestamp")) <= mTwoSecondsLater);        assertEquals("sessionIdTwo", meta.getString("sessionId"));
     }
 
     @Test
