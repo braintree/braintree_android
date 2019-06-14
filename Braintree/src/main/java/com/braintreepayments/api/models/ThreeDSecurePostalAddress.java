@@ -15,6 +15,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     protected static final String LAST_NAME_KEY = "lastName";
     protected static final String STREET_ADDRESS_KEY = "line1";
     protected static final String EXTENDED_ADDRESS_KEY = "line2";
+    protected static final String LINE_3_KEY = "line3";
     protected static final String LOCALITY_KEY = "city";
     protected static final String REGION_KEY = "state";
     protected static final String POSTAL_CODE_KEY = "postalCode";
@@ -26,6 +27,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     private String mSurname;
     private String mStreetAddress;
     private String mExtendedAddress;
+    private String mLine3;
     private String mLocality;
     private String mRegion;
     private String mPostalCode;
@@ -89,6 +91,16 @@ public class ThreeDSecurePostalAddress implements Parcelable {
      * */
     public ThreeDSecurePostalAddress extendedAddress(String extendedAddress) {
         mExtendedAddress = extendedAddress;
+        return this;
+    }
+
+    /**
+     * Optional. Set line 3 of the address
+     *
+     * @param line3 Line 3 of the Address (eg. suite, apt #, etc.).
+     * */
+    public ThreeDSecurePostalAddress line3(String line3) {
+        mLine3 = line3;
         return this;
     }
 
@@ -188,6 +200,13 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     }
 
     /**
+     * @return Line 3 of the Address (eg. suite, apt #, etc.).
+     */
+    public String getLine3() {
+        return mLine3;
+    }
+
+    /**
      * @return City name.
      */
     public String getLocality() {
@@ -227,6 +246,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
         mSurname = in.readString();
         mStreetAddress = in.readString();
         mExtendedAddress = in.readString();
+        mLine3 = in.readString();
         mLocality = in.readString();
         mRegion = in.readString();
         mPostalCode = in.readString();
@@ -240,6 +260,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
         dest.writeString(mSurname);
         dest.writeString(mStreetAddress);
         dest.writeString(mExtendedAddress);
+        dest.writeString(mLine3);
         dest.writeString(mLocality);
         dest.writeString(mRegion);
         dest.writeString(mPostalCode);
@@ -278,6 +299,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
 
             billingAddress.putOpt(ThreeDSecurePostalAddress.STREET_ADDRESS_KEY, mStreetAddress);
             billingAddress.putOpt(ThreeDSecurePostalAddress.EXTENDED_ADDRESS_KEY, mExtendedAddress);
+            billingAddress.putOpt(ThreeDSecurePostalAddress.LINE_3_KEY, mLine3);
             billingAddress.putOpt(ThreeDSecurePostalAddress.LOCALITY_KEY, mLocality);
             billingAddress.putOpt(ThreeDSecurePostalAddress.REGION_KEY, mRegion);
             billingAddress.putOpt(ThreeDSecurePostalAddress.POSTAL_CODE_KEY, mPostalCode);

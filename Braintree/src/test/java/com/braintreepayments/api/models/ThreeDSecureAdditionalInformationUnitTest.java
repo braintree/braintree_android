@@ -114,6 +114,7 @@ public class ThreeDSecureAdditionalInformationUnitTest {
                 .phoneNumber("shipping-phone")
                 .streetAddress("shipping-line1")
                 .extendedAddress("shipping-line2")
+                .line3("shipping-line3")
                 .locality("shipping-city")
                 .region("shipping-state")
                 .postalCode("shipping-postal-code")
@@ -166,7 +167,7 @@ public class ThreeDSecureAdditionalInformationUnitTest {
         assertEquals("shipping-phone", jsonParams.getString("shipping_phone"));
         assertEquals("shipping-line1", jsonParams.getString("shipping_line1"));
         assertEquals("shipping-line2", jsonParams.getString("shipping_line2"));
-        assertFalse(jsonParams.has("shipping_line3"));
+        assertEquals("shipping-line3", jsonParams.getString("shipping_line3"));
         assertEquals("shipping-city", jsonParams.getString("shipping_city"));
         assertEquals("shipping-state", jsonParams.getString("shipping_state"));
         assertEquals("shipping-postal-code", jsonParams.getString("shipping_postal_code"));

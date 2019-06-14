@@ -62,6 +62,7 @@ public class ThreeDSecurePostalAddressUnitTest {
         ThreeDSecurePostalAddress preSerialized = new ThreeDSecurePostalAddress()
                 .streetAddress("123 Fake St.")
                 .extendedAddress("Apt. 3")
+                .line3("Suite A")
                 .locality("Oakland")
                 .region("CA")
                 .postalCode("94602")
@@ -79,6 +80,7 @@ public class ThreeDSecurePostalAddressUnitTest {
         assertNotNull(postSerialized);
         assertEquals("123 Fake St.", postSerialized.getStreetAddress());
         assertEquals("Apt. 3", postSerialized.getExtendedAddress());
+        assertEquals("Suite A", postSerialized.getLine3());
         assertEquals("Oakland", postSerialized.getLocality());
         assertEquals("CA", postSerialized.getRegion());
         assertEquals("94602", postSerialized.getPostalCode());
@@ -93,6 +95,7 @@ public class ThreeDSecurePostalAddressUnitTest {
         ThreeDSecurePostalAddress address = new ThreeDSecurePostalAddress()
                 .streetAddress("123 Fake St.")
                 .extendedAddress("Apt. 3")
+                .line3("Suite C")
                 .locality("Oakland")
                 .region("CA")
                 .postalCode("94602")
@@ -109,6 +112,7 @@ public class ThreeDSecurePostalAddressUnitTest {
         assertEquals("5151231234", jsonParams.get("phoneNumber"));
         assertEquals("123 Fake St.", jsonBillingAddress.get("line1"));
         assertEquals("Apt. 3", jsonBillingAddress.get("line2"));
+        assertEquals("Suite C", jsonBillingAddress.get("line3"));
         assertEquals("Oakland", jsonBillingAddress.get("city"));
         assertEquals("CA", jsonBillingAddress.get("state"));
         assertEquals("94602", jsonBillingAddress.get("postalCode"));

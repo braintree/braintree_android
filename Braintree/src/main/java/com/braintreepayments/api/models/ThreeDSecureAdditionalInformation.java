@@ -820,8 +820,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
 
                 additionalInformation.putOpt("shipping_line1", mShippingAddress.getStreetAddress());
                 additionalInformation.putOpt("shipping_line2", mShippingAddress.getExtendedAddress());
-                // TODO we dont have line3
-                additionalInformation.putOpt("shipping_line3", null);
+                additionalInformation.putOpt("shipping_line3", mShippingAddress.getLine3());
                 additionalInformation.putOpt("shipping_city", mShippingAddress.getLocality());
                 additionalInformation.putOpt("shipping_state", mShippingAddress.getRegion());
                 additionalInformation.putOpt("shipping_postal_code", mShippingAddress.getPostalCode());

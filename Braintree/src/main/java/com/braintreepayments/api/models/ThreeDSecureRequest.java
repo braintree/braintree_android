@@ -309,8 +309,7 @@ public class ThreeDSecureRequest implements Parcelable {
                 additionalInfo.putOpt("billing_surname", billing.getSurname());
                 additionalInfo.putOpt("billing_line1", billing.getStreetAddress());
                 additionalInfo.putOpt("billing_line2", billing.getExtendedAddress());
-                // TODO we dont have line3
-                additionalInfo.putOpt("billing_line3", null);
+                additionalInfo.putOpt("billing_line3", billing.getLine3());
                 additionalInfo.putOpt("billing_city", billing.getLocality());
                 additionalInfo.putOpt("billing_state", billing.getRegion());
                 additionalInfo.putOpt("billing_postal_code", billing.getPostalCode());

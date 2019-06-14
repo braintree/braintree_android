@@ -34,6 +34,7 @@ public class ThreeDSecureRequestUnitTest {
                 .phoneNumber("12345678")
                 .streetAddress("555 Smith St.")
                 .extendedAddress("#5")
+                .line3("Suite C")
                 .locality("Oakland")
                 .region("CA")
                 .countryCodeAlpha2("US")
@@ -70,6 +71,7 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals(expected.getBillingAddress().getPhoneNumber(), actual.getBillingAddress().getPhoneNumber());
         assertEquals(expected.getBillingAddress().getStreetAddress(), actual.getBillingAddress().getStreetAddress());
         assertEquals(expected.getBillingAddress().getExtendedAddress(), actual.getBillingAddress().getExtendedAddress());
+        assertEquals(expected.getBillingAddress().getLine3(), actual.getBillingAddress().getLine3());
         assertEquals(expected.getBillingAddress().getLocality(), actual.getBillingAddress().getLocality());
         assertEquals(expected.getBillingAddress().getRegion(), actual.getBillingAddress().getRegion());
         assertEquals(expected.getBillingAddress().getCountryCodeAlpha2(), actual.getBillingAddress().getCountryCodeAlpha2());
@@ -89,6 +91,7 @@ public class ThreeDSecureRequestUnitTest {
                 .surname("billing-surname")
                 .streetAddress("billing-line1")
                 .extendedAddress("billing-line2")
+                .line3("billing-line3")
                 .locality("billing-city")
                 .region("billing-state")
                 .postalCode("billing-postal-code")
@@ -119,7 +122,7 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals("billing-surname", additionalInfoJson.get("billing_surname"));
         assertEquals("billing-line1", additionalInfoJson.get("billing_line1"));
         assertEquals("billing-line2", additionalInfoJson.get("billing_line2"));
-        assertFalse(additionalInfoJson.has("billing_line3"));
+        assertEquals("billing-line3", additionalInfoJson.get("billing_line3"));
         assertEquals("billing-city", additionalInfoJson.get("billing_city"));
         assertEquals("billing-state", additionalInfoJson.get("billing_state"));
         assertEquals("billing-postal-code", additionalInfoJson.get("billing_postal_code"));
