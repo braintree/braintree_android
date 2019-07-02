@@ -49,6 +49,8 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
     private String mPurchaseDate;
     private String mRecurringEnd;
     private String mRecurringFrequency;
+    private String mSdkMaxTimeout;
+    private String mWorkPhoneNumber;
 
     public ThreeDSecureAdditionalInformation() {}
 
@@ -442,6 +444,22 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
     }
 
     /**
+     * Optional. The 2-digit number of minutes (minimum 05) to set the maximum amount of time for all 3DS 2.0 messages to be communicated between all components.
+     */
+    public ThreeDSecureAdditionalInformation sdkMaxTimeout(String sdkMaxTimeout) {
+        mSdkMaxTimeout = sdkMaxTimeout;
+        return this;
+    }
+
+    /**
+     * Optional. The work phone number used for verification. Only numbers; remove dashes, parenthesis and other characters.
+     */
+    public ThreeDSecureAdditionalInformation workPhoneNumber(String workPhoneNumber) {
+        mWorkPhoneNumber = workPhoneNumber;
+        return this;
+    }
+
+    /**
      * @return shipping address
      */
     public ThreeDSecurePostalAddress getShippingAddress() {
@@ -707,6 +725,20 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
         return mRecurringFrequency;
     }
 
+    /**
+     * @return SDK max timeout
+     */
+    public String getSdkMaxTimeout() {
+        return mSdkMaxTimeout;
+    }
+
+    /**
+     * @return Work phone number
+     */
+    public String getWorkPhoneNumber() {
+        return mWorkPhoneNumber;
+    }
+
     public ThreeDSecureAdditionalInformation(Parcel in) {
         mShippingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
         mShippingMethodIndicator = in.readString();
@@ -746,6 +778,8 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
         mPurchaseDate = in.readString();
         mRecurringEnd = in.readString();
         mRecurringFrequency = in.readString();
+        mSdkMaxTimeout = in.readString();
+        mWorkPhoneNumber = in.readString();
     }
 
     @Override
@@ -788,6 +822,8 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
         dest.writeString(mPurchaseDate);
         dest.writeString(mRecurringEnd);
         dest.writeString(mRecurringFrequency);
+        dest.writeString(mSdkMaxTimeout);
+        dest.writeString(mWorkPhoneNumber);
     }
 
     @Override
@@ -864,6 +900,8 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
             additionalInformation.putOpt("purchase_date", mPurchaseDate);
             additionalInformation.putOpt("recurring_end", mRecurringEnd);
             additionalInformation.putOpt("recurring_frequency", mRecurringFrequency);
+            additionalInformation.putOpt("sdk_max_timeout", mSdkMaxTimeout);
+            additionalInformation.putOpt("work_phone_number", mWorkPhoneNumber);
         } catch (JSONException ignored) {}
 
         return additionalInformation;

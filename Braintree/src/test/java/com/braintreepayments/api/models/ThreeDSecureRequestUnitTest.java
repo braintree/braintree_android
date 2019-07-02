@@ -46,7 +46,6 @@ public class ThreeDSecureRequestUnitTest {
                 .mobilePhoneNumber("5151234321")
                 .email("tester@example.com")
                 .shippingMethod("03")
-                .bin("12345")
                 .versionRequested(VERSION_2)
                 .billingAddress(billingAddress)
                 .additionalInformation(additionalInformation)
@@ -63,7 +62,6 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals(expected.getNonce(), actual.getNonce());
         assertEquals(expected.getMobilePhoneNumber(), actual.getMobilePhoneNumber());
         assertEquals(expected.getEmail(), actual.getEmail());
-        assertEquals(expected.getBin(), actual.getBin());
         assertEquals(expected.getShippingMethod(), actual.getShippingMethod());
         assertEquals(expected.getVersionRequested(), actual.getVersionRequested());
         assertEquals(expected.getBillingAddress().getGivenName(), actual.getBillingAddress().getGivenName());
@@ -104,7 +102,6 @@ public class ThreeDSecureRequestUnitTest {
                 .mobilePhoneNumber("mobile-phone-number")
                 .email("email")
                 .shippingMethod("shipping-method")
-                .bin("bin")
                 .billingAddress(billingAddress)
                 .additionalInformation(additionalInformation)
                 .challengeRequested(true)

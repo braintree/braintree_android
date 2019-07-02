@@ -58,7 +58,9 @@ public class ThreeDSecureAdditionalInformationUnitTest {
                 .installment("installment")
                 .purchaseDate("purchase_date")
                 .recurringEnd("recurring_end")
-                .recurringFrequency("recurring_frequency");
+                .recurringFrequency("recurring_frequency")
+                .sdkMaxTimeout("06")
+                .workPhoneNumber("5551115555");
 
         Parcel parcel = Parcel.obtain();
         preSerialized.writeToParcel(parcel, 0);
@@ -104,6 +106,8 @@ public class ThreeDSecureAdditionalInformationUnitTest {
         assertEquals("purchase_date", postSerialized.getPurchaseDate());
         assertEquals("recurring_end", postSerialized.getRecurringEnd());
         assertEquals("recurring_frequency", postSerialized.getRecurringFrequency());
+        assertEquals("06", postSerialized.getSdkMaxTimeout());
+        assertEquals("5551115555", postSerialized.getWorkPhoneNumber());
     }
 
     @Test
@@ -158,7 +162,9 @@ public class ThreeDSecureAdditionalInformationUnitTest {
                 .installment("installment")
                 .purchaseDate("purchase_date")
                 .recurringEnd("recurring_end")
-                .recurringFrequency("recurring_frequency");
+                .recurringFrequency("recurring_frequency")
+                .sdkMaxTimeout("06")
+                .workPhoneNumber("5551115555");
 
         JSONObject jsonParams = additionalInformation.toJson();
 
@@ -209,6 +215,8 @@ public class ThreeDSecureAdditionalInformationUnitTest {
         assertEquals("purchase_date", jsonParams.getString("purchase_date"));
         assertEquals("recurring_end", jsonParams.getString("recurring_end"));
         assertEquals("recurring_frequency", jsonParams.getString("recurring_frequency"));
+        assertEquals("06", jsonParams.getString("sdk_max_timeout"));
+        assertEquals("5551115555", jsonParams.getString("work_phone_number"));
     }
 
     @Test
@@ -260,5 +268,7 @@ public class ThreeDSecureAdditionalInformationUnitTest {
         assertTrue(jsonParams.isNull("purchase_date"));
         assertTrue(jsonParams.isNull("recurring_end"));
         assertTrue(jsonParams.isNull("recurring_frequency"));
+        assertTrue(jsonParams.isNull("sdk_max_timeout"));
+        assertTrue(jsonParams.isNull("work_phone_number"));
     }
 }

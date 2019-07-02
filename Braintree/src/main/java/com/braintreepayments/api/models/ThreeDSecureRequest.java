@@ -27,7 +27,6 @@ public class ThreeDSecureRequest implements Parcelable {
     private String mEmail;
     private String mShippingMethod;
     private ThreeDSecurePostalAddress mBillingAddress;
-    private String mBin;
     private @ThreeDSecureVersion String mVersionRequested = VERSION_1;
     private ThreeDSecureAdditionalInformation mAdditionalInformation;
     private boolean mChallengeRequested = false;
@@ -97,16 +96,6 @@ public class ThreeDSecureRequest implements Parcelable {
      * */
     public ThreeDSecureRequest billingAddress(ThreeDSecurePostalAddress billingAddress) {
         mBillingAddress = billingAddress;
-        return this;
-    }
-
-    /**
-     * Optional. Set the BIN
-     *
-     * @param bin The BIN (Bank Identification Number) of the tokenized card.
-     * */
-    public ThreeDSecureRequest bin(String bin) {
-        mBin = bin;
         return this;
     }
 
@@ -200,13 +189,6 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * @return The BIN of the tokenized card
-     */
-    public String getBin() {
-        return mBin;
-    }
-
-    /**
      * @return The requested ThreeDSecure version
      */
     public @ThreeDSecureVersion String getVersionRequested() {
@@ -251,7 +233,6 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeString(mEmail);
         dest.writeString(mShippingMethod);
         dest.writeParcelable(mBillingAddress, flags);
-        dest.writeString(mBin);
         dest.writeString(mVersionRequested);
         dest.writeParcelable(mAdditionalInformation, flags);
         dest.writeByte(mChallengeRequested ? (byte)1:0);
@@ -265,7 +246,6 @@ public class ThreeDSecureRequest implements Parcelable {
         mEmail = in.readString();
         mShippingMethod = in.readString();
         mBillingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
-        mBin = in.readString();
         mVersionRequested = in.readString();
         mAdditionalInformation = in.readParcelable(ThreeDSecureAdditionalInformation.class.getClassLoader());
         mChallengeRequested = in.readByte() > 0;

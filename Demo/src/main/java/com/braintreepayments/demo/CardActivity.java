@@ -357,7 +357,6 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
                 .email("test@email.com")
                 .billingAddress(billingAddress)
                 .nonce(cardNonce.getNonce())
-                .bin(cardNonce.getBin())
                 .versionRequested(ThreeDSecureRequest.VERSION_2)
                 .additionalInformation(additionalInformation);
 
