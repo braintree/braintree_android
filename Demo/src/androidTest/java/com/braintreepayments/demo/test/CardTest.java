@@ -9,6 +9,7 @@ import com.braintreepayments.demo.test.utilities.TestHelper;
 import com.braintreepayments.testutils.CardNumber;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -54,6 +55,11 @@ public class CardTest extends TestHelper {
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
+    @Ignore("There is an issue with our merchant account not tokenizing UnionPay. " +
+            "Our merchant account can process capabilities and enrollment but " +
+            "when tokenizing we get a 422 that the merchant account is not setup for credit card " +
+            "processing. " +
+            "Disabling UnionPay tests that involve tokenizing until the issue has been resolved.")
     @Test(timeout = 60000)
     public void tokenizesUnionPay() {
         onDevice(withText("Card Number")).perform(setText(CardNumber.UNIONPAY_CREDIT));
@@ -76,6 +82,11 @@ public class CardTest extends TestHelper {
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
+    @Ignore("There is an issue with our merchant account not tokenizing UnionPay. " +
+            "Our merchant account can process capabilities and enrollment but " +
+            "when tokenizing we get a 422 that the merchant account is not setup for credit card " +
+            "processing. " +
+            "Disabling UnionPay tests that involve tokenizing until the issue has been resolved.")
     @Test(timeout = 60000)
     public void tokenizesUnionPay_whenEnrollmentIsNotRequired() {
         onDevice(withText("Card Number")).perform(setText(CardNumber.UNIONPAY_SMS_NOT_REQUIRED));

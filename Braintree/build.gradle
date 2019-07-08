@@ -48,17 +48,17 @@ android {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.1'
-    compileOnly('com.google.android.gms:play-services-wallet:16.0.1') {
+    compileOnly(braintreeDependency.playServicesWallet) {
         exclude module: 'support-v4'
     }
     compileOnly project(':BraintreeDataCollector')
     compileOnly project(':ThreeDSecure')
 
-    api 'com.braintreepayments.api:google-payment:3.0.0'
+    api braintreeDependency.googlePayment
     api project(':Core')
     api project(':PayPalOneTouch')
 
-    androidTestImplementation 'com.google.android.gms:play-services-wallet:16.0.1'
+    androidTestImplementation braintreeDependency.playServicesWallet
     androidTestImplementation project(':BraintreeDataCollector')
     androidTestImplementation project(':ThreeDSecure')
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
@@ -66,7 +66,7 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation project(':TestUtils')
 
-    testImplementation 'com.google.android.gms:play-services-wallet:16.0.1'
+    testImplementation braintreeDependency.playServicesWallet
     testImplementation project(':BraintreeDataCollector')
     testImplementation project(':ThreeDSecure')
     testImplementation 'org.robolectric:robolectric:3.8'

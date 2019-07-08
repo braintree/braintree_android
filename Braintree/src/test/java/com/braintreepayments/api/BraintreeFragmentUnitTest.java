@@ -60,6 +60,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.verifyAnalyticsEvent;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
@@ -143,7 +144,12 @@ public class BraintreeFragmentUnitTest {
 
     @Test(expected = InvalidArgumentException.class)
     public void newInstance_throwsAnExceptionWhenActivityIsNull() throws InvalidArgumentException {
-        BraintreeFragment.newInstance(null, TOKENIZATION_KEY);
+        BraintreeFragment.newInstance((AppCompatActivity) null, TOKENIZATION_KEY);
+    }
+
+    @Test(expected = InvalidArgumentException.class)
+    public void newInstance_throwsAnExceptionWhenFragmentIsNull() throws InvalidArgumentException {
+        BraintreeFragment.newInstance((Fragment) null, TOKENIZATION_KEY);
     }
 
     @Test(expected = InvalidArgumentException.class)

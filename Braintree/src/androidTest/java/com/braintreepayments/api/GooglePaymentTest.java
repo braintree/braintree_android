@@ -164,7 +164,7 @@ public class GooglePaymentTest {
         assertEquals(1, purchaseUnits.length());
 
         JSONObject purchaseUnit = purchaseUnits.getJSONObject(0);
-        assertEquals("paypal-client-id", purchaseUnit.getJSONObject("payee")
+        assertEquals("paypal-client-id-for-google-payment", purchaseUnit.getJSONObject("payee")
                 .getString("client_id"));
         assertEquals("true", purchaseUnit.getString("recurring_payment"));
 
@@ -178,7 +178,7 @@ public class GooglePaymentTest {
         assertEquals("android-pay-merchant-id", paypalTokenizationSpecificationParams.getString("braintree:merchantId"));
         assertEquals("{\"source\":\"client\",\"version\":\"" + BuildConfig.VERSION_NAME+ "\",\"platform\":\"android\"}", paypalTokenizationSpecificationParams.getString("braintree:metadata"));
         assertFalse(paypalTokenizationSpecificationParams.has("braintree:clientKey"));
-        assertEquals("paypal-client-id", paypalTokenizationSpecificationParams.getString("braintree:paypalClientId"));
+        assertEquals("paypal-client-id-for-google-payment", paypalTokenizationSpecificationParams.getString("braintree:paypalClientId"));
 
         JSONObject card = allowedPaymentMethods.getJSONObject(1);
         assertEquals("CARD", card.getString("type"));
@@ -402,8 +402,12 @@ public class GooglePaymentTest {
         String configuration = mBaseConfiguration.googlePayment(mBaseConfiguration.googlePayment()
                 .environment("sandbox")
                 .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"}))
+                .googlePayment(new TestGooglePaymentConfigurationBuilder()
+                        .environment("sandbox")
+                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
+                        .paypalClientId("paypal-client-id-for-google-payment"))
                 .paypal(new TestConfigurationBuilder.TestPayPalConfigurationBuilder(true)
-                        .clientId("paypal-client-id"))
+                        .clientId("paypal-client-id-for-paypal"))
                 .withAnalytics()
                 .build();
 

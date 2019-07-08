@@ -44,19 +44,20 @@ public class LocalPaymentsActivity extends BaseActivity implements PaymentMethod
 
     public void launchIdeal(View v) {
         PostalAddress address = new PostalAddress()
-                .streetAddress("836486 of 22321 Park Lake")
+                .streetAddress("Stadhouderskade 78")
                 .countryCodeAlpha2("NL")
-                .locality("Den Haag")
-                .postalCode("2585 GJ");
+                .locality("Amsterdam")
+                .postalCode("1072 AE");
         LocalPaymentRequest request = new LocalPaymentRequest()
                 .paymentType("ideal")
                 .amount("1.10")
                 .address(address)
-                .phone("639847934")
-                .email("lingo-buyer@paypal.com")
-                .givenName("Linh")
-                .surname("Ngo")
+                .phone("207215300")
+                .email("android-test-buyer@paypal.com")
+                .givenName("Test")
+                .surname("Buyer")
                 .shippingAddressRequired(true)
+                .merchantAccountId("altpay_eur")
                 .currencyCode("EUR");
         LocalPayment.startPayment(mBraintreeFragment, request, new BraintreeResponseListener<LocalPaymentRequest>() {
             @Override

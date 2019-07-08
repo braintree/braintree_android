@@ -78,6 +78,26 @@
                 android:textSize="12sp"
                 android:layout_weight="1" />
         </TableRow>
+        <TableRow android:layout_width="match_parent" android:layout_height="match_parent">
+            <Button
+                style="?android:attr/buttonStyle"
+                android:id="@+id/local_payments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/local_payments_button"
+                android:onClick="launchLocalPayments"
+                android:enabled="false"
+                android:textSize="12sp"
+                android:layout_weight="1" />
+             <!-- This is a hidden button to maintain the layout -->
+             <Button
+                style="?android:attr/buttonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:visibility="invisible"
+                android:layout_weight="1" />
+        </TableRow>
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent">
