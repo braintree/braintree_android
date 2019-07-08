@@ -13,13 +13,11 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
 
     private static final String PAYMENT_METHOD_KEY = "paymentMethod";
     private static final String SUCCESS_KEY = "success";
-    private static final String THREE_D_SECURE_INFO_KEY = "threeDSecureInfo";
 
     private CardNonce mCardNonce;
     private boolean mSuccess;
     private String mErrors;
     private String mException;
-    private ThreeDSecureInfo mThreeDSecureInfo;
 
     /**
      * Used to parse a response from the Braintree Gateway to be used for 3D Secure.
@@ -53,9 +51,6 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
             if (!authenticationResponse.mSuccess) {
                 authenticationResponse.mErrors = jsonString;
             }
-
-            authenticationResponse.mThreeDSecureInfo = ThreeDSecureInfo.fromJson(
-                    json.optJSONObject(THREE_D_SECURE_INFO_KEY));
         } catch (JSONException e) {
             authenticationResponse.mSuccess = false;
         }
@@ -106,14 +101,6 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
         return mException;
     }
 
-    /**
-     * @return The 3D Secure info for the current {@link CardNonce} or
-     * {@code null}
-     */
-    public ThreeDSecureInfo getThreeDSecureInfo() {
-        return mThreeDSecureInfo;
-    }
-
     public ThreeDSecureAuthenticationResponse() {}
 
     @Override
@@ -127,7 +114,6 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
         dest.writeParcelable(mCardNonce, flags);
         dest.writeString(mErrors);
         dest.writeString(mException);
-        dest.writeParcelable(mThreeDSecureInfo, flags);
     }
 
     private ThreeDSecureAuthenticationResponse(Parcel in) {
@@ -135,7 +121,6 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
         mCardNonce = in.readParcelable(CardNonce.class.getClassLoader());
         mErrors = in.readString();
         mException = in.readString();
-        mThreeDSecureInfo = in.readParcelable(ThreeDSecureInfo.class.getClassLoader());
     }
 
     public static final Creator<ThreeDSecureAuthenticationResponse> CREATOR =

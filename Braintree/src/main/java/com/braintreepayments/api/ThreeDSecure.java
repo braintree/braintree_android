@@ -341,7 +341,7 @@ public class ThreeDSecure {
             @Override
             public void success(String responseBody) {
                 ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse.fromJson(responseBody);
-                ThreeDSecureInfo authenticationResponseThreeDSecureInfo = authenticationResponse.getThreeDSecureInfo();
+                ThreeDSecureInfo authenticationResponseThreeDSecureInfo = authenticationResponse.getCardNonce().getThreeDSecureInfo();
 
                 if (authenticationResponse.isSuccess()) {
                     fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
