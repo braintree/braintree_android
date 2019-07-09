@@ -341,21 +341,15 @@ public class ThreeDSecure {
             @Override
             public void success(String responseBody) {
                 ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse.fromJson(responseBody);
-                ThreeDSecureInfo authenticationResponseThreeDSecureInfo = authenticationResponse.getCardNonce().getThreeDSecureInfo();
 
                 if (authenticationResponse.isSuccess()) {
                     fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
 
                     completeVerificationFlowWithNoncePayload(fragment, authenticationResponse.getCardNonce());
-                } else if (authenticationResponseThreeDSecureInfo != null && authenticationResponseThreeDSecureInfo.isLiabilityShiftPossible()) {
-                    fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.liability-shift-possible");
+                } else {
+                    fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
 
                     completeVerificationFlowWithNoncePayload(fragment, cardNonce);
-                } else {
-                    fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
-
-                    // TODO: This isn't a GraphQL request, but the response uses GraphQL style errors. How do we want to parse them?
-                    fragment.postCallback(ErrorWithResponse.fromGraphQLJson(authenticationResponse.getErrors()));
                 }
             }
 

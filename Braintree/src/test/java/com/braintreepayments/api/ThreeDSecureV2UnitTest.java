@@ -300,7 +300,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecure.authenticateCardinalJWT(mFragment, threeDSecureLookup, "jwt");
 
         verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.started"));
-        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.errored"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce"));
     }
 
     @Test
@@ -330,6 +330,6 @@ public class ThreeDSecureV2UnitTest {
 
         ThreeDSecure.authenticateCardinalJWT(fragment, threeDSecureLookup, "jwt");
 
-        verify(fragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.liability-shift-possible"));
+        verify(fragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce"));
     }
 }
