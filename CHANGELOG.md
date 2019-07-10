@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 3.2.0
+* Add 3DS 2 Support
+* Update 3DS redirect to newest version
+
 ## 3.1.0
 
 * BraintreeFragment can now attach to a Fragment (fixes [#252](https://github.com/braintree/braintree_android/issues/252))
