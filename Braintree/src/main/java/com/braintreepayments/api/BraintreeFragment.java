@@ -250,6 +250,8 @@ public class BraintreeFragment extends BrowserSwitchFragment {
         }
 
         fetchConfiguration();
+
+        ThreeDSecure.configureCardinal(this);
     }
 
     @TargetApi(VERSION_CODES.M)

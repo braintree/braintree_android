@@ -6,17 +6,20 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.StringDef;
+
 /**
  * A class to contain 3D Secure request information used for authentication
  */
 public class ThreeDSecureRequest implements Parcelable {
-
-    protected static final String AMOUNT_KEY = "amount";
-    protected static final String CUSTOMER_KEY = "customer";
-    protected static final String BILLING_ADDRESS_KEY = "billingAddress";
-    protected static final String MOBILE_PHONE_NUMBER_KEY = "mobilePhoneNumber";
-    protected static final String EMAIL_KEY = "email";
-    protected static final String SHIPPING_METHOD_KEY = "shippingMethod";
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({VERSION_1, VERSION_2})
+    @interface ThreeDSecureVersion {}
+    public static final String VERSION_1 = "1";
+    public static final String VERSION_2 = "2";
 
     private String mNonce;
     private String mAmount;
@@ -24,6 +27,10 @@ public class ThreeDSecureRequest implements Parcelable {
     private String mEmail;
     private String mShippingMethod;
     private ThreeDSecurePostalAddress mBillingAddress;
+    private @ThreeDSecureVersion String mVersionRequested = VERSION_1;
+    private ThreeDSecureAdditionalInformation mAdditionalInformation;
+    private boolean mChallengeRequested = false;
+    private boolean mExemptionRequested = false;
 
     /**
      * Set the nonce
@@ -93,6 +100,53 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
+     * Optional. Set the desired ThreeDSecure version.
+     * Possible Values defined at {@link ThreeDSecureVersion}.
+     * <ul>
+     * <li>{@link #VERSION_2} if ThreeDSecure V2 flows are desired, when possible.</li>
+     * <li>{@link #VERSION_1} if only ThreeDSecure V1 flows are desired. Default value.</li>
+     * </ul>
+     *
+     * Will default to {@link #VERSION_1}.
+     *
+     * @param versionRequested {@link ThreeDSecureVersion} The desired ThreeDSecure version.
+     * */
+    public ThreeDSecureRequest versionRequested(
+            @ThreeDSecureVersion String versionRequested) {
+        mVersionRequested = versionRequested;
+        return this;
+    }
+
+    /**
+     * Optional. The additional information used for verification
+     *
+     * @param additionalInformation Additional information.
+     * */
+    public ThreeDSecureRequest additionalInformation(ThreeDSecureAdditionalInformation additionalInformation) {
+        mAdditionalInformation = additionalInformation;
+        return this;
+    }
+
+    /**
+     * Optional If set to true, the customer will be asked to complete the authentication challenge if possible
+     * @param challengeRequested decides if a challenge will be forced.
+     * @return
+     */
+    public ThreeDSecureRequest challengeRequested(boolean challengeRequested) {
+        mChallengeRequested = challengeRequested;
+        return this;
+    }
+    /**
+     * Optional If set to true, an exemption to the authentication challenge will be requested
+     * @param exemptionRequested decides if a exemption will be requested.
+     * @return
+     */
+    public ThreeDSecureRequest exemptionRequested(boolean exemptionRequested) {
+        mExemptionRequested = exemptionRequested;
+        return this;
+    }
+
+    /**
      * @return The nonce to use for 3D Secure verification
      */
     public String getNonce() {
@@ -134,6 +188,36 @@ public class ThreeDSecureRequest implements Parcelable {
         return mBillingAddress;
     }
 
+    /**
+     * @return The requested ThreeDSecure version
+     */
+    public @ThreeDSecureVersion String getVersionRequested() {
+        return mVersionRequested;
+    }
+
+    /**
+     * @return The additional information used for verification
+     * {@link ThreeDSecureAdditionalInformation} is only used for
+     * {@link ThreeDSecureRequest#VERSION_2} requests.
+     */
+    public ThreeDSecureAdditionalInformation getAdditionalInformation() {
+        return mAdditionalInformation;
+    }
+
+    /**
+     * @return If a challenge has been requested
+     */
+    public boolean isChallengeRequested() {
+        return mChallengeRequested;
+    }
+
+    /**
+     * @return If a exemption has been requested
+     */
+    public boolean isExemptionRequested() {
+        return mExemptionRequested;
+    }
+
     public ThreeDSecureRequest() {}
 
     @Override
@@ -149,6 +233,10 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeString(mEmail);
         dest.writeString(mShippingMethod);
         dest.writeParcelable(mBillingAddress, flags);
+        dest.writeString(mVersionRequested);
+        dest.writeParcelable(mAdditionalInformation, flags);
+        dest.writeByte(mChallengeRequested ? (byte)1:0);
+        dest.writeByte(mExemptionRequested ? (byte)1:0);
     }
 
     public ThreeDSecureRequest(Parcel in) {
@@ -158,6 +246,10 @@ public class ThreeDSecureRequest implements Parcelable {
         mEmail = in.readString();
         mShippingMethod = in.readString();
         mBillingAddress = in.readParcelable(ThreeDSecurePostalAddress.class.getClassLoader());
+        mVersionRequested = in.readString();
+        mAdditionalInformation = in.readParcelable(ThreeDSecureAdditionalInformation.class.getClassLoader());
+        mChallengeRequested = in.readByte() > 0;
+        mExemptionRequested = in.readByte() > 0;
     }
 
     public static final Creator<ThreeDSecureRequest> CREATOR = new Creator<ThreeDSecureRequest>() {
@@ -173,22 +265,44 @@ public class ThreeDSecureRequest implements Parcelable {
     /**
      * @return String representation of {@link ThreeDSecureRequest} for API use.
      */
-    public String build() {
+    public String build(String dfReferenceId) {
+        JSONObject additionalInfo;
         JSONObject base = new JSONObject();
-        JSONObject customer = new JSONObject();
+        ThreeDSecurePostalAddress billing = getBillingAddress();
+
+        if (getAdditionalInformation() == null) {
+            additionalInfo = new JSONObject();
+        } else {
+            additionalInfo = getAdditionalInformation().toJson();
+        }
 
         try {
-            base.put(AMOUNT_KEY, mAmount);
+            base.put("amount", mAmount);
+            base.put("additional_info", additionalInfo);
 
-            customer.putOpt(MOBILE_PHONE_NUMBER_KEY, mMobilePhoneNumber);
-            customer.putOpt(EMAIL_KEY, mEmail);
-            customer.putOpt(SHIPPING_METHOD_KEY, mShippingMethod);
+            additionalInfo.putOpt("mobile_phone_number", getMobilePhoneNumber());
+            additionalInfo.putOpt("shipping_method", getShippingMethod());
+            additionalInfo.putOpt("email", getEmail());
 
-            if (mBillingAddress != null) {
-                customer.put(BILLING_ADDRESS_KEY, mBillingAddress.toJson());
+            if (billing != null) {
+                additionalInfo.putOpt("billing_given_name", billing.getGivenName());
+                additionalInfo.putOpt("billing_surname", billing.getSurname());
+                additionalInfo.putOpt("billing_line1", billing.getStreetAddress());
+                additionalInfo.putOpt("billing_line2", billing.getExtendedAddress());
+                additionalInfo.putOpt("billing_line3", billing.getLine3());
+                additionalInfo.putOpt("billing_city", billing.getLocality());
+                additionalInfo.putOpt("billing_state", billing.getRegion());
+                additionalInfo.putOpt("billing_postal_code", billing.getPostalCode());
+                additionalInfo.putOpt("billing_country_code", billing.getCountryCodeAlpha2());
+                additionalInfo.putOpt("billing_phone_number", billing.getPhoneNumber());
             }
 
-            base.put(CUSTOMER_KEY, customer);
+            if (VERSION_2.equals(getVersionRequested())) {
+                base.putOpt("df_reference_id", dfReferenceId);
+            }
+
+            base.put("challenge_requested", mChallengeRequested);
+            base.put("exemption_requested", mExemptionRequested);
         } catch (JSONException ignored) {}
 
         return base.toString();

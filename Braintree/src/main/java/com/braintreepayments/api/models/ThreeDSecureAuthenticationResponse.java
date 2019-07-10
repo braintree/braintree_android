@@ -39,7 +39,14 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
                 authenticationResponse.mCardNonce = cardNonce;
             }
 
-            authenticationResponse.mSuccess = json.getBoolean(SUCCESS_KEY);
+            // TODO: 3DS 1.0 has a "success" key, but 3DS 2.0 responses dont.
+            // Waiting for the Gateway to send this success key.
+            if (json.has(SUCCESS_KEY)) {
+                authenticationResponse.mSuccess = json.getBoolean(SUCCESS_KEY);
+            }
+            else if (!json.has("errors")) {
+                authenticationResponse.mSuccess = true;
+            }
 
             if (!authenticationResponse.mSuccess) {
                 authenticationResponse.mErrors = jsonString;

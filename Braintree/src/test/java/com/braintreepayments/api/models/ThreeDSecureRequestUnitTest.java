@@ -8,49 +8,33 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
+import static com.braintreepayments.api.models.ThreeDSecureRequest.VERSION_1;
+import static com.braintreepayments.api.models.ThreeDSecureRequest.VERSION_2;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureRequestUnitTest {
-
     @Test
-    public void setsValuesCorrectly() {
-        ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
-            .firstName("Joe")
-            .lastName("Guy")
-            .phoneNumber("12345678")
-            .streetAddress("555 Smith St.")
-            .extendedAddress("#5")
-            .locality("Oakland")
-            .region("CA")
-            .countryCodeAlpha2("US")
-            .postalCode("54321");
+    public void constructor_noVersionRequested_defaultsToVersion1() {
+        ThreeDSecureRequest request = new ThreeDSecureRequest();
 
-        ThreeDSecureRequest request = new ThreeDSecureRequest()
-                .nonce("a-nonce")
-                .amount("1.00")
-                .mobilePhoneNumber("5151234321")
-                .email("tester@example.com")
-                .shippingMethod("03")
-                .billingAddress(billingAddress);
-
-        assertEquals("1.00", request.getAmount());
-        assertEquals("a-nonce", request.getNonce());
-        assertEquals("5151234321", request.getMobilePhoneNumber());
-        assertEquals("tester@example.com", request.getEmail());
-        assertEquals("03", request.getShippingMethod());
-        assertEquals(billingAddress, request.getBillingAddress());
+        assertEquals(VERSION_1, request.getVersionRequested());
     }
 
     @Test
-    public void testWriteToParcel_serializesCorrectly() {
+    public void writeToParcel() {
+        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
+                .accountId("account-id");
+
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
-                .firstName("Joe")
-                .lastName("Guy")
+                .givenName("Joe")
+                .surname("Guy")
                 .phoneNumber("12345678")
                 .streetAddress("555 Smith St.")
                 .extendedAddress("#5")
+                .line3("Suite C")
                 .locality("Oakland")
                 .region("CA")
                 .countryCodeAlpha2("US")
@@ -62,7 +46,11 @@ public class ThreeDSecureRequestUnitTest {
                 .mobilePhoneNumber("5151234321")
                 .email("tester@example.com")
                 .shippingMethod("03")
-                .billingAddress(billingAddress);
+                .versionRequested(VERSION_2)
+                .billingAddress(billingAddress)
+                .additionalInformation(additionalInformation)
+                .challengeRequested(true)
+                .exemptionRequested(true);
 
         Parcel parcel = Parcel.obtain();
         expected.writeToParcel(parcel, 0);
@@ -75,91 +63,90 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals(expected.getMobilePhoneNumber(), actual.getMobilePhoneNumber());
         assertEquals(expected.getEmail(), actual.getEmail());
         assertEquals(expected.getShippingMethod(), actual.getShippingMethod());
-        assertEquals(expected.getBillingAddress().getFirstName(), actual.getBillingAddress().getFirstName());
-        assertEquals(expected.getBillingAddress().getLastName(), actual.getBillingAddress().getLastName());
+        assertEquals(expected.getVersionRequested(), actual.getVersionRequested());
+        assertEquals(expected.getBillingAddress().getGivenName(), actual.getBillingAddress().getGivenName());
+        assertEquals(expected.getBillingAddress().getSurname(), actual.getBillingAddress().getSurname());
         assertEquals(expected.getBillingAddress().getPhoneNumber(), actual.getBillingAddress().getPhoneNumber());
         assertEquals(expected.getBillingAddress().getStreetAddress(), actual.getBillingAddress().getStreetAddress());
         assertEquals(expected.getBillingAddress().getExtendedAddress(), actual.getBillingAddress().getExtendedAddress());
+        assertEquals(expected.getBillingAddress().getLine3(), actual.getBillingAddress().getLine3());
         assertEquals(expected.getBillingAddress().getLocality(), actual.getBillingAddress().getLocality());
         assertEquals(expected.getBillingAddress().getRegion(), actual.getBillingAddress().getRegion());
         assertEquals(expected.getBillingAddress().getCountryCodeAlpha2(), actual.getBillingAddress().getCountryCodeAlpha2());
         assertEquals(expected.getBillingAddress().getPostalCode(), actual.getBillingAddress().getPostalCode());
+        assertEquals(expected.getAdditionalInformation().getAccountId(), actual.getAdditionalInformation().getAccountId());
+        assertEquals(expected.isChallengeRequested(), actual.isChallengeRequested());
+        assertEquals(expected.isExemptionRequested(), actual.isExemptionRequested());
     }
 
     @Test
-    public void buildsAllParameters() throws JSONException{
+    public void toJson() throws JSONException{
+        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
+                .accountId("account-id");
+
         ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. 3")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("94602")
-                .countryCodeAlpha2("US")
-                .firstName("John")
-                .lastName("Fakerson")
-                .phoneNumber("5151231234");
+                .givenName("billing-given-name")
+                .surname("billing-surname")
+                .streetAddress("billing-line1")
+                .extendedAddress("billing-line2")
+                .line3("billing-line3")
+                .locality("billing-city")
+                .region("billing-state")
+                .postalCode("billing-postal-code")
+                .countryCodeAlpha2("billing-country-code")
+                .phoneNumber("billing-phone-number");
 
         ThreeDSecureRequest request = new ThreeDSecureRequest()
-                .nonce("a-nonce")
-                .amount("1.00")
-                .mobilePhoneNumber("5151234321")
-                .email("tester@example.com")
-                .shippingMethod("03")
-                .billingAddress(billingAddress);
+                .versionRequested(VERSION_2)
+                .amount("amount")
+                .mobilePhoneNumber("mobile-phone-number")
+                .email("email")
+                .shippingMethod("shipping-method")
+                .billingAddress(billingAddress)
+                .additionalInformation(additionalInformation)
+                .challengeRequested(true)
+                .exemptionRequested(true);
 
-        JSONObject jsonParams = new JSONObject(request.build());
-        JSONObject jsonCustomer = jsonParams.getJSONObject("customer");
-        JSONObject jsonBillingAddress = jsonCustomer.getJSONObject("billingAddress");
+        JSONObject json = new JSONObject(request.build("df-reference-id"));
+        JSONObject additionalInfoJson = json.getJSONObject("additional_info");
 
-        assertEquals("1.00", jsonParams.get("amount"));
-        assertEquals("5151234321", jsonCustomer.get("mobilePhoneNumber"));
-        assertEquals("tester@example.com", jsonCustomer.get("email"));
-        assertEquals("03", jsonCustomer.get("shippingMethod"));
-        assertEquals("123 Fake St.", jsonBillingAddress.get("line1"));
-        assertEquals("Apt. 3", jsonBillingAddress.get("line2"));
-        assertEquals("Oakland", jsonBillingAddress.get("city"));
-        assertEquals("CA", jsonBillingAddress.get("state"));
-        assertEquals("94602", jsonBillingAddress.get("postalCode"));
-        assertEquals("US", jsonBillingAddress.get("countryCode"));
-        assertEquals("John", jsonBillingAddress.get("firstName"));
-        assertEquals("Fakerson", jsonBillingAddress.get("lastName"));
-        assertEquals("5151231234", jsonBillingAddress.get("phoneNumber"));
+        assertEquals("df-reference-id", json.get("df_reference_id"));
+        assertEquals("amount", json.get("amount"));
+        assertTrue(json.getBoolean("challenge_requested"));
+        assertTrue(json.getBoolean("exemption_requested"));
+
+        assertEquals("billing-given-name", additionalInfoJson.get("billing_given_name"));
+        assertEquals("billing-surname", additionalInfoJson.get("billing_surname"));
+        assertEquals("billing-line1", additionalInfoJson.get("billing_line1"));
+        assertEquals("billing-line2", additionalInfoJson.get("billing_line2"));
+        assertEquals("billing-line3", additionalInfoJson.get("billing_line3"));
+        assertEquals("billing-city", additionalInfoJson.get("billing_city"));
+        assertEquals("billing-state", additionalInfoJson.get("billing_state"));
+        assertEquals("billing-postal-code", additionalInfoJson.get("billing_postal_code"));
+        assertEquals("billing-country-code", additionalInfoJson.get("billing_country_code"));
+        assertEquals("billing-phone-number", additionalInfoJson.get("billing_phone_number"));
+
+        assertEquals("mobile-phone-number", additionalInfoJson.get("mobile_phone_number"));
+        assertEquals("email", additionalInfoJson.get("email"));
+        assertEquals("shipping-method", additionalInfoJson.get("shipping_method"));
+
+        assertEquals("account-id", additionalInfoJson.get("account_id"));
     }
 
     @Test
-    public void buildsPartialParameters() throws JSONException{
-        ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. 3")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("94602")
-                .firstName("John")
-                .lastName("Fakerson");
+    public void build_withVersion1_doesNotContainDfReferenceId() throws JSONException {
+        JSONObject json = new JSONObject(new ThreeDSecureRequest()
+                .build("df-reference-id"));
 
-        ThreeDSecureRequest request = new ThreeDSecureRequest()
-                .nonce("a-nonce")
-                .amount("1.00")
-                .mobilePhoneNumber("5151234321")
-                .shippingMethod("03")
-                .billingAddress(billingAddress);
+        assertFalse(json.has("df_reference_id"));
+    }
 
-        JSONObject jsonParams = new JSONObject(request.build());
-        JSONObject jsonCustomer = jsonParams.getJSONObject("customer");
-        JSONObject jsonBillingAddress = jsonCustomer.getJSONObject("billingAddress");
+    @Test
+    public void build_withVersion2_containsDfReferenceId() throws JSONException {
+        JSONObject json = new JSONObject(new ThreeDSecureRequest()
+                .versionRequested(VERSION_2)
+                .build("df-reference-id"));
 
-        assertEquals("1.00", jsonParams.get("amount"));
-        assertEquals("5151234321", jsonCustomer.get("mobilePhoneNumber"));
-        assertTrue(jsonCustomer.isNull("email"));
-        assertEquals("03", jsonCustomer.get("shippingMethod"));
-        assertEquals("123 Fake St.", jsonBillingAddress.get("line1"));
-        assertEquals("Apt. 3", jsonBillingAddress.get("line2"));
-        assertEquals("Oakland", jsonBillingAddress.get("city"));
-        assertEquals("CA", jsonBillingAddress.get("state"));
-        assertEquals("94602", jsonBillingAddress.get("postalCode"));
-        assertTrue(jsonBillingAddress.isNull("countryCode"));
-        assertEquals("John", jsonBillingAddress.get("firstName"));
-        assertEquals("Fakerson", jsonBillingAddress.get("lastName"));
-        assertTrue(jsonBillingAddress.isNull("phoneNumber"));
+        assertEquals("df-reference-id", json.getString("df_reference_id"));
     }
 }

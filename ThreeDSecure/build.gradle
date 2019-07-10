@@ -1,0 +1,83 @@
+apply plugin: 'com.android.library'
+
+rootProject.allprojects {
+    repositories {
+        maven {
+            url  "https://cardinalcommerce.bintray.com/android"
+            credentials {
+                username 'braintree-team-sdk@cardinalcommerce'
+                password '220cc9476025679c4e5c843666c27d97cfb0f951'
+            }
+        }
+    }
+}
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+
+        consumerProguardFiles 'proguard-rules.pro'
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+
+    buildTypes.release.minifyEnabled = true
+
+    // TODO Temporary disable InvalidPackage.
+    // The Cardinal SDK is referencing the `javax.naming` package but it is
+    // unavailable in the classpath.
+    lintOptions.disable 'InvalidPackage'
+}
+
+dependencies {
+    api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.1.3-2'
+
+    implementation 'com.nimbusds:nimbus-jose-jwt:4.39'
+    implementation 'androidx.appcompat:appcompat:1.0.1'
+}
+
+/* maven deploy + signing */
+task javadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    failOnError false
+}
+
+task javadocsJar(type: Jar, dependsOn: javadocs) {
+    classifier = 'javadoc'
+    from javadocs.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    archives javadocsJar
+    archives sourcesJar
+}
+
+apply plugin: 'io.codearte.nexus-staging'
+nexusStaging {
+    packageGroup = "com.braintreepayments"
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.setArtifactId 'three-d-secure'
+
+            pom.project {
+                name 'three-d-secure'
+                groupId = 'com.braintreepayments.api'
+                version = "${android.defaultConfig.versionName}"
+                description '3DS dependencies for Braintree Android.'
+            }
+        }
+    }
+}

@@ -5,7 +5,7 @@
     "fieldErrors":[],
     "threeDSecureInfo": {
         "liabilityShifted": false,
-        "liabilityShiftPossible": false
+        "liabilityShiftPossible": true
     },
     "success": false
 }

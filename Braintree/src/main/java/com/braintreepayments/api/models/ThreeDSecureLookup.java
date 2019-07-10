@@ -3,6 +3,8 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.braintreepayments.api.Json;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,12 +19,16 @@ public class ThreeDSecureLookup implements Parcelable {
     private static final String MD_KEY = "md";
     private static final String TERM_URL_KEY = "termUrl";
     private static final String PA_REQ_KEY = "pareq";
+    private static final String THREE_D_SECURE_VERSION_KEY = "threeDSecureVersion";
+    private static final String TRANSACTION_ID_KEY = "transactionId";
 
     private CardNonce mCardNonce;
     private String mAcsUrl;
     private String mMd;
     private String mTermUrl;
     private String mPareq;
+    private String mThreeDSecureVersion;
+    private String mTransactionId;
 
     /**
      * Used to parse a response from the Braintree Gateway to be used for 3D Secure.
@@ -52,6 +58,8 @@ public class ThreeDSecureLookup implements Parcelable {
         lookup.mMd = lookupJson.getString(MD_KEY);
         lookup.mTermUrl = lookupJson.getString(TERM_URL_KEY);
         lookup.mPareq = lookupJson.getString(PA_REQ_KEY);
+        lookup.mThreeDSecureVersion = Json.optString(lookupJson, THREE_D_SECURE_VERSION_KEY, "");
+        lookup.mTransactionId = Json.optString(lookupJson, TRANSACTION_ID_KEY, "");
 
         return lookup;
     }
@@ -94,6 +102,20 @@ public class ThreeDSecureLookup implements Parcelable {
         return mPareq;
     }
 
+    /**
+     * @return The version of 3D Secure this merchant is using
+     */
+    public String getThreeDSecureVersion() {
+        return mThreeDSecureVersion;
+    }
+
+    /**
+     * @return The transaction ID for this 3D Secure lookup
+     */
+    public String getTransactionId() {
+        return mTransactionId;
+    }
+
     public ThreeDSecureLookup() {}
 
     @Override
@@ -108,6 +130,8 @@ public class ThreeDSecureLookup implements Parcelable {
         dest.writeString(mMd);
         dest.writeString(mTermUrl);
         dest.writeString(mPareq);
+        dest.writeString(mThreeDSecureVersion);
+        dest.writeString(mTransactionId);
     }
 
     private ThreeDSecureLookup(Parcel in) {
@@ -116,6 +140,8 @@ public class ThreeDSecureLookup implements Parcelable {
         mMd = in.readString();
         mTermUrl = in.readString();
         mPareq = in.readString();
+        mThreeDSecureVersion = in.readString();
+        mTransactionId = in.readString();
     }
 
     public static final Creator<ThreeDSecureLookup> CREATOR = new Creator<ThreeDSecureLookup>() {

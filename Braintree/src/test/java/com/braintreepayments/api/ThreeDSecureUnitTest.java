@@ -1,17 +1,19 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
-import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.interfaces.ThreeDSecureLookupListener;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.Authorization;
+import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.ThreeDSecureInfo;
+import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
@@ -23,30 +25,40 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import androidx.appcompat.app.AppCompatActivity;
 
+import static androidx.appcompat.app.AppCompatActivity.RESULT_OK;
+import static com.braintreepayments.api.BraintreePowerMockHelper.MockManifestValidator;
+import static com.braintreepayments.api.BraintreePowerMockHelper.MockStaticTokenizationClient;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.powermock.api.mockito.PowerMockito.doReturn;
+import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.spy;
+import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "javax.crypto.*" })
-@PrepareForTest({ ManifestValidator.class })
+@PrepareForTest({ ManifestValidator.class, TokenizationClient.class })
+/**
+ * This class tests ThreeDSecure content that is unrelated a specific 3DS version.
+ */
 public class ThreeDSecureUnitTest {
 
     @Rule
@@ -58,7 +70,7 @@ public class ThreeDSecureUnitTest {
 
     @Before
     public void setup() throws Exception {
-        mockUrlSchemeDeclaredInAndroidManifest(true);
+        MockManifestValidator.mockUrlSchemeDeclaredInAndroidManifest(true);
 
         Configuration configuration = new TestConfigurationBuilder()
                 .threeDSecureEnabled(true)
@@ -71,7 +83,105 @@ public class ThreeDSecureUnitTest {
 
         mBasicRequest = new ThreeDSecureRequest()
                 .nonce("a-nonce")
-                .amount("1.00");
+                .amount("amount")
+                .billingAddress(new ThreeDSecurePostalAddress()
+                        .givenName("billing-given-name"));
+    }
+
+    @Test
+    public void performVerification_sendsAnalyticEvent() {
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.initialized"));
+    }
+
+    @Test
+    public void performVerification_sendsParamsInLookupRequest() throws JSONException {
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(mFragment.getHttpClient()).post(urlCaptor.capture(), captor.capture(), any(HttpResponseCallback.class));
+
+        String url = urlCaptor.getValue();
+        JSONObject body = new JSONObject(captor.getValue());
+
+        assertTrue(url.contains("a-nonce"));
+        assertEquals("amount", body.getString("amount"));
+
+        assertEquals("billing-given-name", body.getJSONObject("additional_info")
+                .getString("billing_given_name"));
+    }
+
+    @Test
+    public void performVerification_withCardBuilder_errorsWhenNoAmount() {
+        MockStaticTokenizationClient.mockTokenizeSuccess(null);
+
+        CardBuilder cardBuilder = new CardBuilder();
+        ThreeDSecureRequest request = new ThreeDSecureRequest();
+
+        ThreeDSecure.performVerification(mFragment, cardBuilder, request);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(mFragment).postCallback(captor.capture());
+
+        assertEquals("The ThreeDSecureRequest amount cannot be null",
+                captor.getValue().getMessage());
+    }
+
+    @Test
+    public void performVerification_withCardBuilderFailsToTokenize_postsError() {
+        MockStaticTokenizationClient.mockTokenizeFailure(new RuntimeException("Tokenization Failed"));
+
+        CardBuilder cardBuilder = new CardBuilder();
+        ThreeDSecureRequest request = new ThreeDSecureRequest()
+                .amount("10");
+
+        ThreeDSecure.performVerification(mFragment, cardBuilder, request);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(mFragment).postCallback(captor.capture());
+
+        assertEquals("Tokenization Failed",
+                captor.getValue().getMessage());
+    }
+
+    @Test
+    public void performVerification_withCardBuilder_tokenizesAndPerformsVerification() {
+        CardNonce cardNonce = mock(CardNonce.class);
+        when(cardNonce.getNonce()).thenReturn("card-nonce");
+        MockStaticTokenizationClient.mockTokenizeSuccess(cardNonce);
+
+        CardBuilder cardBuilder = new CardBuilder();
+        ThreeDSecureRequest request = new ThreeDSecureRequest()
+                .amount("10");
+
+        ThreeDSecure.performVerification(mFragment, cardBuilder, request);
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+
+        verifyStatic();
+        TokenizationClient.versionedPath(captor.capture());
+
+        assertTrue(captor.getValue().contains("card-nonce"));
+    }
+
+    @Test
+    public void performVerification_callsLookupListener() throws InterruptedException {
+        MockStaticTokenizationClient.mockTokenizeSuccess(null);
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        ThreeDSecureLookupListener lookupListener = new ThreeDSecureLookupListener() {
+            @Override
+            public void onLookupComplete(ThreeDSecureRequest request, ThreeDSecureLookup lookup) {
+                latch.countDown();
+            }
+        };
+
+        ThreeDSecure.performVerification(mFragment, mBasicRequest, lookupListener);
+
+        latch.await(1, TimeUnit.SECONDS);
     }
 
     @Test
@@ -87,117 +197,8 @@ public class ThreeDSecureUnitTest {
     }
 
     @Test
-    public void performVerification_sendsAllParamatersInLookupRequest() throws InterruptedException, JSONException {
-        ThreeDSecureRequest request = new ThreeDSecureRequest()
-                .nonce("a-nonce")
-                .amount("1.00")
-                .shippingMethod("01")
-                .mobilePhoneNumber("8101234567")
-                .email("test@example.com")
-                .billingAddress(new ThreeDSecurePostalAddress()
-                        .firstName("Joe")
-                        .lastName("Guy")
-                        .streetAddress("555 Smith Street")
-                        .extendedAddress("#5")
-                        .locality("Oakland")
-                        .region("CA")
-                        .postalCode("12345")
-                        .countryCodeAlpha2("US")
-                        .phoneNumber("12345678"));
-
-        ThreeDSecure.performVerification(mFragment, request);
-
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(mFragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));
-
-        JSONObject body = new JSONObject(captor.getValue());
-
-        assertEquals("1.00", body.getString("amount"));
-
-        JSONObject customer = body.getJSONObject("customer");
-
-        assertEquals("8101234567", customer.getString("mobilePhoneNumber"));
-        assertEquals("test@example.com", customer.getString("email"));
-        assertEquals("01", customer.getString("shippingMethod"));
-
-        JSONObject billingAddress = customer.getJSONObject("billingAddress");
-
-        assertEquals("Joe", billingAddress.getString("firstName"));
-        assertEquals("Guy", billingAddress.getString("lastName"));
-        assertEquals("555 Smith Street", billingAddress.getString("line1"));
-        assertEquals("#5", billingAddress.getString("line2"));
-        assertEquals("Oakland", billingAddress.getString("city"));
-        assertEquals("CA", billingAddress.getString("state"));
-        assertEquals("12345", billingAddress.getString("postalCode"));
-        assertEquals("US", billingAddress.getString("countryCode"));
-        assertEquals("12345678", billingAddress.getString("phoneNumber"));
-    }
-
-    @Test
-    public void performVerification_sendsMinimumParamatersInLookupRequest() throws InterruptedException, JSONException {
-        ThreeDSecure.performVerification(mFragment, mBasicRequest);
-
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(mFragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));
-
-        JSONObject body = new JSONObject(captor.getValue());
-
-        assertEquals("1.00", body.getString("amount"));
-
-        JSONObject customer = body.getJSONObject("customer");
-
-        assertTrue(customer.isNull("mobilePhoneNumber"));
-        assertTrue(customer.isNull("email"));
-        assertTrue(customer.isNull("shippingMethod"));
-        assertTrue(customer.isNull("billingAddress"));
-    }
-
-    @Test
-    public void performVerification_sendsPartialParamatersInLookupRequest() throws InterruptedException, JSONException {
-        ThreeDSecureRequest request = new ThreeDSecureRequest()
-                .nonce("a-nonce")
-                .amount("1.00")
-                .email("test@example.com")
-                .billingAddress(new ThreeDSecurePostalAddress()
-                        .firstName("Joe")
-                        .lastName("Guy")
-                        .streetAddress("555 Smith Street")
-                        .locality("Oakland")
-                        .region("CA")
-                        .postalCode("12345")
-                        .countryCodeAlpha2("US"));
-
-        ThreeDSecure.performVerification(mFragment, request);
-
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(mFragment.getHttpClient()).post(anyString(), captor.capture(), any(HttpResponseCallback.class));
-
-        JSONObject body = new JSONObject(captor.getValue());
-
-        assertEquals("1.00", body.getString("amount"));
-
-        JSONObject customer = body.getJSONObject("customer");
-
-        assertTrue(customer.isNull("mobilePhoneNumber"));
-        assertEquals("test@example.com", customer.getString("email"));
-        assertTrue(customer.isNull("shippingMethod"));
-
-        JSONObject billingAddress = customer.getJSONObject("billingAddress");
-
-        assertEquals("Joe", billingAddress.getString("firstName"));
-        assertEquals("Guy", billingAddress.getString("lastName"));
-        assertEquals("555 Smith Street", billingAddress.getString("line1"));
-        assertTrue(billingAddress.isNull("line2"));
-        assertEquals("Oakland", billingAddress.getString("city"));
-        assertEquals("CA", billingAddress.getString("state"));
-        assertEquals("12345", billingAddress.getString("postalCode"));
-        assertEquals("US", billingAddress.getString("countryCode"));
-        assertTrue(billingAddress.isNull("phoneNumber"));
-    }
-
-    @Test
     public void performVerification_whenBrowserSwitchNotSetup_postsException() {
-        mockUrlSchemeDeclaredInAndroidManifest(false);
+        MockManifestValidator.mockUrlSchemeDeclaredInAndroidManifest(false);
 
         ThreeDSecure.performVerification(mFragment, mBasicRequest);
 
@@ -213,7 +214,7 @@ public class ThreeDSecureUnitTest {
 
     @Test
     public void performVerification_whenBrowserSwitchNotSetup_sendsAnalyticEvent() {
-        mockUrlSchemeDeclaredInAndroidManifest(false);
+        MockManifestValidator.mockUrlSchemeDeclaredInAndroidManifest(false);
 
         ThreeDSecure.performVerification(mFragment, mBasicRequest);
 
@@ -236,7 +237,7 @@ public class ThreeDSecureUnitTest {
         Intent data = new Intent();
         data.setData(uri);
 
-        ThreeDSecure.onActivityResult(mFragment, AppCompatActivity.RESULT_OK, data);
+        ThreeDSecure.onActivityResult(mFragment, RESULT_OK, data);
 
         ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
         verify(mFragment).postCallback(captor.capture());
@@ -248,6 +249,25 @@ public class ThreeDSecureUnitTest {
     }
 
     @Test
+    public void onActivityResult_whenSuccessful_sendAnalyticsEvents() throws Exception {
+        Uri uri = Uri.parse("http://demo-app.com")
+                .buildUpon()
+                .appendQueryParameter("auth_response", stringFromFixture("three_d_secure/authentication_response.json"))
+                .build();
+        Intent data = new Intent();
+        data.setData(uri);
+
+        ThreeDSecure.onActivityResult(mFragment, RESULT_OK, data);
+
+        ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
+
+        verify(mFragment).postCallback(captor.capture());
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.liability-shifted.true"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.liability-shift-possible.true"));
+    }
+
+    @Test
     public void onActivityResult_whenFailure_postsException() throws Exception {
         JSONObject json = new JSONObject();
         json.put("success", false);
@@ -256,7 +276,7 @@ public class ThreeDSecureUnitTest {
         Intent data = new Intent();
         data.setData(uri);
 
-        ThreeDSecure.onActivityResult(mFragment, AppCompatActivity.RESULT_OK, data);
+        ThreeDSecure.onActivityResult(mFragment, RESULT_OK, data);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(mFragment).postCallback(captor.capture());
@@ -264,16 +284,4 @@ public class ThreeDSecureUnitTest {
         ErrorWithResponse error = (ErrorWithResponse) captor.getValue();
         assertEquals(422, error.getStatusCode());
     }
-
-    private void mockUrlSchemeDeclaredInAndroidManifest(boolean returnValue) {
-        spy(ManifestValidator.class);
-        try {
-            doReturn(returnValue).when(ManifestValidator.class,
-                    "isUrlSchemeDeclaredInAndroidManifest", any(Context.class),
-                    anyString(), any(Class.class));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 }

@@ -52,6 +52,7 @@ dependencies {
         exclude module: 'support-v4'
     }
     compileOnly project(':BraintreeDataCollector')
+    compileOnly project(':ThreeDSecure')
 
     api braintreeDependency.googlePayment
     api project(':Core')
@@ -59,6 +60,7 @@ dependencies {
 
     androidTestImplementation braintreeDependency.playServicesWallet
     androidTestImplementation project(':BraintreeDataCollector')
+    androidTestImplementation project(':ThreeDSecure')
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
     androidTestImplementation 'androidx.test:rules:1.1.1'
     androidTestImplementation 'androidx.test:runner:1.1.1'
@@ -66,6 +68,7 @@ dependencies {
 
     testImplementation braintreeDependency.playServicesWallet
     testImplementation project(':BraintreeDataCollector')
+    testImplementation project(':ThreeDSecure')
     testImplementation 'org.robolectric:robolectric:3.8'
     testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
     testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'

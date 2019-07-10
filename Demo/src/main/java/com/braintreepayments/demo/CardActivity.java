@@ -4,7 +4,11 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.braintreepayments.api.interfaces.BraintreeCancelListener;
+import com.braintreepayments.api.interfaces.ThreeDSecureLookupListener;
+import com.braintreepayments.api.models.ThreeDSecureAdditionalInformation;
+import com.braintreepayments.api.models.ThreeDSecureLookup;
+import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
+import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.google.android.material.textfield.TextInputLayout;
 import android.text.TextUtils;
 import android.view.View;
@@ -38,6 +42,8 @@ import com.braintreepayments.cardform.OnCardFormSubmitListener;
 import com.braintreepayments.cardform.utils.CardType;
 import com.braintreepayments.cardform.view.CardEditText;
 import com.braintreepayments.cardform.view.CardForm;
+
+import androidx.annotation.Nullable;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -269,6 +275,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
                     .expirationMonth(mCardForm.getExpirationMonth())
                     .expirationYear(mCardForm.getExpirationYear())
                     .cvv(mCardForm.getCvv())
+                    .validate(false) // TODO GQL currently only returns the bin if validate = false
                     .postalCode(mCardForm.getPostalCode());
 
             Card.tokenize(mBraintreeFragment, cardBuilder);
@@ -282,7 +289,13 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
         if (!mThreeDSecureRequested && paymentMethodNonce instanceof CardNonce && Settings.isThreeDSecureEnabled(this)) {
             mThreeDSecureRequested = true;
             mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
-            ThreeDSecure.performVerification(mBraintreeFragment, paymentMethodNonce.getNonce(), "1");
+
+            ThreeDSecure.performVerification(mBraintreeFragment, threeDSecureRequest(paymentMethodNonce), new ThreeDSecureLookupListener() {
+                @Override
+                public void onLookupComplete(ThreeDSecureRequest request, ThreeDSecureLookup lookup) {
+                    ThreeDSecure.continuePerformVerification(mBraintreeFragment, request, lookup);
+                }
+            });
         } else if (paymentMethodNonce instanceof CardNonce && Settings.isAmexRewardsBalanceEnabled(this)) {
             mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
             AmericanExpress.getRewardsBalance(mBraintreeFragment, paymentMethodNonce.getNonce(), "USD");
@@ -320,5 +333,33 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
         return  "Amex Rewards Balance: \n" +
                 "- amount: " + rewardsBalance.getRewardsAmount() + "\n" +
                 "- errorCode: " + rewardsBalance.getErrorCode();
+    }
+
+    private ThreeDSecureRequest threeDSecureRequest(PaymentMethodNonce paymentMethodNonce) {
+        CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+
+        ThreeDSecurePostalAddress billingAddress = new ThreeDSecurePostalAddress()
+                .givenName("Jill")
+                .surname("Doe")
+                .phoneNumber("5551234567")
+                .streetAddress("555 Smith St")
+                .extendedAddress("#2")
+                .locality("Chicago")
+                .region("IL")
+                .postalCode("12345")
+                .countryCodeAlpha2("US");
+
+        ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
+                .accountId("account-id");
+
+        ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest()
+                .amount("10")
+                .email("test@email.com")
+                .billingAddress(billingAddress)
+                .nonce(cardNonce.getNonce())
+                .versionRequested(ThreeDSecureRequest.VERSION_2)
+                .additionalInformation(additionalInformation);
+
+        return threeDSecureRequest;
     }
 }
