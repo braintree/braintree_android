@@ -75,7 +75,6 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
     /**
      * @return If the authentication was completed
      */
-    @Deprecated
     public boolean isSuccess() {
         return mSuccess;
     }
