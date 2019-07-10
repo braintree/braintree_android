@@ -342,7 +342,7 @@ public class ThreeDSecure {
             public void success(String responseBody) {
                 ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse.fromJson(responseBody);
 
-                if (authenticationResponse.isSuccess()) {
+                if (authenticationResponse.isSuccess() || authenticationResponse.getErrors() == null) {
                     fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
 
                     completeVerificationFlowWithNoncePayload(fragment, authenticationResponse.getCardNonce());
