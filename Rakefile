@@ -47,7 +47,7 @@ task :publish_snapshot => :unit_tests do
 
   prompt_for_sonatype_username_and_password
 
-  sh "./gradlew clean :Core:uploadArchives :BraintreeDataCollector:uploadArchives :PayPalDataCollector:uploadArchives :PayPalOneTouch:uploadArchives :Braintree:uploadArchives"
+  sh "./gradlew clean :Core:uploadArchives :BraintreeDataCollector:uploadArchives :PayPalDataCollector:uploadArchives :PayPalOneTouch:uploadArchives :Braintree:uploadArchives :ThreeDSecure:uploadArchives"
 end
 
 desc "Interactive release to publish new version"
@@ -71,7 +71,7 @@ task :release do# => :unit_tests do
 end
 
 task :release_braintree do
-  sh "./gradlew clean :Core:uploadArchives :BraintreeDataCollector:uploadArchives :Braintree:uploadArchives"
+  sh "./gradlew clean :Core:uploadArchives :BraintreeDataCollector:uploadArchives :Braintree:uploadArchives :ThreeDSecure:uploadArchives"
   sh "./gradlew :Braintree:closeRepository"
   puts "Sleeping for one minute to allow Braintree modules to close"
   sleep 60
