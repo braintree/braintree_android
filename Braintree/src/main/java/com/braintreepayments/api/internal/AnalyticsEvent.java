@@ -32,7 +32,7 @@ public class AnalyticsEvent {
 
     public AnalyticsEvent(Context context, String sessionId, String integration, String event) {
         this.event = "android." + event;
-        this.timestamp = System.currentTimeMillis() / 1000;
+        this.timestamp = System.currentTimeMillis();
         try {
             metadata.put(SESSION_ID_KEY, sessionId)
                     .put(INTEGRATION_TYPE_KEY, integration)
