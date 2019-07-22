@@ -13,6 +13,7 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.interfaces.ThreeDSecureLookupListener;
 import com.braintreepayments.api.internal.ClassHelper;
 import com.braintreepayments.api.internal.ManifestValidator;
+import com.braintreepayments.api.models.BraintreePaymentResult;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
@@ -199,6 +200,11 @@ public class ThreeDSecure {
                             "switch url as this app. See " +
                             "https://developers.braintreepayments.com/guides/client-sdk/android/v2#browser-switch " +
                             "for the correct configuration"));
+                    return;
+                }
+
+                if (configuration.getCardinalAuthenticationJwt() == null && request.getVersionRequested().equals(ThreeDSecureRequest.VERSION_2)) {
+                    fragment.postCallback(new BraintreeException("Merchant is not configured for Three D Secure 2.0"));
                     return;
                 }
 
@@ -443,6 +449,10 @@ public class ThreeDSecure {
             fragment.waitForConfiguration(new ConfigurationListener() {
                 @Override
                 public void onConfigurationFetched(Configuration configuration) {
+                    if (configuration.getCardinalAuthenticationJwt() == null) {
+                        return;
+                    }
+
                     CardinalEnvironment cardinalEnvironment = CardinalEnvironment.STAGING;
                     if ("production".equalsIgnoreCase(configuration.getEnvironment())) {
                         cardinalEnvironment = CardinalEnvironment.PRODUCTION;

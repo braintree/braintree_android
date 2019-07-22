@@ -61,6 +61,7 @@ public class ThreeDSecureV2UnitTest {
 
         Configuration configuration = new TestConfigurationBuilder()
                 .threeDSecureEnabled(true)
+                .cardinalAuthenticationJWT("cardinal_authentication_jwt")
                 .buildConfiguration();
 
         mMockFragmentBuilder = new MockFragmentBuilder()
