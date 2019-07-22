@@ -13,7 +13,6 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.interfaces.ThreeDSecureLookupListener;
 import com.braintreepayments.api.internal.ClassHelper;
 import com.braintreepayments.api.internal.ManifestValidator;
-import com.braintreepayments.api.models.BraintreePaymentResult;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
