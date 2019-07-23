@@ -36,8 +36,10 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -348,5 +350,24 @@ public class ThreeDSecureV2UnitTest {
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(fragment).postCallback(captor.capture());
         assertTrue(captor.getValue() instanceof BraintreeException);
+    }
+
+    @Test
+    public void configureCardinal_withoutCardinalJWT_doesNotComplete() throws Exception {
+        mockStatic(Cardinal.class);
+
+        Configuration configuration = new TestConfigurationBuilder()
+                .threeDSecureEnabled(true)
+                .buildConfiguration();
+
+        MockFragmentBuilder mockFragmentBuilder = new MockFragmentBuilder()
+                .authorization(Authorization.fromString(stringFromFixture("base_64_client_token.txt")))
+                .configuration(configuration);
+        BraintreeFragment fragment = mockFragmentBuilder.build();
+
+        ThreeDSecure.configureCardinal(fragment);
+
+        verifyStatic(never());
+        Cardinal.getInstance();
     }
 }
