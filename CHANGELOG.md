@@ -1,7 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+* Add additional fields to ThreeDSecureInfo
+
 ## 3.3.0
-Correctly includes the 3DSecure 2.0 module
+* Correctly includes the 3DSecure 2.0 module
 
 ## 3.2.0
 * Add 3DS 2 Support
