@@ -15,6 +15,7 @@ import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class CardNonceUnitTest {
@@ -31,7 +32,7 @@ public class CardNonceUnitTest {
         assertEquals("1111", cardNonce.getLastFour());
         assertNotNull(cardNonce.getThreeDSecureInfo());
         assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
-        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
         assertNotNull(cardNonce.getBinData());
         assertEquals(UNKNOWN, cardNonce.getBinData().getPrepaid());
         assertEquals(YES, cardNonce.getBinData().getHealthcare());
