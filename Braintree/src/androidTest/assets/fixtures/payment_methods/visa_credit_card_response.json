@@ -23,6 +23,18 @@
         "issuingBank": "Unknown",
         "countryOfIssuance": "Something",
         "productId": "123"
+      },
+      "threeDSecureInfo":
+      {
+        "cavv": "fake-cavv",
+        "dsTransactionId": "fake-txn-id",
+        "eciFlag": "07",
+        "enrolled": "Y",
+        "liabilityShiftPossible": true,
+        "liabilityShifted": false,
+        "status": "lookup_enrolled",
+        "threeDSecureVersion": "2.2.0",
+        "xid": "fake-xid"
       }
     }
   ]
