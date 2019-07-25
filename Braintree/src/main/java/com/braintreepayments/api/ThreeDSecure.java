@@ -23,10 +23,10 @@ import com.braintreepayments.api.models.ThreeDSecureInfo;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
-import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment;
-import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters;
-import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
+import com.cardinalcommerce.cardinalmobilesdk.models.response.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
+import com.cardinalcommerce.shared.models.parameters.CardinalConfigurationParameters;
+import com.cardinalcommerce.shared.models.parameters.CardinalEnvironment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
