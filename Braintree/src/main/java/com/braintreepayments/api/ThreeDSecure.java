@@ -202,6 +202,11 @@ public class ThreeDSecure {
                     return;
                 }
 
+                if (configuration.getCardinalAuthenticationJwt() == null && request.getVersionRequested().equals(ThreeDSecureRequest.VERSION_2)) {
+                    fragment.postCallback(new BraintreeException("Merchant is not configured for Three D Secure 2.0"));
+                    return;
+                }
+
                 fragment.sendAnalyticsEvent("three-d-secure.initialized");
 
                 fragment.getHttpClient().post(TokenizationClient.versionedPath(
@@ -443,6 +448,10 @@ public class ThreeDSecure {
             fragment.waitForConfiguration(new ConfigurationListener() {
                 @Override
                 public void onConfigurationFetched(Configuration configuration) {
+                    if (configuration.getCardinalAuthenticationJwt() == null) {
+                        return;
+                    }
+
                     CardinalEnvironment cardinalEnvironment = CardinalEnvironment.STAGING;
                     if ("production".equalsIgnoreCase(configuration.getEnvironment())) {
                         cardinalEnvironment = CardinalEnvironment.PRODUCTION;

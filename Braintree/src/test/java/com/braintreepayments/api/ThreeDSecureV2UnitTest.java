@@ -2,7 +2,7 @@ package com.braintreepayments.api;
 
 import android.content.Intent;
 
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.CardBuilder;
@@ -10,7 +10,6 @@ import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
-import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
@@ -36,11 +35,11 @@ import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -61,6 +60,7 @@ public class ThreeDSecureV2UnitTest {
 
         Configuration configuration = new TestConfigurationBuilder()
                 .threeDSecureEnabled(true)
+                .cardinalAuthenticationJWT("cardinal_authentication_jwt")
                 .buildConfiguration();
 
         mMockFragmentBuilder = new MockFragmentBuilder()
@@ -331,5 +331,43 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecure.authenticateCardinalJWT(fragment, threeDSecureLookup, "jwt");
 
         verify(fragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce"));
+    }
+
+
+    @Test
+    public void performVerification_withoutCardinalJWT_postsException() throws Exception {
+        Configuration configuration = new TestConfigurationBuilder()
+                .threeDSecureEnabled(true)
+                .buildConfiguration();
+
+        MockFragmentBuilder mockFragmentBuilder = new MockFragmentBuilder()
+                .authorization(Authorization.fromString(stringFromFixture("base_64_client_token.txt")))
+                .configuration(configuration);
+        BraintreeFragment fragment = mockFragmentBuilder.build();
+
+        ThreeDSecure.performVerification(fragment, mBasicRequest);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(fragment).postCallback(captor.capture());
+        assertTrue(captor.getValue() instanceof BraintreeException);
+    }
+
+    @Test
+    public void configureCardinal_withoutCardinalJWT_doesNotComplete() throws Exception {
+        mockStatic(Cardinal.class);
+
+        Configuration configuration = new TestConfigurationBuilder()
+                .threeDSecureEnabled(true)
+                .buildConfiguration();
+
+        MockFragmentBuilder mockFragmentBuilder = new MockFragmentBuilder()
+                .authorization(Authorization.fromString(stringFromFixture("base_64_client_token.txt")))
+                .configuration(configuration);
+        BraintreeFragment fragment = mockFragmentBuilder.build();
+
+        ThreeDSecure.configureCardinal(fragment);
+
+        verifyStatic(never());
+        Cardinal.getInstance();
     }
 }
