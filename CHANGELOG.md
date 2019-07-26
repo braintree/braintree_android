@@ -1,10 +1,5 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
-* Send analytics timestamps in milliseconds
-* Add additional fields to ThreeDSecureInfo
-* Fix potential crash when 3DSecure 2.0 JWT is not available
-
 ## 3.3.0
 * Correctly includes the 3DSecure 2.0 module
 
