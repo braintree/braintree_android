@@ -9,11 +9,10 @@ import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
-import com.cardinalcommerce.cardinalmobilesdk.models.response.CardinalActionCode;
-import com.cardinalcommerce.cardinalmobilesdk.models.response.ValidateResponse;
+import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
+import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
-import com.cardinalcommerce.cardinalmobilesdk.services.CruiseService;
 import com.cardinalcommerce.shared.models.enums.DirectoryServerID;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 import com.paypal.android.sdk.onetouch.core.Request;
@@ -77,7 +76,7 @@ class BraintreePowerMockHelper {
             Mockito.doAnswer(new Answer() {
                 @Override
                 public Object answer(InvocationOnMock invocation) {
-                    CardinalValidateReceiver callback = invocation.getArgumentAt(4, CardinalValidateReceiver.class);
+                    CardinalValidateReceiver callback = invocation.getArgumentAt(3, CardinalValidateReceiver.class);
 
                     ValidateResponse validateResponse = new ValidateResponse(
                             false,
@@ -92,7 +91,6 @@ class BraintreePowerMockHelper {
             }).when(cruiseService).cca_continue(
                     anyString(),
                     anyString(),
-                    any(DirectoryServerID.class),
                     any(Activity.class),
                     any(CardinalValidateReceiver.class)
             );

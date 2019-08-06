@@ -117,6 +117,7 @@ public class GooglePaymentTest {
     @Test
     public void requestPayment_startsActivityWithOptionalValues() throws JSONException {
         BraintreeFragment fragment = getSetupFragment();
+        String googlePaymentModuleVersionFormatted = String.format("%s-SNAPSHOT", com.braintreepayments.api.googlepayment.BuildConfig.VERSION_NAME);
         GooglePaymentRequest googlePaymentRequest = new GooglePaymentRequest()
                 .allowPrepaidCards(true)
                 .billingAddressFormat(1)
@@ -174,9 +175,9 @@ public class GooglePaymentTest {
         JSONObject paypalTokenizationSpecificationParams = paypalTokenizationSpecification.getJSONObject("parameters");
         assertEquals("braintree", paypalTokenizationSpecificationParams.getString("gateway"));
         assertEquals("v1", paypalTokenizationSpecificationParams.getString("braintree:apiVersion"));
-        assertEquals(BuildConfig.VERSION_NAME, paypalTokenizationSpecificationParams.getString("braintree:sdkVersion"));
+        assertEquals(googlePaymentModuleVersionFormatted, paypalTokenizationSpecificationParams.getString("braintree:sdkVersion"));
         assertEquals("android-pay-merchant-id", paypalTokenizationSpecificationParams.getString("braintree:merchantId"));
-        assertEquals("{\"source\":\"client\",\"version\":\"" + BuildConfig.VERSION_NAME+ "\",\"platform\":\"android\"}", paypalTokenizationSpecificationParams.getString("braintree:metadata"));
+        assertEquals("{\"source\":\"client\",\"version\":\"" + googlePaymentModuleVersionFormatted + "\",\"platform\":\"android\"}", paypalTokenizationSpecificationParams.getString("braintree:metadata"));
         assertFalse(paypalTokenizationSpecificationParams.has("braintree:clientKey"));
         assertEquals("paypal-client-id-for-google-payment", paypalTokenizationSpecificationParams.getString("braintree:paypalClientId"));
 
@@ -201,9 +202,9 @@ public class GooglePaymentTest {
         JSONObject cardTokenizationSpecificationParams = tokenizationSpecification.getJSONObject("parameters");
         assertEquals("braintree", cardTokenizationSpecificationParams.getString("gateway"));
         assertEquals("v1", cardTokenizationSpecificationParams.getString("braintree:apiVersion"));
-        assertEquals(BuildConfig.VERSION_NAME, cardTokenizationSpecificationParams.getString("braintree:sdkVersion"));
+        assertEquals(googlePaymentModuleVersionFormatted, cardTokenizationSpecificationParams.getString("braintree:sdkVersion"));
         assertEquals("android-pay-merchant-id", cardTokenizationSpecificationParams.getString("braintree:merchantId"));
-        assertEquals("{\"source\":\"client\",\"version\":\"" + BuildConfig.VERSION_NAME+ "\",\"platform\":\"android\"}", cardTokenizationSpecificationParams.getString("braintree:metadata"));
+        assertEquals("{\"source\":\"client\",\"version\":\"" + googlePaymentModuleVersionFormatted + "\",\"platform\":\"android\"}", cardTokenizationSpecificationParams.getString("braintree:metadata"));
         assertEquals("sandbox_tokenization_key", cardTokenizationSpecificationParams.getString("braintree:clientKey"));
     }
 

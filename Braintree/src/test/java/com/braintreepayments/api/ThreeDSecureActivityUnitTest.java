@@ -5,10 +5,8 @@ import android.os.Bundle;
 
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
-import com.cardinalcommerce.cardinalmobilesdk.models.response.CardinalActionCode;
-import com.cardinalcommerce.cardinalmobilesdk.models.response.ValidateResponse;
-import com.cardinalcommerce.cardinalmobilesdk.services.CruiseService;
-import com.cardinalcommerce.shared.models.enums.DirectoryServerID;
+import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
+import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 
 import org.json.JSONException;
 import org.junit.Rule;
@@ -38,7 +36,7 @@ public class ThreeDSecureActivityUnitTest {
 
     @Test
     public void onCreate_invokesCardinalWithLookupData() {
-        CruiseService cruiseService = BraintreePowerMockHelper.MockStaticCardinal
+        Cardinal cardinal = BraintreePowerMockHelper.MockStaticCardinal
                 .cca_continue(CardinalActionCode.SUCCESS);
 
         ThreeDSecureLookup threeDSecureLookup = sampleThreeDSecureLookup();
@@ -52,10 +50,9 @@ public class ThreeDSecureActivityUnitTest {
         ActivityController<ThreeDSecureActivity> activityController = Robolectric.buildActivity(ThreeDSecureActivity.class, intent)
                 .create();
 
-        verify(cruiseService).cca_continue(
+        verify(cardinal).cca_continue(
                 eq(threeDSecureLookup.getTransactionId()),
                 eq(threeDSecureLookup.getPareq()),
-                eq(DirectoryServerID.VISA01),
                 eq(activityController.get()),
                 eq(activityController.get())
         );

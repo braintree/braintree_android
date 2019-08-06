@@ -6,9 +6,8 @@ import android.os.Bundle;
 
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
-import com.cardinalcommerce.cardinalmobilesdk.models.response.ValidateResponse;
+import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
-import com.cardinalcommerce.shared.models.enums.DirectoryServerID;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,7 +33,6 @@ public class ThreeDSecureActivity extends AppCompatActivity implements CardinalV
         Cardinal.getInstance().cca_continue(
                 threeDSecureLookup.getTransactionId(),
                 threeDSecureLookup.getPareq(),
-                DirectoryServerID.VISA01,
                 this,
                 this
         );

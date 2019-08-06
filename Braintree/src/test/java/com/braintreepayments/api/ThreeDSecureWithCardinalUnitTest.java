@@ -6,7 +6,7 @@ import com.braintreepayments.api.internal.ClassHelper;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
-import com.cardinalcommerce.shared.models.parameters.CardinalConfigurationParameters;
+import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters;
 
 import org.junit.Before;
 import org.junit.Rule;
