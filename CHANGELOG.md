@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 3.4.1
+
+* Update Cardinal SDK to 2.1.4-1
+
 ## 3.4.0
 
 * Send analytics timestamps in milliseconds
