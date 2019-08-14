@@ -34,7 +34,10 @@
         "liabilityShifted": false,
         "status": "lookup_enrolled",
         "threeDSecureVersion": "2.2.0",
-        "xid": "fake-xid"
+        "xid": "fake-xid",
+        "acsTransactionId": "fake-acs-transaction-id",
+        "threeDSecureServerTransactionId": "fake-threedsecure-server-transaction-id",
+        "paresStatus": "fake-pares-status"
       }
     }
   ]

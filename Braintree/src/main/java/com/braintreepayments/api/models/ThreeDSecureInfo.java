@@ -20,6 +20,9 @@ public class ThreeDSecureInfo implements Parcelable {
     private static final String STATUS_KEY = "status";
     private static final String THREE_D_SECURE_VERSION_KEY = "threeDSecureVersion";
     private static final String XID_KEY = "xid";
+    private static final String ACS_TRANSACTION_ID_KEY = "acsTransactionId";
+    private static final String THREE_D_SECURE_SERVER_TRANSACTION_ID_KEY = "threeDSecureServerTransactionId";
+    private static final String PARES_STATUS_KEY= "paresStatus";
 
     private String mCavv;
     private String mDsTransactionId;
@@ -31,6 +34,9 @@ public class ThreeDSecureInfo implements Parcelable {
     private String mThreeDSecureVersion;
     private boolean mWasVerified;
     private String mXid;
+    private String mAcsTransactionId;
+    private String mThreeDSecureServerTransactionId;
+    private String mParesStatus;
 
     protected static ThreeDSecureInfo fromJson(JSONObject json) {
         if (json == null) {
@@ -48,6 +54,9 @@ public class ThreeDSecureInfo implements Parcelable {
         threeDSecureInfo.mThreeDSecureVersion = json.optString(THREE_D_SECURE_VERSION_KEY);
         threeDSecureInfo.mWasVerified = json.has(LIABILITY_SHIFTED_KEY) && json.has(LIABILITY_SHIFT_POSSIBLE_KEY);
         threeDSecureInfo.mXid = json.optString(XID_KEY);
+        threeDSecureInfo.mAcsTransactionId = json.optString(ACS_TRANSACTION_ID_KEY);
+        threeDSecureInfo.mThreeDSecureServerTransactionId = json.optString(THREE_D_SECURE_SERVER_TRANSACTION_ID_KEY);
+        threeDSecureInfo.mParesStatus = json.optString(PARES_STATUS_KEY);
 
         return threeDSecureInfo;
     }
@@ -127,6 +136,31 @@ public class ThreeDSecureInfo implements Parcelable {
      */
     public String getXid() {
         return mXid;
+    }
+
+    /**
+     * @return Unique transaction identifier assigned by the ACS to identify a single transaction.
+     */
+    public String getAcsTransactionId() {
+        return mAcsTransactionId;
+    }
+
+    /**
+     * @return Unique transaction identifier assigned by the 3DS Server to identify a single transaction.
+     */
+    public String getThreeDSecureServerTransactionId() {
+        return mThreeDSecureServerTransactionId;
+    }
+
+    /**
+     * @return Transaction status result identifier. Possible Values:
+     * Y – Successful Authentication
+     * N – Failed Authentication
+     * U – Unable to Complete Authentication
+     * A – Successful Attempts Transaction
+     */
+    public String getParesStatus() {
+        return mParesStatus;
     }
 
     public ThreeDSecureInfo() {}
