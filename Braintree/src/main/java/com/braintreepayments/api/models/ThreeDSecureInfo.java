@@ -139,7 +139,7 @@ public class ThreeDSecureInfo implements Parcelable {
     }
 
     /**
-     * @return Unique transaction identifier assigned by the ACS to identify a single transaction.
+     * @return Unique transaction identifier assigned by the Access Control Server (ACS) to identify a single transaction.
      */
     public String getAcsTransactionId() {
         return mAcsTransactionId;
@@ -153,11 +153,11 @@ public class ThreeDSecureInfo implements Parcelable {
     }
 
     /**
-     * @return Transaction status result identifier. Possible Values:
+     * @return The Payer Authentication Response (PARes) Status, a transaction status result identifier. Possible Values:
      * Y – Successful Authentication
      * N – Failed Authentication
      * U – Unable to Complete Authentication
-     * A – Successful Attempts Transaction
+     * A – Successful Stand-In Attempts Transaction
      */
     public String getParesStatus() {
         return mParesStatus;
