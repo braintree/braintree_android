@@ -29,5 +29,8 @@ public class ThreeDSecureInfoUnitTest {
         assertEquals("2.2.0", info.getThreeDSecureVersion());
         assertTrue(info.wasVerified());
         assertEquals("fake-xid", info.getXid());
+        assertEquals("fake-acs-transaction-id", info.getAcsTransactionId());
+        assertEquals("fake-threedsecure-server-transaction-id", info.getThreeDSecureServerTransactionId());
+        assertEquals("fake-pares-status", info.getParesStatus());
     }
 }
