@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## 3.4.2
+
+* Add `acsTransactionId`, `threeDSecureServerTransactionId` and `paresStatus` fields to `ThreeDSecureInfo`
+
 ## 3.4.1
 
 * Update Cardinal SDK to 2.1.4-1
