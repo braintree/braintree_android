@@ -345,17 +345,15 @@ public class ThreeDSecure {
                         "/three_d_secure/authenticate_from_jwt"), body.toString(), new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
-                ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse.fromJson(responseBody);
+                CardNonce nonceToReturn = ThreeDSecureAuthenticationResponse.getNonceWithAuthenticationDetails(responseBody, cardNonce);
 
-                if (authenticationResponse.isSuccess()) {
+                if (nonceToReturn.getThreeDSecureInfo().getThreeDSecureAuthenticationResponse().isSuccess()) {
                     fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
-
-                    completeVerificationFlowWithNoncePayload(fragment, authenticationResponse.getCardNonce());
                 } else {
                     fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
-
-                    completeVerificationFlowWithNoncePayload(fragment, cardNonce);
                 }
+
+                completeVerificationFlowWithNoncePayload(fragment, nonceToReturn);
             }
 
             @Override

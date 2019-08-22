@@ -4,6 +4,7 @@ import android.os.Parcel;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 
+import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -11,6 +12,7 @@ import org.robolectric.RobolectricTestRunner;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
@@ -28,6 +30,48 @@ public class ThreeDSecureAuthenticationResponseUnitTest {
         assertTrue(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
         assertTrue(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertTrue(authResponse.isSuccess());
+    }
+
+    @Test
+    public void getNonceWithAuthenticationDetails_returnsNewNonce_whenAuthenticationSuccessful() throws JSONException {
+        CardNonce lookupNonce = CardNonce.fromJson(
+                stringFromFixture("payment_methods/visa_credit_card_response.json"));
+        CardNonce authenticationNonce = ThreeDSecureAuthenticationResponse.getNonceWithAuthenticationDetails(
+                stringFromFixture("three_d_secure/authentication_response.json"), lookupNonce);
+
+        assertFalse(lookupNonce.getNonce().equalsIgnoreCase(authenticationNonce.getNonce()));
+        assertTrue(authenticationNonce.getThreeDSecureInfo().getThreeDSecureAuthenticationResponse().isSuccess());
+        assertNull(authenticationNonce.getThreeDSecureInfo().getThreeDSecureAuthenticationResponse().getErrors());
+        assertNull(authenticationNonce.getThreeDSecureInfo().getThreeDSecureAuthenticationResponse().getException());
+    }
+
+    //TODO: Possibly refactor after test case 13 card is usable in sand, so we can double check structure.
+    @Test
+    public void getNonceWithAuthenticationDetails_returnsLookupNonce_whenAuthenticationUnsuccessful_WithError() throws JSONException {
+        CardNonce lookupNonce = CardNonce.fromJson(
+                stringFromFixture("payment_methods/visa_credit_card_response.json"));
+        CardNonce authenticationNonce = ThreeDSecureAuthenticationResponse.getNonceWithAuthenticationDetails(
+                stringFromFixture("three_d_secure/authentication_response_with_error.json"), lookupNonce);
+
+        assertTrue(lookupNonce.getNonce().equalsIgnoreCase(authenticationNonce.getNonce()));
+        assertFalse(authenticationNonce.getThreeDSecureInfo().getThreeDSecureAuthenticationResponse().isSuccess());
+        assertNotNull(authenticationNonce.getThreeDSecureInfo().getThreeDSecureAuthenticationResponse().getErrors());
+        assertNull(authenticationNonce.getThreeDSecureInfo().getThreeDSecureAuthenticationResponse().getException());
+    }
+
+    @Test
+    public void getNonceWithAuthenticationDetails_returnsLookupNonce_whenAuthenticationUnsuccessful_WithException() throws JSONException {
+        CardNonce lookupNonce = CardNonce.fromJson(
+                stringFromFixture("payment_methods/visa_credit_card_response.json"));
+        CardNonce authenticationNonce = ThreeDSecureAuthenticationResponse.getNonceWithAuthenticationDetails(
+                "{'bad'}", lookupNonce);
+
+        assertTrue(lookupNonce.getNonce().equalsIgnoreCase(authenticationNonce.getNonce()));
+        assertFalse(authenticationNonce.getThreeDSecureInfo().getThreeDSecureAuthenticationResponse().isSuccess());
+        assertNull(authenticationNonce.getThreeDSecureInfo().getThreeDSecureAuthenticationResponse().getErrors());
+        assertNotNull(authenticationNonce.getThreeDSecureInfo().getThreeDSecureAuthenticationResponse().getException());
+        assertEquals("Expected ':' after bad at character 7 of {'bad'}",
+                authenticationNonce.getThreeDSecureInfo().getThreeDSecureAuthenticationResponse().getException());
     }
 
     @Test

@@ -24,7 +24,7 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
      *
      * @param jsonString The json response from the Braintree Gateway 3D Secure authentication route.
      * @return The {@link ThreeDSecureAuthenticationResponse} to use when performing 3D Secure
-     *         authentication.
+     * authentication.
      */
     public static ThreeDSecureAuthenticationResponse fromJson(String jsonString) {
         ThreeDSecureAuthenticationResponse authenticationResponse = new ThreeDSecureAuthenticationResponse();
@@ -43,8 +43,7 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
             // Waiting for the Gateway to send this success key.
             if (json.has(SUCCESS_KEY)) {
                 authenticationResponse.mSuccess = json.getBoolean(SUCCESS_KEY);
-            }
-            else if (!json.has("errors")) {
+            } else if (!json.has("errors")) {
                 authenticationResponse.mSuccess = true;
             }
 
@@ -56,6 +55,37 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
         }
 
         return authenticationResponse;
+    }
+
+    public static CardNonce getNonceWithAuthenticationDetails(String jsonString, CardNonce lookupCardNonce) {
+        ThreeDSecureAuthenticationResponse authenticationResponse = new ThreeDSecureAuthenticationResponse();
+        CardNonce nonceToReturn = lookupCardNonce;
+
+        try {
+            JSONObject json = new JSONObject(jsonString);
+
+            if (json.has(SUCCESS_KEY)) {
+                authenticationResponse.mSuccess = json.getBoolean(SUCCESS_KEY);
+            } else if (!json.has("errors")) {
+                authenticationResponse.mSuccess = true;
+            }
+
+            if (authenticationResponse.mSuccess) {
+                JSONObject cardJson = json.optJSONObject(PAYMENT_METHOD_KEY);
+                if (cardJson != null) {
+                    nonceToReturn = new CardNonce();
+                    nonceToReturn.fromJson(cardJson);
+                }
+            } else {
+                authenticationResponse.mErrors = jsonString;
+            }
+        } catch (JSONException e) {
+            authenticationResponse.mSuccess = false;
+            authenticationResponse.mException = e.getMessage();
+        }
+
+        nonceToReturn.getThreeDSecureInfo().setThreeDSecureAuthenticationResponse(authenticationResponse);
+        return nonceToReturn;
     }
 
     /**
@@ -81,7 +111,7 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
 
     /**
      * @return The {@link CardNonce} associated with the 3D Secure
-     *         authentication
+     * authentication
      */
     public CardNonce getCardNonce() {
         return mCardNonce;
@@ -101,7 +131,8 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
         return mException;
     }
 
-    public ThreeDSecureAuthenticationResponse() {}
+    public ThreeDSecureAuthenticationResponse() {
+    }
 
     @Override
     public int describeContents() {

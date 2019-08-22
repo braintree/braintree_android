@@ -31,6 +31,7 @@ public class ThreeDSecureInfo implements Parcelable {
     private boolean mLiabilityShifted;
     private boolean mLiabilityShiftPossible;
     private String mStatus;
+    private ThreeDSecureAuthenticationResponse mThreeDSecureAuthenticationResponse;
     private String mThreeDSecureVersion;
     private boolean mWasVerified;
     private String mXid;
@@ -59,6 +60,10 @@ public class ThreeDSecureInfo implements Parcelable {
         threeDSecureInfo.mParesStatus = json.optString(PARES_STATUS_KEY);
 
         return threeDSecureInfo;
+    }
+
+    protected void setThreeDSecureAuthenticationResponse(ThreeDSecureAuthenticationResponse authResponse) {
+        mThreeDSecureAuthenticationResponse = authResponse;
     }
 
     /**
@@ -161,6 +166,13 @@ public class ThreeDSecureInfo implements Parcelable {
      */
     public String getParesStatus() {
         return mParesStatus;
+    }
+
+    /**
+     * @return The {@link ThreeDSecureAuthenticationResponse} if one is associated with a nonce.
+     */
+    public ThreeDSecureAuthenticationResponse getThreeDSecureAuthenticationResponse() {
+        return mThreeDSecureAuthenticationResponse;
     }
 
     public ThreeDSecureInfo() {}
