@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.5.0
 
 * Add 3DSecure authentication details to card nonce
 
