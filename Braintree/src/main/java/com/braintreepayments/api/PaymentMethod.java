@@ -2,7 +2,6 @@ package com.braintreepayments.api;
 
 import android.content.res.Resources;
 import android.net.Uri;
-import android.os.Build;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.PaymentMethodDeleteException;
@@ -34,7 +33,7 @@ public class PaymentMethod {
 
     /**
      * Retrieves the current list of {@link PaymentMethodNonce}s for the current customer.
-     * <p/>
+     * <p>
      * When finished, the {@link java.util.List} of {@link PaymentMethodNonce}s will be sent to {@link
      * PaymentMethodNoncesUpdatedListener#onPaymentMethodNoncesUpdated(List)}.
      *
@@ -76,7 +75,7 @@ public class PaymentMethod {
 
     /**
      * Retrieves the current list of {@link PaymentMethodNonce}s for the current customer.
-     * <p/>
+     * <p>
      * When finished, the {@link java.util.List} of {@link PaymentMethodNonce}s will be sent to {@link
      * PaymentMethodNoncesUpdatedListener#onPaymentMethodNoncesUpdated(List)}.
      *
@@ -89,7 +88,7 @@ public class PaymentMethod {
     /**
      * Deletes a payment method owned by the customer whose id was used to generate the {@link ClientToken}
      * used to create the {@link BraintreeFragment}.
-     * <p/>
+     * <p>
      * Note: This method only works with Android Lollipop (>= 21) and above.
      * This will invoke {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)} when
      * <ul>

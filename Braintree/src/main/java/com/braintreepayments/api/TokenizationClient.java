@@ -1,8 +1,5 @@
 package com.braintreepayments.api;
 
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
-
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
@@ -24,12 +21,12 @@ class TokenizationClient {
 
     /**
      * Create a {@link PaymentMethodNonce} in the Braintree Gateway.
-     * <p/>
+     * <p>
      * On completion, returns the {@link PaymentMethodNonce} to {@link PaymentMethodNonceCallback}.
-     * <p/>
+     * <p>
      * If creation fails validation, {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}
      * will be called with the resulting {@link ErrorWithResponse}.
-     * <p/>
+     * <p>
      * If an error not due to validation (server error, network issue, etc.) occurs, {@link
      * com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)} (Throwable)}
      * will be called with the {@link Exception} that occurred.

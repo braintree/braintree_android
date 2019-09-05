@@ -3,6 +3,9 @@ package com.braintreepayments.api;
 import android.content.Intent;
 import android.net.Uri;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.braintreepayments.api.BraintreePowerMockHelper.MockStaticCardinal;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.ThreeDSecureLookupListener;
@@ -16,6 +19,7 @@ import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
+import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,8 +36,6 @@ import org.robolectric.RobolectricTestRunner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import static androidx.appcompat.app.AppCompatActivity.RESULT_OK;
 import static com.braintreepayments.api.BraintreePowerMockHelper.MockManifestValidator;
 import static com.braintreepayments.api.BraintreePowerMockHelper.MockStaticTokenizationClient;
@@ -47,11 +49,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "javax.crypto.*" })
-@PrepareForTest({ ManifestValidator.class, TokenizationClient.class })
+@PrepareForTest({ ManifestValidator.class, TokenizationClient.class, Cardinal.class })
 /**
  * This class tests ThreeDSecure content that is unrelated a specific 3DS version.
  */
@@ -60,9 +63,8 @@ public class ThreeDSecureUnitTest {
     @Rule
     public PowerMockRule mPowerMockRule = new PowerMockRule();
 
-    private MockFragmentBuilder mMockFragmentBuilder;
     private BraintreeFragment mFragment;
-    public ThreeDSecureRequest mBasicRequest;
+    private ThreeDSecureRequest mBasicRequest;
 
     @Before
     public void setup() throws Exception {
@@ -70,12 +72,13 @@ public class ThreeDSecureUnitTest {
 
         Configuration configuration = new TestConfigurationBuilder()
                 .threeDSecureEnabled(true)
+                .cardinalAuthenticationJWT("cardinal-jwt")
                 .buildConfiguration();
 
-        mMockFragmentBuilder = new MockFragmentBuilder()
+        mFragment = new MockFragmentBuilder()
                 .authorization(Authorization.fromString(stringFromFixture("base_64_client_token.txt")))
-                .configuration(configuration);
-        mFragment = mMockFragmentBuilder.build();
+                .configuration(configuration)
+                .build();
 
         mBasicRequest = new ThreeDSecureRequest()
                 .nonce("a-nonce")
@@ -86,6 +89,8 @@ public class ThreeDSecureUnitTest {
 
     @Test
     public void performVerification_sendsAnalyticEvent() {
+        MockStaticCardinal.initCompletesSuccessfully("df-reference-id");
+
         ThreeDSecure.performVerification(mFragment, mBasicRequest);
 
         verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.initialized"));
@@ -93,20 +98,51 @@ public class ThreeDSecureUnitTest {
 
     @Test
     public void performVerification_sendsParamsInLookupRequest() throws JSONException {
-        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+        MockStaticCardinal.initCompletesSuccessfully("df-reference-id");
+
+        ThreeDSecureRequest request = new ThreeDSecureRequest()
+                .nonce("a-nonce")
+                .versionRequested(ThreeDSecureRequest.VERSION_2)
+                .amount("amount")
+                .billingAddress(new ThreeDSecurePostalAddress()
+                        .givenName("billing-given-name"));
+
+        ThreeDSecure.performVerification(mFragment, request);
 
         ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(mFragment.getHttpClient()).post(urlCaptor.capture(), captor.capture(), any(HttpResponseCallback.class));
+        ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
+        verify(mFragment.getHttpClient())
+                .post(urlCaptor.capture(), bodyCaptor.capture(), any(HttpResponseCallback.class));
 
         String url = urlCaptor.getValue();
-        JSONObject body = new JSONObject(captor.getValue());
+        JSONObject body = new JSONObject(bodyCaptor.getValue());
 
         assertTrue(url.contains("a-nonce"));
         assertEquals("amount", body.getString("amount"));
+        assertEquals("df-reference-id", body.getString("df_reference_id"));
 
         assertEquals("billing-given-name", body.getJSONObject("additional_info")
                 .getString("billing_given_name"));
+    }
+
+    @Test
+    public void performVerification_performsLookup_WhenCardinalSDKInitFails() throws JSONException {
+        MockStaticCardinal.initCallsOnValidated();
+        mockStatic(TokenizationClient.class);
+
+        ThreeDSecureRequest request = new ThreeDSecureRequest()
+                .nonce("a-nonce")
+                .versionRequested(ThreeDSecureRequest.VERSION_2)
+                .amount("amount")
+                .billingAddress(new ThreeDSecurePostalAddress()
+                        .givenName("billing-given-name"));
+
+        ThreeDSecure.performVerification(mFragment, request);
+
+        verifyStatic();
+        TokenizationClient.versionedPath(any(String.class));
+        verify(mFragment.getHttpClient())
+                .post(any(String.class), any(String.class), any(HttpResponseCallback.class));
     }
 
     @Test
@@ -147,6 +183,7 @@ public class ThreeDSecureUnitTest {
         CardNonce cardNonce = mock(CardNonce.class);
         when(cardNonce.getNonce()).thenReturn("card-nonce");
         MockStaticTokenizationClient.mockTokenizeSuccess(cardNonce);
+        MockStaticCardinal.initCompletesSuccessfully("df-reference-id");
 
         CardBuilder cardBuilder = new CardBuilder();
         ThreeDSecureRequest request = new ThreeDSecureRequest()
@@ -165,6 +202,7 @@ public class ThreeDSecureUnitTest {
     @Test
     public void performVerification_callsLookupListener() throws InterruptedException {
         MockStaticTokenizationClient.mockTokenizeSuccess(null);
+        MockStaticCardinal.initCompletesSuccessfully("df-reference-id");
 
         final CountDownLatch latch = new CountDownLatch(1);
 

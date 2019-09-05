@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.content.Intent;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.CardBuilder;
@@ -13,8 +14,13 @@ import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
+import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
+import com.cardinalcommerce.cardinalmobilesdk.models.CardinalConfigurationParameters;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
+import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
+import com.cardinalcommerce.shared.userinterfaces.TextBoxCustomization;
+import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,30 +35,30 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
 import static android.app.Activity.RESULT_OK;
-import static com.braintreepayments.api.BraintreePowerMockHelper.*;
 import static com.braintreepayments.api.BraintreePowerMockHelper.MockManifestValidator.mockUrlSchemeDeclaredInAndroidManifest;
+import static com.braintreepayments.api.BraintreePowerMockHelper.MockStaticCardinal;
+import static com.braintreepayments.api.BraintreePowerMockHelper.MockStaticTokenizationClient;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "javax.crypto.*" })
-@PrepareForTest({ Cardinal.class, ManifestValidator.class, TokenizationClient.class })
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "javax.crypto.*"})
+@PrepareForTest({Cardinal.class, ManifestValidator.class, TokenizationClient.class})
 public class ThreeDSecureV2UnitTest {
     @Rule
     public PowerMockRule mPowerMockRule = new PowerMockRule();
 
     private MockFragmentBuilder mMockFragmentBuilder;
     private BraintreeFragment mFragment;
-    public ThreeDSecureRequest mBasicRequest;
+    private ThreeDSecureRequest mBasicRequest;
 
     @Before
     public void setup() throws Exception {
@@ -68,10 +74,17 @@ public class ThreeDSecureV2UnitTest {
                 .configuration(configuration);
         mFragment = mMockFragmentBuilder.build();
 
+        TextBoxCustomization textBoxCustomization = new TextBoxCustomization();
+        textBoxCustomization.setBorderWidth(12);
+
+        UiCustomization uiCustomization = new UiCustomization();
+        uiCustomization.setTextBoxCustomization(textBoxCustomization);
+
         mBasicRequest = new ThreeDSecureRequest()
                 .nonce("a-nonce")
                 .amount("1.00")
-                .versionRequested(ThreeDSecureRequest.VERSION_2);
+                .versionRequested(ThreeDSecureRequest.VERSION_2)
+                .uiCustomization(uiCustomization);
     }
 
     @Test
@@ -81,7 +94,6 @@ public class ThreeDSecureV2UnitTest {
         MockStaticTokenizationClient.mockTokenizeSuccess(cardNonce);
 
         MockStaticCardinal.initCompletesSuccessfully("fake-df");
-        ThreeDSecure.configureCardinal(mFragment);
 
         CardBuilder cardBuilder = new CardBuilder();
         ThreeDSecureRequest request = new ThreeDSecureRequest()
@@ -92,6 +104,7 @@ public class ThreeDSecureV2UnitTest {
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 
         verifyStatic();
+        //noinspection ResultOfMethodCallIgnored
         TokenizationClient.versionedPath(captor.capture());
 
         assertTrue(captor.getValue().contains("card-nonce"));
@@ -100,18 +113,18 @@ public class ThreeDSecureV2UnitTest {
     @Test
     public void prepareLookup_returnsValidLookupJSONString() throws JSONException {
         MockStaticCardinal.initCompletesSuccessfully("fake-df");
-        ThreeDSecure.configureCardinal(mFragment);
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
 
         JSONObject lookup = new JSONObject(ThreeDSecure.prepareLookup(mFragment, "card-nonce"));
 
-        assertEquals(lookup.getString("authorizationFingerprint"),mFragment.getAuthorization().getBearer());
-        assertEquals(lookup.getString("braintreeLibraryVersion"),"Android-" + BuildConfig.VERSION_NAME);
-        assertEquals(lookup.getString("dfReferenceId"),"fake-df");
-        assertEquals(lookup.getString("nonce"),"card-nonce");
+        assertEquals(lookup.getString("authorizationFingerprint"), mFragment.getAuthorization().getBearer());
+        assertEquals(lookup.getString("braintreeLibraryVersion"), "Android-" + BuildConfig.VERSION_NAME);
+        assertEquals(lookup.getString("dfReferenceId"), "fake-df");
+        assertEquals(lookup.getString("nonce"), "card-nonce");
 
         JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
-        assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"),"2");
-        assertEquals(clientMetaData.getString("sdkVersion"),BuildConfig.VERSION_NAME);
+        assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
+        assertEquals(clientMetaData.getString("sdkVersion"), BuildConfig.VERSION_NAME);
     }
 
     @Test
@@ -126,19 +139,81 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void configureCardinal_whenSetupCompleted_sendsAnalyticEvent() {
+    public void performVerification_setsCardinalConfigurationParameters() {
         MockStaticCardinal.initCompletesSuccessfully("df-reference-id");
 
-        ThreeDSecure.configureCardinal(mFragment);
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        ArgumentCaptor<CardinalConfigurationParameters> captor = ArgumentCaptor.forClass(CardinalConfigurationParameters.class);
+        verify(Cardinal.getInstance()).configure(eq(mFragment.getApplicationContext()), captor.capture());
+
+        CardinalConfigurationParameters actualParams = captor.getValue();
+        assertEquals(actualParams.getTimeout(), 8000);
+        assertFalse(actualParams.isEnableQuickAuth());
+        assertTrue(actualParams.isEnableDFSync());
+        assertEquals(actualParams.getUICustomization().getTextBoxCustomization().getBorderWidth(), 12);
+    }
+
+    @Test
+    public void performVerification_whenEnvironmentIsNonProd_setsCardinalConfigurationEnvironmentParameter() {
+        MockStaticCardinal.initCompletesSuccessfully("df-reference-id");
+
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        ArgumentCaptor<CardinalConfigurationParameters> captor = ArgumentCaptor.forClass(CardinalConfigurationParameters.class);
+        verify(Cardinal.getInstance()).configure(eq(mFragment.getApplicationContext()), captor.capture());
+
+        CardinalConfigurationParameters actualParams = captor.getValue();
+        assertEquals(actualParams.getEnvironment(), CardinalEnvironment.STAGING);
+    }
+
+    @Test
+    public void performVerification_whenEnvironmentIsProd_setsCardinalConfigurationEnvironmentParameter() throws InvalidArgumentException {
+        MockStaticCardinal.initCompletesSuccessfully("df-reference-id");
+
+        Configuration prodConfig = new TestConfigurationBuilder()
+                .threeDSecureEnabled(true)
+                .cardinalAuthenticationJWT("cardinal-jwt")
+                .environment("production")
+                .buildConfiguration();
+
+        mFragment = new MockFragmentBuilder()
+                .authorization(Authorization.fromString(stringFromFixture("base_64_client_token.txt")))
+                .configuration(prodConfig)
+                .build();
+
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        ArgumentCaptor<CardinalConfigurationParameters> captor = ArgumentCaptor.forClass(CardinalConfigurationParameters.class);
+        verify(Cardinal.getInstance()).configure(eq(mFragment.getApplicationContext()), captor.capture());
+
+        CardinalConfigurationParameters actualParams = captor.getValue();
+        assertEquals(actualParams.getEnvironment(), CardinalEnvironment.PRODUCTION);
+    }
+
+    @Test
+    public void performVerification_initializesCardinal() {
+        MockStaticCardinal.initCompletesSuccessfully("df-reference-id");
+
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        verify(Cardinal.getInstance()).init(eq("cardinal_authentication_jwt"), any(CardinalInitService.class));
+    }
+
+    @Test
+    public void performVerification_whenCardinalSetupCompleted_sendsAnalyticEvent() {
+        MockStaticCardinal.initCompletesSuccessfully("df-reference-id");
+
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
 
         verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.cardinal-sdk.init.setup-completed"));
     }
 
     @Test
-    public void configureCardinal_whenSetupFailed_sendsAnalyticEvent() {
+    public void performVerification_whenCardinalSetupFailed_sendsAnalyticEvent() {
         MockStaticCardinal.initCallsOnValidated();
 
-        ThreeDSecure.configureCardinal(mFragment);
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
 
         verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.cardinal-sdk.init.setup-failed"));
     }
@@ -178,6 +253,7 @@ public class ThreeDSecureV2UnitTest {
 
         verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.challenge-presented.false"));
     }
+
     @Test
     public void performVerification_when3DSVersionIsVersion2_sendsAnalyticsEvent() {
         MockStaticCardinal.initCompletesSuccessfully("reference-id");
@@ -333,7 +409,6 @@ public class ThreeDSecureV2UnitTest {
         verify(fragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce"));
     }
 
-
     @Test
     public void performVerification_withoutCardinalJWT_postsException() throws Exception {
         Configuration configuration = new TestConfigurationBuilder()
@@ -350,24 +425,5 @@ public class ThreeDSecureV2UnitTest {
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(fragment).postCallback(captor.capture());
         assertTrue(captor.getValue() instanceof BraintreeException);
-    }
-
-    @Test
-    public void configureCardinal_withoutCardinalJWT_doesNotComplete() throws Exception {
-        mockStatic(Cardinal.class);
-
-        Configuration configuration = new TestConfigurationBuilder()
-                .threeDSecureEnabled(true)
-                .buildConfiguration();
-
-        MockFragmentBuilder mockFragmentBuilder = new MockFragmentBuilder()
-                .authorization(Authorization.fromString(stringFromFixture("base_64_client_token.txt")))
-                .configuration(configuration);
-        BraintreeFragment fragment = mockFragmentBuilder.build();
-
-        ThreeDSecure.configureCardinal(fragment);
-
-        verifyStatic(never());
-        Cardinal.getInstance();
     }
 }

@@ -2,6 +2,9 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 
+import com.cardinalcommerce.shared.userinterfaces.LabelCustomization;
+import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -40,6 +43,12 @@ public class ThreeDSecureRequestUnitTest {
                 .countryCodeAlpha2("US")
                 .postalCode("54321");
 
+        LabelCustomization labelCustomization = new LabelCustomization();
+        labelCustomization.setHeadingTextColor("#FF5A5F");
+
+        UiCustomization uiCustomization = new UiCustomization();
+        uiCustomization.setLabelCustomization(labelCustomization);
+
         ThreeDSecureRequest expected = new ThreeDSecureRequest()
                 .nonce("a-nonce")
                 .amount("1.00")
@@ -50,7 +59,8 @@ public class ThreeDSecureRequestUnitTest {
                 .billingAddress(billingAddress)
                 .additionalInformation(additionalInformation)
                 .challengeRequested(true)
-                .exemptionRequested(true);
+                .exemptionRequested(true)
+                .uiCustomization(uiCustomization);
 
         Parcel parcel = Parcel.obtain();
         expected.writeToParcel(parcel, 0);
@@ -77,6 +87,8 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals(expected.getAdditionalInformation().getAccountId(), actual.getAdditionalInformation().getAccountId());
         assertEquals(expected.isChallengeRequested(), actual.isChallengeRequested());
         assertEquals(expected.isExemptionRequested(), actual.isExemptionRequested());
+        assertEquals(expected.getUiCustomization().getLabelCustomization().getHeadingTextColor(),
+                actual.getUiCustomization().getLabelCustomization().getHeadingTextColor());
     }
 
     @Test

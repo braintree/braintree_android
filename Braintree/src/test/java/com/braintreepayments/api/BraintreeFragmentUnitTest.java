@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.AmericanExpressListener;
@@ -59,9 +62,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-
 import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.verifyAnalyticsEvent;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.ReflectionHelper.getField;
@@ -102,8 +102,6 @@ public class BraintreeFragmentUnitTest {
 
     @Before
     public void setup() {
-        BraintreePowerMockHelper.MockStaticThreeDSecure.mockCardinalSdk();
-
         mActivity = spy(Robolectric.setupActivity(FragmentTestActivity.class));
         doNothing().when(mActivity).startActivity(any(Intent.class));
         AnalyticsDatabaseTestUtils.clearAllEvents(mActivity);

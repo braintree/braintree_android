@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.braintreepayments.api.exceptions.AppSwitchNotAvailableException;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
@@ -23,8 +25,6 @@ import com.braintreepayments.api.models.VenmoConfiguration;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Used to create and tokenize Venmo accounts. For more information see the <a href="https://developers.braintreepayments.com/guides/venmo/overview">documentation</a>
@@ -99,7 +99,7 @@ public class Venmo {
 
     /**
      * Start the Pay With Venmo flow. This will app switch to the Venmo app.
-     * <p/>
+     * <p>
      * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to {@link
      * com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}.
      *
@@ -146,7 +146,7 @@ public class Venmo {
 
     /**
      * Start the Venmo flow. This will app switch to the Venmo app.
-     * <p/>
+     * <p>
      * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to {@link
      * com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}.
      *

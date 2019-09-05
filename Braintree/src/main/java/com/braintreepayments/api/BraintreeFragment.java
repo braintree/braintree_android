@@ -9,6 +9,7 @@ import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
@@ -250,8 +251,6 @@ public class BraintreeFragment extends BrowserSwitchFragment {
         }
 
         fetchConfiguration();
-
-        ThreeDSecure.configureCardinal(this);
     }
 
     @TargetApi(VERSION_CODES.M)
@@ -887,7 +886,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
      * for Android Pay. This instance will be automatically disconnected in
      * {@link BraintreeFragment#onStop()} and automatically connected in
      * {@link BraintreeFragment#onResume()}.
-     * <p/>
+     * <p>
      * Connection failed and connection suspended errors will be sent to
      * {@link BraintreeErrorListener#onError(Exception)}.
      *

@@ -13,7 +13,6 @@ import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
-import com.cardinalcommerce.shared.models.enums.DirectoryServerID;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 import com.paypal.android.sdk.onetouch.core.Request;
 import com.paypal.android.sdk.onetouch.core.Result;
@@ -30,7 +29,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.doAnswer;
-import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
@@ -100,14 +98,6 @@ class BraintreePowerMockHelper {
             Cardinal.getInstance();
 
             return cruiseService;
-        }
-    }
-
-    static class MockStaticThreeDSecure {
-        static void mockCardinalSdk() {
-            mockStatic(ThreeDSecure.class);
-            doNothing().when(ThreeDSecure.class);
-            ThreeDSecure.configureCardinal(any(BraintreeFragment.class));
         }
     }
 

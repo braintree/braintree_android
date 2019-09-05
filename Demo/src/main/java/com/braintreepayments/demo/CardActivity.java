@@ -3,13 +3,6 @@ package com.braintreepayments.demo;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.braintreepayments.api.interfaces.ThreeDSecureLookupListener;
-import com.braintreepayments.api.models.ThreeDSecureAdditionalInformation;
-import com.braintreepayments.api.models.ThreeDSecureLookup;
-import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
-import com.braintreepayments.api.models.ThreeDSecureRequest;
-import com.google.android.material.textfield.TextInputLayout;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +21,7 @@ import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.interfaces.ThreeDSecureLookupListener;
 import com.braintreepayments.api.interfaces.UnionPayListener;
 import com.braintreepayments.api.models.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.models.Authorization;
@@ -35,6 +29,10 @@ import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.ThreeDSecureAdditionalInformation;
+import com.braintreepayments.api.models.ThreeDSecureLookup;
+import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
+import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.braintreepayments.api.models.UnionPayCapabilities;
 import com.braintreepayments.api.models.UnionPayCardBuilder;
 import com.braintreepayments.cardform.OnCardFormFieldFocusedListener;
@@ -42,8 +40,9 @@ import com.braintreepayments.cardform.OnCardFormSubmitListener;
 import com.braintreepayments.cardform.utils.CardType;
 import com.braintreepayments.cardform.view.CardEditText;
 import com.braintreepayments.cardform.view.CardForm;
-
-import androidx.annotation.Nullable;
+import com.cardinalcommerce.shared.userinterfaces.ToolbarCustomization;
+import com.cardinalcommerce.shared.userinterfaces.UiCustomization;
+import com.google.android.material.textfield.TextInputLayout;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -352,14 +351,23 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
         ThreeDSecureAdditionalInformation additionalInformation = new ThreeDSecureAdditionalInformation()
                 .accountId("account-id");
 
-        ThreeDSecureRequest threeDSecureRequest = new ThreeDSecureRequest()
+        ToolbarCustomization toolbarCustomization = new ToolbarCustomization();
+        toolbarCustomization.setHeaderText("Braintree 3DS Checkout");
+        toolbarCustomization.setBackgroundColor("#FF5A5F");
+        toolbarCustomization.setButtonText("Close");
+        toolbarCustomization.setTextColor("#222222");
+        toolbarCustomization.setTextFontSize(18);
+
+        UiCustomization uiCustomization = new UiCustomization();
+        uiCustomization.setToolbarCustomization(toolbarCustomization);
+
+        return new ThreeDSecureRequest()
                 .amount("10")
                 .email("test@email.com")
                 .billingAddress(billingAddress)
                 .nonce(cardNonce.getNonce())
                 .versionRequested(ThreeDSecureRequest.VERSION_2)
-                .additionalInformation(additionalInformation);
-
-        return threeDSecureRequest;
+                .additionalInformation(additionalInformation)
+                .uiCustomization(uiCustomization);
     }
 }

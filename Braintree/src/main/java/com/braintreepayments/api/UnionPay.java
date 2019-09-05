@@ -30,10 +30,10 @@ public class UnionPay {
     /**
      * Fetches the capabilities of a card. If the card needs to be enrolled use {@link
      * UnionPay#enroll(BraintreeFragment, UnionPayCardBuilder)}.
-     * <p/>
+     * <p>
      * On completion, returns the {@link UnionPayCapabilities} to
      * {@link com.braintreepayments.api.interfaces.UnionPayListener#onCapabilitiesFetched(UnionPayCapabilities)}
-     * <p/>
+     * <p>
      * On error, an exception will be passed back to
      * {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}
      *
@@ -75,12 +75,12 @@ public class UnionPay {
     /**
      * Enrolls a Union Pay card. Only call this method if the card needs to be enrolled. Check {@link
      * UnionPay#fetchCapabilities(BraintreeFragment, String)} if your card needs to be enrolled.
-     * <p/>
+     * <p>
      * On completion, returns a enrollmentId to
      * {@link com.braintreepayments.api.interfaces.UnionPayListener#onSmsCodeSent(String, boolean)}
      * This enrollmentId needs to be applied to {@link UnionPayCardBuilder} along with the SMS code
      * collected from the merchant before invoking {@link UnionPay#tokenize(BraintreeFragment, UnionPayCardBuilder)}
-     * <p/>
+     * <p>
      * On error, an exception will be passed back to
      * {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}
      *
@@ -134,13 +134,13 @@ public class UnionPay {
      * Create a {@link com.braintreepayments.api.models.CardNonce}. Note that if the card is a UnionPay card,
      * {@link UnionPayCardBuilder#enrollmentId(String)} and {@link UnionPayCardBuilder#smsCode(String)}
      * need to be set for tokenization to succeed.
-     * <p/>
+     * <p>
      * On completion, returns the {@link com.braintreepayments.api.models.PaymentMethodNonce} to {@link
      * com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener}.
-     * <p/>
+     * <p>
      * If creation fails validation, {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}
      * will be called with the resulting {@link com.braintreepayments.api.exceptions.ErrorWithResponse}.
-     * <p/>
+     * <p>
      * If an error not due to validation (server error, network issue, etc.) occurs, {@link
      * com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)} will be called with the {@link
      * Exception} that occurred.

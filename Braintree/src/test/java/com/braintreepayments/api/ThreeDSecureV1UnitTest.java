@@ -6,6 +6,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
+import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,14 +17,17 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
-import static com.braintreepayments.api.BraintreePowerMockHelper.*;
+import static com.braintreepayments.api.BraintreePowerMockHelper.MockManifestValidator;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "javax.crypto.*" })
-@PrepareForTest({ ManifestValidator.class, TokenizationClient.class })
+@PrepareForTest({ ManifestValidator.class, TokenizationClient.class, Cardinal.class })
 public class ThreeDSecureV1UnitTest {
 
     @Rule
@@ -63,4 +67,13 @@ public class ThreeDSecureV1UnitTest {
         verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.3ds-version.1.0.2"));
     }
 
+    @Test
+    public void performVerification_whenVersion1IsRequested_doesNotUseCardinalMobileSDK() {
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        mockStatic(Cardinal.class);
+        verifyStatic(times(0));
+        //noinspection ResultOfMethodCallIgnored
+        Cardinal.getInstance();
+    }
 }
