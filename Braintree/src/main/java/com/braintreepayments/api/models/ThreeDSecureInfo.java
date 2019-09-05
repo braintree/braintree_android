@@ -23,6 +23,10 @@ public class ThreeDSecureInfo implements Parcelable {
     private static final String ACS_TRANSACTION_ID_KEY = "acsTransactionId";
     private static final String THREE_D_SECURE_SERVER_TRANSACTION_ID_KEY = "threeDSecureServerTransactionId";
     private static final String PARES_STATUS_KEY= "paresStatus";
+    private static final String AUTHENTICATION_KEY= "authentication";
+    private static final String LOOKUP_KEY= "lookup";
+    private static final String TRANS_STATUS_KEY= "transStatus";
+    private static final String TRANS_STATUS_REASON_KEY= "transStatusReason";
 
     private String mCavv;
     private String mDsTransactionId;
@@ -38,6 +42,10 @@ public class ThreeDSecureInfo implements Parcelable {
     private String mAcsTransactionId;
     private String mThreeDSecureServerTransactionId;
     private String mParesStatus;
+    private String mAuthenticationTransactionStatus;
+    private String mAuthenticationTransactionStatusReason;
+    private String mLookupTransactionStatus;
+    private String mLookupTransactionStatusReason;
 
     protected static ThreeDSecureInfo fromJson(JSONObject json) {
         if (json == null) {
@@ -58,6 +66,18 @@ public class ThreeDSecureInfo implements Parcelable {
         threeDSecureInfo.mAcsTransactionId = json.optString(ACS_TRANSACTION_ID_KEY);
         threeDSecureInfo.mThreeDSecureServerTransactionId = json.optString(THREE_D_SECURE_SERVER_TRANSACTION_ID_KEY);
         threeDSecureInfo.mParesStatus = json.optString(PARES_STATUS_KEY);
+
+        JSONObject authenticationJson = json.optJSONObject(AUTHENTICATION_KEY);
+        if (authenticationJson != null) {
+            threeDSecureInfo.mAuthenticationTransactionStatus = authenticationJson.optString(TRANS_STATUS_KEY);
+            threeDSecureInfo.mAuthenticationTransactionStatusReason = authenticationJson.optString(TRANS_STATUS_REASON_KEY);
+        }
+
+        JSONObject lookupJson = json.optJSONObject(LOOKUP_KEY);
+        if (lookupJson != null) {
+            threeDSecureInfo.mLookupTransactionStatus = lookupJson.optString(TRANS_STATUS_KEY);
+            threeDSecureInfo.mLookupTransactionStatusReason = lookupJson.optString(TRANS_STATUS_REASON_KEY);
+        }
 
         return threeDSecureInfo;
     }
@@ -175,6 +195,34 @@ public class ThreeDSecureInfo implements Parcelable {
         return mThreeDSecureAuthenticationResponse;
     }
 
+    /**
+     * @return On authentication, the transaction status result identifier.
+     */
+    public String getAuthenticationTransactionStatus() {
+        return mAuthenticationTransactionStatus;
+    }
+
+    /**
+     * @return On authentication, provides additional information as to why the transaction status has the specific value.
+     */
+    public String getAuthenticationTransactionStatusReason() {
+        return mAuthenticationTransactionStatusReason;
+    }
+
+    /**
+     * @return On lookup, the transaction status result identifier.
+     */
+    public String getLookupTransactionStatus() {
+        return mLookupTransactionStatus;
+    }
+
+    /**
+     * @return On lookup, provides additional information as to why the transaction status has the specific value.
+     */
+    public String getLookupTransactionStatusReason() {
+        return mLookupTransactionStatusReason;
+    }
+
     public ThreeDSecureInfo() {}
 
     @Override
@@ -194,6 +242,10 @@ public class ThreeDSecureInfo implements Parcelable {
         dest.writeString(mThreeDSecureVersion);
         dest.writeByte(mWasVerified ? (byte) 1 : (byte) 0);
         dest.writeString(mXid);
+        dest.writeString(mAuthenticationTransactionStatus);
+        dest.writeString(mAuthenticationTransactionStatusReason);
+        dest.writeString(mLookupTransactionStatus);
+        dest.writeString(mLookupTransactionStatusReason);
     }
 
     private ThreeDSecureInfo(Parcel in) {
@@ -207,6 +259,10 @@ public class ThreeDSecureInfo implements Parcelable {
         mThreeDSecureVersion = in.readString();
         mWasVerified = in.readByte() != 0;
         mXid = in.readString();
+        mAuthenticationTransactionStatus = in.readString();
+        mAuthenticationTransactionStatusReason = in.readString();
+        mLookupTransactionStatus = in.readString();
+        mLookupTransactionStatusReason = in.readString();
     }
 
     public static final Creator<ThreeDSecureInfo> CREATOR = new Creator<ThreeDSecureInfo>() {

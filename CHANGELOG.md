@@ -1,10 +1,14 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Add authentication and lookup transaction status information to ThreeDSecureInfo
+* Add ability to customize UI for 3D Secure challenge views
+* Fix race condition that caused inconsistent 3DS version flows
+
 ## 3.5.0
 
 * Add 3DSecure authentication details to card nonce
-* Add ability to customize UI for 3D Secure challenge views
-* Fix race condition that caused inconsistent 3DS version flows
 
 ## 3.4.2
 
