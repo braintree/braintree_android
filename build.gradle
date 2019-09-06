@@ -38,12 +38,12 @@ allprojects {
     def sonatypeUsername = System.env['SONATYPE_USERNAME']
     def sonatypePassword = System.env['SONATYPE_PASSWORD']
 
-    version = '3.6.0'
+    version = '3.6.1-SNAPSHOT'
     ext {
         compileSdkVersion = 28
         minSdkVersion = 21
         targetSdkVersion = 28
-        versionCode = 107
+        versionCode = 108
         versionName = version
     }
 
