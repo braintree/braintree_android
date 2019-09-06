@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.6.0
 
 * Add authentication and lookup transaction status information to ThreeDSecureInfo
 * Add ability to customize UI for 3D Secure challenge views
