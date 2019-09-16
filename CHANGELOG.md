@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## Unreleased
+
+* Include reference to Cardinal's docs for `uiCustomization` property on `ThreeDSecureRequest`.
+
 ## 3.6.0
 
 * Add authentication and lookup transaction status information to ThreeDSecureInfo
