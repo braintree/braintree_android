@@ -47,6 +47,9 @@
           "transStatus": "N",
           "transStatusReason": "02"
         }
+      },
+      "authenticationInsight":  {
+        "regulationEnvironment": "UNREGULATED"
       }
     }
   ]

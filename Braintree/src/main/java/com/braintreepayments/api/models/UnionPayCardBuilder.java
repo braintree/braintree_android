@@ -125,8 +125,7 @@ public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> im
     }
 
     @Override
-    protected void buildGraphQL(Context context, JSONObject base, JSONObject input)
-            throws BraintreeException, JSONException {}
+    protected void buildGraphQL(Context context, JSONObject base, JSONObject variables) {}
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {

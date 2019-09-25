@@ -11,8 +11,6 @@ public class Settings {
 
     protected static final String ENVIRONMENT = "environment";
 
-    private static final String VERSION = "version";
-
     private static final String SANDBOX_BASE_SERVER_URL = "https://braintree-sample-merchant.herokuapp.com";
     private static final String PRODUCTION_BASE_SERVER_URL = "https://executive-sample-merchant.herokuapp.com";
 

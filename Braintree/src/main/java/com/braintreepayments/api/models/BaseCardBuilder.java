@@ -12,38 +12,38 @@ import org.json.JSONObject;
  */
 public abstract class BaseCardBuilder<T> extends PaymentMethodBuilder<T> implements Parcelable {
 
-    protected static final String CREDIT_CARD_KEY = "creditCard";
-    protected static final String NUMBER_KEY = "number";
-    protected static final String EXPIRATION_MONTH_KEY = "expirationMonth";
-    protected static final String EXPIRATION_YEAR_KEY = "expirationYear";
-    protected static final String CVV_KEY = "cvv";
-    protected static final String CARDHOLDER_NAME_KEY = "cardholderName";
-    protected static final String BILLING_ADDRESS_KEY = "billingAddress";
-    protected static final String FIRST_NAME_KEY = "firstName";
-    protected static final String LAST_NAME_KEY = "lastName";
-    protected static final String COMPANY_KEY = "company";
-    protected static final String COUNTRY_CODE_KEY = "countryCode";
-    protected static final String COUNTRY_CODE_ALPHA3_KEY = "countryCodeAlpha3";
-    protected static final String LOCALITY_KEY = "locality";
-    protected static final String POSTAL_CODE_KEY = "postalCode";
-    protected static final String REGION_KEY = "region";
-    protected static final String STREET_ADDRESS_KEY = "streetAddress";
-    protected static final String EXTENDED_ADDRESS_KEY = "extendedAddress";
+    static final String BILLING_ADDRESS_KEY = "billingAddress";
+    static final String CARDHOLDER_NAME_KEY = "cardholderName";
+    static final String COMPANY_KEY = "company";
+    static final String COUNTRY_CODE_ALPHA3_KEY = "countryCodeAlpha3";
+    static final String COUNTRY_CODE_KEY = "countryCode";
+    static final String CREDIT_CARD_KEY = "creditCard";
+    static final String CVV_KEY = "cvv";
+    static final String EXPIRATION_MONTH_KEY = "expirationMonth";
+    static final String EXPIRATION_YEAR_KEY = "expirationYear";
+    static final String EXTENDED_ADDRESS_KEY = "extendedAddress";
+    static final String FIRST_NAME_KEY = "firstName";
+    static final String LAST_NAME_KEY = "lastName";
+    static final String LOCALITY_KEY = "locality";
+    static final String NUMBER_KEY = "number";
+    static final String POSTAL_CODE_KEY = "postalCode";
+    static final String REGION_KEY = "region";
+    static final String STREET_ADDRESS_KEY = "streetAddress";
 
-    protected String mCardnumber;
-    protected String mCvv;
-    protected String mExpirationMonth;
-    protected String mExpirationYear;
-    protected String mCardholderName;
-    protected String mFirstName;
-    protected String mLastName;
-    protected String mCompany;
-    protected String mCountryCode;
-    protected String mLocality;
-    protected String mPostalCode;
-    protected String mRegion;
-    protected String mStreetAddress;
-    protected String mExtendedAddress;
+    String mCardholderName;
+    String mCardnumber;
+    String mCompany;
+    String mCountryCode;
+    String mCvv;
+    String mExpirationMonth;
+    String mExpirationYear;
+    String mExtendedAddress;
+    String mFirstName;
+    String mLastName;
+    String mLocality;
+    String mPostalCode;
+    String mRegion;
+    String mStreetAddress;
 
     public BaseCardBuilder() {}
 

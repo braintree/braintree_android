@@ -16,6 +16,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
 public class CardNonceUnitTest {
@@ -43,6 +44,8 @@ public class CardNonceUnitTest {
         assertEquals(UNKNOWN, cardNonce.getBinData().getIssuingBank());
         assertEquals("Something", cardNonce.getBinData().getCountryOfIssuance());
         assertEquals("123", cardNonce.getBinData().getProductId());
+        assertEquals("unregulated",
+                cardNonce.getAuthenticationInsight().getRegulationEnvironment());
     }
 
     @Test
@@ -60,14 +63,33 @@ public class CardNonceUnitTest {
         assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
         assertNotNull(cardNonce.getBinData());
         assertEquals(YES, cardNonce.getBinData().getPrepaid());
-        assertEquals(UNKNOWN, cardNonce.getBinData().getHealthcare());
+        assertEquals(YES, cardNonce.getBinData().getHealthcare());
         assertEquals(NO, cardNonce.getBinData().getDebit());
         assertEquals(YES, cardNonce.getBinData().getDurbinRegulated());
         assertEquals(NO, cardNonce.getBinData().getCommercial());
-        assertEquals(UNKNOWN, cardNonce.getBinData().getPayroll());
-        assertEquals(UNKNOWN, cardNonce.getBinData().getIssuingBank());
+        assertEquals(YES, cardNonce.getBinData().getPayroll());
+        assertEquals("Bank of America", cardNonce.getBinData().getIssuingBank());
         assertEquals("USA", cardNonce.getBinData().getCountryOfIssuance());
-        assertEquals(UNKNOWN, cardNonce.getBinData().getProductId());
+        assertEquals("123", cardNonce.getBinData().getProductId());
+        assertEquals("unregulated",
+                cardNonce.getAuthenticationInsight().getRegulationEnvironment());
+    }
+
+    @Test
+    public void setsCorrectDefaultsWhenValuesAreMissingFromJson() throws JSONException {
+        CardNonce cardNonce = CardNonce.fromJson(stringFromFixture("response/graphql/credit_card_missing_values.json"));
+
+        assertEquals("", cardNonce.getLastFour());
+        assertEquals("", cardNonce.getLastTwo());
+        assertEquals("Unknown", cardNonce.getCardType());
+        assertEquals("Unknown", cardNonce.getTypeLabel());
+        assertNotNull(cardNonce.getThreeDSecureInfo());
+        assertEquals("", cardNonce.getBin());
+        assertNotNull(cardNonce.getBinData());
+        assertEquals("3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1", cardNonce.getNonce());
+        assertEquals("", cardNonce.getDescription());
+        assertFalse(cardNonce.isDefault());
+        assertNull(cardNonce.getAuthenticationInsight());
     }
 
     @Test
@@ -113,5 +135,7 @@ public class CardNonceUnitTest {
         assertEquals("1111", parceled.getLastFour());
         assertFalse(parceled.isDefault());
         assertBinDataEqual(cardNonce.getBinData(), parceled.getBinData());
+        assertEquals(cardNonce.getAuthenticationInsight().getRegulationEnvironment(),
+                parceled.getAuthenticationInsight().getRegulationEnvironment());
     }
 }

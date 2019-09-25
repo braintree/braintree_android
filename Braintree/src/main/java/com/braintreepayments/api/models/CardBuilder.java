@@ -1,35 +1,40 @@
 package com.braintreepayments.api.models;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
-import com.braintreepayments.api.R;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.internal.GraphQLConstants.Keys;
-import com.braintreepayments.api.internal.GraphQLQueryHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
-
-import static com.braintreepayments.api.models.PostalAddressParser.COUNTRY_CODE_KEY;
 
 /**
  * Builder used to construct a card tokenization request.
  */
 public class CardBuilder extends BaseCardBuilder<CardBuilder> implements Parcelable {
 
-    protected void buildGraphQL(Context context, JSONObject base, JSONObject input) throws BraintreeException,
-            JSONException {
-        try {
-            base.put(Keys.QUERY, GraphQLQueryHelper.getQuery(context, R.raw.tokenize_credit_card_mutation));
-        } catch (Resources.NotFoundException | IOException e) {
-            throw new BraintreeException("Unable to read GraphQL query", e);
+    private static final String MERCHANT_ACCOUNT_ID_KEY = "merchantAccountId";
+    private static final String AUTHENTICATION_INSIGHT_REQUESTED_KEY = "authenticationInsight";
+    private static final String AUTHENTICATION_INSIGHT_INPUT_KEY = "authenticationInsightInput";
+
+    private String mMerchantAccountId;
+    private boolean mAuthenticationInsightRequested;
+
+    protected void buildGraphQL(Context context, JSONObject base, JSONObject variables) throws BraintreeException, JSONException {
+        JSONObject input = variables.getJSONObject(Keys.INPUT);
+
+        if (TextUtils.isEmpty(mMerchantAccountId) && mAuthenticationInsightRequested) {
+            throw new BraintreeException("A merchant account ID is required when authenticationInsightRequested is true.");
         }
 
+        if (mAuthenticationInsightRequested) {
+            variables.put(AUTHENTICATION_INSIGHT_INPUT_KEY, new JSONObject().put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId));
+        }
+
+        base.put(Keys.QUERY, getCardTokenizationGraphQLMutation());
         base.put(OPERATION_NAME_KEY, "TokenizeCreditCard");
 
         JSONObject creditCard = new JSONObject()
@@ -57,10 +62,48 @@ public class CardBuilder extends BaseCardBuilder<CardBuilder> implements Parcela
         input.put(CREDIT_CARD_KEY, creditCard);
     }
 
-    public CardBuilder() {}
+    public CardBuilder() {
+    }
+
+    /**
+     * @param id The merchant account id used to generate the authentication insight.
+     * @return {@link com.braintreepayments.api.models.CardBuilder}
+     */
+    public CardBuilder merchantAccountId(String id) {
+        mMerchantAccountId = TextUtils.isEmpty(id) ? null : id;
+        return this;
+    }
+
+    /**
+     * @param requested If authentication insight will be requested.
+     * @return {@link com.braintreepayments.api.models.CardBuilder}
+     */
+    public CardBuilder authenticationInsightRequested(boolean requested) {
+        mAuthenticationInsightRequested = requested;
+        return this;
+    }
+
+    @Override
+    protected void build(JSONObject json, JSONObject paymentMethodNonceJson) throws JSONException {
+        super.build(json, paymentMethodNonceJson);
+
+        if (mAuthenticationInsightRequested) {
+            json.put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId);
+            json.put(AUTHENTICATION_INSIGHT_REQUESTED_KEY, mAuthenticationInsightRequested);
+        }
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeString(mMerchantAccountId);
+        dest.writeByte(mAuthenticationInsightRequested ? (byte) 1 : 0);
+    }
 
     protected CardBuilder(Parcel in) {
         super(in);
+        mMerchantAccountId = in.readString();
+        mAuthenticationInsightRequested = in.readByte() > 0;
     }
 
     public static final Creator<CardBuilder> CREATOR = new Creator<CardBuilder>() {
@@ -74,4 +117,46 @@ public class CardBuilder extends BaseCardBuilder<CardBuilder> implements Parcela
             return new CardBuilder[size];
         }
     };
+
+    private String getCardTokenizationGraphQLMutation() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("mutation TokenizeCreditCard($input: TokenizeCreditCardInput!");
+
+        if (mAuthenticationInsightRequested) {
+            stringBuilder.append(", $authenticationInsightInput: AuthenticationInsightInput!");
+        }
+
+        stringBuilder.append(") {" +
+                "  tokenizeCreditCard(input: $input) {" +
+                "    token" +
+                "    creditCard {" +
+                "      bin" +
+                "      brand" +
+                "      last4" +
+                "      binData {" +
+                "        prepaid" +
+                "        healthcare" +
+                "        debit" +
+                "        durbinRegulated" +
+                "        commercial" +
+                "        payroll" +
+                "        issuingBank" +
+                "        countryOfIssuance" +
+                "        productId" +
+                "      }" +
+                "    }");
+
+        if (mAuthenticationInsightRequested) {
+            stringBuilder.append("" +
+                    "    authenticationInsight(input: $authenticationInsightInput) {" +
+                    "      customerAuthenticationRegulationEnvironment" +
+                    "    }");
+        }
+
+        stringBuilder.append("" +
+                "  }" +
+                "}");
+
+        return stringBuilder.toString();
+    }
 }

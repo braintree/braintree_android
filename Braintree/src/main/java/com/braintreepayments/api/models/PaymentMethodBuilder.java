@@ -116,6 +116,7 @@ public abstract class PaymentMethodBuilder<T> {
     public String buildGraphQL(Context context, Authorization authorization) throws BraintreeException {
         JSONObject base = new JSONObject();
         JSONObject input = new JSONObject();
+        JSONObject variables = new JSONObject();
 
         try {
             base.put(GRAPHQL_CLIENT_SDK_METADATA_KEY, new MetadataBuilder()
@@ -135,9 +136,11 @@ public abstract class PaymentMethodBuilder<T> {
                 }
             }
             input.put(OPTIONS_KEY, optionsJson);
+            variables.put(Keys.INPUT, input);
 
-            buildGraphQL(context, base, input);
-            base.put(Keys.VARIABLES, new JSONObject().put(Keys.INPUT, input));
+            buildGraphQL(context, base, variables);
+
+            base.put(Keys.VARIABLES, variables);
         } catch (JSONException ignored) {}
 
         return base.toString();

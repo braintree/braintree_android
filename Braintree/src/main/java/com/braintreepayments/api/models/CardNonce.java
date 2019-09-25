@@ -29,6 +29,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     private static final String LAST_TWO_KEY = "lastTwo";
     private static final String LAST_FOUR_KEY = "lastFour";
     private static final String BIN_KEY = "bin";
+    private static final String AUTHENTICATION_INSIGHT_KEY = "authenticationInsight";
 
     private String mCardType;
     private String mLastTwo;
@@ -36,6 +37,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     private ThreeDSecureInfo mThreeDSecureInfo;
     private String mBin;
     private BinData mBinData;
+    private AuthenticationInsight mAuthenticationInsight;
 
     /**
      * Convert an API response to a {@link CardNonce}.
@@ -73,6 +75,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         mThreeDSecureInfo = ThreeDSecureInfo.fromJson(json.optJSONObject(THREE_D_SECURE_INFO_KEY));
         mBin = Json.optString(details, BIN_KEY, "");
         mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
+        mAuthenticationInsight = AuthenticationInsight.fromJson(json.optJSONObject(AUTHENTICATION_INSIGHT_KEY));
     }
 
     private void fromGraphQLJson(JSONObject json) throws JSONException {
@@ -91,6 +94,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
             mNonce = payload.getString(TOKEN_KEY);
             mDescription = TextUtils.isEmpty(mLastTwo) ? "" : "ending in ••" + mLastTwo;
             mDefault = false;
+            mAuthenticationInsight = AuthenticationInsight.fromJson(payload.optJSONObject(AUTHENTICATION_INSIGHT_KEY));
         } else {
             throw new JSONException("Failed to parse GraphQL response JSON");
         }
@@ -147,6 +151,16 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         return mBinData;
     }
 
+    /**
+     * @return {@link AuthenticationInsight}
+     * Details about the regulatory environment and applicable customer authentication regulation
+     * for a potential transaction. You may use this to make an informed decision whether to perform
+     * 3D Secure authentication.
+     */
+    public AuthenticationInsight getAuthenticationInsight() {
+        return mAuthenticationInsight;
+    }
+
     public CardNonce() {}
 
     @Override
@@ -157,6 +171,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         dest.writeString(mLastFour);
         dest.writeParcelable(mBinData, flags);
         dest.writeParcelable(mThreeDSecureInfo, flags);
+        dest.writeParcelable(mAuthenticationInsight, flags);
     }
 
     protected CardNonce(Parcel in) {
@@ -166,6 +181,7 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         mLastFour = in.readString();
         mBinData = in.readParcelable(BinData.class.getClassLoader());
         mThreeDSecureInfo = in.readParcelable(ThreeDSecureInfo.class.getClassLoader());
+        mAuthenticationInsight = in.readParcelable(AuthenticationInsight.class.getClassLoader());
     }
 
     public static final Creator<CardNonce> CREATOR = new Creator<CardNonce>() {

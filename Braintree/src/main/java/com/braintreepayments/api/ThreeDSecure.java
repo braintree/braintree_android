@@ -89,6 +89,8 @@ public class ThreeDSecure {
     }
 
     /**
+     * @deprecated Use {{@link #performVerification(BraintreeFragment, ThreeDSecureRequest)}} for 3DS 2.0.
+     *
      * Verification is associated with a transaction amount and your merchant account. To specify a
      * different merchant account (or, in turn, currency), you will need to specify the merchant
      * account id when <a href="https://developers.braintreepayments.com/android/sdk/overview/generate-client-token">
@@ -107,6 +109,7 @@ public class ThreeDSecure {
      *                    Note that the nonce will be replaced with the nonce generated from the
      *                    cardBuilder.
      */
+    @Deprecated
     public static void performVerification(final BraintreeFragment fragment,
                                            final CardBuilder cardBuilder,
                                            final ThreeDSecureRequest request) {
