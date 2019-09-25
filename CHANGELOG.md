@@ -4,6 +4,7 @@
 
 * Add ability to request `AuthenticationInsight` when tokenizing a credit card, which can be used to make a decision about whether to perform 3D Secure verification
 * Include reference to Cardinal's docs for `uiCustomization` property on `ThreeDSecureRequest`.
+* Add `requiresUserAuthentication` method to `ThreeDSecureLookup`
 
 ## 3.6.0
 

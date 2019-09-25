@@ -12,6 +12,7 @@ import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureLookupUnitTest {
@@ -42,6 +43,7 @@ public class ThreeDSecureLookupUnitTest {
         assertTrue(mLookupWithoutVersion.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
         assertTrue(mLookupWithoutVersion.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertTrue(mLookupWithoutVersion.getCardNonce().getThreeDSecureInfo().wasVerified());
+        assertTrue(mLookupWithoutVersion.requiresUserAuthentication());
     }
 
     @Test
@@ -85,6 +87,7 @@ public class ThreeDSecureLookupUnitTest {
         assertTrue(mLookupWithoutAcsURL.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
         assertTrue(mLookupWithoutAcsURL.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertTrue(mLookupWithoutAcsURL.getCardNonce().getThreeDSecureInfo().wasVerified());
+        assertFalse(mLookupWithoutAcsURL.requiresUserAuthentication());
     }
 
     @Test

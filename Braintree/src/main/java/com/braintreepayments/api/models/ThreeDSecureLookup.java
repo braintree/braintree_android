@@ -3,6 +3,7 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.Json;
 
 import org.json.JSONException;
@@ -114,6 +115,15 @@ public class ThreeDSecureLookup implements Parcelable {
      */
     public String getTransactionId() {
         return mTransactionId;
+    }
+
+    /**
+     * @return {@code boolean}
+     * When `true`, the user will be presented with a 3D Secure challenge when calling
+     * {@link com.braintreepayments.api.ThreeDSecure#continuePerformVerification(BraintreeFragment, ThreeDSecureRequest, ThreeDSecureLookup)}
+     */
+    public boolean requiresUserAuthentication() {
+        return mAcsUrl != null;
     }
 
     public ThreeDSecureLookup() {}
