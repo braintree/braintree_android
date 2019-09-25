@@ -400,7 +400,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
     }
 
     /**
-     * Optional. The 2-digit number indicating the type of authentication request. This field is required if a recurring or installment transaction request.
+     * Optional. The 2-digit number indicating the type of authentication request.
 
      * Possible values:
      * 02 Recurring transaction
@@ -412,7 +412,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
     }
 
     /**
-     * Optional.  An integer value greater than 1 indicating the maximum number of permitted authorizations for installment payments. Required for recurring and installement transaction requests.
+     * Optional.  An integer value greater than 1 indicating the maximum number of permitted authorizations for installment payments.
      */
     public ThreeDSecureAdditionalInformation installment(String installment) {
         mInstallment = installment;
@@ -420,7 +420,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
     }
 
     /**
-     * Optional. The 14-digit number (format: YYYYMMDDHHMMSS) indicating the date in UTC of original purchase. Required for recurring and installement transaction requests.
+     * Optional. The 14-digit number (format: YYYYMMDDHHMMSS) indicating the date in UTC of original purchase.
      */
     public ThreeDSecureAdditionalInformation purchaseDate(String purchaseDate) {
         mPurchaseDate = purchaseDate;
@@ -428,7 +428,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
     }
 
     /**
-     * Optional. The 8-digit number (format: YYYYMMDD) indicating the date after which no further recurring authorizations should be performed. Required for recurring and installement transaction requests.
+     * Optional. The 8-digit number (format: YYYYMMDD) indicating the date after which no further recurring authorizations should be performed..
      */
     public ThreeDSecureAdditionalInformation recurringEnd(String recurringEnd) {
         mRecurringEnd = recurringEnd;
@@ -436,7 +436,7 @@ public class ThreeDSecureAdditionalInformation implements Parcelable {
     }
 
     /**
-     * Optional. Integer value indicating the minimum number of days between recurring authorizations. A frequency of monthly is indicated by the value 28. Multiple of 28 days will be used to indicate months (ex. 6 months = 168). Required for recurring and installement transaction requests.
+     * Optional. Integer value indicating the minimum number of days between recurring authorizations. A frequency of monthly is indicated by the value 28. Multiple of 28 days will be used to indicate months (ex. 6 months = 168).
      */
     public ThreeDSecureAdditionalInformation recurringFrequency(String recurringFrequency) {
         mRecurringFrequency = recurringFrequency;
