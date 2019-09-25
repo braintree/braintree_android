@@ -2,8 +2,9 @@ package com.paypal.android.sdk.onetouch.core;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringDef;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringDef;
 
 import org.json.JSONException;
 import org.json.JSONObject;
