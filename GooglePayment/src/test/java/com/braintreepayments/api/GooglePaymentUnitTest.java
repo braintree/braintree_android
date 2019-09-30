@@ -1,8 +1,12 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 
+import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.GooglePaymentCardNonce;
@@ -11,6 +15,8 @@ import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.FixturesHelper;
 import com.braintreepayments.api.test.TestConfigurationBuilder;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.wallet.PaymentData;
 import com.google.android.gms.wallet.PaymentDataRequest;
 import com.google.android.gms.wallet.TransactionInfo;
@@ -20,9 +26,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
 import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_ENVIRONMENT;
@@ -30,12 +40,19 @@ import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_PAYMENT_DATA
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(RobolectricTestRunner.class)
+@PrepareForTest({GoogleApiAvailability.class, ManifestValidator.class})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 public class GooglePaymentUnitTest {
+    @Rule
+    public PowerMockRule mPowerMockRule = new PowerMockRule();
 
     private GooglePaymentRequest mBaseRequest;
 
@@ -47,6 +64,35 @@ public class GooglePaymentUnitTest {
                     .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
                     .setCurrencyCode("USD")
                     .build());
+
+       GoogleApiAvailability mockGoogleApiAvailability = mock(GoogleApiAvailability.class);
+       when(mockGoogleApiAvailability.isGooglePlayServicesAvailable(any(Context.class))).thenReturn(ConnectionResult.SUCCESS);
+
+       mockStatic(GoogleApiAvailability.class);
+       when(GoogleApiAvailability.getInstance()).thenReturn(mockGoogleApiAvailability);
+
+       ActivityInfo mockActivityInfo = mock(ActivityInfo.class);
+       when(mockActivityInfo.getThemeResource()).thenReturn(2132083045);
+
+       mockStatic(ManifestValidator.class);
+       when(ManifestValidator.getActivityInfo(any(Context.class), any(Class.class))).thenReturn(mockActivityInfo);
+    }
+
+    @Test
+    public void requestPayment_whenMerchantNotConfigured_returnsExceptionToFragment() {
+        String configuration = new TestConfigurationBuilder().build();
+
+        BraintreeFragment fragment = new MockFragmentBuilder()
+                .configuration(configuration)
+                .build();
+
+        GooglePayment.requestPayment(fragment, mBaseRequest);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(fragment).postCallback(captor.capture());
+        assertTrue(captor.getValue() instanceof BraintreeException);
+        assertEquals("Google Pay enabled is not enabled for your Braintree account, or Google Play Services are not configured correctly.",
+                captor.getValue().getMessage());
     }
 
     @Test
@@ -165,7 +211,8 @@ public class GooglePaymentUnitTest {
                         .environment("sandbox")
                         .googleAuthorizationFingerprint("google-auth-fingerprint")
                         .paypalClientId("paypal-client-id-for-google-payment")
-                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"}))
+                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
+                        .enabled(true))
                 .paypalEnabled(false)
                 .paypal(new TestConfigurationBuilder.TestPayPalConfigurationBuilder(false))
                 .withAnalytics();
@@ -193,7 +240,8 @@ public class GooglePaymentUnitTest {
                         .environment("sandbox")
                         .googleAuthorizationFingerprint("google-auth-fingerprint")
                         .paypalClientId("paypal-client-id-for-google-payment")
-                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"}))
+                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
+                        .enabled(true))
                  .paypal(new TestConfigurationBuilder.TestPayPalConfigurationBuilder(true)
                          .clientId("paypal-client-id-for-paypal"))
                 .withAnalytics();
@@ -229,7 +277,8 @@ public class GooglePaymentUnitTest {
                 .androidPay(new TestConfigurationBuilder.TestAndroidPayConfigurationBuilder()
                         .environment("sandbox")
                         .googleAuthorizationFingerprint("google-auth-fingerprint")
-                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"}))
+                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
+                        .enabled(true))
                 .withAnalytics();
 
         BraintreeFragment fragment = getSetupFragment(configuration);
@@ -287,7 +336,8 @@ public class GooglePaymentUnitTest {
                         .environment(environment)
                         .googleAuthorizationFingerprint("google-auth-fingerprint")
                         .paypalClientId("paypal-client-id-for-google-payment")
-                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"}))
+                        .supportedNetworks(new String[]{"visa", "mastercard", "amex", "discover"})
+                        .enabled(true))
                 .withAnalytics()
                 .build();
 

@@ -116,6 +116,11 @@ public class TestConfigurationBuilder extends JSONBuilder {
             put(paypalClientId);
             return this;
         }
+
+        public TestGooglePaymentConfigurationBuilder enabled(boolean enabled) {
+            put(enabled);
+            return this;
+        }
     }
 
     public static class TestPayPalConfigurationBuilder extends JSONBuilder {
