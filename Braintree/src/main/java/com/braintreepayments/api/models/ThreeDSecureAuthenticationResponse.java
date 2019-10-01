@@ -3,6 +3,8 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.braintreepayments.api.Json;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -11,6 +13,9 @@ import org.json.JSONObject;
  */
 public class ThreeDSecureAuthenticationResponse implements Parcelable {
 
+    private static final String ERRORS_KEY = "errors";
+    private static final String ERROR_KEY = "error";
+    private static final String MESSAGE_KEY = "message";
     private static final String PAYMENT_METHOD_KEY = "paymentMethod";
     private static final String SUCCESS_KEY = "success";
 
@@ -39,16 +44,17 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
                 authenticationResponse.mCardNonce = cardNonce;
             }
 
-            // TODO: 3DS 1.0 has a "success" key, but 3DS 2.0 responses dont.
-            // Waiting for the Gateway to send this success key.
+            // 3DS 1.0 has a "success" key, but 3DS 2.0 responses do not.
             if (json.has(SUCCESS_KEY)) {
+                if (json.has(ERROR_KEY)) {
+                    authenticationResponse.mErrors = Json.optString(json.getJSONObject(ERROR_KEY), MESSAGE_KEY, null);
+                }
                 authenticationResponse.mSuccess = json.getBoolean(SUCCESS_KEY);
-            } else if (!json.has("errors")) {
-                authenticationResponse.mSuccess = true;
-            }
-
-            if (!authenticationResponse.mSuccess) {
-                authenticationResponse.mErrors = jsonString;
+            } else {
+                if (json.has(ERRORS_KEY)) {
+                    authenticationResponse.mErrors = Json.optString(json.getJSONArray(ERRORS_KEY).getJSONObject(0), MESSAGE_KEY, null);
+                }
+                authenticationResponse.mSuccess = authenticationResponse.mErrors == null;
             }
         } catch (JSONException e) {
             authenticationResponse.mSuccess = false;
@@ -57,6 +63,7 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
         return authenticationResponse;
     }
 
+    @Deprecated
     public static CardNonce getNonceWithAuthenticationDetails(String jsonString, CardNonce lookupCardNonce) {
         ThreeDSecureAuthenticationResponse authenticationResponse = new ThreeDSecureAuthenticationResponse();
         CardNonce nonceToReturn = lookupCardNonce;
@@ -66,7 +73,7 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
 
             if (json.has(SUCCESS_KEY)) {
                 authenticationResponse.mSuccess = json.getBoolean(SUCCESS_KEY);
-            } else if (!json.has("errors")) {
+            } else if (!json.has(ERRORS_KEY)) {
                 authenticationResponse.mSuccess = true;
             }
 
@@ -103,8 +110,11 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
     }
 
     /**
+     * @deprecated Use {@link ThreeDSecureInfo#isLiabilityShifted()} and
+     * {@link ThreeDSecureInfo#isLiabilityShiftPossible()} to determine state of 3D Secure authentication
      * @return If the authentication was completed
      */
+    @Deprecated
     public boolean isSuccess() {
         return mSuccess;
     }
@@ -118,9 +128,12 @@ public class ThreeDSecureAuthenticationResponse implements Parcelable {
     }
 
     /**
+     * @deprecated Use {@link ThreeDSecureInfo#getErrorMessage()}
      * @return Possible errors that occurred during the authentication
      */
+    @Deprecated
     public String getErrors() {
+        // NEXT_MAJOR_VERSION make this a private method
         return mErrors;
     }
 

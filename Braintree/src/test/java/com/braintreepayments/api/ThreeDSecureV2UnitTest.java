@@ -9,7 +9,6 @@ import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
@@ -108,34 +107,6 @@ public class ThreeDSecureV2UnitTest {
         TokenizationClient.versionedPath(captor.capture());
 
         assertTrue(captor.getValue().contains("card-nonce"));
-    }
-
-    @Test
-    public void prepareLookup_returnsValidLookupJSONString() throws JSONException {
-        MockStaticCardinal.initCompletesSuccessfully("fake-df");
-        ThreeDSecure.performVerification(mFragment, mBasicRequest);
-
-        JSONObject lookup = new JSONObject(ThreeDSecure.prepareLookup(mFragment, "card-nonce"));
-
-        assertEquals(lookup.getString("authorizationFingerprint"), mFragment.getAuthorization().getBearer());
-        assertEquals(lookup.getString("braintreeLibraryVersion"), "Android-" + BuildConfig.VERSION_NAME);
-        assertEquals(lookup.getString("dfReferenceId"), "fake-df");
-        assertEquals(lookup.getString("nonce"), "card-nonce");
-
-        JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
-        assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
-        assertEquals(clientMetaData.getString("sdkVersion"), BuildConfig.VERSION_NAME);
-    }
-
-    @Test
-    public void initializeChallengeWithLookupResponse_postsExceptionForBadJSON() {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        ThreeDSecure.initializeChallengeWithLookupResponse(fragment, "{bad:}");
-
-        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(fragment).postCallback(captor.capture());
-        assertTrue(captor.getValue() instanceof JSONException);
     }
 
     @Test
@@ -267,6 +238,149 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
+    public void performVerification_withoutCardinalJWT_postsException() throws Exception {
+        Configuration configuration = new TestConfigurationBuilder()
+                .threeDSecureEnabled(true)
+                .buildConfiguration();
+
+        MockFragmentBuilder mockFragmentBuilder = new MockFragmentBuilder()
+                .authorization(Authorization.fromString(stringFromFixture("base_64_client_token.txt")))
+                .configuration(configuration);
+        BraintreeFragment fragment = mockFragmentBuilder.build();
+
+        ThreeDSecure.performVerification(fragment, mBasicRequest);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(fragment).postCallback(captor.capture());
+        assertTrue(captor.getValue() instanceof BraintreeException);
+    }
+
+    @Test
+    public void prepareLookup_returnsValidLookupJSONString() throws JSONException {
+        MockStaticCardinal.initCompletesSuccessfully("fake-df");
+        ThreeDSecure.performVerification(mFragment, mBasicRequest);
+
+        JSONObject lookup = new JSONObject(ThreeDSecure.prepareLookup(mFragment, "card-nonce"));
+
+        assertEquals(lookup.getString("authorizationFingerprint"), mFragment.getAuthorization().getBearer());
+        assertEquals(lookup.getString("braintreeLibraryVersion"), "Android-" + BuildConfig.VERSION_NAME);
+        assertEquals(lookup.getString("dfReferenceId"), "fake-df");
+        assertEquals(lookup.getString("nonce"), "card-nonce");
+
+        JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
+        assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
+        assertEquals(clientMetaData.getString("sdkVersion"), BuildConfig.VERSION_NAME);
+    }
+
+    @Test
+    public void initializeChallengeWithLookupResponse_postsExceptionForBadJSON() {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.initializeChallengeWithLookupResponse(fragment, "{bad:}");
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(fragment).postCallback(captor.capture());
+        assertTrue(captor.getValue() instanceof JSONException);
+    }
+
+    @Test
+    public void authenticateCardinalJWT_whenSuccess_sendsAnalyticsEvent() throws JSONException {
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+
+        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/authentication_response.json"));
+        mFragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.authenticateCardinalJWT(mFragment, threeDSecureLookup, "jwt");
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.started"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.succeeded"));
+    }
+
+    @Test
+    public void authenticateCardinalJWT_whenSuccess_returnsThreeDSecureCardNonce() throws JSONException {
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+
+        String authResponseJson = stringFromFixture("three_d_secure/authentication_response.json");
+        mMockFragmentBuilder.successResponse(authResponseJson);
+        mFragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.authenticateCardinalJWT(mFragment, threeDSecureLookup, "jwt");
+
+        ArgumentCaptor<CardNonce> captor = ArgumentCaptor.forClass(CardNonce.class);
+        verify(mFragment).postCallback(captor.capture());
+
+        CardNonce cardNonce = captor.getValue();
+
+        assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+        assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertEquals("12345678-1234-1234-1234-123456789012", cardNonce.getNonce());
+    }
+
+    @Test
+    public void authenticateCardinalJWT_whenCustomerFailsAuthentication_sendsAnalyticsEvent() throws JSONException {
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+
+        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/2.0/authentication_response_with_error.json"));
+        mFragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.authenticateCardinalJWT(mFragment, threeDSecureLookup, "jwt");
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.started"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce"));
+    }
+
+    @Test
+    public void authenticateCardinalJWT_whenCustomerFailsAuthentication_returnsLookupCardNonce() throws JSONException {
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(
+                stringFromFixture("three_d_secure/2.0/lookup_response_without_liability_with_liability_shift_possible.json"));
+
+        String authResponseJson = stringFromFixture("three_d_secure/2.0/authentication_response_with_error.json");
+        mMockFragmentBuilder.successResponse(authResponseJson);
+        mFragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.authenticateCardinalJWT(mFragment, threeDSecureLookup, "jwt");
+
+        ArgumentCaptor<CardNonce> captor = ArgumentCaptor.forClass(CardNonce.class);
+        verify(mFragment).postCallback(captor.capture());
+
+        CardNonce cardNonce = captor.getValue();
+
+        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
+        assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertEquals("123456-12345-12345-a-adfa", cardNonce.getNonce());
+        assertEquals("Failed to authenticate, please try a different form of payment.", cardNonce.getThreeDSecureInfo().getErrorMessage());
+        assertEquals(authResponseJson, cardNonce.getThreeDSecureInfo().getThreeDSecureAuthenticationResponse().getErrors());
+    }
+
+    @Test
+    public void authenticateCardinalJWT_whenExceptionOccurs_sendsAnalyticsEvent() throws JSONException {
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+
+        mMockFragmentBuilder.errorResponse(new BraintreeException("an error occurred!"));
+        mFragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.authenticateCardinalJWT(mFragment, threeDSecureLookup, "jwt");
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.started"));
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.errored"));
+    }
+
+    @Test
+    public void authenticateCardinalJWT_whenExceptionOccurs_returnsException() throws JSONException {
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+
+        mMockFragmentBuilder.errorResponse(new BraintreeException("an error occurred!"));
+        mFragment = mMockFragmentBuilder.build();
+
+        ThreeDSecure.authenticateCardinalJWT(mFragment, threeDSecureLookup, "jwt");
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(mFragment).postCallback(captor.capture());
+
+        assertEquals("an error occurred!", captor.getValue().getMessage());
+    }
+
+    @Test
     public void onActivityResult_whenCardinalCardVerificationReportsSuccess_sendsAnalyticsEvent() throws JSONException {
         mFragment = mMockFragmentBuilder.build();
 
@@ -351,79 +465,5 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecure.onActivityResult(mFragment, RESULT_OK, data);
 
         verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.failed"));
-    }
-
-    @Test
-    public void authenticateCardinalJWT_whenSuccess_sendsAnalyticsEvent() throws JSONException {
-        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
-
-        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/authentication_response.json"));
-        mFragment = mMockFragmentBuilder.build();
-
-        ThreeDSecure.authenticateCardinalJWT(mFragment, threeDSecureLookup, "jwt");
-
-        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.started"));
-        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.succeeded"));
-    }
-
-    @Test
-    public void authenticateCardinalJWT_whenFailure_sendsAnalyticsEvent() throws JSONException {
-        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
-
-        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/authentication_response_with_error.json"));
-        mFragment = mMockFragmentBuilder.build();
-
-        ThreeDSecure.authenticateCardinalJWT(mFragment, threeDSecureLookup, "jwt");
-
-        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.started"));
-        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce"));
-    }
-
-    @Test
-    public void authenticateCardinalJWT_whenFailureAndLiabilityShiftPossible_returnsCardNonce() throws JSONException {
-        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/2.0/lookup_response_without_liability_with_liability_shift_possible.json"));
-
-        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/2.0/authentication_response_with_liability_shift_possible.json"));
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        ThreeDSecure.authenticateCardinalJWT(fragment, threeDSecureLookup, "jwt");
-
-        ArgumentCaptor<PaymentMethodNonce> captor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
-        verify(fragment).postCallback(captor.capture());
-
-        CardNonce cardNonce = (CardNonce) captor.getValue();
-
-        assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
-        assertTrue(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
-    }
-
-    @Test
-    public void authenticateCardinalJWT_whenFailureAndLiabilityShiftPossible_sendsAnalyticEvent() throws JSONException {
-        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/2.0/lookup_response_without_liability_with_liability_shift_possible.json"));
-
-        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/2.0/authentication_response_with_liability_shift_possible.json"));
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        ThreeDSecure.authenticateCardinalJWT(fragment, threeDSecureLookup, "jwt");
-
-        verify(fragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce"));
-    }
-
-    @Test
-    public void performVerification_withoutCardinalJWT_postsException() throws Exception {
-        Configuration configuration = new TestConfigurationBuilder()
-                .threeDSecureEnabled(true)
-                .buildConfiguration();
-
-        MockFragmentBuilder mockFragmentBuilder = new MockFragmentBuilder()
-                .authorization(Authorization.fromString(stringFromFixture("base_64_client_token.txt")))
-                .configuration(configuration);
-        BraintreeFragment fragment = mockFragmentBuilder.build();
-
-        ThreeDSecure.performVerification(fragment, mBasicRequest);
-
-        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(fragment).postCallback(captor.capture());
-        assertTrue(captor.getValue() instanceof BraintreeException);
     }
 }

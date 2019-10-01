@@ -1,0 +1,59 @@
+{
+  "paymentMethod": {
+    "type": "CreditCard",
+    "nonce": "ceff1c43-0274-010d-6b0e-e15544dd8583",
+    "description": "ending in 91",
+    "consumed": false,
+    "threeDSecureInfo": {
+      "liabilityShifted": true,
+      "liabilityShiftPossible": true,
+      "status": "authenticate_successful",
+      "enrolled": "Y",
+      "cavv": "MTIzNDU2Nzg5MDEyMzQ1Njc4OTA=",
+      "xid": null,
+      "eci_flag": "05",
+      "three_d_secure_version": "2.1.0",
+      "ds_transaction_id": "e1aaed8b-4c2e-4e50-b6a9-8d48779c90b3",
+      "acs_transaction_id": "e2f621db-b23a-4b0a-983c-91f72b23d16b",
+      "three_d_secure_server_transaction_id": "d6909f17-6a92-4ea1-9148-5499677dee60",
+      "pares_status": "Y",
+      "acsTransactionId": "e2f621db-b23a-4b0a-983c-91f72b23d16b",
+      "dsTransactionId": "e1aaed8b-4c2e-4e50-b6a9-8d48779c90b3",
+      "eciFlag": "05",
+      "paresStatus": "Y",
+      "threeDSecureServerTransactionId": "d6909f17-6a92-4ea1-9148-5499677dee60",
+      "threeDSecureVersion": "2.1.0",
+      "lookup": {
+        "transStatus": "C",
+        "transStatusReason": null
+      },
+      "authentication": {
+        "transStatus": "Y",
+        "transStatusReason": null
+      }
+    },
+    "details": {
+      "bin": "400000",
+      "lastTwo": "91",
+      "lastFour": "1091",
+      "cardType": "Visa",
+      "expirationYear": "2022",
+      "expirationMonth": "01"
+    },
+    "bin_data": {
+      "prepaid": "Unknown",
+      "healthcare": "Unknown",
+      "debit": "Unknown",
+      "durbin_regulated": "Unknown",
+      "commercial": "Unknown",
+      "payroll": "Unknown",
+      "issuing_bank": "Unknown",
+      "country_of_issuance": "Unknown",
+      "product_id": "Unknown"
+    }
+  },
+  "threeDSecureInfo": {
+    "liabilityShifted": true,
+    "liabilityShiftPossible": true
+  }
+}

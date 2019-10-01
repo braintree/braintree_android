@@ -2,8 +2,6 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
-
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,16 +18,51 @@ import static junit.framework.Assert.assertTrue;
 public class ThreeDSecureAuthenticationResponseUnitTest {
 
     @Test
-    public void fromJson_parsesCorrectly() {
+    public void fromJson_parsesCorrectly_v1() {
         ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
                 stringFromFixture("three_d_secure/authentication_response.json"));
 
         assertEquals("11", authResponse.getCardNonce().getLastTwo());
         assertTrue(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
         assertTrue(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
+        assertTrue(authResponse.isSuccess());
+        assertNull(authResponse.getErrors());
+        assertNull(authResponse.getException());
+    }
+
+    @Test
+    public void fromJson_parsesCorrectly_v2() {
+        ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
+                stringFromFixture("three_d_secure/2.0/authentication_response.json"));
+
+        assertEquals("91", authResponse.getCardNonce().getLastTwo());
         assertTrue(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
         assertTrue(authResponse.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertTrue(authResponse.isSuccess());
+        assertNull(authResponse.getErrors());
+        assertNull(authResponse.getException());
+    }
+
+    @Test
+    public void fromJson_whenAuthenticationErrorOccurs_parsesCorrectly_v1() {
+        ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
+                stringFromFixture("three_d_secure/authentication_response_with_error.json"));
+
+        assertNull(authResponse.getCardNonce());
+        assertFalse(authResponse.isSuccess());
+        assertEquals("Failed to authenticate, please try a different form of payment.", authResponse.getErrors());
+        assertNull(authResponse.getException());
+    }
+
+    @Test
+    public void fromJson_whenAuthenticationErrorOccurs_parsesCorrectly_v2() {
+        ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
+                stringFromFixture("three_d_secure/2.0/authentication_response_with_error.json"));
+
+        assertNull(authResponse.getCardNonce());
+        assertFalse(authResponse.isSuccess());
+        assertEquals("Failed to authenticate, please try a different form of payment.", authResponse.getErrors());
+        assertNull(authResponse.getException());
     }
 
     @Test
@@ -81,17 +114,6 @@ public class ThreeDSecureAuthenticationResponseUnitTest {
 
         assertFalse(authResponse.isSuccess());
         assertEquals("Error!", authResponse.getException());
-    }
-
-    @Test
-    public void getErrors_returnsErrorString() {
-        ThreeDSecureAuthenticationResponse authResponse = ThreeDSecureAuthenticationResponse.fromJson(
-                stringFromFixture("three_d_secure/authentication_response_with_error.json"));
-        ErrorWithResponse errors = new ErrorWithResponse(0, authResponse.getErrors());
-
-        assertNull(authResponse.getCardNonce());
-        assertFalse(authResponse.isSuccess());
-        assertEquals("Failed to authenticate, please try a different form of payment", errors.getMessage());
     }
 
     @Test

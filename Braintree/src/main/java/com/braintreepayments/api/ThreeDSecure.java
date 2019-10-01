@@ -334,45 +334,39 @@ public class ThreeDSecure {
         }
     }
 
-    protected static void performCardinalAuthentication(final BraintreeFragment fragment, final ThreeDSecureLookup threeDSecureLookup) {
-        fragment.sendAnalyticsEvent("three-d-secure.verification-flow.started");
-
-        Bundle extras = new Bundle();
-        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup);
-
-        Intent intent = new Intent(fragment.getApplicationContext(), ThreeDSecureActivity.class);
-        intent.putExtras(extras);
-
-        fragment.startActivityForResult(intent, BraintreeRequestCodes.THREE_D_SECURE);
-    }
-
-    protected static void authenticateCardinalJWT(final BraintreeFragment fragment, final ThreeDSecureLookup threeDSecureLookup, final String cardinalJWT) {
-        final CardNonce cardNonce = threeDSecureLookup.getCardNonce();
+    static void authenticateCardinalJWT(final BraintreeFragment fragment, final ThreeDSecureLookup threeDSecureLookup, final String cardinalJWT) {
+        final CardNonce lookupCardNonce = threeDSecureLookup.getCardNonce();
 
         fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
 
-        final String nonce = cardNonce.getNonce();
+        final String lookupNonce = lookupCardNonce.getNonce();
         JSONObject body = new JSONObject();
         try {
             body.put("jwt", cardinalJWT);
-            body.put("paymentMethodNonce", nonce);
+            body.put("paymentMethodNonce", lookupNonce);
         } catch (JSONException ignored) {
         }
 
         fragment.getHttpClient().post(TokenizationClient.versionedPath(
-                TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + nonce +
+                TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + lookupNonce +
                         "/three_d_secure/authenticate_from_jwt"), body.toString(), new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
-                CardNonce nonceToReturn = ThreeDSecureAuthenticationResponse.getNonceWithAuthenticationDetails(responseBody, cardNonce);
+                ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse.fromJson(responseBody);
 
-                if (nonceToReturn.getThreeDSecureInfo().getThreeDSecureAuthenticationResponse().isSuccess()) {
-                    fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
-                } else {
+                // NEXT_MAJOR_VERSION
+                // Remove this line. Pass back lookupCardNonce + error message if there are errors.
+                // Otherwise pass back authenticationResponse.getCardNonce().
+                CardNonce nonce = ThreeDSecureAuthenticationResponse.getNonceWithAuthenticationDetails(responseBody, lookupCardNonce);
+
+                if (authenticationResponse.getErrors() != null) {
                     fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
+                    nonce.getThreeDSecureInfo().setErrorMessage(authenticationResponse.getErrors());
+                    completeVerificationFlowWithNoncePayload(fragment, nonce);
+                } else {
+                    fragment.sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
+                    completeVerificationFlowWithNoncePayload(fragment, nonce);
                 }
-
-                completeVerificationFlowWithNoncePayload(fragment, nonceToReturn);
             }
 
             @Override
@@ -393,15 +387,14 @@ public class ThreeDSecure {
 
         if (resultUri != null) {
             // V1 flow
-            ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse
-                    .fromJson(resultUri.getQueryParameter("auth_response"));
+            String authResponse = resultUri.getQueryParameter("auth_response");
+            ThreeDSecureAuthenticationResponse authenticationResponse = ThreeDSecureAuthenticationResponse.fromJson(authResponse);
 
+            // NEXT_MAJOR_VERSION Make isSuccess package-private so that we have access to it, but merchants do not
             if (authenticationResponse.isSuccess()) {
                 completeVerificationFlowWithNoncePayload(fragment, authenticationResponse.getCardNonce());
-            } else if (authenticationResponse.getException() != null) {
-                fragment.postCallback(new BraintreeException(authenticationResponse.getException()));
             } else {
-                fragment.postCallback(new ErrorWithResponse(422, authenticationResponse.getErrors()));
+                fragment.postCallback(new ErrorWithResponse(422, authResponse));
             }
         } else {
             // V2 flow
@@ -477,5 +470,17 @@ public class ThreeDSecure {
                 fragment.postCallback(exception);
             }
         });
+    }
+
+    private static void performCardinalAuthentication(final BraintreeFragment fragment, final ThreeDSecureLookup threeDSecureLookup) {
+        fragment.sendAnalyticsEvent("three-d-secure.verification-flow.started");
+
+        Bundle extras = new Bundle();
+        extras.putParcelable(ThreeDSecureActivity.EXTRA_THREE_D_SECURE_LOOKUP, threeDSecureLookup);
+
+        Intent intent = new Intent(fragment.getApplicationContext(), ThreeDSecureActivity.class);
+        intent.putExtras(extras);
+
+        fragment.startActivityForResult(intent, BraintreeRequestCodes.THREE_D_SECURE);
     }
 }

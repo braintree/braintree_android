@@ -46,6 +46,7 @@ public class ThreeDSecureInfo implements Parcelable {
     private String mAuthenticationTransactionStatusReason;
     private String mLookupTransactionStatus;
     private String mLookupTransactionStatusReason;
+    private String mErrorMessage;
 
     protected static ThreeDSecureInfo fromJson(JSONObject json) {
         if (json == null) {
@@ -84,6 +85,10 @@ public class ThreeDSecureInfo implements Parcelable {
 
     protected void setThreeDSecureAuthenticationResponse(ThreeDSecureAuthenticationResponse authResponse) {
         mThreeDSecureAuthenticationResponse = authResponse;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        mErrorMessage = errorMessage;
     }
 
     /**
@@ -189,6 +194,8 @@ public class ThreeDSecureInfo implements Parcelable {
     }
 
     /**
+     * @deprecated Use {@link #getErrorMessage()},  {@link #isLiabilityShifted()}, and {@link #isLiabilityShiftPossible()}
+     * to determine the result of the challenge authentication
      * @return The {@link ThreeDSecureAuthenticationResponse} if one is associated with a nonce.
      */
     public ThreeDSecureAuthenticationResponse getThreeDSecureAuthenticationResponse() {
@@ -221,6 +228,13 @@ public class ThreeDSecureInfo implements Parcelable {
      */
     public String getLookupTransactionStatusReason() {
         return mLookupTransactionStatusReason;
+    }
+
+    /**
+     * @return The error message, if present, that occurred during a 3D Secure challenge attempt
+     */
+    public String getErrorMessage() {
+        return mErrorMessage;
     }
 
     public ThreeDSecureInfo() {}

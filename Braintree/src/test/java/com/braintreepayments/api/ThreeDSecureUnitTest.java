@@ -302,9 +302,13 @@ public class ThreeDSecureUnitTest {
     }
 
     @Test
-    public void onActivityResult_whenFailure_postsException() throws Exception {
+    public void onActivityResult_whenFailure_postsErrorWithResponse() throws Exception {
         JSONObject json = new JSONObject();
         json.put("success", false);
+
+        JSONObject errorJson = new JSONObject();
+        errorJson.put("message", "Failed to authenticate, please try a different form of payment.");
+        json.put("error", errorJson);
 
         Uri uri = Uri.parse("https://.com?auth_response=" + json.toString());
         Intent data = new Intent();
@@ -312,10 +316,11 @@ public class ThreeDSecureUnitTest {
 
         ThreeDSecure.onActivityResult(mFragment, RESULT_OK, data);
 
-        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        ArgumentCaptor<ErrorWithResponse> captor = ArgumentCaptor.forClass(ErrorWithResponse.class);
         verify(mFragment).postCallback(captor.capture());
 
-        ErrorWithResponse error = (ErrorWithResponse) captor.getValue();
+        ErrorWithResponse error = captor.getValue();
         assertEquals(422, error.getStatusCode());
+        assertEquals("Failed to authenticate, please try a different form of payment.", error.getMessage());
     }
 }

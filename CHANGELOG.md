@@ -3,6 +3,7 @@
 ## Unreleased
 
 * Add ability to request `AuthenticationInsight` when tokenizing a credit card, which can be used to make a decision about whether to perform 3D Secure verification
+* Set error message on `ThreeDSecureInfo` when 3D Secure 2.0 challenge fails
 * Include reference to Cardinal's docs for `uiCustomization` property on `ThreeDSecureRequest`.
 * Add `requiresUserAuthentication` method to `ThreeDSecureLookup`
 * Add support for `PayPalLineItem`
