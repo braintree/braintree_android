@@ -4,6 +4,7 @@ import android.content.Intent;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.interfaces.ThreeDSecurePrepareLookupListener;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.CardBuilder;
@@ -41,6 +42,8 @@ import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
@@ -84,6 +87,112 @@ public class ThreeDSecureV2UnitTest {
                 .amount("1.00")
                 .versionRequested(ThreeDSecureRequest.VERSION_2)
                 .uiCustomization(uiCustomization);
+    }
+
+    @Test
+    public void prepareLookup_returnsValidLookupJSONString() {
+        MockStaticCardinal.initCompletesSuccessfully("fake-df");
+
+        ThreeDSecure.prepareLookup(mFragment, mBasicRequest, new ThreeDSecurePrepareLookupListener() {
+            @Override
+            public void onPrepareLookupComplete(ThreeDSecureRequest request, String clientData) {
+                try {
+                    JSONObject lookup = new JSONObject(clientData);
+                    assertEquals(lookup.getString("authorizationFingerprint"),
+                            mFragment.getAuthorization().getBearer());
+                    assertEquals(lookup.getString("braintreeLibraryVersion"), "Android-" + BuildConfig.VERSION_NAME);
+                    assertEquals(lookup.getString("dfReferenceId"), "fake-df");
+                    assertEquals(lookup.getString("nonce"), "a-nonce");
+
+                    JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
+                    assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
+                    assertEquals(clientMetaData.getString("sdkVersion"), BuildConfig.VERSION_NAME);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        });
+    }
+
+    @Test
+    public void prepareLookup_returnsValidLookupJSONString_whenCardinalSetupFails() throws JSONException {
+        MockStaticCardinal.initCallsOnValidated();
+
+        ThreeDSecure.prepareLookup(mFragment, mBasicRequest, new ThreeDSecurePrepareLookupListener() {
+            @Override
+            public void onPrepareLookupComplete(ThreeDSecureRequest request, String clientData) {
+                try {
+                    JSONObject lookup = new JSONObject(clientData);
+                    assertEquals(lookup.getString("authorizationFingerprint"),
+                            mFragment.getAuthorization().getBearer());
+                    assertEquals(lookup.getString("braintreeLibraryVersion"), "Android-" + BuildConfig.VERSION_NAME);
+                    assertEquals(lookup.getString("nonce"), "a-nonce");
+                    assertNull(lookup.optString("dfReferenceId", null));
+
+                    JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
+                    assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
+                    assertEquals(clientMetaData.getString("sdkVersion"), BuildConfig.VERSION_NAME);
+                } catch (JSONException e) {}
+            }
+        });
+    }
+
+    @Test
+    public void prepareLookup_setsCardinalConfigurationParameters() {
+        MockStaticCardinal.initCompletesSuccessfully("fake-df");
+
+        ThreeDSecure.prepareLookup(mFragment, mBasicRequest, new ThreeDSecurePrepareLookupListener() {
+            @Override
+            public void onPrepareLookupComplete(ThreeDSecureRequest request, String clientData) {
+                ArgumentCaptor<CardinalConfigurationParameters> captor = ArgumentCaptor.forClass(CardinalConfigurationParameters.class);
+                verify(Cardinal.getInstance()).configure(eq(mFragment.getApplicationContext()), captor.capture());
+
+                CardinalConfigurationParameters actualParams = captor.getValue();
+                assertEquals(actualParams.getTimeout(), 8000);
+                assertFalse(actualParams.isEnableQuickAuth());
+                assertTrue(actualParams.isEnableDFSync());
+                assertEquals(actualParams.getUICustomization().getTextBoxCustomization().getBorderWidth(), 12);
+            }
+        });
+    }
+
+    @Test
+    public void prepareLookup_initializesCardinal() {
+        MockStaticCardinal.initCompletesSuccessfully("fake-df");
+
+        ThreeDSecure.prepareLookup(mFragment, mBasicRequest, new ThreeDSecurePrepareLookupListener() {
+            @Override
+            public void onPrepareLookupComplete(ThreeDSecureRequest request, String clientData) {
+
+            }
+        });
+
+        verify(Cardinal.getInstance()).init(eq("cardinal_authentication_jwt"), any(CardinalInitService.class));
+    }
+
+    @Test
+    public void prepareLookup_withoutCardinalJWT_postsException() throws Exception {
+        Configuration configuration = new TestConfigurationBuilder()
+                .threeDSecureEnabled(true)
+                .buildConfiguration();
+
+        MockFragmentBuilder mockFragmentBuilder = new MockFragmentBuilder()
+                .authorization(Authorization.fromString(stringFromFixture("base_64_client_token.txt")))
+                .configuration(configuration);
+        BraintreeFragment fragment = mockFragmentBuilder.build();
+
+        ThreeDSecure.prepareLookup(fragment, mBasicRequest, new ThreeDSecurePrepareLookupListener() {
+            @Override
+            public void onPrepareLookupComplete(ThreeDSecureRequest request, String clientData) {
+
+            }
+        });
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(fragment).postCallback(captor.capture());
+        assertTrue(captor.getValue() instanceof BraintreeException);
+        assertEquals(captor.getValue().getMessage(), "Merchant is not configured for 3DS 2.0. " +
+                "Please contact Braintree Support for assistance.");
     }
 
     @Test
@@ -253,23 +362,8 @@ public class ThreeDSecureV2UnitTest {
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
         verify(fragment).postCallback(captor.capture());
         assertTrue(captor.getValue() instanceof BraintreeException);
-    }
-
-    @Test
-    public void prepareLookup_returnsValidLookupJSONString() throws JSONException {
-        MockStaticCardinal.initCompletesSuccessfully("fake-df");
-        ThreeDSecure.performVerification(mFragment, mBasicRequest);
-
-        JSONObject lookup = new JSONObject(ThreeDSecure.prepareLookup(mFragment, "card-nonce"));
-
-        assertEquals(lookup.getString("authorizationFingerprint"), mFragment.getAuthorization().getBearer());
-        assertEquals(lookup.getString("braintreeLibraryVersion"), "Android-" + BuildConfig.VERSION_NAME);
-        assertEquals(lookup.getString("dfReferenceId"), "fake-df");
-        assertEquals(lookup.getString("nonce"), "card-nonce");
-
-        JSONObject clientMetaData = lookup.getJSONObject("clientMetadata");
-        assertEquals(clientMetaData.getString("requestedThreeDSecureVersion"), "2");
-        assertEquals(clientMetaData.getString("sdkVersion"), BuildConfig.VERSION_NAME);
+        assertEquals(captor.getValue().getMessage(), "Merchant is not configured for 3DS 2.0. " +
+                "Please contact Braintree Support for assistance.");
     }
 
     @Test

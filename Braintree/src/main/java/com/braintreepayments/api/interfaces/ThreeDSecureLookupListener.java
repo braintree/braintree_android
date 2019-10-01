@@ -15,7 +15,7 @@ public interface ThreeDSecureLookupListener {
      * 3DS can be continued by invoking:
      * {@link com.braintreepayments.api.ThreeDSecure#continuePerformVerification(BraintreeFragment, ThreeDSecureRequest, ThreeDSecureLookup)}
      *
-     * @param request The request used to generate the lookup.
+     * @param request the {@link ThreeDSecureRequest} used to generate the lookup.
      * @param lookup Lookup details that can be reviewed.
      */
     void onLookupComplete(ThreeDSecureRequest request,

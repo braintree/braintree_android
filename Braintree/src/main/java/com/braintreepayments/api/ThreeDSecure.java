@@ -11,6 +11,7 @@ import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.interfaces.ThreeDSecureLookupListener;
+import com.braintreepayments.api.interfaces.ThreeDSecurePrepareLookupListener;
 import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.CardBuilder;
@@ -188,7 +189,8 @@ public class ThreeDSecure {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 if (!configuration.isThreeDSecureEnabled()) {
-                    fragment.postCallback(new BraintreeException("Three D Secure is not enabled in the control panel"));
+                    fragment.postCallback(new BraintreeException("Three D Secure is not enabled for this account. " +
+                            "Please contact Braintree Support for assistance."));
                     return;
                 }
 
@@ -206,7 +208,8 @@ public class ThreeDSecure {
                 }
 
                 if (configuration.getCardinalAuthenticationJwt() == null && ThreeDSecureRequest.VERSION_2.equals(request.getVersionRequested())) {
-                    fragment.postCallback(new BraintreeException("Merchant is not configured for Three D Secure 2.0"));
+                    fragment.postCallback(new BraintreeException("Merchant is not configured for 3DS 2.0. " +
+                            "Please contact Braintree Support for assistance."));
                     return;
                 }
 
@@ -217,20 +220,9 @@ public class ThreeDSecure {
                     return;
                 }
 
-                CardinalEnvironment cardinalEnvironment = CardinalEnvironment.STAGING;
-                if ("production".equalsIgnoreCase(configuration.getEnvironment())) {
-                    cardinalEnvironment = CardinalEnvironment.PRODUCTION;
-                }
-
-                CardinalConfigurationParameters cardinalConfigurationParameters = new CardinalConfigurationParameters();
-                cardinalConfigurationParameters.setEnvironment(cardinalEnvironment);
-                cardinalConfigurationParameters.setTimeout(8000);
-                cardinalConfigurationParameters.setEnableQuickAuth(false);
-                cardinalConfigurationParameters.setEnableDFSync(true);
-                cardinalConfigurationParameters.setUICustomization(request.getUiCustomization());
+                configureCardinal(fragment, configuration, request);
 
                 Cardinal cardinal = Cardinal.getInstance();
-                cardinal.configure(fragment.getApplicationContext(), cardinalConfigurationParameters);
                 cardinal.init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
                     @Override
                     public void onSetupCompleted(String consumerSessionId) {
@@ -285,24 +277,54 @@ public class ThreeDSecure {
      * Creates a stringified JSON object containing the information necessary to perform a lookup
      *
      * @param fragment the {@link BraintreeFragment} backing the http request.
-     * @param nonce    The nonce representing the card from a tokenization payload.
+     * @param request  the {@link ThreeDSecureRequest} that has a nonce and an optional UI customization.
+     * @param prepareLookupListener the listener that will receive the JSON string to send to the server for lookup
      */
-    public static String prepareLookup(final BraintreeFragment fragment, final String nonce) {
-        JSONObject lookupJSON = new JSONObject();
+    public static void prepareLookup(final BraintreeFragment fragment,
+            final ThreeDSecureRequest request,
+            final ThreeDSecurePrepareLookupListener prepareLookupListener) {
+        final JSONObject lookupJSON = new JSONObject();
 
         try {
             lookupJSON
                     .put("authorizationFingerprint", fragment.getAuthorization().getBearer())
                     .put("braintreeLibraryVersion", "Android-" + BuildConfig.VERSION_NAME)
-                    .put("dfReferenceId", sDFReferenceId)
-                    .put("nonce", nonce)
+                    .put("nonce", request.getNonce())
                     .put("clientMetadata", new JSONObject()
                             .put("requestedThreeDSecureVersion", "2")
                             .put("sdkVersion", BuildConfig.VERSION_NAME));
-        } catch (JSONException ignored) {
-        }
+        } catch (JSONException ignored) {}
 
-        return lookupJSON.toString();
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                if (configuration.getCardinalAuthenticationJwt() == null) {
+                    fragment.postCallback(new BraintreeException("Merchant is not configured for 3DS 2.0. " +
+                    "Please contact Braintree Support for assistance."));
+                    return;
+                }
+
+                configureCardinal(fragment, configuration, request);
+
+                Cardinal cardinal = Cardinal.getInstance();
+                cardinal.init(configuration.getCardinalAuthenticationJwt(), new CardinalInitService() {
+                    @Override
+                    public void onSetupCompleted(String consumerSessionId) {
+                        sDFReferenceId = consumerSessionId;
+                        try {
+                            lookupJSON.put("dfReferenceId", sDFReferenceId);
+                        } catch (JSONException ignored) {}
+
+                        prepareLookupListener.onPrepareLookupComplete(request, lookupJSON.toString());
+                    }
+
+                    @Override
+                    public void onValidated(ValidateResponse validateResponse, String serverJWT) {
+                        prepareLookupListener.onPrepareLookupComplete(request, lookupJSON.toString());
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -332,6 +354,23 @@ public class ThreeDSecure {
         } catch (JSONException e) {
             fragment.postCallback(e);
         }
+    }
+
+    private static void configureCardinal(BraintreeFragment fragment, Configuration configuration, ThreeDSecureRequest request) {
+        CardinalEnvironment cardinalEnvironment = CardinalEnvironment.STAGING;
+        if ("production".equalsIgnoreCase(configuration.getEnvironment())) {
+            cardinalEnvironment = CardinalEnvironment.PRODUCTION;
+        }
+
+        CardinalConfigurationParameters cardinalConfigurationParameters = new CardinalConfigurationParameters();
+        cardinalConfigurationParameters.setEnvironment(cardinalEnvironment);
+        cardinalConfigurationParameters.setTimeout(8000);
+        cardinalConfigurationParameters.setEnableQuickAuth(false);
+        cardinalConfigurationParameters.setEnableDFSync(true);
+        cardinalConfigurationParameters.setUICustomization(request.getUiCustomization());
+
+        Cardinal cardinal = Cardinal.getInstance();
+        cardinal.configure(fragment.getApplicationContext(), cardinalConfigurationParameters);
     }
 
     static void authenticateCardinalJWT(final BraintreeFragment fragment, final ThreeDSecureLookup threeDSecureLookup, final String cardinalJWT) {
