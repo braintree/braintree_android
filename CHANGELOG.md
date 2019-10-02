@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## Unreleased
+## 3.7.0 
 
 * Update 3DS `prepareLookup` method to function asynchronously to wait for Cardinal SDK
 * Add ability to request `AuthenticationInsight` when tokenizing a credit card, which can be used to make a decision about whether to perform 3D Secure verification
