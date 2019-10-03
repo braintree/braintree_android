@@ -11,7 +11,7 @@ buildscript {
 }
 
 ext.braintreeDependency = [
-        googlePayment: 'com.braintreepayments.api:google-payment:3.0.1',
+        googlePayment: 'com.braintreepayments.api:google-payment:3.1.0',
         playServicesWallet: 'com.google.android.gms:play-services-wallet:16.0.1'
 ]
 

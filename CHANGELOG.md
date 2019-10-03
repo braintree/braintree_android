@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## Unreleased
+
+* Update `braintree-android-google-payment` module to `3.1.0`
+
 ## 3.7.0 
 
 * Update 3DS `prepareLookup` method to function asynchronously to wait for Cardinal SDK
