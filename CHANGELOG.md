@@ -891,6 +891,10 @@
 * Fixes
   * Attach Javadocs and sources to Maven Central build.
 
+## 3.1.0
+
+* Add check in `requestPayment` to avoid Null Pointer Exception
+
 ## 3.0.1
 
 * Resolve issue where optional shipping parameters were treated as if they were required
