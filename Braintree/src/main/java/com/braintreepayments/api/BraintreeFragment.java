@@ -170,7 +170,8 @@ public class BraintreeFragment extends BrowserSwitchFragment {
         }
 
         BraintreeFragment braintreeFragment = (BraintreeFragment) fragmentManager.findFragmentByTag(TAG);
-        if (braintreeFragment == null) {
+        
+        if (braintreeFragment == null || !braintreeFragment.hasMatchingAuthorization(authorization)) {
             braintreeFragment = new BraintreeFragment();
             Bundle bundle = new Bundle();
 
@@ -187,6 +188,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
 
             try {
                 if (VERSION.SDK_INT >= VERSION_CODES.N) {
+                    // TODO: where we use `add`, we might nee to use `replace` if an existing fragment for that TAG exists
                     try {
                         fragmentManager.beginTransaction().add(braintreeFragment, TAG).commitNow();
                     } catch (IllegalStateException | NullPointerException e) {
@@ -557,6 +559,10 @@ public class BraintreeFragment extends BrowserSwitchFragment {
      */
     public boolean hasFetchedPaymentMethodNonces() {
         return mHasFetchedPaymentMethodNonces;
+    }
+    
+    public boolean hasMatchingAuthorization(String authorization) {
+        return mAuthorization.toString() == authorization;
     }
 
     /**
