@@ -408,18 +408,19 @@ public class GooglePayment {
     private static JSONObject buildCardTokenizationSpecification(BraintreeFragment fragment) {
         JSONObject cardJson = new JSONObject();
         JSONObject parameters = new JSONObject();
+        String googlePaymentVersion = com.braintreepayments.api.googlepayment.BuildConfig.VERSION_NAME;
 
         try {
             parameters
                     .put("gateway", "braintree")
                     .put("braintree:apiVersion", "v1")
-                    .put("braintree:sdkVersion", BuildConfig.VERSION_NAME)
+                    .put("braintree:sdkVersion", googlePaymentVersion)
                     .put("braintree:merchantId", fragment.getConfiguration().getMerchantId())
                     .put("braintree:metadata", (new JSONObject()
                             .put("source", "client")
                             .put("integration", fragment.getIntegrationType())
                             .put("sessionId", fragment.getSessionId())
-                            .put("version", BuildConfig.VERSION_NAME)
+                            .put("version", googlePaymentVersion)
                             .put("platform", "android")).toString());
 
             if (Authorization.isTokenizationKey(fragment.getAuthorization().toString())) {
@@ -451,13 +452,14 @@ public class GooglePayment {
 
     private static JSONObject buildPayPalTokenizationSpecification(BraintreeFragment fragment) {
         JSONObject json = new JSONObject();
+        String googlePaymentVersion = com.braintreepayments.api.googlepayment.BuildConfig.VERSION_NAME;
 
         try {
             json.put("type", "PAYMENT_GATEWAY")
                     .put("parameters", new JSONObject()
                             .put("gateway", "braintree")
                             .put("braintree:apiVersion", "v1")
-                            .put("braintree:sdkVersion", BuildConfig.VERSION_NAME)
+                            .put("braintree:sdkVersion", googlePaymentVersion)
                             .put("braintree:merchantId",
                                     fragment.getConfiguration().getMerchantId())
                             .put("braintree:paypalClientId",
@@ -466,7 +468,7 @@ public class GooglePayment {
                                     .put("source", "client")
                                     .put("integration", fragment.getIntegrationType())
                                     .put("sessionId", fragment.getSessionId())
-                                    .put("version", BuildConfig.VERSION_NAME)
+                                    .put("version", googlePaymentVersion)
                                     .put("platform", "android")).toString()));
         } catch (JSONException ignored) {
         }
