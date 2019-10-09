@@ -891,6 +891,9 @@
 * Fixes
   * Attach Javadocs and sources to Maven Central build.
 
+## 3.1.1
+Fix setting the correct version in metadata
+
 ## 3.1.0
 
 * Add check in `requestPayment` to avoid Null Pointer Exception
