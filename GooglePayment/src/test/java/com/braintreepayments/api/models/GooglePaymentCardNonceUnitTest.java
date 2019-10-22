@@ -41,7 +41,7 @@ public class GooglePaymentCardNonceUnitTest {
         assertEquals("android-user@example.com", googlePaymentCardNonce.getEmail());
         assertPostalAddress(billingPostalAddress, googlePaymentCardNonce.getBillingAddress());
         assertPostalAddress(shippingPostalAddress, googlePaymentCardNonce.getShippingAddress());
-        assertTrue(googlePaymentCardNonce.getIsNetworkTokenizedKey());
+        assertTrue(googlePaymentCardNonce.isNetworkTokenized());
     }
 
     @Test

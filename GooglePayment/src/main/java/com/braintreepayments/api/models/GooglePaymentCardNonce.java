@@ -144,9 +144,9 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
     }
 
     /**
-     * @return Is network tokenized
+     * @return true if the card is network tokenized.
      */
-    public Boolean getIsNetworkTokenizedKey() {
+    public Boolean isNetworkTokenized() {
         return mIsNetworkTokenized;
     }
 
