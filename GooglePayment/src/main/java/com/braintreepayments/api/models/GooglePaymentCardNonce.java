@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import androidx.annotation.Nullable;
 
 import static com.braintreepayments.api.models.BinData.BIN_DATA_KEY;
+import static java.lang.Boolean.FALSE;
 
 /**
  * {@link PaymentMethodNonce} representing a Google Payments card.
@@ -24,11 +25,13 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
     private static final String CARD_TYPE_KEY = "cardType";
     private static final String LAST_TWO_KEY = "lastTwo";
     private static final String LAST_FOUR_KEY = "lastFour";
+    private static final String IS_NETWORK_TOKENIZED_KEY = "isNetworkTokenized";
 
     private String mCardType;
     private String mLastTwo;
     private String mLastFour;
     private String mEmail;
+    private Boolean mIsNetworkTokenized;
     private PostalAddress mBillingAddress;
     private PostalAddress mShippingAddress;
     private BinData mBinData;
@@ -81,6 +84,7 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
         mLastTwo = details.getString(LAST_TWO_KEY);
         mLastFour = details.getString(LAST_FOUR_KEY);
         mCardType = details.getString(CARD_TYPE_KEY);
+        mIsNetworkTokenized = details.optBoolean(IS_NETWORK_TOKENIZED_KEY, FALSE);
     }
 
     public static PostalAddress postalAddressFromJson(JSONObject json) {
@@ -137,6 +141,13 @@ public class GooglePaymentCardNonce extends PaymentMethodNonce implements Parcel
     @Nullable
     public String getEmail() {
         return mEmail;
+    }
+
+    /**
+     * @return Is network tokenized
+     */
+    public Boolean getIsNetworkTokenizedKey() {
+        return mIsNetworkTokenized;
     }
 
     /**

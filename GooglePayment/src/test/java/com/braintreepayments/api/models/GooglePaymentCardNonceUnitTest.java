@@ -14,6 +14,7 @@ import static com.braintreepayments.api.test.Assertions.assertBinDataEqual;
 import static com.braintreepayments.api.test.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class GooglePaymentCardNonceUnitTest {
@@ -40,6 +41,7 @@ public class GooglePaymentCardNonceUnitTest {
         assertEquals("android-user@example.com", googlePaymentCardNonce.getEmail());
         assertPostalAddress(billingPostalAddress, googlePaymentCardNonce.getBillingAddress());
         assertPostalAddress(shippingPostalAddress, googlePaymentCardNonce.getShippingAddress());
+        assertTrue(googlePaymentCardNonce.getIsNetworkTokenizedKey());
     }
 
     @Test
