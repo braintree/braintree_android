@@ -903,10 +903,6 @@ Fix setting the correct version in metadata
 * Resolve issue where optional shipping parameters were treated as if they were required
 * Use GooglePayment PayPal client ID
 
-## Unreleased
-
-* Resolve issue where optional shipping parameters were treated as if they were required
-
 ## 3.0.0
 
 * Convert to AndroidX
