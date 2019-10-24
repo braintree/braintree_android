@@ -891,6 +891,9 @@
 * Fixes
   * Attach Javadocs and sources to Maven Central build.
 
+## 3.2.0
+* Add support for `isNetworkTokenized`
+
 ## 3.1.1
 Fix setting the correct version in metadata
 
