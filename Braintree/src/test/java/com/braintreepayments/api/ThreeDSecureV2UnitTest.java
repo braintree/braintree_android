@@ -560,4 +560,19 @@ public class ThreeDSecureV2UnitTest {
 
         verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.failed"));
     }
+
+    @Test
+    public void onActivityResult_whenCardinalCardVerificationTimeout_sendsAnalyticsEvent() {
+        mFragment = mMockFragmentBuilder.build();
+
+        ValidateResponse validateResponse = mock(ValidateResponse.class);
+        when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.TIMEOUT);
+
+        Intent data = new Intent();
+        data.putExtra(ThreeDSecureActivity.EXTRA_VALIDATION_RESPONSE, validateResponse);
+
+        ThreeDSecure.onActivityResult(mFragment, RESULT_OK, data);
+
+        verify(mFragment).sendAnalyticsEvent(eq("three-d-secure.verification-flow.failed"));
+    }
 }
