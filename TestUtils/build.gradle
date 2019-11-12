@@ -1,9 +1,5 @@
 apply plugin: 'com.android.library'
 
-def LOCALHOST_IP = System.properties['LOCALHOST_IP'] ?: '"10.0.2.2"';
-def GATEWAY_IP = System.properties['GATEWAY_IP'] ?: '"10.0.2.2"';
-def GATEWAY_PORT = System.properties['GATEWAY_PORT'] ?: '"3000"';
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
@@ -25,10 +21,4 @@ dependencies {
     api 'androidx.test:runner:1.1.0'
     api 'androidx.test:rules:1.1.0'
     api 'androidx.appcompat:appcompat:1.0.1'
-}
-
-android.buildTypes.each { type ->
-    type.buildConfigField 'String', 'LOCALHOST_IP', LOCALHOST_IP
-    type.buildConfigField 'String', 'GATEWAY_IP', GATEWAY_IP
-    type.buildConfigField 'String', 'GATEWAY_PORT', GATEWAY_PORT
 }

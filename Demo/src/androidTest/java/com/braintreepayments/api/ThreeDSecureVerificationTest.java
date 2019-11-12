@@ -1,5 +1,8 @@
 package com.braintreepayments.api;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.test.runner.AndroidJUnit4;
+
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
@@ -18,9 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.test.runner.AndroidJUnit4;
 
 import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
@@ -110,7 +110,7 @@ public class ThreeDSecureVerificationTest {
 
     @Test(timeout = 10000)
     public void performVerification_failsWithATokenizationKey() throws InterruptedException {
-        String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
+        String clientToken = new TestClientTokenBuilder().build();
         BraintreeFragment fragment = getFragment(TOKENIZATION_KEY, clientToken);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
@@ -148,6 +148,14 @@ public class ThreeDSecureVerificationTest {
                 mCountDownLatch.countDown();
             }
         });
+
+        fragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onError(Exception error) {
+                fail(error.getMessage());
+            }
+        });
+
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(THREE_D_SECURE_LOOKUP_ERROR)
                 .expirationDate("12/20");
@@ -174,6 +182,14 @@ public class ThreeDSecureVerificationTest {
                 mCountDownLatch.countDown();
             }
         });
+
+        fragment.addListener(new BraintreeErrorListener() {
+            @Override
+            public void onError(Exception error) {
+                fail(error.getMessage());
+            }
+        });
+
         CardBuilder cardBuilder = new CardBuilder()
                 .cardNumber(THREE_D_SECURE_MPI_LOOKUP_ERROR)
                 .expirationDate("12/20");
@@ -185,7 +201,7 @@ public class ThreeDSecureVerificationTest {
 
     /* helpers */
     private BraintreeFragment getFragment() {
-        String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
+        String clientToken = new TestClientTokenBuilder().build();
         return getFragment(clientToken, clientToken);
     }
 

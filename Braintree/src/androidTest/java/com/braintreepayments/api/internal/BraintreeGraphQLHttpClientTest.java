@@ -10,8 +10,6 @@ import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.ClientToken;
-import com.braintreepayments.api.test.EnvironmentHelper;
-import com.braintreepayments.testutils.Assumptions;
 import com.braintreepayments.testutils.FixturesHelper;
 
 import org.junit.Before;
@@ -126,12 +124,8 @@ public class BraintreeGraphQLHttpClientTest {
     }
 
     @Test(timeout = 5000)
-    public void getRequestBadCertificateCheck() throws InterruptedException, InvalidArgumentException {
-        if (!BuildConfig.RUN_ALL_TESTS) {
-            return;
-        }
-
-        String baseUrl = "https://" + EnvironmentHelper.getLocalhostIp() + ":9443";
+    public void getRequest_whenErrorOccurs_callsFailure() throws InterruptedException {
+        String baseUrl = "https://bad.endpoint";
         BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
 
         httpClient.get("/", new HttpResponseCallback() {
@@ -143,9 +137,7 @@ public class BraintreeGraphQLHttpClientTest {
 
             @Override
             public void failure(Exception exception) {
-                assertEquals(
-                        "java.security.cert.CertPathValidatorException: Trust anchor for certification path not found.",
-                        exception.getMessage());
+                assertNotNull(exception);
                 mCountDownLatch.countDown();
             }
         });

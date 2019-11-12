@@ -9,7 +9,6 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.TokenizationKey;
-import com.braintreepayments.api.test.EnvironmentHelper;
 
 import org.json.JSONException;
 import org.junit.Before;
@@ -276,33 +275,6 @@ public class BraintreeHttpClientTest {
             @Override
             public void failure(Exception exception) {
                 assertTrue(exception instanceof AuthorizationException);
-                mCountDownLatch.countDown();
-            }
-        });
-
-        mCountDownLatch.await();
-    }
-
-    @Test(timeout = 5000)
-    public void getRequestBadCertificateCheck() throws InterruptedException, InvalidArgumentException {
-        if (!BuildConfig.RUN_ALL_TESTS) {
-            return;
-        }
-
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY));
-        httpClient.setBaseUrl("https://" + EnvironmentHelper.getLocalhostIp() + ":9443");
-
-        httpClient.get("/", new HttpResponseCallback() {
-            @Override
-            public void success(String responseBody) {
-                fail("Request was successful");
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                assertEquals(
-                        "java.security.cert.CertPathValidatorException: Trust anchor for certification path not found.",
-                        exception.getMessage());
                 mCountDownLatch.countDown();
             }
         });

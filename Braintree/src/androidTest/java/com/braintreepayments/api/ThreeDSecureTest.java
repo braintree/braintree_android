@@ -1,6 +1,8 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.test.runner.AndroidJUnit4;
+
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
@@ -17,9 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.test.runner.AndroidJUnit4;
 
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWithAuthorization;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.tokenize;
@@ -47,7 +46,7 @@ public class ThreeDSecureTest {
     @Test(timeout = 10000)
     public void performVerification_postsPaymentMethodNonceToListenersWhenLookupReturnsACard()
             throws InterruptedException {
-        String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
+        String clientToken = new TestClientTokenBuilder().build();
         BraintreeFragment fragment = getFragmentWithAuthorization(mActivity, clientToken);
         String nonce = tokenize(fragment, new CardBuilder()
                 .cardNumber("4000000000000051")
@@ -69,8 +68,8 @@ public class ThreeDSecureTest {
 
     @Test(timeout = 10000)
     public void performVerification_acceptsAThreeDSecureRequest_postsPaymentMethodNonceToListenersWhenLookupReturnsACard()
-            throws InterruptedException, InvalidArgumentException {
-        String clientToken = new TestClientTokenBuilder().withThreeDSecure().build();
+            throws InterruptedException {
+        String clientToken = new TestClientTokenBuilder().build();
         BraintreeFragment fragment = getFragmentWithAuthorization(mActivity, clientToken);
         String nonce = tokenize(fragment, new CardBuilder()
                 .cardNumber("4000000000000051")
@@ -102,7 +101,7 @@ public class ThreeDSecureTest {
     public void performVerification_acceptsACardBuilderAndPostsAPaymentMethodNonceToListener()
             throws InterruptedException {
         BraintreeFragment fragment = getFragmentWithAuthorization(mActivity,
-                new TestClientTokenBuilder().withThreeDSecure().build());
+                new TestClientTokenBuilder().build());
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {

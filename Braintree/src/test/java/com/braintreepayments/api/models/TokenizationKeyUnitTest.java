@@ -7,17 +7,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(RobolectricTestRunner.class)
 public class TokenizationKeyUnitTest {
 
+    private static final String TOKENIZATION_KEY = "development_testing_integration_merchant_id";
+
     @Test
     public void fromString_acceptsATokenizationKey() throws InvalidArgumentException {
         Authorization tokenizationKey = Authorization.fromString(TOKENIZATION_KEY);
 
-        assertEquals("development_testing_integration_merchant_id", tokenizationKey.getBearer());
+        assertEquals(TOKENIZATION_KEY, tokenizationKey.getBearer());
     }
 
     @Test(expected = InvalidArgumentException.class)

@@ -3,7 +3,6 @@ package com.braintreepayments.api.internal;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
 
 import org.junit.Test;
@@ -18,28 +17,28 @@ import static junit.framework.Assert.assertEquals;
 @RunWith(AndroidJUnit4.class)
 public class AnalyticsSenderTest {
 
+    private static final String ANALYTICS_URL = "https://origin-analytics-sand.sandbox.braintree-api.com/some-merchant-id";
+
     @Test(timeout = 10000)
     public void sendsCorrectlyFormattedAnalyticsRequest() throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
-        String authorization = new TestClientTokenBuilder().withAnalytics().build();
-        final Configuration configuration = Configuration.fromJson(authorization);
 
+        Authorization authorization = Authorization.fromString(new TestClientTokenBuilder().build());
         AnalyticsEvent event = new AnalyticsEvent(getTargetContext(), "sessionId", "custom", "event.started");
         AnalyticsDatabase.getInstance(getTargetContext()).addEvent(event);
 
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(Authorization.fromString(authorization)) {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(authorization) {
             @Override
             protected String parseResponse(HttpURLConnection connection) throws Exception {
-                if (connection.getURL().toString().equals(configuration.getAnalytics().getUrl())) {
+                if (ANALYTICS_URL.equals(connection.getURL().toString())) {
                     assertEquals(200, connection.getResponseCode());
                     latch.countDown();
                 }
-                return "";
+                return null;
             }
         };
 
-        AnalyticsSender.send(getTargetContext(), Authorization.fromString(authorization), httpClient,
-                configuration.getAnalytics().getUrl(), true);
+        AnalyticsSender.send(getTargetContext(), authorization, httpClient, ANALYTICS_URL, true);
 
         latch.await();
     }

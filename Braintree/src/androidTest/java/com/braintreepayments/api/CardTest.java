@@ -16,6 +16,7 @@ import com.braintreepayments.api.test.TestClientTokenBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,7 +61,7 @@ public class CardTest {
                 .cardNumber(VISA)
                 .expirationDate("08/20");
 
-        assertTokenizationSuccessful(new TestClientTokenBuilder().build(), cardBuilder);
+        assertTokenizationSuccessful(new TestClientTokenBuilder().withCustomerId().build(), cardBuilder);
     }
 
     @Test(timeout = 10000)
@@ -69,7 +70,7 @@ public class CardTest {
                 .cardNumber(VISA)
                 .expirationDate("08/20");
 
-        assertTokenizationSuccessful(new TestClientTokenBuilder().withoutCustomer().build(), cardBuilder);
+        assertTokenizationSuccessful(new TestClientTokenBuilder().build(), cardBuilder);
     }
 
     @Test(timeout = 10000)
@@ -179,6 +180,7 @@ public class CardTest {
         countDownLatch.await();
     }
 
+    @Ignore("Sample merchant account is not set up for CVV verification")
     @Test(timeout = 10000)
     public void tokenize_callsErrorCallbackForInvalidCvv() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()
@@ -212,6 +214,7 @@ public class CardTest {
         assertTokenizationSuccessful(new TestClientTokenBuilder().withPostalCodeVerification().build(), cardBuilder);
     }
 
+    @Ignore("Sample merchant account is not set up for postal code verification")
     @Test(timeout = 10000)
     public void tokenize_callsErrorCallbackForInvalidPostalCode() throws Exception {
         CardBuilder cardBuilder = new CardBuilder()

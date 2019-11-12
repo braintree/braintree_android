@@ -5,12 +5,9 @@ import androidx.test.runner.AndroidJUnit4;
 import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.exceptions.BraintreeApiErrorResponse;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.test.EnvironmentHelper;
-import com.braintreepayments.testutils.Assumptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -21,6 +18,7 @@ import java.util.concurrent.CountDownLatch;
 import static com.braintreepayments.api.internal.HttpClientTestUtils.stubResponse;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.fail;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.spy;
@@ -162,14 +160,10 @@ public class BraintreeApiHttpClientTest {
     }
 
     @Test(timeout = 5000)
-    public void getRequestBadCertificateCheck() throws InterruptedException {
-        if (!BuildConfig.RUN_ALL_TESTS) {
-            return;
-        }
+    public void getRequest_whenErrorOccurs_callsFailure() throws InterruptedException {
 
         final CountDownLatch latch = new CountDownLatch(1);
-        BraintreeApiHttpClient client = new BraintreeApiHttpClient("https://" + EnvironmentHelper.getLocalhostIp() + ":9443",
-                null);
+        BraintreeApiHttpClient client = new BraintreeApiHttpClient("https://bad.endpoint", null);
 
         client.get("/", new HttpResponseCallback() {
             @Override
@@ -179,9 +173,7 @@ public class BraintreeApiHttpClientTest {
 
             @Override
             public void failure(Exception exception) {
-                assertEquals(
-                        "java.security.cert.CertPathValidatorException: Trust anchor for certification path not found.",
-                        exception.getMessage());
+                assertNotNull(exception);
                 latch.countDown();
             }
         });
