@@ -66,12 +66,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Queue;
+import java.util.UUID;
 
 /**
  * Core Braintree class that handles network requests and managing callbacks.
  */
 public class BraintreeFragment extends BrowserSwitchFragment {
 
+    /**
+     * @deprecated This constant is no longer used and will be removed in a future release. If you were using this constant to retrieve an instance of `BraintreeFragment`, you should instead call `BraintreeFragment.newInstance` with the authorization string. It will return an existing instance if one is present.
+     */
+    @Deprecated
     public static final String TAG = "com.braintreepayments.api.BraintreeFragment";
 
     public static final String EXTRA_WAS_BROWSER_SWITCH_RESULT = "com.braintreepayments.api.WAS_BROWSER_SWITCH_RESULT";
@@ -79,6 +84,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     private static final String EXTRA_AUTHORIZATION_TOKEN = "com.braintreepayments.api.EXTRA_AUTHORIZATION_TOKEN";
     private static final String EXTRA_INTEGRATION_TYPE = "com.braintreepayments.api.EXTRA_INTEGRATION_TYPE";
     private static final String EXTRA_SESSION_ID = "com.braintreepayments.api.EXTRA_SESSION_ID";
+    private static final String TAG_PREFIX = "BraintreeFragment";
 
     @VisibleForTesting
     static final String EXTRA_CONFIGURATION = "com.braintreepayments.api.EXTRA_CONFIGURATION";
@@ -122,8 +128,9 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     public BraintreeFragment() {}
 
     /**
-     * Create a new instance of {@link BraintreeFragment} using the client token and add it to the
-     * {@link AppCompatActivity}'s {@link FragmentManager}.
+     * Create a new instance of {@link BraintreeFragment} using the tokenization key or client token and add it to the
+     * {@link AppCompatActivity}'s {@link FragmentManager}. If a fragment has already been created with the provided
+     * authorization, the existing fragment will be returned.
      *
      * @param activity The {@link AppCompatActivity} to add the {@link BraintreeFragment} to.
      * @param authorization The tokenization key or client token to use.
@@ -131,8 +138,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
      * @throws InvalidArgumentException If the tokenization key or client token is not valid or cannot be
      *         parsed.
      */
-    public static BraintreeFragment newInstance(AppCompatActivity activity, String authorization)
-            throws InvalidArgumentException {
+    public static BraintreeFragment newInstance(AppCompatActivity activity, String authorization) throws InvalidArgumentException {
         if (activity == null) {
             throw new InvalidArgumentException("Activity is null");
         }
@@ -141,8 +147,9 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     }
 
     /**
-     * Create a new instance of {@link BraintreeFragment} using the client token and add it to the
-     * {@link Fragment}'s child {@link FragmentManager}.
+     * Create a new instance of {@link BraintreeFragment} using the tokenization key or client token and add it to the
+     * {@link Fragment}'s child {@link FragmentManager}. If a fragment has already been created with the provided
+     * authorization, the existing fragment will be returned.
      *
      * @param fragment The {@link Fragment} to add the {@link BraintreeFragment} to.
      * @param authorization The tokenization key or client token to use.
@@ -150,8 +157,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
      * @throws InvalidArgumentException If the tokenization key or client token is not valid or cannot be
      *         parsed.
      */
-    public static BraintreeFragment newInstance(Fragment fragment, String authorization)
-            throws InvalidArgumentException {
+    public static BraintreeFragment newInstance(Fragment fragment, String authorization) throws InvalidArgumentException {
         if (fragment == null) {
             throw new InvalidArgumentException("Fragment is null");
         }
@@ -159,8 +165,9 @@ public class BraintreeFragment extends BrowserSwitchFragment {
         return newInstance(fragment.getContext(), fragment.getChildFragmentManager(), authorization);
     }
 
-    private static BraintreeFragment newInstance(Context context, FragmentManager fragmentManager, String authorization)
-            throws InvalidArgumentException {
+    private static BraintreeFragment newInstance(Context context,
+                                                 FragmentManager fragmentManager,
+                                                 String authorization) throws InvalidArgumentException {
         if (context == null) {
             throw new InvalidArgumentException("Context is null");
         }
@@ -169,41 +176,48 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             throw new InvalidArgumentException("FragmentManager is null");
         }
 
-        BraintreeFragment braintreeFragment = (BraintreeFragment) fragmentManager.findFragmentByTag(TAG);
-        if (braintreeFragment == null) {
-            braintreeFragment = new BraintreeFragment();
-            Bundle bundle = new Bundle();
+        if (authorization == null) {
+            throw new InvalidArgumentException("Tokenization Key or Client Token is null.");
+        }
 
-            try {
-                Authorization auth = Authorization.fromString(authorization);
-                bundle.putParcelable(EXTRA_AUTHORIZATION_TOKEN, auth);
-            } catch (InvalidArgumentException e) {
-                throw new InvalidArgumentException("Tokenization Key or client token was invalid.");
-            }
+        String tag = TAG_PREFIX + "." + UUID.nameUUIDFromBytes(authorization.getBytes());
 
-            bundle.putString(EXTRA_SESSION_ID, UUIDHelper.getFormattedUUID());
-            bundle.putString(EXTRA_INTEGRATION_TYPE, IntegrationType.get(context));
-            braintreeFragment.setArguments(bundle);
+        if (fragmentManager.findFragmentByTag(tag) != null) {
+            return (BraintreeFragment) fragmentManager.findFragmentByTag(tag);
+        }
 
-            try {
-                if (VERSION.SDK_INT >= VERSION_CODES.N) {
-                    try {
-                        fragmentManager.beginTransaction().add(braintreeFragment, TAG).commitNow();
-                    } catch (IllegalStateException | NullPointerException e) {
-                        fragmentManager.beginTransaction().add(braintreeFragment, TAG).commit();
-                        try {
-                            fragmentManager.executePendingTransactions();
-                        } catch (IllegalStateException ignored) {}
-                    }
-                } else {
-                    fragmentManager.beginTransaction().add(braintreeFragment, TAG).commit();
+        BraintreeFragment braintreeFragment = new BraintreeFragment();
+        Bundle bundle = new Bundle();
+
+        try {
+            Authorization auth = Authorization.fromString(authorization);
+            bundle.putParcelable(EXTRA_AUTHORIZATION_TOKEN, auth);
+        } catch (InvalidArgumentException e) {
+            throw new InvalidArgumentException("Tokenization Key or client token was invalid.");
+        }
+
+        bundle.putString(EXTRA_SESSION_ID, UUIDHelper.getFormattedUUID());
+        bundle.putString(EXTRA_INTEGRATION_TYPE, IntegrationType.get(context));
+        braintreeFragment.setArguments(bundle);
+
+        try {
+            if (VERSION.SDK_INT >= VERSION_CODES.N) {
+                try {
+                    fragmentManager.beginTransaction().add(braintreeFragment, tag).commitNow();
+                } catch (IllegalStateException | NullPointerException e) {
+                    fragmentManager.beginTransaction().add(braintreeFragment, tag).commit();
                     try {
                         fragmentManager.executePendingTransactions();
                     } catch (IllegalStateException ignored) {}
                 }
-            } catch (IllegalStateException e) {
-                throw new InvalidArgumentException(e.getMessage());
+            } else {
+                fragmentManager.beginTransaction().add(braintreeFragment, tag).commit();
+                try {
+                    fragmentManager.executePendingTransactions();
+                } catch (IllegalStateException ignored) {}
             }
+        } catch (IllegalStateException e) {
+            throw new InvalidArgumentException(e.getMessage());
         }
 
         braintreeFragment.mContext = context.getApplicationContext();

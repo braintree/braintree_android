@@ -3,6 +3,7 @@
 ## Unreleased
 
 * Update `braintree-android-google-payment` module to `3.1.0`
+* Fix a bug so that `BraintreeFragment.newInstance` returns a new fragment whenever a new authorization string is passed in (Resolves issue #274. Thanks @krunk4ever and @bramley-stride.)
 
 ## 3.7.0 
 

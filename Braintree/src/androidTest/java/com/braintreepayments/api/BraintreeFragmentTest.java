@@ -3,7 +3,6 @@ package com.braintreepayments.api;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.runner.AndroidJUnit4;
 
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.models.Configuration;
@@ -13,7 +12,6 @@ import com.braintreepayments.api.test.TestClientTokenBuilder;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,9 +20,7 @@ import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWithAuthorization;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
 public class BraintreeFragmentTest {
@@ -72,30 +68,6 @@ public class BraintreeFragmentTest {
         mCountDownLatch.await();
     }
 
-    @Test(timeout = 1000)
-    public void newInstance_returnsSingleton() throws InvalidArgumentException, InterruptedException {
-        final BraintreeFragment[] fragments = new BraintreeFragment[2];
-        mActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    fragments[0] = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-                    fragments[1] = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-                } catch (InvalidArgumentException e) {
-                    fail(e.getMessage());
-                }
-
-                mCountDownLatch.countDown();
-            }
-        });
-
-        mCountDownLatch.await();
-        assertNotNull(fragments[0]);
-        assertNotNull(fragments[1]);
-        assertEquals(fragments[0], fragments[1]);
-    }
-
-    @Ignore("Investigate why this test passes when run individually, but not when run with other tests.")
     @Test(timeout = 1000)
     public void getGoogleApiClient_returnsGoogleApiClient() throws InterruptedException {
         BraintreeFragment fragment = getFragmentWithAuthorization(mActivity, mClientToken);

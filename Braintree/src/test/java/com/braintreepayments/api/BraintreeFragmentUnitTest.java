@@ -75,6 +75,7 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertSame;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertNotSame;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -109,17 +110,45 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void newInstance_returnsABraintreeFragmentFromATokenizationKey() throws InvalidArgumentException {
+    public void newInstance_whenAuthorizationIsTokenizationKey_returnsBraintreeFragmentWithTag() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
 
         assertNotNull(fragment);
+        assertEquals("BraintreeFragment.2bdfa273-fd2a-3ed9-b0fe-71583ec1ce78", fragment.getTag());
     }
 
     @Test
-    public void newInstance_returnsABraintreeFragmentFromAClientToken() throws InvalidArgumentException {
+    public void newInstance_whenAuthorizationIsClientToken_returnsBraintreeFragmentWithTag() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, stringFromFixture("client_token.json"));
 
         assertNotNull(fragment);
+        assertEquals("BraintreeFragment.d131b316-49af-3f8e-87be-68e42bf0186d", fragment.getTag());
+    }
+
+    @Test
+    public void newInstance_whenFragmentExistsWithSameAuthorization_returnsExistingFragment() throws InvalidArgumentException {
+        BraintreeFragment fragment1 = BraintreeFragment.newInstance(mActivity, stringFromFixture("client_token.json"));
+        BraintreeFragment fragment2 = BraintreeFragment.newInstance(mActivity, stringFromFixture("client_token.json"));
+        assertSame(fragment1, fragment2);
+    }
+
+    @Test
+    public void newInstance_whenFragmentExistsWithDifferentAuthorization_returnsNewFragment() throws InvalidArgumentException {
+        String clientToken1 = "{\n" +
+                "  \"configUrl\": \"config_url_1\",\n" +
+                "  \"authorizationFingerprint\": \"auth_fingerprint_1\",\n" +
+                "  \"merchantAccountId\": \"merchant_account_id_1\"\n" +
+                "}";
+
+        String clientToken2 = "{\n" +
+                "  \"configUrl\": \"config_url_2\",\n" +
+                "  \"authorizationFingerprint\": \"auth_fingerprint_2\",\n" +
+                "  \"merchantAccountId\": \"merchant_account_id\"\n" +
+                "}";
+
+        BraintreeFragment fragment1 = BraintreeFragment.newInstance(mActivity, clientToken1);
+        BraintreeFragment fragment2 = BraintreeFragment.newInstance(mActivity, clientToken2);
+        assertNotSame(fragment1, fragment2);
     }
 
     @Test(expected = InvalidArgumentException.class)
@@ -132,12 +161,9 @@ public class BraintreeFragmentUnitTest {
         BraintreeFragment.newInstance(mActivity, "{}");
     }
 
-    @Test
-    public void newInstance_returnsAnExistingInstance() throws InvalidArgumentException {
-        BraintreeFragment fragment1 = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-        BraintreeFragment fragment2 = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-
-        assertEquals(fragment1, fragment2);
+    @Test(expected = InvalidArgumentException.class)
+    public void newInstance_throwsAnExceptionWhenAuthorizationIsNull() throws InvalidArgumentException {
+        BraintreeFragment.newInstance(mActivity, null);
     }
 
     @Test(expected = InvalidArgumentException.class)
@@ -162,6 +188,13 @@ public class BraintreeFragmentUnitTest {
                 .get();
 
         BraintreeFragment.newInstance(activity, TOKENIZATION_KEY);
+    }
+
+    @Test
+    public void newInstance_setsIntegrationTypeToCustomForAllActivities() throws Exception {
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+
+        assertEquals("custom", getField("mIntegrationType", fragment));
     }
 
     @Test
@@ -197,21 +230,13 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void onAttach_recordsNewActivity()
-            throws JSONException, InvalidArgumentException, NoSuchFieldException, IllegalAccessException {
+            throws InvalidArgumentException, NoSuchFieldException, IllegalAccessException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         assertEquals(false, getField("mNewActivityNeedsConfiguration", fragment));
 
         fragment.onAttach(null);
 
         assertEquals(true, getField("mNewActivityNeedsConfiguration", fragment));
-    }
-
-    @Test
-    public void newInstance_setsIntegrationTypeToCustomForAllActivities()
-            throws InvalidArgumentException, NoSuchFieldException, IllegalAccessException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
-
-        assertEquals("custom", getField("mIntegrationType", fragment));
     }
 
     @Test
@@ -262,7 +287,7 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void onSaveInstanceState_savesState() throws InvalidArgumentException, JSONException {
+    public void onSaveInstanceState_savesState() throws InvalidArgumentException {
         Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
         mockConfigurationManager(configuration);
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
@@ -276,8 +301,7 @@ public class BraintreeFragmentUnitTest {
     }
 
     @Test
-    public void onSaveInstanceState_doesNotIncludeConfigurationWhenNull() throws InvalidArgumentException,
-            JSONException {
+    public void onSaveInstanceState_doesNotIncludeConfigurationWhenNull() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         Bundle bundle = new Bundle();
 
@@ -1128,13 +1152,13 @@ public class BraintreeFragmentUnitTest {
                 any(BraintreeResponseListener.class));
     }
 
-    private void mockConfigurationManager(final Exception exeption) {
+    private void mockConfigurationManager(final Exception exception) {
         mockStatic(ConfigurationManager.class);
         doAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 if (invocation.getArguments()[2] != null) {
-                    ((BraintreeResponseListener<Exception>) invocation.getArguments()[2]).onResponse(exeption);
+                    ((BraintreeResponseListener<Exception>) invocation.getArguments()[2]).onResponse(exception);
                 }
                 return null;
             }
