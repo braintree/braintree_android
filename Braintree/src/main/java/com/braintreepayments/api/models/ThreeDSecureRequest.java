@@ -47,11 +47,8 @@ public class ThreeDSecureRequest implements Parcelable {
 
     /**
      * Set the amount
-     * <p>
-     * This value must be a non-negative number and must match the currency format of the merchant account.
-     * It can only contain numbers and optionally one decimal point with exactly 2 decimal place precision (e.g., x.xx).
      *
-     * @param amount The amount of the transaction in the current merchant account's currency.
+     * @param amount The amount of the transaction in the current merchant account's currency. This must be expressed in numbers with an optional decimal (using `.`) and precision up to the hundredths place. For example, if you're processing a transaction for 1.234,56 € then `amount` should be `1234.56`.
      */
     public ThreeDSecureRequest amount(String amount) {
         mAmount = amount;
