@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-* Update Cardinal SDK to `2.2.1-1`
+* Update Cardinal SDK to `2.2.1-2`
 
 ## 3.7.1
 
