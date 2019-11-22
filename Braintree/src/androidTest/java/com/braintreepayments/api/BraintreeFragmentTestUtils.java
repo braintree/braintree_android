@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
-
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.Authorization;

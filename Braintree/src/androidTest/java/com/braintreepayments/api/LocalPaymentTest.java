@@ -2,13 +2,11 @@ package com.braintreepayments.api;
 
 import androidx.test.runner.AndroidJUnit4;
 
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.models.LocalPaymentRequest;
 import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
-import com.braintreepayments.testutils.Assumptions;
 
 import org.junit.Before;
 import org.junit.Rule;

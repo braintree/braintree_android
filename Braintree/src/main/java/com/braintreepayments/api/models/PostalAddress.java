@@ -4,10 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.braintreepayments.api.models.PostalAddressParser;
-
-import org.json.JSONObject;
-
 /**
  * Java object representing a postal address
  */

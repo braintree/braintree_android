@@ -2,8 +2,6 @@ package com.braintreepayments.api;
 
 import android.os.Parcel;
 
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 import com.paypal.android.sdk.onetouch.core.PayPalLineItem;
 import com.braintreepayments.api.models.PayPalRequest;
@@ -21,10 +19,8 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
-import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 

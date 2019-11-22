@@ -23,9 +23,7 @@ import com.braintreepayments.api.models.PostalAddress;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
 public class PayPalActivity extends BaseActivity implements ConfigurationListener,
         PaymentMethodNonceCreatedListener, BraintreeErrorListener {

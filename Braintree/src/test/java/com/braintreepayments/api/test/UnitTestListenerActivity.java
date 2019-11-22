@@ -1,6 +1,5 @@
 package com.braintreepayments.api.test;
 
-import android.app.Activity;
 import android.os.Bundle;
 
 import com.braintreepayments.api.R;

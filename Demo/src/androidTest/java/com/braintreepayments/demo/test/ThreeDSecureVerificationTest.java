@@ -1,7 +1,6 @@
 package com.braintreepayments.demo.test;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
-import com.lukekorth.deviceautomator.UiObjectMatcher;
 
 import org.junit.Before;
 import org.junit.Test;

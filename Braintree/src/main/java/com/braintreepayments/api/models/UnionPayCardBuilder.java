@@ -5,8 +5,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.braintreepayments.api.exceptions.BraintreeException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

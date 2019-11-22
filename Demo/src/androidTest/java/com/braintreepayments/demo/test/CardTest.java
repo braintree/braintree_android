@@ -14,10 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static androidx.test.InstrumentationRegistry.getTargetContext;
-import static com.braintreepayments.demo.test.utilities.UiTestActions.clickWebViewText;
-import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_AUTHENTICATION_FAILED;
-import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_LOOKUP_ERROR;
-import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAction.scrollTextIntoView;
 import static com.lukekorth.deviceautomator.AutomatorAction.setText;
@@ -26,7 +22,6 @@ import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withClass;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextContaining;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;

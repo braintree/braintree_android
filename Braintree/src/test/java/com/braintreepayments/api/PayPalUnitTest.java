@@ -46,7 +46,6 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import java.util.ArrayList;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;

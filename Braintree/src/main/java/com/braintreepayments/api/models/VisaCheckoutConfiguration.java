@@ -1,8 +1,6 @@
 package com.braintreepayments.api.models;
 
 import com.braintreepayments.api.Json;
-import com.braintreepayments.api.internal.ClassHelper;
-import com.braintreepayments.api.internal.VisaCheckoutConstants;
 
 import org.json.JSONObject;
 

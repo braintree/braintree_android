@@ -9,9 +9,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureAdditionalInformationUnitTest {

@@ -9,19 +9,7 @@ import android.os.Parcelable;
 import com.paypal.android.sdk.onetouch.core.config.OtcConfiguration;
 import com.paypal.android.sdk.onetouch.core.config.Recipe;
 import com.paypal.android.sdk.onetouch.core.enums.Protocol;
-import com.paypal.android.sdk.onetouch.core.exception.InvalidEncryptionDataException;
 import com.paypal.android.sdk.onetouch.core.fpti.TrackingPoint;
-
-import org.json.JSONException;
-
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 public abstract class Request<T extends Request<T>> implements Parcelable {
 

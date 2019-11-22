@@ -4,7 +4,6 @@ import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * The configuration loaded from default or stored in preferences.

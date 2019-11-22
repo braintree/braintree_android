@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.dropin.DropInActivity;
 import com.braintreepayments.api.dropin.DropInRequest;
 import com.braintreepayments.api.dropin.DropInResult;
@@ -24,8 +23,6 @@ import com.braintreepayments.api.models.VisaCheckoutNonce;
 import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.WalletConstants;
-
-import java.util.Collections;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
