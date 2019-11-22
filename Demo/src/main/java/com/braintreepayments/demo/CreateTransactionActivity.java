@@ -1,13 +1,14 @@
 package com.braintreepayments.demo;
 
 import android.os.Bundle;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
@@ -33,7 +34,7 @@ public class CreateTransactionActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        mLoadingSpinner = (ProgressBar) findViewById(R.id.loading_spinner);
+        mLoadingSpinner = findViewById(R.id.loading_spinner);
         setTitle(R.string.processing_transaction);
 
         sendNonceToServer((PaymentMethodNonce) getIntent().getParcelableExtra(EXTRA_PAYMENT_METHOD_NONCE));
@@ -84,14 +85,14 @@ public class CreateTransactionActivity extends AppCompatActivity {
     private void setStatus(int message) {
         mLoadingSpinner.setVisibility(View.GONE);
         setTitle(message);
-        TextView status = (TextView) findViewById(R.id.transaction_status);
+        TextView status = findViewById(R.id.transaction_status);
         status.setText(message);
         status.setVisibility(View.VISIBLE);
     }
 
     private void setMessage(String message) {
         mLoadingSpinner.setVisibility(View.GONE);
-        TextView textView = (TextView) findViewById(R.id.transaction_message);
+        TextView textView = findViewById(R.id.transaction_message);
         textView.setText(message);
         textView.setVisibility(View.VISIBLE);
     }

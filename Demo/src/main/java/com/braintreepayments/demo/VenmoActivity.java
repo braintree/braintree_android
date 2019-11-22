@@ -28,7 +28,7 @@ public class VenmoActivity extends BaseActivity implements ConfigurationListener
         setContentView(R.layout.venmo_activity);
         setUpAsBack();
 
-        mVenmoButton = (ImageButton) findViewById(R.id.venmo_button);
+        mVenmoButton = findViewById(R.id.venmo_button);
     }
 
     @Override

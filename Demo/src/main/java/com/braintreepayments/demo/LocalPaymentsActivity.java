@@ -24,7 +24,7 @@ public class LocalPaymentsActivity extends BaseActivity implements PaymentMethod
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ideal_activity);
 
-        mIdealButton = (Button) findViewById(R.id.ideal_button);
+        mIdealButton = findViewById(R.id.ideal_button);
     }
 
     @Override
