@@ -452,6 +452,7 @@ public class ThreeDSecure {
                     fragment.sendAnalyticsEvent("three-d-secure.verification-flow.completed");
                     break;
                 case ERROR:
+                case TIMEOUT:
                     fragment.postCallback(new BraintreeException(validateResponse.errorDescription));
                     fragment.sendAnalyticsEvent("three-d-secure.verification-flow.failed");
                     break;

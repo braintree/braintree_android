@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## Unreleased
+
+* Update Cardinal SDK to `2.2.1-2`
+
 ## 3.7.1
 
 * Update `braintree-android-google-payment` module to `3.1.0`
