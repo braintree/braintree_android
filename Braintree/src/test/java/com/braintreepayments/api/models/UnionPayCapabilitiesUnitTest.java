@@ -43,7 +43,7 @@ public class UnionPayCapabilitiesUnitTest {
     }
 
     @Test
-    public void parcelsCorrectly() throws JSONException {
+    public void parcelsCorrectly() {
         Parcel parcel = Parcel.obtain();
 
         mUnionPayCapabilities.writeToParcel(parcel, 0);

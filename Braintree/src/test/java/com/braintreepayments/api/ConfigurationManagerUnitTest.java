@@ -61,7 +61,7 @@ public class ConfigurationManagerUnitTest {
     }
 
     @Test
-    public void isFetchingConfiguration_isTrueWhenFetchingConfiguration() throws InterruptedException {
+    public void isFetchingConfiguration_isTrueWhenFetchingConfiguration() {
         when(mBraintreeFragment.getHttpClient()).thenReturn(new BraintreeHttpClient(mTokenizationKey) {
             @Override
             public void get(String path, HttpResponseCallback callback) {

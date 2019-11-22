@@ -19,7 +19,7 @@ public class ReflectionHelper {
     }
 
     public static Object getField(String fieldName, Object src)
-            throws NoSuchFieldException, IllegalAccessException {
+            throws IllegalAccessException {
         Field field = findField(fieldName, src);
         field.setAccessible(true);
         return field.get(src);

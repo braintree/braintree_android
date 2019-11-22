@@ -1141,7 +1141,7 @@ public class BraintreeFragmentUnitTest {
         mockStatic(ConfigurationManager.class);
         doAnswer(new Answer<Object>() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 if (invocation.getArguments()[1] != null) {
                     ((ConfigurationListener) invocation.getArguments()[1]).onConfigurationFetched(configuration);
                 }
@@ -1156,7 +1156,7 @@ public class BraintreeFragmentUnitTest {
         mockStatic(ConfigurationManager.class);
         doAnswer(new Answer<Object>() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 if (invocation.getArguments()[2] != null) {
                     ((BraintreeResponseListener<Exception>) invocation.getArguments()[2]).onResponse(exception);
                 }

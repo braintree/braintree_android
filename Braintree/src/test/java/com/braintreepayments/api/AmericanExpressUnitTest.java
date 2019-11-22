@@ -37,7 +37,7 @@ public class AmericanExpressUnitTest {
     }
 
     @Test
-    public void getRewardsBalance_callsListenerWithRewardsBalanceOnSuccess() throws JSONException {
+    public void getRewardsBalance_callsListenerWithRewardsBalanceOnSuccess() {
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(mConfiguration)
                 .successResponse(stringFromFixture("response/amex_rewards_balance_success.json"))
@@ -61,7 +61,7 @@ public class AmericanExpressUnitTest {
     }
 
     @Test
-    public void getRewardsBalance_callsListenerWithRewardsBalanceOnIneligibleCard() throws JSONException {
+    public void getRewardsBalance_callsListenerWithRewardsBalanceOnIneligibleCard() {
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(mConfiguration)
                 .successResponse(stringFromFixture("response/amex_rewards_balance_ineligible_card.json"))
@@ -85,7 +85,7 @@ public class AmericanExpressUnitTest {
     }
 
     @Test
-    public void getRewardsBalance_callsListenerWithRewardsBalanceOnInsufficientPoints() throws JSONException {
+    public void getRewardsBalance_callsListenerWithRewardsBalanceOnInsufficientPoints() {
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(mConfiguration)
                 .successResponse(stringFromFixture("response/amex_rewards_balance_insufficient_points.json"))

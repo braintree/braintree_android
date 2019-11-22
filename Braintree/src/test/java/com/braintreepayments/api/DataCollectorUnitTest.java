@@ -148,7 +148,7 @@ public class DataCollectorUnitTest {
     }
 
     @Test
-    public void collectPayPalDeviceData() throws JSONException, InterruptedException {
+    public void collectPayPalDeviceData() throws InterruptedException {
         final BraintreeFragment fragment = new MockFragmentBuilder().build();
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -171,7 +171,7 @@ public class DataCollectorUnitTest {
         final com.kount.api.DataCollector mockDataCollector = mock(com.kount.api.DataCollector.class);
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 CompletionHandler handler = ((CompletionHandler) invocation.getArguments()[1]);
                 String id = (String) invocation.getArguments()[0];
 
@@ -188,7 +188,7 @@ public class DataCollectorUnitTest {
         mockStatic(com.kount.api.DataCollector.class);
         doAnswer(new Answer<Object>() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 return mockDataCollector;
             }
         }).when(com.kount.api.DataCollector.class);

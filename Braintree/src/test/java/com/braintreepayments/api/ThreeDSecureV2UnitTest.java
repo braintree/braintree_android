@@ -115,7 +115,7 @@ public class ThreeDSecureV2UnitTest {
     }
 
     @Test
-    public void prepareLookup_returnsValidLookupJSONString_whenCardinalSetupFails() throws JSONException {
+    public void prepareLookup_returnsValidLookupJSONString_whenCardinalSetupFails() {
         MockStaticCardinal.initCallsOnValidated();
 
         ThreeDSecure.prepareLookup(mFragment, mBasicRequest, new ThreeDSecurePrepareLookupListener() {

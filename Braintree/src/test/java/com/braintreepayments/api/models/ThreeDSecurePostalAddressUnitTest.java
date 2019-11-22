@@ -145,7 +145,7 @@ public class ThreeDSecurePostalAddressUnitTest {
     }
 
     @Test
-    public void testToJson_buildsEmptyParameters() throws JSONException{
+    public void testToJson_buildsEmptyParameters() {
         ThreeDSecurePostalAddress address = new ThreeDSecurePostalAddress();
 
         JSONObject jsonParams = address.toJson();

@@ -15,7 +15,7 @@ import static junit.framework.Assert.assertTrue;
 public class LocalPaymentRequestUnitTest {
 
     @Test
-    public void build_setsAllParams() throws NoSuchFieldException, IllegalAccessException, JSONException {
+    public void build_setsAllParams() throws JSONException {
         PostalAddress address = new PostalAddress()
                 .streetAddress("836486 of 22321 Park Lake")
                 .extendedAddress("Apt 2")
@@ -62,7 +62,7 @@ public class LocalPaymentRequestUnitTest {
     }
 
     @Test
-    public void setsApprovalUrl_andPaymentId_once() throws NoSuchFieldException, IllegalAccessException, JSONException {
+    public void setsApprovalUrl_andPaymentId_once() {
 
         LocalPaymentRequest request = new LocalPaymentRequest()
                 .paymentId("pid")

@@ -79,7 +79,7 @@ public class CardUnitTest {
         mockStatic(TokenizationClient.class);
         doAnswer(new Answer<Void>() {
             @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
+            public Void answer(InvocationOnMock invocation) {
                 ((PaymentMethodNonceCallback) invocation.getArguments()[2]).success(new CardNonce());
                 return null;
             }
@@ -92,7 +92,7 @@ public class CardUnitTest {
         mockStatic(TokenizationClient.class);
         doAnswer(new Answer<Void>() {
             @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
+            public Void answer(InvocationOnMock invocation) {
                 ((PaymentMethodNonceCallback) invocation.getArguments()[2]).failure(new ErrorWithResponse(422, ""));
                 return null;
             }

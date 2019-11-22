@@ -199,7 +199,7 @@ public class PayPal {
                 try {
                     persistPayPalRequest(fragment.getApplicationContext(), paypalRequest);
                     createPaymentResource(fragment, paypalRequest, isBillingAgreement, callback);
-                } catch (JSONException | ErrorWithResponse | BraintreeException ex) {
+                } catch (JSONException ex) {
                     fragment.postCallback(ex);
                 }
             }
@@ -218,7 +218,7 @@ public class PayPal {
      */
     private static void createPaymentResource(BraintreeFragment fragment, PayPalRequest request,
             boolean isBillingAgreement, HttpResponseCallback callback)
-            throws JSONException, ErrorWithResponse, BraintreeException {
+            throws JSONException {
         String currencyCode = request.getCurrencyCode();
         if (currencyCode == null) {
             currencyCode = fragment.getConfiguration().getPayPal().getCurrencyIsoCode();

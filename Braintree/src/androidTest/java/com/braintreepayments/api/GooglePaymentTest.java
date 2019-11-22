@@ -223,7 +223,7 @@ public class GooglePaymentTest {
     }
 
     @Test
-    public void requestPayment_postsExceptionWhenTransactionInfoIsNull() throws Exception {
+    public void requestPayment_postsExceptionWhenTransactionInfoIsNull() {
         BraintreeFragment fragment = getSetupFragment();
 
         GooglePayment.requestPayment(fragment, null);
@@ -286,7 +286,7 @@ public class GooglePaymentTest {
     }
 
     @Test(timeout = 5000)
-    public void getTokenizationParameters_doesNotIncludeATokenizationKeyWhenNotPresent() throws Exception {
+    public void getTokenizationParameters_doesNotIncludeATokenizationKeyWhenNotPresent() {
         final BraintreeFragment fragment = getFragment(mActivityTestRule.getActivity(),
                 stringFromFixture("client_token.json"), mBaseConfiguration.build());
 

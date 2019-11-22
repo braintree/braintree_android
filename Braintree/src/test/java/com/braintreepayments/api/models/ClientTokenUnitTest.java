@@ -15,7 +15,7 @@ import static junit.framework.Assert.assertNull;
 public class ClientTokenUnitTest {
 
     @Test
-    public void fromString_deserializesClientToken() throws JSONException, InvalidArgumentException {
+    public void fromString_deserializesClientToken() throws InvalidArgumentException {
         ClientToken clientToken = (ClientToken) Authorization.fromString(stringFromFixture("client_token.json"));
 
         assertEquals("client_api_configuration_url", clientToken.getConfigUrl());
@@ -23,7 +23,7 @@ public class ClientTokenUnitTest {
     }
 
     @Test
-    public void fromString_canDeserializeFromBase64String() throws JSONException, InvalidArgumentException {
+    public void fromString_canDeserializeFromBase64String() throws InvalidArgumentException {
         ClientToken clientToken = (ClientToken) Authorization.fromString(stringFromFixture("base_64_client_token.txt"));
 
         assertEquals("encoded_capi_configuration_url", clientToken.getConfigUrl());

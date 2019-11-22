@@ -34,7 +34,7 @@ public class BraintreeApiErrorUnitTest {
     }
 
     @Test
-    public void fromJsonArray_doesNotBlowUpParsingBadJson() throws JSONException {
+    public void fromJsonArray_doesNotBlowUpParsingBadJson() {
         List<BraintreeApiError> errors = BraintreeApiError.fromJsonArray(new JSONArray());
 
         assertEquals(0, errors.size());

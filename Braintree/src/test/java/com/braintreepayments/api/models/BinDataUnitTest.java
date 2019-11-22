@@ -34,7 +34,7 @@ public class BinDataUnitTest {
     }
 
     @Test
-    public void parsesCorrectly_ifNull() throws JSONException {
+    public void parsesCorrectly_ifNull() {
         BinData binData = BinData.fromJson(new JSONObject());
 
         assertNotNull(binData);

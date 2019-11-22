@@ -106,7 +106,7 @@ class BraintreePowerMockHelper {
             mockStatic(PayPalOneTouchCore.class);
             doAnswer(new Answer<Result>() {
                 @Override
-                public Result answer(InvocationOnMock invocation) throws Throwable {
+                public Result answer(InvocationOnMock invocation) {
                     return new Result("test", ResponseType.web, null, "");
                 }
             }).when(PayPalOneTouchCore.class);
@@ -117,7 +117,7 @@ class BraintreePowerMockHelper {
             mockStatic(PayPalOneTouchCore.class);
             doAnswer(new Answer<PendingRequest>() {
                 @Override
-                public PendingRequest answer(InvocationOnMock invocation) throws Throwable {
+                public PendingRequest answer(InvocationOnMock invocation) {
                     RequestTarget requestTarget = "browser-switch".equals(switchType) ? RequestTarget.browser : RequestTarget.wallet;
                     return new PendingRequest(true, requestTarget, "", null);
                 }

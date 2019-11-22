@@ -58,7 +58,7 @@ public class AnalyticsSenderUnitTest {
     }
 
     @After
-    public void tearDown() throws IOException {
+    public void tearDown() {
         clearAllEvents(RuntimeEnvironment.application);
     }
 
@@ -202,7 +202,7 @@ public class AnalyticsSenderUnitTest {
 
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((HttpResponseCallback) invocation.getArguments()[2]).success("");
                 return null;
             }
@@ -244,7 +244,7 @@ public class AnalyticsSenderUnitTest {
 
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((HttpResponseCallback) invocation.getArguments()[2]).failure(new ServerException(""));
                 return null;
             }

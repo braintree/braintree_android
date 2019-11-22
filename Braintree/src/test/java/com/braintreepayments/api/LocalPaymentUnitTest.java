@@ -140,7 +140,7 @@ public class LocalPaymentUnitTest {
 
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
                 callback.success(stringFromFixture("payment_methods/local_payment_create_response.json"));
                 return null;
@@ -165,7 +165,7 @@ public class LocalPaymentUnitTest {
 
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
                 callback.success(stringFromFixture("error_response.json"));
                 return null;
@@ -190,7 +190,7 @@ public class LocalPaymentUnitTest {
 
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
                 callback.success(stringFromFixture("payment_methods/local_payment_create_response.json"));
                 return null;
@@ -293,7 +293,7 @@ public class LocalPaymentUnitTest {
         final Exception expectedException = new Exception();
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
                 callback.failure(expectedException);
                 return null;
@@ -316,7 +316,7 @@ public class LocalPaymentUnitTest {
 
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
                 callback.success(stringFromFixture("error_response.json"));
                 latch.countDown();
@@ -335,7 +335,7 @@ public class LocalPaymentUnitTest {
 
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
                 callback.success(stringFromFixture("payment_methods/local_payment_response.json"));
                 return null;
@@ -353,7 +353,7 @@ public class LocalPaymentUnitTest {
 
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
                 callback.success(stringFromFixture("error_response.json"));
                 latch.countDown();
@@ -372,7 +372,7 @@ public class LocalPaymentUnitTest {
 
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
                 callback.success(stringFromFixture("payment_methods/local_payment_response.json"));
                 return null;
@@ -386,12 +386,12 @@ public class LocalPaymentUnitTest {
 
     @Test
     public void onActivityResult_returnsResultToFragment()
-            throws InvalidArgumentException, JSONException, InterruptedException {
+            throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
 
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
                 callback.success(stringFromFixture("payment_methods/local_payment_response.json"));
                 latch.countDown();

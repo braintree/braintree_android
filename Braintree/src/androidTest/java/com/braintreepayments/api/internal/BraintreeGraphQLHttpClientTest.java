@@ -36,12 +36,12 @@ public class BraintreeGraphQLHttpClientTest {
     private CountDownLatch mCountDownLatch;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
         mCountDownLatch = new CountDownLatch(1);
     }
 
     @Test
-    public void sendsUserAgent() throws IOException, InvalidArgumentException {
+    public void sendsUserAgent() throws IOException {
         String baseUrl = "http://example.com/graphql";
         BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
 
@@ -51,7 +51,7 @@ public class BraintreeGraphQLHttpClientTest {
     }
 
     @Test
-    public void sendsTokenizationKeyAsAuthorization() throws IOException, InvalidArgumentException {
+    public void sendsTokenizationKeyAsAuthorization() throws IOException {
         String baseUrl = "http://example.com/graphql";
         BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
 
@@ -72,7 +72,7 @@ public class BraintreeGraphQLHttpClientTest {
     }
 
     @Test
-    public void sendsBraintreeVersionHeader() throws IOException, InvalidArgumentException {
+    public void sendsBraintreeVersionHeader() throws IOException {
         String baseUrl = "http://example.com/graphql";
         BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
 
@@ -82,7 +82,7 @@ public class BraintreeGraphQLHttpClientTest {
     }
 
     @Test(timeout = 5000)
-    public void getRequestSslCertificateSuccessfulInSandbox() throws InterruptedException, InvalidArgumentException {
+    public void getRequestSslCertificateSuccessfulInSandbox() throws InterruptedException {
         BraintreeGraphQLHttpClient httpClient =
                 new BraintreeGraphQLHttpClient("https://payments.sandbox.braintree-api.com/graphql", TOKENIZATION_KEY);
 
@@ -103,7 +103,7 @@ public class BraintreeGraphQLHttpClientTest {
     }
 
     @Test(timeout = 5000)
-    public void getRequestSslCertificateSuccessfulInProduction() throws InterruptedException, InvalidArgumentException {
+    public void getRequestSslCertificateSuccessfulInProduction() throws InterruptedException {
         BraintreeGraphQLHttpClient httpClient =
                 new BraintreeGraphQLHttpClient("https://payments.braintree-api.com/graphql", TOKENIZATION_KEY);
 

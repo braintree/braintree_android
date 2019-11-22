@@ -27,7 +27,7 @@ public class VenmoConfigurationUnitTest {
     }
 
     @Test
-    public void fromJson_parsesPayWithVenmoConfiguration() throws JSONException {
+    public void fromJson_parsesPayWithVenmoConfiguration() {
         assertEquals("access-token", mConfiguration.getPayWithVenmo().getAccessToken());
         assertEquals("environment", mConfiguration.getPayWithVenmo().getEnvironment());
         assertEquals("merchant-id", mConfiguration.getPayWithVenmo().getMerchantId());
@@ -42,12 +42,12 @@ public class VenmoConfigurationUnitTest {
     }
 
     @Test
-    public void isEnabled_returnsTrueWhenEnabled() throws JSONException {
+    public void isEnabled_returnsTrueWhenEnabled() {
         assertFalse(TextUtils.isEmpty(mConfiguration.getPayWithVenmo().getAccessToken()));
     }
 
     @Test
-    public void isEnabled_returnsTrueWhenAppIsInstalled() throws JSONException {
+    public void isEnabled_returnsTrueWhenAppIsInstalled() {
         disableSignatureVerification();
         assertTrue(mConfiguration.getPayWithVenmo().isEnabled(VenmoInstalledContextFactory.venmoInstalledContext(true)));
     }

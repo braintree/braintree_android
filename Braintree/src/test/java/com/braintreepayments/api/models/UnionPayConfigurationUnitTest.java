@@ -23,14 +23,14 @@ public class UnionPayConfigurationUnitTest {
     }
 
     @Test
-    public void fromJson_parsesWithUnionPayConfiguration() throws JSONException {
+    public void fromJson_parsesWithUnionPayConfiguration() {
         UnionPayConfiguration unionPayConfiguration = UnionPayConfiguration.fromJson(mUnionPayConfiguration);
 
         assertTrue(unionPayConfiguration.isEnabled());
     }
 
     @Test
-    public void fromJson_parsesEmptyUnionPayConfigurationIfNotDefined() throws JSONException {
+    public void fromJson_parsesEmptyUnionPayConfigurationIfNotDefined() {
         mUnionPayConfiguration = new JSONObject();
         UnionPayConfiguration unionPayConfiguration = UnionPayConfiguration.fromJson(mUnionPayConfiguration);
 

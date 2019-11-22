@@ -392,7 +392,7 @@ public class HttpClientTest {
 
     /* helpers */
     private void assertExceptionIsPosted(HttpClient httpClient, final Class<? extends Exception> exceptionType,
-            final String exceptionMessage) throws IOException, InterruptedException {
+            final String exceptionMessage) throws InterruptedException {
         final CountDownLatch countDownLatch = new CountDownLatch(2);
 
         httpClient.get("/", new HttpResponseCallback() {

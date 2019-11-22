@@ -126,7 +126,7 @@ public class ThreeDSecureUnitTest {
     }
 
     @Test
-    public void performVerification_performsLookup_WhenCardinalSDKInitFails() throws JSONException {
+    public void performVerification_performsLookup_WhenCardinalSDKInitFails() {
         MockStaticCardinal.initCallsOnValidated();
         mockStatic(TokenizationClient.class);
 
@@ -263,7 +263,7 @@ public class ThreeDSecureUnitTest {
     }
 
     @Test
-    public void onActivityResult_whenSuccessful_postsPayment() throws Exception {
+    public void onActivityResult_whenSuccessful_postsPayment() {
         Uri uri = Uri.parse("http://demo-app.com")
                 .buildUpon()
                 .appendQueryParameter("auth_response", stringFromFixture("three_d_secure/authentication_response.json"))
@@ -283,7 +283,7 @@ public class ThreeDSecureUnitTest {
     }
 
     @Test
-    public void onActivityResult_whenSuccessful_sendAnalyticsEvents() throws Exception {
+    public void onActivityResult_whenSuccessful_sendAnalyticsEvents() {
         Uri uri = Uri.parse("http://demo-app.com")
                 .buildUpon()
                 .appendQueryParameter("auth_response", stringFromFixture("three_d_secure/authentication_response.json"))

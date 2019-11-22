@@ -19,7 +19,7 @@ import static junit.framework.Assert.assertTrue;
 public class PostalAddressUnitTest {
 
     @Test
-    public void constructsCorrectly() throws JSONException {
+    public void constructsCorrectly() {
         PostalAddress postalAddress = new PostalAddress()
                 .streetAddress("123 Fake St.")
                 .extendedAddress("Apt. 3")

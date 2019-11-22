@@ -194,7 +194,7 @@ public class UnionPayUnitTest {
     }
 
     @Test
-    public void enroll_sendsAnalyticsEventOnFailure() throws JSONException {
+    public void enroll_sendsAnalyticsEventOnFailure() {
         UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
                 .cardNumber("some-card-number");
 
@@ -325,7 +325,7 @@ public class UnionPayUnitTest {
     }
 
     @Test
-    public void fetchCapabilities_callsListenerWithCapabilitiesOnSuccess() throws JSONException {
+    public void fetchCapabilities_callsListenerWithCapabilitiesOnSuccess() {
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(mConfigurationWithUnionPay)
                 .successResponse(stringFromFixture("unionpay_capabilities_success_response.json"))
@@ -345,7 +345,7 @@ public class UnionPayUnitTest {
     }
 
     @Test
-    public void fetchCapabilities_sendsAnalyticsEventOnSuccess() throws JSONException {
+    public void fetchCapabilities_sendsAnalyticsEventOnSuccess() {
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(mConfigurationWithUnionPay)
                 .successResponse(stringFromFixture("unionpay_capabilities_success_response.json"))
@@ -374,7 +374,7 @@ public class UnionPayUnitTest {
         mockStatic(TokenizationClient.class);
         doAnswer(new Answer<Void>() {
             @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
+            public Void answer(InvocationOnMock invocation) {
                 UnionPayCardBuilder cardBuilder = (UnionPayCardBuilder) invocation.getArguments()[1];
                 CardNonce cardNonce = mock(CardNonce.class);
                 boolean hasSmsCode = false;
@@ -397,7 +397,7 @@ public class UnionPayUnitTest {
         mockStatic(TokenizationClient.class);
         doAnswer(new Answer<Void>() {
             @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
+            public Void answer(InvocationOnMock invocation) {
                 ((PaymentMethodNonceCallback) invocation.getArguments()[2]).failure(new ErrorWithResponse(422, ""));
                 return null;
             }

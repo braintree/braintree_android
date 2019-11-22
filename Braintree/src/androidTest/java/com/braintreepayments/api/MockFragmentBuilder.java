@@ -41,7 +41,7 @@ public class MockFragmentBuilder {
 
         doAnswer(new Answer() {
             @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
+            public Object answer(InvocationOnMock invocation) {
                 ((ConfigurationListener) invocation.getArguments()[0]).onConfigurationFetched(mConfiguration);
                 return null;
             }

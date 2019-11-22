@@ -79,7 +79,7 @@ public class BraintreeHttpClientTest {
 
     @Test(timeout = 1000)
     public void get_includesAuthorizationFingerprintWhenPresent()
-            throws IOException, InterruptedException, InvalidArgumentException {
+            throws InterruptedException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(Authorization.fromString(stringFromFixture("client_token.json"))) {
             @Override
             protected HttpURLConnection init(String url) throws IOException {
@@ -97,7 +97,7 @@ public class BraintreeHttpClientTest {
 
     @Test(timeout = 1000)
     public void get_doesNotIncludeAuthorizationFingerprintWhenNotPresent()
-            throws IOException, InterruptedException, InvalidArgumentException {
+            throws InterruptedException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
                 TokenizationKey.fromString(TOKENIZATION_KEY)) {
             @Override
@@ -116,7 +116,7 @@ public class BraintreeHttpClientTest {
 
     @Test(timeout = 1000)
     public void postsErrorWhenBaseUrlIsNotSet()
-            throws InterruptedException, IOException, InvalidArgumentException {
+            throws InterruptedException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(TokenizationKey.fromString(TOKENIZATION_KEY));
         final CountDownLatch countDownLatch = new CountDownLatch(2);
 

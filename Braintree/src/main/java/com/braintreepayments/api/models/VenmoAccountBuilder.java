@@ -28,8 +28,7 @@ public class VenmoAccountBuilder extends PaymentMethodBuilder<VenmoAccountBuilde
     }
 
     @Override
-    protected void buildGraphQL(Context context, JSONObject base, JSONObject input)
-            throws BraintreeException, JSONException {}
+    protected void buildGraphQL(Context context, JSONObject base, JSONObject input) {}
 
     @Override
     public String getApiPath() {
