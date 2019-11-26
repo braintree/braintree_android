@@ -891,6 +891,9 @@
 * Fixes
   * Attach Javadocs and sources to Maven Central build.
 
+## unreleased
+* Add support for GooglePay "Existing Payment Method" configuration
+
 ## 3.2.0
 * Add support for `isNetworkTokenized`
 
