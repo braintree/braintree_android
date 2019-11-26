@@ -10,12 +10,6 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.GoogleApiClientException;
@@ -67,6 +61,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Queue;
 import java.util.UUID;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 /**
  * Core Braintree class that handles network requests and managing callbacks.
@@ -761,7 +761,9 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     @VisibleForTesting
     protected void postOrQueueCallback(QueuedCallback callback) {
         if (!callback.shouldRun()) {
-            mCallbackQueue.add(callback);
+            synchronized (mCallbackQueue) {
+                mCallbackQueue.add(callback);
+            }
         } else {
             callback.run();
         }
