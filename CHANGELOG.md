@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## Unreleased
+## 3.7.2
 
 * Update Cardinal SDK to `2.2.1-2`
 * Use `synchronized` when adding to callback queue in `BraintreeFragment` (thanks @skauss)
