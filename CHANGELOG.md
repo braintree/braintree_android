@@ -4,6 +4,7 @@
 
 * Update Cardinal SDK to `2.2.1-2`
 * Use `synchronized` when adding to callback queue in `BraintreeFragment` (thanks @skauss)
+* Update paypal-data-collector to 4.1.2 
 
 ## 3.7.1
 
