@@ -34,6 +34,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private boolean mChallengeRequested = false;
     private boolean mExemptionRequested = false;
     private UiCustomization mUiCustomization;
+    private ThreeDSecureV1UiCustomization mV1UiCustomization;
 
     /**
      * Set the nonce
@@ -150,13 +151,23 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * Optional UI Customization for the 3DS 2 challenge views.
+     * Optional UI Customization for the 3DS2 challenge views.
      * See <a href="https://cardinaldocs.atlassian.net/wiki/spaces/CMSDK/pages/863698999/UI+Customization">UiCustomization documentation</a>.
      *
-     * @param uiCustomization specifies how 3DS 2 challenge views should be customized.
+     * @param uiCustomization specifies how 3DS2 challenge views should be customized.
      */
     public ThreeDSecureRequest uiCustomization(UiCustomization uiCustomization) {
         mUiCustomization = uiCustomization;
+        return this;
+    }
+
+    /**
+     * Optional UI Customization for the 3DS1 challenge views.
+     *
+     * @param v1UiCustomization specifies how 3DS1 challenge views should be customized.
+     */
+    public ThreeDSecureRequest v1UiCustomization(ThreeDSecureV1UiCustomization v1UiCustomization) {
+        mV1UiCustomization = v1UiCustomization;
         return this;
     }
 
@@ -233,10 +244,17 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
-     * @return The UI customization for 3DS challenge views.
+     * @return The UI customization for 3DS2 challenge views.
      */
     public UiCustomization getUiCustomization() {
         return mUiCustomization;
+    }
+
+    /**
+     * @return The UI customization for 3DS1 challenge views.
+     */
+    public ThreeDSecureV1UiCustomization getV1UiCustomization() {
+        return mV1UiCustomization;
     }
 
     public ThreeDSecureRequest() {}
@@ -259,6 +277,7 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeByte(mChallengeRequested ? (byte) 1 : 0);
         dest.writeByte(mExemptionRequested ? (byte) 1 : 0);
         dest.writeSerializable(mUiCustomization);
+        dest.writeParcelable(mV1UiCustomization, flags);
     }
 
     public ThreeDSecureRequest(Parcel in) {
@@ -273,6 +292,7 @@ public class ThreeDSecureRequest implements Parcelable {
         mChallengeRequested = in.readByte() > 0;
         mExemptionRequested = in.readByte() > 0;
         mUiCustomization = (UiCustomization) in.readSerializable();
+        mV1UiCustomization = in.readParcelable(ThreeDSecureV1UiCustomization.class.getClassLoader());
     }
 
     public static final Creator<ThreeDSecureRequest> CREATOR = new Creator<ThreeDSecureRequest>() {

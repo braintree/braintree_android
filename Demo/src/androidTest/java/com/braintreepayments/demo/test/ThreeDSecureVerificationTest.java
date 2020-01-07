@@ -1,13 +1,13 @@
 package com.braintreepayments.demo.test;
 
+import androidx.preference.PreferenceManager;
+import androidx.test.runner.AndroidJUnit4;
+
 import com.braintreepayments.demo.test.utilities.TestHelper;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import androidx.preference.PreferenceManager;
-import androidx.test.runner.AndroidJUnit4;
 
 import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.demo.test.utilities.UiTestActions.clickWebViewText;
@@ -29,6 +29,7 @@ import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextContaining;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.endsWith;
+import static org.hamcrest.CoreMatchers.notNullValue;
 
 @RunWith(AndroidJUnit4.class)
 public class ThreeDSecureVerificationTest extends TestHelper {
@@ -61,7 +62,6 @@ public class ThreeDSecureVerificationTest extends TestHelper {
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
-
 
     @Test(timeout = 40000)
     public void threeDSecure_authenticationFailed() {
@@ -214,16 +214,31 @@ public class ThreeDSecureVerificationTest extends TestHelper {
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
     }
 
+    @Test
+    public void threeDSecure_displaysCustomButtonTextAndDescriptionInBrowser() {
+        onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_VERIFICATON));
+        fillInExpiration();
+        onDevice(withText("CVV")).perform(setText("123"));
+        onDevice(withText("Postal Code")).perform(setText("12345"));
+        onDevice(withText("Purchase")).perform(click());
+
+        onDevice(withText("Authentication")).waitForExists();
+        onDevice().typeText("1234");
+        onDevice(withText("Submit")).perform(click());
+
+        onDevice(withText("Return to Demo App")).check(text(notNullValue()));
+
+        onDevice(withText("Please use the button above if you are not automatically redirected to the app."))
+                .check(text(notNullValue()));
+    }
+
     private void enterThreeDSecurePasswordAndReturnToApp() {
         onDevice(withText("Authentication")).waitForExists();
         onDevice().typeText("1234");
         onDevice(withText("Submit")).perform(click());
-        ensureThreeDSecureRedirect();
-    }
 
-    private void ensureThreeDSecureRedirect() {
         try {
-            clickWebViewText("RETURN TO APP", 3000);
+            clickWebViewText("Return to Demo App", 3000);
         } catch (RuntimeException ignored) {}
     }
 }

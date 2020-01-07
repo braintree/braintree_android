@@ -49,6 +49,10 @@ public class ThreeDSecureRequestUnitTest {
         UiCustomization uiCustomization = new UiCustomization();
         uiCustomization.setLabelCustomization(labelCustomization);
 
+        ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization()
+                .redirectButtonText("return-button-text")
+                .redirectDescription("return-label-text");
+
         ThreeDSecureRequest expected = new ThreeDSecureRequest()
                 .nonce("a-nonce")
                 .amount("1.00")
@@ -60,7 +64,8 @@ public class ThreeDSecureRequestUnitTest {
                 .additionalInformation(additionalInformation)
                 .challengeRequested(true)
                 .exemptionRequested(true)
-                .uiCustomization(uiCustomization);
+                .uiCustomization(uiCustomization)
+                .v1UiCustomization(v1UiCustomization);
 
         Parcel parcel = Parcel.obtain();
         expected.writeToParcel(parcel, 0);
@@ -87,8 +92,15 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals(expected.getAdditionalInformation().getAccountId(), actual.getAdditionalInformation().getAccountId());
         assertEquals(expected.isChallengeRequested(), actual.isChallengeRequested());
         assertEquals(expected.isExemptionRequested(), actual.isExemptionRequested());
+
         assertEquals(expected.getUiCustomization().getLabelCustomization().getHeadingTextColor(),
                 actual.getUiCustomization().getLabelCustomization().getHeadingTextColor());
+
+        assertEquals(expected.getV1UiCustomization().getRedirectButtonText(),
+                actual.getV1UiCustomization().getRedirectButtonText());
+
+        assertEquals(expected.getV1UiCustomization().getRedirectDescription(),
+                actual.getV1UiCustomization().getRedirectDescription());
     }
 
     @Test

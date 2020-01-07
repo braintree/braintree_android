@@ -33,6 +33,7 @@ import com.braintreepayments.api.models.ThreeDSecureAdditionalInformation;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
+import com.braintreepayments.api.models.ThreeDSecureV1UiCustomization;
 import com.braintreepayments.api.models.UnionPayCapabilities;
 import com.braintreepayments.api.models.UnionPayCardBuilder;
 import com.braintreepayments.cardform.OnCardFormFieldFocusedListener;
@@ -361,6 +362,10 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
         UiCustomization uiCustomization = new UiCustomization();
         uiCustomization.setToolbarCustomization(toolbarCustomization);
 
+        ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization()
+                .redirectButtonText("Return to Demo App")
+                .redirectDescription("Please use the button above if you are not automatically redirected to the app.");
+
         return new ThreeDSecureRequest()
                 .amount("10")
                 .email("test@email.com")
@@ -368,6 +373,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
                 .nonce(cardNonce.getNonce())
                 .versionRequested(ThreeDSecureRequest.VERSION_2)
                 .additionalInformation(additionalInformation)
-                .uiCustomization(uiCustomization);
+                .uiCustomization(uiCustomization)
+                .v1UiCustomization(v1UiCustomization);
     }
 }

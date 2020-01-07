@@ -1,10 +1,14 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Add support for basic UI customization of 3DS1 flows. See `ThreeDSecureV1UiCustomization`.
+
 ## 3.7.2
 
 * Update Cardinal SDK to `2.2.1-2`
 * Use `synchronized` when adding to callback queue in `BraintreeFragment` (thanks @skauss)
-* Update paypal-data-collector to 4.1.2 
+* Update paypal-data-collector to 4.1.2
 
 ## 3.7.1
 

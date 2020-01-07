@@ -13,6 +13,7 @@ import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.interfaces.ThreeDSecureLookupListener;
 import com.braintreepayments.api.interfaces.ThreeDSecurePrepareLookupListener;
 import com.braintreepayments.api.internal.ManifestValidator;
+import com.braintreepayments.api.internal.ThreeDSecureV1BrowserSwitchHelper;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
@@ -44,12 +45,8 @@ import static com.braintreepayments.api.models.BraintreeRequestCodes.THREE_D_SEC
  * for a full explanation of 3D Secure.
  */
 public class ThreeDSecure {
-    private static String sDFReferenceId;
 
-    /**
-     * The versioned path of the 3D Secure assets to use. Hosted by Braintree.
-     */
-    private static final String THREE_D_SECURE_ASSETS_PATH = "/mobile/three-d-secure-redirect/0.1.6";
+    private static String sDFReferenceId;
 
     /**
      * @deprecated Use {{@link #performVerification(BraintreeFragment, CardBuilder, ThreeDSecureRequest)}} for 3DS 2.0.
@@ -266,7 +263,11 @@ public class ThreeDSecure {
         }
 
         if (!threeDSecureVersion.startsWith("2.")) {
-            launchBrowserSwitch(fragment, threeDSecureLookup);
+            fragment.browserSwitch(THREE_D_SECURE, ThreeDSecureV1BrowserSwitchHelper.getUrl(
+                    fragment.getReturnUrlScheme(),
+                    fragment.getConfiguration().getAssetsUrl(),
+                    request,
+                    threeDSecureLookup));
             return;
         }
 
@@ -330,10 +331,23 @@ public class ThreeDSecure {
     /**
      * Initialize a challenge from a server side lookup call.
      *
-     * @param fragment       the {@link BraintreeFragment} backing the http request.
+     * @param fragment The {@link BraintreeFragment} backing the http request.
      * @param lookupResponse The lookup response from the server side call to lookup the 3D Secure information.
      */
     public static void initializeChallengeWithLookupResponse(final BraintreeFragment fragment, final String lookupResponse) {
+        initializeChallengeWithLookupResponse(fragment, null, lookupResponse);
+    }
+
+    /**
+     * Initialize a challenge from a server side lookup call.
+     *
+     * @param fragment The {@link BraintreeFragment} backing the http request.
+     * @param threeDSecureRequest The {@link ThreeDSecureRequest} with optional UI customization.
+     * @param lookupResponse The lookup response from the server side call to lookup the 3D Secure information.
+     */
+    public static void initializeChallengeWithLookupResponse(final BraintreeFragment fragment,
+                                                             final ThreeDSecureRequest threeDSecureRequest,
+                                                             final String lookupResponse) {
         try {
             ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(lookupResponse);
 
@@ -346,7 +360,11 @@ public class ThreeDSecure {
             }
 
             if (!threeDSecureVersion.startsWith("2.")) {
-                launchBrowserSwitch(fragment, threeDSecureLookup);
+                fragment.browserSwitch(THREE_D_SECURE, ThreeDSecureV1BrowserSwitchHelper.getUrl(
+                        fragment.getReturnUrlScheme(),
+                        fragment.getConfiguration().getAssetsUrl(),
+                        threeDSecureRequest,
+                        threeDSecureLookup));
                 return;
             }
 
@@ -471,23 +489,6 @@ public class ThreeDSecure {
         fragment.sendAnalyticsEvent(String.format("three-d-secure.verification-flow.liability-shift-possible.%b", info.isLiabilityShiftPossible()));
 
         fragment.postCallback(noncePayload);
-    }
-
-    private static void launchBrowserSwitch(BraintreeFragment fragment, ThreeDSecureLookup threeDSecureLookup) {
-        String assetsBaseUrl = fragment.getConfiguration().getAssetsUrl() + THREE_D_SECURE_ASSETS_PATH;
-        String returnUrl = String.format("%s/redirect.html?redirect_url=%s://x-callback-url/braintree/threedsecure?",
-                assetsBaseUrl,
-                fragment.getReturnUrlScheme());
-        Uri redirectUri = Uri.parse(assetsBaseUrl + "/index.html")
-                .buildUpon()
-                .appendQueryParameter("AcsUrl", threeDSecureLookup.getAcsUrl())
-                .appendQueryParameter("PaReq", threeDSecureLookup.getPareq())
-                .appendQueryParameter("MD", threeDSecureLookup.getMd())
-                .appendQueryParameter("TermUrl", threeDSecureLookup.getTermUrl())
-                .appendQueryParameter("ReturnUrl", returnUrl)
-                .build();
-
-        fragment.browserSwitch(THREE_D_SECURE, redirectUri.toString());
     }
 
     private static void performThreeDSecureLookup(final BraintreeFragment fragment,
