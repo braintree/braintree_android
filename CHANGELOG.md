@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.8.0
 
 * Add support for basic UI customization of 3DS1 flows. See `ThreeDSecureV1UiCustomization`.
 
