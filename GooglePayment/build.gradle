@@ -45,8 +45,8 @@ dependencies {
     }
 
     testImplementation 'com.google.android.gms:play-services-wallet:16.0.1'
-    testImplementation 'androidx.test:runner:1.1.1'
-    testImplementation 'androidx.test:rules:1.1.1'
+    testImplementation 'androidx.test:runner:1.2.0'
+    testImplementation 'androidx.test:rules:1.2.0'
     testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
     testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'
     testImplementation 'org.powermock:powermock-api-mockito:1.6.6'
