@@ -83,7 +83,6 @@ public class GooglePayment {
 
     /**
      * Before starting the Google Payments flow, use this method to check whether the
-     * {@link #isReadyToPay(BraintreeFragment, ReadyForGooglePayRequest, BraintreeResponseListener)} to check whether the
      * Google Payment API is supported and set up on the device. When the listener is called with
      * {@code true}, show the Google Payments button. When it is called with {@code false}, display other
      * checkout options.
