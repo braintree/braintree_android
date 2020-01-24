@@ -23,6 +23,7 @@ import com.braintreepayments.api.models.GooglePaymentConfiguration;
 import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.models.MetadataBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonceFactory;
+import com.braintreepayments.api.models.ReadyForGooglePayRequest;
 import com.braintreepayments.api.models.TokenizationKey;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -77,6 +78,24 @@ public class GooglePayment {
      */
     public static void isReadyToPay(final BraintreeFragment fragment,
                                     final BraintreeResponseListener<Boolean> listener) {
+        isReadyToPay(fragment, null, listener);
+    }
+
+    /**
+     * Before starting the Google Payments flow, use this method to check whether the
+     * {@link #isReadyToPay(BraintreeFragment, ReadyForGooglePayRequest, BraintreeResponseListener)} to check whether the
+     * Google Payment API is supported and set up on the device. When the listener is called with
+     * {@code true}, show the Google Payments button. When it is called with {@code false}, display other
+     * checkout options.
+     *
+     * @param fragment {@link BraintreeFragment}
+     * @param request {@link ReadyForGooglePayRequest}
+     * @param listener Instance of {@link BraintreeResponseListener<Boolean>} to receive the
+     *                 isReadyToPay response.
+     */
+    public static void isReadyToPay(final BraintreeFragment fragment,
+                                    final ReadyForGooglePayRequest request,
+                                    final BraintreeResponseListener<Boolean> listener) {
         try {
             Class.forName(PaymentsClient.class.getName());
         } catch (ClassNotFoundException | NoClassDefFoundError e) {
@@ -101,7 +120,6 @@ public class GooglePayment {
                                 .setEnvironment(getEnvironment(configuration.getGooglePayment()))
                                 .build());
 
-
                 JSONObject json = new JSONObject();
                 JSONArray allowedCardNetworks = new JSONArray();
 
@@ -121,6 +139,11 @@ public class GooglePayment {
                                                             .put("PAN_ONLY")
                                                             .put("CRYPTOGRAM_3DS"))
                                                     .put("allowedCardNetworks", allowedCardNetworks))));
+
+                    if (request != null) {
+                        json.put("existingPaymentMethodRequired", request.isExistingPaymentMethodRequired());
+                    }
+
                 } catch (JSONException ignored) {
                 }
 
