@@ -5,6 +5,10 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.GoogleApiClientException;
@@ -23,7 +27,7 @@ import com.braintreepayments.api.models.GooglePaymentConfiguration;
 import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.models.MetadataBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonceFactory;
-import com.braintreepayments.api.models.ReadyForGooglePayRequest;
+import com.braintreepayments.api.models.ReadyForGooglePaymentRequest;
 import com.braintreepayments.api.models.TokenizationKey;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -44,9 +48,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_ENVIRONMENT;
 import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_PAYMENT_DATA_REQUEST;
@@ -88,12 +89,12 @@ public class GooglePayment {
      * checkout options.
      *
      * @param fragment {@link BraintreeFragment}
-     * @param request {@link ReadyForGooglePayRequest}
+     * @param request {@link ReadyForGooglePaymentRequest}
      * @param listener Instance of {@link BraintreeResponseListener<Boolean>} to receive the
      *                 isReadyToPay response.
      */
     public static void isReadyToPay(final BraintreeFragment fragment,
-                                    final ReadyForGooglePayRequest request,
+                                    final @Nullable ReadyForGooglePaymentRequest request,
                                     final BraintreeResponseListener<Boolean> listener) {
         try {
             Class.forName(PaymentsClient.class.getName());

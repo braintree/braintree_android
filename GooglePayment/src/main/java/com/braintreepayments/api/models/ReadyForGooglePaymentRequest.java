@@ -7,22 +7,22 @@ import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 /**
  * Optional parameters to use when checking whether Google Payment API is supported and set up on the device.
  */
-public class ReadyForGooglePayRequest {
+public class ReadyForGooglePaymentRequest {
 
     private boolean mExistingPaymentMethodRequired;
 
     /**
-     * If set to true, then the {@link GooglePayment#isReadyToPay(BraintreeFragment, ReadyForGooglePayRequest, BraintreeResponseListener)}
+     * If set to true, then the {@link GooglePayment#isReadyToPay(BraintreeFragment, ReadyForGooglePaymentRequest, BraintreeResponseListener)}
      * method will call the listener with true if the customer is ready to pay with one or more of your
      * supported card networks.
      *
-     * @param value Indicates whether the customer must have one or more payment methods from your supported card networks in order
-     *              to be considered ready to pay with Google Pay
+     * @param existingPaymentMethodRequired Indicates whether the customer must already have at least one payment method from your supported
+     *              card networks in order to be considered ready to pay with Google Pay
      *
-     * @return {@link ReadyForGooglePayRequest}
+     * @return {@link ReadyForGooglePaymentRequest}
      */
-    public ReadyForGooglePayRequest existingPaymentMethodRequired(boolean value) {
-        mExistingPaymentMethodRequired = value;
+    public ReadyForGooglePaymentRequest existingPaymentMethodRequired(boolean existingPaymentMethodRequired) {
+        mExistingPaymentMethodRequired = existingPaymentMethodRequired;
         return this;
     }
 
