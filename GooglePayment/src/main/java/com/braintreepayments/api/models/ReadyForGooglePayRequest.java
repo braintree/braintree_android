@@ -16,7 +16,7 @@ public class ReadyForGooglePayRequest {
      * method will call the listener with true if the customer is ready to pay with one or more of your
      * supported card networks.
      *
-     * @param value Indicates whether the customer must have one or more payment methods from your allowed card networks in order
+     * @param value Indicates whether the customer must have one or more payment methods from your supported card networks in order
      *              to be considered ready to pay with Google Pay
      *
      * @return {@link ReadyForGooglePayRequest}
