@@ -5,7 +5,7 @@ import com.braintreepayments.api.GooglePayment;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 
 /**
- * Optional parameters to use when checking whether Google Payment API is supported and set up on the device.
+ * Optional parameters to use when checking whether Google Pay is supported and set up on the customer's device.
  */
 public class ReadyForGooglePaymentRequest {
 
