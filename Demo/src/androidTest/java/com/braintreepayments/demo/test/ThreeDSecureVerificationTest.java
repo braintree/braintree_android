@@ -228,7 +228,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
 
         onDevice(withText("Return to Demo App")).check(text(notNullValue()));
 
-        onDevice(withText("Please use the button above if you are not automatically redirected to the app."))
+        onDevice(withText("Please use the button above if you are not automatically redirected to the app. (This text can contain accéntéd chàractèrs.)"))
                 .check(text(notNullValue()));
     }
 

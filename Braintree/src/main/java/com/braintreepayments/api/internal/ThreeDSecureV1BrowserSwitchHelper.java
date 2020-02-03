@@ -20,7 +20,7 @@ public class ThreeDSecureV1BrowserSwitchHelper {
         Uri redirectUrl = new Uri.Builder()
                 .scheme(appReturnUrlScheme)
                 .authority("x-callback-url")
-                .appendPath("braintree/threedsecure?")
+                .appendEncodedPath("braintree/threedsecure?") // trailing question mark required
                 .build();
 
         Uri returnUrl = Uri.parse(assetsUrl)
@@ -50,9 +50,9 @@ public class ThreeDSecureV1BrowserSwitchHelper {
                 .appendQueryParameter("redirect_url", redirectUrl.toString())
                 .build();
 
-        // The return url's query string needs to be encoded
+        // The return url's query string needs to be encoded a second time
         returnUrl = returnUrl.buildUpon()
-                .query(returnUrl.getQuery())
+                .query(returnUrl.getEncodedQuery())
                 .build();
 
         Uri browserSwitchUrl = Uri.parse(assetsUrl)

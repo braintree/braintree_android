@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Fix bug in 3DS1 browser switch around accented characters in the redirect button and description (fixes #288)
+
 ## 3.8.0
 
 * Add support for basic UI customization of 3DS1 flows. See `ThreeDSecureV1UiCustomization`.

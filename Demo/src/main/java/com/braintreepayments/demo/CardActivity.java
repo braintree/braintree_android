@@ -364,7 +364,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
 
         ThreeDSecureV1UiCustomization v1UiCustomization = new ThreeDSecureV1UiCustomization()
                 .redirectButtonText("Return to Demo App")
-                .redirectDescription("Please use the button above if you are not automatically redirected to the app.");
+                .redirectDescription("Please use the button above if you are not automatically redirected to the app. (This text can contain accéntéd chàractèrs.)");
 
         return new ThreeDSecureRequest()
                 .amount("10")
