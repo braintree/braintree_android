@@ -16,6 +16,7 @@ import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
 import com.braintreepayments.testutils.CardNumber;
+import com.braintreepayments.testutils.ExpirationDateHelper;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -159,7 +160,7 @@ public class UnionPayTest {
         final UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
                 .cardNumber(cardNumber)
                 .expirationMonth("12")
-                .expirationYear("2019")
+                .expirationYear(ExpirationDateHelper.validExpirationYear())
                 .mobileCountryCode("62")
                 .mobilePhoneNumber("11111111111");
 
@@ -189,7 +190,7 @@ public class UnionPayTest {
         final UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
                 .cardNumber(cardNumber)
                 .expirationMonth("12")
-                .expirationYear("2019")
+                .expirationYear(ExpirationDateHelper.validExpirationYear())
                 .mobileCountryCode("62")
                 .mobilePhoneNumber("11111111111");
 
@@ -226,7 +227,7 @@ public class UnionPayTest {
         final UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
                 .cardNumber(cardNumber)
                 .expirationMonth("12")
-                .expirationYear("2019")
+                .expirationYear(ExpirationDateHelper.validExpirationYear())
                 .mobileCountryCode("62")
                 .mobilePhoneNumber("11111111111");
 

@@ -5,9 +5,11 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
-import androidx.core.content.ContextCompat;
 import android.widget.Spinner;
 
+import androidx.core.content.ContextCompat;
+
+import com.braintreepayments.testutils.ExpirationDateHelper;
 import com.lukekorth.deviceautomator.DeviceAutomator;
 
 import static androidx.test.InstrumentationRegistry.getTargetContext;
@@ -84,7 +86,7 @@ public class TestHelper {
     }
 
     protected void fillInExpiration() {
-        fillInExpiration("04", "2020");
+        fillInExpiration("04", ExpirationDateHelper.validExpirationYear());
     }
 
     protected void fillInExpiration(String month, String year) {

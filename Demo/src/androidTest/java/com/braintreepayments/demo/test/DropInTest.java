@@ -3,6 +3,7 @@ package com.braintreepayments.demo.test;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
+import com.braintreepayments.testutils.ExpirationDateHelper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +36,7 @@ public class DropInTest extends TestHelper {
         onDevice(withText("Credit or Debit Card")).perform(click());
         onDevice(withText("Card Number")).perform(setText(VISA));
         onDevice(withText("12")).perform(click());
-        onDevice(withText("2019")).perform(click());
+        onDevice(withText(ExpirationDateHelper.validExpirationYear())).perform(click());
         onDevice(withText("CVV")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice().pressBack();
