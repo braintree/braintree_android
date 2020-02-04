@@ -891,7 +891,7 @@
 * Fixes
   * Attach Javadocs and sources to Maven Central build.
 
-## unreleased
+## 3.3.0
 * Add support for Google Pay's `existingPaymentMethodRequired` option
 
 ## 3.2.0
