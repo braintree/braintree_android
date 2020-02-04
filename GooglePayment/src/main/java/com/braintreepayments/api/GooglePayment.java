@@ -67,8 +67,7 @@ public class GooglePayment {
     private static final String PAYPAL_PAYMENT_TYPE = "PAYPAL";
 
     /**
-     * Before starting the Google Payments flow, use
-     * {@link #isReadyToPay(BraintreeFragment, BraintreeResponseListener)} to check whether the
+     * Before starting the Google Payments flow, use this method to check whether the
      * Google Payment API is supported and set up on the device. When the listener is called with
      * {@code true}, show the Google Payments button. When it is called with {@code false}, display other
      * checkout options.
@@ -242,11 +241,11 @@ public class GooglePayment {
     }
 
     /**
-     * Call this method when you've received a successful {@link PaymentData} response in your activity's
-     * {@link AppCompatActivity#onActivityResult(int, int, Intent)} to get a {@link GooglePaymentCardNonce}.
+     * Call this method when you've received a successful {@link PaymentData} response in your
+     * activity or fragment's {@code onActivityResult} method to get a {@link GooglePaymentCardNonce}.
      *
      * @param fragment    An instance of {@link BraintreeFragment}.
-     * @param paymentData {@link PaymentData} from the Intent in {@link AppCompatActivity#onActivityResult(int, int, Intent)}.
+     * @param paymentData {@link PaymentData} from the Intent in {@code onActivityResult} method.
      */
     public static void tokenize(BraintreeFragment fragment, PaymentData paymentData) {
         try {
