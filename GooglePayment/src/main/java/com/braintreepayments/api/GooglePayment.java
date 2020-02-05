@@ -120,11 +120,7 @@ public class GooglePayment {
                                 .build());
 
                 JSONObject json = new JSONObject();
-                JSONArray allowedCardNetworks = new JSONArray();
-
-                for (String cardnetwork : configuration.getGooglePayment().getSupportedNetworks()) {
-                    allowedCardNetworks.put(cardnetwork);
-                }
+                JSONArray allowedCardNetworks = buildCardNetworks(fragment);
 
                 try {
                     json
@@ -345,33 +341,38 @@ public class GooglePayment {
         return allowedNetworks;
     }
 
+    private static JSONArray buildCardNetworks(BraintreeFragment fragment) {
+        JSONArray cardNetworkStrings = new JSONArray();
+
+        for (int network : getAllowedCardNetworks(fragment)) {
+            switch (network) {
+                case WalletConstants.CARD_NETWORK_AMEX:
+                    cardNetworkStrings.put("AMEX");
+                    break;
+                case WalletConstants.CARD_NETWORK_DISCOVER:
+                    cardNetworkStrings.put("DISCOVER");
+                    break;
+                case WalletConstants.CARD_NETWORK_JCB:
+                    cardNetworkStrings.put("JCB");
+                    break;
+                case WalletConstants.CARD_NETWORK_MASTERCARD:
+                    cardNetworkStrings.put("MASTERCARD");
+                    break;
+                case WalletConstants.CARD_NETWORK_VISA:
+                    cardNetworkStrings.put("VISA");
+                    break;
+            }
+        }
+        return cardNetworkStrings;
+    }
+
     private static JSONObject buildCardPaymentMethodParameters(GooglePaymentRequest request,
                                                                BraintreeFragment fragment) {
         JSONObject defaultParameters = new JSONObject();
 
         try {
             if (request.getAllowedCardNetworksForType(CARD_PAYMENT_TYPE) == null) {
-                JSONArray cardNetworkStrings = new JSONArray();
-
-                for (int network : getAllowedCardNetworks(fragment)) {
-                    switch (network) {
-                        case WalletConstants.CARD_NETWORK_AMEX:
-                            cardNetworkStrings.put("AMEX");
-                            break;
-                        case WalletConstants.CARD_NETWORK_DISCOVER:
-                            cardNetworkStrings.put("DISCOVER");
-                            break;
-                        case WalletConstants.CARD_NETWORK_JCB:
-                            cardNetworkStrings.put("JCB");
-                            break;
-                        case WalletConstants.CARD_NETWORK_MASTERCARD:
-                            cardNetworkStrings.put("MASTERCARD");
-                            break;
-                        case WalletConstants.CARD_NETWORK_VISA:
-                            cardNetworkStrings.put("VISA");
-                            break;
-                    }
-                }
+                JSONArray cardNetworkStrings = buildCardNetworks(fragment);
 
                 if (request.getAllowedAuthMethodsForType(CARD_PAYMENT_TYPE) == null) {
                     request.setAllowedAuthMethods(CARD_PAYMENT_TYPE,
