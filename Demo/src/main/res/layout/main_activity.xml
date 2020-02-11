@@ -89,13 +89,15 @@
                 android:enabled="false"
                 android:textSize="12sp"
                 android:layout_weight="1" />
-             <!-- This is a hidden button to maintain the layout -->
              <Button
                 style="?android:attr/buttonStyle"
+                android:id="@+id/preferred_payment_methods"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@string/preferred_payment_methods_button"
+                android:onClick="launchPreferredPaymentMethods"
                 android:enabled="false"
-                android:visibility="invisible"
+                android:textSize="12sp"
                 android:layout_weight="1" />
         </TableRow>
         <TableRow

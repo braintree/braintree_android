@@ -40,6 +40,7 @@ public class MainActivity extends BaseActivity {
     private static final int VENMO_REQUEST = 5;
     private static final int VISA_CHECKOUT_REQUEST = 6;
     private static final int LOCAL_PAYMENTS_REQUEST = 7;
+    private static final int PREFERRED_PAYMENT_METHODS_REQUEST = 8;
 
     private static final String KEY_NONCE = "nonce";
 
@@ -58,6 +59,7 @@ public class MainActivity extends BaseActivity {
     private Button mVisaCheckoutButton;
     private Button mCreateTransactionButton;
     private Button mLocalPayments;
+    private Button mPreferredPaymentMethods;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +78,7 @@ public class MainActivity extends BaseActivity {
         mVenmoButton = findViewById(R.id.venmo);
         mVisaCheckoutButton = findViewById(R.id.visa_checkout);
         mLocalPayments = findViewById(R.id.local_payments);
+        mPreferredPaymentMethods = findViewById(R.id.preferred_payment_methods);
         mCreateTransactionButton = findViewById(R.id.create_transaction);
 
         if (savedInstanceState != null) {
@@ -127,6 +130,11 @@ public class MainActivity extends BaseActivity {
     public void launchLocalPayments(View v) {
         Intent intent = new Intent(this, LocalPaymentsActivity.class);
         startActivityForResult(intent, LOCAL_PAYMENTS_REQUEST);
+    }
+
+    public void launchPreferredPaymentMethods(View v) {
+        Intent intent = new Intent(this, PreferredPaymentMethodsActivity.class);
+        startActivityForResult(intent, PREFERRED_PAYMENT_METHODS_REQUEST);
     }
 
     private DropInRequest getDropInRequest() {
@@ -248,5 +256,6 @@ public class MainActivity extends BaseActivity {
         mVenmoButton.setEnabled(enable);
         mVisaCheckoutButton.setEnabled(enable);
         mLocalPayments.setEnabled(enable);
+        mPreferredPaymentMethods.setEnabled(enable);
     }
 }

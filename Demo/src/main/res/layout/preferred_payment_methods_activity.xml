@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/preferred_payment_methods_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:onClick="launchPreferredPaymentMethods"
+        android:text="@string/fetch_preferred_payment_methods_button" />
+
+    <TextView
+        android:id="@+id/preferred_payment_methods_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/preferred_payment_methods_button"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp"
+        android:textAlignment="center" />
+
+    <Button
+        android:id="@+id/paypal_single_payment_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/paypal_billing_agreement_button"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:enabled="false"
+        android:onClick="launchSinglePayment"
+        android:text="@string/paypal_single_payment" />
+
+    <Button
+        android:id="@+id/paypal_billing_agreement_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="40dp"
+        android:enabled="false"
+        android:onClick="launchBillingAgreement"
+        android:text="@string/paypal_billing_agreement" />
+
+    <TextView
+        android:id="@+id/paypal_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/paypal_single_payment_button"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp"
+        android:text="@string/paypal"
+        android:textAlignment="viewStart"
+        android:textStyle="bold" />
+
+
+</RelativeLayout>

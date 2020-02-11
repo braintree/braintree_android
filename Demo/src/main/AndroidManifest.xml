@@ -28,6 +28,7 @@
         <activity android:name=".VenmoActivity" android:label="@string/venmo" />
         <activity android:name=".VisaCheckoutActivity" android:label="@string/visa_checkout_button" />
         <activity android:name=".LocalPaymentsActivity" android:label="@string/ideal_button" />
+        <activity android:name=".PreferredPaymentMethodsActivity" android:label="@string/preferred_payment_methods_button" />
         <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
             android:launchMode="singleTask">
             <intent-filter>

@@ -16,6 +16,7 @@
     <string name="ideal_button">Pay with iDEAL</string>
     <string name="ideal_bank_icon">iDEAL bank icon</string>
     <string name="local_payments_button">Local Payments</string>
+    <string name="preferred_payment_methods_button">Pref Payment Methods</string>
     <string name="cards">Credit or Debit Cards</string>
     <string name="create_transaction">Create a Transaction</string>
     <string name="loading">Loading…</string>
@@ -102,4 +103,8 @@
     <string name="paypal_useraction_commit_summary">Sets the Payment User Action to Commit for Express Checkout Transactions</string>
     <string name="paypal_address_override">Send a shipping address to PayPal</string>
     <string name="paypal_address_override_summary">Sends a shipping address as an override option to PayPal for any PayPal request</string>
+
+    <!-- PreferredPaymentMethodsActivity -->
+    <string name="fetch_preferred_payment_methods_button">Preferred Payment Methods</string>
+    <string name="preferred_payment_methods_progress">Fetching preferred payment methods…</string>
 </resources>

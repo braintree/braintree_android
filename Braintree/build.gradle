@@ -100,6 +100,10 @@ task javadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
     failOnError false
+    // TODO remove these exclusions when this is ready for GA
+    exclude "com/braintreepayments/api/PreferredPaymentMethods.java"
+    exclude "com/braintreepayments/api/models/PreferredPaymentMethodsResult.java"
+    exclude "com/braintreepayments/api/interfaces/PreferredPaymentMethodsListener.java"
 }
 
 task javadocsJar(type: Jar, dependsOn: javadocs) {
