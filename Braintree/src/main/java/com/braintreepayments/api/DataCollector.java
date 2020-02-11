@@ -42,12 +42,16 @@ public class DataCollector {
     }
 
     /**
-     * Collect device information for fraud identification purposes. This should be used in conjunction
-     * with a non-aggregate fraud id.
+     * Collects device data based on your merchant configuration.
+     *
+     * We recommend that you call this method as early as possible, e.g. at app launch. If that's too early,
+     * call it at the beginning of customer checkout.
+     *
+     * Use the return value on your server, e.g. with `Transaction.sale`.
      *
      * @param fragment {@link BraintreeFragment}
-     * @param merchantId The fraud merchant id from Braintree.
-     * @param listener listener to be called with the device data String to send to Braintree.
+     * @param merchantId Optional - Custom Kount merchant id. Leave blank to use the default.
+     * @param listener listener called with the deviceData string that should be passed into server-side calls, such as `Transaction.sale`.
      */
     public static void collectDeviceData(final BraintreeFragment fragment, final String merchantId,
             final BraintreeResponseListener<String> listener) {
