@@ -13,6 +13,7 @@ import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
+import com.cardinalcommerce.cardinalmobilesdk.a.a.c;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 import com.paypal.android.sdk.onetouch.core.Request;
 import com.paypal.android.sdk.onetouch.core.Result;
@@ -79,8 +80,7 @@ class BraintreePowerMockHelper {
                     ValidateResponse validateResponse = new ValidateResponse(
                             false,
                             actionCode,
-                            0,
-                            ""
+                            new c(0, "")
                     );
 
                     callback.onValidated(null, validateResponse, "jwt");

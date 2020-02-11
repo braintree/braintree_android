@@ -2,6 +2,7 @@
 
 ## unreleased
 
+* Update Cardinal SDK to `2.2.2-1`
 * Fix bug in 3DS1 browser switch around accented characters in the redirect button and description (fixes #288)
 
 ## 3.8.0
