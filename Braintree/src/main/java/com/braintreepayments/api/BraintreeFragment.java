@@ -423,6 +423,9 @@ public class BraintreeFragment extends BrowserSwitchFragment {
             case BraintreeRequestCodes.GOOGLE_PAYMENT:
                 GooglePayment.onActivityResult(this, resultCode, data);
                 break;
+            case BraintreeRequestCodes.PAYPAL_TWO_FACTOR_AUTH:
+                PayPalTwoFactorAuth.onActivityResult(this, resultCode, data);
+                break;
         }
 
         if (resultCode == AppCompatActivity.RESULT_CANCELED) {

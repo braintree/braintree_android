@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.braintreepayments.api.Json;
+import com.braintreepayments.api.PayPalTwoFactorAuth;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,6 +47,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
     private String mEmail;
     private String mPayerId;
     private PayPalCreditFinancing mCreditFinancing;
+    private String mAuthenticateUrl;
 
     /**
      * Convert an API response to a {@link PayPalAccountNonce}.
@@ -85,6 +87,8 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
      */
     protected void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
+
+        mAuthenticateUrl = Json.optString(json, "authenticateUrl", null);
 
         JSONObject details = json.getJSONObject(DETAILS_KEY);
         mEmail = Json.optString(details, EMAIL_KEY, null);
@@ -197,11 +201,31 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
     }
 
     /**
+     *
+     * @return If authentication is required to transact with the nonce.
+     * Use {@link PayPalTwoFactorAuth#continueTwoFactorAuthentication(com.braintreepayments.api.BraintreeFragment, PaymentMethodNonce)}
+     * to complete the authentication flow if required.
+     */
+    public boolean isTwoFactorAuthRequired() {
+        return mAuthenticateUrl != null;
+    }
+
+    /**
      * @return The credit financing details. This property will only be present when the customer pays with PayPal Credit.
      */
     @Nullable
     public PayPalCreditFinancing getCreditFinancing() {
         return mCreditFinancing;
+    }
+
+    /**
+     *
+     * @return The URL used to authenticate the customer during two-factor authentication flows.
+     * This property will only be present if two-factor authentication is required.
+     */
+    @Nullable
+    public String getAuthenticateUrl() {
+        return mAuthenticateUrl;
     }
 
     public PayPalAccountNonce() {}
@@ -218,6 +242,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
         dest.writeString(mPhone);
         dest.writeString(mPayerId);
         dest.writeParcelable(mCreditFinancing, flags);
+        dest.writeString(mAuthenticateUrl);
     }
 
     private PayPalAccountNonce(Parcel in) {
@@ -231,6 +256,7 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
         mPhone = in.readString();
         mPayerId = in.readString();
         mCreditFinancing = in.readParcelable(PayPalCreditFinancing.class.getClassLoader());
+        mAuthenticateUrl = in.readString();
     }
 
     public static final Creator<PayPalAccountNonce> CREATOR = new Creator<PayPalAccountNonce>() {

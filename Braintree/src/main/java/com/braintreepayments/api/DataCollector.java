@@ -1,10 +1,11 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import android.text.TextUtils;
 
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;

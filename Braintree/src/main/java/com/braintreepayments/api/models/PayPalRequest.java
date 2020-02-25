@@ -73,6 +73,7 @@ public class PayPalRequest implements Parcelable {
     private String mDisplayName;
     private boolean mOfferCredit;
     private String mMerchantAccountId;
+    private PayPalProductAttributes mProductAttributes;
     private ArrayList<PayPalLineItem> mLineItems = new ArrayList<>();
 
     /**
@@ -295,6 +296,11 @@ public class PayPalRequest implements Parcelable {
         return this;
     }
 
+    public PayPalRequest productAttributes(PayPalProductAttributes productAttributes) {
+        mProductAttributes = productAttributes;
+        return this;
+    }
+
     public String getAmount() {
         return mAmount;
     }
@@ -339,6 +345,10 @@ public class PayPalRequest implements Parcelable {
         return mLineItems;
     }
 
+    public PayPalProductAttributes getProductAttributes() {
+        return mProductAttributes;
+    }
+
     @PayPalPaymentIntent
     public String getIntent() {
         return mIntent;
@@ -375,6 +385,7 @@ public class PayPalRequest implements Parcelable {
         parcel.writeByte(mOfferCredit ? (byte) 1:0);
         parcel.writeString(mMerchantAccountId);
         parcel.writeList(mLineItems);
+        parcel.writeParcelable(mProductAttributes, i);
     }
 
     public PayPalRequest(Parcel in) {
@@ -392,6 +403,7 @@ public class PayPalRequest implements Parcelable {
         mOfferCredit = in.readByte() > 0;
         mMerchantAccountId = in.readString();
         mLineItems = in.readArrayList(PayPalLineItem.class.getClassLoader());
+        mProductAttributes = in.readParcelable(PayPalProductAttributes.class.getClassLoader());
     }
 
     public static final Creator<PayPalRequest> CREATOR = new Creator<PayPalRequest>() {

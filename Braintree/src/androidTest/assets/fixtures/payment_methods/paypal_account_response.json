@@ -1,6 +1,7 @@
 {
   "paypalAccounts": [
     {
+      "authenticateUrl": "fake-authenticate-url",
       "type": "PayPalAccount",
       "nonce": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
       "description": "with email paypalaccount@example.com",

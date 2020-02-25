@@ -22,6 +22,7 @@
     <string name="loading">Loading…</string>
     <string name="buy">Buy</string>
     <string name="payment_icon">payment icon</string>
+    <string name="paypal_two_factor">PayPal 2FA</string>
 
     <!-- CardActivity -->
     <string name="purchase">Purchase</string>
@@ -79,6 +80,7 @@
     <string name="paypal_disable_signature_verification_summary">Allows app switch with a PayPal Wallet app that is not signed</string>
     <string name="paypal_single_payment">Single Payment</string>
     <string name="paypal_billing_agreement">Billing Agreement</string>
+    <string name="paypal_deferred_billing_agreement">Deferred Billing Agreement</string>
     <string name="paypal_intent_type">Intent Type</string>
     <string name="paypal_landing_page_type">Landing Page Type</string>
     <string name="paypal_intent_authorize">Authorize</string>
@@ -103,6 +105,11 @@
     <string name="paypal_useraction_commit_summary">Sets the Payment User Action to Commit for Express Checkout Transactions</string>
     <string name="paypal_address_override">Send a shipping address to PayPal</string>
     <string name="paypal_address_override_summary">Sends a shipping address as an override option to PayPal for any PayPal request</string>
+
+    <!-- PayPalTwoFactorAuth -->
+    <string name="paypal_two_factor_button">Launch PayPal 2FA</string>
+    <string name="nonce_hint">Enter Nonce</string>
+    <string name="amount_hint">Enter Amount</string>
 
     <!-- PreferredPaymentMethodsActivity -->
     <string name="fetch_preferred_payment_methods_button">Preferred Payment Methods</string>

@@ -100,7 +100,13 @@ task javadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
     failOnError false
-    // TODO remove these exclusions when this is ready for GA
+
+    // Used to exclude docstrings from public site
+    exclude "com/braintreepayments/api/PayPalTwoFactorAuth.java"
+    exclude "com/braintreepayments/api/PayPalTwoFactorAuthSharedPreferences.java"
+    exclude "com/braintreepayments/api/model/PayPalTwoFactorAuthRequest.java"
+    exclude "com/braintreepayments/api/model/PayPalTwoFactorAuthResponse.java"
+    exclude "com/braintreepayments/api/interfaces/PayPalTwoFactorAuthCallback.java"
     exclude "com/braintreepayments/api/PreferredPaymentMethods.java"
     exclude "com/braintreepayments/api/models/PreferredPaymentMethodsResult.java"
     exclude "com/braintreepayments/api/interfaces/PreferredPaymentMethodsListener.java"

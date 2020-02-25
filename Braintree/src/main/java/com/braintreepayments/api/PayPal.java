@@ -14,7 +14,6 @@ import android.util.Base64;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.BrowserSwitchException;
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PayPalApprovalCallback;
@@ -29,6 +28,7 @@ import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PayPalConfiguration;
 import com.braintreepayments.api.models.PayPalPaymentResource;
+import com.braintreepayments.api.models.PayPalProductAttributes;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
@@ -52,6 +52,10 @@ import org.json.JSONObject;
  * <a href="https://developers.braintreepayments.com/guides/paypal/overview/android/v2">documentation</a>
  */
 public class PayPal {
+    public static final String PRODUCT_ATTRIBUTES = "product_attributes";
+    public static final String CHARGE_PATTERN = "charge_pattern";
+    public static final String NAME = "name";
+    public static final String PRODUCT_CODE = "product_code";
     private static final String REQUEST_KEY = "com.braintreepayments.api.PayPal.REQUEST_KEY";
     private static final String REQUEST_TYPE_KEY = "com.braintreepayments.api.PayPal.REQUEST_TYPE_KEY";
     private static final String PAYPAL_REQUEST_KEY = "com.braintreepayments.api.PayPal.PAYPAL_REQUEST_KEY";
@@ -180,7 +184,9 @@ public class PayPal {
             @Override
             public void onConfigurationFetched(Configuration configuration) {
                 if (!configuration.isPayPalEnabled()) {
-                    fragment.postCallback(new BraintreeException("PayPal is not enabled"));
+                    fragment.postCallback(new BraintreeException("PayPal is not enabled. " +
+                            "See https://developers.braintreepayments.com/guides/paypal/overview/android/ " +
+                            "for more information."));
                     return;
                 }
 
@@ -189,7 +195,7 @@ public class PayPal {
                     fragment.postCallback(new BraintreeException("BraintreeBrowserSwitchActivity missing, " +
                             "incorrectly configured in AndroidManifest.xml or another app defines the same browser " +
                             "switch url as this app. See " +
-                            "https://developers.braintreepayments.com/guides/client-sdk/android/v2#browser-switch " +
+                            "https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch " +
                             "for the correct configuration"));
                     return;
                 }
@@ -249,6 +255,15 @@ public class PayPal {
         } else {
             if (!TextUtils.isEmpty(request.getBillingAgreementDescription())) {
                 parameters.put(DESCRIPTION_KEY, request.getBillingAgreementDescription());
+            }
+
+            PayPalProductAttributes productAttributes = request.getProductAttributes();
+            if (productAttributes != null) {
+                parameters.put(PRODUCT_ATTRIBUTES, new JSONObject()
+                        .put(CHARGE_PATTERN, productAttributes.getChargePattern())
+                        .put(NAME, productAttributes.getName())
+                        .put(PRODUCT_CODE, productAttributes.getProductCode())
+                );
             }
         }
 
@@ -564,7 +579,7 @@ public class PayPal {
         return null;
     }
 
-    private static boolean isManifestValid(BraintreeFragment fragment) {
+    static boolean isManifestValid(BraintreeFragment fragment) {
         return ManifestValidator.isUrlSchemeDeclaredInAndroidManifest(fragment.getApplicationContext(),
                 fragment.getReturnUrlScheme(), BraintreeBrowserSwitchActivity.class);
     }

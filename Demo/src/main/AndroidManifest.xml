@@ -1,42 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.braintreepayments.demo">
 
     <application
+        android:name=".DemoApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/DemoAppTheme"
-        android:name=".DemoApplication"
         tools:replace="android:allowBackup">
 
-        <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true" />
+        <meta-data
+            android:name="com.google.android.gms.wallet.api.enabled"
+            android:value="true" />
 
-        <activity
-            android:name=".MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".SettingsActivity" android:label="@string/options" />
-        <activity android:name=".GooglePaymentActivity" android:label="@string/buy" />
-        <activity android:name=".CardActivity" android:label="@string/buy" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/options" />
+        <activity
+            android:name=".GooglePaymentActivity"
+            android:label="@string/buy" />
+        <activity
+            android:name=".CardActivity"
+            android:label="@string/buy" />
         <activity android:name=".CreateTransactionActivity" />
-        <activity android:name=".PayPalActivity" android:label="@string/paypal" />
-        <activity android:name=".VenmoActivity" android:label="@string/venmo" />
-        <activity android:name=".VisaCheckoutActivity" android:label="@string/visa_checkout_button" />
-        <activity android:name=".LocalPaymentsActivity" android:label="@string/ideal_button" />
-        <activity android:name=".PreferredPaymentMethodsActivity" android:label="@string/preferred_payment_methods_button" />
-        <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
+        <activity
+            android:name=".PayPalActivity"
+            android:label="@string/paypal" />
+        <activity
+            android:name=".VenmoActivity"
+            android:label="@string/venmo" />
+        <activity
+            android:name=".VisaCheckoutActivity"
+            android:label="@string/visa_checkout_button" />
+        <activity
+            android:name=".LocalPaymentsActivity"
+            android:label="@string/ideal_button" />
+        <activity android:name=".PayPalTwoFactorAuthActivity"
+            android:label="@string/paypal_two_factor" />
+        <activity
+            android:name=".PreferredPaymentMethodsActivity"
+            android:label="Pref Payment Methods" />
+        <activity
+            android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <data android:scheme="${applicationId}.braintree" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
     </application>
+
 </manifest>

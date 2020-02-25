@@ -3,6 +3,7 @@ package com.braintreepayments.demo;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -40,7 +41,8 @@ public class MainActivity extends BaseActivity {
     private static final int VENMO_REQUEST = 5;
     private static final int VISA_CHECKOUT_REQUEST = 6;
     private static final int LOCAL_PAYMENTS_REQUEST = 7;
-    private static final int PREFERRED_PAYMENT_METHODS_REQUEST = 8;
+    private static final int PAYPAL_TWO_FACTOR_REQUEST = 8;
+    private static final int PREFERRED_PAYMENT_METHODS_REQUEST = 9;
 
     private static final String KEY_NONCE = "nonce";
 
@@ -58,7 +60,8 @@ public class MainActivity extends BaseActivity {
     private Button mVenmoButton;
     private Button mVisaCheckoutButton;
     private Button mCreateTransactionButton;
-    private Button mLocalPayments;
+    private Button mLocalPaymentsButton;
+    private Button mPayPalTwoFactorAuthButton;
     private Button mPreferredPaymentMethods;
 
     @Override
@@ -77,9 +80,10 @@ public class MainActivity extends BaseActivity {
         mPayPalButton = findViewById(R.id.paypal);
         mVenmoButton = findViewById(R.id.venmo);
         mVisaCheckoutButton = findViewById(R.id.visa_checkout);
-        mLocalPayments = findViewById(R.id.local_payments);
+        mLocalPaymentsButton = findViewById(R.id.local_payments);
         mPreferredPaymentMethods = findViewById(R.id.preferred_payment_methods);
         mCreateTransactionButton = findViewById(R.id.create_transaction);
+        mPayPalTwoFactorAuthButton = findViewById(R.id.paypal_two_factor);
 
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(KEY_NONCE)) {
@@ -130,6 +134,11 @@ public class MainActivity extends BaseActivity {
     public void launchLocalPayments(View v) {
         Intent intent = new Intent(this, LocalPaymentsActivity.class);
         startActivityForResult(intent, LOCAL_PAYMENTS_REQUEST);
+    }
+
+    public void launchPayPalTwoFactorAuth(View v) {
+        Intent intent = new Intent(this, PayPalTwoFactorAuthActivity.class);
+        startActivityForResult(intent, PAYPAL_TWO_FACTOR_REQUEST);
     }
 
     public void launchPreferredPaymentMethods(View v) {
@@ -209,6 +218,7 @@ public class MainActivity extends BaseActivity {
 
     private void displayNonce(PaymentMethodNonce paymentMethodNonce, String deviceData) {
         mNonce = paymentMethodNonce;
+        Log.d("KANYE", mNonce.getNonce());
 
         mNonceIcon.setImageResource(PaymentMethodType.forType(mNonce).getDrawable());
         mNonceIcon.setVisibility(VISIBLE);
@@ -255,7 +265,8 @@ public class MainActivity extends BaseActivity {
         mPayPalButton.setEnabled(enable);
         mVenmoButton.setEnabled(enable);
         mVisaCheckoutButton.setEnabled(enable);
-        mLocalPayments.setEnabled(enable);
+        mLocalPaymentsButton.setEnabled(enable);
+        mPayPalTwoFactorAuthButton.setEnabled(enable);
         mPreferredPaymentMethods.setEnabled(enable);
     }
 }

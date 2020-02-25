@@ -16,6 +16,7 @@ import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PayPalAccountNonce;
+import com.braintreepayments.api.models.PayPalProductAttributes;
 import com.paypal.android.sdk.onetouch.core.PayPalLineItem;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
@@ -219,6 +220,28 @@ public class PayPalUnitTest {
 
         JSONObject json = new JSONObject(dataCaptor.getValue());
         assertTrue(json.getBoolean("offer_paypal_credit"));
+    }
+
+    @Test
+    public void requestBillingAgreement_containsPayPalTwoFactorAuthParams() throws JSONException {
+        BraintreeFragment fragment = mMockFragmentBuilder.build();
+
+        PayPalProductAttributes productAttributes = new PayPalProductAttributes()
+                .name("name")
+                .chargePattern("chargePattern")
+                .productCode("productCode");
+
+        PayPal.requestBillingAgreement(fragment, new PayPalRequest().productAttributes(productAttributes));
+
+        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/setup_billing_agreement"), dataCaptor.capture(),
+                any(HttpResponseCallback.class));
+
+        JSONObject json = new JSONObject(dataCaptor.getValue());
+        JSONObject productAttributesJSON = json.getJSONObject("product_attributes");
+        assertEquals(productAttributesJSON.getString("name"), "name");
+        assertEquals(productAttributesJSON.getString("product_code"), "productCode");
+        assertEquals(productAttributesJSON.getString("charge_pattern"), "chargePattern");
     }
 
     @Test
