@@ -64,8 +64,8 @@ import java.util.UUID;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 /**
@@ -129,16 +129,16 @@ public class BraintreeFragment extends BrowserSwitchFragment {
 
     /**
      * Create a new instance of {@link BraintreeFragment} using the tokenization key or client token and add it to the
-     * {@link AppCompatActivity}'s {@link FragmentManager}. If a fragment has already been created with the provided
+     * {@link FragmentActivity}'s {@link FragmentManager}. If a fragment has already been created with the provided
      * authorization, the existing fragment will be returned.
      *
-     * @param activity The {@link AppCompatActivity} to add the {@link BraintreeFragment} to.
+     * @param activity The {@link FragmentActivity} to add the {@link BraintreeFragment} to.
      * @param authorization The tokenization key or client token to use.
      * @return {@link BraintreeFragment}
      * @throws InvalidArgumentException If the tokenization key or client token is not valid or cannot be
      *         parsed.
      */
-    public static BraintreeFragment newInstance(AppCompatActivity activity, String authorization) throws InvalidArgumentException {
+    public static BraintreeFragment newInstance(FragmentActivity activity, String authorization) throws InvalidArgumentException {
         if (activity == null) {
             throw new InvalidArgumentException("Activity is null");
         }
@@ -384,12 +384,12 @@ public class BraintreeFragment extends BrowserSwitchFragment {
                 break;
         }
 
-        int resultCode = AppCompatActivity.RESULT_FIRST_USER;
+        int resultCode = FragmentActivity.RESULT_FIRST_USER;
         if (browserSwitchResult == BrowserSwitchResult.OK) {
-            resultCode = AppCompatActivity.RESULT_OK;
+            resultCode = FragmentActivity.RESULT_OK;
             sendAnalyticsEvent(type + ".browser-switch.succeeded");
         } else if (browserSwitchResult == BrowserSwitchResult.CANCELED) {
-            resultCode = AppCompatActivity.RESULT_CANCELED;
+            resultCode = FragmentActivity.RESULT_CANCELED;
             sendAnalyticsEvent(type + ".browser-switch.canceled");
         } else if (browserSwitchResult == BrowserSwitchResult.ERROR) {
             if (browserSwitchResult.getErrorMessage().startsWith("No installed activities")) {
@@ -428,7 +428,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
                 break;
         }
 
-        if (resultCode == AppCompatActivity.RESULT_CANCELED) {
+        if (resultCode == FragmentActivity.RESULT_CANCELED) {
             postCancelCallback(requestCode);
         }
     }
