@@ -66,6 +66,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 /**
@@ -139,6 +140,25 @@ public class BraintreeFragment extends BrowserSwitchFragment {
      *         parsed.
      */
     public static BraintreeFragment newInstance(AppCompatActivity activity, String authorization) throws InvalidArgumentException {
+        if (activity == null) {
+            throw new InvalidArgumentException("Activity is null");
+        }
+
+        return newInstance(activity, activity.getSupportFragmentManager(), authorization);
+    }
+
+    /**
+     * Create a new instance of {@link BraintreeFragment} using the tokenization key or client token and add it to the
+     * {@link FragmentActivity}'s {@link FragmentManager}. If a fragment has already been created with the provided
+     * authorization, the existing fragment will be returned.
+     *
+     * @param activity The {@link FragmentActivity} to add the {@link BraintreeFragment} to.
+     * @param authorization The tokenization key or client token to use.
+     * @return {@link BraintreeFragment}
+     * @throws InvalidArgumentException If the tokenization key or client token is not valid or cannot be
+     *         parsed.
+     */
+    public static BraintreeFragment newInstance(FragmentActivity activity, String authorization) throws InvalidArgumentException {
         if (activity == null) {
             throw new InvalidArgumentException("Activity is null");
         }
