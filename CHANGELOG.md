@@ -3,6 +3,7 @@
 ## unreleased
 
 * Allow new BraintreeFragment instances to be created using FragmentActivity
+* Deprecate BraintreeFragment#newInstance(AppCompatActivity, String) method
 
 ## 3.9.0
 
