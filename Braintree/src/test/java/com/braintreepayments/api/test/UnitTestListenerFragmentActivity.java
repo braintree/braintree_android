@@ -2,6 +2,11 @@ package com.braintreepayments.api.test;
 
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+
 import com.braintreepayments.api.R;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
@@ -16,14 +21,11 @@ import com.braintreepayments.api.models.UnionPayCapabilities;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 /**
  * Activity that implements all listeners used by {@link com.braintreepayments.api.BraintreeFragment}
  * for testing.
  */
-public class UnitTestListenerActivity extends AppCompatActivity implements PaymentMethodNonceCreatedListener,
+public class UnitTestListenerFragmentActivity extends FragmentActivity implements PaymentMethodNonceCreatedListener,
         PaymentMethodNoncesUpdatedListener, BraintreeErrorListener, ConfigurationListener, BraintreeCancelListener,
         UnionPayListener {
 

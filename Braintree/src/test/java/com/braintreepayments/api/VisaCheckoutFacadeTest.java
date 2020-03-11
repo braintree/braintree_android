@@ -5,6 +5,7 @@ import android.content.Intent;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.shadows.ShadowVisaCheckout;
+import com.braintreepayments.api.test.AppCompatTestActivity;
 import com.braintreepayments.api.test.FragmentTestActivity;
 
 import org.junit.Before;
@@ -41,7 +42,7 @@ public class VisaCheckoutFacadeTest {
 
     @Before
     public void setup() throws InvalidArgumentException {
-        mActivity = spy(Robolectric.setupActivity(FragmentTestActivity.class));
+        mActivity = spy(Robolectric.setupActivity(AppCompatTestActivity.class));
         mFragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
         mLatch = new CountDownLatch(1);
     }
