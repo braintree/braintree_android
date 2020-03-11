@@ -141,7 +141,6 @@ public class BraintreeFragment extends BrowserSwitchFragment {
      * @throws InvalidArgumentException If the tokenization key or client token is not valid or cannot be
      *         parsed.
      */
-    @Deprecated
     public static BraintreeFragment newInstance(AppCompatActivity activity, String authorization) throws InvalidArgumentException {
         if (activity == null) {
             throw new InvalidArgumentException("Activity is null");
