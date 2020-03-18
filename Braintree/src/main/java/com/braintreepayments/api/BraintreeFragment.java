@@ -129,7 +129,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     public BraintreeFragment() {}
 
     /**
-     * @deprecated Use {@link BraintreeFragment#newInstance(FragmentActivity, String)}
+     * NEXT_MAJOR_VERSION: remove this method in favor of BraintreeFragment#(FragmentActivity, String)
      *
      * Create a new instance of {@link BraintreeFragment} using the tokenization key or client token and add it to the
      * {@link AppCompatActivity}'s {@link FragmentManager}. If a fragment has already been created with the provided

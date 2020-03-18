@@ -3,11 +3,11 @@ package com.braintreepayments.api.test;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 
-import androidx.fragment.app.FragmentActivity;
-
 import com.braintreepayments.api.R;
 
-public class FragmentTestActivity extends FragmentActivity {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class AppCompatTestActivity extends AppCompatActivity {
 
     @SuppressWarnings("ResourceType")
     @Override
