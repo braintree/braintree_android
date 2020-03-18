@@ -6,9 +6,8 @@ import android.widget.LinearLayout;
 import com.braintreepayments.api.R;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
 
-public class FragmentTestActivity extends FragmentActivity {
+public class FragmentTestActivity extends AppCompatActivity {
 
     @SuppressWarnings("ResourceType")
     @Override
