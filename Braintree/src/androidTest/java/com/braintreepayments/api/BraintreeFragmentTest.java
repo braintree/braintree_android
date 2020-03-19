@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 import androidx.test.runner.AndroidJUnit4;
 
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
@@ -29,7 +30,7 @@ public class BraintreeFragmentTest {
     public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
 
-    private AppCompatActivity mActivity;
+    private FragmentActivity mActivity;
     private String mClientToken;
     private CountDownLatch mCountDownLatch;
 
