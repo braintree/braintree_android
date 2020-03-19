@@ -54,3 +54,4 @@ be notified when SDK releases go out.
 ## License
 
 The Braintree Android SDK is open source and available under the MIT license. See the [LICENSE](LICENSE) file for more info.
+
