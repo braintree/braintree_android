@@ -6,18 +6,19 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import androidx.annotation.CallSuper;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.ArrayAdapter;
+
+import androidx.annotation.CallSuper;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
+import androidx.core.content.ContextCompat;
 
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
@@ -30,6 +31,9 @@ import com.braintreepayments.api.models.BraintreePaymentResult;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.demo.models.ClientToken;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
+
+import java.util.Arrays;
+import java.util.List;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -93,7 +97,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
 
     private void handleAuthorizationState() {
         if (mAuthorization == null ||
-                (Settings.useTokenizationKey(this) && !mAuthorization.equals(Settings.getEnvironmentTokenizationKey(this))) ||
+                (Settings.useTokenizationKey(this) && !mAuthorization.equals(Settings.getTokenizationKey(this))) ||
                 !TextUtils.equals(mCustomerId, Settings.getCustomerId(this))) {
             performReset();
         } else {
@@ -169,7 +173,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
             setProgressBarIndeterminateVisibility(false);
             onAuthorizationFetched();
         } else if (Settings.useTokenizationKey(this)) {
-            mAuthorization = Settings.getEnvironmentTokenizationKey(this);
+            mAuthorization = Settings.getTokenizationKey(this);
             setProgressBarIndeterminateVisibility(false);
             onAuthorizationFetched();
         } else {
@@ -230,13 +234,16 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.environments,
                 android.R.layout.simple_spinner_dropdown_item);
         actionBar.setListNavigationCallbacks(adapter, this);
-        actionBar.setSelectedNavigationItem(Settings.getEnvironment(this));
+
+        List<String> envs = Arrays.asList(getResources().getStringArray(R.array.environments));
+        actionBar.setSelectedNavigationItem(envs.indexOf(Settings.getEnvironment(this)));
     }
 
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        if (Settings.getEnvironment(this) != itemPosition) {
-            Settings.setEnvironment(this, itemPosition);
+        String env = getResources().getStringArray(R.array.environments)[itemPosition];
+        if (!Settings.getEnvironment(this).equals(env)) {
+            Settings.setEnvironment(this, env);
             performReset();
         }
         return true;

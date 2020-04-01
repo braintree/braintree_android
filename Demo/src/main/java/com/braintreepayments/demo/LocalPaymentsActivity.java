@@ -34,8 +34,13 @@ public class LocalPaymentsActivity extends BaseActivity implements PaymentMethod
 
     @Override
     protected void onAuthorizationFetched() {
+        if (!Settings.SANDBOX_ENV_NAME.equals(Settings.getEnvironment(this))) {
+            onError(new Exception("To use this feature, enable the \"Sandbox\" environment."));
+            return;
+        }
+
         try {
-            mBraintreeFragment = BraintreeFragment.newInstance(this, Settings.getEnvironmentTokenizationKeyForLocalPayment(getApplicationContext()));
+            mBraintreeFragment = BraintreeFragment.newInstance(this, Settings.getLocalPaymentsTokenizationKey(this));
             mIdealButton.setEnabled(true);
         } catch (InvalidArgumentException e) {
             onError(e);

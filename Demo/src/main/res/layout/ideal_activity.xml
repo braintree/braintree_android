@@ -15,4 +15,11 @@
         android:padding="10dp"
         android:text="@string/ideal_button"
         android:drawableStart="@drawable/ideal"/>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="This feature uses a hard-coded sandbox tokenization key that is enabled for this local payment."
+        android:padding = "10dp"/>
 </RelativeLayout>

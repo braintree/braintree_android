@@ -9,13 +9,22 @@ import java.util.List;
 
 public class Settings {
 
-    protected static final String ENVIRONMENT = "environment";
+    private static final String ENVIRONMENT = "environment";
+
+    static final String SANDBOX_ENV_NAME = "Sandbox";
+    static final String SANDBOX_INDIA_ENV_NAME = "Sandbox India";
+    static final String PRODUCTION_ENV_NAME = "Production";
 
     private static final String PRODUCTION_BASE_SERVER_URL = "https://executive-sample-merchant.herokuapp.com";
     private static final String PRODUCTION_TOKENIZATION_KEY = "production_t2wns2y2_dfy45jdj3dxkmz5m";
 
     private static final String SANDBOX_BASE_SERVER_URL = "https://braintree-sample-merchant.herokuapp.com";
     private static final String SANDBOX_TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn";
+
+    private static final String SANDBOX_INDIA_BASE_SERVER_URL = "https://braintree-india-2fa-merchant.herokuapp.com/";
+
+    static final String LOCAL_PAYMENTS_TOKENIZATION_KEY = "sandbox_f252zhq7_hh4cpc39zq4rgjcg";
+    static final String PAYPAL_2FA_TOKENIZATION_KEY = "sandbox_bn8fp75g_f38w7q9kcr3zcspd";
 
     private static SharedPreferences sSharedPreferences;
 
@@ -27,14 +36,14 @@ public class Settings {
         return sSharedPreferences;
     }
 
-    public static int getEnvironment(Context context) {
-        return getPreferences(context).getInt(ENVIRONMENT, 0);
+    public static String getEnvironment(Context context) {
+        return getPreferences(context).getString(ENVIRONMENT, "sandbox");
     }
 
-    public static void setEnvironment(Context context, int environment) {
+    public static void setEnvironment(Context context, String environment) {
         getPreferences(context)
                 .edit()
-                .putInt(ENVIRONMENT, environment)
+                .putString(ENVIRONMENT, environment)
                 .apply();
 
         DemoApplication.resetApiClient();
@@ -45,10 +54,12 @@ public class Settings {
     }
 
     public static String getEnvironmentUrl(Context context) {
-        int environment = getEnvironment(context);
-        if (environment == 0) {
+        String environment = getEnvironment(context);
+        if (SANDBOX_ENV_NAME.equals(environment)) {
             return SANDBOX_BASE_SERVER_URL;
-        } else if (environment == 1) {
+        } else if (SANDBOX_INDIA_ENV_NAME.equals(environment)) {
+            return SANDBOX_INDIA_BASE_SERVER_URL;
+        } else if (PRODUCTION_ENV_NAME.equals(environment)) {
             return PRODUCTION_BASE_SERVER_URL;
         } else {
             return "";
@@ -68,7 +79,7 @@ public class Settings {
     }
 
     public static String getThreeDSecureMerchantAccountId(Context context) {
-        if (isThreeDSecureEnabled(context) && getEnvironment(context) == 1) {
+        if (isThreeDSecureEnabled(context) && "production".equals(getEnvironment(context))) {
             return "test_AIB";
         } else {
             return null;
@@ -76,7 +87,7 @@ public class Settings {
     }
 
     public static String getUnionPayMerchantAccountId(Context context) {
-        if (getEnvironment(context) == 0) {
+        if ("sandbox".equals(getEnvironment(context))) {
             return "fake_switch_usd";
         } else {
             return null;
@@ -87,25 +98,27 @@ public class Settings {
         return getPreferences(context).getBoolean("tokenization_key", false);
     }
 
-    public static String getEnvironmentTokenizationKey(Context context) {
-        int environment = getEnvironment(context);
-        if (environment == 0) {
+    public static String getTokenizationKey(Context context) {
+        String environment = getEnvironment(context);
+
+        if (SANDBOX_ENV_NAME.equals(environment)) {
             return SANDBOX_TOKENIZATION_KEY;
-        } else if (environment == 1) {
+        } else if (SANDBOX_INDIA_ENV_NAME.equals(environment)) {
+            return PAYPAL_2FA_TOKENIZATION_KEY;
+        } else if (PRODUCTION_ENV_NAME.equals(environment)) {
             return PRODUCTION_TOKENIZATION_KEY;
         } else {
-            return "";
+            return null;
         }
     }
 
-    public static String getEnvironmentTokenizationKeyForLocalPayment(Context context) {
-        int environment = getEnvironment(context);
-        if (environment == 0) {
-            return "sandbox_f252zhq7_hh4cpc39zq4rgjcg";
-        } else if (environment == 1) {
-            return PRODUCTION_TOKENIZATION_KEY;
+    public static String getLocalPaymentsTokenizationKey(Context context) {
+        String environment = getEnvironment(context);
+
+        if (SANDBOX_ENV_NAME.equals(environment)) {
+            return LOCAL_PAYMENTS_TOKENIZATION_KEY;
         } else {
-            return "";
+            return null;
         }
     }
 

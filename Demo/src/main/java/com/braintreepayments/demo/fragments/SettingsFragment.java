@@ -4,12 +4,12 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 
-import com.braintreepayments.demo.R;
-import com.braintreepayments.demo.views.SummaryEditTestPreference;
-
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+
+import com.braintreepayments.demo.R;
+import com.braintreepayments.demo.views.SummaryEditTestPreference;
 
 public class SettingsFragment extends PreferenceFragmentCompat
         implements OnSharedPreferenceChangeListener {
@@ -24,6 +24,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         onSharedPreferenceChanged(preferences, "paypal_payment_type");
         onSharedPreferenceChanged(preferences, "android_pay_currency");
         onSharedPreferenceChanged(preferences, "android_pay_allowed_countries_for_shipping");
+        onSharedPreferenceChanged(preferences, "tokenization_key_type");
         preferences.registerOnSharedPreferenceChangeListener(this);
     }
 
