@@ -340,6 +340,11 @@ public class PayPal {
         return new PayPalApprovalHandler() {
             @Override
             public void handleApproval(Request request, PayPalApprovalCallback paypalApprovalCallback) {
+                // Ensure that Activity is still running before proceeding
+                if (!fragment.isActive()) {
+                    return;
+                }
+
                 PendingRequest pendingRequest =
                         PayPalOneTouchCore.getStartIntent(fragment.getApplicationContext(), request);
 

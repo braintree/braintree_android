@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Do not open PayPal (browser) if Activity has been destroyed (fixes #295)
+
 ## 3.10.0
 
 * Allow new BraintreeFragment instances to be created using FragmentActivity
