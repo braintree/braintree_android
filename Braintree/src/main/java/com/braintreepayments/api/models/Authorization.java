@@ -3,6 +3,7 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.annotation.Nullable;
+
 import android.text.TextUtils;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
@@ -29,8 +30,12 @@ public abstract class Authorization implements Parcelable {
     public static Authorization fromString(@Nullable String authorizationString) throws InvalidArgumentException {
         if (isTokenizationKey(authorizationString)) {
             return new TokenizationKey(authorizationString);
-        } else {
+        } else if (isPayPalUAT(authorizationString)){
+            return new PayPalUAT(authorizationString);
+        } else if (isClientToken(authorizationString)) {
             return new ClientToken(authorizationString);
+        } else {
+            throw new InvalidArgumentException("Authorization provided is invalid: " + authorizationString);
         }
     }
 
@@ -56,8 +61,17 @@ public abstract class Authorization implements Parcelable {
      * @param tokenizationKey The {@link String} to check if it is a tokenization key
      * @return {@code true} if the {@link String} is a tokenization key, {@code false} otherwise.
      */
+    @Deprecated
     public static boolean isTokenizationKey(String tokenizationKey) {
         return !TextUtils.isEmpty(tokenizationKey) && tokenizationKey.matches(TokenizationKey.MATCHER);
+    }
+
+    private static boolean isPayPalUAT(String payPalUAT) {
+        return !TextUtils.isEmpty(payPalUAT) && payPalUAT.matches(PayPalUAT.MATCHER);
+    }
+
+    private static boolean isClientToken(String clientToken) {
+        return !TextUtils.isEmpty(clientToken) && clientToken.matches(ClientToken.BASE_64_MATCHER);
     }
 
     @Override

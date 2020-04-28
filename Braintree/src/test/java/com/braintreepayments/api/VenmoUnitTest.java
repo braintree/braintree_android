@@ -39,6 +39,7 @@ import java.security.NoSuchAlgorithmException;
 import androidx.appcompat.app.AppCompatActivity;
 
 import static com.braintreepayments.api.internal.SignatureVerificationUnitTestUtils.disableSignatureVerification;
+import static com.braintreepayments.testutils.FixturesHelper.base64EncodedClientTokenFromFixture;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.SharedPreferencesHelper.clearSharedPreferences;
 import static junit.framework.Assert.assertEquals;
@@ -139,7 +140,7 @@ public class VenmoUnitTest {
         Configuration configuration = getConfigurationFromFixture();
 
         BraintreeFragment fragment = new MockFragmentBuilder()
-                .authorization(Authorization.fromString(stringFromFixture("client_token.json")))
+                .authorization(Authorization.fromString(base64EncodedClientTokenFromFixture("client_token.json")))
                 .configuration(configuration)
                 .sessionId("session-id")
                 .build();

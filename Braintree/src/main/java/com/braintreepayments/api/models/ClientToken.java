@@ -30,9 +30,7 @@ public class ClientToken extends Authorization {
     ClientToken(String clientTokenString) throws InvalidArgumentException {
         super(clientTokenString);
         try {
-            if (clientTokenString.matches(BASE_64_MATCHER)) {
-                clientTokenString = new String(Base64.decode(clientTokenString, Base64.DEFAULT));
-            }
+            clientTokenString = new String(Base64.decode(clientTokenString, Base64.DEFAULT));
 
             JSONObject jsonObject = new JSONObject(clientTokenString);
             mConfigUrl = jsonObject.getString(CONFIG_URL_KEY);

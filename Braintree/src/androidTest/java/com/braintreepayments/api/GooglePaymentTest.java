@@ -44,7 +44,7 @@ import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWithConfiguration;
 import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_ENVIRONMENT;
 import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_PAYMENT_DATA_REQUEST;
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static com.braintreepayments.testutils.FixturesHelper.base64EncodedClientTokenFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -288,7 +288,7 @@ public class GooglePaymentTest {
     @Test(timeout = 5000)
     public void getTokenizationParameters_doesNotIncludeATokenizationKeyWhenNotPresent() {
         final BraintreeFragment fragment = getFragment(mActivityTestRule.getActivity(),
-                stringFromFixture("client_token.json"), mBaseConfiguration.build());
+                base64EncodedClientTokenFromFixture("client_token.json"), mBaseConfiguration.build());
 
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override

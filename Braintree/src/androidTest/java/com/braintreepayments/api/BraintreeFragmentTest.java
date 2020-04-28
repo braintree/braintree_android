@@ -1,6 +1,5 @@
 package com.braintreepayments.api;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.test.runner.AndroidJUnit4;
 
@@ -10,6 +9,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
+import com.braintreepayments.api.test.TestPayPalUATBuilder;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.junit.Before;
@@ -32,12 +32,14 @@ public class BraintreeFragmentTest {
 
     private FragmentActivity mActivity;
     private String mClientToken;
+    private String mPayPalUAT;
     private CountDownLatch mCountDownLatch;
 
     @Before
     public void setUp() {
         mActivity = mActivityTestRule.getActivity();
         mClientToken = new TestClientTokenBuilder().build();
+        mPayPalUAT = new TestPayPalUATBuilder().build();
         mCountDownLatch = new CountDownLatch(1);
     }
 
@@ -69,7 +71,21 @@ public class BraintreeFragmentTest {
         mCountDownLatch.await();
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
+    public void fetchConfiguration_worksWithAPayPalUAT() throws InterruptedException {
+        final BraintreeFragment fragment = getFragmentWithAuthorization(mActivity, mPayPalUAT);
+        fragment.waitForConfiguration(new ConfigurationListener() {
+            @Override
+            public void onConfigurationFetched(Configuration configuration) {
+                assertNotNull(configuration);
+                mCountDownLatch.countDown();
+            }
+        });
+
+        mCountDownLatch.await();
+    }
+
+    @Test(timeout = 6000)
     public void getGoogleApiClient_returnsGoogleApiClient() throws InterruptedException {
         BraintreeFragment fragment = getFragmentWithAuthorization(mActivity, mClientToken);
 

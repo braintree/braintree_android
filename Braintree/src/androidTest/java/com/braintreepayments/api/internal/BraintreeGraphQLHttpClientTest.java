@@ -22,7 +22,7 @@ import java.util.concurrent.CountDownLatch;
 
 import javax.net.ssl.SSLException;
 
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static com.braintreepayments.testutils.FixturesHelper.base64EncodedClientTokenFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -63,7 +63,7 @@ public class BraintreeGraphQLHttpClientTest {
     @Test
     public void sendsAuthorizationFingerprintAsAuthorization() throws IOException, InvalidArgumentException {
         String baseUrl = "http://example.com/graphql";
-        ClientToken clientToken = (ClientToken) Authorization.fromString(stringFromFixture("client_token.json"));
+        ClientToken clientToken = (ClientToken) Authorization.fromString(base64EncodedClientTokenFromFixture("client_token.json"));
         BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, clientToken.getBearer());
 
         HttpURLConnection connection = httpClient.init(baseUrl);

@@ -4,11 +4,12 @@
     <PreferenceCategory
         android:title="@string/authorization">
 
-        <CheckBoxPreference
-            android:key="tokenization_key"
-            android:title="@string/tokenization_key"
-            android:summary="@string/tokenization_key_summary"
-            android:defaultValue="false" />
+        <ListPreference
+            android:key="authorization_type"
+            android:title="@string/authorization_type"
+            android:entries="@array/authorization_types"
+            android:entryValues="@array/authorization_types"
+            android:defaultValue="@string/client_token"/>
 
     </PreferenceCategory>
 

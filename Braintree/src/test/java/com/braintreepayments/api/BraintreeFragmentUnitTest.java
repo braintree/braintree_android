@@ -59,11 +59,13 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.verifyAnalyticsEvent;
+import static com.braintreepayments.testutils.FixturesHelper.base64EncodedClientTokenFromFixture;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.ReflectionHelper.getField;
 import static com.braintreepayments.testutils.ReflectionHelper.setField;
@@ -130,16 +132,19 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void newInstance_whenAuthorizationIsClientToken_returnsBraintreeFragmentWithTag() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, stringFromFixture("client_token.json"));
+        BraintreeFragment fragment = BraintreeFragment
+                .newInstance(mAppCompatActivity, base64EncodedClientTokenFromFixture("client_token.json"));
 
         assertNotNull(fragment);
-        assertEquals("BraintreeFragment.d131b316-49af-3f8e-87be-68e42bf0186d", fragment.getTag());
+        assertEquals("BraintreeFragment.7126d60f-ce18-3f6c-b3cb-8eb3e40b908f", fragment.getTag());
     }
 
     @Test
     public void newInstance_whenFragmentExistsWithSameAuthorization_returnsExistingFragment() throws InvalidArgumentException {
-        BraintreeFragment fragment1 = BraintreeFragment.newInstance(mAppCompatActivity, stringFromFixture("client_token.json"));
-        BraintreeFragment fragment2 = BraintreeFragment.newInstance(mAppCompatActivity, stringFromFixture("client_token.json"));
+        BraintreeFragment fragment1 = BraintreeFragment
+                .newInstance(mAppCompatActivity, base64EncodedClientTokenFromFixture("client_token.json"));
+        BraintreeFragment fragment2 = BraintreeFragment
+                .newInstance(mAppCompatActivity, base64EncodedClientTokenFromFixture("client_token.json"));
         assertSame(fragment1, fragment2);
     }
 
@@ -157,8 +162,10 @@ public class BraintreeFragmentUnitTest {
                 "  \"merchantAccountId\": \"merchant_account_id\"\n" +
                 "}";
 
-        BraintreeFragment fragment1 = BraintreeFragment.newInstance(mAppCompatActivity, clientToken1);
-        BraintreeFragment fragment2 = BraintreeFragment.newInstance(mAppCompatActivity, clientToken2);
+        BraintreeFragment fragment1 = BraintreeFragment
+                .newInstance(mAppCompatActivity, base64EncodeString(clientToken1));
+        BraintreeFragment fragment2 = BraintreeFragment
+                .newInstance(mAppCompatActivity, base64EncodeString(clientToken2));
         assertNotSame(fragment1, fragment2);
     }
 
@@ -1176,5 +1183,9 @@ public class BraintreeFragmentUnitTest {
         }).when(ConfigurationManager.class);
         ConfigurationManager.getConfiguration(any(BraintreeFragment.class), any(ConfigurationListener.class),
                 any(BraintreeResponseListener.class));
+    }
+
+    private String base64EncodeString(String string) {
+        return Base64.getEncoder().encodeToString(string.getBytes());
     }
 }

@@ -17,7 +17,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 import static com.braintreepayments.testutils.CardNumber.VISA;
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static com.braintreepayments.testutils.FixturesHelper.base64EncodedClientTokenFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -429,7 +429,7 @@ public class CardBuilderUnitTest {
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
         JSONObject json = new JSONObject(
-                cardBuilder.buildGraphQL(context, Authorization.fromString(stringFromFixture("client_token.json"))));
+                cardBuilder.buildGraphQL(context, Authorization.fromString(base64EncodedClientTokenFromFixture("client_token.json"))));
         JSONObject jsonOptions = json.getJSONObject(Keys.VARIABLES)
                 .getJSONObject(Keys.INPUT)
                 .getJSONObject(PaymentMethodBuilder.OPTIONS_KEY);

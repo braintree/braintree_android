@@ -9,6 +9,7 @@ import com.braintreepayments.api.exceptions.UnprocessableEntityException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.ClientToken;
+import com.braintreepayments.api.models.PayPalUAT;
 import com.braintreepayments.api.models.TokenizationKey;
 
 import org.json.JSONException;
@@ -69,10 +70,10 @@ public class BraintreeHttpClient extends HttpClient {
             uri = Uri.parse(mBaseUrl + path);
         }
 
-        if (mAuthorization instanceof ClientToken) {
+        if (mAuthorization instanceof ClientToken || mAuthorization instanceof PayPalUAT) {
             uri = uri.buildUpon()
                     .appendQueryParameter(AUTHORIZATION_FINGERPRINT_KEY,
-                            ((ClientToken) mAuthorization).getAuthorizationFingerprint())
+                            mAuthorization.getBearer())
                     .build();
         }
 

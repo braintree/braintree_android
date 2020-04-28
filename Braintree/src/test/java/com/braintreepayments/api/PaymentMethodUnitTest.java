@@ -22,6 +22,7 @@ import org.robolectric.RuntimeEnvironment;
 
 import java.util.List;
 
+import static com.braintreepayments.testutils.FixturesHelper.base64EncodedClientTokenFromFixture;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -166,7 +167,8 @@ public class PaymentMethodUnitTest {
     @Test
     public void deletePaymentMethodNonce_throwsAnError()
             throws InvalidArgumentException {
-        Authorization authorization = Authorization.fromString(stringFromFixture("client_token.json"));
+        Authorization authorization = Authorization
+                .fromString(base64EncodedClientTokenFromFixture("client_token.json"));
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .authorization(authorization)
                 .graphQLErrorResponse(new UnexpectedException("Error"))
@@ -184,7 +186,8 @@ public class PaymentMethodUnitTest {
     @Test
     public void deletePaymentMethodNonce_sendAnAnalyticsEventForFailure()
             throws InvalidArgumentException {
-        Authorization authorization = Authorization.fromString(stringFromFixture("client_token.json"));
+        Authorization authorization = Authorization
+                .fromString(base64EncodedClientTokenFromFixture("client_token.json"));
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .authorization(authorization)
                 .graphQLErrorResponse(new UnexpectedException("Error"))
@@ -198,7 +201,8 @@ public class PaymentMethodUnitTest {
     @Test
     public void deletePaymentMethodNonce_sendAnAnalyticsEventForSuccess()
             throws InvalidArgumentException {
-        Authorization authorization = Authorization.fromString(stringFromFixture("client_token.json"));
+        Authorization authorization = Authorization
+                .fromString(base64EncodedClientTokenFromFixture("client_token.json"));
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .authorization(authorization)
                 .graphQLSuccessResponse("Success")
@@ -212,7 +216,8 @@ public class PaymentMethodUnitTest {
     @Test
     public void deletePaymentMethodNonce_sendNoncePostCallbackForSuccess()
             throws InvalidArgumentException {
-        Authorization authorization = Authorization.fromString(stringFromFixture("client_token.json"));
+        Authorization authorization = Authorization
+                .fromString(base64EncodedClientTokenFromFixture("client_token.json"));
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .authorization(authorization)
                 .graphQLSuccessResponse("Success")
@@ -226,7 +231,8 @@ public class PaymentMethodUnitTest {
     @Test
     public void deletePaymentMethodNonce_postToGraphQL()
             throws Exception {
-        Authorization authorization = Authorization.fromString(stringFromFixture("client_token.json"));
+        Authorization authorization = Authorization
+                .fromString(base64EncodedClientTokenFromFixture("client_token.json"));
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .authorization(authorization)
                 .graphQLSuccessResponse("Success")

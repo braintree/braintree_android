@@ -66,6 +66,10 @@ public class Settings {
         }
     }
 
+    public static String getAuthorizationType(Context context) {
+        return getPreferences(context).getString("authorization_type", context.getString(R.string.client_token));
+    }
+
     public static String getCustomerId(Context context) {
         return getPreferences(context).getString("customer", null);
     }
@@ -95,7 +99,7 @@ public class Settings {
     }
 
     public static boolean useTokenizationKey(Context context) {
-        return getPreferences(context).getBoolean("tokenization_key", false);
+        return getAuthorizationType(context).equals(context.getString(R.string.tokenization_key));
     }
 
     public static String getTokenizationKey(Context context) {

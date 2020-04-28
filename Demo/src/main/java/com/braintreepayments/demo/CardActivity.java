@@ -179,7 +179,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
             if (mCardType != cardType) {
                 mCardType  = cardType;
 
-                if (mConfiguration.getUnionPay().isEnabled() && !Authorization.isTokenizationKey(mAuthorization)) {
+                if (mConfiguration.getUnionPay().isEnabled() && !Settings.useTokenizationKey(getApplicationContext())) {
                     UnionPay.fetchCapabilities(mBraintreeFragment, mCardForm.getCardNumber());
                 }
             }

@@ -29,13 +29,17 @@ import com.braintreepayments.api.internal.SignatureVerificationOverrides;
 import com.braintreepayments.api.models.BinData;
 import com.braintreepayments.api.models.BraintreePaymentResult;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.demo.internal.ApiClient;
+import com.braintreepayments.demo.internal.ApiClientRequestInterceptor;
 import com.braintreepayments.demo.models.ClientToken;
+import com.braintreepayments.demo.models.PayPalUAT;
 import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import java.util.Arrays;
 import java.util.List;
 
 import retrofit.Callback;
+import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
@@ -172,11 +176,51 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
         if (mAuthorization != null) {
             setProgressBarIndeterminateVisibility(false);
             onAuthorizationFetched();
-        } else if (Settings.useTokenizationKey(this)) {
+        }
+
+        String authType = Settings.getAuthorizationType(this);
+        if (authType.equals(getString(R.string.tokenization_key))) {
             mAuthorization = Settings.getTokenizationKey(this);
             setProgressBarIndeterminateVisibility(false);
             onAuthorizationFetched();
-        } else {
+
+        } else if (authType.equals(getString(R.string.paypal_uat))) {
+            // NOTE: - The PP UAT is fetched from the PPCP sample server
+            //       - The only feature that currently works with a PP UAT is Card Tokenization.
+            ApiClient apiClient = new RestAdapter.Builder()
+                    .setEndpoint("https://ppcp-sample-merchant-sand.herokuapp.com")
+                    .setRequestInterceptor(new ApiClientRequestInterceptor())
+                    .build()
+                    .create(ApiClient.class);
+
+            apiClient.getPayPalUAT("US", new Callback<PayPalUAT>() {
+                @Override
+                public void success(PayPalUAT uat, Response response) {
+                    setProgressBarIndeterminateVisibility(false);
+
+                    if (TextUtils.isEmpty(uat.getUAT())) {
+                        showDialog("PayPal UAT was empty");
+                    } else {
+                        mAuthorization = uat.getUAT();
+                        onAuthorizationFetched();
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    setProgressBarIndeterminateVisibility(false);
+
+                    if (error.getResponse() == null) {
+                        showDialog(error.getCause().getMessage());
+                    } else {
+                        showDialog("Unable to get a PayPal UAT. Response Code: " +
+                                error.getResponse().getStatus() + " Response body: " +
+                                error.getResponse().getBody());
+                    }
+                }
+            });
+
+        } else if (authType.equals(getString(R.string.client_token))) {
             DemoApplication.getApiClient(this).getClientToken(Settings.getCustomerId(this),
                     Settings.getMerchantAccountId(this), new Callback<ClientToken>() {
                         @Override

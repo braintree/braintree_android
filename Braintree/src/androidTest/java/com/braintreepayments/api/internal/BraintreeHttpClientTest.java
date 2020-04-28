@@ -21,6 +21,7 @@ import java.net.MalformedURLException;
 import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.api.internal.HttpClientTestUtils.stubResponse;
+import static com.braintreepayments.testutils.FixturesHelper.base64EncodedClientTokenFromFixture;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
@@ -70,7 +71,8 @@ public class BraintreeHttpClientTest {
     public void doesNotSendTokenizationKeyWhenNotPresent()
             throws IOException, InvalidArgumentException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
-                Authorization.fromString(stringFromFixture("client_token.json")));
+                Authorization
+                        .fromString(base64EncodedClientTokenFromFixture("client_token.json")));
 
         HttpURLConnection connection = httpClient.init("http://example.com/");
 
@@ -80,7 +82,8 @@ public class BraintreeHttpClientTest {
     @Test(timeout = 1000)
     public void get_includesAuthorizationFingerprintWhenPresent()
             throws InterruptedException, InvalidArgumentException {
-        BraintreeHttpClient httpClient = new BraintreeHttpClient(Authorization.fromString(stringFromFixture("client_token.json"))) {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(Authorization
+                .fromString(base64EncodedClientTokenFromFixture("client_token.json"))) {
             @Override
             protected HttpURLConnection init(String url) throws IOException {
                 assertTrue(url.contains("authorization_fingerprint"));
@@ -206,7 +209,8 @@ public class BraintreeHttpClientTest {
     public void postsErrorWhenClientTokenIsUsedAndInvalidJsonIsSent()
             throws InvalidArgumentException, InterruptedException {
         BraintreeHttpClient httpClient = new BraintreeHttpClient(
-                Authorization.fromString(stringFromFixture("client_token.json")));
+                Authorization
+                        .fromString(base64EncodedClientTokenFromFixture("client_token.json")));
 
         httpClient.post("/", "not json", new HttpResponseCallback() {
             @Override

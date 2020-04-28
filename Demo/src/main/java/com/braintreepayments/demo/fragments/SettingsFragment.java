@@ -19,6 +19,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         addPreferencesFromResource(R.xml.settings);
 
         SharedPreferences preferences = getPreferenceManager().getSharedPreferences();
+        onSharedPreferenceChanged(preferences, "authorization_type");
         onSharedPreferenceChanged(preferences, "paypal_intent_type");
         onSharedPreferenceChanged(preferences, "paypal_landing_page_type");
         onSharedPreferenceChanged(preferences, "paypal_payment_type");

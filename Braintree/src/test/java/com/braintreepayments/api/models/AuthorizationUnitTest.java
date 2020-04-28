@@ -24,17 +24,17 @@ public class AuthorizationUnitTest {
     }
 
     @Test
-    public void fromString_returnsValidClientTokenWhenJSON() throws InvalidArgumentException {
-        Authorization authorization = Authorization.fromString(stringFromFixture("client_token.json"));
-
-        assertTrue(authorization instanceof ClientToken);
-    }
-
-    @Test
     public void fromString_returnsValidTokenizationKey() throws InvalidArgumentException {
         Authorization authorization = Authorization.fromString(TOKENIZATION_KEY);
 
         assertTrue(authorization instanceof TokenizationKey);
+    }
+
+    @Test
+    public void fromString_returnsValidPayPalUAT() throws InvalidArgumentException {
+        Authorization authorization = Authorization.fromString(stringFromFixture("base_64_paypal_uat.txt"));
+
+        assertTrue(authorization instanceof PayPalUAT);
     }
 
     @Test(expected = InvalidArgumentException.class)
@@ -50,20 +50,6 @@ public class AuthorizationUnitTest {
     @Test(expected = InvalidArgumentException.class)
     public void fromString_throwsWhenPassedJunk() throws InvalidArgumentException {
         Authorization.fromString("not authorization");
-    }
-
-    @Test
-    public void getType_returnsTokenizationKey() throws InvalidArgumentException {
-        Authorization authorization = Authorization.fromString(TOKENIZATION_KEY);
-
-        assertTrue(authorization instanceof TokenizationKey);
-    }
-
-    @Test
-    public void getType_returnsClientToken() throws InvalidArgumentException {
-        Authorization authorization = Authorization.fromString(stringFromFixture("base_64_client_token.txt"));
-
-        assertTrue(authorization instanceof ClientToken);
     }
 
     @Test
@@ -97,5 +83,20 @@ public class AuthorizationUnitTest {
         assertEquals(((TokenizationKey) authorization).getEnvironment(), parceled.getEnvironment());
         assertEquals(((TokenizationKey) authorization).getMerchantId(), parceled.getMerchantId());
         assertEquals(((TokenizationKey) authorization).getUrl(), parceled.getUrl());
+    }
+
+    @Test
+    public void parcelable_parcelsPayPalUATCorrectly() throws InvalidArgumentException {
+        Authorization authorization = Authorization.fromString(stringFromFixture("base_64_paypal_uat.txt"));
+        Parcel parcel = Parcel.obtain();
+        authorization.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+
+        PayPalUAT parceled = PayPalUAT.CREATOR.createFromParcel(parcel);
+
+        assertEquals(authorization.toString(), parceled.toString());
+        assertEquals(authorization.getBearer(), parceled.getBearer());
+        assertEquals(authorization.getConfigUrl(), parceled.getConfigUrl());
+        assertEquals(((PayPalUAT) authorization).getPayPalURL(), parceled.getPayPalURL());
     }
 }

@@ -17,7 +17,6 @@ import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestPayPalConfigurationBuilder;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,6 +33,7 @@ import java.util.concurrent.CountDownLatch;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import static com.braintreepayments.testutils.FixturesHelper.base64EncodedClientTokenFromFixture;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -65,7 +65,7 @@ public class LocalPaymentUnitTest {
                         .billingAgreementsEnabled(false))
                 .buildConfiguration();
 
-        mBraintreeFragment = getMockFragment(stringFromFixture("client_token.json"), mConfiguration);
+        mBraintreeFragment = getMockFragment(base64EncodedClientTokenFromFixture("client_token.json"), mConfiguration);
 
         mMockHttpClient = mock(BraintreeHttpClient.class);
         when(mBraintreeFragment.getHttpClient()).thenReturn(mMockHttpClient);

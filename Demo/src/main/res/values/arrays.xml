@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="authorization_types">
+        <item name="client-token">@string/client_token</item>
+        <item name="tokenization-key">@string/tokenization_key</item>
+        <item name="paypal-uat">@string/paypal_uat</item>
+    </string-array>
+
     <string-array name="environments">
         <item name="sandbox">@string/sandbox</item>
         <item name="sandbox-india">@string/sandbox_india</item>

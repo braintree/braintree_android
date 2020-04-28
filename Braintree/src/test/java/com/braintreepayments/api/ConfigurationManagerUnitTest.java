@@ -23,6 +23,7 @@ import org.robolectric.RuntimeEnvironment;
 
 import java.util.concurrent.CountDownLatch;
 
+import static com.braintreepayments.testutils.FixturesHelper.base64EncodedClientTokenFromFixture;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static com.braintreepayments.testutils.SharedPreferencesHelper.clearSharedPreferences;
 import static com.braintreepayments.testutils.SharedPreferencesHelper.getSharedPreferences;
@@ -226,7 +227,7 @@ public class ConfigurationManagerUnitTest {
     public void getConfiguration_takesClientTokenIntoAccountForCache()
             throws InvalidArgumentException, InterruptedException {
         ClientToken clientToken = (ClientToken) Authorization.fromString(
-                stringFromFixture("client_token_with_authorization_fingerprint_options.json"));
+                base64EncodedClientTokenFromFixture("client_token_with_authorization_fingerprint_options.json"));
         when(mBraintreeFragment.getAuthorization()).thenReturn(clientToken);
         writeMockConfiguration(RuntimeEnvironment.application, clientToken.getConfigUrl(),
                 clientToken.getAuthorizationFingerprint(), stringFromFixture("configuration/configuration.json"),
