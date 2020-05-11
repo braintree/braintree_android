@@ -35,6 +35,7 @@
         "threeDSecureVersion": "2.2.0",
         "xid": "fake-xid",
         "acsTransactionId": "fake-acs-transaction-id",
+        "threeDSecureAuthenticationId": "fake-threedsecure-authentication-id",
         "threeDSecureServerTransactionId": "fake-threedsecure-server-transaction-id",
         "paresStatus": "fake-pares-status",
         "authentication":

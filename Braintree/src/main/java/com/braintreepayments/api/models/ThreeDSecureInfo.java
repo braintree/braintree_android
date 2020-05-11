@@ -21,6 +21,7 @@ public class ThreeDSecureInfo implements Parcelable {
     private static final String THREE_D_SECURE_VERSION_KEY = "threeDSecureVersion";
     private static final String XID_KEY = "xid";
     private static final String ACS_TRANSACTION_ID_KEY = "acsTransactionId";
+    private static final String THREE_D_SECURE_AUTHENTICATION_ID_KEY = "threeDSecureAuthenticationId";
     private static final String THREE_D_SECURE_SERVER_TRANSACTION_ID_KEY = "threeDSecureServerTransactionId";
     private static final String PARES_STATUS_KEY= "paresStatus";
     private static final String AUTHENTICATION_KEY= "authentication";
@@ -40,6 +41,7 @@ public class ThreeDSecureInfo implements Parcelable {
     private boolean mWasVerified;
     private String mXid;
     private String mAcsTransactionId;
+    private String mThreeDSecureAuthenticationId;
     private String mThreeDSecureServerTransactionId;
     private String mParesStatus;
     private String mAuthenticationTransactionStatus;
@@ -65,6 +67,7 @@ public class ThreeDSecureInfo implements Parcelable {
         threeDSecureInfo.mWasVerified = json.has(LIABILITY_SHIFTED_KEY) && json.has(LIABILITY_SHIFT_POSSIBLE_KEY);
         threeDSecureInfo.mXid = json.optString(XID_KEY);
         threeDSecureInfo.mAcsTransactionId = json.optString(ACS_TRANSACTION_ID_KEY);
+        threeDSecureInfo.mThreeDSecureAuthenticationId = json.optString(THREE_D_SECURE_AUTHENTICATION_ID_KEY);
         threeDSecureInfo.mThreeDSecureServerTransactionId = json.optString(THREE_D_SECURE_SERVER_TRANSACTION_ID_KEY);
         threeDSecureInfo.mParesStatus = json.optString(PARES_STATUS_KEY);
 
@@ -176,6 +179,14 @@ public class ThreeDSecureInfo implements Parcelable {
     }
 
     /**
+     * @return Unique identifier assigned to the 3D Secure authentication performed for this transaction.
+     */
+    public String getThreeDSecureAuthenticationId() {
+        return mThreeDSecureAuthenticationId;
+    }
+
+
+    /**
      * @return Unique transaction identifier assigned by the 3DS Server to identify a single transaction.
      */
     public String getThreeDSecureServerTransactionId() {
@@ -260,6 +271,7 @@ public class ThreeDSecureInfo implements Parcelable {
         dest.writeString(mAuthenticationTransactionStatusReason);
         dest.writeString(mLookupTransactionStatus);
         dest.writeString(mLookupTransactionStatusReason);
+        dest.writeString(mThreeDSecureAuthenticationId);
     }
 
     private ThreeDSecureInfo(Parcel in) {
@@ -277,6 +289,7 @@ public class ThreeDSecureInfo implements Parcelable {
         mAuthenticationTransactionStatusReason = in.readString();
         mLookupTransactionStatus = in.readString();
         mLookupTransactionStatusReason = in.readString();
+        mThreeDSecureAuthenticationId = in.readString();
     }
 
     public static final Creator<ThreeDSecureInfo> CREATOR = new Creator<ThreeDSecureInfo>() {

@@ -21,6 +21,7 @@
       "dsTransactionId": "e1aaed8b-4c2e-4e50-b6a9-8d48779c90b3",
       "eciFlag": "05",
       "paresStatus": "Y",
+      "threeDSecureAuthenticationId": "3fg8syh4nsmq3nzrmv",
       "threeDSecureServerTransactionId": "d6909f17-6a92-4ea1-9148-5499677dee60",
       "threeDSecureVersion": "2.1.0",
       "lookup": {

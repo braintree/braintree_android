@@ -5,6 +5,7 @@
 * Allow new BraintreeFragment instances to be created using FragmentActivity
 * Add support for authorizing the Braintree SDK with a `PayPalUAT` (universal access token)
 * Fix bug that accepted raw JSON string as valid authorization to `BraintreeFragment.newInstance(...)`
+* Add `threeDSecureAuthenticationId` field to `ThreeDSecureInfo`
 
 ## 3.9.0
 

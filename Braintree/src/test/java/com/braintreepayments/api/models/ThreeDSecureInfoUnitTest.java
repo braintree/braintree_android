@@ -30,6 +30,7 @@ public class ThreeDSecureInfoUnitTest {
         assertTrue(info.wasVerified());
         assertEquals("fake-xid", info.getXid());
         assertEquals("fake-acs-transaction-id", info.getAcsTransactionId());
+        assertEquals("fake-threedsecure-authentication-id", info.getThreeDSecureAuthenticationId());
         assertEquals("fake-threedsecure-server-transaction-id", info.getThreeDSecureServerTransactionId());
         assertEquals("fake-pares-status", info.getParesStatus());
         assertEquals("Y", info.getAuthenticationTransactionStatus());
