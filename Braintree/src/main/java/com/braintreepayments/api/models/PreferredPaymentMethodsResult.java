@@ -9,26 +9,34 @@ import org.json.JSONObject;
  */
 public class PreferredPaymentMethodsResult {
     private boolean mPayPalPreferred;
+    private boolean mVenmoPreferred;
 
     public PreferredPaymentMethodsResult() {}
 
-    public static PreferredPaymentMethodsResult fromJSON(String responseBody) {
+    public static PreferredPaymentMethodsResult fromJSON(String responseBody, boolean venmoInstalled) {
         boolean payPalPreferred = false;
 
         try {
             JSONObject response = new JSONObject(responseBody);
-            JSONObject payPalClientConfiguration = getObjectAtKeyPath(response, "data.clientConfiguration.paypal");
-            if (payPalClientConfiguration != null) {
-                payPalPreferred = payPalClientConfiguration.getBoolean("preferredPaymentMethod");
+            JSONObject preferredPaymentMethods = getObjectAtKeyPath(response, "data.preferredPaymentMethods");
+            if (preferredPaymentMethods != null) {
+                payPalPreferred = preferredPaymentMethods.getBoolean("paypalPreferred");
             }
         } catch (JSONException ignored) {
             // do nothing
         }
-        return new PreferredPaymentMethodsResult().isPayPalPreferred(payPalPreferred);
+        return new PreferredPaymentMethodsResult()
+                .isPayPalPreferred(payPalPreferred)
+                .isVenmoPreferred(venmoInstalled);
     }
 
     public PreferredPaymentMethodsResult isPayPalPreferred(boolean payPalPreferred) {
         mPayPalPreferred = payPalPreferred;
+        return this;
+    }
+
+    public PreferredPaymentMethodsResult isVenmoPreferred(boolean venmoPreferred) {
+        mVenmoPreferred = venmoPreferred;
         return this;
     }
 
@@ -38,6 +46,14 @@ public class PreferredPaymentMethodsResult {
      */
     public boolean isPayPalPreferred() {
         return mPayPalPreferred;
+    }
+
+    /**
+     *
+     * @return True if Venmo app is installed. False otherwise.
+     */
+    public boolean isVenmoPreferred() {
+        return mVenmoPreferred;
     }
 
     private static JSONObject getObjectAtKeyPath(JSONObject obj, String keyPath) throws JSONException {

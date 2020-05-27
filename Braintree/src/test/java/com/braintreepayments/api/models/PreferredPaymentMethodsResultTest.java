@@ -8,39 +8,48 @@ import static org.junit.Assert.assertTrue;
 public class PreferredPaymentMethodsResultTest {
 
     @Test
-    public void fromJson_whenPayPalIsPreferred_setsIsPayPalPreferredToTrue() {
+    public void fromJson_whenApiDetectsPayPalPreferred_setsPayPalPreferredToTrue() {
         PreferredPaymentMethodsResult result = PreferredPaymentMethodsResult.fromJSON("{\n" +
                 "  \"data\": {\n" +
-                "    \"clientConfiguration\": {\n" +
-                "      \"paypal\": {\n" +
-                "        \"preferredPaymentMethod\": true\n" +
-                "      }\n" +
+                "    \"preferredPaymentMethods\": {\n" +
+                "      \"paypalPreferred\": true\n" +
                 "    }\n" +
                 "  }\n" +
-                "}");
+                "}", false);
 
         assertTrue(result.isPayPalPreferred());
     }
 
     @Test
-    public void fromJson_whenPayPalIsNotPreferred_setsIsPayPalPreferredToFalse() {
+    public void fromJson_whenApiDetectsPayPalNotPreferred_setsPayPalPreferredToFalse() {
         PreferredPaymentMethodsResult result = PreferredPaymentMethodsResult.fromJSON("{\n" +
                 "  \"data\": {\n" +
-                "    \"clientConfiguration\": {\n" +
-                "      \"paypal\": {\n" +
-                "        \"preferredPaymentMethod\": false\n" +
-                "      }\n" +
+                "    \"preferredPaymentMethods\": {\n" +
+                "      \"paypalPreferred\": false\n" +
                 "    }\n" +
                 "  }\n" +
-                "}");
+                "}", false);
 
         assertFalse(result.isPayPalPreferred());
     }
 
     @Test
+    public void fromJson_whenVenmoAppIsInstalled_setsVenmoPreferredToTrue() {
+        PreferredPaymentMethodsResult result = PreferredPaymentMethodsResult.fromJSON("json", true);
+        assertTrue(result.isVenmoPreferred());
+    }
+
+    @Test
+    public void fromJson_whenVenmoAppIsNotInstalled_setsVenmoPreferredToFalse() {
+        PreferredPaymentMethodsResult result = PreferredPaymentMethodsResult.fromJSON("json", false);
+        assertFalse(result.isVenmoPreferred());
+    }
+
+    @Test
     public void fromJson_whenJsonIsInvalid_setsIsPayPalPreferredToFalse() {
-        PreferredPaymentMethodsResult result = PreferredPaymentMethodsResult.fromJSON("invalid-response");
+        PreferredPaymentMethodsResult result = PreferredPaymentMethodsResult.fromJSON("invalid-response", false);
 
         assertFalse(result.isPayPalPreferred());
+        assertFalse(result.isVenmoPreferred());
     }
 }

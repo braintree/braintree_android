@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.PreferredPaymentMethods;
+import com.braintreepayments.api.Venmo;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.PreferredPaymentMethodsListener;
 import com.braintreepayments.api.models.PayPalRequest;
@@ -22,6 +23,7 @@ public class PreferredPaymentMethodsActivity extends BaseActivity {
     private TextView mPreferredPaymentMethodsTextView;
     private Button mBillingAgreementButton;
     private Button mSinglePaymentButton;
+    private Button mVenmoButton;
 
     private BraintreeFragment mBraintreeFragment;
 
@@ -34,13 +36,16 @@ public class PreferredPaymentMethodsActivity extends BaseActivity {
         mPreferredPaymentMethodsButton = findViewById(R.id.preferred_payment_methods_button);
         mBillingAgreementButton = findViewById(R.id.paypal_billing_agreement_button);
         mSinglePaymentButton = findViewById(R.id.paypal_single_payment_button);
+        mVenmoButton = findViewById(R.id.venmo_button);
     }
 
     @Override
     protected void reset() {
         mPreferredPaymentMethodsTextView.setText("");
         mPreferredPaymentMethodsButton.setEnabled(false);
-        enabledPayPalButtons(false);
+        mBillingAgreementButton.setEnabled(false);
+        mSinglePaymentButton.setEnabled(false);
+        mVenmoButton.setEnabled(false);
     }
 
     @Override
@@ -60,15 +65,15 @@ public class PreferredPaymentMethodsActivity extends BaseActivity {
         PreferredPaymentMethods.fetchPreferredPaymentMethods(mBraintreeFragment, new PreferredPaymentMethodsListener() {
             @Override
             public void onPreferredPaymentMethodsFetched(PreferredPaymentMethodsResult result) {
-                mPreferredPaymentMethodsTextView.setText(String.format("PayPal Preferred: %b", result.isPayPalPreferred()));
-                enabledPayPalButtons(result.isPayPalPreferred());
+                mPreferredPaymentMethodsTextView.setText(String.format("PayPal Preferred: %b\nVenmo Preferred: %b",
+                        result.isPayPalPreferred(),
+                        result.isVenmoPreferred()));
+
+                mBillingAgreementButton.setEnabled(result.isPayPalPreferred());
+                mSinglePaymentButton.setEnabled(result.isPayPalPreferred());
+                mVenmoButton.setEnabled(result.isVenmoPreferred());
             }
         });
-    }
-
-    private void enabledPayPalButtons(boolean enabled) {
-        mBillingAgreementButton.setEnabled(enabled);
-        mSinglePaymentButton.setEnabled(enabled);
     }
 
     public void launchSinglePayment(View v) {
@@ -81,6 +86,12 @@ public class PreferredPaymentMethodsActivity extends BaseActivity {
         setProgressBarIndeterminateVisibility(true);
 
         PayPal.requestBillingAgreement(mBraintreeFragment, getPayPalRequest(null));
+    }
+
+    public void launchVenmo(View v) {
+        setProgressBarIndeterminateVisibility(true);
+
+        Venmo.authorizeAccount(mBraintreeFragment);
     }
 
     // Launching a payment method from the home screen creates a new BraintreeFragment. To maintain sessionID within a
