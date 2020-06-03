@@ -19,7 +19,7 @@ public interface ApiClient {
     @GET("/client_token")
     void getClientToken(@Query("customer_id") String customerId, @Query("merchant_account_id") String merchantAccountId, Callback<ClientToken> callback);
 
-    @GET("/uat")
+    @GET("/client-token")
     void getPayPalUAT(@Query("countryCode") String countryCode, Callback<PayPalUAT> callback);
 
     @FormUrlEncoded
