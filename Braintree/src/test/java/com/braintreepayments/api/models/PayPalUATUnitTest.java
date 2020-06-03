@@ -31,14 +31,14 @@ public class PayPalUATUnitTest {
 
     @Test
     public void fromString_withStagingIssuer_setsProperEnv() throws InvalidArgumentException {
-        PayPalUAT payPalUAT = (PayPalUAT) Authorization.fromString(encodeUAT("{\"iss\":\"https://api.msmaster.qa.paypal.com\", \"external_ids\":[\"Braintree:id\"]}"));
+        PayPalUAT payPalUAT = (PayPalUAT) Authorization.fromString(encodeUAT("{\"iss\":\"https://api.msmaster.qa.paypal.com\", \"external_id\":[\"Braintree:id\"]}"));
 
         assertEquals(PayPalUAT.Environment.STAGING, payPalUAT.getEnvironment());
     }
 
     @Test
     public void fromString_withSandboxIssuer_setsProperEnv() throws InvalidArgumentException {
-        PayPalUAT payPalUAT = (PayPalUAT) Authorization.fromString(encodeUAT("{\"iss\":\"https://api.paypal.com\", \"external_ids\":[\"Braintree:id\"]}"));
+        PayPalUAT payPalUAT = (PayPalUAT) Authorization.fromString(encodeUAT("{\"iss\":\"https://api.paypal.com\", \"external_id\":[\"Braintree:id\"]}"));
 
         assertEquals(PayPalUAT.Environment.PRODUCTION, payPalUAT.getEnvironment());
     }
@@ -65,7 +65,7 @@ public class PayPalUATUnitTest {
         exceptionRule.expect(InvalidArgumentException.class);
         exceptionRule.expectMessage("PayPal UAT invalid: Missing Braintree merchant account ID.");
 
-        PayPalUAT.fromString(encodeUAT("{\"iss\":\"paypal-url.com\", \"external_ids\":[\"Faketree:my-merchant-id\"]}"));
+        PayPalUAT.fromString(encodeUAT("{\"iss\":\"paypal-url.com\", \"external_id\":[\"Faketree:my-merchant-id\"]}"));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class PayPalUATUnitTest {
         exceptionRule.expect(InvalidArgumentException.class);
         exceptionRule.expectMessage("PayPal UAT invalid: Does not contain issuer, or \"iss\" key.");
 
-        PayPalUAT.fromString(encodeUAT("{\"external_ids\":[\"Braintree:my-merchant-id\"]}"));
+        PayPalUAT.fromString(encodeUAT("{\"external_id\":[\"Braintree:my-merchant-id\"]}"));
     }
 
     @Test
@@ -81,7 +81,7 @@ public class PayPalUATUnitTest {
         exceptionRule.expect(InvalidArgumentException.class);
         exceptionRule.expectMessage("PayPal issuer URL missing or unknown: fake-url.com");
 
-        PayPalUAT.fromString(encodeUAT("{\"iss\":\"fake-url.com\", \"external_ids\":[\"Braintree:my-merchant-id\"]}"));
+        PayPalUAT.fromString(encodeUAT("{\"iss\":\"fake-url.com\", \"external_id\":[\"Braintree:my-merchant-id\"]}"));
     }
 
     // Test Helpers
