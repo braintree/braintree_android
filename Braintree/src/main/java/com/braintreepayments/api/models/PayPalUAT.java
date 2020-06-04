@@ -15,7 +15,7 @@ public class PayPalUAT extends Authorization {
     protected static final String MATCHER =
             "^[a-zA-Z0-9]+\\.[a-zA-Z0-9]+\\.[a-zA-Z0-9_-]+$";
 
-    private static final String EXTERNAL_IDS_STRING = "external_ids";
+    private static final String EXTERNAL_ID_STRING = "external_id";
 
     private String mConfigUrl;
     private String mPayPalUrl;
@@ -44,7 +44,7 @@ public class PayPalUAT extends Authorization {
             String decodedUATString = decodeUATString(uatString);
             JSONObject jsonObject = new JSONObject(decodedUATString);
 
-            JSONArray externalIDs = jsonObject.getJSONArray(EXTERNAL_IDS_STRING);
+            JSONArray externalIDs = jsonObject.getJSONArray(EXTERNAL_ID_STRING);
 
             for (int i = 0; i < externalIDs.length(); i++) {
                 if (externalIDs.getString(i).startsWith("Braintree:")) {
