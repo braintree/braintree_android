@@ -37,7 +37,7 @@ public class Settings {
     }
 
     public static String getEnvironment(Context context) {
-        return getPreferences(context).getString(ENVIRONMENT, "sandbox");
+        return getPreferences(context).getString(ENVIRONMENT, SANDBOX_ENV_NAME);
     }
 
     public static void setEnvironment(Context context, String environment) {
