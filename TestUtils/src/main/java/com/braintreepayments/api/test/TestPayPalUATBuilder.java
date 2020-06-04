@@ -32,7 +32,7 @@ public class TestPayPalUATBuilder {
     public String fetchUAT() {
         try {
 
-            URL url = new URL("https://ppcp-sample-merchant-sand.herokuapp.com/uat?countryCode=US");
+            URL url = new URL("https://ppcp-sample-merchant-sand.herokuapp.com/client-token?countryCode=US");
 
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -50,7 +50,7 @@ public class TestPayPalUATBuilder {
             connection.disconnect();
 
             JSONObject json = new JSONObject(responseBody.toString());
-            return json.getString("universal_access_token");
+            return json.getString("id_token");
         } catch (MalformedURLException e) {
             throw new RuntimeException("Invalid url");
         } catch (IOException e) {
