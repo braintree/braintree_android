@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.10.0
 
 * Allow new BraintreeFragment instances to be created using FragmentActivity
 * Add support for authorizing the Braintree SDK with a `PayPalUAT` (universal access token)
