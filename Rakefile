@@ -115,7 +115,7 @@ end
 
 def post_release(version)
   if !`git remote`.include?("github")
-    sh "git remote add github https://github.com/braintree/braintree_android.git"
+    sh "git remote add github git@github.com:braintree/braintree_android.git"
   end
 
   puts "\nArchives are uploaded! Committing and tagging #{version} and preparing for the next development iteration"
