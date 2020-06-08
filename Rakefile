@@ -98,6 +98,13 @@ task :release_paypal do
   puts "PayPal modules have been released"
 end
 
+desc "Complete Github merge if Sonatype times out"
+task :run_post_release do
+    puts "What version are you running post release on? (x.x.x format)"
+    version = $stdin.gets.chomp
+    post_release(version)
+end
+
 def prompt_for_sonatype_username_and_password
   puts "Enter Sonatype username:"
   ENV["SONATYPE_USERNAME"] = $stdin.gets.chomp
