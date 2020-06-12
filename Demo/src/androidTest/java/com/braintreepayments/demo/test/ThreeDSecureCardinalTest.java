@@ -2,7 +2,6 @@ package com.braintreepayments.demo.test;
 
 import androidx.preference.PreferenceManager;
 import androidx.test.runner.AndroidJUnit4;
-import androidx.test.uiautomator.UiObjectNotFoundException;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
 
@@ -36,7 +35,7 @@ public class ThreeDSecureCardinalTest extends TestHelper {
     }
 
     @Test(timeout = 40000)
-    public void threeDSecure_authenticates() throws UiObjectNotFoundException {
+    public void threeDSecure_authenticates() {
         onDevice(withText("Card Number")).perform(setText("4000000000001091"));
         fillInExpiration("01", "2022");
         onDevice(withText("CVV")).perform(setText("123"));
