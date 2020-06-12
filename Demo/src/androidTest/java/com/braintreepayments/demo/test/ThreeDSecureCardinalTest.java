@@ -4,6 +4,10 @@ import android.widget.EditText;
 
 import androidx.preference.PreferenceManager;
 import androidx.test.runner.AndroidJUnit4;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiObjectNotFoundException;
+import androidx.test.uiautomator.UiSelector;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
 
@@ -11,12 +15,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.IOException;
+
+import static androidx.test.InstrumentationRegistry.getInstrumentation;
 import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAction.setText;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withClass;
+import static com.lukekorth.deviceautomator.UiObjectMatcher.withResourceId;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.Matchers.containsString;
@@ -37,14 +45,17 @@ public class ThreeDSecureCardinalTest extends TestHelper {
     }
 
     @Test(timeout = 40000)
-    public void threeDSecure_authenticates() {
+    public void threeDSecure_authenticates() throws UiObjectNotFoundException {
         onDevice(withText("Card Number")).perform(setText("4000000000001091"));
         fillInExpiration("01", "2022");
         onDevice(withText("CVV")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
-        onDevice(withClass(EditText.class)).perform(setText("1234"));
+        UiObject codeEditText = getCodeEditTextView();
+        codeEditText.waitForExists(5000);
+        codeEditText.legacySetText("1234");
+
         onDevice(withText("Submit")).perform(click());
 
         getNonceDetails().check(text(containsString("Card Last Two: 91")));
@@ -53,5 +64,11 @@ public class ThreeDSecureCardinalTest extends TestHelper {
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
+    }
+
+    private static UiObject getCodeEditTextView() {
+        UiDevice device = UiDevice.getInstance(getInstrumentation());
+        String codeEditTextResId = "com.braintreepayments.demo:id/codeEditTextField";
+        return device.findObject(new UiSelector().resourceId(codeEditTextResId));
     }
 }
