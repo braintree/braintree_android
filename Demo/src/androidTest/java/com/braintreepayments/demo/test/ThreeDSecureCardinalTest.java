@@ -1,13 +1,8 @@
 package com.braintreepayments.demo.test;
 
-import android.widget.EditText;
-
 import androidx.preference.PreferenceManager;
 import androidx.test.runner.AndroidJUnit4;
-import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiObjectNotFoundException;
-import androidx.test.uiautomator.UiSelector;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
 
@@ -15,15 +10,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
-
-import static androidx.test.InstrumentationRegistry.getInstrumentation;
 import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static com.lukekorth.deviceautomator.AutomatorAction.click;
 import static com.lukekorth.deviceautomator.AutomatorAction.setText;
 import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
 import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withClass;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withResourceId;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
