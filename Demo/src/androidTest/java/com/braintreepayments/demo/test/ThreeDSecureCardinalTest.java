@@ -52,9 +52,10 @@ public class ThreeDSecureCardinalTest extends TestHelper {
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
-        UiObject codeEditText = getCodeEditTextView();
-        codeEditText.waitForExists(5000);
-        codeEditText.legacySetText("1234");
+        String codeEditTextResId = "com.braintreepayments.demo:id/codeEditTextField";
+        onDevice(withResourceId(codeEditTextResId)).waitForExists();
+        onDevice(withResourceId(codeEditTextResId)).perform(click());
+        onDevice().typeText("1234");
 
         onDevice(withText("Submit")).perform(click());
 
@@ -64,11 +65,5 @@ public class ThreeDSecureCardinalTest extends TestHelper {
 
         onDevice(withText("Create a Transaction")).perform(click());
         onDevice(withTextStartingWith("created")).check(text(endsWith("authorized")));
-    }
-
-    private static UiObject getCodeEditTextView() {
-        UiDevice device = UiDevice.getInstance(getInstrumentation());
-        String codeEditTextResId = "com.braintreepayments.demo:id/codeEditTextField";
-        return device.findObject(new UiSelector().resourceId(codeEditTextResId));
     }
 }
