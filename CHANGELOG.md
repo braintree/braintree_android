@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.11.0
 
 * Bump Cardinal version to 2.2.3-2
 * Check if Fragment is active before handling Pay with PayPal result (fixes #295, thanks @brudaswen)
