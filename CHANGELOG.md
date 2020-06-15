@@ -2,7 +2,7 @@
 
 ## unreleased
 
-* Do not open PayPal (browser) if Activity has been destroyed (fixes #295)
+* Check if Fragment is active before handling Pay with PayPal result (fixes #295, thanks @brudaswen)
 
 ## 3.10.0
 
