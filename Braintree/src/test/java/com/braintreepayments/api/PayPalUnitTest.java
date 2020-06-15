@@ -177,6 +177,18 @@ public class PayPalUnitTest {
     }
 
     @Test
+    public void requestBillingAgreement_fragmentNotActive_notStartsBrowser() {
+        BraintreeFragment fragment = mMockFragmentBuilder
+                .successResponse(stringFromFixture("paypal_hermes_billing_agreement_response.json"))
+                .isActive(false)
+                .build();
+
+        PayPal.requestBillingAgreement(fragment, new PayPalRequest());
+
+        verify(fragment, never()).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), any(Intent.class));
+    }
+
+    @Test
     public void requestBillingAgreement_defaultPostParamsIncludeCorrectValues() throws JSONException {
         BraintreeFragment fragment = mMockFragmentBuilder.build();
 

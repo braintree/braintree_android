@@ -32,6 +32,7 @@ public class MockFragmentBuilder {
     private String mGraphQLSuccessResponse;
     private Exception mGraphQLErrorResponse;
     private String mIntegration;
+    private Boolean mIsActive = true;
 
     public MockFragmentBuilder() {
         mContext = RuntimeEnvironment.application;
@@ -90,6 +91,11 @@ public class MockFragmentBuilder {
         return this;
     }
 
+    public MockFragmentBuilder isActive(boolean isActive) {
+        mIsActive = isActive;
+        return this;
+    }
+
     public BraintreeFragment build() {
         BraintreeFragment fragment = mock(BraintreeFragment.class);
         when(fragment.getApplicationContext()).thenReturn(mContext);
@@ -97,6 +103,7 @@ public class MockFragmentBuilder {
         when(fragment.getSessionId()).thenReturn(mSessionId);
         when(fragment.getReturnUrlScheme()).thenReturn("com.braintreepayments.api.braintree");
         when(fragment.getIntegrationType()).thenReturn(mIntegration);
+        when(fragment.isActive()).thenReturn(mIsActive);
 
         doAnswer(new Answer() {
             @Override

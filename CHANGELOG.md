@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Check if Fragment is active before handling Pay with PayPal result (fixes #295, thanks @brudaswen)
+
 ## 3.10.0
 
 * Allow new BraintreeFragment instances to be created using FragmentActivity
