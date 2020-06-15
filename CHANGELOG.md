@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Bump Cardinal version to 2.2.3-2
+
 ## 3.10.0
 
 * Allow new BraintreeFragment instances to be created using FragmentActivity
