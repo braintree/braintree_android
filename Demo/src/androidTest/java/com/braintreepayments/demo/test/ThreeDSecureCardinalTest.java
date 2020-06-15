@@ -47,6 +47,7 @@ public class ThreeDSecureCardinalTest extends TestHelper {
         onDevice(withResourceId(codeEditTextResId)).perform(click());
         onDevice().typeText("1234");
 
+        onDevice().pressEnter();
         onDevice(withText("Submit")).perform(click());
 
         getNonceDetails().check(text(containsString("Card Last Two: 91")));
