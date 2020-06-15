@@ -3,6 +3,7 @@
 ## unreleased
 
 * Bump Cardinal version to 2.2.3-2
+* Check if Fragment is active before handling Pay with PayPal result (fixes #295, thanks @brudaswen)
 
 ## 3.10.0
 

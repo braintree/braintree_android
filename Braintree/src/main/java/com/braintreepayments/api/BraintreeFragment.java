@@ -610,6 +610,16 @@ public class BraintreeFragment extends BrowserSwitchFragment {
         return Collections.unmodifiableList(mCachedPaymentMethodNonces);
     }
 
+    /**
+     * Check if this Braintree fragment is still active.
+     *
+     * @return {@code true} if still active and process can proceed, {@code false} otherwise.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public boolean isActive() {
+        return isAdded();
+    }
+
     public void sendAnalyticsEvent(final String eventFragment) {
         final AnalyticsEvent request = new AnalyticsEvent(mContext, getSessionId(), mIntegrationType, eventFragment);
         waitForConfiguration(new ConfigurationListener() {
