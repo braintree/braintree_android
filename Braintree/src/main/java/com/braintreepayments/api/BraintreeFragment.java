@@ -615,6 +615,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
      *
      * @return {@code true} if still active and process can proceed, {@code false} otherwise.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public boolean isActive() {
         return isAdded();
     }
