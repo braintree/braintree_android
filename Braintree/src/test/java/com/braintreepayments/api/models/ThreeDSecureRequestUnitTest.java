@@ -15,15 +15,23 @@ import static com.braintreepayments.api.models.ThreeDSecureRequest.VERSION_1;
 import static com.braintreepayments.api.models.ThreeDSecureRequest.VERSION_2;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class ThreeDSecureRequestUnitTest {
+
     @Test
     public void constructor_noVersionRequested_defaultsToVersion1() {
         ThreeDSecureRequest request = new ThreeDSecureRequest();
 
         assertEquals(VERSION_1, request.getVersionRequested());
+    }
+
+    @Test
+    public void constructor_defaultsUiCustomizationPropertyToEmptyObject() {
+        ThreeDSecureRequest request = new ThreeDSecureRequest();
+        assertNotNull(request.getUiCustomization());
     }
 
     @Test

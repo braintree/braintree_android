@@ -257,7 +257,10 @@ public class ThreeDSecureRequest implements Parcelable {
         return mV1UiCustomization;
     }
 
-    public ThreeDSecureRequest() {}
+    public ThreeDSecureRequest() {
+        // NOTE: this is a temporary fix for a null-pointer bug introduced by Cardinal 2.2.3-2
+        mUiCustomization = new UiCustomization();
+    }
 
     @Override
     public int describeContents() {
