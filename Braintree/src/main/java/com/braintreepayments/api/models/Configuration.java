@@ -158,7 +158,7 @@ public class Configuration {
      *         {@code false} otherwise.
      */
     public boolean isPayPalEnabled() {
-        return (mPaypalEnabled && mPayPalConfiguration.isEnabled());
+        return mPaypalEnabled;
     }
 
     /**

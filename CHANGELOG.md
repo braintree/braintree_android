@@ -1,5 +1,8 @@
 # Braintree Android SDK Release Notes
 
+## Unreleased
+* Changed `Configuration#isPayPalEnabled` to no longer consider deprecated integration requirements.
+
 ## 3.11.1
 
 * Add default `uiCustomization` to `ThreeDSecureRequest` to prevent null pointer exception when interacting with Cardinal SDK

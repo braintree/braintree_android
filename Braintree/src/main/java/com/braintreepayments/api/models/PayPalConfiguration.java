@@ -56,7 +56,9 @@ public class PayPalConfiguration {
 
     /**
      * @return {@code true} if PayPal is enabled, {@code false} otherwise.
+     * @deprecated Use {@link Configuration#isPayPalEnabled()} for more reliable determination of feature availability.
      */
+    @Deprecated
     public boolean isEnabled() {
         boolean enabled = !TextUtils.isEmpty(mEnvironment) && !TextUtils.isEmpty(mDisplayName) &&
                 !TextUtils.isEmpty(mPrivacyUrl) && !TextUtils.isEmpty(mUserAgreementUrl);
