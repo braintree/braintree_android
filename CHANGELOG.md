@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## Unreleased
+## 3.12.0
 * Changed `Configuration#isPayPalEnabled` to no longer consider deprecated integration requirements.
 
 ## 3.11.1
