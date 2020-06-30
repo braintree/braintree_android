@@ -32,7 +32,7 @@ public class TestPayPalUATBuilder {
     public String fetchUAT() {
         try {
 
-            URL url = new URL("https://ppcp-sample-merchant-sand.herokuapp.com/client-token?countryCode=US");
+            URL url = new URL("https://ppcp-sample-merchant-sand.herokuapp.com/id-token?countryCode=US");
 
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
