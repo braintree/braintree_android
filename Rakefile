@@ -60,8 +60,7 @@ task :release => :unit_tests do
 
   prompt_for_sonatype_username_and_password
 
-  Rake::Task["release_braintree"].invoke
-  Rake::Task["release_paypal"].invoke
+  Rake::Task["release_braintree_and_paypal_modules"].invoke
 
   post_release(version)
 end
@@ -77,24 +76,10 @@ task :assumptions do
     $stdin.gets
 end
 
-task :release_braintree do
-  sh "./gradlew clean :Core:uploadArchives :BraintreeDataCollector:uploadArchives :Braintree:uploadArchives :ThreeDSecure:uploadArchives"
-  sh "./gradlew :Braintree:closeRepository"
-  puts "Sleeping for one minute to allow Braintree modules to close"
-  sleep 60
-  sh "./gradlew :Braintree:promoteRepository"
-  puts "Sleeping for ten minutes to allow Braintree modules to be promoted"
-  sleep 600
-  puts "Braintree modules have been released"
-end
-
-task :release_paypal do
-  sh "./gradlew clean :PayPalDataCollector:uploadArchives :PayPalOneTouch:uploadArchives"
-  sh "./gradlew :PayPalOneTouch:closeRepository"
-  puts "Sleeping for one minute to allow PayPal modules to close"
-  sleep 60
-  sh "./gradlew :PayPalOneTouch:promoteRepository"
-  puts "PayPal modules have been released"
+task :release_braintree_and_paypal_modules do
+  sh "./gradlew clean :Core:publishToSonatype :BraintreeDataCollector:publishToSonatype :Braintree:publishToSonatype :ThreeDSecure:publishToSonatype :PayPalDataCollector:publishToSonatype :PayPalOneTouch:publishToSonatype"
+  sh "./gradlew closeAndReleaseRepository"
+  puts "Braintree and PayPal modules have been released"
 end
 
 desc "Complete Github merge if Sonatype times out"

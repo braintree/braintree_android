@@ -89,8 +89,10 @@ public class AnalyticsSenderUnitTest {
         assertEquals("Android", meta.getString("platform"));
         assertEquals(Integer.toString(VERSION.SDK_INT), meta.getString("platformVersion"));
         assertEquals(BuildConfig.VERSION_NAME, meta.getString("sdkVersion"));
-        assertEquals("com.braintreepayments.api", meta.getString("merchantAppId"));
-        assertEquals("com.braintreepayments.api", meta.getString("merchantAppName"));
+        // WORKAROUND: Google is appending '.test' to the package name in unit tests.
+        // This works fine on an emulator.
+        assertEquals("com.braintreepayments.api.test", meta.getString("merchantAppId"));
+        assertEquals("Test Application", meta.getString("merchantAppName"));
         assertEquals(Build.MANUFACTURER, meta.getString("deviceManufacturer"));
         assertEquals(Build.MODEL, meta.getString("deviceModel"));
         assertEquals(UUIDHelper.getPersistentUUID(RuntimeEnvironment.application),

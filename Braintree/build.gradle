@@ -68,7 +68,7 @@ dependencies {
 
     testImplementation braintreeDependency.playServicesWallet
     testImplementation project(':BraintreeDataCollector')
-    testImplementation 'org.robolectric:robolectric:3.8'
+    testImplementation 'org.robolectric:robolectric:4.1'
     testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
     testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'
     testImplementation 'org.powermock:powermock-api-mockito:1.6.6'
@@ -127,22 +127,25 @@ artifacts {
     archives sourcesJar
 }
 
-apply plugin: 'io.codearte.nexus-staging'
 nexusStaging {
     packageGroup = "com.braintreepayments"
 }
 
-group = 'com.braintreepayments.api'
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.setArtifactId 'braintree'
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
 
-            pom.project {
-                name 'braintree'
                 groupId = 'com.braintreepayments.api'
+                artifactId = 'braintree'
                 version = "${android.defaultConfig.versionName}"
-                description 'This is Braintree\'s Android SDK. Integrate this library to accept payments in your Android app.'
+
+                pom {
+                    name = 'braintree'
+                    description = 'This is Braintree\'s Android SDK. Integrate this library to accept payments in your Android app.'
+                }
             }
         }
     }

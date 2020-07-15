@@ -45,6 +45,7 @@ public class TestSetupHelper {
         Context context = spy(RuntimeEnvironment.application);
         when(context.getPackageManager()).thenReturn(packageManager);
         when(context.getSystemService(Context.TELEPHONY_SERVICE)).thenReturn(telephonyManager);
+        when(context.getPackageName()).thenReturn("com.samplepackagename.app");
 
         ContextInspector contextInspector = mock(ContextInspector.class);
         when(contextInspector.getContext()).thenReturn(context);

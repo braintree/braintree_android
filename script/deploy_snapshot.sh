@@ -18,6 +18,6 @@ elif [[ $(./gradlew properties | grep version) != *-SNAPSHOT ]]; then
   echo "Skipping snapshot deployment: not a snapshot version."
 else
   echo "Deploying snapshot..."
-  ./gradlew :Core:uploadArchives :BraintreeDataCollector:uploadArchives :PayPalDataCollector:uploadArchives :PayPalOneTouch:uploadArchives :Braintree:uploadArchives
+  ./gradlew :Core:publishToSonatype :BraintreeDataCollector:publishToSonatype :PayPalDataCollector:publishToSonatype :PayPalOneTouch:publishToSonatype :Braintree:publishToSonatype
   echo "Snapshot deployed!"
 fi

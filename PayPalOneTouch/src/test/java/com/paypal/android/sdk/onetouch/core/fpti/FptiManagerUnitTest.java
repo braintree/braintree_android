@@ -29,6 +29,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class FptiManagerUnitTest {
@@ -87,7 +88,7 @@ public class FptiManagerUnitTest {
         assertEquals("mobile", eventParams.getString("sv"));
         assertEquals("installation-guid", eventParams.getString("dsid"));
         assertEquals("im", eventParams.getString("e"));
-        assertEquals("application-name|" + BuildConfig.VERSION_NAME + "|com.paypal.android.sdk.onetouch.core",
+        assertEquals("application-name|" + BuildConfig.VERSION_NAME + "|com.samplepackagename.app",
                 eventParams.getString("apid"));
         assertEquals(Integer.toString(new GregorianCalendar().getTimeZone().getRawOffset() / 1000 / 60),
                 eventParams.getString("g"));

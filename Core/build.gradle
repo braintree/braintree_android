@@ -53,22 +53,25 @@ artifacts {
     archives sourcesJar
 }
 
-apply plugin: 'io.codearte.nexus-staging'
 nexusStaging {
     packageGroup = "com.braintreepayments"
 }
 
-group = 'com.braintreepayments.api'
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.setArtifactId 'core'
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
 
-            pom.project {
-                name 'core'
                 groupId = 'com.braintreepayments.api'
+                artifactId = 'core'
                 version = "${android.defaultConfig.versionName}"
-                description 'Library containing shared components used across Braintree\'s Android SDKs.'
+
+                pom {
+                    name = 'core'
+                    description = 'Library containing shared components used across Braintree\'s Android SDKs.'
+                }
             }
         }
     }

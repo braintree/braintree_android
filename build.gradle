@@ -2,11 +2,14 @@ buildscript {
     repositories {
         jcenter()
         google()
+        maven {
+            url = "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
-
-        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
+        classpath 'com.android.tools.build:gradle:4.0.0'
+        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2'
+        classpath 'de.marcphilipp.gradle:nexus-publish-plugin:0.4.0'
     }
 }
 
@@ -14,6 +17,8 @@ ext.braintreeDependency = [
         googlePayment: 'com.braintreepayments.api:google-payment:3.3.1',
         playServicesWallet: 'com.google.android.gms:play-services-wallet:16.0.1'
 ]
+
+apply plugin: 'io.codearte.nexus-staging'
 
 allprojects {
     repositories {
@@ -32,72 +37,79 @@ allprojects {
             url 'file:///tmp/maven/'
         }
     }
+}
 
-    apply plugin: 'maven'
+version = '3.12.1-SNAPSHOT'
+ext {
+    compileSdkVersion = 28
+    minSdkVersion = 21
+    targetSdkVersion = 28
+    versionCode = 117
+    versionName = version
+}
 
-    def sonatypeUsername = System.env['SONATYPE_USERNAME']
-    def sonatypePassword = System.env['SONATYPE_PASSWORD']
+def sonatypeUsername = System.env['SONATYPE_USERNAME']
+def sonatypePassword = System.env['SONATYPE_PASSWORD']
 
-    version = '3.12.1-SNAPSHOT'
-    ext {
-        compileSdkVersion = 28
-        minSdkVersion = 21
-        targetSdkVersion = 28
-        versionCode = 117
-        versionName = version
+subprojects {
+    apply plugin: 'signing'
+    apply plugin: 'maven-publish'
+    apply plugin: 'de.marcphilipp.nexus-publish'
+
+    signing {
+        required {
+            !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
+        }
+        sign publishing.publications
     }
 
-    uploadArchives {
+    nexusStaging {
+        stagingProfileId = 'd2424106a9f1f'
+        username = sonatypeUsername
+        password = sonatypePassword
+    }
+
+    nexusPublishing {
         repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            sonatype {
+                username = sonatypeUsername
+                password = sonatypePassword
+            }
+        }
+    }
 
-                if (version.endsWith("DEVELOPMENT")) {
-                    repository(url: 'file:///tmp/maven/')
-                } else {
-                    repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
-                        authentication(userName: sonatypeUsername, password: sonatypePassword)
-                    }
-                }
+    afterEvaluate {
+        publishing {
+            publications {
+                release(MavenPublication) {
 
-                snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
-                }
+                    pom {
+                        packaging = 'aar'
+                        url = 'https://github.com/braintree/braintree_android'
 
-                pom.project {
-                    url 'https://github.com/braintree/braintree_android'
-
-                    scm {
-                        url 'scm:git@github.com:braintree/braintree_android.git'
-                        connection 'scm:git@github.com:braintree/braintree_android.git'
-                        developerConnection 'scm:git@github.com:braintree/braintree_android.git'
-                    }
-
-                    developers {
-                        developer {
-                            id 'devs'
-                            name 'Braintree Payments'
+                        scm {
+                            url = 'scm:git@github.com:braintree/braintree_android.git'
+                            connection = 'scm:git@github.com:braintree/braintree_android.git'
+                            developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
                         }
-                    }
 
-                    licenses {
-                        license {
-                            name 'MIT'
-                            url 'http://opensource.org/licenses/MIT'
-                            distribution 'repo'
+                        developers {
+                            developer {
+                                id = 'devs'
+                                name = 'Braintree Payments'
+                            }
+                        }
+
+                        licenses {
+                            license {
+                                name = 'MIT'
+                                url = 'http://opensource.org/licenses/MIT'
+                                distribution = 'repo'
+                            }
                         }
                     }
                 }
             }
         }
-    }
-
-
-    apply plugin: 'signing'
-    signing {
-        required {
-          !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
-        }
-        sign configurations.archives
     }
 }

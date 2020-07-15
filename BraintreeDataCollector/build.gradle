@@ -44,22 +44,25 @@ artifacts {
     archives sourcesJar
 }
 
-apply plugin: 'io.codearte.nexus-staging'
 nexusStaging {
     packageGroup = "com.braintreepayments"
 }
 
-group = 'com.braintreepayments.api'
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.setArtifactId 'data-collector'
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
 
-            pom.project {
-                name 'data-collector'
                 groupId = 'com.braintreepayments.api'
+                artifactId = 'data-collector'
                 version = "${android.defaultConfig.versionName}"
-                description 'Fraud tools for Braintree integrations on Android.'
+
+                pom {
+                    name = 'data-collector'
+                    description = 'Fraud tools for Braintree integrations on Android.'
+                }
             }
         }
     }

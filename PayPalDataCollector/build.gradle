@@ -59,22 +59,25 @@ artifacts {
     archives sourcesJar
 }
 
-apply plugin: 'io.codearte.nexus-staging'
 nexusStaging {
     packageGroup = "com.paypal"
 }
 
-group = 'com.paypal.android.sdk'
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            pom.setArtifactId 'data-collector'
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
 
-            pom.project {
-                name 'data-collector'
                 groupId = 'com.paypal.android.sdk'
+                artifactId = 'data-collector'
                 version = "${android.defaultConfig.versionName}"
-                description 'Fraud tools for PayPal integrations on Android.'
+
+                pom {
+                    name = 'data-collector'
+                    description = 'Fraud tools for PayPal integrations on Android.'
+                }
             }
         }
     }
