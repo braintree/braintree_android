@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Browser;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -38,7 +39,7 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.UnionPayCapabilities;
 import com.braintreepayments.api.test.AppCompatTestActivity;
 import com.braintreepayments.api.test.UnitTestListenerActivity;
-import com.braintreepayments.browserswitch.BrowserSwitchFragment.BrowserSwitchResult;
+import com.braintreepayments.browserswitch.BrowserSwitchResult;
 import com.braintreepayments.testutils.ReflectionHelper;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestBraintreeApiConfigurationBuilder;
@@ -88,6 +89,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.doAnswer;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
+import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 import static org.powermock.api.mockito.PowerMockito.verifyZeroInteractions;
@@ -939,7 +941,10 @@ public class BraintreeFragmentUnitTest {
     public void onBrowserSwitchResult_callsOnActivityResultForOkResult() throws InvalidArgumentException {
         BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY));
 
-        fragment.onBrowserSwitchResult(42, BrowserSwitchResult.OK, Uri.parse("http://example.com"));
+        BrowserSwitchResult result = mock(BrowserSwitchResult.class);
+        when(result.getStatus()).thenReturn(BrowserSwitchResult.STATUS_OK);
+
+        fragment.onBrowserSwitchResult(42, result, Uri.parse("http://example.com"));
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(fragment).onActivityResult(eq(42), eq(AppCompatActivity.RESULT_OK), captor.capture());
@@ -950,7 +955,10 @@ public class BraintreeFragmentUnitTest {
     public void onBrowserSwitchResult_callsOnActivityResultForCancelResult() throws InvalidArgumentException {
         BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY));
 
-        fragment.onBrowserSwitchResult(42, BrowserSwitchResult.CANCELED, Uri.parse("http://example.com"));
+        BrowserSwitchResult result = mock(BrowserSwitchResult.class);
+        when(result.getStatus()).thenReturn(BrowserSwitchResult.STATUS_CANCELED);
+
+        fragment.onBrowserSwitchResult(42, result, Uri.parse("http://example.com"));
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(fragment).onActivityResult(eq(42), eq(AppCompatActivity.RESULT_CANCELED), captor.capture());
@@ -961,7 +969,10 @@ public class BraintreeFragmentUnitTest {
     public void onBrowserSwitchResult_callsOnActivityResultForErrorResult() throws InvalidArgumentException {
         BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY));
 
-        fragment.onBrowserSwitchResult(42, BrowserSwitchResult.ERROR, Uri.parse("http://example.com"));
+        BrowserSwitchResult result = mock(BrowserSwitchResult.class);
+        when(result.getStatus()).thenReturn(BrowserSwitchResult.STATUS_ERROR);
+
+        fragment.onBrowserSwitchResult(42, result, Uri.parse("http://example.com"));
 
         ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
         verify(fragment).onActivityResult(eq(42), eq(AppCompatActivity.RESULT_FIRST_USER), captor.capture());
@@ -972,7 +983,8 @@ public class BraintreeFragmentUnitTest {
     public void onBrowserSwitchResult_sendsAnalyticsEventForOkResult() throws InvalidArgumentException {
         BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY));
 
-        BrowserSwitchResult result = BrowserSwitchResult.OK;
+        BrowserSwitchResult result = mock(BrowserSwitchResult.class);
+        when(result.getStatus()).thenReturn(BrowserSwitchResult.STATUS_OK);
 
         fragment.onBrowserSwitchResult(BraintreeRequestCodes.PAYPAL, result, Uri.parse("http://example.com"));
 
@@ -983,7 +995,8 @@ public class BraintreeFragmentUnitTest {
     public void onBrowserSwitchResult_sendsAnalyticsEventForCanceledResult() throws InvalidArgumentException {
         BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY));
 
-        BrowserSwitchResult result = BrowserSwitchResult.CANCELED;
+        BrowserSwitchResult result = mock(BrowserSwitchResult.class);
+        when(result.getStatus()).thenReturn(BrowserSwitchResult.STATUS_CANCELED);
 
         fragment.onBrowserSwitchResult(BraintreeRequestCodes.PAYPAL, result, Uri.parse("http://example.com"));
 
@@ -995,8 +1008,9 @@ public class BraintreeFragmentUnitTest {
             throws InvalidArgumentException, NoSuchFieldException, IllegalAccessException {
         BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY));
 
-        BrowserSwitchResult result = BrowserSwitchResult.ERROR;
-        ReflectionHelper.setField("mErrorMessage", result, "No installed activities can open this URL: http://example.com");
+        BrowserSwitchResult result = mock(BrowserSwitchResult.class);
+        when(result.getStatus()).thenReturn(BrowserSwitchResult.STATUS_ERROR);
+        when(result.getErrorMessage()).thenReturn("No installed activities can open this URL: http://example.com");
 
         fragment.onBrowserSwitchResult(BraintreeRequestCodes.PAYPAL, result, Uri.parse("http://example.com"));
 
@@ -1008,11 +1022,12 @@ public class BraintreeFragmentUnitTest {
             throws InvalidArgumentException, NoSuchFieldException, IllegalAccessException {
         BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY));
 
-        BrowserSwitchResult result = BrowserSwitchResult.ERROR;
-        ReflectionHelper.setField("mErrorMessage", result,
-                "Activity on this device defines the same url scheme in it's Android Manifest. " +
-                        "See https://github.com/braintree/browser-switch-android for more information on " +
-                        "setting up a return url scheme.");
+        BrowserSwitchResult result = mock(BrowserSwitchResult.class);
+        when(result.getStatus()).thenReturn(BrowserSwitchResult.STATUS_ERROR);
+        when(result.getErrorMessage()).thenReturn(
+            "Activity on this device defines the same url scheme in it's Android Manifest. " +
+                    "See https://github.com/braintree/browser-switch-android for more information on " +
+                    "setting up a return url scheme.");
 
         fragment.onBrowserSwitchResult(BraintreeRequestCodes.PAYPAL, result, Uri.parse("http://example.com"));
 

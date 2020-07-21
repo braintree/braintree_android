@@ -23,7 +23,7 @@ public class PayPalUAT extends Authorization {
     private String mToken;
     private Environment mEnvironment;
 
-    enum Environment {
+    public enum Environment {
         STAGING,
         SANDBOX,
         PRODUCTION

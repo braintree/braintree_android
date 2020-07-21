@@ -43,4 +43,30 @@ public class Card {
             }
         });
     }
+
+    /**
+     * Create a {@link com.braintreepayments.api.models.CardNonce}.
+     * <p>
+     * The tokenization result is returned via a {@link PaymentMethodNonceCallback} listener.
+     *
+     * <p>
+     * On success, the callback listener's {@link PaymentMethodNonceCallback#success} method will
+     * be invoked with a nonce.
+     *
+     * <p>
+     * If creation fails validation, the callback listener's {@link PaymentMethodNonceCallback#failure}
+     * method will be invoked with an {@link com.braintreepayments.api.exceptions.ErrorWithResponse} exception.
+     *
+     * <p>
+     * If an error not due to validation (server error, network issue, etc.) occurs, the callback
+     * listener's {@link PaymentMethodNonceCallback#failure} method will be invoked with
+     * an {@link Exception} describing the error.
+     *
+     * @param fragment {@link BraintreeFragment}
+     * @param cardBuilder {@link CardBuilder}
+     * @param callback {@link PaymentMethodNonceCallback}
+     */
+    public static void tokenize(final BraintreeFragment fragment, final CardBuilder cardBuilder, final PaymentMethodNonceCallback callback) {
+        TokenizationClient.tokenize(fragment, cardBuilder, callback);
+    }
 }

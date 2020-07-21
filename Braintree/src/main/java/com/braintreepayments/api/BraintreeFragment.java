@@ -10,6 +10,13 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.exceptions.GoogleApiClientException;
@@ -45,6 +52,7 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.api.models.UnionPayCapabilities;
 import com.braintreepayments.browserswitch.BrowserSwitchFragment;
+import com.braintreepayments.browserswitch.BrowserSwitchResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -61,13 +69,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Queue;
 import java.util.UUID;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 
 /**
  * Core Braintree class that handles network requests and managing callbacks.
@@ -125,6 +126,8 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     private BraintreePaymentResultListener mBraintreePaymentResultListener;
     private UnionPayListener mUnionPayListener;
     private AmericanExpressListener mAmericanExpressListener;
+
+    protected Context mContext;
 
     public BraintreeFragment() {}
 
@@ -384,7 +387,8 @@ public class BraintreeFragment extends BrowserSwitchFragment {
 
     @Override
     public String getReturnUrlScheme() {
-        return getApplicationContext().getPackageName().toLowerCase(Locale.ROOT)
+        Context applicationContext = getActivity().getApplicationContext();
+        return applicationContext.getPackageName().toLowerCase(Locale.ROOT)
                 .replace("_", "") + ".braintree";
     }
 
@@ -407,14 +411,15 @@ public class BraintreeFragment extends BrowserSwitchFragment {
         }
 
         int resultCode = AppCompatActivity.RESULT_FIRST_USER;
-        if (browserSwitchResult == BrowserSwitchResult.OK) {
+        if (browserSwitchResult.getStatus() == BrowserSwitchResult.STATUS_OK) {
             resultCode = AppCompatActivity.RESULT_OK;
             sendAnalyticsEvent(type + ".browser-switch.succeeded");
-        } else if (browserSwitchResult == BrowserSwitchResult.CANCELED) {
+        } else if (browserSwitchResult.getStatus() == BrowserSwitchResult.STATUS_CANCELED) {
             resultCode = AppCompatActivity.RESULT_CANCELED;
             sendAnalyticsEvent(type + ".browser-switch.canceled");
-        } else if (browserSwitchResult == BrowserSwitchResult.ERROR) {
-            if (browserSwitchResult.getErrorMessage().startsWith("No installed activities")) {
+        } else if (browserSwitchResult.getStatus() == BrowserSwitchResult.STATUS_ERROR) {
+            String errorMessage = browserSwitchResult.getErrorMessage();
+            if (errorMessage != null && errorMessage.startsWith("No installed activities")) {
                 sendAnalyticsEvent(type + ".browser-switch.failed.no-browser-installed");
             } else {
                 sendAnalyticsEvent(type + ".browser-switch.failed.not-setup");

@@ -1,5 +1,10 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+* Update `browser-switch` module to `1.0.0`
+* Make PayPalUAT::Environment enum public
+* Add Card#tokenize overload to allow a custom `PaymentMethodNonceCallback` to be provided.
+
 ## 3.12.0
 * Changed `Configuration#isPayPalEnabled` to no longer consider deprecated integration requirements.
 
