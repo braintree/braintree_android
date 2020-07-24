@@ -61,10 +61,6 @@ artifacts {
     archives sourcesJar
 }
 
-nexusStaging {
-    packageGroup = "com.braintreepayments"
-}
-
 afterEvaluate {
     publishing {
         publications {
