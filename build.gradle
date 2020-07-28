@@ -18,8 +18,6 @@ ext.braintreeDependency = [
         playServicesWallet: 'com.google.android.gms:play-services-wallet:16.0.1'
 ]
 
-apply plugin: 'io.codearte.nexus-staging'
-
 allprojects {
     repositories {
         flatDir {
@@ -51,9 +49,16 @@ ext {
 def sonatypeUsername = System.env['SONATYPE_USERNAME']
 def sonatypePassword = System.env['SONATYPE_PASSWORD']
 
+apply plugin: 'io.codearte.nexus-staging'
+
+nexusStaging {
+    packageGroup = project.hasProperty('nexusPackageGroup') ? project.getProperty('nexusPackageGroup') : 'com.braintreepayments'
+    username = sonatypeUsername
+    password = sonatypePassword
+}
+
 subprojects {
     apply plugin: 'signing'
-    apply plugin: 'maven-publish'
     apply plugin: 'de.marcphilipp.nexus-publish'
 
     signing {
@@ -63,18 +68,9 @@ subprojects {
         sign publishing.publications
     }
 
-    nexusStaging {
-        stagingProfileId = 'd2424106a9f1f'
-        username = sonatypeUsername
-        password = sonatypePassword
-    }
-
     nexusPublishing {
         repositories {
-            sonatype {
-                username = sonatypeUsername
-                password = sonatypePassword
-            }
+            sonatype()
         }
     }
 

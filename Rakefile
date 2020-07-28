@@ -84,8 +84,8 @@ task :release_braintree do
 end
 
 task :release_paypal do
-  sh "./gradlew clean :PayPalDataCollector:publishToSonatype :PayPalOneTouch:publishToSonatype"
-  sh "./gradlew closeAndReleaseRepository"
+  sh "./gradlew -PnexusPackageGroup=com.paypal clean :PayPalDataCollector:publishToSonatype :PayPalOneTouch:publishToSonatype"
+  sh "./gradlew -PnexusPackageGroup=com.paypal closeAndReleaseRepository"
   puts "PayPal modules have been released"
 end
 

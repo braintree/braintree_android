@@ -59,10 +59,6 @@ artifacts {
     archives sourcesJar
 }
 
-nexusStaging {
-    packageGroup = "com.paypal"
-}
-
 afterEvaluate {
     publishing {
         publications {
