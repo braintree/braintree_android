@@ -1,15 +1,20 @@
-apply plugin: 'com.android.library'
+plugins {
+    id 'com.android.library'
+    id 'de.marcphilipp.nexus-publish'
+    id 'signing'
+}
 
 def dataCollectorVersion = 'paypal-data-collector-4.1.2.jar'
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode rootProject.ext.versionCode
-        versionName rootProject.ext.versionName
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
+
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
@@ -24,12 +29,6 @@ android {
     }
 }
 
-repositories {
-    flatDir {
-        dirs "libs"
-    }
-}
-
 dependencies {
     api files('libs/' + dataCollectorVersion)
     compileOnly 'androidx.annotation:annotation:1.0.0'
@@ -37,7 +36,8 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.1.0-beta02'
 }
 
-/* maven deploy + signing */
+// region signing and publishing
+
 task javadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
@@ -45,12 +45,12 @@ task javadocs(type: Javadoc) {
 }
 
 task javadocsJar(type: Jar, dependsOn: javadocs) {
-    classifier = 'javadoc'
+    archiveClassifier.set('javadoc')
     from javadocs.destinationDir
 }
 
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
+    archiveClassifier.set('sources')
     from android.sourceSets.main.java.srcDirs
 }
 
@@ -59,22 +59,62 @@ artifacts {
     archives sourcesJar
 }
 
+signing {
+    required {
+        !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
+    }
+    sign publishing.publications
+}
+
+nexusPublishing {
+    // give nexus sonatype more time to initialize the staging repository
+    clientTimeout = Duration.ofMinutes(3)
+    repositories {
+        sonatype()
+    }
+}
+
 afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                // Applies the component for the release build variant.
                 from components.release
 
                 groupId = 'com.paypal.android.sdk'
                 artifactId = 'data-collector'
-                version = "${android.defaultConfig.versionName}"
+                version = rootProject.versionName
 
                 pom {
                     name = 'data-collector'
+                    packaging = 'aar'
                     description = 'Fraud tools for PayPal integrations on Android.'
+                    url = 'https://github.com/braintree/braintree_android'
+
+                    scm {
+                        url = 'scm:git@github.com:braintree/braintree_android.git'
+                        connection = 'scm:git@github.com:braintree/braintree_android.git'
+                        developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
+                    }
+
+                    developers {
+                        developer {
+                            id = 'devs'
+                            name = 'Braintree Payments'
+                        }
+                    }
+
+                    licenses {
+                        license {
+                            name = 'MIT'
+                            url = 'http://opensource.org/licenses/MIT'
+                            distribution = 'repo'
+                        }
+                    }
                 }
             }
         }
     }
 }
+
+// endregion
+

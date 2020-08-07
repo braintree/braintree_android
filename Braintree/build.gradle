@@ -1,15 +1,19 @@
-apply plugin: 'com.android.library'
+plugins {
+    id 'com.android.library'
+    id 'de.marcphilipp.nexus-publish'
+    id 'signing'
+}
 
 def DEVELOPMENT_URL = System.properties['DEVELOPMENT_URL'] ?: '"http://10.0.2.2:3000/"';
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode rootProject.ext.versionCode
-        versionName rootProject.ext.versionName
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
 
         consumerProguardFiles 'proguard.pro'
 
@@ -46,19 +50,22 @@ android {
     }
 }
 
+def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProject.playServicesWalletVersion}"
+def googlePayment = "com.braintreepayments.api:google-payment:${rootProject.googlePaymentVersion}"
+
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.1'
-    compileOnly(braintreeDependency.playServicesWallet) {
+    compileOnly(playServicesWallet) {
         exclude module: 'support-v4'
     }
     compileOnly project(':BraintreeDataCollector')
     compileOnly project(':ThreeDSecure')
 
-    api braintreeDependency.googlePayment
+    api googlePayment
     api project(':Core')
     api project(':PayPalOneTouch')
 
-    androidTestImplementation braintreeDependency.playServicesWallet
+    androidTestImplementation playServicesWallet
     androidTestImplementation project(':BraintreeDataCollector')
     androidTestImplementation project(':ThreeDSecure')
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
@@ -66,7 +73,7 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation project(':TestUtils')
 
-    testImplementation braintreeDependency.playServicesWallet
+    testImplementation playServicesWallet
     testImplementation project(':BraintreeDataCollector')
     testImplementation 'org.robolectric:robolectric:4.1'
     testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
@@ -95,7 +102,8 @@ gradle.taskGraph.whenReady { taskGraph ->
     android.buildTypes.debug.buildConfigField('boolean', 'RUN_ALL_TESTS', '' + RUN_ALL_TESTS)
 }
 
-/* maven deploy + signing */
+// region signing and publishing
+
 task javadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
@@ -113,12 +121,12 @@ task javadocs(type: Javadoc) {
 }
 
 task javadocsJar(type: Jar, dependsOn: javadocs) {
-    classifier = 'javadoc'
+    archiveClassifier.set('javadoc')
     from javadocs.destinationDir
 }
 
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
+    archiveClassifier.set('sources')
     from android.sourceSets.main.java.srcDirs
 }
 
@@ -127,22 +135,61 @@ artifacts {
     archives sourcesJar
 }
 
+signing {
+    required {
+        !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
+    }
+    sign publishing.publications
+}
+
+nexusPublishing {
+    // give nexus sonatype more time to initialize the staging repository
+    clientTimeout = Duration.ofMinutes(3)
+    repositories {
+        sonatype()
+    }
+}
+
 afterEvaluate {
     publishing {
         publications {
             release(MavenPublication) {
-                // Applies the component for the release build variant.
                 from components.release
 
                 groupId = 'com.braintreepayments.api'
                 artifactId = 'braintree'
-                version = "${android.defaultConfig.versionName}"
+                version = rootProject.versionName
 
                 pom {
                     name = 'braintree'
+                    packaging = 'aar'
                     description = 'This is Braintree\'s Android SDK. Integrate this library to accept payments in your Android app.'
+                    url = 'https://github.com/braintree/braintree_android'
+
+                    scm {
+                        url = 'scm:git@github.com:braintree/braintree_android.git'
+                        connection = 'scm:git@github.com:braintree/braintree_android.git'
+                        developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
+                    }
+
+                    developers {
+                        developer {
+                            id = 'devs'
+                            name = 'Braintree Payments'
+                        }
+                    }
+
+                    licenses {
+                        license {
+                            name = 'MIT'
+                            url = 'http://opensource.org/licenses/MIT'
+                            distribution = 'repo'
+                        }
+                    }
                 }
             }
         }
     }
 }
+
+// endregion

@@ -13,10 +13,10 @@ buildscript {
     }
 }
 
-ext.braintreeDependency = [
-        googlePayment: 'com.braintreepayments.api:google-payment:3.3.1',
-        playServicesWallet: 'com.google.android.gms:play-services-wallet:16.0.1'
-]
+plugins {
+    id 'io.codearte.nexus-staging' version '0.21.2'
+    id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
+}
 
 allprojects {
     repositories {
@@ -25,86 +25,36 @@ allprojects {
         }
         google()
         jcenter()
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/releases/'
-        }
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots/'
-        }
-        maven {
-            url 'file:///tmp/maven/'
-        }
     }
 }
 
-version = '3.13.1-SNAPSHOT'
+version '3.13.1-SNAPSHOT'
 ext {
     compileSdkVersion = 28
     minSdkVersion = 21
     targetSdkVersion = 28
     versionCode = 118
     versionName = version
+
+    googlePaymentVersion = '3.3.1'
+    playServicesWalletVersion ='16.0.1'
 }
-
-def sonatypeUsername = System.env['SONATYPE_USERNAME']
-def sonatypePassword = System.env['SONATYPE_PASSWORD']
-
-apply plugin: 'io.codearte.nexus-staging'
 
 nexusStaging {
     packageGroup = project.hasProperty('nexusPackageGroup') ? project.getProperty('nexusPackageGroup') : 'com.braintreepayments'
-    username = sonatypeUsername
-    password = sonatypePassword
+    // give nexus sonatype more time to close the staging repository
+    delayBetweenRetriesInMillis = 20000
+    username = System.env['SONATYPE_USERNAME']
+    password = System.env['SONATYPE_PASSWORD']
 }
 
 subprojects {
-    apply plugin: 'signing'
-    apply plugin: 'de.marcphilipp.nexus-publish'
-
-    signing {
-        required {
-            !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
-        }
-        sign publishing.publications
-    }
-
-    nexusPublishing {
-        repositories {
-            sonatype()
-        }
-    }
-
-    afterEvaluate {
-        publishing {
-            publications {
-                release(MavenPublication) {
-
-                    pom {
-                        packaging = 'aar'
-                        url = 'https://github.com/braintree/braintree_android'
-
-                        scm {
-                            url = 'scm:git@github.com:braintree/braintree_android.git'
-                            connection = 'scm:git@github.com:braintree/braintree_android.git'
-                            developerConnection = 'scm:git@github.com:braintree/braintree_android.git'
-                        }
-
-                        developers {
-                            developer {
-                                id = 'devs'
-                                name = 'Braintree Payments'
-                            }
-                        }
-
-                        licenses {
-                            license {
-                                name = 'MIT'
-                                url = 'http://opensource.org/licenses/MIT'
-                                distribution = 'repo'
-                            }
-                        }
-                    }
-                }
+    repositories {
+        maven {
+            url  "https://cardinalcommerce.bintray.com/android"
+            credentials {
+                username 'braintree-team-sdk@cardinalcommerce'
+                password '220cc9476025679c4e5c843666c27d97cfb0f951'
             }
         }
     }

@@ -1,14 +1,17 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
         applicationId "com.braintreepayments.demo"
-        minSdkVersion 21
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode rootProject.ext.versionCode
-        versionName rootProject.ext.versionName
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
+
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         multiDexEnabled true
     }
@@ -62,10 +65,8 @@ android {
     }
 }
 
-def googlePayDependencies = [
-        braintreeDependency.googlePayment,
-        braintreeDependency.playServicesWallet
-]
+def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProject.playServicesWalletVersion}"
+def googlePayment = "com.braintreepayments.api:google-payment:${rootProject.googlePaymentVersion}"
 
 def visaCheckoutDependencies = [
         'com.braintreepayments.api:visa-checkout:2.0.0',
@@ -91,7 +92,8 @@ dependencies {
     implementation project(':Braintree')
     implementation project(':ThreeDSecure')
 
-    implementation googlePayDependencies
+    implementation playServicesWallet
+    implementation googlePayment
     implementation visaCheckoutDependencies
 
     implementation 'io.card:android-sdk:5.5.1'
