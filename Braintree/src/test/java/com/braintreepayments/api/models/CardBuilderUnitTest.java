@@ -39,6 +39,8 @@ public class CardBuilderUnitTest {
             "    creditCard {" +
             "      bin" +
             "      brand" +
+            "      expirationMonth" +
+            "      expirationYear" +
             "      last4" +
             "      binData {" +
             "        prepaid" +
@@ -62,6 +64,8 @@ public class CardBuilderUnitTest {
             "    creditCard {" +
             "      bin" +
             "      brand" +
+            "      expirationMonth" +
+            "      expirationYear" +
             "      last4" +
             "      binData {" +
             "        prepaid" +

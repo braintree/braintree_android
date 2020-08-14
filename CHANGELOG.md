@@ -1,5 +1,8 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+* Expose expiration month and year on `CardNonce`.
+
 ## 3.13.0
 * Update `browser-switch` module to `1.0.0`
 * Make PayPalUAT::Environment enum public

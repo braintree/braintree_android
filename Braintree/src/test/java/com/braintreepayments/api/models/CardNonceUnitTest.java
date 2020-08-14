@@ -46,6 +46,8 @@ public class CardNonceUnitTest {
         assertEquals("123", cardNonce.getBinData().getProductId());
         assertEquals("unregulated",
                 cardNonce.getAuthenticationInsight().getRegulationEnvironment());
+        assertEquals("01", cardNonce.getExpirationMonth());
+        assertEquals("2020", cardNonce.getExpirationYear());
     }
 
     @Test
@@ -73,6 +75,8 @@ public class CardNonceUnitTest {
         assertEquals("123", cardNonce.getBinData().getProductId());
         assertEquals("unregulated",
                 cardNonce.getAuthenticationInsight().getRegulationEnvironment());
+        assertEquals("01", cardNonce.getExpirationMonth());
+        assertEquals("2020", cardNonce.getExpirationYear());
     }
 
     @Test
@@ -90,6 +94,8 @@ public class CardNonceUnitTest {
         assertEquals("", cardNonce.getDescription());
         assertFalse(cardNonce.isDefault());
         assertNull(cardNonce.getAuthenticationInsight());
+        assertEquals("", cardNonce.getExpirationMonth());
+        assertEquals("", cardNonce.getExpirationYear());
     }
 
     @Test
@@ -102,6 +108,8 @@ public class CardNonceUnitTest {
         assertEquals("", cardNonce.getDescription());
         assertEquals("", cardNonce.getLastTwo());
         assertEquals("", cardNonce.getLastFour());
+        assertEquals("", cardNonce.getExpirationMonth());
+        assertEquals("", cardNonce.getExpirationYear());
         assertNotNull(cardNonce.getThreeDSecureInfo());
         assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
         assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
@@ -133,6 +141,8 @@ public class CardNonceUnitTest {
         assertEquals("ending in ••11", parceled.getDescription());
         assertEquals("11", parceled.getLastTwo());
         assertEquals("1111", parceled.getLastFour());
+        assertEquals("01", cardNonce.getExpirationMonth());
+        assertEquals("2020", cardNonce.getExpirationYear());
         assertFalse(parceled.isDefault());
         assertBinDataEqual(cardNonce.getBinData(), parceled.getBinData());
         assertEquals(cardNonce.getAuthenticationInsight().getRegulationEnvironment(),

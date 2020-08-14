@@ -30,6 +30,8 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     private static final String LAST_FOUR_KEY = "lastFour";
     private static final String BIN_KEY = "bin";
     private static final String AUTHENTICATION_INSIGHT_KEY = "authenticationInsight";
+    private static final String EXPIRATION_MONTH_KEY = "expirationMonth";
+    private static final String EXPIRATION_YEAR_KEY = "expirationYear";
 
     private String mCardType;
     private String mLastTwo;
@@ -38,6 +40,8 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
     private String mBin;
     private BinData mBinData;
     private AuthenticationInsight mAuthenticationInsight;
+    private String mExpirationMonth;
+    private String mExpirationYear;
 
     /**
      * Convert an API response to a {@link CardNonce}.
@@ -76,6 +80,8 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         mBin = Json.optString(details, BIN_KEY, "");
         mBinData = BinData.fromJson(json.optJSONObject(BIN_DATA_KEY));
         mAuthenticationInsight = AuthenticationInsight.fromJson(json.optJSONObject(AUTHENTICATION_INSIGHT_KEY));
+        mExpirationMonth = Json.optString(details, EXPIRATION_MONTH_KEY, "");
+        mExpirationYear = Json.optString(details, EXPIRATION_YEAR_KEY, "");
     }
 
     private void fromGraphQLJson(JSONObject json) throws JSONException {
@@ -95,6 +101,8 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
             mDescription = TextUtils.isEmpty(mLastTwo) ? "" : "ending in ••" + mLastTwo;
             mDefault = false;
             mAuthenticationInsight = AuthenticationInsight.fromJson(payload.optJSONObject(AUTHENTICATION_INSIGHT_KEY));
+            mExpirationMonth = Json.optString(creditCard, EXPIRATION_MONTH_KEY, "");
+            mExpirationYear = Json.optString(creditCard, EXPIRATION_YEAR_KEY, "");
         } else {
             throw new JSONException("Failed to parse GraphQL response JSON");
         }
@@ -127,6 +135,20 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
      */
     public String getLastFour() {
         return mLastFour;
+    }
+
+    /**
+     * @return The expiration month of the card.
+     */
+    public String getExpirationMonth() {
+        return mExpirationMonth;
+    }
+
+    /**
+     * @return The expiration year of the card.
+     */
+    public String getExpirationYear() {
+        return mExpirationYear;
     }
 
     /**
@@ -172,6 +194,8 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         dest.writeParcelable(mBinData, flags);
         dest.writeParcelable(mThreeDSecureInfo, flags);
         dest.writeParcelable(mAuthenticationInsight, flags);
+        dest.writeString(mExpirationMonth);
+        dest.writeString(mExpirationYear);
     }
 
     protected CardNonce(Parcel in) {
@@ -182,6 +206,8 @@ public class CardNonce extends PaymentMethodNonce implements Parcelable {
         mBinData = in.readParcelable(BinData.class.getClassLoader());
         mThreeDSecureInfo = in.readParcelable(ThreeDSecureInfo.class.getClassLoader());
         mAuthenticationInsight = in.readParcelable(AuthenticationInsight.class.getClassLoader());
+        mExpirationMonth = in.readString();
+        mExpirationYear = in.readString();
     }
 
     public static final Creator<CardNonce> CREATOR = new Creator<CardNonce>() {

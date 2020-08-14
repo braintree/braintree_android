@@ -11,7 +11,9 @@
       {
         "cardType": "Visa",
         "lastTwo": "11",
-        "lastFour": "1111"
+        "lastFour": "1111",
+        "expirationMonth": "01",
+        "expirationYear": "2020"
       },
       "binData": {
         "prepaid": "Unknown",

@@ -4,6 +4,8 @@
       "token": "3744a73e-b1ab-0dbd-85f0-c12a0a4bd3d1",
       "creditCard": {
         "brand": "Visa",
+        "expirationMonth": "01",
+        "expirationYear": "2020",
         "last4": "1111",
         "binData": {
           "prepaid": "Yes",
