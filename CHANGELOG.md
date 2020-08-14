@@ -2,6 +2,7 @@
 
 ## unreleased
 * Expose expiration month and year on `CardNonce`.
+* Update `browser-switch` module to `1.1.0`.
 
 ## 3.13.0
 * Update `browser-switch` module to `1.0.0`

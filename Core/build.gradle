@@ -29,7 +29,7 @@ android {
 
 dependencies {
     compileOnly 'androidx.annotation:annotation:1.0.0'
-    api 'com.braintreepayments:browser-switch:1.0.0'
+    api 'com.braintreepayments:browser-switch:1.1.0'
 
     androidTestImplementation 'androidx.test:runner:1.1.0'
     androidTestImplementation 'androidx.appcompat:appcompat:1.0.1'
