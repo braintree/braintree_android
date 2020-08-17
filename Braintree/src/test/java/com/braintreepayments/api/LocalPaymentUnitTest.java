@@ -3,6 +3,8 @@ package com.braintreepayments.api;
 import android.content.Intent;
 import android.net.Uri;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
@@ -30,8 +32,6 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
 import java.util.concurrent.CountDownLatch;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import static com.braintreepayments.testutils.FixturesHelper.base64EncodedClientTokenFromFixture;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
@@ -239,7 +239,7 @@ public class LocalPaymentUnitTest {
 
     @Test
     public void startPayment_callsExceptionListener_whenListenerIsNull() {
-        LocalPayment.startPayment(mBraintreeFragment, getIdealLocalPaymentRequest(),null);
+        LocalPayment.startPayment(mBraintreeFragment, getIdealLocalPaymentRequest(), null);
 
         verify(mBraintreeFragment).postCallback(any(BraintreeException.class));
     }
@@ -309,7 +309,51 @@ public class LocalPaymentUnitTest {
     }
 
     @Test
-    public void onActivityResult_tokenize_sendsAnalyticsEvent() throws InterruptedException {
+    public void onActivityResult_whenResultOK_uriNull_postsCancelCallbackAlongWithAnalyticsEvent() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) {
+                HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
+                callback.success(stringFromFixture("payment_methods/local_payment_create_response.json"));
+                latch.countDown();
+                return null;
+            }
+        }).when(mMockHttpClient).post(eq("/v1/local_payments/create"), any(String.class), any(HttpResponseCallback.class));
+
+        LocalPayment.startPayment(mBraintreeFragment, getIdealLocalPaymentRequest(), new BraintreeResponseListener<LocalPaymentRequest>() {
+            @Override
+            public void onResponse(LocalPaymentRequest localPaymentRequest) {
+                LocalPayment.approvePayment(mBraintreeFragment, localPaymentRequest);
+            }
+        });
+
+        latch.await();
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) {
+                HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
+                callback.success(stringFromFixture("payment_methods/local_payment_response.json"));
+                return null;
+            }
+        }).when(mMockHttpClient).post(eq("/v1/payment_methods/paypal_accounts"), any(String.class), any(HttpResponseCallback.class));
+
+        LocalPayment.onActivityResult(mBraintreeFragment, AppCompatActivity.RESULT_OK, new Intent());
+
+        verify(mBraintreeFragment).sendAnalyticsEvent(eq("ideal.local-payment.webswitch-response.invalid"));
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(mBraintreeFragment).postCallback(captor.capture());
+
+        BraintreeException braintreeException = ((BraintreeException) captor.getValue());
+        String expectedMessage = "LocalPayment encountered an error, return URL is invalid.";
+        assertEquals(braintreeException.getMessage(), expectedMessage);
+    }
+
+    @Test
+    public void onActivityResult_whenResultOK_tokenize_sendsAnalyticsEvent() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
 
         doAnswer(new Answer() {
@@ -346,7 +390,7 @@ public class LocalPaymentUnitTest {
     }
 
     @Test
-    public void onActivityResult_cancel_sendsAnalyticsEvent() throws InterruptedException {
+    public void onActivityResult_whenResultOK_cancel_sendsAnalyticsEvent() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
 
         doAnswer(new Answer() {
@@ -383,7 +427,7 @@ public class LocalPaymentUnitTest {
     }
 
     @Test
-    public void onActivityResult_returnsResultToFragment()
+    public void onActivityResult_whenResultOK_returnsResultToFragment()
             throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -406,6 +450,35 @@ public class LocalPaymentUnitTest {
 
         LocalPaymentResult capturedResult = captor.getValue();
         assertEquals("e11c9c39-d6a4-0305-791d-bfe680ef2d5d", capturedResult.getNonce());
+    }
+
+    @Test
+    public void onActivityResult_whenResultCancel_postsCancelCallback() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) {
+                HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
+                callback.success(stringFromFixture("error_response.json"));
+                latch.countDown();
+                return null;
+            }
+        }).when(mMockHttpClient).post(eq("/v1/local_payments/create"), any(String.class), any(HttpResponseCallback.class));
+
+        LocalPayment.startPayment(mBraintreeFragment, getIdealLocalPaymentRequest(), new BraintreeResponseListener<LocalPaymentRequest>() {
+            @Override
+            public void onResponse(LocalPaymentRequest localPaymentRequest) {
+                LocalPayment.approvePayment(mBraintreeFragment, localPaymentRequest);
+            }
+        });
+
+        latch.await();
+
+        LocalPayment.onActivityResult(mBraintreeFragment, AppCompatActivity.RESULT_CANCELED, new Intent());
+
+        verify(mBraintreeFragment).postCancelCallback(BraintreeRequestCodes.LOCAL_PAYMENT);
+        verify(mBraintreeFragment).sendAnalyticsEvent(eq("ideal.local-payment.webswitch.canceled"));
     }
 
     private LocalPaymentRequest getIdealLocalPaymentRequest() {

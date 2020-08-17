@@ -1,6 +1,9 @@
 package com.braintreepayments.api;
 
 import android.content.Intent;
+import android.net.Uri;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ConfigurationException;
@@ -31,13 +34,13 @@ public class LocalPayment {
      * Prepares the payment flow for a specific type of local payment.
      *
      * @param fragment {@link BraintreeFragment}
-     * @param request {@link LocalPaymentRequest} with the payment details.
+     * @param request  {@link LocalPaymentRequest} with the payment details.
      * @param listener {@link BraintreeResponseListener} the callback to which the {@link LocalPaymentRequest} will be sent
-     * with a payment ID for preprocessing and an approval URL. Once ready, use {@link #approvePayment(BraintreeFragment, LocalPaymentRequest)}
-     * to initiate the browser switch.
+     *                 with a payment ID for preprocessing and an approval URL. Once ready, use {@link #approvePayment(BraintreeFragment, LocalPaymentRequest)}
+     *                 to initiate the browser switch.
      */
     public static void startPayment(final BraintreeFragment fragment, final LocalPaymentRequest request,
-            final BraintreeResponseListener<LocalPaymentRequest> listener) {
+                                    final BraintreeResponseListener<LocalPaymentRequest> listener) {
         if (request == null) {
             fragment.postCallback(new BraintreeException("A LocalPaymentRequest is required."));
             return;
@@ -65,8 +68,8 @@ public class LocalPayment {
 
                 sMerchantAccountId = request.getMerchantAccountId();
                 sPaymentType = request.getPaymentType();
-                String returnUrl =  fragment.getReturnUrlScheme() + "://" + LOCAL_PAYMENT_SUCCESSS;
-                String cancel =  fragment.getReturnUrlScheme() + "://" + LOCAL_PAYMENT_CANCEL;
+                String returnUrl = fragment.getReturnUrlScheme() + "://" + LOCAL_PAYMENT_SUCCESSS;
+                String cancel = fragment.getReturnUrlScheme() + "://" + LOCAL_PAYMENT_CANCEL;
 
                 fragment.sendAnalyticsEvent(paymentTypeForAnalytics() + ".local-payment.start-payment.selected");
 
@@ -101,8 +104,8 @@ public class LocalPayment {
      * Initiates the browser switch for a payment flow by opening a browser where the customer can authenticate with their bank.
      *
      * @param fragment {@link BraintreeFragment}
-     * @param request {@link LocalPaymentRequest} which has already been sent to {@link #startPayment(BraintreeFragment, LocalPaymentRequest, BraintreeResponseListener)}
-     * and now has an approvalUrl and paymentId.
+     * @param request  {@link LocalPaymentRequest} which has already been sent to {@link #startPayment(BraintreeFragment, LocalPaymentRequest, BraintreeResponseListener)}
+     *                 and now has an approvalUrl and paymentId.
      */
     public static void approvePayment(BraintreeFragment fragment, LocalPaymentRequest request) {
         fragment.browserSwitch(BraintreeRequestCodes.LOCAL_PAYMENT, request.getApprovalUrl());
@@ -110,64 +113,77 @@ public class LocalPayment {
     }
 
     static void onActivityResult(final BraintreeFragment fragment, int resultCode, Intent data) {
-        if (data != null && data.getData() != null) {
-            String responseString = data.getData().toString();
 
-            if (responseString.toLowerCase().contains(LOCAL_PAYMENT_CANCEL.toLowerCase())) {
-                fragment.sendAnalyticsEvent(paymentTypeForAnalytics() + ".local-payment.webswitch.canceled");
-                fragment.postCancelCallback(BraintreeRequestCodes.LOCAL_PAYMENT);
-                return;
-            }
-
-            JSONObject payload = new JSONObject();
-
-            try {
-                payload.put("merchant_account_id", sMerchantAccountId);
-
-                JSONObject paypalAccount = new JSONObject()
-                        .put("intent", "sale")
-                        .put("response", new JSONObject().put("webURL", responseString))
-                        .put("options", new JSONObject().put("validate", false))
-                        .put("response_type", "web")
-                        .put("correlation_id", PayPalDataCollector.getClientMetadataId(fragment.getApplicationContext()));
-                payload.put("paypal_account", paypalAccount);
-
-                JSONObject metaData = new JSONObject()
-                        .put("source", "client")
-                        .put("integration", fragment.getIntegrationType())
-                        .put("sessionId", fragment.getSessionId());
-                payload.put("_meta", metaData);
-
-                fragment.getHttpClient().post("/v1/payment_methods/paypal_accounts", payload.toString(),
-                        new HttpResponseCallback() {
-                            @Override
-                            public void success(String responseBody) {
-                                try {
-                                    LocalPaymentResult result = LocalPaymentResult.fromJson(responseBody);
-                                    fragment.sendAnalyticsEvent(paymentTypeForAnalytics() + ".local-payment.tokenize.succeeded");
-                                    fragment.postCallback(result);
-                                } catch (JSONException jsonException) {
-                                    failure(jsonException);
-                                }
-                            }
-
-                            @Override
-                            public void failure(Exception exception) {
-                                fragment.sendAnalyticsEvent(paymentTypeForAnalytics() + ".local-payment.tokenize.failed");
-                                fragment.postCallback(exception);
-                            }
-                        });
-
-            } catch (JSONException ignored) {}
-
-        } else {
-            fragment.sendAnalyticsEvent(paymentTypeForAnalytics() + ".local-payment.webswitch-response.invalid");
-            fragment.postCallback(new BraintreeException("LocalPayment encountered an error, " +
-                    "return URL is invalid."));
+        if (resultCode == AppCompatActivity.RESULT_CANCELED) {
+            postCancelCallbackAndSendAnalytics(fragment);
+            return;
         }
+
+        Uri uri = (data == null) ? null : data.getData();
+        if (uri == null) {
+            postErrorCallbackAndSendAnalytics(fragment);
+            return;
+        }
+
+        String responseString = uri.toString();
+        if (responseString.toLowerCase().contains(LOCAL_PAYMENT_CANCEL.toLowerCase())) {
+            postCancelCallbackAndSendAnalytics(fragment);
+            return;
+        }
+
+        JSONObject payload = new JSONObject();
+        try {
+            payload.put("merchant_account_id", sMerchantAccountId);
+
+            JSONObject paypalAccount = new JSONObject()
+                    .put("intent", "sale")
+                    .put("response", new JSONObject().put("webURL", responseString))
+                    .put("options", new JSONObject().put("validate", false))
+                    .put("response_type", "web")
+                    .put("correlation_id", PayPalDataCollector.getClientMetadataId(fragment.getApplicationContext()));
+            payload.put("paypal_account", paypalAccount);
+
+            JSONObject metaData = new JSONObject()
+                    .put("source", "client")
+                    .put("integration", fragment.getIntegrationType())
+                    .put("sessionId", fragment.getSessionId());
+            payload.put("_meta", metaData);
+
+            fragment.getHttpClient().post("/v1/payment_methods/paypal_accounts", payload.toString(),
+                    new HttpResponseCallback() {
+                        @Override
+                        public void success(String responseBody) {
+                            try {
+                                LocalPaymentResult result = LocalPaymentResult.fromJson(responseBody);
+                                fragment.sendAnalyticsEvent(paymentTypeForAnalytics() + ".local-payment.tokenize.succeeded");
+                                fragment.postCallback(result);
+                            } catch (JSONException jsonException) {
+                                failure(jsonException);
+                            }
+                        }
+
+                        @Override
+                        public void failure(Exception exception) {
+                            fragment.sendAnalyticsEvent(paymentTypeForAnalytics() + ".local-payment.tokenize.failed");
+                            fragment.postCallback(exception);
+                        }
+                    });
+
+        } catch (JSONException ignored) { /* do nothing */ }
     }
 
     private static String paymentTypeForAnalytics() {
         return sPaymentType != null ? sPaymentType : "unknown";
+    }
+
+    private static void postCancelCallbackAndSendAnalytics(BraintreeFragment fragment) {
+        fragment.sendAnalyticsEvent(paymentTypeForAnalytics() + ".local-payment.webswitch.canceled");
+        fragment.postCancelCallback(BraintreeRequestCodes.LOCAL_PAYMENT);
+    }
+
+    private static void postErrorCallbackAndSendAnalytics(BraintreeFragment fragment) {
+        fragment.sendAnalyticsEvent(paymentTypeForAnalytics() + ".local-payment.webswitch-response.invalid");
+        fragment.postCallback(new BraintreeException("LocalPayment encountered an error, " +
+                "return URL is invalid."));
     }
 }
