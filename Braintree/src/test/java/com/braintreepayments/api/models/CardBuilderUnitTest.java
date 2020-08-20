@@ -41,6 +41,7 @@ public class CardBuilderUnitTest {
             "      brand" +
             "      expirationMonth" +
             "      expirationYear" +
+            "      cardholderName" +
             "      last4" +
             "      binData {" +
             "        prepaid" +
@@ -66,6 +67,7 @@ public class CardBuilderUnitTest {
             "      brand" +
             "      expirationMonth" +
             "      expirationYear" +
+            "      cardholderName" +
             "      last4" +
             "      binData {" +
             "        prepaid" +

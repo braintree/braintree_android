@@ -48,6 +48,7 @@ public class CardNonceUnitTest {
                 cardNonce.getAuthenticationInsight().getRegulationEnvironment());
         assertEquals("01", cardNonce.getExpirationMonth());
         assertEquals("2020", cardNonce.getExpirationYear());
+        assertEquals("Joe Smith", cardNonce.getCardholderName());
     }
 
     @Test
@@ -77,6 +78,7 @@ public class CardNonceUnitTest {
                 cardNonce.getAuthenticationInsight().getRegulationEnvironment());
         assertEquals("01", cardNonce.getExpirationMonth());
         assertEquals("2020", cardNonce.getExpirationYear());
+        assertEquals("Joe Smith", cardNonce.getCardholderName());
     }
 
     @Test
@@ -96,6 +98,7 @@ public class CardNonceUnitTest {
         assertNull(cardNonce.getAuthenticationInsight());
         assertEquals("", cardNonce.getExpirationMonth());
         assertEquals("", cardNonce.getExpirationYear());
+        assertEquals("", cardNonce.getCardholderName());
     }
 
     @Test
@@ -110,6 +113,7 @@ public class CardNonceUnitTest {
         assertEquals("", cardNonce.getLastFour());
         assertEquals("", cardNonce.getExpirationMonth());
         assertEquals("", cardNonce.getExpirationYear());
+        assertEquals("", cardNonce.getCardholderName());
         assertNotNull(cardNonce.getThreeDSecureInfo());
         assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShifted());
         assertFalse(cardNonce.getThreeDSecureInfo().isLiabilityShiftPossible());
@@ -143,6 +147,7 @@ public class CardNonceUnitTest {
         assertEquals("1111", parceled.getLastFour());
         assertEquals("01", cardNonce.getExpirationMonth());
         assertEquals("2020", cardNonce.getExpirationYear());
+        assertEquals("Joe Smith", cardNonce.getCardholderName());
         assertFalse(parceled.isDefault());
         assertBinDataEqual(cardNonce.getBinData(), parceled.getBinData());
         assertEquals(cardNonce.getAuthenticationInsight().getRegulationEnvironment(),

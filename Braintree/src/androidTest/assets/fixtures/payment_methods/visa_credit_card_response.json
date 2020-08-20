@@ -13,7 +13,8 @@
         "lastTwo": "11",
         "lastFour": "1111",
         "expirationMonth": "01",
-        "expirationYear": "2020"
+        "expirationYear": "2020",
+        "cardholderName": "Joe Smith"
       },
       "binData": {
         "prepaid": "Unknown",

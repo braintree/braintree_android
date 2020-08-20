@@ -6,6 +6,7 @@
         "brand": "Visa",
         "expirationMonth": "01",
         "expirationYear": "2020",
+        "cardholderName": "Joe Smith",
         "last4": "1111",
         "binData": {
           "prepaid": "Yes",

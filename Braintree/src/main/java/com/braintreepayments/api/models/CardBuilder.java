@@ -134,6 +134,7 @@ public class CardBuilder extends BaseCardBuilder<CardBuilder> implements Parcela
                 "      brand" +
                 "      expirationMonth" +
                 "      expirationYear" +
+                "      cardholderName" +
                 "      last4" +
                 "      binData {" +
                 "        prepaid" +

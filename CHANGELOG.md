@@ -1,6 +1,7 @@
 # Braintree Android SDK Release Notes
 
 ## unreleased
+* Expose cardholder name on `CardNonce`.
 * Expose expiration month and year on `CardNonce`.
 * Update `browser-switch` module to `1.1.0`.
 * Fix bug where `onError` callback was invoked instead of the `onCancel` callback in the Local Payment Method flow (fixes #299, thanks @vijayantil1)
