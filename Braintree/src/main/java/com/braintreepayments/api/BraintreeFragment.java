@@ -114,6 +114,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     private int mConfigurationRequestAttempts = 0;
     private String mIntegrationType;
     private String mSessionId;
+    private String mReturnUrlScheme;
     private AnalyticsDatabase mAnalyticsDatabase;
 
     private ConfigurationListener mConfigurationListener;
@@ -258,6 +259,8 @@ public class BraintreeFragment extends BrowserSwitchFragment {
         if (mContext == null) {
             mContext = getActivity().getApplicationContext();
         }
+        mReturnUrlScheme = mContext.getPackageName().toLowerCase(Locale.ROOT)
+                .replace("_", "") + ".braintree";
 
         mNewActivityNeedsConfiguration = false;
         mCrashReporter = CrashReporter.setup(this);
@@ -387,9 +390,7 @@ public class BraintreeFragment extends BrowserSwitchFragment {
 
     @Override
     public String getReturnUrlScheme() {
-        Context applicationContext = getActivity().getApplicationContext();
-        return applicationContext.getPackageName().toLowerCase(Locale.ROOT)
-                .replace("_", "") + ".braintree";
+        return mReturnUrlScheme;
     }
 
     @Override

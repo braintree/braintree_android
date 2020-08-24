@@ -5,6 +5,7 @@
 * Expose expiration month and year on `CardNonce`.
 * Update `browser-switch` module to `1.1.0`.
 * Fix bug where `onError` callback was invoked instead of the `onCancel` callback in the Local Payment Method flow (fixes #299, thanks @vijayantil1)
+* Fix bug where `getReturnUrlScheme` is called and an Activity is no longer attached to the fragment (fixes [#308](https://github.com/braintree/braintree_android/issues/308), thanks @hakanbagci)
 
 ## 3.13.0
 * Update `browser-switch` module to `1.0.0`
