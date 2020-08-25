@@ -256,12 +256,6 @@ public class BraintreeFragment extends BrowserSwitchFragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
 
-        if (mContext == null) {
-            mContext = getActivity().getApplicationContext();
-        }
-        mReturnUrlScheme = mContext.getPackageName().toLowerCase(Locale.ROOT)
-                .replace("_", "") + ".braintree";
-
         mNewActivityNeedsConfiguration = false;
         mCrashReporter = CrashReporter.setup(this);
         mSessionId = getArguments().getString(EXTRA_SESSION_ID);
@@ -306,6 +300,12 @@ public class BraintreeFragment extends BrowserSwitchFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mNewActivityNeedsConfiguration = true;
+
+        if (mContext == null) {
+            mContext = activity.getApplicationContext();
+        }
+        mReturnUrlScheme = mContext.getPackageName().toLowerCase(Locale.ROOT)
+                .replace("_", "") + ".braintree";
     }
 
     @Override
