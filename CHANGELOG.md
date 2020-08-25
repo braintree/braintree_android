@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.14.0
 * Expose cardholder name on `CardNonce`.
 * Expose expiration month and year on `CardNonce`.
 * Update `browser-switch` module to `1.1.0`.
