@@ -26,6 +26,7 @@ import com.braintreepayments.api.models.GooglePaymentCardNonce;
 import com.braintreepayments.api.models.GooglePaymentConfiguration;
 import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.models.MetadataBuilder;
+import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonceFactory;
 import com.braintreepayments.api.models.ReadyForGooglePaymentRequest;
 import com.braintreepayments.api.models.TokenizationKey;
@@ -238,7 +239,8 @@ public class GooglePayment {
 
     /**
      * Call this method when you've received a successful {@link PaymentData} response in your
-     * activity or fragment's {@code onActivityResult} method to get a {@link GooglePaymentCardNonce}.
+     * activity or fragment's {@code onActivityResult} method to get a {@link GooglePaymentCardNonce}
+     * or {@link PayPalAccountNonce}.
      *
      * @param fragment    An instance of {@link BraintreeFragment}.
      * @param paymentData {@link PaymentData} from the Intent in {@code onActivityResult} method.
