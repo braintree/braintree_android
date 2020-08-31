@@ -891,6 +891,10 @@
 * Fixes
   * Attach Javadocs and sources to Maven Central build.
 
+## unreleased
+* Breaking Changes
+  * Bump `minSdkVersion` to 21.
+
 ## 3.3.1
 * Fix `allowedCardNetworks` in `isReadyToPayRequest` to be uppercased. Thanks @fcastagnozzi.
 

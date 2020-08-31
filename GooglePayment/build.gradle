@@ -1,16 +1,18 @@
-apply plugin: 'com.android.library'
-apply plugin: 'maven'
-apply plugin: 'signing'
+plugins {
+    id 'com.android.library'
+    id 'de.marcphilipp.nexus-publish'
+    id 'signing'
+}
 
 android {
-    buildToolsVersion '28.0.3'
-    compileSdkVersion 28
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion '29.0.3'
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 28
-        versionCode = rootProject.ext.versionCode
-        versionName = rootProject.ext.versionName
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
 
         consumerProguardFiles 'proguard.pro'
     }
@@ -28,35 +30,34 @@ android {
     }
 }
 
-def braintreeVersion = '3.7.0'
-
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'com.google.android.gms:play-services-wallet:16.0.1'
 
-    compileOnly("com.braintreepayments.api:braintree:$braintreeVersion") {
+    compileOnly("com.braintreepayments.api:braintree:$rootProject.braintreeVersion") {
         exclude module: 'google-payment'
         because 'Use this development version'
     }
 
-    testImplementation("com.braintreepayments.api:braintree:$braintreeVersion") {
+    testImplementation("com.braintreepayments.api:braintree:$rootProject.braintreeVersion") {
         exclude module: 'google-payment'
         because 'Use this development version'
     }
 
-    testImplementation 'com.google.android.gms:play-services-wallet:16.0.1'
-    testImplementation 'androidx.test:runner:1.2.0'
     testImplementation 'androidx.test:rules:1.2.0'
-    testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
-    testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'
+    testImplementation 'androidx.test:runner:1.2.0'
+    testImplementation 'com.google.android.gms:play-services-wallet:16.0.1'
+    testImplementation 'com.squareup.assertj:assertj-android:1.1.1'
     testImplementation 'org.powermock:powermock-api-mockito:1.6.6'
     testImplementation 'org.powermock:powermock-classloading-xstream:1.6.6'
+    testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
+    testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'
     testImplementation 'org.robolectric:robolectric:4.3'
     testImplementation 'org.skyscreamer:jsonassert:1.4.0'
-    testImplementation 'com.squareup.assertj:assertj-android:1.1.1'
 }
 
-/* maven deploy + signing */
+// region signing and publishing
+
 task javadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
@@ -64,12 +65,12 @@ task javadocs(type: Javadoc) {
 }
 
 task javadocsJar(type: Jar, dependsOn: javadocs) {
-    classifier = 'javadoc'
+    archiveClassifier.set('javadoc')
     from javadocs.destinationDir
 }
 
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
+    archiveClassifier.set('sources')
     from android.sourceSets.main.java.srcDirs
 }
 
@@ -80,74 +81,59 @@ artifacts {
 
 signing {
     required {
-        !android.defaultConfig.versionName.endsWith("SNAPSHOT") &&
-        !android.defaultConfig.versionName.endsWith("DEVELOPMENT")
+        !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
     }
-    sign configurations.archives
+    sign publishing.publications
 }
 
-def sonatypeUsername = System.env['SONATYPE_USERNAME']
-def sonatypePassword = System.env['SONATYPE_PASSWORD']
-
-nexusStaging {
-    packageGroup = "com.braintreepayments"
-    delayBetweenRetriesInMillis = 10000
-    username = sonatypeUsername
-    password = sonatypePassword
-}
-
-uploadArchives {
+nexusPublishing {
+    // give nexus sonatype more time to initialize the staging repository
+    clientTimeout = Duration.ofMinutes(3)
     repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+        sonatype()
+    }
+}
 
-            if (android.defaultConfig.versionName.endsWith('DEVELOPMENT')) {
-                repository(url: 'file:///tmp/maven/')
-            } else {
-                repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
-                }
-            }
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
 
-            snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
-            }
-
-            pom.setArtifactId 'google-payment'
-
-            pom.project {
-                name 'google-payment'
                 groupId = 'com.braintreepayments.api'
-                version = "${android.defaultConfig.versionName}"
-                packaging 'jar'
-                description 'Google Pay Module for Braintree\'s Android SDK.'
-                url 'https://github.com/braintree/braintree-android-google-payment'
+                artifactId = 'google-payment'
+                version = rootProject.versionName
 
-                scm {
-                    url 'scm:git@github.com:braintree/braintree-android-google-payment.git'
-                    connection 'scm:git@github.com:braintree/braintree-android-google-payment.git'
-                    developerConnection 'scm:git@github.com:braintree/braintree-android-google-payment.git'
-                }
+                pom {
+                    name = 'google-payment'
+                    packaging = 'jar'
+                    description = 'Google Pay Module for Braintree\'s Android SDK.'
+                    url = 'https://github.com/braintree/braintree-android-google-payment'
 
-                developers {
-                    developer {
-                        id 'devs'
-                        name 'Braintree Payments'
+                    scm {
+                        url = 'scm:git@github.com:braintree/braintree-android-google-payment.git'
+                        connection = 'scm:git@github.com:braintree/braintree-android-google-payment.git'
+                        developerConnection = 'scm:git@github.com:braintree/braintree-android-google-payment.git'
+                    }
+
+                    developers {
+                        developer {
+                            id = 'devs'
+                            name = 'Braintree Payments'
+                        }
+                    }
+
+                    licenses {
+                        license {
+                            name = 'MIT'
+                            url = 'http://opensource.org/licenses/MIT'
+                            distribution = 'repo'
+                        }
                     }
                 }
-
-                licenses {
-                    license {
-                        name 'MIT'
-                        url 'http://opensource.org/licenses/MIT'
-                        distribution 'repo'
-                    }
-                }
-            }
-
-            pom.whenConfigured {
-                it.dependencies.removeAll { true }
             }
         }
     }
 }
+
+// endregion
