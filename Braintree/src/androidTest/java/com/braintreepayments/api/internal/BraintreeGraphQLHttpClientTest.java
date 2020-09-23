@@ -1,6 +1,6 @@
 package com.braintreepayments.api.internal;
 
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.exceptions.AuthorizationException;
@@ -30,7 +30,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class BraintreeGraphQLHttpClientTest {
 
     private CountDownLatch mCountDownLatch;

@@ -1,7 +1,8 @@
 package com.braintreepayments.api;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
@@ -22,7 +23,6 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
 
-import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.api.test.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_AUTHENTICATION_UNAVAILABLE;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_LOOKUP_ERROR;
@@ -36,7 +36,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class ThreeDSecureVerificationTest {
 
     private static final String TEST_AMOUNT = "1";
@@ -208,7 +208,7 @@ public class ThreeDSecureVerificationTest {
     private BraintreeFragment getFragment(String authorization, String configuration) {
         try {
             Authorization auth = Authorization.fromString(authorization);
-            writeMockConfiguration(getTargetContext(), auth.getConfigUrl(), auth.getBearer(), configuration);
+            writeMockConfiguration(ApplicationProvider.getApplicationContext(), auth.getConfigUrl(), auth.getBearer(), configuration);
 
             BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, authorization);
 

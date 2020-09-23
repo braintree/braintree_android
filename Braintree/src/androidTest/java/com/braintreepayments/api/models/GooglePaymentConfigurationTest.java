@@ -1,6 +1,7 @@
 package com.braintreepayments.api.models;
 
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -10,7 +11,6 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
@@ -18,7 +18,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeTrue;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class GooglePaymentConfigurationTest {
 
     @Test(timeout = 1000)
@@ -29,7 +29,7 @@ public class GooglePaymentConfigurationTest {
 
         GooglePaymentConfiguration googlePaymentConfiguration = configuration.getGooglePayment();
 
-        assertTrue(googlePaymentConfiguration.isEnabled(getTargetContext()));
+        assertTrue(googlePaymentConfiguration.isEnabled(ApplicationProvider.getApplicationContext()));
         assertEquals("google-auth-fingerprint", googlePaymentConfiguration.getGoogleAuthorizationFingerprint());
         assertEquals("Android Pay Merchant", googlePaymentConfiguration.getDisplayName());
         assertEquals("sandbox", googlePaymentConfiguration.getEnvironment());
@@ -48,7 +48,7 @@ public class GooglePaymentConfigurationTest {
 
         GooglePaymentConfiguration googlePaymentConfiguration = GooglePaymentConfiguration.fromJson(json);
 
-        assertTrue(googlePaymentConfiguration.isEnabled(getTargetContext()));
+        assertTrue(googlePaymentConfiguration.isEnabled(ApplicationProvider.getApplicationContext()));
         assertEquals("google-auth-fingerprint", googlePaymentConfiguration.getGoogleAuthorizationFingerprint());
         assertEquals("Android Pay Merchant", googlePaymentConfiguration.getDisplayName());
         assertEquals("sandbox", googlePaymentConfiguration.getEnvironment());
@@ -62,7 +62,7 @@ public class GooglePaymentConfigurationTest {
     public void fromJson_returnsNewGooglePaymentConfigurationWithDefaultValuesWhenJSONObjectIsNull() {
         GooglePaymentConfiguration googlePaymentConfiguration = GooglePaymentConfiguration.fromJson(null);
 
-        assertFalse(googlePaymentConfiguration.isEnabled(getTargetContext()));
+        assertFalse(googlePaymentConfiguration.isEnabled(ApplicationProvider.getApplicationContext()));
         assertNull(googlePaymentConfiguration.getGoogleAuthorizationFingerprint());
         assertEquals("", googlePaymentConfiguration.getDisplayName());
         assertNull(googlePaymentConfiguration.getEnvironment());
@@ -73,7 +73,7 @@ public class GooglePaymentConfigurationTest {
     public void fromJson_returnsNewGooglePaymentConfigurationWithDefaultValuesWhenNoDataIsPresent() {
         GooglePaymentConfiguration googlePaymentConfiguration = GooglePaymentConfiguration.fromJson(new JSONObject());
 
-        assertFalse(googlePaymentConfiguration.isEnabled(getTargetContext()));
+        assertFalse(googlePaymentConfiguration.isEnabled(ApplicationProvider.getApplicationContext()));
         assertNull(googlePaymentConfiguration.getGoogleAuthorizationFingerprint());
         assertEquals("", googlePaymentConfiguration.getDisplayName());
         assertNull(googlePaymentConfiguration.getEnvironment());
@@ -81,7 +81,7 @@ public class GooglePaymentConfigurationTest {
     }
 
     private static boolean hasGooglePlayServices() {
-        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getTargetContext()) ==
+        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(ApplicationProvider.getApplicationContext()) ==
                 ConnectionResult.SUCCESS;
     }
 }

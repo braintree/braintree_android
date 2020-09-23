@@ -1,8 +1,9 @@
 package com.braintreepayments.api;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.test.runner.AndroidJUnit4;
 import android.text.TextUtils;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
@@ -26,7 +27,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.fail;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class DataCollectorTest {
 
     @Rule
@@ -96,7 +97,7 @@ public class DataCollectorTest {
         mCountDownLatch.await();
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void collectDeviceData_doesNotCollectKountDataIfKountDisabledInConfiguration() throws InterruptedException {
         BraintreeFragment fragment = getFragmentWithConfiguration(mActivity, new TestConfigurationBuilder().build());
 

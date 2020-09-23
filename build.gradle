@@ -7,7 +7,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.0'
+        classpath 'com.android.tools.build:gradle:4.0.1'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2'
         classpath 'de.marcphilipp.gradle:nexus-publish-plugin:0.4.0'
     }
@@ -30,9 +30,9 @@ allprojects {
 
 version '3.14.1-SNAPSHOT'
 ext {
-    compileSdkVersion = 28
+    compileSdkVersion = 30
     minSdkVersion = 21
-    targetSdkVersion = 28
+    targetSdkVersion = 30
     versionCode = 119
     versionName = version
 

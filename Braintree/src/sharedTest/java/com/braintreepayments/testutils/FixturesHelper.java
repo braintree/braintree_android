@@ -1,5 +1,7 @@
 package com.braintreepayments.testutils;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import com.braintreepayments.api.internal.StreamHelper;
 
 import java.io.ByteArrayInputStream;
@@ -10,7 +12,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 
-import static androidx.test.InstrumentationRegistry.getTargetContext;
 
 public class FixturesHelper {
 
@@ -48,7 +49,7 @@ public class FixturesHelper {
     private static String stringFromAndroidFixture(String filename) throws IOException {
         InputStream inputStream = null;
         try {
-            inputStream = getTargetContext().getResources().getAssets().open(FIXTURES_PATH + filename);
+            inputStream = ApplicationProvider.getApplicationContext().getResources().getAssets().open(FIXTURES_PATH + filename);
             return StreamHelper.getString(inputStream);
         } finally {
             if (inputStream != null) {

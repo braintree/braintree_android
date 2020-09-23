@@ -1,6 +1,6 @@
 package com.braintreepayments.api.internal;
 
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.exceptions.BraintreeApiErrorResponse;
@@ -24,7 +24,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class BraintreeApiHttpClientTest {
 
     @Test(timeout = 1000)

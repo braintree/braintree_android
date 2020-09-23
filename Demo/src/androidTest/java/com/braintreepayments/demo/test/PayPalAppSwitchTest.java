@@ -1,6 +1,6 @@
 package com.braintreepayments.demo.test;
 
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
 
@@ -9,16 +9,16 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static com.braintreepayments.AutomatorAction.click;
+import static com.braintreepayments.AutomatorAssertion.text;
+import static com.braintreepayments.DeviceAutomator.onDevice;
+import static com.braintreepayments.UiObjectMatcher.withText;
 import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.PAYPAL_WALLET_PACKAGE_NAME;
 import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.assumePayPalAppInstalled;
 import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.installPayPalWallet;
-import static com.lukekorth.deviceautomator.AutomatorAction.click;
-import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
-import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class PayPalAppSwitchTest extends TestHelper {
 
     @BeforeClass

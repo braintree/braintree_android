@@ -1,6 +1,6 @@
 package com.braintreepayments.demo.test;
 
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
 
@@ -9,18 +9,17 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static com.braintreepayments.AutomatorAction.click;
+import static com.braintreepayments.AutomatorAssertion.text;
+import static com.braintreepayments.DeviceAutomator.onDevice;
+import static com.braintreepayments.UiObjectMatcher.withText;
+import static com.braintreepayments.UiObjectMatcher.withTextStartingWith;
 import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.assumePayPalAppInstalled;
 import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.uninstallPayPalWallet;
-import static com.braintreepayments.demo.test.utilities.UiTestActions.clickWebViewText;
-import static com.lukekorth.deviceautomator.AutomatorAction.click;
-import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
-import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class PayPalBrowserSwitchTest extends TestHelper {
 
     @BeforeClass
@@ -38,7 +37,8 @@ public class PayPalBrowserSwitchTest extends TestHelper {
     @Test(timeout = 60000)
     public void browserSwitch_makesASinglePayment() {
         onDevice(withText("Single Payment")).waitForEnabled().perform(click());
-        clickWebViewText("Proceed with Sandbox Purchase", 5000);
+        onDevice(withText("Proceed with Sandbox Purchase")).waitForExists();
+        onDevice(withText("Proceed with Sandbox Purchase")).perform(click());
 
         getNonceDetails().check(text(containsString("Email: bt_buyer_us@paypal.com")));
 
@@ -49,7 +49,8 @@ public class PayPalBrowserSwitchTest extends TestHelper {
     @Test(timeout = 60000)
     public void browserSwitch_makesABillingAgreement() {
         onDevice(withText("Billing Agreement")).waitForEnabled().perform(click());
-        clickWebViewText("Proceed with Sandbox Purchase", 5000);
+        onDevice(withText("Proceed with Sandbox Purchase")).waitForExists();
+        onDevice(withText("Proceed with Sandbox Purchase")).perform(click());
 
         getNonceDetails().check(text(containsString("Email: bt_buyer_us@paypal.com")));
 

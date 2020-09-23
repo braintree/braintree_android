@@ -1,7 +1,7 @@
 package com.braintreepayments.api;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
@@ -25,7 +25,7 @@ import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_K
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class TokenizationClientTest {
 
     @Rule

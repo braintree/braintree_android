@@ -1,13 +1,13 @@
 package com.paypal.android.sdk.data.collector;
 
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import androidx.test.runner.AndroidJUnit4;
-
 import static junit.framework.Assert.assertEquals;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class PayPalDataCollectorRequestTest {
 
     @Test

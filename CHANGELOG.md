@@ -1,6 +1,11 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Update `compileSdkVersion` and `targetSdkVersion` to 30
+
 ## 3.14.0
+
 * Expose cardholder name on `CardNonce`.
 * Expose expiration month and year on `CardNonce`.
 * Update `browser-switch` module to `1.1.0`.
@@ -8,11 +13,13 @@
 * Fix bug where `getReturnUrlScheme` is called and an Activity is no longer attached to the fragment (fixes [#308](https://github.com/braintree/braintree_android/issues/308), thanks @hakanbagci)
 
 ## 3.13.0
+
 * Update `browser-switch` module to `1.0.0`
 * Make PayPalUAT::Environment enum public
 * Add Card#tokenize overload to allow a custom `PaymentMethodNonceCallback` to be provided.
 
 ## 3.12.0
+
 * Changed `Configuration#isPayPalEnabled` to no longer consider deprecated integration requirements.
 
 ## 3.11.1
@@ -86,9 +93,11 @@
 * Fix potential crash when 3DSecure 2.0 JWT is not available
 
 ## 3.3.0
+
 * Correctly includes the 3DSecure 2.0 module
 
 ## 3.2.0
+
 * Add 3DS 2 Support
 * Update 3DS redirect to newest version
 
@@ -205,6 +214,7 @@
 * Catch possible SQLite exceptions
 
 ## 2.12.0
+
 * Move Visa Checkout to separate module
 * Update Visa Checkout to 5.5.2
 * Update SDK to 27
@@ -225,13 +235,16 @@
 * Deprecate `countryName`, `countryCodeAlpha2`, `countryCodeAlpha3`, and `countryCodeNumeric` in favor of `countryCode` in `CardBuilder` and `UnionPayCardBuilder`.
 
 ## 2.8.1
+
 * Support `lastFour` in `GooglePayCardNonce`
 * Add Google Pay branding
 
 ## 2.8.0
+
 * Add support for iDEAL payments
 
 ## 2.7.3
+
 * Check package name is valid for PayPal Wallet switch
 
 ## 2.7.2
@@ -276,6 +289,7 @@
 * Accept third party cookies in ThreeDSecureWebView for Lollipop and above
 
 ## 2.5.3
+
 * Add PayPal Credit for Billing Agreements
 
 ## 2.5.2

@@ -78,14 +78,29 @@ public class DemoApplication extends Application implements UncaughtExceptionHan
 
     private void handleViolation(Violation v) {
         Throwable cause = v.getCause();
-
-        if (classExistsInThrowable("com.cardinalcommerce.cardinalmobilesdk.Tasks.NewtworkTask.CentinelChallengeTask", "doInBackground", cause)) {
-            Log.d("handleViolation", "Cardinal has been notified of this strict mode violation");
-        } else if (classExistsInThrowable("com.cardinalcommerce.cardinalmobilesdk.Tasks.NewtworkTask.CentinelApiInitTask", "doInBackground", cause)) {
-            Log.d("handleViolation", "Cardinal has been notified of this strict mode violation");
-        } else {
-            throw new RuntimeException(v.getCause());
+        if (cause != null) {
+            if (classExistsInThrowable("com.cardinalcommerce.cardinalmobilesdk.Tasks.NewtworkTask.CentinelChallengeTask", "doInBackground", cause)) {
+                Log.d("handleViolation", "Cardinal has been notified of this strict mode violation");
+            } else if (classExistsInThrowable("com.cardinalcommerce.cardinalmobilesdk.Tasks.NewtworkTask.CentinelApiInitTask", "doInBackground", cause)) {
+                Log.d("handleViolation", "Cardinal has been notified of this strict mode violation");
+            } else if (shouldRethrowViolation(cause)){
+                throw new RuntimeException(cause);
+            }
         }
+    }
+
+    private boolean shouldRethrowViolation(Throwable cause) {
+        boolean shouldThrow = true;
+
+        String message = cause.getMessage();
+        if (message != null) {
+            String disposeNotCalledMessage = "Explicit termination method 'dispose' not called";
+            if (message.equalsIgnoreCase(disposeNotCalledMessage)) {
+                // this "violation" is causing integration tests to crash in Android 11
+                shouldThrow = false;
+            }
+        }
+        return shouldThrow;
     }
 
     private boolean classExistsInThrowable(String clazz, String method, Throwable t) {
@@ -97,7 +112,6 @@ public class DemoApplication extends Application implements UncaughtExceptionHan
                 return true;
             }
         }
-
         return false;
     }
 

@@ -5,18 +5,18 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.SystemClock;
 import android.util.Log;
 
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 @Ignore("This will be removed.")
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class SignatureVerificationTest {
 
     private static final String PAYPAL_WALLET_PACKAGE_NAME = "com.paypal.android.p2pmobile";
@@ -40,7 +40,7 @@ public class SignatureVerificationTest {
     }
 
     private boolean isAppInstalled() {
-        PackageManager pm = getTargetContext().getPackageManager();
+        PackageManager pm = ApplicationProvider.getApplicationContext().getPackageManager();
         try {
             pm.getPackageInfo("com.paypal.android.p2pmobile", PackageManager.GET_ACTIVITIES);
             return true;
@@ -50,7 +50,7 @@ public class SignatureVerificationTest {
     }
 
     private boolean checkSignature() {
-        return SignatureVerification.isSignatureValid(getTargetContext(),
+        return SignatureVerification.isSignatureValid(ApplicationProvider.getApplicationContext(),
                 "com.paypal.android.p2pmobile", "O=Paypal", "O=Paypal", 34172764);
     }
 }

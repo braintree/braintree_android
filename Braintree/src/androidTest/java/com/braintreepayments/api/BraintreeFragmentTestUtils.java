@@ -1,5 +1,8 @@
 package com.braintreepayments.api;
 
+import androidx.fragment.app.FragmentActivity;
+import androidx.test.core.app.ApplicationProvider;
+
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.Authorization;
@@ -10,9 +13,6 @@ import com.braintreepayments.testutils.TestTokenizationKey;
 
 import java.util.concurrent.CountDownLatch;
 
-import androidx.fragment.app.FragmentActivity;
-
-import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
 import static junit.framework.Assert.fail;
 
@@ -53,7 +53,7 @@ public class BraintreeFragmentTestUtils {
 
     public static void setConfiguration(String authorization, String configuration) throws InvalidArgumentException {
         Authorization auth = Authorization.fromString(authorization);
-        writeMockConfiguration(getTargetContext(), auth.getConfigUrl(), auth.getBearer(), configuration);
+        writeMockConfiguration(ApplicationProvider.getApplicationContext(), auth.getConfigUrl(), auth.getBearer(), configuration);
     }
 
     public static CardNonce tokenize(BraintreeFragment fragment, CardBuilder cardBuilder) {

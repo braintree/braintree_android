@@ -1,16 +1,24 @@
 package com.braintreepayments.demo.test;
 
 import androidx.preference.PreferenceManager;
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static androidx.test.InstrumentationRegistry.getTargetContext;
-import static com.braintreepayments.demo.test.utilities.UiTestActions.clickWebViewText;
+import static com.braintreepayments.AutomatorAction.click;
+import static com.braintreepayments.AutomatorAction.setText;
+import static com.braintreepayments.AutomatorAssertion.text;
+import static com.braintreepayments.DeviceAutomator.onDevice;
+import static com.braintreepayments.UiObjectMatcher.withContentDescription;
+import static com.braintreepayments.UiObjectMatcher.withText;
+import static com.braintreepayments.UiObjectMatcher.withTextContaining;
+import static com.braintreepayments.UiObjectMatcher.withTextStartingWith;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_AUTHENTICATION_FAILED;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_ISSUER_DOES_NOT_PARTICIPATE;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_ISSUER_DOWN;
@@ -19,19 +27,11 @@ import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_LOOKUP_T
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_MPI_SERVICE_ERROR;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_SIGNATURE_VERIFICATION_FAILURE;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON;
-import static com.lukekorth.deviceautomator.AutomatorAction.click;
-import static com.lukekorth.deviceautomator.AutomatorAction.setText;
-import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
-import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextContaining;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class ThreeDSecureVerificationTest extends TestHelper {
 
     @Before
@@ -39,7 +39,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
         super.setup();
         onDevice(withText("Credit or Debit Cards")).waitForEnabled().perform(click());
 
-        PreferenceManager.getDefaultSharedPreferences(getTargetContext())
+        PreferenceManager.getDefaultSharedPreferences(ApplicationProvider.getApplicationContext())
                 .edit()
                 .putBoolean("enable_three_d_secure", true)
                 .commit();
@@ -113,7 +113,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
     public void threeDSecure_whenSignatureVerificationFails_returnsAFailedAuthentication() {
         onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_SIGNATURE_VERIFICATION_FAILURE));
         fillInExpiration();
-        onDevice(withText("CVV")).perform(setText("123"));
+        onDevice(withText("CVC")).perform(setText("123"));
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
@@ -215,7 +215,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
     }
 
     @Test
-    public void threeDSecure_displaysCustomButtonTextAndDescriptionInBrowser() {
+    public void threeDSecure_automaticallyRedirectsBackToAppWith3DSResult() {
         onDevice(withText("Card Number")).perform(setText(THREE_D_SECURE_VERIFICATON));
         fillInExpiration();
         onDevice(withText("CVV")).perform(setText("123"));
@@ -226,19 +226,12 @@ public class ThreeDSecureVerificationTest extends TestHelper {
         onDevice().typeText("1234");
         onDevice(withText("Submit")).perform(click());
 
-        onDevice(withText("Return to Demo App")).check(text(notNullValue()));
-
-        onDevice(withText("Please use the button above if you are not automatically redirected to the app. (This text can contain accéntéd chàractèrs.)"))
-                .check(text(notNullValue()));
+        onDevice(withText("wasVerified: true")).exists();
     }
 
     private void enterThreeDSecurePasswordAndReturnToApp() {
         onDevice(withText("Authentication")).waitForExists();
         onDevice().typeText("1234");
         onDevice(withText("Submit")).perform(click());
-
-        try {
-            clickWebViewText("Return to Demo App", 3000);
-        } catch (RuntimeException ignored) {}
     }
 }

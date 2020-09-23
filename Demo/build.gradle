@@ -4,6 +4,7 @@ plugins {
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion '30.0.2'
 
     defaultConfig {
         applicationId "com.braintreepayments.demo"
@@ -105,7 +106,7 @@ dependencies {
     debugImplementation 'com.facebook.stetho:stetho:1.5.0'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4'
 
-    androidTestImplementation 'com.lukekorth:device-automator:1.0.0'
+    androidTestImplementation 'com.braintreepayments:device-automator:1.0.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-web:3.1.1'
     androidTestImplementation project(':TestUtils')

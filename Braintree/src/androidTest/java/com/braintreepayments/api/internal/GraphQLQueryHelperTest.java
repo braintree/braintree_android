@@ -1,20 +1,20 @@
 package com.braintreepayments.api.internal;
 
 import android.content.res.Resources;
-import androidx.test.runner.AndroidJUnit4;
+
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
 
-import static androidx.test.InstrumentationRegistry.getTargetContext;
-
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class GraphQLQueryHelperTest {
 
     @Test(expected = Resources.NotFoundException.class)
     public void getQuery_throwsResourcesNotFoundExceptionForInvalidResources() throws IOException {
-        GraphQLQueryHelper.getQuery(getTargetContext(), -1);
+        GraphQLQueryHelper.getQuery(ApplicationProvider.getApplicationContext(), -1);
     }
 }

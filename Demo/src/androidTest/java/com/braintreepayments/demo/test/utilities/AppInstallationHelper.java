@@ -1,13 +1,15 @@
 package com.braintreepayments.demo.test.utilities;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeThat;
@@ -30,7 +32,7 @@ public class AppInstallationHelper {
     }
 
     public static boolean isAppInstalled(String packageName) {
-        PackageManager pm = getTargetContext().getPackageManager();
+        PackageManager pm = ApplicationProvider.getApplicationContext().getPackageManager();
         try {
             pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
             return true;

@@ -2,6 +2,8 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.BraintreeGraphQLHttpClient;

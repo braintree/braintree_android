@@ -6,6 +6,7 @@ plugins {
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion '30.0.2'
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -29,9 +30,10 @@ android {
 
 dependencies {
     compileOnly 'androidx.annotation:annotation:1.0.0'
-    api 'com.braintreepayments:browser-switch:1.1.0'
+    api 'com.braintreepayments:browser-switch:1.1.2'
 
     androidTestImplementation 'androidx.test:runner:1.1.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.appcompat:appcompat:1.0.1'
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
 }

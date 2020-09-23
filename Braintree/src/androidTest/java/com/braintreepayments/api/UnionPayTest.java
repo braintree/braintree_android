@@ -2,7 +2,7 @@ package com.braintreepayments.api;
 
 import android.text.TextUtils;
 
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.interfaces.BraintreeErrorListener;
@@ -41,7 +41,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class UnionPayTest {
 
     @Rule

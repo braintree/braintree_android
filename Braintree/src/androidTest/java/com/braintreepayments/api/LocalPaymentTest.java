@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.models.LocalPaymentRequest;
@@ -19,7 +19,7 @@ import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWi
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class LocalPaymentTest {
 
     @Rule

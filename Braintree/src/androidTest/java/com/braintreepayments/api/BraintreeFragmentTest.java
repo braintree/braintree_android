@@ -1,7 +1,7 @@
 package com.braintreepayments.api;
 
 import androidx.fragment.app.FragmentActivity;
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
@@ -13,6 +13,7 @@ import com.braintreepayments.api.test.TestPayPalUATBuilder;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +24,7 @@ import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWi
 import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertNotNull;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class BraintreeFragmentTest {
 
     @Rule
@@ -71,6 +72,7 @@ public class BraintreeFragmentTest {
         mCountDownLatch.await();
     }
 
+    @Ignore("PayPalUAT development still in progress.")
     @Test(timeout = 10000)
     public void fetchConfiguration_worksWithAPayPalUAT() throws InterruptedException {
         final BraintreeFragment fragment = getFragmentWithAuthorization(mActivity, mPayPalUAT);

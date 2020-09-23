@@ -1,9 +1,12 @@
 package com.braintreepayments.demo.test;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.preference.PreferenceManager;
-import androidx.test.runner.AndroidJUnit4;
 import android.widget.ScrollView;
+
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
 import com.braintreepayments.testutils.CardNumber;
@@ -13,21 +16,20 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static androidx.test.InstrumentationRegistry.getTargetContext;
-import static com.lukekorth.deviceautomator.AutomatorAction.click;
-import static com.lukekorth.deviceautomator.AutomatorAction.scrollTextIntoView;
-import static com.lukekorth.deviceautomator.AutomatorAction.setText;
-import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
-import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withClass;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withContentDescription;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
+import static com.braintreepayments.AutomatorAction.click;
+import static com.braintreepayments.AutomatorAction.scrollTextIntoView;
+import static com.braintreepayments.AutomatorAction.setText;
+import static com.braintreepayments.AutomatorAssertion.text;
+import static com.braintreepayments.DeviceAutomator.onDevice;
+import static com.braintreepayments.UiObjectMatcher.withClass;
+import static com.braintreepayments.UiObjectMatcher.withContentDescription;
+import static com.braintreepayments.UiObjectMatcher.withText;
+import static com.braintreepayments.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
 @SuppressLint("ApplySharedPref")
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class CardTest extends TestHelper {
 
     @Before
@@ -100,7 +102,8 @@ public class CardTest extends TestHelper {
 
     @Test(timeout = 60000)
     public void amexRewardsBalance_whenCardHasBalance() {
-        PreferenceManager.getDefaultSharedPreferences(getTargetContext())
+        Context context = ApplicationProvider.getApplicationContext();
+        PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .putBoolean("amex_rewards_balance", true)
                 .commit();
@@ -112,11 +115,13 @@ public class CardTest extends TestHelper {
         onDevice(withText("Purchase")).perform(click());
 
         onDevice(withTextStartingWith("Amex Rewards Balance:")).check(text(containsString("amount: 45256433")));
+        onDevice(withText("OK")).perform(click());
     }
 
     @Test(timeout = 60000)
     public void amexRewardsBalance_whenCardHasInsufficientPoints() {
-        PreferenceManager.getDefaultSharedPreferences(getTargetContext())
+        Context context = ApplicationProvider.getApplicationContext();
+        PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .putBoolean("amex_rewards_balance", true)
                 .commit();
@@ -128,11 +133,13 @@ public class CardTest extends TestHelper {
         onDevice(withText("Purchase")).perform(click());
 
         onDevice(withTextStartingWith("Amex Rewards Balance:")).check(text(containsString("errorCode: INQ2003")));
+        onDevice(withText("OK")).perform(click());
     }
 
     @Test(timeout = 60000)
     public void amexRewardsBalance_whenCardIsIneligible() {
-        PreferenceManager.getDefaultSharedPreferences(getTargetContext())
+        Context context = ApplicationProvider.getApplicationContext();
+        PreferenceManager.getDefaultSharedPreferences(context)
                 .edit()
                 .putBoolean("amex_rewards_balance", true)
                 .commit();
@@ -144,5 +151,6 @@ public class CardTest extends TestHelper {
         onDevice(withText("Purchase")).perform(click());
 
         onDevice(withTextStartingWith("Amex Rewards Balance:")).check(text(containsString("errorCode: INQ2002")));
+        onDevice(withText("OK")).perform(click());
     }
 }

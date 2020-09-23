@@ -35,7 +35,7 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*" })
+@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*" })
 @PrepareForTest({ com.kount.api.DataCollector.class })
 public class DataCollectorUnitTest {
 

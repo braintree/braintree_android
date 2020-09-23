@@ -8,17 +8,17 @@ import android.preference.PreferenceManager;
 import android.widget.Spinner;
 
 import androidx.core.content.ContextCompat;
+import androidx.test.core.app.ApplicationProvider;
 
+import com.braintreepayments.DeviceAutomator;
 import com.braintreepayments.testutils.ExpirationDateHelper;
-import com.lukekorth.deviceautomator.DeviceAutomator;
 
-import static androidx.test.InstrumentationRegistry.getTargetContext;
-import static com.lukekorth.deviceautomator.AutomatorAction.click;
-import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
-import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withClass;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withResourceId;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
+import static com.braintreepayments.AutomatorAction.click;
+import static com.braintreepayments.AutomatorAssertion.text;
+import static com.braintreepayments.DeviceAutomator.onDevice;
+import static com.braintreepayments.UiObjectMatcher.withClass;
+import static com.braintreepayments.UiObjectMatcher.withResourceId;
+import static com.braintreepayments.UiObjectMatcher.withText;
 import static org.hamcrest.CoreMatchers.equalTo;
 
 public class TestHelper {
@@ -28,7 +28,7 @@ public class TestHelper {
         clearPreference("BraintreeApi");
         clearPreference("PayPalOTC");
 
-        PreferenceManager.getDefaultSharedPreferences(getTargetContext())
+        PreferenceManager.getDefaultSharedPreferences(ApplicationProvider.getApplicationContext())
                 .edit()
                 .clear()
                 .putBoolean("paypal_use_hardcoded_configuration", true)
@@ -45,7 +45,7 @@ public class TestHelper {
 
     @SuppressLint("ApplySharedPref")
     private void clearPreference(String preference) {
-        getTargetContext().getSharedPreferences(preference, Context.MODE_PRIVATE)
+        ApplicationProvider.getApplicationContext().getSharedPreferences(preference, Context.MODE_PRIVATE)
                 .edit()
                 .clear()
                 .commit();
@@ -62,7 +62,7 @@ public class TestHelper {
     }
 
     private static void enableStoragePermission() {
-        if (ContextCompat.checkSelfPermission(getTargetContext(), permission.WRITE_EXTERNAL_STORAGE)
+        if (ContextCompat.checkSelfPermission(ApplicationProvider.getApplicationContext(), permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             try {
                 onDevice(withText("Allow")).perform(click());

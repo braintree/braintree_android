@@ -1,7 +1,8 @@
 package com.braintreepayments.demo.test;
 
 import androidx.preference.PreferenceManager;
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.demo.test.utilities.TestHelper;
 
@@ -9,18 +10,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static androidx.test.InstrumentationRegistry.getTargetContext;
-import static com.lukekorth.deviceautomator.AutomatorAction.click;
-import static com.lukekorth.deviceautomator.AutomatorAction.setText;
-import static com.lukekorth.deviceautomator.AutomatorAssertion.text;
-import static com.lukekorth.deviceautomator.DeviceAutomator.onDevice;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withResourceId;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withText;
-import static com.lukekorth.deviceautomator.UiObjectMatcher.withTextStartingWith;
+import static com.braintreepayments.AutomatorAction.click;
+import static com.braintreepayments.AutomatorAction.setText;
+import static com.braintreepayments.AutomatorAssertion.text;
+import static com.braintreepayments.DeviceAutomator.onDevice;
+import static com.braintreepayments.UiObjectMatcher.withResourceId;
+import static com.braintreepayments.UiObjectMatcher.withText;
+import static com.braintreepayments.UiObjectMatcher.withTextStartingWith;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class ThreeDSecureCardinalTest extends TestHelper {
 
     @Before
@@ -28,7 +28,7 @@ public class ThreeDSecureCardinalTest extends TestHelper {
         super.setup();
         onDevice(withText("Credit or Debit Cards")).waitForEnabled().perform(click());
 
-        PreferenceManager.getDefaultSharedPreferences(getTargetContext())
+        PreferenceManager.getDefaultSharedPreferences(ApplicationProvider.getApplicationContext())
                 .edit()
                 .putBoolean("enable_three_d_secure", true)
                 .commit();

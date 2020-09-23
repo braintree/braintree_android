@@ -1,7 +1,7 @@
 package com.braintreepayments.api;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
@@ -34,7 +34,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class PaymentMethodTest {
 
     @Rule

@@ -2,6 +2,8 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.internal.BraintreeGraphQLHttpClient;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
@@ -12,7 +14,6 @@ import org.json.JSONException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import static androidx.test.InstrumentationRegistry.getTargetContext;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -24,7 +25,7 @@ public class MockFragmentBuilder {
     private Configuration mConfiguration;
 
     public MockFragmentBuilder() {
-        mContext = getTargetContext();
+        mContext = ApplicationProvider.getApplicationContext();
         mConfiguration = TestConfigurationBuilder.basicConfig();
     }
 

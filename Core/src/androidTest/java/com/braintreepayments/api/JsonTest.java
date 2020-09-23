@@ -1,6 +1,6 @@
 package com.braintreepayments.api;
 
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 
 import static junit.framework.Assert.assertEquals;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class JsonTest {
 
     private JSONObject mJson;
