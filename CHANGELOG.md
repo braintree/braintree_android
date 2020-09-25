@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.14.1
 
 * Update `compileSdkVersion` and `targetSdkVersion` to 30
 
