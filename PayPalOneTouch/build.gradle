@@ -40,7 +40,7 @@ android {
 dependencies {
     compileOnly 'androidx.annotation:annotation:1.1.0'
 
-    api project(':Core')
+    api project(':SharedUtils')
     api project(':PayPalDataCollector')
 
     testImplementation 'org.robolectric:robolectric:4.1'

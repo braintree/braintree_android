@@ -11,6 +11,8 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         versionCode rootProject.versionCode
         versionName rootProject.versionName
+
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     lintOptions {
@@ -21,9 +23,22 @@ android {
 }
 
 dependencies {
-    api 'androidx.test:runner:1.3.0'
-    api 'androidx.test:rules:1.3.0'
-    api 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.0.1'
+
+    api 'androidx.test:runner:1.1.0'
+    api 'androidx.test:rules:1.1.0'
+    api 'androidx.appcompat:appcompat:1.0.1'
 
     implementation 'androidx.test.ext:junit:1.1.2'
+
+    compileOnly 'org.robolectric:robolectric:4.1'
+    compileOnly 'org.powermock:powermock-module-junit4:1.6.6'
+    compileOnly 'org.powermock:powermock-module-junit4-rule:1.6.6'
+    compileOnly 'org.powermock:powermock-api-mockito:1.6.6'
+    compileOnly 'org.powermock:powermock-classloading-xstream:1.6.6'
+    compileOnly 'org.skyscreamer:jsonassert:1.4.0'
+
+    implementation project(':BraintreeCore')
+    implementation project(':ThreeDSecure')
+    implementation project(':PayPalOneTouch')
 }

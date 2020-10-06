@@ -38,6 +38,11 @@ ext {
 
     googlePaymentVersion = '3.3.1'
     playServicesWalletVersion ='16.0.1'
+
+    // link add on libraries to the latest braintree android version
+    // to prevent circular dependencies from occuring
+    // TODO: remove when circular dependencies are eliminated from project
+    braintreeSdkVersion = '3.14.1'
 }
 
 nexusStaging {

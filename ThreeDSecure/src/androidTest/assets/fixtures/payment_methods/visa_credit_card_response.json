@@ -1,0 +1,57 @@
+{
+  "creditCards": [
+    {
+      "type": "CreditCard",
+      "nonce": "123456-12345-12345-a-adfa",
+      "description": "ending in ••11",
+      "default": false,
+      "isLocked": false,
+      "securityQuestions": [],
+      "details":
+      {
+        "cardType": "Visa",
+        "lastTwo": "11",
+        "lastFour": "1111"
+      },
+      "binData": {
+        "prepaid": "Unknown",
+        "healthcare": "Yes",
+        "debit": "No",
+        "durbinRegulated": "Unknown",
+        "commercial": "Unknown",
+        "payroll": "Unknown",
+        "issuingBank": "Unknown",
+        "countryOfIssuance": "Something",
+        "productId": "123"
+      },
+      "threeDSecureInfo": {
+        "cavv": "fake-cavv",
+        "dsTransactionId": "fake-txn-id",
+        "eciFlag": "07",
+        "enrolled": "Y",
+        "liabilityShiftPossible": true,
+        "liabilityShifted": false,
+        "status": "lookup_enrolled",
+        "threeDSecureVersion": "2.2.0",
+        "xid": "fake-xid",
+        "acsTransactionId": "fake-acs-transaction-id",
+        "threeDSecureAuthenticationId": "fake-threedsecure-authentication-id",
+        "threeDSecureServerTransactionId": "fake-threedsecure-server-transaction-id",
+        "paresStatus": "fake-pares-status",
+        "authentication":
+        {
+          "transStatus": "Y",
+          "transStatusReason": "01"
+        },
+        "lookup":
+        {
+          "transStatus": "N",
+          "transStatusReason": "02"
+        }
+      },
+      "authenticationInsight":  {
+        "regulationEnvironment": "UNREGULATED"
+      }
+    }
+  ]
+}

@@ -68,7 +68,12 @@ task :publish_snapshot => :unit_tests do
   sh "./gradlew clean :Core:uploadArchives :BraintreeDataCollector:uploadArchives :PayPalDataCollector:uploadArchives :PayPalOneTouch:uploadArchives :Braintree:uploadArchives :ThreeDSecure:uploadArchives"
 end
 
-desc "Interactive release to publish new version"
+desc "Interactive release to publish new version to maven local"
+task :release_local do
+  sh "./gradlew clean publishToMavenLocal"
+end
+
+desc "Interactive release to publish new version to nexus sonatype"
 task :release => :unit_tests do
   Rake::Task["assumptions"].invoke
 

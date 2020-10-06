@@ -90,7 +90,8 @@ dependencies {
         exclude module: 'com.google.gson'
     }
 
-    implementation project(':Braintree')
+    implementation project(':BraintreeCore')
+    implementation project(':BraintreeDataCollector')
     implementation project(':ThreeDSecure')
 
     implementation playServicesWallet

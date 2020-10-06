@@ -1,5 +1,17 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Breaking Changes
+  * Rename `core` module to `shared-utils`
+  * Rename `braintree` module to `braintree-core`
+  * Move AmericanExpress library to `american-express` module
+  * Move Card library to `card` module
+  * Move LocalPayment library to `local-payment` module
+  * Move PayPal library to `pay-pal` module
+  * Move UnionPay library to `union-pay` module
+  * Move Venmo library to `venmo` module
+
 ## 3.17.0
 
 * Add `bic` (Bank Identification Code) to `LocalPaymentRequest`
