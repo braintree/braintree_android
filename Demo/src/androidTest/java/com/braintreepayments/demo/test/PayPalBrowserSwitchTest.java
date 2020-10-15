@@ -5,7 +5,6 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import com.braintreepayments.demo.test.utilities.TestHelper;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -14,23 +13,15 @@ import static com.braintreepayments.AutomatorAssertion.text;
 import static com.braintreepayments.DeviceAutomator.onDevice;
 import static com.braintreepayments.UiObjectMatcher.withText;
 import static com.braintreepayments.UiObjectMatcher.withTextStartingWith;
-import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.assumePayPalAppInstalled;
-import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.uninstallPayPalWallet;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class PayPalBrowserSwitchTest extends TestHelper {
 
-    @BeforeClass
-    public static void uninstallPayPal() {
-        uninstallPayPalWallet();
-    }
-
     @Before
     public void setup() {
         super.setup();
-        assumePayPalAppInstalled(false);
         onDevice(withText("PayPal")).waitForEnabled().perform(click());
     }
 

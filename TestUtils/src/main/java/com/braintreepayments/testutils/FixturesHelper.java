@@ -1,5 +1,7 @@
 package com.braintreepayments.testutils;
 
+import android.util.Base64;
+
 import androidx.test.core.app.ApplicationProvider;
 
 import com.braintreepayments.api.internal.StreamHelper;
@@ -10,8 +12,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Base64;
-
 
 public class FixturesHelper {
 
@@ -33,9 +33,9 @@ public class FixturesHelper {
     public static String base64EncodedClientTokenFromFixture(String filename) {
         try {
             try {
-                return Base64.getEncoder().encodeToString(stringFromAndroidFixture(filename).getBytes());
+                return Base64.encodeToString(stringFromAndroidFixture(filename).getBytes(), Base64.NO_WRAP);
             } catch (RuntimeException | FileNotFoundException | Error e) {
-                return Base64.getEncoder().encodeToString(stringFromUnitTestFixture(filename).getBytes());
+                return Base64.encodeToString(stringFromUnitTestFixture(filename).getBytes(), Base64.NO_WRAP);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -15,7 +15,6 @@ import com.braintreepayments.api.models.PayPalTwoFactorAuthRequest;
 import com.braintreepayments.api.models.PayPalTwoFactorAuthResponse;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.paypal.android.sdk.data.collector.PayPalDataCollector;
 
 import org.json.JSONException;
 import org.json.JSONObject;

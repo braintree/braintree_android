@@ -1,5 +1,6 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
 
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
@@ -15,10 +16,6 @@ import com.braintreepayments.api.models.PreferredPaymentMethodsResult;
  */
 public class PreferredPaymentMethods {
 
-    private static final int NO_FLAGS = 0;
-    private static final String PAYPAL_APP_PACKAGE = "com.paypal.android.p2pmobile";
-    private static final String VENMO_APP_PACKAGE = "com.venmo";
-
     /**
      * Fetches information about which payment methods should be given preference in your UI.
      *
@@ -27,15 +24,9 @@ public class PreferredPaymentMethods {
      */
     public static void fetchPreferredPaymentMethods(final BraintreeFragment fragment, final PreferredPaymentMethodsListener listener) {
 
-        boolean isPayPalAppInstalled = false;
-        boolean isVenmoAppInstalled = false;
-        try {
-            PackageManager packageManager = fragment.getApplicationContext().getPackageManager();
-            isPayPalAppInstalled = packageManager.getApplicationInfo(PAYPAL_APP_PACKAGE, NO_FLAGS) != null;
-            isVenmoAppInstalled = Venmo.isVenmoInstalled(fragment.getApplicationContext());
-        } catch (PackageManager.NameNotFoundException ignored) {
-            // do nothing
-        }
+        Context applicationContext = fragment.getApplicationContext();
+        boolean isVenmoAppInstalled = DeviceCapabilities.isVenmoInstalled(applicationContext);
+        boolean isPayPalAppInstalled = DeviceCapabilities.isPayPalInstalled(applicationContext);
 
         fragment.sendAnalyticsEvent(String.format("preferred-payment-methods.venmo.app-installed.%b", isVenmoAppInstalled));
 

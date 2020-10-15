@@ -40,5 +40,4 @@ dependencies {
 
     implementation project(':BraintreeCore')
     implementation project(':ThreeDSecure')
-    implementation project(':PayPalOneTouch')
 }

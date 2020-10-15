@@ -5,12 +5,14 @@
 * Breaking Changes
   * Rename `core` module to `shared-utils`
   * Rename `braintree` module to `braintree-core`
-  * Move AmericanExpress library to `american-express` module
-  * Move Card library to `card` module
-  * Move LocalPayment library to `local-payment` module
-  * Move PayPal library to `pay-pal` module
-  * Move UnionPay library to `union-pay` module
-  * Move Venmo library to `venmo` module
+  * Create `american-express` module
+  * Create `card` module
+  * Create `local-payment` module
+  * Create `pay-pal` module
+  * Create `union-pay` module
+  * Create `venmo` module
+  * Delete PayPal `data-collector` module
+  * Delete PayPal `paypal-one-touch` module
 
 ## 3.17.0
 

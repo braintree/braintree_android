@@ -1,19 +1,19 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PreferredPaymentMethodsListener;
-import com.braintreepayments.api.internal.SignatureVerificationUnitTestUtils;
 import com.braintreepayments.api.models.PreferredPaymentMethodsResult;
-import com.braintreepayments.api.test.VenmoInstalledContextFactory;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
 import java.util.concurrent.CountDownLatch;
@@ -23,29 +23,30 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(RobolectricTestRunner.class)
+@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*", "org.json.*" })
+@PrepareForTest({ DeviceCapabilities.class })
 public class PreferredPaymentMethodsTest {
 
-    private CountDownLatch mCountDownLatch;
+    @Rule
+    public PowerMockRule mPowerMockRule = new PowerMockRule();
 
-    private Context mockContext = mock(Context.class);
-    private PackageManager mockPackageManager = mock(PackageManager.class);
+    private CountDownLatch mCountDownLatch;
+    private Context mockContext;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
+        mockStatic(DeviceCapabilities.class);
         mCountDownLatch = new CountDownLatch(1);
-
-        when(mockContext.getPackageManager()).thenReturn(mockPackageManager);
+        mockContext = mock(Context.class);
 
         // by default, simulate PayPal and Venmo apps not installed
-        when(mockPackageManager.getApplicationInfo("com.paypal.android.p2pmobile", 0))
-                .thenThrow(new PackageManager.NameNotFoundException());
-        when(mockPackageManager.getApplicationInfo("com.venmo", 0))
-                .thenThrow(new PackageManager.NameNotFoundException());
+        when(DeviceCapabilities.isPayPalInstalled(mockContext)).thenReturn(false);
+        when(DeviceCapabilities.isVenmoInstalled(mockContext)).thenReturn(false);
     }
 
     @Test
@@ -54,9 +55,7 @@ public class PreferredPaymentMethodsTest {
                 .context(mockContext)
                 .build();
 
-        // simulate PayPal app installed
-        reset(mockPackageManager);
-        when(mockPackageManager.getApplicationInfo("com.paypal.android.p2pmobile", 0)).thenReturn(new ApplicationInfo());
+        when(DeviceCapabilities.isPayPalInstalled(mockContext)).thenReturn(true);
 
         PreferredPaymentMethods.fetchPreferredPaymentMethods(mockFragment, new PreferredPaymentMethodsListener() {
             @Override
@@ -72,15 +71,11 @@ public class PreferredPaymentMethodsTest {
 
     @Test
     public void fetchPreferredPaymentMethods_whenVenmoAppIsInstalled_callsListenerWithTrue() throws Exception {
-        SignatureVerificationUnitTestUtils.disableSignatureVerification();
-
-        // simulate Venmo app installed
-        mockContext = VenmoInstalledContextFactory.venmoInstalledContext(true);
-
         final BraintreeFragment mockFragment = new MockFragmentBuilder()
                 .context(mockContext)
                 .build();
 
+        when(DeviceCapabilities.isVenmoInstalled(mockContext)).thenReturn(true);
         when(mockFragment.getGraphQLHttpClient()).thenReturn(null);
 
         PreferredPaymentMethods.fetchPreferredPaymentMethods(mockFragment, new PreferredPaymentMethodsListener() {

@@ -4,8 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.annotation.StringDef;
 
-import com.paypal.android.sdk.onetouch.core.PayPalLineItem;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -75,7 +73,7 @@ public class PayPalRequest implements Parcelable {
     private boolean mOfferPayLater;
     private String mMerchantAccountId;
     private PayPalProductAttributes mProductAttributes;
-    private ArrayList<PayPalLineItem> mLineItems = new ArrayList<>();
+    private ArrayList<PayPalApiLineItem> mLineItems = new ArrayList<>();
 
     /**
      * Constructs a description of a PayPal checkout for Single Payment and Billing Agreements.
@@ -301,9 +299,9 @@ public class PayPalRequest implements Parcelable {
     /**
      * The line items for this transaction. It can include up to 249 line items.
      *
-     * @param lineItems a collection of {@link PayPalLineItem}
+     * @param lineItems a collection of {@link PayPalApiLineItem}
      */
-    public PayPalRequest lineItems(Collection<PayPalLineItem> lineItems) {
+    public PayPalRequest lineItems(Collection<PayPalApiLineItem> lineItems) {
         mLineItems.clear();
         mLineItems.addAll(lineItems);
         return this;
@@ -358,7 +356,7 @@ public class PayPalRequest implements Parcelable {
         return mMerchantAccountId;
     }
 
-    public ArrayList<PayPalLineItem> getLineItems() {
+    public ArrayList<PayPalApiLineItem> getLineItems() {
         return mLineItems;
     }
 
@@ -421,7 +419,7 @@ public class PayPalRequest implements Parcelable {
         mOfferCredit = in.readByte() > 0;
         mOfferPayLater = in.readByte() > 0;
         mMerchantAccountId = in.readString();
-        mLineItems = in.readArrayList(PayPalLineItem.class.getClassLoader());
+        mLineItems = in.readArrayList(PayPalApiLineItem.class.getClassLoader());
         mProductAttributes = in.readParcelable(PayPalProductAttributes.class.getClassLoader());
     }
 

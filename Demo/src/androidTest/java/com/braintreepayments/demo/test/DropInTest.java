@@ -16,7 +16,6 @@ import static com.braintreepayments.DeviceAutomator.onDevice;
 import static com.braintreepayments.UiObjectMatcher.withText;
 import static com.braintreepayments.UiObjectMatcher.withTextContaining;
 import static com.braintreepayments.UiObjectMatcher.withTextStartingWith;
-import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.uninstallPayPalWallet;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
@@ -49,8 +48,6 @@ public class DropInTest extends TestHelper {
 
     @Test(timeout = 60000)
     public void tokenizesPayPal() {
-        uninstallPayPalWallet();
-
         onDevice(withText("PayPal")).perform(click());
         onDevice(withText("Proceed with Sandbox Purchase")).waitForExists();
         onDevice(withText("Proceed with Sandbox Purchase")).perform(click());

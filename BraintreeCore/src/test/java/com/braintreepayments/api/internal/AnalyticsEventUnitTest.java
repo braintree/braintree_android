@@ -1,11 +1,11 @@
 package com.braintreepayments.api.internal;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 import com.braintreepayments.api.Venmo;
-import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import org.json.JSONException;
 import org.junit.Rule;
@@ -42,13 +42,16 @@ public class AnalyticsEventUnitTest {
         // WORKAROUND: Stubbing version name here because Android Gradle Plugin 4.0 causes Robolectric
         // 4.3 to return null for version name. Version name is correctly returned in the emulator
         Context context = spy(RuntimeEnvironment.application);
-        PackageManager packageManager = spy(context.getPackageManager());
+        PackageManager packageManager = mock(PackageManager.class);
 
         when(context.getPackageManager()).thenReturn(packageManager);
 
         PackageInfo packageInfo = mock(PackageInfo.class);
         packageInfo.versionName = "sampleVersionName";
         when(packageManager.getPackageInfo("com.braintreepayments.api.test", 0)).thenReturn(packageInfo);
+
+        ApplicationInfo paypalAppInfo = mock(ApplicationInfo.class);
+        when(packageManager.getApplicationInfo("com.paypal.android.p2pmobile", 0)).thenReturn(paypalAppInfo);
 
         AnalyticsEvent analyticsEvent = new AnalyticsEvent(context, "sessionId",
                 "custom", "card.nonce-received");
@@ -60,9 +63,8 @@ public class AnalyticsEventUnitTest {
         assertNotNull(analyticsEvent.metadata.getString("deviceNetworkType"));
         assertNotNull(analyticsEvent.metadata.getString("userInterfaceOrientation"));
         assertEquals("sampleVersionName", analyticsEvent.metadata.getString("merchantAppVersion"));
-        assertEquals(PayPalOneTouchCore.isWalletAppInstalled(RuntimeEnvironment.application),
-                analyticsEvent.metadata.getBoolean("paypalInstalled"));
-        assertEquals(Venmo.isVenmoInstalled(RuntimeEnvironment.application),
+        assertTrue(analyticsEvent.metadata.getBoolean("paypalInstalled"));
+        assertEquals(Venmo.isVenmoAppSwitchAvailable(RuntimeEnvironment.application),
                 analyticsEvent.metadata.getBoolean("venmoInstalled"));
         assertEquals("custom",
                 analyticsEvent.metadata.getString("integrationType"));

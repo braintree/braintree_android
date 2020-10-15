@@ -98,7 +98,7 @@ public class VenmoUnitTest {
     @Test
     public void isVenmoInstalled_returnsTrueWhenInstalled() {
         disableSignatureVerification();
-        assertTrue(Venmo.isVenmoInstalled(VenmoInstalledContextFactory.venmoInstalledContext(true)));
+        assertTrue(Venmo.isVenmoAppSwitchAvailable(VenmoInstalledContextFactory.venmoInstalledContext(true)));
     }
 
     @Test

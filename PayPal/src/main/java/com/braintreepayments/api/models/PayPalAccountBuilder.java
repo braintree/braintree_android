@@ -2,7 +2,6 @@ package com.braintreepayments.api.models;
 
 import android.content.Context;
 
-import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.models.PayPalRequest.PayPalPaymentIntent;
 
 import org.json.JSONException;
@@ -33,7 +32,7 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
      * Used by PayPal wrappers to construct a request to create a PayPal account.
      *
      * @param clientMetadataId Application clientMetadataId created by
-     * {@link com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore#getClientMetadataId(Context)}.
+     * {@link com.braintreepayments.api.PayPalDataCollector#getClientMetadataId(Context)}.
      * @return {@link PayPalAccountBuilder}
      */
     public PayPalAccountBuilder clientMetadataId(String clientMetadataId) {

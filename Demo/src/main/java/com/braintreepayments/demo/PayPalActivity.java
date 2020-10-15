@@ -2,10 +2,10 @@ package com.braintreepayments.demo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.DataCollector;
@@ -20,7 +20,6 @@ import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
-import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +29,6 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
 
     private String mDeviceData;
 
-    private TextView mPayPalAppIndicator;
     private Button mBillingAgreementButton;
     private Button mSinglePaymentButton;
 
@@ -41,7 +39,6 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
         setContentView(R.layout.paypal_activity);
         setUpAsBack();
 
-        mPayPalAppIndicator = findViewById(R.id.paypal_wallet_app_indicator);
         mBillingAgreementButton = findViewById(R.id.paypal_billing_agreement_button);
         mSinglePaymentButton = findViewById(R.id.paypal_single_payment_button);
     }
@@ -49,9 +46,6 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
     @Override
     protected void onResume() {
         super.onResume();
-
-        mPayPalAppIndicator.setText(getString(R.string.paypal_wallet_available,
-                PayPalOneTouchCore.isWalletAppInstalled(this)));
     }
 
     @Override

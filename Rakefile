@@ -13,16 +13,16 @@ end
 
 # Usage:
 #   rake unit_tests
-#   rake unit_tests"[com.braintreepayments.api.CardUnitTest,braintree]"
-#   rake unit_tests"[com.braintreepayments.api.CardUnitTest,braintree,tokenize_sendsAnalyticsEventOnSuccess]"
+#   rake unit_tests"[com.braintreepayments.api.CardUnitTest,Card]"
+#   rake unit_tests"[com.braintreepayments.api.CardUnitTest,Card,tokenize_sendsAnalyticsEventOnSuccess]"
 desc "Run Android unit tests"
 task :unit_tests, [:qualified_class, :module_name, :test_name] => :lint do |task, args|
   if args.module_name.nil?
-    sh "./gradlew --continue test"
+    sh "./gradlew --continue testRelease"
   elsif args.test_name.nil?
-    sh "./gradlew #{args[:module_name]}:testDebugUnitTest --tests #{args[:qualified_class]}"
+    sh "./gradlew #{args[:module_name]}:testRelease --tests #{args[:qualified_class]}"
   else
-    sh "./gradlew #{args[:module_name]}:testDebugUnitTest --tests #{args[:qualified_class]}.#{args[:test_name]}"
+    sh "./gradlew #{args[:module_name]}:testRelease --tests #{args[:qualified_class]}.#{args[:test_name]}"
   end
 end
 
@@ -35,7 +35,6 @@ task :integration_tests, [:qualified_class, :module_name, :test_name] do |task, 
   output = `adb devices`
   if output.match(/device$/)
     begin
-      `adb uninstall com.paypal.android.p2pmobile > /dev/null`
       log_listener_pid = fork { exec 'ruby', 'script/log_listener.rb' }
       sh "ruby script/httpsd.rb /tmp/httpsd.pid"
       if args.file_path.nil?
@@ -53,19 +52,6 @@ task :integration_tests, [:qualified_class, :module_name, :test_name] do |task, 
     puts "Please connect a device or start an emulator and try again"
     exit 1
   end
-end
-
-desc "Publish current version as a SNAPSHOT"
-task :publish_snapshot => :unit_tests do
-  abort("Version must contain '-SNAPSHOT'!") unless get_current_version.end_with?('-SNAPSHOT')
-
-  puts "Ensure integration tests are passing by executing `rake integration_tests`."
-
-  $stdin.gets
-
-  prompt_for_sonatype_username_and_password
-
-  sh "./gradlew clean :Core:uploadArchives :BraintreeDataCollector:uploadArchives :PayPalDataCollector:uploadArchives :PayPalOneTouch:uploadArchives :Braintree:uploadArchives :ThreeDSecure:uploadArchives"
 end
 
 desc "Interactive release to publish new version to maven local"
@@ -86,7 +72,6 @@ task :release => :unit_tests do
   prompt_for_sonatype_username_and_password
 
   Rake::Task["release_braintree"].invoke
-  Rake::Task["release_paypal"].invoke
 
   post_release(version)
 end
@@ -103,15 +88,9 @@ task :assumptions do
 end
 
 task :release_braintree do
-  sh "./gradlew clean :Core:publishToSonatype :BraintreeDataCollector:publishToSonatype :Braintree:publishToSonatype :ThreeDSecure:publishToSonatype"
+  sh "./gradlew clean :AmericanExpress:publishToSonatype :BraintreeCore:publishToSonatype :BraintreeDataCollector:publishToSonatype :Card:publishToSonatype :LocalPayment:publishToSonatype :PayPal:publishToSonatype :SharedUtils:publishToSonatype :ThreeDSecure:publishToSonatype :UnionPay:publishToSonatype :Venmo:publishToSonatype"
   sh "./gradlew closeAndReleaseRepository"
   puts "Braintree modules have been released"
-end
-
-task :release_paypal do
-  sh "./gradlew -PnexusPackageGroup=com.paypal clean :PayPalDataCollector:publishToSonatype :PayPalOneTouch:publishToSonatype"
-  sh "./gradlew -PnexusPackageGroup=com.paypal closeAndReleaseRepository"
-  puts "PayPal modules have been released"
 end
 
 desc "Complete Github merge if Sonatype times out"
@@ -158,7 +137,6 @@ def post_release(version)
   version_values = version.split('.')
   version_values[2] = version_values[2].to_i + 1
   update_version("#{version_values.join('.')}-SNAPSHOT")
-  update_readme_snapshot_version(version_values.join('.'))
   increment_version_code
   sh "git commit -am 'Prepare for development'"
 
@@ -210,14 +188,6 @@ def update_readme_version(version)
   IO.write("README.md",
     File.open("README.md") do |file|
       file.read.gsub(/:braintree:\d+\.\d+\.\d+'/, ":braintree:#{version}'")
-    end
-  )
-end
-
-def update_readme_snapshot_version(snapshot_version)
-  IO.write("README.md",
-    File.open("README.md") do |file|
-      file.read.gsub(/:braintree:\d+\.\d+\.\d+-SNAPSHOT'/, ":braintree:#{snapshot_version}-SNAPSHOT'")
     end
   )
 end

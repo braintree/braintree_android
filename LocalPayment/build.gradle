@@ -30,6 +30,7 @@ def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProj
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation project(':BraintreeDataCollector')
 
     // TODO: replace with `implementation project(:Braintree)` once LocalPaymentClient is created
     compileOnly("com.braintreepayments.api:braintree:${rootProject.braintreeSdkVersion}") {

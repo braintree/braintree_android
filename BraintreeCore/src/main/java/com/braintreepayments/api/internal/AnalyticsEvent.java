@@ -1,13 +1,14 @@
 package com.braintreepayments.api.internal;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.braintreepayments.api.DeviceCapabilities;
 import com.braintreepayments.api.Venmo;
-import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +23,9 @@ public class AnalyticsEvent {
     private static final String VENMO_INSTALLED_KEY = "venmoInstalled";
     private static final String INTEGRATION_TYPE_KEY = "integrationType";
     private static final String DROP_IN_VERSION_KEY = "dropinVersion";
+
+    private static final int NO_FLAGS = 0;
+    private static final String PAYPAL_APP_PACKAGE = "com.paypal.android.p2pmobile";
 
     int id;
     String event;
@@ -39,8 +43,8 @@ public class AnalyticsEvent {
                     .put(DEVICE_NETWORK_TYPE_KEY, getNetworkType(context))
                     .put(USER_INTERFACE_ORIENTATION_KEY, getUserOrientation(context))
                     .put(MERCHANT_APP_VERSION_KEY, getAppVersion(context))
-                    .put(PAYPAL_INSTALLED_KEY, isPayPalInstalled(context))
-                    .put(VENMO_INSTALLED_KEY, Venmo.isVenmoInstalled(context))
+                    .put(PAYPAL_INSTALLED_KEY, DeviceCapabilities.isPayPalInstalled(context))
+                    .put(VENMO_INSTALLED_KEY, DeviceCapabilities.isVenmoInstalled(context))
                     .put(DROP_IN_VERSION_KEY, getDropInVersion());
         } catch (JSONException ignored) {}
     }
@@ -76,15 +80,6 @@ public class AnalyticsEvent {
             return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
         } catch (NameNotFoundException e) {
             return "VersionUnknown";
-        }
-    }
-
-    private boolean isPayPalInstalled(Context context) {
-        try {
-            Class.forName(PayPalOneTouchCore.class.getName());
-            return PayPalOneTouchCore.isWalletAppInstalled(context);
-        } catch (ClassNotFoundException | NoClassDefFoundError ignored) {
-            return false;
         }
     }
 

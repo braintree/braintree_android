@@ -71,7 +71,7 @@ public class VenmoConfiguration {
      * @return boolean if Venmo is enabled, and available to be used
      */
     public boolean isEnabled(Context context) {
-        return isAccessTokenValid() && Venmo.isVenmoInstalled(context);
+        return isAccessTokenValid() && Venmo.isVenmoAppSwitchAvailable(context);
     }
 
     public boolean isAccessTokenValid() {

@@ -33,7 +33,6 @@ import com.braintreepayments.demo.internal.ApiClient;
 import com.braintreepayments.demo.internal.ApiClientRequestInterceptor;
 import com.braintreepayments.demo.models.ClientToken;
 import com.braintreepayments.demo.models.PayPalUAT;
-import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import java.util.Arrays;
 import java.util.List;
@@ -83,7 +82,6 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
 
         SignatureVerificationOverrides.disableAppSwitchSignatureVerification(
                 Settings.isPayPalSignatureVerificationDisabled(this));
-        PayPalOneTouchCore.useHardcodedConfig(this, Settings.useHardcodedPayPalConfiguration(this));
 
         if (BuildConfig.DEBUG && ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {

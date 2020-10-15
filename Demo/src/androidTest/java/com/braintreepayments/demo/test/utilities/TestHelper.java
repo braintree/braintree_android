@@ -26,7 +26,7 @@ public class TestHelper {
     @SuppressLint("ApplySharedPref")
     public void setup() {
         clearPreference("BraintreeApi");
-        clearPreference("PayPalOTC");
+        clearPreference("com.braintreepayments.api.paypal");
 
         PreferenceManager.getDefaultSharedPreferences(ApplicationProvider.getApplicationContext())
                 .edit()

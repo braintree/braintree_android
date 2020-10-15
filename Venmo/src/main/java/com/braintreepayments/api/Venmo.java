@@ -52,7 +52,7 @@ public class Venmo {
      * @param context A context to access the installed packages.
      * @return boolean depending on if the Venmo app is installed, and has a valid signature.
      */
-    public static boolean isVenmoInstalled(Context context) {
+    public static boolean isVenmoAppSwitchAvailable(Context context) {
         return AppHelper.isIntentAvailable(context, getVenmoIntent()) &&
                 SignatureVerification.isSignatureValid(context, PACKAGE_NAME, CERTIFICATE_SUBJECT, CERTIFICATE_ISSUER,
                         PUBLIC_KEY_HASH_CODE);
@@ -125,7 +125,7 @@ public class Venmo {
                 String exceptionMessage = "";
                 if (!configuration.getPayWithVenmo().isAccessTokenValid()) {
                     exceptionMessage = "Venmo is not enabled";
-                } else if (!Venmo.isVenmoInstalled(fragment.getApplicationContext())) {
+                } else if (!Venmo.isVenmoAppSwitchAvailable(fragment.getApplicationContext())) {
                     exceptionMessage = "Venmo is not installed";
                 }
 

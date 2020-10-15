@@ -2,7 +2,6 @@ package com.braintreepayments.api;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.internal.ManifestValidator;
@@ -14,13 +13,6 @@ import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalInitService;
 import com.cardinalcommerce.cardinalmobilesdk.services.CardinalValidateReceiver;
-import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
-import com.paypal.android.sdk.onetouch.core.Request;
-import com.paypal.android.sdk.onetouch.core.Result;
-import com.paypal.android.sdk.onetouch.core.enums.RequestTarget;
-import com.paypal.android.sdk.onetouch.core.enums.ResponseType;
-import com.paypal.android.sdk.onetouch.core.enums.ResultType;
-import com.paypal.android.sdk.onetouch.core.sdk.PendingRequest;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -98,31 +90,6 @@ class BraintreePowerMockHelper {
             Cardinal.getInstance();
 
             return cruiseService;
-        }
-    }
-
-    static class MockStaticPayPalOneTouch {
-        static void parseResponse(final ResultType wantedResultType) {
-            mockStatic(PayPalOneTouchCore.class);
-            doAnswer(new Answer<Result>() {
-                @Override
-                public Result answer(InvocationOnMock invocation) {
-                    return new Result("test", ResponseType.web, null, "");
-                }
-            }).when(PayPalOneTouchCore.class);
-            PayPalOneTouchCore.parseResponse(any(Context.class), any(Request.class), any(Intent.class));
-        }
-
-        static void getStartIntent(final String switchType) {
-            mockStatic(PayPalOneTouchCore.class);
-            doAnswer(new Answer<PendingRequest>() {
-                @Override
-                public PendingRequest answer(InvocationOnMock invocation) {
-                    RequestTarget requestTarget = "browser-switch".equals(switchType) ? RequestTarget.browser : RequestTarget.wallet;
-                    return new PendingRequest(true, requestTarget, "", null);
-                }
-            }).when(PayPalOneTouchCore.class);
-            PayPalOneTouchCore.getStartIntent(any(Context.class), any(Request.class));
         }
     }
 

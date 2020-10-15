@@ -18,8 +18,6 @@ import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PayPalTwoFactorAuthRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
-import com.paypal.android.sdk.data.collector.PayPalDataCollector;
-import com.paypal.android.sdk.onetouch.core.config.Recipe;
 
 import org.json.JSONException;
 import org.junit.Before;
@@ -51,7 +49,7 @@ import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-@PrepareForTest({PayPalTwoFactorAuthSharedPreferences.class, PayPal.class, Recipe.class, PayPalDataCollector.class})
+@PrepareForTest({PayPalTwoFactorAuthSharedPreferences.class, PayPal.class, PayPalDataCollector.class})
 @PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "javax.crypto.*" })
 public class PayPalTwoFactorAuthUnitTest {
     @Rule
@@ -73,9 +71,6 @@ public class PayPalTwoFactorAuthUnitTest {
     public void setup() throws Exception {
         spy(PayPal.class);
         doReturn(true).when(PayPal.class, "isManifestValid", any(Context.class));
-
-        spy(Recipe.class);
-        doReturn(true).when(Recipe.class, "isValidBrowserTarget", any(Context.class), anyString(), anyString());
 
         Authorization authorization = mock(Authorization.class);
         when(authorization.getBearer()).thenReturn("authorization");

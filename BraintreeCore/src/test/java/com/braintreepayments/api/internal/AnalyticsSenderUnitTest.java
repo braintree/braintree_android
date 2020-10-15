@@ -9,7 +9,6 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.Authorization;
-import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,7 +22,6 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
-import java.io.IOException;
 import java.util.List;
 
 import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.awaitTasksFinished;
@@ -102,9 +100,8 @@ public class AnalyticsSenderUnitTest {
         assertEquals("custom", meta.getString("integrationType"));
         assertEquals("sessionId", meta.getString("sessionId"));
         assertFalse(meta.getString("sessionId").contains("-"));
-        assertEquals(PayPalOneTouchCore.isWalletAppInstalled(RuntimeEnvironment.application),
-                meta.getBoolean("paypalInstalled"));
-        assertEquals(Venmo.isVenmoInstalled(RuntimeEnvironment.application),
+        assertFalse(meta.getBoolean("paypalInstalled"));
+        assertEquals(Venmo.isVenmoAppSwitchAvailable(RuntimeEnvironment.application),
                 meta.getBoolean("venmoInstalled"));
     }
 

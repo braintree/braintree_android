@@ -1,6 +1,6 @@
 package com.braintreepayments.api.interfaces;
 
-import com.paypal.android.sdk.onetouch.core.Request;
+import com.braintreepayments.api.models.PayPalApiRequest;
 
 /**
  * Interface that could be extended for custom authentication and authorization of PayPal.
@@ -15,5 +15,5 @@ public interface PayPalApprovalHandler {
      * @param request PayPal request object.
      * @param paypalApprovalCallback callback method to handle response.
      */
-    void handleApproval(Request request, PayPalApprovalCallback paypalApprovalCallback);
+    void handleApproval(PayPalApiRequest request, PayPalApprovalCallback paypalApprovalCallback);
 }

@@ -3,13 +3,13 @@ package com.braintreepayments.api;
 import android.os.Parcel;
 
 import com.braintreepayments.api.models.Configuration;
-import com.paypal.android.sdk.onetouch.core.PayPalLineItem;
+import com.braintreepayments.api.models.PayPalApiLineItem;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PostalAddress;
-import com.paypal.android.sdk.onetouch.core.BillingAgreementRequest;
-import com.paypal.android.sdk.onetouch.core.CheckoutRequest;
-import com.paypal.android.sdk.onetouch.core.Request;
-import com.paypal.android.sdk.onetouch.core.network.EnvironmentManager;
+import com.braintreepayments.api.models.PayPalApiBillingAgreementRequest;
+import com.braintreepayments.api.models.PayPalApiCheckoutRequest;
+import com.braintreepayments.api.models.PayPalApiRequest;
+import com.braintreepayments.api.network.PayPalApiEnvironmentManager;
 
 import org.json.JSONException;
 import org.junit.Before;
@@ -40,9 +40,9 @@ public class PayPalRequestUnitTest {
         Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_offline_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder.configuration(configuration).build();
 
-        CheckoutRequest request = PayPal.getCheckoutRequest(fragment, "https://paypal.com/?token=pairingId");
+        PayPalApiCheckoutRequest request = PayPal.getCheckoutRequest(fragment, "https://paypal.com/?token=pairingId");
 
-        assertEquals(EnvironmentManager.MOCK, request.getEnvironment());
+        assertEquals(PayPalApiEnvironmentManager.MOCK, request.getEnvironment());
         assertEquals("com.braintreepayments.api.braintree://onetouch/v1/cancel", request.getCancelUrl());
         assertEquals("com.braintreepayments.api.braintree://onetouch/v1/success", request.getSuccessUrl());
         assertEquals("paypal_client_id", request.getClientId());
@@ -54,9 +54,9 @@ public class PayPalRequestUnitTest {
         Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_live_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder.configuration(configuration).build();
 
-        Request request = PayPal.getCheckoutRequest(fragment, null);
+        PayPalApiRequest request = PayPal.getCheckoutRequest(fragment, null);
 
-        assertEquals(EnvironmentManager.LIVE, request.getEnvironment());
+        assertEquals(PayPalApiEnvironmentManager.LIVE, request.getEnvironment());
     }
 
     @Test
@@ -64,9 +64,9 @@ public class PayPalRequestUnitTest {
         Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_offline_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder.configuration(configuration).build();
 
-        Request request = PayPal.getCheckoutRequest(fragment, null);
+        PayPalApiRequest request = PayPal.getCheckoutRequest(fragment, null);
 
-        assertEquals(EnvironmentManager.MOCK, request.getEnvironment());
+        assertEquals(PayPalApiEnvironmentManager.MOCK, request.getEnvironment());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class PayPalRequestUnitTest {
         Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_custom_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder.configuration(configuration).build();
 
-        Request request = PayPal.getCheckoutRequest(fragment, null);
+        PayPalApiRequest request = PayPal.getCheckoutRequest(fragment, null);
 
         assertEquals("custom", request.getEnvironment());
     }
@@ -84,10 +84,10 @@ public class PayPalRequestUnitTest {
         Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_offline_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder.configuration(configuration).build();
 
-        BillingAgreementRequest request = PayPal.getBillingAgreementRequest(fragment,
+        PayPalApiBillingAgreementRequest request = PayPal.getBillingAgreementRequest(fragment,
                 "https://paypal.com/?ba_token=pairingId");
 
-        assertEquals(EnvironmentManager.MOCK, request.getEnvironment());
+        assertEquals(PayPalApiEnvironmentManager.MOCK, request.getEnvironment());
         assertEquals("com.braintreepayments.api.braintree://onetouch/v1/cancel", request.getCancelUrl());
         assertEquals("com.braintreepayments.api.braintree://onetouch/v1/success", request.getSuccessUrl());
         assertEquals("paypal_client_id", request.getClientId());
@@ -99,9 +99,9 @@ public class PayPalRequestUnitTest {
         Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_live_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder.configuration(configuration).build();
 
-        Request request = PayPal.getBillingAgreementRequest(fragment, null);
+        PayPalApiRequest request = PayPal.getBillingAgreementRequest(fragment, null);
 
-        assertEquals(EnvironmentManager.LIVE, request.getEnvironment());
+        assertEquals(PayPalApiEnvironmentManager.LIVE, request.getEnvironment());
     }
 
     @Test
@@ -109,9 +109,9 @@ public class PayPalRequestUnitTest {
         Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_offline_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder.configuration(configuration).build();
 
-        Request request = PayPal.getBillingAgreementRequest(fragment, null);
+        PayPalApiRequest request = PayPal.getBillingAgreementRequest(fragment, null);
 
-        assertEquals(EnvironmentManager.MOCK, request.getEnvironment());
+        assertEquals(PayPalApiEnvironmentManager.MOCK, request.getEnvironment());
     }
 
     @Test
@@ -119,7 +119,7 @@ public class PayPalRequestUnitTest {
         Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/with_custom_paypal.json"));
         BraintreeFragment fragment = mMockFragmentBuilder.configuration(configuration).build();
 
-        Request request = PayPal.getBillingAgreementRequest(fragment, null);
+        PayPalApiRequest request = PayPal.getBillingAgreementRequest(fragment, null);
 
         assertEquals("custom", request.getEnvironment());
     }
@@ -142,8 +142,8 @@ public class PayPalRequestUnitTest {
                 .offerPayLater(true)
                 .merchantAccountId("merchant_account_id");
 
-        ArrayList<PayPalLineItem> lineItems = new ArrayList<PayPalLineItem>();
-        lineItems.add(new PayPalLineItem(PayPalLineItem.KIND_DEBIT, "An Item", "1", "1"));
+        ArrayList<PayPalApiLineItem> lineItems = new ArrayList<PayPalApiLineItem>();
+        lineItems.add(new PayPalApiLineItem(PayPalApiLineItem.KIND_DEBIT, "An Item", "1", "1"));
         request.lineItems(lineItems);
 
         Parcel parcel = Parcel.obtain();

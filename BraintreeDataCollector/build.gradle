@@ -40,7 +40,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.1'
 
     api files('libs/kount-data-collector-3.2.jar')
-    api project(':PayPalOneTouch')
+    api files('libs/paypal-data-collector-4.1.2.jar')
 
     // TODO: replace with `implementation project(:Braintree)` once DataCollectorClient is created
     compileOnly("com.braintreepayments.api:braintree:${rootProject.braintreeSdkVersion}") {
@@ -62,6 +62,10 @@ dependencies {
     testImplementation 'org.skyscreamer:jsonassert:1.4.0'
 
     testImplementation project(':TestUtils')
+
+    androidTestImplementation 'androidx.test:rules:1.1.1'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
 }
 
 // region signing and publishing

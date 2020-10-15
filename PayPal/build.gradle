@@ -30,6 +30,7 @@ def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProj
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation project(':BraintreeDataCollector')
 
     // TODO: replace with `implementation project(:Braintree)` once PayPalClient is created
     compileOnly("com.braintreepayments.api:braintree:${rootProject.braintreeSdkVersion}") {
@@ -51,7 +52,6 @@ dependencies {
     testImplementation 'org.skyscreamer:jsonassert:1.4.0'
     testImplementation project(':TestUtils')
     testImplementation project(':ThreeDSecure')
-    testImplementation project(':PayPalOneTouch')
 }
 
 // region signing and publishing

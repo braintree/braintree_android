@@ -13,10 +13,6 @@ import com.braintreepayments.api.internal.UUIDHelper;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.paypal.android.sdk.data.collector.InstallationIdentifier;
-import com.paypal.android.sdk.data.collector.PayPalDataCollector;
-import com.paypal.android.sdk.data.collector.PayPalDataCollectorRequest;
-import com.paypal.android.sdk.onetouch.core.PayPalOneTouchCore;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -126,10 +122,6 @@ public class DataCollector {
      */
     public static String getPayPalClientMetadataId(Context context) {
         try {
-            return PayPalOneTouchCore.getClientMetadataId(context);
-        } catch (NoClassDefFoundError ignored) {}
-
-        try {
             return PayPalDataCollector.getClientMetadataId(context);
         } catch (NoClassDefFoundError ignored) {}
 
@@ -193,7 +185,7 @@ public class DataCollector {
                     }
 
                     PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
-                            .setApplicationGuid(InstallationIdentifier.getInstallationGUID(fragment.getApplicationContext()))
+                            .setApplicationGuid(PayPalInstallationIdentifier.getInstallationGUID(fragment.getApplicationContext()))
                             .setClientMetadataId(paymentMethodNonce.getNonce())
                             .setDisableBeacon(true)
                             .setAdditionalData(additionalProperties);

@@ -14,7 +14,6 @@ import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.LocalPaymentRequest;
 import com.braintreepayments.api.models.LocalPaymentResult;
-import com.paypal.android.sdk.data.collector.PayPalDataCollector;
 
 import org.json.JSONException;
 import org.json.JSONObject;

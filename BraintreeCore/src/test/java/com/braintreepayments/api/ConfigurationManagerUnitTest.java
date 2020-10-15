@@ -179,7 +179,7 @@ public class ConfigurationManagerUnitTest {
         mCountDownLatch.await();
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 5000)
     public void getConfiguration_fetchesConfigFromGatewayWhenCacheIsEmpty() throws InterruptedException {
         stubConfigurationFromGateway(stringFromFixture("configuration/with_analytics.json"));
 
