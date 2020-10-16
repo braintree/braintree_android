@@ -5,6 +5,7 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import com.braintreepayments.demo.test.utilities.TestHelper;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -24,6 +25,7 @@ public class VenmoTest extends TestHelper {
 
     private static final String VENMO_PACKAGE_NAME = "com.venmo";
 
+    @Ignore("Disable until physical device test automation implemented")
     @Test(timeout = 120000)
     public void tokenizesVenmo() {
         assumeTrue("The Venmo app is not installed.", isAppInstalled(VENMO_PACKAGE_NAME));

@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Bump Cardinal version to 2.2.4-1
+
 ## 3.14.1
 
 * Update `compileSdkVersion` and `targetSdkVersion` to 30
