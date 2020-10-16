@@ -116,6 +116,23 @@ task :run_post_release do
     post_release(version)
 end
 
+desc "Create Demo APK"
+task :create_demo_apk do
+  puts "Enter keystore file path:"
+  ENV["KEYSTORE_FILE"] = $stdin.gets.chomp.strip
+
+  puts "Enter keystore password:"
+  ENV["KEYSTORE_PASSWORD"] = $stdin.noecho(&:gets).chomp
+
+  puts "Enter key alias:"
+  ENV["KEY_ALIAS"] = $stdin.gets.chomp
+
+  puts "Enter key password:"
+  ENV["KEY_PASSWORD"] = $stdin.noecho(&:gets).chomp
+
+  sh "./gradlew clean :Demo:assembleRelease"
+end
+
 def prompt_for_sonatype_username_and_password
   puts "Enter Sonatype username:"
   ENV["SONATYPE_USERNAME"] = $stdin.gets.chomp
@@ -199,3 +216,4 @@ def update_readme_snapshot_version(snapshot_version)
     end
   )
 end
+
