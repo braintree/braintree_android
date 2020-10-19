@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.14.2
 
 * Bump Cardinal version to `2.2.4-1`
 * Bump `browser-switch` to `1.1.3`
