@@ -26,9 +26,9 @@ android {
         }
         release {
             storeFile file(System.env['KEYSTORE_FILE'] ?: 'debug.keystore')
-            storePassword System.env['KEYSTORE_PASSWORD']
-            keyAlias System.env['KEY_ALIAS']
-            keyPassword System.env['KEY_PASSWORD']
+            storePassword System.env['KEYSTORE_PASSWORD'] ?: 'android'
+            keyAlias System.env['KEY_ALIAS'] ?: 'androiddebugkey'
+            keyPassword System.env['KEY_PASSWORD'] ?: 'android'
         }
     }
 

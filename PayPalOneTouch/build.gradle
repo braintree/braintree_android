@@ -38,7 +38,7 @@ android {
 }
 
 dependencies {
-    compileOnly 'androidx.annotation:annotation:1.0.0'
+    compileOnly 'androidx.annotation:annotation:1.1.0'
 
     api project(':Core')
     api project(':PayPalDataCollector')

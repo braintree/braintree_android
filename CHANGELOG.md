@@ -2,7 +2,8 @@
 
 ## unreleased
 
-* Bump Cardinal version to 2.2.4-1
+* Bump Cardinal version to `2.2.4-1`
+* Bump `browser-switch` to `1.1.3`
 
 ## 3.14.1
 

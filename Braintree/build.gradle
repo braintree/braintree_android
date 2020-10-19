@@ -55,7 +55,7 @@ def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProj
 def googlePayment = "com.braintreepayments.api:google-payment:${rootProject.googlePaymentVersion}"
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.0.1'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     compileOnly(playServicesWallet) {
         exclude module: 'support-v4'
     }
