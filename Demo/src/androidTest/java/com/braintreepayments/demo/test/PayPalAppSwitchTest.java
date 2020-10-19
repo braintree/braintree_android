@@ -6,6 +6,7 @@ import com.braintreepayments.demo.test.utilities.TestHelper;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -18,6 +19,7 @@ import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.as
 import static com.braintreepayments.demo.test.utilities.AppInstallationHelper.installPayPalWallet;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 
+@Ignore("PayPal app switch no longer happens and will be removed")
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class PayPalAppSwitchTest extends TestHelper {
 
