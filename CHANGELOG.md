@@ -2,7 +2,7 @@
 
 ## 3.14.2
 
-* Bump Cardinal version to `2.2.4-1`
+* Bump Cardinal version to `2.2.4-1` (fixes [#305](https://github.com/braintree/braintree_android/issues/305))
 * Bump `browser-switch` to `1.1.3`
 
 ## 3.14.1
