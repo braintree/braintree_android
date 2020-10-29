@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -47,6 +48,21 @@ public class Venmo {
     static final String CERTIFICATE_SUBJECT = "CN=Andrew Kortina,OU=Engineering,O=Venmo,L=Philadelphia,ST=PA,C=US";
     static final String CERTIFICATE_ISSUER = "CN=Andrew Kortina,OU=Engineering,O=Venmo,L=Philadelphia,ST=PA,C=US";
     static final int PUBLIC_KEY_HASH_CODE = -129711843;
+
+    /**
+     * Determines if the Venmo flow is available to be used. This can be used to determine
+     * if UI components should be shown or hidden.
+     *
+     * @param context A context to access the {@link PackageManager}
+     * @return boolean if Venmo is enabled, and available to be used
+     */
+    public static boolean isEnabled(Context context, VenmoConfiguration venmoConfiguration) {
+        return isAccessTokenValid(venmoConfiguration) && isVenmoAppSwitchAvailable(context);
+    }
+
+    public static boolean isAccessTokenValid(VenmoConfiguration venmoConfiguration) {
+        return !TextUtils.isEmpty(venmoConfiguration.getAccessToken());
+    }
 
     /**
      * @param context A context to access the installed packages.

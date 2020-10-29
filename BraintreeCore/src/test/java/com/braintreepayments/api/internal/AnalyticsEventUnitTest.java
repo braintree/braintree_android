@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
+import com.braintreepayments.api.DeviceCapabilities;
 import com.braintreepayments.api.Venmo;
 
 import org.json.JSONException;
@@ -64,7 +65,7 @@ public class AnalyticsEventUnitTest {
         assertNotNull(analyticsEvent.metadata.getString("userInterfaceOrientation"));
         assertEquals("sampleVersionName", analyticsEvent.metadata.getString("merchantAppVersion"));
         assertTrue(analyticsEvent.metadata.getBoolean("paypalInstalled"));
-        assertEquals(Venmo.isVenmoAppSwitchAvailable(RuntimeEnvironment.application),
+        assertEquals(DeviceCapabilities.isVenmoInstalled(RuntimeEnvironment.application),
                 analyticsEvent.metadata.getBoolean("venmoInstalled"));
         assertEquals("custom",
                 analyticsEvent.metadata.getString("integrationType"));

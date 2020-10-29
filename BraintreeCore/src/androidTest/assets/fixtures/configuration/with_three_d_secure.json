@@ -1,7 +1,0 @@
-{
-    "clientApiUrl": "client_api_url",
-    "environment": "test",
-    "merchantId": "integration_merchant_id",
-    "merchantAccountId": "integration_merchant_account_id",
-    "threeDSecureEnabled": true
-}

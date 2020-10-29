@@ -10,7 +10,7 @@ import com.braintreepayments.api.exceptions.UnexpectedException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.ClientToken;
-import com.braintreepayments.testutils.FixturesHelper;
+import com.braintreepayments.testutils.Fixtures;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,8 +22,7 @@ import java.util.concurrent.CountDownLatch;
 
 import javax.net.ssl.SSLException;
 
-import static com.braintreepayments.testutils.FixturesHelper.base64EncodedClientTokenFromFixture;
-import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
+import static com.braintreepayments.testutils.FixturesHelper.base64Encode;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -43,7 +42,7 @@ public class BraintreeGraphQLHttpClientTest {
     @Test
     public void sendsUserAgent() throws IOException {
         String baseUrl = "http://example.com/graphql";
-        BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
+        BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, Fixtures.TOKENIZATION_KEY);
 
         HttpURLConnection connection = httpClient.init(baseUrl);
 
@@ -53,17 +52,17 @@ public class BraintreeGraphQLHttpClientTest {
     @Test
     public void sendsTokenizationKeyAsAuthorization() throws IOException {
         String baseUrl = "http://example.com/graphql";
-        BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
+        BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, Fixtures.TOKENIZATION_KEY);
 
         HttpURLConnection connection = httpClient.init(baseUrl);
 
-        assertEquals("Bearer " + TOKENIZATION_KEY, connection.getRequestProperty("Authorization"));
+        assertEquals("Bearer " + Fixtures.TOKENIZATION_KEY, connection.getRequestProperty("Authorization"));
     }
 
     @Test
     public void sendsAuthorizationFingerprintAsAuthorization() throws IOException, InvalidArgumentException {
         String baseUrl = "http://example.com/graphql";
-        ClientToken clientToken = (ClientToken) Authorization.fromString(base64EncodedClientTokenFromFixture("client_token.json"));
+        ClientToken clientToken = (ClientToken) Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN));
         BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, clientToken.getBearer());
 
         HttpURLConnection connection = httpClient.init(baseUrl);
@@ -74,7 +73,7 @@ public class BraintreeGraphQLHttpClientTest {
     @Test
     public void sendsBraintreeVersionHeader() throws IOException {
         String baseUrl = "http://example.com/graphql";
-        BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
+        BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, Fixtures.TOKENIZATION_KEY);
 
         HttpURLConnection connection = httpClient.init(baseUrl);
 
@@ -84,7 +83,7 @@ public class BraintreeGraphQLHttpClientTest {
     @Test(timeout = 5000)
     public void getRequestSslCertificateSuccessfulInSandbox() throws InterruptedException {
         BraintreeGraphQLHttpClient httpClient =
-                new BraintreeGraphQLHttpClient("https://payments.sandbox.braintree-api.com/graphql", TOKENIZATION_KEY);
+                new BraintreeGraphQLHttpClient("https://payments.sandbox.braintree-api.com/graphql", Fixtures.TOKENIZATION_KEY);
 
         httpClient.get("/", new HttpResponseCallback() {
             @Override
@@ -105,7 +104,7 @@ public class BraintreeGraphQLHttpClientTest {
     @Test(timeout = 5000)
     public void getRequestSslCertificateSuccessfulInProduction() throws InterruptedException {
         BraintreeGraphQLHttpClient httpClient =
-                new BraintreeGraphQLHttpClient("https://payments.braintree-api.com/graphql", TOKENIZATION_KEY);
+                new BraintreeGraphQLHttpClient("https://payments.braintree-api.com/graphql", Fixtures.TOKENIZATION_KEY);
 
         httpClient.get("/", new HttpResponseCallback() {
             @Override
@@ -126,7 +125,7 @@ public class BraintreeGraphQLHttpClientTest {
     @Test(timeout = 5000)
     public void getRequest_whenErrorOccurs_callsFailure() throws InterruptedException {
         String baseUrl = "https://bad.endpoint";
-        BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
+        BraintreeGraphQLHttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, Fixtures.TOKENIZATION_KEY);
 
         httpClient.get("/", new HttpResponseCallback() {
             @Override
@@ -148,10 +147,8 @@ public class BraintreeGraphQLHttpClientTest {
     @Test
     public void parseResponseReturnsSuccessBody() throws Exception {
         String baseUrl = "http://example.com/graphql";
-        HttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
-        httpClient = HttpClientTestUtils.stubResponse(httpClient,
-                200,
-                FixturesHelper.stringFromFixture("response/graphql/credit_card.json"));
+        HttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, Fixtures.TOKENIZATION_KEY);
+        httpClient = HttpClientTestUtils.stubResponse(httpClient, 200, Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD);
         HttpURLConnection connection = httpClient.init(baseUrl);
 
         String response = httpClient.parseResponse(connection);
@@ -162,10 +159,8 @@ public class BraintreeGraphQLHttpClientTest {
     @Test
     public void parseResponseFailsWithUserErrors() throws Exception {
         String baseUrl = "http://example.com/graphql";
-        HttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
-        httpClient = HttpClientTestUtils.stubResponse(httpClient,
-                200,
-                FixturesHelper.stringFromFixture("errors/graphql/credit_card_error.json"));
+        HttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, Fixtures.TOKENIZATION_KEY);
+        httpClient = HttpClientTestUtils.stubResponse(httpClient, 200, Fixtures.ERRORS_GRAPHQL_CREDIT_CARD_ERROR);
         HttpURLConnection connection = httpClient.init(baseUrl);
 
         try {
@@ -180,10 +175,8 @@ public class BraintreeGraphQLHttpClientTest {
     @Test
     public void parseResponseFailsWithValidationNotAllowed() throws Exception {
         String baseUrl = "http://example.com/graphql";
-        HttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
-        httpClient = HttpClientTestUtils.stubResponse(httpClient,
-                200,
-                FixturesHelper.stringFromFixture("errors/graphql/validation_not_allowed_error.json"));
+        HttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, Fixtures.TOKENIZATION_KEY);
+        httpClient = HttpClientTestUtils.stubResponse(httpClient, 200, Fixtures.ERRORS_GRAPHQL_VALIDATION_NOT_ALLOWED_ERROR);
         HttpURLConnection connection = httpClient.init(baseUrl);
 
         try {
@@ -198,10 +191,8 @@ public class BraintreeGraphQLHttpClientTest {
     @Test
     public void parseResponseFailsWithCoercionError() throws Exception {
         String baseUrl = "http://example.com/graphql";
-        HttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
-        httpClient = HttpClientTestUtils.stubResponse(httpClient,
-                200,
-                FixturesHelper.stringFromFixture("errors/graphql/coercion_error.json"));
+        HttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, Fixtures.TOKENIZATION_KEY);
+        httpClient = HttpClientTestUtils.stubResponse(httpClient, 200, Fixtures.ERRORS_GRAPHQL_COERCION_ERROR);
         HttpURLConnection connection = httpClient.init(baseUrl);
 
         try {
@@ -215,10 +206,8 @@ public class BraintreeGraphQLHttpClientTest {
     @Test
     public void parseResponseFailsWithUnknownError() throws Exception {
         String baseUrl = "http://example.com/graphql";
-        HttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, TOKENIZATION_KEY);
-        httpClient = HttpClientTestUtils.stubResponse(httpClient,
-                200,
-                FixturesHelper.stringFromFixture("errors/graphql/unknown_error.json"));
+        HttpClient httpClient = new BraintreeGraphQLHttpClient(baseUrl, Fixtures.TOKENIZATION_KEY);
+        httpClient = HttpClientTestUtils.stubResponse(httpClient, 200, Fixtures.ERRORS_GRAPHQL_UNKNOWN_ERROR);
         HttpURLConnection connection = httpClient.init(baseUrl);
 
         try {

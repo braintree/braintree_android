@@ -15,6 +15,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
+import com.braintreepayments.testutils.Fixtures;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestGooglePaymentConfigurationBuilder;
 import com.google.android.gms.wallet.PaymentDataRequest;
@@ -44,8 +45,7 @@ import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragment;
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWithConfiguration;
 import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_ENVIRONMENT;
 import static com.braintreepayments.api.GooglePaymentActivity.EXTRA_PAYMENT_DATA_REQUEST;
-import static com.braintreepayments.testutils.FixturesHelper.base64EncodedClientTokenFromFixture;
-import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
+import static com.braintreepayments.testutils.FixturesHelper.base64Encode;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -83,7 +83,7 @@ public class GooglePaymentTest {
                 .googlePayment(new TestGooglePaymentConfigurationBuilder().enabled(false))
                 .build();
 
-        BraintreeFragment fragment = getFragment(mActivityTestRule.getActivity(), TOKENIZATION_KEY, configuration);
+        BraintreeFragment fragment = getFragment(mActivityTestRule.getActivity(), Fixtures.TOKENIZATION_KEY, configuration);
 
         GooglePayment.isReadyToPay(fragment, new BraintreeResponseListener<Boolean>() {
             @Override
@@ -264,7 +264,7 @@ public class GooglePaymentTest {
     public void getTokenizationParameters_returnsCorrectParameters() throws Exception {
         String config = mBaseConfiguration.withAnalytics().build();
 
-        final BraintreeFragment fragment = getFragment(mActivityTestRule.getActivity(), TOKENIZATION_KEY, config);
+        final BraintreeFragment fragment = getFragment(mActivityTestRule.getActivity(), Fixtures.TOKENIZATION_KEY, config);
 
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
@@ -288,7 +288,7 @@ public class GooglePaymentTest {
     @Test(timeout = 5000)
     public void getTokenizationParameters_doesNotIncludeATokenizationKeyWhenNotPresent() {
         final BraintreeFragment fragment = getFragment(mActivityTestRule.getActivity(),
-                base64EncodedClientTokenFromFixture("client_token.json"), mBaseConfiguration.build());
+                base64Encode(Fixtures.CLIENT_TOKEN), mBaseConfiguration.build());
 
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
@@ -306,7 +306,7 @@ public class GooglePaymentTest {
 
     @Test(timeout = 5000)
     public void getTokenizationParameters_includesATokenizationKeyWhenPresent() throws Exception {
-        final BraintreeFragment fragment = getFragment(mActivityTestRule.getActivity(), TOKENIZATION_KEY,
+        final BraintreeFragment fragment = getFragment(mActivityTestRule.getActivity(), Fixtures.TOKENIZATION_KEY,
                 mBaseConfiguration.withAnalytics().build());
 
         fragment.waitForConfiguration(new ConfigurationListener() {
@@ -314,7 +314,7 @@ public class GooglePaymentTest {
             public void onConfigurationFetched(Configuration configuration) {
                 Bundle tokenizationParameters = GooglePayment.getTokenizationParameters(fragment).getParameters();
 
-                assertEquals(TOKENIZATION_KEY,  tokenizationParameters.getString("braintree:clientKey"));
+                assertEquals(Fixtures.TOKENIZATION_KEY,  tokenizationParameters.getString("braintree:clientKey"));
 
                 mLatch.countDown();
             }
@@ -356,7 +356,7 @@ public class GooglePaymentTest {
                 .build();
         final Configuration configuration = Configuration.fromJson(config);
 
-        BraintreeFragment fragment = getFragment(mActivityTestRule.getActivity(), TOKENIZATION_KEY, config);
+        BraintreeFragment fragment = getFragment(mActivityTestRule.getActivity(), Fixtures.TOKENIZATION_KEY, config);
 
         GooglePayment.getTokenizationParameters(fragment, new TokenizationParametersListener() {
             @Override

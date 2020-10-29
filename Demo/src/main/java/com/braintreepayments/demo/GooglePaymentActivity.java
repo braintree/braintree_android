@@ -6,12 +6,14 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import com.braintreepayments.api.BraintreeFragment;
+import com.braintreepayments.api.GooglePayCapabilities;
 import com.braintreepayments.api.GooglePayment;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.GooglePaymentCardNonce;
+import com.braintreepayments.api.models.GooglePaymentConfiguration;
 import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
@@ -52,7 +54,7 @@ public class GooglePaymentActivity extends BaseActivity implements Configuration
 
     @Override
     public void onConfigurationFetched(Configuration configuration) {
-        if (configuration.getGooglePayment().isEnabled(this)) {
+        if (GooglePayCapabilities.isGooglePayEnabled(this, configuration.getGooglePayment())) {
             GooglePayment.isReadyToPay(mBraintreeFragment, new BraintreeResponseListener<Boolean>() {
                 @Override
                 public void onResponse(Boolean isReadyToPay) {

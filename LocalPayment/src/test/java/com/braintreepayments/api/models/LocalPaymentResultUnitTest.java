@@ -2,12 +2,13 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 
+import com.braintreepayments.testutils.Fixtures;
+
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 
@@ -16,8 +17,7 @@ public class LocalPaymentResultUnitTest {
 
     @Test
     public void fromJson_parsesResponse() throws JSONException {
-        LocalPaymentResult result = LocalPaymentResult.fromJson(
-                stringFromFixture("payment_methods/local_payment_response.json"));
+        LocalPaymentResult result = LocalPaymentResult.fromJson(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE);
 
         assertNotNull(result);
         assertEquals("PayPal", result.getDescription());
@@ -39,8 +39,7 @@ public class LocalPaymentResultUnitTest {
 
     @Test
     public void parcelsCorrectly() throws JSONException {
-        LocalPaymentResult result = LocalPaymentResult.fromJson(
-                stringFromFixture("payment_methods/local_payment_response.json"));
+        LocalPaymentResult result = LocalPaymentResult.fromJson(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE);
         Parcel parcel = Parcel.obtain();
         result.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);

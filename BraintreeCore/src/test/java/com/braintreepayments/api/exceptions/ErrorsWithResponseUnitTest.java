@@ -2,12 +2,13 @@ package com.braintreepayments.api.exceptions;
 
 import android.os.Parcel;
 
+import com.braintreepayments.testutils.Fixtures;
+
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 
@@ -16,8 +17,7 @@ public class ErrorsWithResponseUnitTest {
 
     @Test
     public void constructor_parsesErrorsCorrectly() {
-        String response = stringFromFixture("errors/credit_card_error_response.json");
-
+        String response = Fixtures.ERRORS_CREDIT_CARD_ERROR_RESPONSE;
         ErrorWithResponse errorWithResponse = new ErrorWithResponse(422, response);
 
         assertEquals("Credit card is invalid", errorWithResponse.getMessage());
@@ -33,8 +33,7 @@ public class ErrorsWithResponseUnitTest {
 
     @Test
     public void constructor_handlesTopLevelErrors() {
-        String topLevelError = stringFromFixture("errors/auth_fingerprint_error.json");
-
+        String topLevelError = Fixtures.ERRORS_AUTH_FINGERPRINT_ERROR;
         ErrorWithResponse errorWithResponse = new ErrorWithResponse(422, topLevelError);
 
         assertEquals("Authorization fingerprint is invalid", errorWithResponse.getMessage());
@@ -43,8 +42,7 @@ public class ErrorsWithResponseUnitTest {
 
     @Test
     public void constructor_canHandleMultipleCategories() {
-        String errors = stringFromFixture("errors/complex_error_response.json");
-
+        String errors = Fixtures.ERRORS_COMPLEX_ERROR_RESPONSE;
         ErrorWithResponse errorWithResponse = new ErrorWithResponse(422, errors);
 
         assertEquals(3, errorWithResponse.errorFor("creditCard").getFieldErrors().size());
@@ -54,8 +52,7 @@ public class ErrorsWithResponseUnitTest {
 
     @Test
     public void constructor_doesNotBlowUpParsingBadJson() {
-        String badJson = stringFromFixture("random_json.json");
-
+        String badJson = Fixtures.RANDOM_JSON;
         ErrorWithResponse errorWithResponse = new ErrorWithResponse(422, badJson);
 
         assertEquals("Parsing error response failed", errorWithResponse.getMessage());
@@ -63,8 +60,7 @@ public class ErrorsWithResponseUnitTest {
 
     @Test
     public void fromJson_parsesErrorsCorrectly() throws JSONException {
-        String response = stringFromFixture("errors/credit_card_error_response.json");
-
+        String response = Fixtures.ERRORS_CREDIT_CARD_ERROR_RESPONSE;
         ErrorWithResponse errorWithResponse = ErrorWithResponse.fromJson(response);
 
         assertEquals("Credit card is invalid", errorWithResponse.getMessage());
@@ -79,13 +75,12 @@ public class ErrorsWithResponseUnitTest {
 
     @Test(expected = JSONException.class)
     public void fromJson_throwsExceptionIfJsonParsingFails() throws JSONException {
-        ErrorWithResponse.fromJson(stringFromFixture("random_json.json"));
+        ErrorWithResponse.fromJson(Fixtures.RANDOM_JSON);
     }
 
     @Test
     public void fromGraphQLJson_parsesErrorsCorrectly() {
-        String response = stringFromFixture("errors/graphql/credit_card_error.json");
-
+        String response = Fixtures.ERRORS_GRAPHQL_CREDIT_CARD_ERROR;
         ErrorWithResponse errorWithResponse = ErrorWithResponse.fromGraphQLJson(response);
 
         assertEquals("Input is invalid.", errorWithResponse.getMessage());
@@ -100,8 +95,7 @@ public class ErrorsWithResponseUnitTest {
 
     @Test
     public void fromGraphQLJson_parsesGraphQLCoercionErrorsCorrectly() {
-        String response = stringFromFixture("errors/graphql/coercion_error.json");
-
+        String response = Fixtures.ERRORS_GRAPHQL_COERCION_ERROR;
         ErrorWithResponse errorWithResponse = ErrorWithResponse.fromGraphQLJson(response);
 
         assertEquals("Variable 'input' has coerced Null value for NonNull type 'String!'", errorWithResponse.getMessage());
@@ -110,8 +104,7 @@ public class ErrorsWithResponseUnitTest {
 
     @Test
     public void fromGraphQLJson_doesNotBlowUpParsingBadJson() {
-        String badJson = stringFromFixture("random_json.json");
-
+        String badJson = Fixtures.RANDOM_JSON;
         ErrorWithResponse errorWithResponse = ErrorWithResponse.fromGraphQLJson(badJson);
 
         assertEquals("Parsing error response failed", errorWithResponse.getMessage());
@@ -119,7 +112,7 @@ public class ErrorsWithResponseUnitTest {
 
     @Test
     public void parcelsCorrectly() throws JSONException {
-        ErrorWithResponse error = ErrorWithResponse.fromJson(stringFromFixture("errors/credit_card_error_response.json"));
+        ErrorWithResponse error = ErrorWithResponse.fromJson(Fixtures.ERRORS_CREDIT_CARD_ERROR_RESPONSE);
 
         Parcel parcel = Parcel.obtain();
         error.writeToParcel(parcel, 0);

@@ -2,6 +2,8 @@ package com.braintreepayments.api.exceptions;
 
 import android.os.Parcel;
 
+import com.braintreepayments.testutils.Fixtures;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,7 +13,6 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.util.List;
 
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 
@@ -20,7 +21,7 @@ public class BraintreeApiErrorUnitTest {
 
     @Test
     public void fromJsonArray_parsesErrors() throws JSONException {
-        JSONObject response = new JSONObject(stringFromFixture("errors/braintree_api_error_response.json"));
+        JSONObject response = new JSONObject(Fixtures.ERRORS_BRAINTREE_API_ERROR_RESPONSE);
         JSONArray details = response.getJSONObject("error").getJSONArray("details");
 
         List<BraintreeApiError> errors = BraintreeApiError.fromJsonArray(details);
@@ -42,7 +43,7 @@ public class BraintreeApiErrorUnitTest {
 
     @Test
     public void fromJson_parsesDetails() throws JSONException {
-        JSONObject response = new JSONObject(stringFromFixture("errors/braintree_api_error_response.json"));
+        JSONObject response = new JSONObject(Fixtures.ERRORS_BRAINTREE_API_ERROR_RESPONSE);
         JSONObject detail = response.getJSONObject("error").getJSONArray("details").getJSONObject(0);
 
         BraintreeApiError error = BraintreeApiError.fromJson(detail);
@@ -56,7 +57,7 @@ public class BraintreeApiErrorUnitTest {
 
     @Test
     public void fromJson_doesNotBlowUpParsingBadJson() throws JSONException {
-        String badJson = stringFromFixture("random_json.json");
+        String badJson = Fixtures.RANDOM_JSON;
 
         BraintreeApiError error = BraintreeApiError.fromJson(new JSONObject(badJson));
 
@@ -68,7 +69,7 @@ public class BraintreeApiErrorUnitTest {
 
     @Test
     public void parcelsCorrectly() throws JSONException {
-        JSONObject response = new JSONObject(stringFromFixture("errors/braintree_api_error_response.json"));
+        JSONObject response = new JSONObject(Fixtures.ERRORS_BRAINTREE_API_ERROR_RESPONSE);
         JSONObject detail = response.getJSONObject("error").getJSONArray("details").getJSONObject(0);
         BraintreeApiError error = BraintreeApiError.fromJson(detail);
         Parcel parcel = Parcel.obtain();

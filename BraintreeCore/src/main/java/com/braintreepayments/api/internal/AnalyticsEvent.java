@@ -1,14 +1,12 @@
 package com.braintreepayments.api.internal;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import com.braintreepayments.api.DeviceCapabilities;
-import com.braintreepayments.api.Venmo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,9 +21,6 @@ public class AnalyticsEvent {
     private static final String VENMO_INSTALLED_KEY = "venmoInstalled";
     private static final String INTEGRATION_TYPE_KEY = "integrationType";
     private static final String DROP_IN_VERSION_KEY = "dropinVersion";
-
-    private static final int NO_FLAGS = 0;
-    private static final String PAYPAL_APP_PACKAGE = "com.paypal.android.p2pmobile";
 
     int id;
     String event;

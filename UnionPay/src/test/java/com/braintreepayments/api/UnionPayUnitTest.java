@@ -12,6 +12,7 @@ import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.UnionPayCapabilities;
 import com.braintreepayments.api.models.UnionPayCardBuilder;
+import com.braintreepayments.testutils.Fixtures;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,7 +29,6 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
 import static com.braintreepayments.testutils.CardNumber.UNIONPAY_CREDIT;
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -56,7 +56,7 @@ public class UnionPayUnitTest {
 
     @Before
     public void setup() throws JSONException {
-        mConfigurationWithUnionPay = Configuration.fromJson(stringFromFixture("configuration/with_unionpay.json"));
+        mConfigurationWithUnionPay = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_UNIONPAY);
         mBraintreeFragment = new MockFragmentBuilder()
                 .configuration(mConfigurationWithUnionPay)
                 .build();
@@ -183,7 +183,7 @@ public class UnionPayUnitTest {
                 .cardNumber("some-card-number");
 
         BraintreeFragment fragment = new MockFragmentBuilder()
-                .configuration(Configuration.fromJson(stringFromFixture("configuration/configuration.json")))
+                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN))
                 .build();
 
         UnionPay.enroll(fragment, unionPayCardBuilder);
@@ -328,7 +328,7 @@ public class UnionPayUnitTest {
     public void fetchCapabilities_callsListenerWithCapabilitiesOnSuccess() {
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(mConfigurationWithUnionPay)
-                .successResponse(stringFromFixture("unionpay_capabilities_success_response.json"))
+                .successResponse(Fixtures.UNIONPAY_CAPABILITIES_SUCCESS_RESPONSE)
                 .build();
 
         UnionPay.fetchCapabilities(fragment, UNIONPAY_CREDIT);
@@ -348,7 +348,7 @@ public class UnionPayUnitTest {
     public void fetchCapabilities_sendsAnalyticsEventOnSuccess() {
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(mConfigurationWithUnionPay)
-                .successResponse(stringFromFixture("unionpay_capabilities_success_response.json"))
+                .successResponse(Fixtures.UNIONPAY_CAPABILITIES_SUCCESS_RESPONSE)
                 .build();
 
         UnionPay.fetchCapabilities(fragment, UNIONPAY_CREDIT);
@@ -359,7 +359,7 @@ public class UnionPayUnitTest {
     @Test
     public void fetchCapabilities_failsIfUnionPayIsDisabled() throws JSONException {
         BraintreeFragment fragment = new MockFragmentBuilder()
-                .configuration(Configuration.fromJson(stringFromFixture("configuration/configuration.json")))
+                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN))
                 .build();
 
         UnionPay.fetchCapabilities(fragment, UNIONPAY_CREDIT);

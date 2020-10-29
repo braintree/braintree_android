@@ -15,58 +15,15 @@ import java.io.UnsupportedEncodingException;
 
 public class FixturesHelper {
 
-    private static final String FIXTURES_PATH = "fixtures/";
-    private static final String LOCAL_UNIT_TEST_FIXTURES_PATH = "src/androidTest/assets/" + FIXTURES_PATH;
-
-    public static String stringFromFixture(String filename) {
+    public static String base64Encode(String value) {
         try {
-            try {
-                return stringFromAndroidFixture(filename);
-            } catch (RuntimeException | FileNotFoundException | Error e) {
-                return stringFromUnitTestFixture(filename);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static String base64EncodedClientTokenFromFixture(String filename) {
-        try {
-            try {
-                return Base64.encodeToString(stringFromAndroidFixture(filename).getBytes(), Base64.NO_WRAP);
-            } catch (RuntimeException | FileNotFoundException | Error e) {
-                return Base64.encodeToString(stringFromUnitTestFixture(filename).getBytes(), Base64.NO_WRAP);
-            }
-        } catch (IOException e) {
+            return Base64.encodeToString(value.getBytes(), Base64.NO_WRAP);
+        } catch (RuntimeException | Error e) {
             throw new RuntimeException(e);
         }
     }
 
     public static InputStream streamFromString(String string) throws UnsupportedEncodingException {
         return new ByteArrayInputStream(string.getBytes("UTF-8"));
-    }
-
-    private static String stringFromAndroidFixture(String filename) throws IOException {
-        InputStream inputStream = null;
-        try {
-            inputStream = ApplicationProvider.getApplicationContext().getResources().getAssets().open(FIXTURES_PATH + filename);
-            return StreamHelper.getString(inputStream);
-        } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
-        }
-    }
-
-    private static String stringFromUnitTestFixture(String filename) throws IOException {
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(LOCAL_UNIT_TEST_FIXTURES_PATH + filename);
-            return StreamHelper.getString(inputStream);
-        } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
-        }
     }
 }

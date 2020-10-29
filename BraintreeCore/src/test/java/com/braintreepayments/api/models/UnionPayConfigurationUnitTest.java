@@ -1,5 +1,7 @@
 package com.braintreepayments.api.models;
 
+import com.braintreepayments.testutils.Fixtures;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -7,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
@@ -18,7 +19,7 @@ public class UnionPayConfigurationUnitTest {
 
     @Before
     public void setup() throws JSONException {
-        JSONObject configuration = new JSONObject(stringFromFixture("configuration/with_unionpay.json"));
+        JSONObject configuration = new JSONObject(Fixtures.CONFIGURATION_WITH_UNIONPAY);
         mUnionPayConfiguration = configuration.getJSONObject("unionPay");
     }
 
@@ -47,10 +48,8 @@ public class UnionPayConfigurationUnitTest {
 
     @Test
     public void reportsUnionPayEnabledWhenEnabled() throws JSONException {
-        Configuration configuration = Configuration.fromJson(
-                stringFromFixture("configuration/with_unionpay.json"));
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_UNIONPAY);
 
         assertTrue(configuration.getUnionPay().isEnabled());
     }
-
 }

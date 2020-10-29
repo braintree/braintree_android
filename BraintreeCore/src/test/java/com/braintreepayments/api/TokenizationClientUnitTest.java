@@ -9,6 +9,7 @@ import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.UnionPayCardBuilder;
 import com.braintreepayments.api.models.VenmoAccountBuilder;
+import com.braintreepayments.testutils.Fixtures;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 
 import org.json.JSONException;
@@ -18,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -108,7 +108,7 @@ public class TokenizationClientUnitTest {
                 .configuration(new TestConfigurationBuilder()
                         .graphQL()
                         .build())
-                .graphQLSuccessResponse(stringFromFixture("response/graphql/credit_card.json"))
+                .graphQLSuccessResponse(Fixtures.GRAPHQL_RESPONSE_CREDIT_CARD)
                 .build();
         CardBuilder cardBuilder = new CardBuilder();
 
@@ -129,7 +129,7 @@ public class TokenizationClientUnitTest {
                 .configuration(new TestConfigurationBuilder()
                         .graphQL()
                         .build())
-                .graphQLErrorResponse(ErrorWithResponse.fromGraphQLJson(stringFromFixture("errors/graphql/credit_card_error.json")))
+                .graphQLErrorResponse(ErrorWithResponse.fromGraphQLJson(Fixtures.ERRORS_GRAPHQL_CREDIT_CARD_ERROR))
                 .build();
         CardBuilder cardBuilder = new CardBuilder();
 

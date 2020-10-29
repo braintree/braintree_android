@@ -7,6 +7,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
+import com.braintreepayments.testutils.Fixtures;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 
@@ -22,7 +23,6 @@ import org.robolectric.RobolectricTestRunner;
 
 import static com.braintreepayments.api.BraintreePowerMockHelper.MockManifestValidator;
 import static com.braintreepayments.api.models.BraintreeRequestCodes.THREE_D_SECURE;
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -58,7 +58,7 @@ public class ThreeDSecureV1UnitTest {
                 .buildConfiguration();
 
         mMockFragmentBuilder = new MockFragmentBuilder()
-                .authorization(Authorization.fromString(stringFromFixture("base_64_client_token.txt")))
+                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(configuration);
         mMockFragment = mMockFragmentBuilder.build();
 
@@ -68,13 +68,13 @@ public class ThreeDSecureV1UnitTest {
                 .billingAddress(new ThreeDSecurePostalAddress()
                         .givenName("billing-given-name"));
 
-        mThreeDSecureLookupResponse = stringFromFixture("three_d_secure/lookup_response_with_version_number1.json");
+        mThreeDSecureLookupResponse = Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE;
         mThreeDSecureLookup = ThreeDSecureLookup.fromJson(mThreeDSecureLookupResponse);
     }
 
     @Test
     public void performVerification_sendsAnalyticsEvent() {
-        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/lookup_response_with_version_number1.json"));
+        mMockFragmentBuilder.successResponse(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE);
         mMockFragment = mMockFragmentBuilder.build();
 
         ThreeDSecure.performVerification(mMockFragment, mThreeDSecureRequest);

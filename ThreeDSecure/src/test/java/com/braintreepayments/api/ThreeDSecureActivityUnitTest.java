@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.braintreepayments.api.models.ThreeDSecureLookup;
+import com.braintreepayments.testutils.Fixtures;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 import com.cardinalcommerce.cardinalmobilesdk.models.CardinalActionCode;
 import com.cardinalcommerce.cardinalmobilesdk.models.ValidateResponse;
@@ -19,7 +20,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.android.controller.ActivityController;
 
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.eq;
@@ -83,8 +83,7 @@ public class ThreeDSecureActivityUnitTest {
 
     private ThreeDSecureLookup sampleThreeDSecureLookup() {
         try {
-            return ThreeDSecureLookup.fromJson(
-                    stringFromFixture("three_d_secure/lookup_response.json"));
+            return ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }

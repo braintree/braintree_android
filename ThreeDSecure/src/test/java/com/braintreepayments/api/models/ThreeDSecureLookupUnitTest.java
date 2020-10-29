@@ -2,13 +2,14 @@ package com.braintreepayments.api.models;
 
 import android.os.Parcel;
 
+import com.braintreepayments.testutils.Fixtures;
+
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
@@ -24,10 +25,10 @@ public class ThreeDSecureLookupUnitTest {
 
     @Before
     public void setUp() throws JSONException {
-        mLookupWithoutVersion = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response.json")); // Lookup doesn't contain a 3DS version number
-        mLookupWithVersion1 = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number1.json"));
-        mLookupWithVersion2 = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
-        mLookupWithoutAcsURL = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_noAcsUrl.json"));
+        mLookupWithoutVersion = ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE); // Lookup doesn't contain a 3DS version number
+        mLookupWithVersion1 = ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_V1_LOOKUP_RESPONSE);
+        mLookupWithVersion2 = ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
+        mLookupWithoutAcsURL = ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL);
     }
 
     @Test

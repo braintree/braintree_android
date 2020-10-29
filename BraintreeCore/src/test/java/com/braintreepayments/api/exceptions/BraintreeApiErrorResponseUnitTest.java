@@ -2,11 +2,12 @@ package com.braintreepayments.api.exceptions;
 
 import android.os.Parcel;
 
+import com.braintreepayments.testutils.Fixtures;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 
@@ -15,8 +16,7 @@ public class BraintreeApiErrorResponseUnitTest {
 
     @Test
     public void parsesErrorsCorrectly() {
-        String response = stringFromFixture("errors/braintree_api_error_response.json");
-
+        String response = Fixtures.ERRORS_BRAINTREE_API_ERROR_RESPONSE;
         BraintreeApiErrorResponse errorResponse = new BraintreeApiErrorResponse(response);
 
         assertEquals("The provided parameters are invalid; see details for field-specific error messages.",
@@ -32,8 +32,7 @@ public class BraintreeApiErrorResponseUnitTest {
 
     @Test
     public void doesNotBlowUpParsingBadJson() {
-        String badJson = stringFromFixture("random_json.json");
-
+        String badJson = Fixtures.RANDOM_JSON;
         BraintreeApiErrorResponse errorResponse = new BraintreeApiErrorResponse(badJson);
 
         assertEquals("Parsing error response failed", errorResponse.getMessage());
@@ -42,7 +41,7 @@ public class BraintreeApiErrorResponseUnitTest {
 
     @Test
     public void parcelsCorrectly() {
-        String response = stringFromFixture("errors/braintree_api_error_response.json");
+        String response = Fixtures.ERRORS_BRAINTREE_API_ERROR_RESPONSE;
         BraintreeApiErrorResponse errorResponse = new BraintreeApiErrorResponse(response);
         Parcel parcel = Parcel.obtain();
         errorResponse.writeToParcel(parcel, 0);

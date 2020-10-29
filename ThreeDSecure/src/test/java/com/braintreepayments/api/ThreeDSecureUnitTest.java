@@ -17,6 +17,7 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecurePostalAddress;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
+import com.braintreepayments.testutils.Fixtures;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 
@@ -40,7 +41,6 @@ import static com.braintreepayments.api.BraintreePowerMockHelper.MockManifestVal
 import static com.braintreepayments.api.BraintreePowerMockHelper.MockStaticCardinal;
 import static com.braintreepayments.api.BraintreePowerMockHelper.MockStaticTokenizationClient;
 import static com.braintreepayments.testutils.Assertions.assertIsANonce;
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -76,7 +76,7 @@ public class ThreeDSecureUnitTest {
                 .buildConfiguration();
 
         mFragment = new MockFragmentBuilder()
-                .authorization(Authorization.fromString(stringFromFixture("base_64_client_token.txt")))
+                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(configuration)
                 .build();
 
@@ -266,7 +266,7 @@ public class ThreeDSecureUnitTest {
     public void onActivityResult_whenSuccessful_postsPayment() {
         Uri uri = Uri.parse("http://demo-app.com")
                 .buildUpon()
-                .appendQueryParameter("auth_response", stringFromFixture("three_d_secure/authentication_response.json"))
+                .appendQueryParameter("auth_response", Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE)
                 .build();
         Intent data = new Intent();
         data.setData(uri);
@@ -286,7 +286,7 @@ public class ThreeDSecureUnitTest {
     public void onActivityResult_whenSuccessful_sendAnalyticsEvents() {
         Uri uri = Uri.parse("http://demo-app.com")
                 .buildUpon()
-                .appendQueryParameter("auth_response", stringFromFixture("three_d_secure/authentication_response.json"))
+                .appendQueryParameter("auth_response", Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE)
                 .build();
         Intent data = new Intent();
         data.setData(uri);

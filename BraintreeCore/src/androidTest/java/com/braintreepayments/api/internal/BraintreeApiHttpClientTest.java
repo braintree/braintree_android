@@ -5,6 +5,7 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.exceptions.BraintreeApiErrorResponse;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
+import com.braintreepayments.testutils.Fixtures;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,7 +17,6 @@ import java.net.HttpURLConnection;
 import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.api.internal.HttpClientTestUtils.stubResponse;
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.fail;
@@ -74,7 +74,7 @@ public class BraintreeApiHttpClientTest {
         final String expectedMessage = "The provided parameters are invalid; see details for field-specific error messages.";
         BraintreeApiHttpClient client = new BraintreeApiHttpClient(null, null);
         client = (BraintreeApiHttpClient) stubResponse(client, 400,
-                stringFromFixture("errors/braintree_api_error_response.json"));
+                Fixtures.ERRORS_BRAINTREE_API_ERROR_RESPONSE);
 
         client.get("/", new HttpResponseCallback() {
             @Override

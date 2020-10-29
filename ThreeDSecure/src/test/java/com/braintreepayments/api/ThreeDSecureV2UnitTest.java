@@ -12,6 +12,7 @@ import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
+import com.braintreepayments.testutils.Fixtures;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.cardinalcommerce.cardinalmobilesdk.Cardinal;
 import com.cardinalcommerce.cardinalmobilesdk.enums.CardinalEnvironment;
@@ -38,7 +39,6 @@ import static android.app.Activity.RESULT_OK;
 import static com.braintreepayments.api.BraintreePowerMockHelper.MockManifestValidator.mockUrlSchemeDeclaredInAndroidManifest;
 import static com.braintreepayments.api.BraintreePowerMockHelper.MockStaticCardinal;
 import static com.braintreepayments.api.BraintreePowerMockHelper.MockStaticTokenizationClient;
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -72,7 +72,7 @@ public class ThreeDSecureV2UnitTest {
                 .buildConfiguration();
 
         mMockFragmentBuilder = new MockFragmentBuilder()
-                .authorization(Authorization.fromString(stringFromFixture("base_64_client_token.txt")))
+                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(configuration);
         mFragment = mMockFragmentBuilder.build();
 
@@ -177,7 +177,7 @@ public class ThreeDSecureV2UnitTest {
                 .buildConfiguration();
 
         MockFragmentBuilder mockFragmentBuilder = new MockFragmentBuilder()
-                .authorization(Authorization.fromString(stringFromFixture("base_64_client_token.txt")))
+                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(configuration);
         BraintreeFragment fragment = mockFragmentBuilder.build();
 
@@ -258,7 +258,7 @@ public class ThreeDSecureV2UnitTest {
                 .buildConfiguration();
 
         mFragment = new MockFragmentBuilder()
-                .authorization(Authorization.fromString(stringFromFixture("base_64_client_token.txt")))
+                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(prodConfig)
                 .build();
 
@@ -302,7 +302,7 @@ public class ThreeDSecureV2UnitTest {
     public void performVerification_whenAuthenticatingWithCardinal_sendsAnalyticsEvent() {
         MockStaticCardinal.initCompletesSuccessfully("reference-id");
 
-        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+        mMockFragmentBuilder.successResponse(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
         mFragment = mMockFragmentBuilder.build();
 
         ThreeDSecure.performVerification(mFragment, mBasicRequest);
@@ -314,7 +314,7 @@ public class ThreeDSecureV2UnitTest {
     public void performVerification_whenChallengeIsPresented_sendsAnalyticsEvent() {
         MockStaticCardinal.initCompletesSuccessfully("reference-id");
 
-        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/lookup_response.json"));
+        mMockFragmentBuilder.successResponse(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE);
         mFragment = mMockFragmentBuilder.build();
 
         ThreeDSecure.performVerification(mFragment, mBasicRequest);
@@ -326,7 +326,7 @@ public class ThreeDSecureV2UnitTest {
     public void performVerification_whenChallengeIsNotPresented_sendsAnalyticsEvent() {
         MockStaticCardinal.initCompletesSuccessfully("reference-id");
 
-        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/lookup_response_noAcsUrl.json"));
+        mMockFragmentBuilder.successResponse(Fixtures.THREE_D_SECURE_LOOKUP_RESPONSE_NO_ACS_URL);
         mFragment = mMockFragmentBuilder.build();
 
         ThreeDSecure.performVerification(mFragment, mBasicRequest);
@@ -338,7 +338,7 @@ public class ThreeDSecureV2UnitTest {
     public void performVerification_when3DSVersionIsVersion2_sendsAnalyticsEvent() {
         MockStaticCardinal.initCompletesSuccessfully("reference-id");
 
-        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+        mMockFragmentBuilder.successResponse(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
         mFragment = mMockFragmentBuilder.build();
 
         ThreeDSecure.performVerification(mFragment, mBasicRequest);
@@ -353,7 +353,7 @@ public class ThreeDSecureV2UnitTest {
                 .buildConfiguration();
 
         MockFragmentBuilder mockFragmentBuilder = new MockFragmentBuilder()
-                .authorization(Authorization.fromString(stringFromFixture("base_64_client_token.txt")))
+                .authorization(Authorization.fromString(Fixtures.BASE64_CLIENT_TOKEN))
                 .configuration(configuration);
         BraintreeFragment fragment = mockFragmentBuilder.build();
 
@@ -379,9 +379,9 @@ public class ThreeDSecureV2UnitTest {
 
     @Test
     public void authenticateCardinalJWT_whenSuccess_sendsAnalyticsEvent() throws JSONException {
-        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
-        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/authentication_response.json"));
+        mMockFragmentBuilder.successResponse(Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE);
         mFragment = mMockFragmentBuilder.build();
 
         ThreeDSecure.authenticateCardinalJWT(mFragment, threeDSecureLookup, "jwt");
@@ -392,9 +392,9 @@ public class ThreeDSecureV2UnitTest {
 
     @Test
     public void authenticateCardinalJWT_whenSuccess_returnsThreeDSecureCardNonce() throws JSONException {
-        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
-        String authResponseJson = stringFromFixture("three_d_secure/authentication_response.json");
+        String authResponseJson = Fixtures.THREE_D_SECURE_AUTHENTICATION_RESPONSE;
         mMockFragmentBuilder.successResponse(authResponseJson);
         mFragment = mMockFragmentBuilder.build();
 
@@ -412,9 +412,9 @@ public class ThreeDSecureV2UnitTest {
 
     @Test
     public void authenticateCardinalJWT_whenCustomerFailsAuthentication_sendsAnalyticsEvent() throws JSONException {
-        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
-        mMockFragmentBuilder.successResponse(stringFromFixture("three_d_secure/2.0/authentication_response_with_error.json"));
+        mMockFragmentBuilder.successResponse(Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE_WITH_ERROR);
         mFragment = mMockFragmentBuilder.build();
 
         ThreeDSecure.authenticateCardinalJWT(mFragment, threeDSecureLookup, "jwt");
@@ -426,9 +426,9 @@ public class ThreeDSecureV2UnitTest {
     @Test
     public void authenticateCardinalJWT_whenCustomerFailsAuthentication_returnsLookupCardNonce() throws JSONException {
         ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(
-                stringFromFixture("three_d_secure/2.0/lookup_response_without_liability_with_liability_shift_possible.json"));
+                Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE_WITHOUT_LIABILITY_WITH_LIABILITY_SHIFT_POSSIBLE);
 
-        String authResponseJson = stringFromFixture("three_d_secure/2.0/authentication_response_with_error.json");
+        String authResponseJson = Fixtures.THREE_D_SECURE_V2_AUTHENTICATION_RESPONSE_WITH_ERROR;
         mMockFragmentBuilder.successResponse(authResponseJson);
         mFragment = mMockFragmentBuilder.build();
 
@@ -448,7 +448,7 @@ public class ThreeDSecureV2UnitTest {
 
     @Test
     public void authenticateCardinalJWT_whenExceptionOccurs_sendsAnalyticsEvent() throws JSONException {
-        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
         mMockFragmentBuilder.errorResponse(new BraintreeException("an error occurred!"));
         mFragment = mMockFragmentBuilder.build();
@@ -461,7 +461,7 @@ public class ThreeDSecureV2UnitTest {
 
     @Test
     public void authenticateCardinalJWT_whenExceptionOccurs_returnsException() throws JSONException {
-        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
         mMockFragmentBuilder.errorResponse(new BraintreeException("an error occurred!"));
         mFragment = mMockFragmentBuilder.build();
@@ -478,7 +478,7 @@ public class ThreeDSecureV2UnitTest {
     public void onActivityResult_whenCardinalCardVerificationReportsSuccess_sendsAnalyticsEvent() throws JSONException {
         mFragment = mMockFragmentBuilder.build();
 
-        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
         ValidateResponse validateResponse = mock(ValidateResponse.class);
         when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.SUCCESS);
@@ -497,7 +497,7 @@ public class ThreeDSecureV2UnitTest {
     public void onActivityResult_whenCardinalCardVerificationReportsNoAction_sendsAnalyticsEvent() throws JSONException {
         mFragment = mMockFragmentBuilder.build();
 
-        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
         ValidateResponse validateResponse = mock(ValidateResponse.class);
         when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.NOACTION);
@@ -516,7 +516,7 @@ public class ThreeDSecureV2UnitTest {
     public void onActivityResult_whenCardinalCardVerificationReportsFailure_sendsAnalyticsEvent() throws JSONException {
         mFragment = mMockFragmentBuilder.build();
 
-        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(stringFromFixture("three_d_secure/lookup_response_with_version_number2.json"));
+        ThreeDSecureLookup threeDSecureLookup = ThreeDSecureLookup.fromJson(Fixtures.THREE_D_SECURE_V2_LOOKUP_RESPONSE);
 
         ValidateResponse validateResponse = mock(ValidateResponse.class);
         when(validateResponse.getActionCode()).thenReturn(CardinalActionCode.FAILURE);

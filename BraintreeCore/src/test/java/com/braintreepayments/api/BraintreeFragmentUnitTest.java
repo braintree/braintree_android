@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Browser;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -40,7 +39,7 @@ import com.braintreepayments.api.models.UnionPayCapabilities;
 import com.braintreepayments.api.test.AppCompatTestActivity;
 import com.braintreepayments.api.test.UnitTestListenerActivity;
 import com.braintreepayments.browserswitch.BrowserSwitchResult;
-import com.braintreepayments.testutils.ReflectionHelper;
+import com.braintreepayments.testutils.Fixtures;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestBraintreeApiConfigurationBuilder;
 
@@ -66,12 +65,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.verifyAnalyticsEvent;
-import static com.braintreepayments.testutils.FixturesHelper.base64EncodedClientTokenFromFixture;
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static com.braintreepayments.testutils.FixturesHelper.base64Encode;
 import static com.braintreepayments.testutils.ReflectionHelper.getField;
 import static com.braintreepayments.testutils.ReflectionHelper.setField;
 import static com.braintreepayments.testutils.TestConfigurationBuilder.basicConfig;
-import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -118,7 +115,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void newInstance_whenAuthorizationIsTokenizationKey_returnsBraintreeFragmentWithTag() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
 
         assertNotNull(fragment);
         assertEquals("BraintreeFragment.2bdfa273-fd2a-3ed9-b0fe-71583ec1ce78", fragment.getTag());
@@ -126,7 +123,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void newInstance_fragmentActivity_whenAuthorizationIsTokenizationKey_returnsBraintreeFragmentWithTag() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mFragmentActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mFragmentActivity, Fixtures.TOKENIZATION_KEY);
 
         assertNotNull(fragment);
         assertEquals("BraintreeFragment.2bdfa273-fd2a-3ed9-b0fe-71583ec1ce78", fragment.getTag());
@@ -135,18 +132,18 @@ public class BraintreeFragmentUnitTest {
     @Test
     public void newInstance_whenAuthorizationIsClientToken_returnsBraintreeFragmentWithTag() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment
-                .newInstance(mAppCompatActivity, base64EncodedClientTokenFromFixture("client_token.json"));
+                .newInstance(mAppCompatActivity, base64Encode(Fixtures.CLIENT_TOKEN));
 
         assertNotNull(fragment);
-        assertEquals("BraintreeFragment.7126d60f-ce18-3f6c-b3cb-8eb3e40b908f", fragment.getTag());
+        assertEquals("BraintreeFragment.a4d73fc1-b71f-397c-b2a9-f22f024103c6", fragment.getTag());
     }
 
     @Test
     public void newInstance_whenFragmentExistsWithSameAuthorization_returnsExistingFragment() throws InvalidArgumentException {
         BraintreeFragment fragment1 = BraintreeFragment
-                .newInstance(mAppCompatActivity, base64EncodedClientTokenFromFixture("client_token.json"));
+                .newInstance(mAppCompatActivity, base64Encode(Fixtures.CLIENT_TOKEN));
         BraintreeFragment fragment2 = BraintreeFragment
-                .newInstance(mAppCompatActivity, base64EncodedClientTokenFromFixture("client_token.json"));
+                .newInstance(mAppCompatActivity, base64Encode(Fixtures.CLIENT_TOKEN));
         assertSame(fragment1, fragment2);
     }
 
@@ -188,12 +185,12 @@ public class BraintreeFragmentUnitTest {
 
     @Test(expected = InvalidArgumentException.class)
     public void newInstance_throwsAnExceptionWhenActivityIsNull() throws InvalidArgumentException {
-        BraintreeFragment.newInstance((AppCompatActivity) null, TOKENIZATION_KEY);
+        BraintreeFragment.newInstance((AppCompatActivity) null, Fixtures.TOKENIZATION_KEY);
     }
 
     @Test(expected = InvalidArgumentException.class)
     public void newInstance_throwsAnExceptionWhenFragmentIsNull() throws InvalidArgumentException {
-        BraintreeFragment.newInstance((Fragment) null, TOKENIZATION_KEY);
+        BraintreeFragment.newInstance((Fragment) null, Fixtures.TOKENIZATION_KEY);
     }
 
     @Test(expected = InvalidArgumentException.class)
@@ -207,12 +204,12 @@ public class BraintreeFragmentUnitTest {
                 .destroy()
                 .get();
 
-        BraintreeFragment.newInstance(activity, TOKENIZATION_KEY);
+        BraintreeFragment.newInstance(activity, Fixtures.TOKENIZATION_KEY);
     }
 
     @Test
     public void newInstance_setsIntegrationTypeToCustomForAllActivities() throws Exception {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
 
         assertEquals("custom", getField("mIntegrationType", fragment));
     }
@@ -221,7 +218,7 @@ public class BraintreeFragmentUnitTest {
     public void onCreate_callsFetchConfiguration() throws InvalidArgumentException {
         mockStatic(ConfigurationManager.class);
 
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
 
         verifyStatic(times(2));
         ConfigurationManager.getConfiguration(eq(fragment), any(ConfigurationListener.class),
@@ -234,7 +231,7 @@ public class BraintreeFragmentUnitTest {
                 .graphQL()
                 .buildConfiguration();
         mockConfigurationManager(configuration);
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         Bundle bundle = new Bundle();
         fragment.onSaveInstanceState(bundle);
         setField("mConfiguration", fragment, null);
@@ -251,7 +248,7 @@ public class BraintreeFragmentUnitTest {
     @Test
     public void onAttach_recordsNewActivity()
             throws InvalidArgumentException, NoSuchFieldException, IllegalAccessException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         assertEquals(false, getField("mNewActivityNeedsConfiguration", fragment));
 
         fragment.onAttach(null);
@@ -263,7 +260,7 @@ public class BraintreeFragmentUnitTest {
     public void sendEvent_addsEventToDatabase() throws InvalidArgumentException {
         Configuration configuration = new TestConfigurationBuilder().withAnalytics().buildConfiguration();
 
-        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY));
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY));
         when(fragment.getConfiguration()).thenReturn(configuration);
         fragment.sendAnalyticsEvent("test.event");
 
@@ -274,7 +271,7 @@ public class BraintreeFragmentUnitTest {
     public void sendEvent_doesNothingIfAnalyticsNotEnabled() throws InvalidArgumentException {
         AnalyticsDatabase db = AnalyticsDatabase.getInstance(mAppCompatActivity);
 
-        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY));
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY));
         when(fragment.getConfiguration()).thenReturn((Configuration) basicConfig());
         fragment.sendAnalyticsEvent("test.event");
 
@@ -284,7 +281,7 @@ public class BraintreeFragmentUnitTest {
     @Test
     public void postsAnErrorWhenFetchingConfigurationFails() throws InvalidArgumentException {
         mockConfigurationManager(new Exception("Configuration error"));
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         final AtomicInteger calls = new AtomicInteger(0);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
@@ -310,7 +307,7 @@ public class BraintreeFragmentUnitTest {
     public void onSaveInstanceState_savesState() throws InvalidArgumentException {
         Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
         mockConfigurationManager(configuration);
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         Bundle bundle = new Bundle();
 
         fragment.onSaveInstanceState(bundle);
@@ -322,7 +319,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void onSaveInstanceState_doesNotIncludeConfigurationWhenNull() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         Bundle bundle = new Bundle();
 
         fragment.onSaveInstanceState(bundle);
@@ -334,23 +331,23 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void getContext_returnsContext() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
 
         assertEquals(mAppCompatActivity.getApplicationContext(), fragment.getApplicationContext());
     }
 
     @Test
     public void getTokenizationKey_returnsTokenizationKey() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
 
-        assertEquals(TOKENIZATION_KEY, fragment.getAuthorization().getBearer());
+        assertEquals(Fixtures.TOKENIZATION_KEY, fragment.getAuthorization().getBearer());
     }
 
     @Test
     public void getConfiguration_returnsConfiguration() throws InvalidArgumentException, JSONException {
-        Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
+        Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
         mockConfigurationManager(configuration);
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
 
         assertEquals(configuration, fragment.getConfiguration());
     }
@@ -358,9 +355,9 @@ public class BraintreeFragmentUnitTest {
     @Test
     public void waitForConfiguration_postsCallbackAfterConfigurationIsReceived() throws JSONException,
             InvalidArgumentException {
-        final Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
+        final Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
         mockConfigurationManager(configuration);
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
 
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
@@ -376,9 +373,9 @@ public class BraintreeFragmentUnitTest {
     @Test
     public void waitForConfiguration_doesNotPostCallbackWhenNotAttached() throws JSONException,
             InvalidArgumentException {
-        final Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
+        final Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
         mockConfigurationManager(configuration);
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
 
         mAppCompatActivity.getSupportFragmentManager().beginTransaction().detach(fragment).commit();
         mAppCompatActivity.getSupportFragmentManager().executePendingTransactions();
@@ -394,9 +391,9 @@ public class BraintreeFragmentUnitTest {
     @Test
     public void waitForConfiguration_postsCallbackWhenFragmentIsAttached() throws JSONException,
             InvalidArgumentException {
-        final Configuration configuration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
+        final Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
         mockConfigurationManager(configuration);
-        final BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        final BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
 
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
@@ -411,7 +408,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void getHttpClient_returnsHttpClient() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
 
         assertNotNull(fragment.getHttpClient());
     }
@@ -426,7 +423,7 @@ public class BraintreeFragmentUnitTest {
                 .build();
         mockConfigurationManager(Configuration.fromJson(configuration));
 
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
 
         assertNotNull(fragment.getBraintreeApiHttpClient());
     }
@@ -440,7 +437,7 @@ public class BraintreeFragmentUnitTest {
                 .build();
         mockConfigurationManager(Configuration.fromJson(configuration));
 
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
 
         HttpClient client = fragment.getBraintreeApiHttpClient();
         HttpClient client2 = fragment.getBraintreeApiHttpClient();
@@ -454,12 +451,12 @@ public class BraintreeFragmentUnitTest {
                 .build();
         mockConfigurationManager(Configuration.fromJson(configuration));
 
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         assertNull(fragment.getBraintreeApiHttpClient());
     }
 
     public void getGraphQLHttpClient_returnsNullWhenNotEnabled() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
 
         assertNull(fragment.getGraphQLHttpClient());
     }
@@ -470,14 +467,14 @@ public class BraintreeFragmentUnitTest {
                 .graphQL()
                 .buildConfiguration();
         mockConfigurationManager(configuration);
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
 
         assertNotNull(fragment.getGraphQLHttpClient());
     }
 
     @Test
     public void addListener_flushesExceptionCallbacks() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         fragment.postCallback(new Exception("Error!"));
 
         fragment.addListener(new BraintreeErrorListener() {
@@ -493,7 +490,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void addListener_flushesErrorWithResponseCallback() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         fragment.postCallback(new ErrorWithResponse(422, ""));
 
         fragment.addListener(new BraintreeErrorListener() {
@@ -510,7 +507,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void addListener_flushesPaymentMethodNonceCreatedCallback() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         fragment.postCallback(new CardNonce());
 
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
@@ -525,7 +522,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void addListener_flushesPaymentMethodNoncesUpdatedCallback() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         fragment.postCallback(new ArrayList<PaymentMethodNonce>());
 
         fragment.addListener(new PaymentMethodNoncesUpdatedListener() {
@@ -540,7 +537,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void addListener_flushesCancelCallback() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         fragment.postCancelCallback(42);
 
         fragment.addListener(new BraintreeCancelListener() {
@@ -556,7 +553,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void removeListener_noPaymentMethodNonceCreatedReceived() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         PaymentMethodNonceCreatedListener listener = new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
@@ -572,7 +569,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void removeListener_noCancelReceived() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         BraintreeCancelListener listener = new BraintreeCancelListener() {
             @Override
             public void onCancel(int requestCode) {
@@ -588,7 +585,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void removeListener_noPaymentMethodNoncesUpdatedCallbacksReceived() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         PaymentMethodNoncesUpdatedListener listener = new PaymentMethodNoncesUpdatedListener() {
             @Override
             public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {
@@ -604,7 +601,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void removeListener_noErrorCallbacksReceived() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         BraintreeErrorListener listener = new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
@@ -621,7 +618,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void addAndRemoveListenersAddAndRemoveAllListeners() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         ConfigurationListener configurationListener = new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {}
@@ -683,7 +680,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void getListeners_isEmptyWhenNoListenersAreSet() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
 
         assertEquals(0, fragment.getListeners().size());
     }
@@ -691,7 +688,7 @@ public class BraintreeFragmentUnitTest {
     @Test
     public void getListeners_returnsAllListeners() throws InvalidArgumentException {
         BraintreeFragment fragment = BraintreeFragment.newInstance(
-                Robolectric.setupActivity(UnitTestListenerActivity.class), TOKENIZATION_KEY);
+                Robolectric.setupActivity(UnitTestListenerActivity.class), Fixtures.TOKENIZATION_KEY);
 
         assertEquals(6, fragment.getListeners().size());
     }
@@ -699,7 +696,7 @@ public class BraintreeFragmentUnitTest {
     @Test
     public void waitForConfiguration_retriesIfConfigurationIsNull() throws InvalidArgumentException {
         mockConfigurationManager(new Exception());
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
 
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
@@ -716,7 +713,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void postCallback_postsPaymentMethodNonceToListener() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         final AtomicBoolean wasCalled = new AtomicBoolean(false);
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
@@ -733,7 +730,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void postCancelCallback_postsRequestCodeToListener() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         final AtomicBoolean wasCalled = new AtomicBoolean(false);
         fragment.addListener(new BraintreeCancelListener() {
             @Override
@@ -750,7 +747,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void postCallback_addsPaymentMethodNonceToCache() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         assertEquals(0, fragment.getCachedPaymentMethodNonces().size());
 
         fragment.postCallback(new CardNonce());
@@ -761,7 +758,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void postCallback_addsPaymentMethodNonceToBeginningOfCache() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         assertEquals(0, fragment.getCachedPaymentMethodNonces().size());
 
         fragment.postCallback(new CardNonce());
@@ -773,7 +770,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void postCallback_setsBooleanForFetchedPaymentMethodNonces() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         assertFalse(fragment.hasFetchedPaymentMethodNonces());
 
         fragment.postCallback(new ArrayList<PaymentMethodNonce>());
@@ -783,7 +780,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void postCallback_addsAllPaymentMethodNoncesToCache() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         assertEquals(0, fragment.getCachedPaymentMethodNonces().size());
         List<PaymentMethodNonce> paymentMethodNonceList = new ArrayList<>();
         paymentMethodNonceList.add(new CardNonce());
@@ -798,7 +795,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void postCallback_exceptionIsPostedToListeners() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
@@ -814,7 +811,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void postCallback_ErrorWithResponseIsPostedToListeners() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
@@ -833,7 +830,7 @@ public class BraintreeFragmentUnitTest {
     public void executesCallbacksOnlyWhenShouldRunIsTrue() throws InvalidArgumentException {
         final AtomicBoolean shouldRun = new AtomicBoolean(false);
         final AtomicBoolean run = new AtomicBoolean(false);
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         QueuedCallback callback = new QueuedCallback() {
             @Override
             public boolean shouldRun() {
@@ -856,7 +853,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void doesNotExecuteCallbackWhenShouldRunIsFalse() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         QueuedCallback callback = new QueuedCallback() {
             @Override
             public boolean shouldRun() {
@@ -880,7 +877,7 @@ public class BraintreeFragmentUnitTest {
         Robolectric.getForegroundThreadScheduler().pause();
         Context context = spy(RuntimeEnvironment.application);
         when(mAppCompatActivity.getApplicationContext()).thenReturn(context);
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         Robolectric.getForegroundThreadScheduler().unPause();
         Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
 
@@ -890,7 +887,7 @@ public class BraintreeFragmentUnitTest {
         verify(context).startService(intentCaptor.capture());
 
         Intent serviceIntent = intentCaptor.getValue();
-        assertEquals(TOKENIZATION_KEY, serviceIntent.getStringExtra(AnalyticsIntentService.EXTRA_AUTHORIZATION));
+        assertEquals(Fixtures.TOKENIZATION_KEY, serviceIntent.getStringExtra(AnalyticsIntentService.EXTRA_AUTHORIZATION));
         assertEquals(configuration, serviceIntent.getStringExtra(AnalyticsIntentService.EXTRA_CONFIGURATION));
     }
 
@@ -902,7 +899,7 @@ public class BraintreeFragmentUnitTest {
         Robolectric.getForegroundThreadScheduler().pause();
         Context context = spy(RuntimeEnvironment.application);
         when(mAppCompatActivity.getApplicationContext()).thenReturn(context);
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         Robolectric.getForegroundThreadScheduler().unPause();
         Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
 
@@ -925,7 +922,7 @@ public class BraintreeFragmentUnitTest {
         doThrow(new RuntimeException()).when(context).startService(any(Intent.class));
         when(mAppCompatActivity.getApplicationContext()).thenReturn(context);
 
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
 
         Robolectric.getForegroundThreadScheduler().unPause();
         Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
@@ -939,7 +936,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void onBrowserSwitchResult_callsOnActivityResultForOkResult() throws InvalidArgumentException {
-        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY));
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY));
 
         BrowserSwitchResult result = mock(BrowserSwitchResult.class);
         when(result.getStatus()).thenReturn(BrowserSwitchResult.STATUS_OK);
@@ -953,7 +950,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void onBrowserSwitchResult_callsOnActivityResultForCancelResult() throws InvalidArgumentException {
-        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY));
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY));
 
         BrowserSwitchResult result = mock(BrowserSwitchResult.class);
         when(result.getStatus()).thenReturn(BrowserSwitchResult.STATUS_CANCELED);
@@ -967,7 +964,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void onBrowserSwitchResult_callsOnActivityResultForErrorResult() throws InvalidArgumentException {
-        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY));
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY));
 
         BrowserSwitchResult result = mock(BrowserSwitchResult.class);
         when(result.getStatus()).thenReturn(BrowserSwitchResult.STATUS_ERROR);
@@ -981,7 +978,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void onBrowserSwitchResult_sendsAnalyticsEventForOkResult() throws InvalidArgumentException {
-        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY));
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY));
 
         BrowserSwitchResult result = mock(BrowserSwitchResult.class);
         when(result.getStatus()).thenReturn(BrowserSwitchResult.STATUS_OK);
@@ -993,7 +990,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void onBrowserSwitchResult_sendsAnalyticsEventForCanceledResult() throws InvalidArgumentException {
-        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY));
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY));
 
         BrowserSwitchResult result = mock(BrowserSwitchResult.class);
         when(result.getStatus()).thenReturn(BrowserSwitchResult.STATUS_CANCELED);
@@ -1006,7 +1003,7 @@ public class BraintreeFragmentUnitTest {
     @Test
     public void onBrowserSwitchResult_sendsAnalyticsEventForNoBrowserInstalledErrorResult()
             throws InvalidArgumentException, NoSuchFieldException, IllegalAccessException {
-        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY));
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY));
 
         BrowserSwitchResult result = mock(BrowserSwitchResult.class);
         when(result.getStatus()).thenReturn(BrowserSwitchResult.STATUS_ERROR);
@@ -1020,7 +1017,7 @@ public class BraintreeFragmentUnitTest {
     @Test
     public void onBrowserSwitchResult_sendsAnalyticsEventWhenSetupFailedErrorResult()
             throws InvalidArgumentException, NoSuchFieldException, IllegalAccessException {
-        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY));
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY));
 
         BrowserSwitchResult result = mock(BrowserSwitchResult.class);
         when(result.getStatus()).thenReturn(BrowserSwitchResult.STATUS_ERROR);
@@ -1036,7 +1033,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void onActivityResult_handlesPayPalResult() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         mockStatic(PayPal.class);
         Intent intent = new Intent();
 
@@ -1048,7 +1045,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void onActivityResult_callsCancelListenerOnlyOnceForPayPal() throws InvalidArgumentException {
-        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY));
+        BraintreeFragment fragment = spy(BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY));
 
         fragment.onActivityResult(BraintreeRequestCodes.PAYPAL, AppCompatActivity.RESULT_CANCELED, new Intent());
 
@@ -1057,7 +1054,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void onActivityResult_handlesThreeDSecureResult() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         mockStatic(ThreeDSecure.class);
         Intent intent = new Intent();
 
@@ -1069,7 +1066,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void onActivityResult_handlesVenmoResult() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         mockStatic(Venmo.class);
         Intent intent = new Intent();
 
@@ -1081,7 +1078,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void onActivityResult_handlesGooglePaymentResult() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         mockStatic(GooglePayment.class);
         Intent intent = new Intent();
 
@@ -1093,7 +1090,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void onActivityResult_postsCancelCallbackWhenResultCodeIsCanceled() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         fragment.addListener(new BraintreeCancelListener() {
             @Override
             public void onCancel(int requestCode) {
@@ -1109,7 +1106,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void startActivityForResult_postsExceptionWhenNotAttached() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         mAppCompatActivity.getSupportFragmentManager().beginTransaction().detach(fragment).commit();
         mAppCompatActivity.getSupportFragmentManager().executePendingTransactions();
         fragment.addListener(new BraintreeErrorListener() {
@@ -1128,7 +1125,7 @@ public class BraintreeFragmentUnitTest {
 
     @Test
     public void startActivityForResult_doesNotPostExceptionWhenAttached() throws InvalidArgumentException {
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mAppCompatActivity, Fixtures.TOKENIZATION_KEY);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
@@ -1146,7 +1143,7 @@ public class BraintreeFragmentUnitTest {
         Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
         mockConfigurationManager(configuration);
         UnitTestListenerActivity activity = Robolectric.setupActivity(UnitTestListenerActivity.class);
-        BraintreeFragment fragment = BraintreeFragment.newInstance(activity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(activity, Fixtures.TOKENIZATION_KEY);
 
         fragment.onResume();
 
@@ -1159,7 +1156,7 @@ public class BraintreeFragmentUnitTest {
         Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
         mockConfigurationManager(configuration);
         UnitTestListenerActivity activity = Robolectric.setupActivity(UnitTestListenerActivity.class);
-        BraintreeFragment fragment = BraintreeFragment.newInstance(activity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(activity, Fixtures.TOKENIZATION_KEY);
         fragment.onAttach(null);
 
         fragment.onResume();

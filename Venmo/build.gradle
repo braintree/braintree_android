@@ -14,6 +14,8 @@ android {
         versionName rootProject.versionName
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+
+        buildConfigField "String", "BRAINTREE_SDK_VERSION", "\"${rootProject.versionName}\""
     }
 
     testOptions {

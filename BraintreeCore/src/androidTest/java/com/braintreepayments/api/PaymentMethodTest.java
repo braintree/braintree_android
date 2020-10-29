@@ -14,6 +14,7 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
+import com.braintreepayments.testutils.Fixtures;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -29,7 +30,6 @@ import static com.braintreepayments.api.BraintreeFragmentTestUtils.tokenize;
 import static com.braintreepayments.testutils.Assertions.assertIsANonce;
 import static com.braintreepayments.testutils.CardNumber.VISA;
 import static com.braintreepayments.testutils.ExpirationDateHelper.validExpirationYear;
-import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
@@ -101,7 +101,7 @@ public class PaymentMethodTest {
     public void getPaymentMethodNonces_failsWithATokenizationKey() throws InterruptedException,
             InvalidArgumentException {
         final CountDownLatch latch = new CountDownLatch(1);
-        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        BraintreeFragment fragment = BraintreeFragment.newInstance(mActivity, Fixtures.TOKENIZATION_KEY);
         getInstrumentation().waitForIdleSync();
         fragment.addListener(new PaymentMethodNoncesUpdatedListener() {
             @Override

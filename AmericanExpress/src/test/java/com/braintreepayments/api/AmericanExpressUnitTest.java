@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import com.braintreepayments.api.exceptions.AuthorizationException;
 import com.braintreepayments.api.models.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.testutils.Fixtures;
 
 import org.json.JSONException;
 import org.junit.Before;
@@ -15,7 +16,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
@@ -33,14 +33,14 @@ public class AmericanExpressUnitTest {
 
     @Before
     public void setup() throws JSONException {
-        mConfiguration = Configuration.fromJson(stringFromFixture("configuration/configuration.json"));
+        mConfiguration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
     }
 
     @Test
     public void getRewardsBalance_callsListenerWithRewardsBalanceOnSuccess() {
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(mConfiguration)
-                .successResponse(stringFromFixture("response/amex_rewards_balance_success.json"))
+                .successResponse(Fixtures.AMEX_REWARDS_BALANCE_SUCCESS)
                 .build();
 
         AmericanExpress.getRewardsBalance(fragment, "fake-nonce", "USD");
@@ -64,7 +64,7 @@ public class AmericanExpressUnitTest {
     public void getRewardsBalance_callsListenerWithRewardsBalanceOnIneligibleCard() {
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(mConfiguration)
-                .successResponse(stringFromFixture("response/amex_rewards_balance_ineligible_card.json"))
+                .successResponse(Fixtures.AMEX_REWARDS_BALANCE_INELIGIBLE_CARD)
                 .build();
 
         AmericanExpress.getRewardsBalance(fragment, "fake-nonce", "USD");
@@ -88,7 +88,7 @@ public class AmericanExpressUnitTest {
     public void getRewardsBalance_callsListenerWithRewardsBalanceOnInsufficientPoints() {
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(mConfiguration)
-                .successResponse(stringFromFixture("response/amex_rewards_balance_insufficient_points.json"))
+                .successResponse(Fixtures.AMEX_REWARDS_BALANCE_INSUFFICIENT_POINTS)
                 .build();
 
         AmericanExpress.getRewardsBalance(fragment, "fake-nonce", "USD");
@@ -112,7 +112,7 @@ public class AmericanExpressUnitTest {
     public void getRewardsBalance_sendsAnalyticsEventOnSuccess() {
         BraintreeFragment fragment = new MockFragmentBuilder()
                 .configuration(mConfiguration)
-                .successResponse(stringFromFixture("response/amex_rewards_balance_success.json"))
+                .successResponse(Fixtures.AMEX_REWARDS_BALANCE_SUCCESS)
                 .build();
 
         AmericanExpress.getRewardsBalance(fragment, "fake-nonce", "USD");

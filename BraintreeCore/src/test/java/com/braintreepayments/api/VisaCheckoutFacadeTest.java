@@ -6,6 +6,7 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.shadows.ShadowVisaCheckout;
 import com.braintreepayments.api.test.AppCompatTestActivity;
+import com.braintreepayments.testutils.Fixtures;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,7 +22,6 @@ import java.util.concurrent.CountDownLatch;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyStatic;
@@ -42,7 +42,7 @@ public class VisaCheckoutFacadeTest {
     @Before
     public void setup() throws InvalidArgumentException {
         mActivity = spy(Robolectric.setupActivity(AppCompatTestActivity.class));
-        mFragment = BraintreeFragment.newInstance(mActivity, TOKENIZATION_KEY);
+        mFragment = BraintreeFragment.newInstance(mActivity, Fixtures.TOKENIZATION_KEY);
         mLatch = new CountDownLatch(1);
     }
 

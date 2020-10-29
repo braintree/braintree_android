@@ -30,18 +30,8 @@ def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProj
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.1'
+    implementation project(':BraintreeCore')
     implementation project(':BraintreeDataCollector')
-
-    // TODO: replace with `implementation project(:Braintree)` once CardClient is created
-    compileOnly("com.braintreepayments.api:braintree:${rootProject.braintreeSdkVersion}") {
-        exclude module: 'card'
-        because "Use this development version"
-    }
-
-    testImplementation("com.braintreepayments.api:braintree:${rootProject.braintreeSdkVersion}") {
-        exclude module: 'card'
-        because "Use this development version"
-    }
 
     testImplementation playServicesWallet
     testImplementation 'org.robolectric:robolectric:4.1'

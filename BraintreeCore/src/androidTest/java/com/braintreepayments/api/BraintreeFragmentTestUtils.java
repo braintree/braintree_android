@@ -9,7 +9,7 @@ import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.testutils.TestTokenizationKey;
+import com.braintreepayments.testutils.Fixtures;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -29,7 +29,7 @@ public class BraintreeFragmentTestUtils {
     public static BraintreeFragment getFragment(FragmentActivity activity, String authorization, String configuration) {
         try {
             if (authorization == null) {
-                authorization = TestTokenizationKey.TOKENIZATION_KEY;
+                authorization = Fixtures.TOKENIZATION_KEY;
             }
 
             if (configuration != null) {

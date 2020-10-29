@@ -15,6 +15,7 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
 import com.braintreepayments.demo.test.DemoTestActivity;
+import com.braintreepayments.testutils.Fixtures;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,7 +31,6 @@ import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_MPI_LOOK
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON;
 import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICATON_NOT_REQUIRED;
 import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
-import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -111,7 +111,7 @@ public class ThreeDSecureVerificationTest {
     @Test(timeout = 10000)
     public void performVerification_failsWithATokenizationKey() throws InterruptedException {
         String clientToken = new TestClientTokenBuilder().build();
-        BraintreeFragment fragment = getFragment(TOKENIZATION_KEY, clientToken);
+        BraintreeFragment fragment = getFragment(Fixtures.TOKENIZATION_KEY, clientToken);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {

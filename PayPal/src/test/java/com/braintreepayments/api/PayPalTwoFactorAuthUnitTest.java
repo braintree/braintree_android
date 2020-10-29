@@ -17,6 +17,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PayPalTwoFactorAuthRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.testutils.Fixtures;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 
 import org.json.JSONException;
@@ -33,7 +34,6 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -58,11 +58,12 @@ public class PayPalTwoFactorAuthUnitTest {
     private static final String CREATE_PAYMENT_RESOURCE_PATH = "/v1/paypal_hermes/create_payment_resource";
     private static final String CREATE_PAYPAL_ACCOUNT_PATH = "/v1/payment_methods/paypal_accounts";
 
-    private static final String CREATE_PAYMENT_RESOURCE_RESPONSE = stringFromFixture(
-            "payment_methods/hermes_payment_resource/response_with_authenticate_url.json");
-    private static final String CREATE_PAYPAL_ACCOUNT_RESPONSE = stringFromFixture(
-            "payment_methods/paypal_account_response.json");
-    
+    private static final String CREATE_PAYMENT_RESOURCE_RESPONSE =
+        Fixtures.PAYMENT_METHODS_HERMES_PAYMENT_RESOURCE_RESPONSE_WITH_AUTHENTICATE_URL;
+
+    private static final String CREATE_PAYPAL_ACCOUNT_RESPONSE =
+            Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE;
+
     private MockFragmentBuilder mMockFragmentBuilder;
     private PayPalTwoFactorAuthRequest payPalTwoFactorAuthRequest;
     private PayPalTwoFactorAuthCallback emptyPayPalTwoFactorAuthCallback;

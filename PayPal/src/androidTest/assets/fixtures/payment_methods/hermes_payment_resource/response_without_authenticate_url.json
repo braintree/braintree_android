@@ -1,8 +1,0 @@
-{
-  "paymentResource": {
-    "paymentToken": "fake-token",
-    "intent": "authorize",
-    "redirectUrl": "fake-redirect-url",
-    "authenticateUrl": null
-  }
-}

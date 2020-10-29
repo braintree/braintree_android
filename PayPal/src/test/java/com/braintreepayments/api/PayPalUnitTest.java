@@ -16,17 +16,18 @@ import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PayPalAccountNonce;
+import com.braintreepayments.api.models.PayPalApiBillingAgreementRequest;
+import com.braintreepayments.api.models.PayPalApiCheckoutRequest;
+import com.braintreepayments.api.models.PayPalApiLineItem;
+import com.braintreepayments.api.models.PayPalApiRequest;
 import com.braintreepayments.api.models.PayPalProductAttributes;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
+import com.braintreepayments.testutils.Fixtures;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestPayPalConfigurationBuilder;
-import com.braintreepayments.api.models.PayPalApiBillingAgreementRequest;
-import com.braintreepayments.api.models.PayPalApiCheckoutRequest;
-import com.braintreepayments.api.models.PayPalApiLineItem;
-import com.braintreepayments.api.models.PayPalApiRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,7 +52,6 @@ import java.util.concurrent.CountDownLatch;
 import static androidx.appcompat.app.AppCompatActivity.RESULT_CANCELED;
 import static androidx.appcompat.app.AppCompatActivity.RESULT_OK;
 import static com.braintreepayments.api.BraintreePowerMockHelper.MockStaticTokenizationClient;
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -116,7 +116,7 @@ public class PayPalUnitTest {
     @Test
     public void requestBillingAgreement_startsBrowser() {
         BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_billing_agreement_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
                 .build();
 
         PayPal.requestBillingAgreement(fragment, new PayPalRequest());
@@ -143,7 +143,7 @@ public class PayPalUnitTest {
     @Test
     public void requestBillingAgreement_startsBrowserWithPayPalCredit() {
         BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_billing_agreement_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
                 .build();
 
         PayPal.requestBillingAgreement(fragment, new PayPalRequest().offerCredit(true));
@@ -171,7 +171,7 @@ public class PayPalUnitTest {
     @Test
     public void requestBillingAgreement_fragmentNotActive_notStartsBrowser() {
         BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_billing_agreement_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
                 .isActive(false)
                 .build();
 
@@ -252,7 +252,7 @@ public class PayPalUnitTest {
     @Test
     public void authorizeAccount_whenSuccessfulBrowserSwitch_sendsAnalyticsEvents() throws Exception {
         final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_billing_agreement_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
                 .build();
         doAnswer(new Answer() {
             @Override
@@ -276,7 +276,7 @@ public class PayPalUnitTest {
     @Test
     public void requestBillingAgreement_whenSuccessfulBrowserSwitch_sendsAnalyticsEvents() {
         final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_billing_agreement_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
                 .build();
         doAnswer(new Answer() {
             @Override
@@ -300,10 +300,10 @@ public class PayPalUnitTest {
     @Test
     public void requestBillingAgreement_paypalCreditReturnedInResponse() throws Exception {
         BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_billing_agreement_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
                 .build();
 
-        MockStaticTokenizationClient.mockTokenizeSuccess(PayPalAccountNonce.fromJson(stringFromFixture("payment_methods/paypal_account_response.json")));
+        MockStaticTokenizationClient.mockTokenizeSuccess(PayPalAccountNonce.fromJson(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE));
 
         PayPal.requestBillingAgreement(fragment, new PayPalRequest().offerCredit(true), new PayPalApprovalHandler() {
             @Override
@@ -327,7 +327,7 @@ public class PayPalUnitTest {
     @Test
     public void requestBillingAgreement_doesNotCallCancelListenerWhenSuccessful() {
         final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
         doAnswer(new Answer() {
             @Override
@@ -349,7 +349,7 @@ public class PayPalUnitTest {
     @Test
     public void requestBillingAgreement_cancelUrlTriggersCancelListener() {
         final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
         doAnswer(new Answer() {
             @Override
@@ -565,7 +565,7 @@ public class PayPalUnitTest {
     @Test(timeout = 1000)
     public void requestOneTimePayment_customHandlerIsCalledCorrectly() throws InterruptedException {
         BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
 
         final CountDownLatch latch = new CountDownLatch(1);
@@ -582,7 +582,7 @@ public class PayPalUnitTest {
     @Test
     public void requestOneTimePayment_customHandlerCancelCallbackIsInvoked() {
         BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
 
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"), new PayPalApprovalHandler() {
@@ -598,10 +598,10 @@ public class PayPalUnitTest {
     @Test
     public void requestOneTimePayment_paypalCreditReturnedInResponse() throws Exception {
         BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
 
-        MockStaticTokenizationClient.mockTokenizeSuccess(PayPalAccountNonce.fromJson(stringFromFixture("payment_methods/paypal_account_response.json")));
+        MockStaticTokenizationClient.mockTokenizeSuccess(PayPalAccountNonce.fromJson(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE));
 
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").offerCredit(true), new PayPalApprovalHandler() {
             @Override
@@ -625,7 +625,7 @@ public class PayPalUnitTest {
     @Test
     public void requestOneTimePayment_customHandlerSuccessCallbackIsInvoked() {
         BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
 
         MockStaticTokenizationClient.mockTokenizeSuccess(new PayPalAccountNonce());
@@ -815,7 +815,7 @@ public class PayPalUnitTest {
     @Test
     public void requestOneTimePayment_userAction_setsUserActionToBlankStringonDefault() {
         BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
 
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").userAction(PayPalRequest.USER_ACTION_DEFAULT));
@@ -830,7 +830,7 @@ public class PayPalUnitTest {
     @Test
     public void requestOneTimePayment_userAction_canBeSetToCommit() {
         BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
 
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").userAction(PayPalRequest.USER_ACTION_COMMIT));
@@ -1067,7 +1067,7 @@ public class PayPalUnitTest {
     @Test
     public void requestOneTimePayment_startsBrowser() {
         BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
 
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1.00"));
@@ -1093,7 +1093,7 @@ public class PayPalUnitTest {
     @Test
     public void requestOneTimePayment_startsBrowserWithPayPalCredit() {
         BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
 
         PayPal.requestOneTimePayment(fragment, new PayPalRequest("1.00").offerCredit(true));
@@ -1120,7 +1120,7 @@ public class PayPalUnitTest {
     @Test
     public void requestOneTimePayment_isSuccessful() {
         final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
         doAnswer(new Answer() {
             @Override
@@ -1148,7 +1148,7 @@ public class PayPalUnitTest {
         MockStaticTokenizationClient.mockTokenizeSuccess(new PayPalAccountNonce());
 
         final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
         doAnswer(new Answer() {
             @Override
@@ -1171,7 +1171,7 @@ public class PayPalUnitTest {
     public void requestOneTimePayment_containsPaymentIntent() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
 
         doAnswer(new Answer() {
@@ -1208,7 +1208,7 @@ public class PayPalUnitTest {
     @Test
     public void requestOneTimePayment_doesNotCallCancelListenerWhenSuccessful() {
         final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
         doAnswer(new Answer() {
             @Override
@@ -1240,7 +1240,7 @@ public class PayPalUnitTest {
     @Test
     public void checkout_cancelUrlTriggersCancelListener() {
         final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(stringFromFixture("paypal_hermes_response.json"))
+                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
                 .build();
         doAnswer(new Answer() {
             @Override

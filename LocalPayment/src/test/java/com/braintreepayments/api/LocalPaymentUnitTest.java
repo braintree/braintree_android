@@ -16,6 +16,7 @@ import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.LocalPaymentRequest;
 import com.braintreepayments.api.models.LocalPaymentResult;
 import com.braintreepayments.api.models.PostalAddress;
+import com.braintreepayments.testutils.Fixtures;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestPayPalConfigurationBuilder;
 
@@ -33,8 +34,7 @@ import org.robolectric.RobolectricTestRunner;
 
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.testutils.FixturesHelper.base64EncodedClientTokenFromFixture;
-import static com.braintreepayments.testutils.FixturesHelper.stringFromFixture;
+import static com.braintreepayments.testutils.FixturesHelper.base64Encode;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
@@ -65,7 +65,7 @@ public class LocalPaymentUnitTest {
                         .billingAgreementsEnabled(false))
                 .buildConfiguration();
 
-        mBraintreeFragment = getMockFragment(base64EncodedClientTokenFromFixture("client_token.json"), mConfiguration);
+        mBraintreeFragment = getMockFragment(base64Encode(Fixtures.CLIENT_TOKEN), mConfiguration);
 
         mMockHttpClient = mock(BraintreeHttpClient.class);
         when(mBraintreeFragment.getHttpClient()).thenReturn(mMockHttpClient);
@@ -116,7 +116,7 @@ public class LocalPaymentUnitTest {
                 assertEquals(expectedReturnUrl, json.getString("returnUrl"));
 
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
-                callback.success(stringFromFixture("payment_methods/local_payment_create_response.json"));
+                callback.success(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_CREATE_RESPONSE);
                 return null;
             }
         }).when(mMockHttpClient).post(eq("/v1/local_payments/create"), any(String.class), any(HttpResponseCallback.class));
@@ -141,7 +141,7 @@ public class LocalPaymentUnitTest {
             @Override
             public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
-                callback.success(stringFromFixture("payment_methods/local_payment_create_response.json"));
+                callback.success(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_CREATE_RESPONSE);
                 return null;
             }
         }).when(mMockHttpClient).post(eq("/v1/local_payments/create"), any(String.class), any(HttpResponseCallback.class));
@@ -166,7 +166,7 @@ public class LocalPaymentUnitTest {
             @Override
             public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
-                callback.success(stringFromFixture("error_response.json"));
+                callback.success(Fixtures.ERROR_RESPONSE);
                 return null;
             }
         }).when(mMockHttpClient).post(eq("/v1/local_payments/create"), any(String.class), any(HttpResponseCallback.class));
@@ -191,7 +191,7 @@ public class LocalPaymentUnitTest {
             @Override
             public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
-                callback.success(stringFromFixture("payment_methods/local_payment_create_response.json"));
+                callback.success(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_CREATE_RESPONSE);
                 return null;
             }
         }).when(mMockHttpClient).post(eq("/v1/local_payments/create"), any(String.class), any(HttpResponseCallback.class));
@@ -317,7 +317,7 @@ public class LocalPaymentUnitTest {
             @Override
             public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
-                callback.success(stringFromFixture("payment_methods/local_payment_create_response.json"));
+                callback.success(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_CREATE_RESPONSE);
                 latch.countDown();
                 return null;
             }
@@ -336,7 +336,7 @@ public class LocalPaymentUnitTest {
             @Override
             public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
-                callback.success(stringFromFixture("payment_methods/local_payment_response.json"));
+                callback.success(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE);
                 return null;
             }
         }).when(mMockHttpClient).post(eq("/v1/payment_methods/paypal_accounts"), any(String.class), any(HttpResponseCallback.class));
@@ -361,7 +361,7 @@ public class LocalPaymentUnitTest {
             @Override
             public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
-                callback.success(stringFromFixture("error_response.json"));
+                callback.success(Fixtures.ERROR_RESPONSE);
                 latch.countDown();
                 return null;
             }
@@ -380,7 +380,7 @@ public class LocalPaymentUnitTest {
             @Override
             public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
-                callback.success(stringFromFixture("payment_methods/local_payment_response.json"));
+                callback.success(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE);
                 return null;
             }
         }).when(mMockHttpClient).post(eq("/v1/payment_methods/paypal_accounts"), any(String.class), any(HttpResponseCallback.class));
@@ -398,7 +398,7 @@ public class LocalPaymentUnitTest {
             @Override
             public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
-                callback.success(stringFromFixture("error_response.json"));
+                callback.success(Fixtures.ERROR_RESPONSE);
                 latch.countDown();
                 return null;
             }
@@ -417,7 +417,7 @@ public class LocalPaymentUnitTest {
             @Override
             public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
-                callback.success(stringFromFixture("payment_methods/local_payment_response.json"));
+                callback.success(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE);
                 return null;
             }
         }).when(mMockHttpClient).post(eq("/v1/payment_methods/paypal_accounts"), any(String.class), any(HttpResponseCallback.class));
@@ -436,7 +436,7 @@ public class LocalPaymentUnitTest {
             @Override
             public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
-                callback.success(stringFromFixture("payment_methods/local_payment_response.json"));
+                callback.success(Fixtures.PAYMENT_METHODS_LOCAL_PAYMENT_RESPONSE);
                 latch.countDown();
                 return null;
             }
@@ -461,7 +461,7 @@ public class LocalPaymentUnitTest {
             @Override
             public Object answer(InvocationOnMock invocation) {
                 HttpResponseCallback callback = (HttpResponseCallback) invocation.getArguments()[2];
-                callback.success(stringFromFixture("error_response.json"));
+                callback.success(Fixtures.ERROR_RESPONSE);
                 latch.countDown();
                 return null;
             }

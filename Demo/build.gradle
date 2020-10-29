@@ -94,6 +94,10 @@ dependencies {
     implementation project(':BraintreeDataCollector')
     implementation project(':ThreeDSecure')
 
+    implementation project(':AmericanExpress')
+    implementation project(':Card')
+    implementation project(':UnionPay')
+
     implementation playServicesWallet
     implementation googlePayment
     implementation visaCheckoutDependencies

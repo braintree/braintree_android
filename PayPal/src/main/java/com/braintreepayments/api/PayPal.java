@@ -440,6 +440,7 @@ public class PayPal {
             paypalAccountBuilder.source("paypal-browser");
         }
 
+        // TODO: find out if is this required for feature to work; if not, remove
         paypalAccountBuilder.oneTouchCoreData(result.getResponse());
 
         return paypalAccountBuilder;

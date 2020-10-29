@@ -1,4 +1,5 @@
 buildscript {
+    ext.kotlin_version = '1.4.10'
     repositories {
         jcenter()
         google()
@@ -7,9 +8,10 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.1'
+        classpath 'com.android.tools.build:gradle:4.1.0'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2'
         classpath 'de.marcphilipp.gradle:nexus-publish-plugin:0.4.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -28,7 +30,7 @@ allprojects {
     }
 }
 
-version '3.17.1-SNAPSHOT'
+version '4.0.0-SNAPSHOT'
 ext {
     compileSdkVersion = 30
     minSdkVersion = 21
@@ -42,7 +44,7 @@ ext {
     // link add on libraries to the latest braintree android version
     // to prevent circular dependencies from occuring
     // TODO: remove when circular dependencies are eliminated from project
-    braintreeSdkVersion = '3.14.1'
+    braintreeSdkVersion = '3.14.2'
 }
 
 nexusStaging {

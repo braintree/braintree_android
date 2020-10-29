@@ -18,6 +18,8 @@ android {
 
         consumerProguardFiles 'proguard.pro'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+
+        buildConfigField "String", "VERSION_NAME", "\"${rootProject.versionName}\""
     }
 
     testOptions {
@@ -51,14 +53,13 @@ dependencies {
     compileOnly project(':BraintreeDataCollector')
     compileOnly project(':ThreeDSecure')
 
+    api project(':BraintreeModels')
+
     // TODO: remove each api reference when it's corresponding feature client is created
     api googlePayment
     api project(':SharedUtils')
-    api project(':Card')
     api project(':PayPal')
     api project(':LocalPayment')
-    api project(':AmericanExpress')
-    api project(':UnionPay')
     api project(':Venmo')
 
     androidTestImplementation playServicesWallet
@@ -69,6 +70,8 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation project(':TestUtils')
+    androidTestImplementation project(':Card')
+    androidTestImplementation project(':UnionPay')
 
     testImplementation playServicesWallet
     testImplementation project(':BraintreeDataCollector')

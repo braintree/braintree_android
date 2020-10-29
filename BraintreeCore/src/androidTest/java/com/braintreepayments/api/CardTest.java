@@ -13,6 +13,7 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
+import com.braintreepayments.testutils.Fixtures;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,7 +29,6 @@ import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.testutils.CardNumber.VISA;
-import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -99,7 +99,7 @@ public class CardTest {
                 .cardNumber(VISA)
                 .expirationDate("08/20");
 
-        assertTokenizationSuccessful(TOKENIZATION_KEY, cardBuilder);
+        assertTokenizationSuccessful(Fixtures.TOKENIZATION_KEY, cardBuilder);
     }
 
     @Test(timeout = 10000)
@@ -109,7 +109,7 @@ public class CardTest {
                 .expirationDate("08/20")
                 .validate(false);
 
-        assertTokenizationSuccessful(TOKENIZATION_KEY, cardBuilder);
+        assertTokenizationSuccessful(Fixtures.TOKENIZATION_KEY, cardBuilder);
     }
 
     @Test(timeout = 10000)
@@ -119,7 +119,7 @@ public class CardTest {
                 .expirationDate("08/20")
                 .validate(true);
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        BraintreeFragment fragment = setupBraintreeFragment(TOKENIZATION_KEY);
+        BraintreeFragment fragment = setupBraintreeFragment(Fixtures.TOKENIZATION_KEY);
         fragment.addListener(new BraintreeErrorListener() {
             @Override
             public void onError(Exception error) {
@@ -155,7 +155,7 @@ public class CardTest {
     @Test(timeout = 10000)
     public void tokenize_tokenizesCvvOnly() throws Exception {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        BraintreeFragment fragment = setupBraintreeFragment(TOKENIZATION_KEY);
+        BraintreeFragment fragment = setupBraintreeFragment(Fixtures.TOKENIZATION_KEY);
         fragment.addListener(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {

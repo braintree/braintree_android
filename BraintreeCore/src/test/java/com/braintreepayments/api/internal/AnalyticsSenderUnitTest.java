@@ -4,11 +4,13 @@ import android.os.Build;
 import android.os.Build.VERSION;
 
 import com.braintreepayments.api.BuildConfig;
+import com.braintreepayments.api.DeviceCapabilities;
 import com.braintreepayments.api.Venmo;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.Authorization;
+import com.braintreepayments.testutils.Fixtures;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -26,7 +28,6 @@ import java.util.List;
 
 import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.awaitTasksFinished;
 import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.clearAllEvents;
-import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.TestCase.assertTrue;
@@ -49,7 +50,7 @@ public class AnalyticsSenderUnitTest {
 
     @Before
     public void setup() throws InvalidArgumentException {
-        mAuthorization = Authorization.fromString(TOKENIZATION_KEY);
+        mAuthorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
         mHttpClient = mock(BraintreeHttpClient.class);
         mCurrentTime = System.currentTimeMillis();
         mOneSecondLater = mCurrentTime + 999;
@@ -101,7 +102,7 @@ public class AnalyticsSenderUnitTest {
         assertEquals("sessionId", meta.getString("sessionId"));
         assertFalse(meta.getString("sessionId").contains("-"));
         assertFalse(meta.getBoolean("paypalInstalled"));
-        assertEquals(Venmo.isVenmoAppSwitchAvailable(RuntimeEnvironment.application),
+        assertEquals(DeviceCapabilities.isVenmoInstalled(RuntimeEnvironment.application),
                 meta.getBoolean("venmoInstalled"));
     }
 

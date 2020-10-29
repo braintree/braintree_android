@@ -10,6 +10,7 @@ import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
 import com.braintreepayments.api.test.TestPayPalUATBuilder;
+import com.braintreepayments.testutils.Fixtures;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.junit.Before;
@@ -21,7 +22,6 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.CountDownLatch;
 
 import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWithAuthorization;
-import static com.braintreepayments.testutils.TestTokenizationKey.TOKENIZATION_KEY;
 import static junit.framework.Assert.assertNotNull;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
@@ -46,7 +46,7 @@ public class BraintreeFragmentTest {
 
     @Test(timeout = 10000)
     public void fetchConfiguration_worksWithATokenizationKey() throws InterruptedException {
-        final BraintreeFragment fragment = getFragmentWithAuthorization(mActivity, TOKENIZATION_KEY);
+        final BraintreeFragment fragment = getFragmentWithAuthorization(mActivity, Fixtures.TOKENIZATION_KEY);
         fragment.waitForConfiguration(new ConfigurationListener() {
             @Override
             public void onConfigurationFetched(Configuration configuration) {

@@ -6,6 +6,7 @@ import com.braintreepayments.demo.test.utilities.TestHelper;
 import com.braintreepayments.testutils.ExpirationDateHelper;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -21,6 +22,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
+@Ignore("Move Drop-In tests to Drop-In repo after circular dependencies are removed")
 public class DropInTest extends TestHelper {
 
     @Before

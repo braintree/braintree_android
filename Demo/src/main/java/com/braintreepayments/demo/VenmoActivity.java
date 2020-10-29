@@ -47,7 +47,7 @@ public class VenmoActivity extends BaseActivity implements ConfigurationListener
 
     @Override
     public void onConfigurationFetched(Configuration configuration) {
-        if (configuration.getPayWithVenmo().isEnabled(this)) {
+        if (Venmo.isEnabled(this, configuration.getPayWithVenmo())) {
             mVenmoButton.setVisibility(VISIBLE);
         } else if (configuration.getPayWithVenmo().isAccessTokenValid()) {
             showDialog("Please install the Venmo app first.");
