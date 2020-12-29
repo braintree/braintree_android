@@ -1,15 +1,18 @@
 package com.braintreepayments.api.internal;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.Build.VERSION;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import com.braintreepayments.api.BuildConfig;
-import com.braintreepayments.api.DeviceCapabilities;
-import com.braintreepayments.api.Venmo;
+import com.braintreepayments.api.DeviceInspector;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.exceptions.ServerException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.Authorization;
+import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.testutils.Fixtures;
 
 import org.json.JSONArray;
@@ -22,7 +25,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 
 import java.util.List;
 
@@ -31,6 +33,7 @@ import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.clea
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.TestCase.assertTrue;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
@@ -47,6 +50,7 @@ public class AnalyticsSenderUnitTest {
     private BraintreeHttpClient mHttpClient;
     private long mCurrentTime;
     private long mOneSecondLater;
+    private Configuration mConfiguration;
 
     @Before
     public void setup() throws InvalidArgumentException {
@@ -54,33 +58,38 @@ public class AnalyticsSenderUnitTest {
         mHttpClient = mock(BraintreeHttpClient.class);
         mCurrentTime = System.currentTimeMillis();
         mOneSecondLater = mCurrentTime + 999;
+        mConfiguration = mock(Configuration.class);
     }
 
     @After
     public void tearDown() {
-        clearAllEvents(RuntimeEnvironment.application);
+        clearAllEvents(ApplicationProvider.getApplicationContext());
     }
 
     @Test
     public void flushEvents_doesNothingIfThereAreNoEvents() {
-        AnalyticsSender.send(RuntimeEnvironment.application, mAuthorization, mHttpClient, "", true);
+        AnalyticsSender.send(ApplicationProvider.getApplicationContext(), mAuthorization, mConfiguration, mHttpClient, "", true);
 
         verifyZeroInteractions(mHttpClient);
     }
 
     @Test
     public void newRequest_sendsCorrectMetaData() throws Exception {
-        AnalyticsEvent event = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId", "custom",
-                "event.started");
-        AnalyticsDatabase database = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
+        Context context = ApplicationProvider.getApplicationContext();
+        DeviceInspector deviceInspector = mock(DeviceInspector.class);
+        when(deviceInspector.isPayPalInstalled(context)).thenReturn(true);
+        when(deviceInspector.isVenmoInstalled(context)).thenReturn(true);
+
+        AnalyticsEvent event = new AnalyticsEvent(context, "sessionId", "custom", "event.started", deviceInspector);
+        AnalyticsDatabase database = AnalyticsDatabase.getInstance(context);
         database.addEvent(event);
 
         awaitTasksFinished(database);
 
-        AnalyticsSender.send(RuntimeEnvironment.application, mAuthorization, mHttpClient, "", true);
+        AnalyticsSender.send(ApplicationProvider.getApplicationContext(), mAuthorization, mConfiguration, mHttpClient, "", true);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(mHttpClient).post(anyString(), captor.capture());
+        verify(mHttpClient).post(anyString(), captor.capture(), same(mConfiguration));
 
         JSONObject object = new JSONObject(captor.getValue());
         JSONObject meta = object.getJSONObject("_meta");
@@ -94,32 +103,32 @@ public class AnalyticsSenderUnitTest {
         assertEquals("Test Application", meta.getString("merchantAppName"));
         assertEquals(Build.MANUFACTURER, meta.getString("deviceManufacturer"));
         assertEquals(Build.MODEL, meta.getString("deviceModel"));
-        assertEquals(UUIDHelper.getPersistentUUID(RuntimeEnvironment.application),
+        assertEquals(UUIDHelper.getPersistentUUID(ApplicationProvider.getApplicationContext()),
                 meta.getString("deviceAppGeneratedPersistentUuid"));
         assertEquals("false", meta.getString("isSimulator"));
         assertEquals("Portrait", meta.getString("userInterfaceOrientation"));
         assertEquals("custom", meta.getString("integrationType"));
         assertEquals("sessionId", meta.getString("sessionId"));
         assertFalse(meta.getString("sessionId").contains("-"));
-        assertFalse(meta.getBoolean("paypalInstalled"));
-        assertEquals(DeviceCapabilities.isVenmoInstalled(RuntimeEnvironment.application),
-                meta.getBoolean("venmoInstalled"));
+        assertTrue(meta.getBoolean("paypalInstalled"));
+        assertTrue(meta.getBoolean("venmoInstalled"));
     }
 
     @Test
     public void sendsAllEvents() throws Exception {
-        AnalyticsEvent one = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId", "custom", "started");
-        AnalyticsEvent two = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId", "custom", "finished");
-        AnalyticsDatabase database = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
+        Context context = ApplicationProvider.getApplicationContext();
+        AnalyticsEvent one = new AnalyticsEvent(context, "sessionId", "custom", "started");
+        AnalyticsEvent two = new AnalyticsEvent(context, "sessionId", "custom", "finished");
+        AnalyticsDatabase database = AnalyticsDatabase.getInstance(ApplicationProvider.getApplicationContext());
         database.addEvent(one);
         database.addEvent(two);
 
         awaitTasksFinished(database);
 
-        AnalyticsSender.send(RuntimeEnvironment.application, mAuthorization, mHttpClient, "", true);
+        AnalyticsSender.send(ApplicationProvider.getApplicationContext(), mAuthorization, mConfiguration, mHttpClient, "", true);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(mHttpClient).post(anyString(), captor.capture());
+        verify(mHttpClient).post(anyString(), captor.capture(), same(mConfiguration));
 
         JSONObject analyticsJson = new JSONObject(captor.getValue());
         JSONArray array = analyticsJson.getJSONArray("analytics");
@@ -137,18 +146,19 @@ public class AnalyticsSenderUnitTest {
 
     @Test
     public void disambiguatesBasedOnDiscreteParams() throws Exception {
-        AnalyticsEvent one = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId", "custom", "started");
-        AnalyticsEvent two = new AnalyticsEvent(RuntimeEnvironment.application, "sessionIdTwo", "custom", "finished");
-        AnalyticsDatabase database = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
+        Context context = ApplicationProvider.getApplicationContext();
+        AnalyticsEvent one = new AnalyticsEvent(context, "sessionId", "custom", "started");
+        AnalyticsEvent two = new AnalyticsEvent(context, "sessionIdTwo", "custom", "finished");
+        AnalyticsDatabase database = AnalyticsDatabase.getInstance(ApplicationProvider.getApplicationContext());
         database.addEvent(one);
         database.addEvent(two);
 
         awaitTasksFinished(database);
 
-        AnalyticsSender.send(RuntimeEnvironment.application, mAuthorization, mHttpClient, "", true);
+        AnalyticsSender.send(ApplicationProvider.getApplicationContext(), mAuthorization, mConfiguration, mHttpClient, "", true);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(mHttpClient, times(2)).post(anyString(), captor.capture());
+        verify(mHttpClient, times(2)).post(anyString(), captor.capture(), same(mConfiguration));
 
         List<String> values = captor.getAllValues();
         assertEquals(2, values.size());
@@ -174,17 +184,18 @@ public class AnalyticsSenderUnitTest {
 
     @Test
     public void deletesDatabaseEventsOnSuccessResponse() throws Exception {
-        AnalyticsEvent one = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId", "custom", "started");
-        AnalyticsEvent two = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId", "custom", "finished");
-        AnalyticsDatabase database = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
+        Context context = ApplicationProvider.getApplicationContext();
+        AnalyticsEvent one = new AnalyticsEvent(context, "sessionId", "custom", "started");
+        AnalyticsEvent two = new AnalyticsEvent(context, "sessionId", "custom", "finished");
+        AnalyticsDatabase database = AnalyticsDatabase.getInstance(ApplicationProvider.getApplicationContext());
         database.addEvent(one);
         database.addEvent(two);
 
         awaitTasksFinished(database);
 
-        when(mHttpClient.post(anyString(), anyString())).thenReturn("");
+        when(mHttpClient.post(anyString(), anyString(), same(mConfiguration))).thenReturn("");
 
-        AnalyticsSender.send(RuntimeEnvironment.application, mAuthorization, mHttpClient, "", true);
+        AnalyticsSender.send(ApplicationProvider.getApplicationContext(), mAuthorization, mConfiguration, mHttpClient, "", true);
 
         List<List<AnalyticsEvent>> pendingEvents = database.getPendingRequests();
         assertEquals(0, pendingEvents.size());
@@ -192,23 +203,24 @@ public class AnalyticsSenderUnitTest {
 
     @Test
     public void deletesDatabaseEventsOnAsynchronousSuccessResponse() throws InterruptedException {
-        AnalyticsEvent one = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId", "custom", "started");
-        AnalyticsEvent two = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId", "custom", "finished");
-        AnalyticsDatabase database = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
+        Context context = ApplicationProvider.getApplicationContext();
+        AnalyticsEvent one = new AnalyticsEvent(context, "sessionId", "custom", "started");
+        AnalyticsEvent two = new AnalyticsEvent(context, "sessionId", "custom", "finished");
+        AnalyticsDatabase database = AnalyticsDatabase.getInstance(ApplicationProvider.getApplicationContext());
         database.addEvent(one);
         database.addEvent(two);
-
-        awaitTasksFinished(database);
 
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) {
-                ((HttpResponseCallback) invocation.getArguments()[2]).success("");
+                ((HttpResponseCallback) invocation.getArguments()[3]).success("");
                 return null;
             }
-        }).when(mHttpClient).post(anyString(), anyString(), any(HttpResponseCallback.class));
+        }).when(mHttpClient).post(anyString(), anyString(), same(mConfiguration), any(HttpResponseCallback.class));
 
-        AnalyticsSender.send(RuntimeEnvironment.application, mAuthorization, mHttpClient, "", false);
+        AnalyticsSender.send(ApplicationProvider.getApplicationContext(), mAuthorization, mConfiguration, mHttpClient, "", false);
+
+        awaitTasksFinished(database);
 
         List<List<AnalyticsEvent>> pendingEvents = database.getPendingRequests();
         assertEquals(0, pendingEvents.size());
@@ -216,17 +228,18 @@ public class AnalyticsSenderUnitTest {
 
     @Test
     public void doesNothingOnErrorResponse() throws Exception {
-        AnalyticsEvent one = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId", "custom", "started");
-        AnalyticsEvent two = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId", "custom", "finished");
-        AnalyticsDatabase database = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
+        Context context = ApplicationProvider.getApplicationContext();
+        AnalyticsEvent one = new AnalyticsEvent(context, "sessionId", "custom", "started");
+        AnalyticsEvent two = new AnalyticsEvent(context, "sessionId", "custom", "finished");
+        AnalyticsDatabase database = AnalyticsDatabase.getInstance(ApplicationProvider.getApplicationContext());
         database.addEvent(one);
         database.addEvent(two);
 
         awaitTasksFinished(database);
 
-        when(mHttpClient.post(anyString(), anyString())).thenThrow(ServerException.class);
+        when(mHttpClient.post(anyString(), anyString(), same(mConfiguration))).thenThrow(ServerException.class);
 
-        AnalyticsSender.send(RuntimeEnvironment.application, mAuthorization, mHttpClient, "", true);
+        AnalyticsSender.send(ApplicationProvider.getApplicationContext(), mAuthorization, mConfiguration, mHttpClient, "", true);
 
         List<List<AnalyticsEvent>> pendingEvents = database.getPendingRequests();
         assertEquals(1, pendingEvents.size());
@@ -234,9 +247,10 @@ public class AnalyticsSenderUnitTest {
 
     @Test
     public void doesNothingOnAsynchronousErrorResponse() throws Exception {
-        AnalyticsEvent one = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId", "custom", "started");
-        AnalyticsEvent two = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId", "custom", "finished");
-        AnalyticsDatabase database = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
+        Context context = ApplicationProvider.getApplicationContext();
+        AnalyticsEvent one = new AnalyticsEvent(context, "sessionId", "custom", "started");
+        AnalyticsEvent two = new AnalyticsEvent(context, "sessionId", "custom", "finished");
+        AnalyticsDatabase database = AnalyticsDatabase.getInstance(ApplicationProvider.getApplicationContext());
         database.addEvent(one);
         database.addEvent(two);
 
@@ -245,12 +259,12 @@ public class AnalyticsSenderUnitTest {
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) {
-                ((HttpResponseCallback) invocation.getArguments()[2]).failure(new ServerException(""));
+                ((HttpResponseCallback) invocation.getArguments()[3]).failure(new ServerException(""));
                 return null;
             }
-        }).when(mHttpClient).post(anyString(), anyString(), any(HttpResponseCallback.class));
+        }).when(mHttpClient).post(anyString(), anyString(), same(mConfiguration), any(HttpResponseCallback.class));
 
-        AnalyticsSender.send(RuntimeEnvironment.application, mAuthorization, mHttpClient, "", false);
+        AnalyticsSender.send(ApplicationProvider.getApplicationContext(), mAuthorization, mConfiguration, mHttpClient, "", false);
 
         List<List<AnalyticsEvent>> pendingEvents = database.getPendingRequests();
         assertEquals(1, pendingEvents.size());

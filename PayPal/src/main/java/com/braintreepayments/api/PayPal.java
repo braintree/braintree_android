@@ -1,604 +1,270 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Parcel;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.text.TextUtils;
-import android.util.Base64;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.PayPalBrowserSwitchException;
-import com.braintreepayments.api.interfaces.ConfigurationListener;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.interfaces.PayPalApprovalCallback;
-import com.braintreepayments.api.interfaces.PayPalApprovalHandler;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.internal.BraintreeSharedPreferences;
-import com.braintreepayments.api.internal.ManifestValidator;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
-import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PayPalAccountNonce;
-import com.braintreepayments.api.models.PayPalConfiguration;
-import com.braintreepayments.api.models.PayPalPaymentResource;
-import com.braintreepayments.api.models.PayPalProductAttributes;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.PostalAddress;
-import com.braintreepayments.api.models.PostalAddressParser;
-import com.braintreepayments.api.models.PayPalApiBillingAgreementRequest;
-import com.braintreepayments.api.models.PayPalApiCheckoutRequest;
-import com.braintreepayments.api.models.PayPalApiRequest;
-import com.braintreepayments.api.models.PayPalApiResult;
-import com.braintreepayments.api.network.PayPalApiEnvironmentManager;
-import com.braintreepayments.api.models.PayPalApiLineItem;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Used to create and tokenize PayPal accounts. For more information see the
- * <a href="https://developers.braintreepayments.com/guides/paypal/overview/android/v2">documentation</a>
- */
+// TODO: Rename class when API is finalized
 public class PayPal {
-    public static final String PRODUCT_ATTRIBUTES = "product_attributes";
-    public static final String CHARGE_PATTERN = "charge_pattern";
-    public static final String NAME = "name";
-    public static final String PRODUCT_CODE = "product_code";
-    private static final String REQUEST_KEY = "com.braintreepayments.api.PayPal.REQUEST_KEY";
-    private static final String REQUEST_TYPE_KEY = "com.braintreepayments.api.PayPal.REQUEST_TYPE_KEY";
-    private static final String PAYPAL_REQUEST_KEY = "com.braintreepayments.api.PayPal.PAYPAL_REQUEST_KEY";
-    private static final String SETUP_BILLING_AGREEMENT_ENDPOINT = "paypal_hermes/setup_billing_agreement";
-    private static final String CREATE_SINGLE_PAYMENT_ENDPOINT = "paypal_hermes/create_payment_resource";
-    private static final String NO_SHIPPING_KEY = "no_shipping";
-    private static final String ADDRESS_OVERRIDE_KEY = "address_override";
-    private static final String LOCALE_CODE_KEY = "locale_code";
-    private static final String DESCRIPTION_KEY = "description";
-    private static final String AUTHORIZATION_FINGERPRINT_KEY = "authorization_fingerprint";
-    private static final String TOKENIZATION_KEY = "client_key";
-    private static final String RETURN_URL_KEY = "return_url";
-    private static final String OFFER_CREDIT_KEY = "offer_paypal_credit";
-    private static final String OFFER_PAY_LATER_KEY = "offer_pay_later";
-    private static final String CANCEL_URL_KEY = "cancel_url";
-    private static final String EXPERIENCE_PROFILE_KEY = "experience_profile";
-    private static final String AMOUNT_KEY = "amount";
-    private static final String CURRENCY_ISO_CODE_KEY = "currency_iso_code";
-    private static final String INTENT_KEY = "intent";
-    private static final String LANDING_PAGE_TYPE_KEY = "landing_page_type";
-    private static final String USER_ACTION_KEY = "useraction";
-    private static final String DISPLAY_NAME_KEY = "brand_name";
-    private static final String SHIPPING_ADDRESS_KEY = "shipping_address";
-    private static final String MERCHANT_ACCOUNT_ID = "merchant_account_id";
-    private static final String LINE_ITEMS_KEY = "line_items";
 
-    /**
-     * Starts the Billing Agreement flow for PayPal. This will launch the PayPal app if installed or
-     * fall back to a browser switch.
-     *
-     * @param fragment A {@link BraintreeFragment} used to process the request.
-     * @param request A {@link PayPalRequest} used to customize the request.
-     */
-    public static void requestBillingAgreement(BraintreeFragment fragment, PayPalRequest request) {
-        requestBillingAgreement(fragment, request, null);
+    private final BraintreeClient braintreeClient;
+    private final TokenizationClient tokenizationClient;
+    private final String returnUrlScheme;
+
+    private final PayPalInternalClient internalPayPalClient;
+
+    public PayPal(BraintreeClient braintreeClient, String returnUrlScheme) {
+        this(braintreeClient, returnUrlScheme, new TokenizationClient(braintreeClient), new PayPalInternalClient(braintreeClient, returnUrlScheme));
     }
 
-    /**
-     * Starts the Billing Agreement flow for PayPal with custom PayPal approval handler.
-     *
-     * @param fragment A {@link BraintreeFragment} used to process the request.
-     * @param request A {@link PayPalRequest} used to customize the request.
-     * @param handler A {@link PayPalApprovalHandler} for custom approval handling.
-     */
-    public static void requestBillingAgreement(BraintreeFragment fragment, PayPalRequest request,
-            PayPalApprovalHandler handler) {
-        if (request.getAmount() == null) {
-            fragment.sendAnalyticsEvent("paypal.billing-agreement.selected");
-            if (request.shouldOfferCredit()) {
-                fragment.sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
+    // TODO: Make package-private
+    public PayPal(BraintreeClient braintreeClient, String returnUrlScheme, TokenizationClient tokenizationClient, PayPalInternalClient internalPayPalClient) {
+        this.braintreeClient = braintreeClient;
+        this.returnUrlScheme = returnUrlScheme;
+        this.tokenizationClient = tokenizationClient;
+        this.internalPayPalClient = internalPayPalClient;
+    }
+
+    private static boolean payPalConfigInvalid(Configuration configuration) {
+        return (configuration == null || !configuration.isPayPalEnabled());
+    }
+
+    boolean manifestInvalid(Context context) {
+        return !braintreeClient.isUrlSchemeDeclaredInAndroidManifest(context,
+                returnUrlScheme, BraintreeBrowserSwitchActivity.class);
+    }
+
+    private static Exception createPayPalConfigInvalidException() {
+        return new BraintreeException("PayPal is not enabled. " +
+                "See https://developers.braintreepayments.com/guides/paypal/overview/android/ " +
+                "for more information.");
+    }
+
+    private static Exception createManifestInvalidError() {
+        return new BraintreeException("BraintreeBrowserSwitchActivity missing, " +
+                "incorrectly configured in AndroidManifest.xml or another app defines the same browser " +
+                "switch url as this app. See " +
+                "https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch " +
+                "for the correct configuration");
+    }
+
+    public void requestOneTimePayment(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalRequestCallback callback) {
+        if (payPalRequest.getAmount() != null) {
+            braintreeClient.sendAnalyticsEvent(activity, "paypal.single-payment.selected");
+            if (payPalRequest.shouldOfferCredit()) {
+                braintreeClient.sendAnalyticsEvent(activity, "paypal.single-payment.credit.offered");
+            }
+            
+            if (payPalRequest.shouldOfferPayLater()) {
+                braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
             }
 
-            requestOneTimePayment(fragment, request, true, handler);
-        } else {
-            fragment.postCallback(new BraintreeException(
-                    "There must be no amount specified for the Billing Agreement flow"));
-        }
-    }
+            braintreeClient.getConfiguration(activity, new ConfigurationCallback() {
+                @Override
+                public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
+                    if (payPalConfigInvalid(configuration)) {
+                        Exception configInvalidError = createPayPalConfigInvalidException();
+                        callback.onResult(false, configInvalidError);
+                        return;
+                    }
 
-    /**
-     * Starts the Single Payment flow for PayPal. This will launch the PayPal app if installed or
-     * fall back to a browser switch.
-     *
-     * @param fragment A {@link BraintreeFragment} used to process the request.
-     * @param request A {@link PayPalRequest} used to customize the request. An amount MUST be specified.
-     */
-    public static void requestOneTimePayment(BraintreeFragment fragment, PayPalRequest request) {
-        requestOneTimePayment(fragment, request, null);
-    }
-
-    /**
-     * Starts the Single Payment flow for PayPal with custom PayPal approval handler.
-     *
-     * @param fragment A {@link BraintreeFragment} used to process the request.
-     * @param request A {@link PayPalRequest} used to customize the request. An amount MUST be specified.
-     * @param handler A {@link PayPalApprovalHandler} for custom approval handling.
-     */
-    public static void requestOneTimePayment(BraintreeFragment fragment, PayPalRequest request,
-            PayPalApprovalHandler handler) {
-        if (request.getAmount() != null) {
-            fragment.sendAnalyticsEvent("paypal.single-payment.selected");
-            if (request.shouldOfferCredit()) {
-                fragment.sendAnalyticsEvent("paypal.single-payment.credit.offered");
-            }
-
-            if (request.shouldOfferPayLater()) {
-                fragment.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
-            }
-
-            requestOneTimePayment(fragment, request, false, handler);
-        } else {
-            fragment.postCallback(new BraintreeException("An amount must be specified for the Single Payment flow."));
-        }
-    }
-
-    private static void requestOneTimePayment(final BraintreeFragment fragment, final PayPalRequest paypalRequest,
-            final boolean isBillingAgreement, final PayPalApprovalHandler handler) {
-        final HttpResponseCallback callback = new HttpResponseCallback() {
-            @Override
-            public void success(String responseBody) {
-                final PayPalPaymentResource paypalPaymentResource;
-                try {
-                    paypalPaymentResource = PayPalPaymentResource.fromJson(responseBody);
-                } catch (JSONException e) {
-                    fragment.postCallback(e);
-                    return;
+                    if (manifestInvalid(activity)) {
+                        braintreeClient.sendAnalyticsEvent(activity, "paypal.invalid-manifest");
+                        Exception manifestInvalidError = createManifestInvalidError();
+                        callback.onResult(false, manifestInvalidError);
+                        return;
+                    }
+                    sendCheckoutRequest(activity, payPalRequest, false, callback);
                 }
+            });
 
-                String redirectUrl = Uri.parse(paypalPaymentResource.getRedirectUrl())
-                        .buildUpon()
-                        .appendQueryParameter(USER_ACTION_KEY, paypalRequest.getUserAction())
-                        .toString();
+        } else {
+            callback.onResult(false, new BraintreeException("An amount must be specified for the Single Payment flow."));
+        }
+    }
 
-                PayPalApiRequest request;
-                if (isBillingAgreement) {
-                    request = getBillingAgreementRequest(fragment, redirectUrl);
+    public void requestBillingAgreement(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalRequestCallback callback) {
+        if (payPalRequest.getAmount() == null) {
+            braintreeClient.sendAnalyticsEvent(activity, "paypal.billing-agreement.selected");
+            if (payPalRequest.shouldOfferCredit()) {
+                braintreeClient.sendAnalyticsEvent(activity, "paypal.billing-agreement.credit.offered");
+            }
+
+            braintreeClient.getConfiguration(activity, new ConfigurationCallback() {
+                @Override
+                public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
+                    if (payPalConfigInvalid(configuration)) {
+                        Exception configInvalidError = createPayPalConfigInvalidException();
+                        callback.onResult(false, configInvalidError);
+                        return;
+                    }
+
+                    if (manifestInvalid(activity)) {
+                        braintreeClient.sendAnalyticsEvent(activity, "paypal.invalid-manifest");
+                        Exception manifestInvalidError = createManifestInvalidError();
+                        callback.onResult(false, manifestInvalidError);
+                        return;
+                    }
+
+                    sendCheckoutRequest(activity, payPalRequest, true, callback);
+                }
+            });
+        } else {
+            callback.onResult(false, new BraintreeException("There must be no amount specified for the Billing Agreement flow"));
+        }
+    }
+
+    private void sendCheckoutRequest(final FragmentActivity activity, final PayPalRequest payPalRequest, final boolean isBillingAgreement, final PayPalRequestCallback callback) {
+        internalPayPalClient.sendRequest(activity, payPalRequest, isBillingAgreement, new PayPalInternalClientCallback() {
+            @Override
+            public void onResult(PayPalResponse payPalResponse, Exception error) {
+                if (payPalResponse != null) {
+                    String analyticsPrefix = getAnalyticsEventPrefix(isBillingAgreement);
+                    braintreeClient.sendAnalyticsEvent(activity, String.format("%s.browser-switch.started", analyticsPrefix));
+
+                    try {
+                        startBrowserSwitch(activity, payPalResponse);
+                        callback.onResult(true, null);
+                    } catch (JSONException | BrowserSwitchException exception) {
+                        callback.onResult(false, exception);
+                    }
                 } else {
-                    request = getCheckoutRequest(fragment, redirectUrl);
+                    callback.onResult(false, error);
                 }
-
-                startPayPal(fragment, request, handler);
             }
+        });
+    }
 
-            @Override
-            public void failure(Exception e) {
-                fragment.postCallback(e);
-            }
-        };
+    private void startBrowserSwitch(FragmentActivity activity, PayPalResponse payPalResponse) throws JSONException, BrowserSwitchException {
+        JSONObject metadata = new JSONObject();
+        metadata.put("approval-url", payPalResponse.getApprovalUrl());
+        metadata.put("success-url", payPalResponse.getSuccessUrl());
 
-        fragment.waitForConfiguration(new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                if (!configuration.isPayPalEnabled()) {
-                    fragment.postCallback(new BraintreeException("PayPal is not enabled. " +
-                            "See https://developers.braintreepayments.com/guides/paypal/overview/android/ " +
-                            "for more information."));
-                    return;
-                }
+        String paymentType = payPalResponse.isBillingAgreement()
+                ? "billing-agreement" : "single-payment";
 
-                if (!isManifestValid(fragment)) {
-                    fragment.sendAnalyticsEvent("paypal.invalid-manifest");
-                    fragment.postCallback(new BraintreeException("BraintreeBrowserSwitchActivity missing, " +
-                            "incorrectly configured in AndroidManifest.xml or another app defines the same browser " +
-                            "switch url as this app. See " +
-                            "https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch " +
-                            "for the correct configuration"));
-                    return;
-                }
+        metadata.put("payment-type", paymentType);
+        metadata.put("client-metadata-id", payPalResponse.getClientMetadataId());
+        metadata.put("merchant-account-id", payPalResponse.getMerchantAccountId());
+        metadata.put("source", "paypal-browser");
+        metadata.put("intent", payPalResponse.getIntent());
 
+        BrowserSwitchOptions browserSwitchOptions = new BrowserSwitchOptions()
+                .requestCode(BraintreeRequestCodes.PAYPAL)
+                .url(Uri.parse(payPalResponse.getApprovalUrl()))
+                .metadata(metadata);
+        braintreeClient.startBrowserSwitch(activity, browserSwitchOptions);
+    }
+
+    private static String getAnalyticsEventPrefix(boolean isBillingAgreement) {
+        return isBillingAgreement ? "paypal.billing-agreement" : "paypal.single-payment";
+    }
+
+    public void onBrowserSwitchResult(final Context context, BrowserSwitchResult browserSwitchResult, @Nullable Uri uri, final PayPalBrowserSwitchResultCallback callback) {
+
+        JSONObject metadata = browserSwitchResult.getRequestMetadata();
+        String clientMetadataId = Json.optString(metadata, "client-metadata-id", null);
+        String merchantAccountId = Json.optString(metadata, "merchant-account-id", null);
+        String payPalIntent = Json.optString(metadata, "intent", null);
+        String approvalUrl = Json.optString(metadata, "approval-url", null);
+        String successUrl = Json.optString(metadata, "success-url", null);
+        String paymentType = Json.optString(metadata, "payment-type", "unknown");
+
+        boolean isBillingAgreement = paymentType.equalsIgnoreCase("billing-agreement");
+        String tokenKey = isBillingAgreement ? "ba_token" : "token";
+        String analyticsPrefix = getAnalyticsEventPrefix(isBillingAgreement);
+
+        int result = browserSwitchResult.getStatus();
+        switch (result) {
+            case BrowserSwitchResult.STATUS_CANCELED:
+                callback.onResult(null, new BraintreeException("User Canceled PayPal"));
+                braintreeClient.sendAnalyticsEvent(context, String.format("%s.browser-switch.canceled", analyticsPrefix));
+                break;
+            case BrowserSwitchResult.STATUS_OK:
                 try {
-                    persistPayPalRequest(fragment.getApplicationContext(), paypalRequest);
-                    createPaymentResource(fragment, paypalRequest, isBillingAgreement, callback);
-                } catch (JSONException ex) {
-                    fragment.postCallback(ex);
+                    JSONObject oneTouchCoreData = createOneTouchPayload(uri, successUrl, approvalUrl, tokenKey);
+                    PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder()
+                            .clientMetadataId(clientMetadataId)
+                            .intent(payPalIntent)
+                            .source("paypal-browser")
+                            .oneTouchCoreData(oneTouchCoreData);
+
+                    if (merchantAccountId != null) {
+                        payPalAccountBuilder.merchantAccountId(merchantAccountId);
+                    }
+
+                    if (payPalIntent != null) {
+                        payPalAccountBuilder.intent(payPalIntent);
+                    }
+
+                    tokenizationClient.tokenize(context, payPalAccountBuilder, new PaymentMethodNonceCallback() {
+                        @Override
+                        public void success(PaymentMethodNonce paymentMethodNonce) {
+                            if (paymentMethodNonce instanceof PayPalAccountNonce &&
+                                    ((PayPalAccountNonce) paymentMethodNonce).getCreditFinancing() != null) {
+                                braintreeClient.sendAnalyticsEvent(context, "paypal.credit.accepted");
+                            }
+
+                            callback.onResult(paymentMethodNonce, null);
+                        }
+
+                        @Override
+                        public void failure(Exception exception) {
+                            callback.onResult(null, exception);
+                        }
+                    });
+
+                    braintreeClient.sendAnalyticsEvent(context, String.format("%s.browser-switch.succeeded", analyticsPrefix));
+
+                } catch (JSONException | PayPalBrowserSwitchException e) {
+                    callback.onResult(null, e);
+                    braintreeClient.sendAnalyticsEvent(context, String.format("%s.browser-switch.failed", analyticsPrefix));
                 }
-            }
-        });
-    }
-
-    /**
-     * Create a PayPalPaymentResource on behalf of the merchant. To be used in the PayPal Checkout
-     * flows for Single Payment and Billing Agreement.
-     *
-     * @param fragment A {@link BraintreeFragment} used to process the request.
-     * @param request A {@link PayPalRequest} used to customize the request.
-     * @param isBillingAgreement A boolean. If true, this will use the Billing Agreement. Otherwise,
-     *        PayPal will perform a Single Payment.
-     * @param callback A callback on the http request.
-     */
-    private static void createPaymentResource(BraintreeFragment fragment, PayPalRequest request,
-            boolean isBillingAgreement, HttpResponseCallback callback)
-            throws JSONException {
-        String currencyCode = request.getCurrencyCode();
-        if (currencyCode == null) {
-            currencyCode = fragment.getConfiguration().getPayPal().getCurrencyIsoCode();
-        }
-
-        PayPalApiCheckoutRequest payPalApiCheckoutRequest = getCheckoutRequest(fragment, null);
-        JSONObject parameters = new JSONObject()
-                .put(RETURN_URL_KEY, payPalApiCheckoutRequest.getSuccessUrl())
-                .put(CANCEL_URL_KEY, payPalApiCheckoutRequest.getCancelUrl())
-                .put(OFFER_CREDIT_KEY, request.shouldOfferCredit())
-                .put(OFFER_PAY_LATER_KEY, request.shouldOfferPayLater());
-
-        if (fragment.getAuthorization() instanceof ClientToken) {
-            parameters.put(AUTHORIZATION_FINGERPRINT_KEY, fragment.getAuthorization().getBearer());
-        } else {
-            parameters.put(TOKENIZATION_KEY, fragment.getAuthorization().getBearer());
-        }
-
-        if (!isBillingAgreement) {
-            parameters.put(AMOUNT_KEY, request.getAmount())
-                    .put(CURRENCY_ISO_CODE_KEY, currencyCode)
-                    .put(INTENT_KEY, request.getIntent());
-
-            if (!request.getLineItems().isEmpty()) {
-                JSONArray lineItems = new JSONArray();
-                for (PayPalApiLineItem lineItem : request.getLineItems()) {
-                    lineItems.put(lineItem.toJson());
-                }
-                parameters.put(LINE_ITEMS_KEY, lineItems);
-            }
-        } else {
-            if (!TextUtils.isEmpty(request.getBillingAgreementDescription())) {
-                parameters.put(DESCRIPTION_KEY, request.getBillingAgreementDescription());
-            }
-
-            PayPalProductAttributes productAttributes = request.getProductAttributes();
-            if (productAttributes != null) {
-                parameters.put(PRODUCT_ATTRIBUTES, new JSONObject()
-                        .put(CHARGE_PATTERN, productAttributes.getChargePattern())
-                        .put(NAME, productAttributes.getName())
-                        .put(PRODUCT_CODE, productAttributes.getProductCode())
-                );
-            }
-        }
-
-        JSONObject experienceProfile = new JSONObject();
-        experienceProfile.put(NO_SHIPPING_KEY, !request.isShippingAddressRequired());
-        experienceProfile.put(LANDING_PAGE_TYPE_KEY, request.getLandingPageType());
-        String displayName = request.getDisplayName();
-        if (TextUtils.isEmpty(displayName)) {
-            displayName = fragment.getConfiguration().getPayPal().getDisplayName();
-        }
-        experienceProfile.put(DISPLAY_NAME_KEY, displayName);
-
-        if (request.getLocaleCode() != null) {
-            experienceProfile.put(LOCALE_CODE_KEY, request.getLocaleCode());
-        }
-
-        if (request.getShippingAddressOverride() != null) {
-            experienceProfile.put(ADDRESS_OVERRIDE_KEY, !request.isShippingAddressEditable());
-
-            JSONObject shippingAddressJson;
-            if (isBillingAgreement) {
-                shippingAddressJson = new JSONObject();
-                parameters.put(SHIPPING_ADDRESS_KEY, shippingAddressJson);
-            } else {
-                shippingAddressJson = parameters;
-            }
-
-            PostalAddress shippingAddress = request.getShippingAddressOverride();
-            shippingAddressJson.put(PostalAddressParser.LINE_1_KEY, shippingAddress.getStreetAddress());
-            shippingAddressJson.put(PostalAddressParser.LINE_2_KEY, shippingAddress.getExtendedAddress());
-            shippingAddressJson.put(PostalAddressParser.LOCALITY_KEY, shippingAddress.getLocality());
-            shippingAddressJson.put(PostalAddressParser.REGION_KEY, shippingAddress.getRegion());
-            shippingAddressJson.put(PostalAddressParser.POSTAL_CODE_UNDERSCORE_KEY, shippingAddress.getPostalCode());
-            shippingAddressJson.put(PostalAddressParser.COUNTRY_CODE_UNDERSCORE_KEY, shippingAddress.getCountryCodeAlpha2());
-            shippingAddressJson.put(PostalAddressParser.RECIPIENT_NAME_UNDERSCORE_KEY, shippingAddress.getRecipientName());
-        } else {
-            experienceProfile.put(ADDRESS_OVERRIDE_KEY, false);
-        }
-
-        if(request.getMerchantAccountId() != null) {
-            parameters.put(MERCHANT_ACCOUNT_ID, request.getMerchantAccountId());
-        }
-
-        parameters.put(EXPERIENCE_PROFILE_KEY, experienceProfile);
-
-        String apiUrl = isBillingAgreement ? SETUP_BILLING_AGREEMENT_ENDPOINT : CREATE_SINGLE_PAYMENT_ENDPOINT;
-        String versionedPath = "/v1/" + apiUrl;
-        fragment.getHttpClient().post(versionedPath, parameters.toString(), callback);
-    }
-
-    private static void startPayPal(final BraintreeFragment fragment, PayPalApiRequest request, PayPalApprovalHandler handler) {
-        persistRequest(fragment.getApplicationContext(), request);
-        PayPalApprovalCallback callback = null;
-
-        if (handler == null) {
-            handler = getDefaultApprovalHandler(fragment);
-        } else {
-            callback = new PayPalApprovalCallback() {
-                @Override
-                public void onComplete(Intent data) {
-                    PayPal.onActivityResult(fragment, AppCompatActivity.RESULT_OK, data);
-                }
-
-                @Override
-                public void onCancel() {
-                    fragment.postCancelCallback(BraintreeRequestCodes.PAYPAL);
-                }
-            };
-        }
-        handler.handleApproval(request, callback);
-    }
-
-    private static PayPalApprovalHandler getDefaultApprovalHandler(final BraintreeFragment fragment) {
-        return new PayPalApprovalHandler() {
-            @Override
-            public void handleApproval(PayPalApiRequest request, PayPalApprovalCallback paypalApprovalCallback) {
-                // Ensure that Activity is still running before proceeding
-                if (!fragment.isActive()) {
-                    return;
-                }
-
-                String paymentType = paymentTypeForRequest(request);
-                fragment.sendAnalyticsEvent(paymentType + ".browser-switch.started");
-                fragment.browserSwitch(BraintreeRequestCodes.PAYPAL, request.getBrowserSwitchUrl());
-            }
-        };
-    }
-
-    /**
-     * The result from PayPal's request.
-     *
-     * @param fragment A {@link BraintreeFragment} used to process the request.
-     * @param data Data associated with the result.
-     */
-    protected static void onActivityResult(final BraintreeFragment fragment, int resultCode, Intent data) {
-        PayPalApiRequest request = getPersistedRequest(fragment.getApplicationContext());
-        String paymentType = paymentTypeForRequest(request);
-        String switchType = switchTypeForIntent(data);
-        String eventPrefix = paymentType + "." + switchType;
-
-        if (resultCode == AppCompatActivity.RESULT_OK && request != null && data != null && data.getData() != null) {
-            PayPalApiResult result = request.parseBrowserResponse(data.getData());
-
-            switch (result.getResultType()) {
-                case Error:
-                    fragment.postCallback(new PayPalBrowserSwitchException(result.getError().getMessage()));
-                    fragment.sendAnalyticsEvent(eventPrefix + ".failed");
-                    break;
-                case Cancel:
-                    fragment.postCancelCallback(BraintreeRequestCodes.PAYPAL);
-                    fragment.sendAnalyticsEvent(eventPrefix + ".canceled");
-                    break;
-                case Success:
-                    onSuccess(fragment, data, request, result);
-                    fragment.sendAnalyticsEvent(eventPrefix + ".succeeded");
-                    break;
-            }
-        } else {
-            fragment.sendAnalyticsEvent(eventPrefix + ".canceled");
-
-            if (resultCode != AppCompatActivity.RESULT_CANCELED) {
-                fragment.postCancelCallback(BraintreeRequestCodes.PAYPAL);
-            }
-        }
-    }
-
-    private static void onSuccess(final BraintreeFragment fragment, Intent data, PayPalApiRequest request, PayPalApiResult result) {
-        PayPalRequest paypalRequest = getPersistedPayPalRequest(fragment.getApplicationContext());
-        TokenizationClient.tokenize(fragment, parseResponse(paypalRequest, request, result, data), new PaymentMethodNonceCallback() {
-            @Override
-            public void success(PaymentMethodNonce paymentMethodNonce) {
-                if (paymentMethodNonce instanceof PayPalAccountNonce &&
-                        ((PayPalAccountNonce) paymentMethodNonce).getCreditFinancing() != null) {
-                    fragment.sendAnalyticsEvent("paypal.credit.accepted");
-                }
-
-                fragment.postCallback(paymentMethodNonce);
-            }
-
-            @Override
-            public void failure(Exception exception) {
-                fragment.postCallback(exception);
-            }
-        });
-    }
-
-    /**
-     * Parse the PayPal response URL using OneTouchCore.
-     *
-     * @param paypalRequest Original {@link PayPalRequest} that started this flow.
-     * @param result Context that received the result.
-     * @param intent The {@link Intent} returned in result.
-     * @return A {@link PayPalAccountBuilder} or null if the intent is invalid.
-     */
-    private static PayPalAccountBuilder parseResponse(PayPalRequest paypalRequest, PayPalApiRequest request, PayPalApiResult result,
-                                                      Intent intent) {
-        PayPalAccountBuilder paypalAccountBuilder = new PayPalAccountBuilder()
-                .clientMetadataId(request.getClientMetadataId());
-
-        if (paypalRequest != null && paypalRequest.getMerchantAccountId() != null) {
-            paypalAccountBuilder.merchantAccountId(paypalRequest.getMerchantAccountId());
-        }
-
-        if (request instanceof PayPalApiCheckoutRequest && paypalRequest != null) {
-            paypalAccountBuilder.intent(paypalRequest.getIntent());
-        }
-
-        if (isAppSwitch(intent)) {
-            paypalAccountBuilder.source("paypal-app");
-        } else {
-            paypalAccountBuilder.source("paypal-browser");
-        }
-
-        // TODO: find out if is this required for feature to work; if not, remove
-        paypalAccountBuilder.oneTouchCoreData(result.getResponse());
-
-        return paypalAccountBuilder;
-    }
-
-    @VisibleForTesting
-    static PayPalApiCheckoutRequest getCheckoutRequest(BraintreeFragment fragment, String redirectUrl) {
-        PayPalApiCheckoutRequest request = populateRequestData(fragment, new PayPalApiCheckoutRequest())
-                .approvalURL(redirectUrl);
-
-        if (redirectUrl != null) {
-            Uri uri = Uri.parse(redirectUrl);
-            String pairingId = uri.getQueryParameter("token");
-
-            if (pairingId != null) {
-                request.pairingId(fragment.getApplicationContext(), pairingId);
-            }
-        }
-
-        return request;
-    }
-
-    @VisibleForTesting
-    static PayPalApiBillingAgreementRequest getBillingAgreementRequest(BraintreeFragment fragment, String redirectUrl) {
-        PayPalApiBillingAgreementRequest request = populateRequestData(fragment, new PayPalApiBillingAgreementRequest())
-                .approvalURL(redirectUrl);
-
-        if (redirectUrl != null) {
-            Uri uri = Uri.parse(redirectUrl);
-            String pairingId = uri.getQueryParameter("ba_token");
-
-            if (pairingId != null) {
-                request.pairingId(fragment.getApplicationContext(), pairingId);
-            }
-        }
-
-        return request;
-    }
-
-    private static <T extends PayPalApiRequest> T populateRequestData(BraintreeFragment fragment, T request) {
-        PayPalConfiguration paypalConfiguration = fragment.getConfiguration().getPayPal();
-        String environment;
-        switch (paypalConfiguration.getEnvironment()) {
-            case "live":
-                environment = PayPalApiEnvironmentManager.LIVE;
-                break;
-            case "offline":
-                environment = PayPalApiEnvironmentManager.MOCK;
-                break;
-            default:
-                environment = paypalConfiguration.getEnvironment();
                 break;
         }
+    }
 
-        String clientId = paypalConfiguration.getClientId();
-        if (clientId == null && PayPalApiEnvironmentManager.MOCK.equals(environment)) {
-            clientId = "FAKE-PAYPAL-CLIENT-ID";
+    public JSONObject createOneTouchPayload(Uri uri, String successUrl, String approvalUrl, String tokenKey) throws JSONException, PayPalBrowserSwitchException {
+        String status = uri.getLastPathSegment();
+
+        if (!Uri.parse(successUrl).getLastPathSegment().equals(status)) {
+            throw new PayPalBrowserSwitchException("User cancelled.");
         }
 
-        request.environment(environment)
-                .clientId(clientId)
-                .cancelUrl(fragment.getReturnUrlScheme(), "cancel")
-                .successUrl(fragment.getReturnUrlScheme(), "success");
+        String requestXoToken = Uri.parse(approvalUrl).getQueryParameter(tokenKey);
+        String responseXoToken = uri.getQueryParameter(tokenKey);
+        if (responseXoToken != null && TextUtils.equals(requestXoToken, responseXoToken)) {
+            JSONObject client = new JSONObject();
+            client.put("environment", null);
 
-        return request;
-    }
+            JSONObject oneTouchData = new JSONObject();
+            oneTouchData.put("client", client);
 
-    private static boolean isAppSwitch(Intent data) {
-        return data.getData() == null;
-    }
+            JSONObject response = new JSONObject();
+            response.put("webURL", uri.toString());
+            oneTouchData.put("response", response);
 
-    private static void persistPayPalRequest(Context context, PayPalRequest paypalRequest) {
-        Parcel parcel = Parcel.obtain();
-        paypalRequest.writeToParcel(parcel, 0);
-        BraintreeSharedPreferences.getSharedPreferences(context).edit()
-                .putString(PAYPAL_REQUEST_KEY, Base64.encodeToString(parcel.marshall(), 0))
-                .apply();
-    }
+            oneTouchData.put("response_type", "web");
 
-    private static void persistRequest(Context context, PayPalApiRequest request) {
-        Parcel parcel = Parcel.obtain();
-        request.writeToParcel(parcel, 0);
-        BraintreeSharedPreferences.getSharedPreferences(context).edit()
-                .putString(REQUEST_KEY, Base64.encodeToString(parcel.marshall(), 0))
-                .putString(REQUEST_TYPE_KEY, request.getClass().getSimpleName())
-                .apply();
-    }
-
-    @Nullable
-    private static PayPalRequest getPersistedPayPalRequest(Context context) {
-        SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(context);
-
-        try {
-            byte[] requestBytes = Base64.decode(prefs.getString(PAYPAL_REQUEST_KEY, ""), 0);
-            Parcel parcel = Parcel.obtain();
-            parcel.unmarshall(requestBytes, 0, requestBytes.length);
-            parcel.setDataPosition(0);
-            return PayPalRequest.CREATOR.createFromParcel(parcel);
-        } catch (Exception ignored) {
-        } finally {
-            prefs.edit()
-                    .remove(PAYPAL_REQUEST_KEY)
-                    .apply();
-        }
-
-        return null;
-    }
-
-    @Nullable
-    private static PayPalApiRequest getPersistedRequest(Context context) {
-        SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(context);
-
-        try {
-            byte[] requestBytes = Base64.decode(prefs.getString(REQUEST_KEY, ""), 0);
-            Parcel parcel = Parcel.obtain();
-            parcel.unmarshall(requestBytes, 0, requestBytes.length);
-            parcel.setDataPosition(0);
-
-            String type = prefs.getString(REQUEST_TYPE_KEY, "");
-            if (PayPalApiBillingAgreementRequest.class.getSimpleName().equals(type)) {
-                return PayPalApiBillingAgreementRequest.CREATOR.createFromParcel(parcel);
-            } else if (PayPalApiCheckoutRequest.class.getSimpleName().equals(type)) {
-                return PayPalApiCheckoutRequest.CREATOR.createFromParcel(parcel);
-            }
-        } catch (Exception ignored) {
-        } finally {
-            prefs.edit()
-                    .remove(REQUEST_KEY)
-                    .remove(REQUEST_TYPE_KEY)
-                    .apply();
-        }
-
-        return null;
-    }
-
-    static boolean isManifestValid(BraintreeFragment fragment) {
-        return ManifestValidator.isUrlSchemeDeclaredInAndroidManifest(fragment.getApplicationContext(),
-                fragment.getReturnUrlScheme(), BraintreeBrowserSwitchActivity.class);
-    }
-
-    private static String switchTypeForIntent(Intent data) {
-        String switchType = "unknown";
-
-        if (data != null) {
-            if (data.getData() != null || data.getBooleanExtra(BraintreeFragment.EXTRA_WAS_BROWSER_SWITCH_RESULT, false)) {
-                switchType = "browser-switch";
-            }
-        }
-        return switchType;
-    }
-
-    private static String paymentTypeForRequest(PayPalApiRequest request) {
-        if (request instanceof PayPalApiBillingAgreementRequest) {
-            return "paypal.billing-agreement";
-        } else if (request instanceof PayPalApiCheckoutRequest) {
-            return "paypal.single-payment";
+            return oneTouchData;
         } else {
-            return "paypal.unknown";
+            throw new PayPalBrowserSwitchException("The response contained inconsistent data.");
         }
     }
 }

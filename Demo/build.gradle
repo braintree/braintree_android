@@ -66,22 +66,6 @@ android {
     }
 }
 
-def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProject.playServicesWalletVersion}"
-def googlePayment = "com.braintreepayments.api:google-payment:${rootProject.googlePaymentVersion}"
-
-def visaCheckoutDependencies = [
-        'com.braintreepayments.api:visa-checkout:2.0.0',
-        'com.visa.checkout:visacheckout-android-sdk:6.6.0@aar',
-        'com.squareup.okio:okio:1.13.0',
-        'com.squareup.okhttp3:okhttp:3.8.1',
-        'com.google.code.gson:gson:2.8.1',
-        'de.greenrobot:eventbus:2.4.1',
-        'androidx.appcompat:appcompat:1.0.1',
-        'androidx.preference:preference:1.0.0',
-        'com.google.android.material:material:1.0.0',
-        'androidx.cardview:cardview:1.0.0',
-        'androidx.multidex:multidex:2.0.0'
-]
 
 dependencies {
     implementation 'androidx.preference:preference:1.0.0'
@@ -90,23 +74,21 @@ dependencies {
         exclude module: 'com.google.gson'
     }
 
-    implementation project(':BraintreeCore')
-    implementation project(':BraintreeDataCollector')
-    implementation project(':ThreeDSecure')
+    implementation project(':BraintreeExtensions')
 
-    implementation project(':AmericanExpress')
-    implementation project(':Card')
-    implementation project(':UnionPay')
-
-    implementation playServicesWallet
-    implementation googlePayment
-    implementation visaCheckoutDependencies
+    implementation 'com.visa.checkout:visacheckout-android-sdk:6.6.1@aar'
+    implementation 'com.squareup.okio:okio:1.13.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.8.1'
+    implementation 'com.google.code.gson:gson:2.8.1'
+    implementation 'de.greenrobot:eventbus:2.4.1'
+    implementation 'androidx.appcompat:appcompat:1.0.1'
+    implementation 'androidx.preference:preference:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.multidex:multidex:2.0.0'
 
     implementation 'io.card:android-sdk:5.5.1'
-    implementation('com.braintreepayments.api:drop-in:4.0.0') {
-        exclude group: 'com.braintreepayments.api', module: 'braintree'
-        because 'Use the development version of Braintree'
-    }
+    implementation 'com.braintreepayments:card-form:4.0.0'
 
     debugImplementation 'com.facebook.stetho:stetho:1.5.0'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.4'
@@ -118,8 +100,6 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
 }
-
-
 
 task demoApkSize {
   group 'Braintree'

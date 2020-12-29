@@ -45,7 +45,8 @@ public class ThreeDSecureV1BrowserSwitchHelperTest {
         String urlScheme = "com.braintreepayments.Demo.payments";
         String assetsUrl = "https://assets.com";
 
-        String actualUrl = ThreeDSecureV1BrowserSwitchHelper.getUrl(urlScheme, assetsUrl, null, mThreeDSecureLookup);
+        ThreeDSecureV1BrowserSwitchHelper sut = new ThreeDSecureV1BrowserSwitchHelper();
+        String actualUrl = sut.getUrl(urlScheme, assetsUrl, null, mThreeDSecureLookup);
         String expectedUrl = "https://assets.com/mobile/three-d-secure-redirect/0.2.0/index.html?" +
                 "AcsUrl=https%3A%2F%2Facs.com&" +
                 "PaReq=pa.req&" +
@@ -69,7 +70,8 @@ public class ThreeDSecureV1BrowserSwitchHelperTest {
         ThreeDSecureRequest request = new ThreeDSecureRequest()
                 .v1UiCustomization(v1UiCustomization);
 
-        String actualUrl = ThreeDSecureV1BrowserSwitchHelper.getUrl(urlScheme, assetsUrl, request, mThreeDSecureLookup);
+        ThreeDSecureV1BrowserSwitchHelper sut = new ThreeDSecureV1BrowserSwitchHelper();
+        String actualUrl = sut.getUrl(urlScheme, assetsUrl, request, mThreeDSecureLookup);
         String expectedUrl = "https://assets.com/mobile/three-d-secure-redirect/0.2.0/index.html?" +
                 "AcsUrl=https%3A%2F%2Facs.com&" +
                 "PaReq=pa.req&" +

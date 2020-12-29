@@ -9,20 +9,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.braintreepayments.api.AmericanExpress;
-import com.braintreepayments.api.BraintreeFragment;
-import com.braintreepayments.api.Card;
-import com.braintreepayments.api.DataCollector;
-import com.braintreepayments.api.ThreeDSecure;
-import com.braintreepayments.api.UnionPay;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.AmericanExpressListener;
-import com.braintreepayments.api.interfaces.BraintreeErrorListener;
-import com.braintreepayments.api.interfaces.BraintreeResponseListener;
-import com.braintreepayments.api.interfaces.ConfigurationListener;
-import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
-import com.braintreepayments.api.interfaces.ThreeDSecureLookupListener;
-import com.braintreepayments.api.interfaces.UnionPayListener;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.braintreepayments.api.AmericanExpressGetRewardsBalanceCallback;
+import com.braintreepayments.api.BraintreeDataCollectorCallback;
+import com.braintreepayments.api.CardTokenizeCallback;
+import com.braintreepayments.api.ConfigurationCallback;
+import com.braintreepayments.api.ThreeDSecureVerificationCallback;
+import com.braintreepayments.api.UnionPayFetchCapabilitiesCallback;
+import com.braintreepayments.api.UnionPayEnrollment;
+import com.braintreepayments.api.UnionPayEnrollCallback;
+import com.braintreepayments.api.UnionPayTokenizeCallback;
+import com.braintreepayments.api.interfaces.ThreeDSecureLookupCallback;
 import com.braintreepayments.api.models.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
@@ -47,15 +46,12 @@ import com.google.android.material.textfield.TextInputLayout;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class CardActivity extends BaseActivity implements ConfigurationListener, UnionPayListener,
-        PaymentMethodNonceCreatedListener, BraintreeErrorListener, OnCardFormSubmitListener,
-        OnCardFormFieldFocusedListener, AmericanExpressListener {
+public class CardActivity extends BaseActivity implements OnCardFormSubmitListener, OnCardFormFieldFocusedListener {
 
     private static final String EXTRA_THREE_D_SECURE_REQUESTED = "com.braintreepayments.demo.EXTRA_THREE_D_SECURE_REQUESTED";
     private static final String EXTRA_UNIONPAY = "com.braintreepayments.demo.EXTRA_UNIONPAY";
     private static final String EXTRA_UNIONPAY_ENROLLMENT_ID = "com.braintreepayments.demo.EXTRA_UNIONPAY_ENROLLMENT_ID";
 
-    private Configuration mConfiguration;
     private String mDeviceData;
     private boolean mIsUnionPay;
     private String mEnrollmentId;
@@ -119,42 +115,40 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
     }
 
     @Override
-    protected void onAuthorizationFetched() {
-        try {
-            mBraintreeFragment = BraintreeFragment.newInstance(this, mAuthorization);
-        } catch (InvalidArgumentException e) {
-            onError(e);
-        }
-
+    protected void onBraintreeInitialized() {
         mPurchaseButton.setEnabled(true);
-    }
 
-    @Override
-    public void onConfigurationFetched(Configuration configuration) {
-        mConfiguration = configuration;
+        getConfiguration(new ConfigurationCallback() {
+            @Override
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                mCardForm.cardRequired(true)
+                        .expirationRequired(true)
+                        .cvvRequired(configuration.isCvvChallengePresent())
+                        .postalCodeRequired(configuration.isPostalCodeChallengePresent())
+                        .mobileNumberRequired(false)
+                        .actionLabel(getString(R.string.purchase))
+                        .setup(CardActivity.this);
 
-        mCardForm.cardRequired(true)
-                .expirationRequired(true)
-                .cvvRequired(configuration.isCvvChallengePresent())
-                .postalCodeRequired(configuration.isPostalCodeChallengePresent())
-                .mobileNumberRequired(false)
-                .actionLabel(getString(R.string.purchase))
-                .setup(this);
-
-        if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {
-            DataCollector.collectDeviceData(mBraintreeFragment, new BraintreeResponseListener<String>() {
-                @Override
-                public void onResponse(String deviceData) {
-                    mDeviceData = deviceData;
+                if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {
+                    collectDeviceData(new BraintreeDataCollectorCallback() {
+                        @Override
+                        public void onResult(@Nullable String deviceData, @Nullable Exception error) {
+                            mDeviceData = deviceData;
+                        }
+                    });
                 }
-            });
-        }
+            }
+        });
     }
 
     @Override
-    public void onError(Exception error) {
-        super.onError(error);
+    protected void onBraintreeError(Exception error) {
+        handleError(error);
+    }
 
+    @Override
+    protected void handleError(Exception error) {
+        super.handleError(error);
         mThreeDSecureRequested = false;
     }
 
@@ -169,59 +163,71 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
 
     @Override
     public void onCardFormFieldFocused(View field) {
-        if (mBraintreeFragment == null) {
-            return;
-        }
 
         if (!(field instanceof CardEditText) && !TextUtils.isEmpty(mCardForm.getCardNumber())) {
             CardType cardType = CardType.forCardNumber(mCardForm.getCardNumber());
             if (mCardType != cardType) {
-                mCardType  = cardType;
+                mCardType = cardType;
 
-                if (mConfiguration.getUnionPay().isEnabled() && !Settings.useTokenizationKey(getApplicationContext())) {
-                    UnionPay.fetchCapabilities(mBraintreeFragment, mCardForm.getCardNumber());
+                if (!Settings.useTokenizationKey(getApplicationContext())) {
+                    String cardNumber = mCardForm.getCardNumber();
+                    fetchUnionPayCapabilities(cardNumber, new UnionPayFetchCapabilitiesCallback() {
+                        @Override
+                        public void onResult(UnionPayCapabilities capabilities, Exception error) {
+                            if (capabilities != null) {
+                                handleUnionPayCapabilitiesFetched(capabilities);
+                            } else {
+                                onBraintreeError(error);
+                            }
+                        }
+                    });
                 }
             }
         }
     }
 
-    @Override
-    public void onCapabilitiesFetched(UnionPayCapabilities capabilities) {
+    private void handleUnionPayCapabilitiesFetched(final UnionPayCapabilities capabilities) {
         mSmsCodeContainer.setVisibility(GONE);
         mSmsCode.setText("");
 
-        if (capabilities.isUnionPay()) {
-            if (!capabilities.isSupported()) {
-                mCardForm.setCardNumberError(getString(R.string.bt_card_not_accepted));
-                return;
+        final AppCompatActivity activity = this;
+        getConfiguration(new ConfigurationCallback() {
+            @Override
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                if (capabilities.isUnionPay()) {
+                    if (!capabilities.isSupported()) {
+                        mCardForm.setCardNumberError("Card not accepted");
+                        return;
+                    }
+                    mIsUnionPay = true;
+                    mEnrollmentId = null;
+
+                    mCardForm.cardRequired(true)
+                            .expirationRequired(true)
+                            .cvvRequired(true)
+                            .postalCodeRequired(configuration.isPostalCodeChallengePresent())
+                            .mobileNumberRequired(true)
+                            .actionLabel(getString(R.string.purchase))
+                            .setup(activity);
+
+                    mSendSmsButton.setVisibility(VISIBLE);
+                } else {
+                    mIsUnionPay = false;
+
+                    mCardForm.cardRequired(true)
+                            .expirationRequired(true)
+                            .cvvRequired(configuration.isCvvChallengePresent())
+                            .postalCodeRequired(configuration.isPostalCodeChallengePresent())
+                            .mobileNumberRequired(false)
+                            .actionLabel(getString(R.string.purchase))
+                            .setup(activity);
+
+                    if (!configuration.isCvvChallengePresent()) {
+                        ((EditText) findViewById(R.id.bt_card_form_cvv)).setText("");
+                    }
+                }
             }
-            mIsUnionPay = true;
-            mEnrollmentId = null;
-
-            mCardForm.cardRequired(true)
-                    .expirationRequired(true)
-                    .cvvRequired(true)
-                    .postalCodeRequired(mConfiguration.isPostalCodeChallengePresent())
-                    .mobileNumberRequired(true)
-                    .actionLabel(getString(R.string.purchase))
-                    .setup(this);
-
-            mSendSmsButton.setVisibility(VISIBLE);
-        } else {
-            mIsUnionPay = false;
-
-            mCardForm.cardRequired(true)
-                    .expirationRequired(true)
-                    .cvvRequired(mConfiguration.isCvvChallengePresent())
-                    .postalCodeRequired(mConfiguration.isPostalCodeChallengePresent())
-                    .mobileNumberRequired(false)
-                    .actionLabel(getString(R.string.purchase))
-                    .setup(this);
-
-            if (!mConfiguration.isCvvChallengePresent()) {
-                ((EditText) findViewById(R.id.bt_card_form_cvv)).setText("");
-            }
-        }
+        });
     }
 
     public void sendSms(View v) {
@@ -234,17 +240,17 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
                 .mobileCountryCode(mCardForm.getCountryCode())
                 .mobilePhoneNumber(mCardForm.getMobileNumber());
 
-        UnionPay.enroll(mBraintreeFragment, unionPayCardBuilder);
-    }
-
-    @Override
-    public void onSmsCodeSent(String enrollmentId, boolean smsCodeRequired) {
-        mEnrollmentId = enrollmentId;
-        if (smsCodeRequired) {
-            mSmsCodeContainer.setVisibility(VISIBLE);
-        } else {
-            onCardFormSubmit();
-        }
+        enrollUnionPay(unionPayCardBuilder, new UnionPayEnrollCallback() {
+            @Override
+            public void onResult(@Nullable UnionPayEnrollment enrollment, @Nullable Exception error) {
+                mEnrollmentId = enrollment.getId();
+                if (enrollment.isSmsCodeRequired()) {
+                    mSmsCodeContainer.setVisibility(VISIBLE);
+                } else {
+                    onCardFormSubmit();
+                }
+            }
+        });
     }
 
     @Override
@@ -267,7 +273,17 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
                     .smsCode(mSmsCode.getText().toString())
                     .enrollmentId(mEnrollmentId);
 
-            UnionPay.tokenize(mBraintreeFragment, unionPayCardBuilder);
+            tokenizeUnionPay(unionPayCardBuilder, new UnionPayTokenizeCallback() {
+                @Override
+                public void onResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
+                    if (paymentMethodNonce != null) {
+                        handlePaymentMethodNonceCreated(paymentMethodNonce);
+                    } else {
+                        onBraintreeError(error);
+                    }
+                }
+            });
+
         } else {
             CardBuilder cardBuilder = new CardBuilder()
                     .cardNumber(mCardForm.getCardNumber())
@@ -277,27 +293,68 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
                     .validate(false) // TODO GQL currently only returns the bin if validate = false
                     .postalCode(mCardForm.getPostalCode());
 
-            Card.tokenize(mBraintreeFragment, cardBuilder);
+            tokenizeCard(cardBuilder, new CardTokenizeCallback() {
+                @Override
+                public void onResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
+                    if (paymentMethodNonce != null) {
+                        handlePaymentMethodNonceCreated(paymentMethodNonce);
+                    } else {
+                        onBraintreeError(error);
+                    }
+                }
+            });
         }
     }
 
     @Override
-    public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+    protected void onThreeDSecureResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
+        if (paymentMethodNonce != null) {
+            handlePaymentMethodNonceCreated(paymentMethodNonce);
+        } else {
+            onBraintreeError(error);
+        }
+    }
+
+    private void handlePaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         if (!mThreeDSecureRequested && paymentMethodNonce instanceof CardNonce && Settings.isThreeDSecureEnabled(this)) {
             mThreeDSecureRequested = true;
             mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
 
-            ThreeDSecure.performVerification(mBraintreeFragment, threeDSecureRequest(paymentMethodNonce), new ThreeDSecureLookupListener() {
+            performThreeDSecureVerification(threeDSecureRequest(paymentMethodNonce), new ThreeDSecureLookupCallback() {
                 @Override
-                public void onLookupComplete(ThreeDSecureRequest request, ThreeDSecureLookup lookup) {
-                    ThreeDSecure.continuePerformVerification(mBraintreeFragment, request, lookup);
+                public void onResult(ThreeDSecureRequest request, ThreeDSecureLookup lookup, Exception error) {
+                    if (request != null && lookup != null) {
+                        continuePerformVerification(request, lookup, new ThreeDSecureVerificationCallback() {
+                            @Override
+                            public void onResult(@Nullable PaymentMethodNonce paymentMethodNonce, @Nullable Exception error) {
+                                if (paymentMethodNonce != null) {
+                                    handlePaymentMethodNonceCreated(paymentMethodNonce);
+                                } else {
+                                    handleError(error);
+                                }
+                            }
+                        });
+                    } else {
+                        handleError(error);
+                    }
                 }
             });
         } else if (paymentMethodNonce instanceof CardNonce && Settings.isAmexRewardsBalanceEnabled(this)) {
             mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
-            AmericanExpress.getRewardsBalance(mBraintreeFragment, paymentMethodNonce.getNonce(), "USD");
+            String nonce = paymentMethodNonce.getNonce();
+            getAmericanExpressRewards(nonce, "USD", new AmericanExpressGetRewardsBalanceCallback() {
+                @Override
+                public void onResult(@Nullable AmericanExpressRewardsBalance rewardsBalance, @Nullable Exception error) {
+                    if (rewardsBalance != null) {
+                        safelyCloseLoadingView();
+                        showDialog(getAmexRewardsBalanceString(rewardsBalance));
+                    } else if (error != null) {
+                        handleError(error);
+                    }
+                }
+            });
         } else {
             Intent intent = new Intent()
                     .putExtra(MainActivity.EXTRA_PAYMENT_RESULT, paymentMethodNonce)
@@ -305,12 +362,6 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
             setResult(RESULT_OK, intent);
             finish();
         }
-    }
-
-    @Override
-    public void onRewardsBalanceFetched(AmericanExpressRewardsBalance rewardsBalance) {
-        safelyCloseLoadingView();
-        showDialog(getAmexRewardsBalanceString(rewardsBalance));
     }
 
     private void safelyCloseLoadingView() {
@@ -329,7 +380,7 @@ public class CardActivity extends BaseActivity implements ConfigurationListener,
     }
 
     public static String getAmexRewardsBalanceString(AmericanExpressRewardsBalance rewardsBalance) {
-        return  "Amex Rewards Balance: \n" +
+        return "Amex Rewards Balance: \n" +
                 "- amount: " + rewardsBalance.getRewardsAmount() + "\n" +
                 "- errorCode: " + rewardsBalance.getErrorCode();
     }

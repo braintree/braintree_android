@@ -6,10 +6,15 @@ import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.braintreepayments.api.DeviceCapabilities;
+import androidx.annotation.VisibleForTesting;
+
+import com.braintreepayments.api.AnalyticsClient;
+import com.braintreepayments.api.DeviceInspector;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import static android.content.res.Configuration.ORIENTATION_UNDEFINED;
 
 public class AnalyticsEvent {
 
@@ -26,40 +31,53 @@ public class AnalyticsEvent {
     String event;
     long timestamp;
     JSONObject metadata = new JSONObject();
+    DeviceInspector deviceInspector;
 
     public AnalyticsEvent() {}
 
     public AnalyticsEvent(Context context, String sessionId, String integration, String event) {
+        this(context, sessionId, integration, event, new DeviceInspector());
+    }
+
+    @VisibleForTesting
+    AnalyticsEvent(Context context, String sessionId, String integration, String event, DeviceInspector deviceInspector) {
         this.event = "android." + event;
         this.timestamp = System.currentTimeMillis();
+        this.deviceInspector = deviceInspector;
         try {
             metadata.put(SESSION_ID_KEY, sessionId)
                     .put(INTEGRATION_TYPE_KEY, integration)
                     .put(DEVICE_NETWORK_TYPE_KEY, getNetworkType(context))
                     .put(USER_INTERFACE_ORIENTATION_KEY, getUserOrientation(context))
                     .put(MERCHANT_APP_VERSION_KEY, getAppVersion(context))
-                    .put(PAYPAL_INSTALLED_KEY, DeviceCapabilities.isPayPalInstalled(context))
-                    .put(VENMO_INSTALLED_KEY, DeviceCapabilities.isVenmoInstalled(context))
+                    .put(PAYPAL_INSTALLED_KEY, isPayPalInstalled(context))
+                    .put(VENMO_INSTALLED_KEY, isVenmoInstalled(context))
                     .put(DROP_IN_VERSION_KEY, getDropInVersion());
         } catch (JSONException ignored) {}
     }
 
     private String getNetworkType(Context context) {
         String networkType = null;
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        if (networkInfo != null) {
-            networkType = networkInfo.getTypeName();
-        }
-        if (networkType == null) {
-            networkType = "none";
+        if (context != null) {
+            ConnectivityManager connectivityManager =
+                    (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            if (networkInfo != null) {
+                networkType = networkInfo.getTypeName();
+            }
+            if (networkType == null) {
+                networkType = "none";
+            }
         }
         return networkType;
     }
 
     private String getUserOrientation(Context context) {
-        int orientation = context.getResources().getConfiguration().orientation;
+        int orientation = ORIENTATION_UNDEFINED;
+        if (context != null) {
+            orientation = context.getResources().getConfiguration().orientation;
+        }
+
         switch (orientation) {
             case Configuration.ORIENTATION_PORTRAIT:
                 return "Portrait";
@@ -71,11 +89,21 @@ public class AnalyticsEvent {
     }
 
     private String getAppVersion(Context context) {
-        try {
-            return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
-        } catch (NameNotFoundException e) {
-            return "VersionUnknown";
+        String result = "VersionUnknown";
+        if (context != null) {
+            try {
+                result = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+            } catch (NameNotFoundException ignored) { /* do nothing */ }
         }
+        return result;
+    }
+
+    private boolean isPayPalInstalled(Context context) {
+        return deviceInspector.isPayPalInstalled(context);
+    }
+
+    private boolean isVenmoInstalled(Context context) {
+        return deviceInspector.isVenmoInstalled(context);
     }
 
     /**

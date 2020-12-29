@@ -10,10 +10,9 @@ public class ThreeDSecureV1BrowserSwitchHelper {
 
     private static final String MOBILE_HOSTED_ASSETS_PATH = "mobile/three-d-secure-redirect/0.2.0";
 
-    // static utility class; no constructor needed
-    private ThreeDSecureV1BrowserSwitchHelper() {}
+    public ThreeDSecureV1BrowserSwitchHelper() {}
 
-    public static String getUrl(String appReturnUrlScheme,
+    public String getUrl(String appReturnUrlScheme,
                                 String assetsUrl,
                                 ThreeDSecureRequest threeDSecureRequest,
                                 ThreeDSecureLookup threeDSecureLookup) {

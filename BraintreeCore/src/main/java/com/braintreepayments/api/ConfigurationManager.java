@@ -1,101 +1,79 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import android.util.Base64;
 
-import com.braintreepayments.api.interfaces.BraintreeResponseListener;
-import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.internal.BraintreeSharedPreferences;
+import com.braintreepayments.api.internal.BraintreeHttpClient;
+import com.braintreepayments.api.internal.HttpClient;
+import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.Configuration;
 
 import org.json.JSONException;
 
-import java.util.concurrent.TimeUnit;
+// TODO: Re-name to ConfigurationLoader
+public class ConfigurationManager {
 
-/**
- * Manages on-disk {@link Configuration} cache and fetching configuration from the Gateway
- */
-class ConfigurationManager {
+    private final BraintreeHttpClient httpClient;
 
-    static final long TTL = TimeUnit.MINUTES.toMillis(5);
-    @VisibleForTesting
-    static boolean sFetchingConfiguration = false;
-
-    private ConfigurationManager() {}
-
-    static boolean isFetchingConfiguration() {
-        return sFetchingConfiguration;
+    ConfigurationManager(BraintreeHttpClient httpClient) {
+        this.httpClient = httpClient;
     }
 
-    static void getConfiguration(final BraintreeFragment fragment, final @NonNull ConfigurationListener listener,
-            final @NonNull BraintreeResponseListener<Exception> errorListener) {
-        final String configUrl = Uri.parse(fragment.getAuthorization().getConfigUrl())
+    void loadConfiguration(final Context context, final Authorization authorization, final ConfigurationCallback callback) {
+        final String configUrl = Uri.parse(authorization.getConfigUrl())
                 .buildUpon()
                 .appendQueryParameter("configVersion", "3")
                 .build()
                 .toString();
 
-        Configuration cachedConfig = getCachedConfiguration(fragment.getApplicationContext(), configUrl +
-                fragment.getAuthorization().getBearer());
+        Configuration cachedConfig = getCachedConfiguration(context, authorization, configUrl);
         if (cachedConfig != null) {
-            listener.onConfigurationFetched(cachedConfig);
+            callback.onResult(cachedConfig, null);
         } else {
-            sFetchingConfiguration = true;
-            fragment.getHttpClient().get(configUrl, new HttpResponseCallback() {
+
+            httpClient.get(configUrl, null, HttpClient.RETRY_MAX_3_TIMES, new HttpResponseCallback() {
                 @Override
                 public void success(String responseBody) {
                     try {
                         Configuration configuration = Configuration.fromJson(responseBody);
-                        cacheConfiguration(fragment.getApplicationContext(),
-                                configUrl + fragment.getAuthorization().getBearer(), configuration);
-
-                        sFetchingConfiguration = false;
-                        listener.onConfigurationFetched(configuration);
-                    } catch (final JSONException e) {
-                        sFetchingConfiguration = false;
-                        errorListener.onResponse(e);
+                        saveConfigurationToCache(context, configuration, authorization, configUrl);
+                        callback.onResult(configuration, null);
+                    } catch (JSONException jsonException) {
+                        callback.onResult(null, jsonException);
                     }
                 }
 
                 @Override
-                public void failure(final Exception exception) {
-                    sFetchingConfiguration = false;
-                    errorListener.onResponse(exception);
+                public void failure(Exception httpException) {
+                    String errorMessageFormat = "Request for configuration has failed: %s";
+                    String errorMessage = String.format(errorMessageFormat, httpException.getMessage());
+
+                    ConfigurationException configurationException = new ConfigurationException(errorMessage, httpException);
+                    callback.onResult(null, configurationException);
                 }
             });
         }
     }
 
-    @Nullable
-    private static Configuration getCachedConfiguration(Context context, String configUrl) {
-        SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(context);
-        configUrl = Base64.encodeToString(configUrl.getBytes(), 0);
+    private static void saveConfigurationToCache(Context context, Configuration configuration, Authorization authorization, String configUrl) {
+        String cacheKey = createCacheKey(authorization, configUrl);
+        ConfigurationCache.saveConfiguration(context, configuration, cacheKey);
+    }
 
-        String timestampKey = configUrl + "_timestamp";
-        if ((System.currentTimeMillis() - prefs.getLong(timestampKey, 0)) > TTL) {
-            return null;
-        }
-
+    private static Configuration getCachedConfiguration(Context context, Authorization authorization, String configUrl) {
+        String cacheKey = createCacheKey(authorization, configUrl);
+        String cachedConfigResponse = ConfigurationCache.getConfiguration(context, cacheKey);
         try {
-            return Configuration.fromJson(prefs.getString(configUrl, ""));
+            return Configuration.fromJson(cachedConfigResponse);
         } catch (JSONException e) {
             return null;
         }
     }
 
-    private static void cacheConfiguration(Context context, String configUrl, Configuration configuration) {
-        configUrl = Base64.encodeToString(configUrl.getBytes(), 0);
-
-        String timestampKey = configUrl + "_timestamp";
-        BraintreeSharedPreferences.getSharedPreferences(context).edit()
-                .putString(configUrl, configuration.toJson())
-                .putLong(timestampKey, System.currentTimeMillis())
-                .apply();
+    private static String createCacheKey(Authorization authorization, String configUrl) {
+        return Base64.encodeToString(String.format("%s%s", configUrl, authorization.getBearer()).getBytes(), 0);
     }
 }

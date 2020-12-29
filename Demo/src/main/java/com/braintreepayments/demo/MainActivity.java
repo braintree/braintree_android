@@ -9,21 +9,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.braintreepayments.api.dropin.DropInActivity;
-import com.braintreepayments.api.dropin.DropInRequest;
-import com.braintreepayments.api.dropin.DropInResult;
-import com.braintreepayments.api.dropin.utils.PaymentMethodType;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.GooglePaymentCardNonce;
-import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.models.LocalPaymentResult;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VenmoAccountNonce;
 import com.braintreepayments.api.models.VisaCheckoutNonce;
-import com.google.android.gms.wallet.ShippingAddressRequirements;
-import com.google.android.gms.wallet.TransactionInfo;
-import com.google.android.gms.wallet.WalletConstants;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -53,7 +45,6 @@ public class MainActivity extends BaseActivity {
     private TextView mNonceDetails;
     private TextView mDeviceData;
 
-    private Button mDropInButton;
     private Button mGooglePaymentButton;
     private Button mCardsButton;
     private Button mPayPalButton;
@@ -61,7 +52,6 @@ public class MainActivity extends BaseActivity {
     private Button mVisaCheckoutButton;
     private Button mCreateTransactionButton;
     private Button mLocalPaymentsButton;
-    private Button mPayPalTwoFactorAuthButton;
     private Button mPreferredPaymentMethods;
 
     @Override
@@ -74,7 +64,6 @@ public class MainActivity extends BaseActivity {
         mNonceDetails = findViewById(R.id.nonce_details);
         mDeviceData = findViewById(R.id.device_data);
 
-        mDropInButton = findViewById(R.id.drop_in);
         mGooglePaymentButton = findViewById(R.id.google_payment);
         mCardsButton = findViewById(R.id.card);
         mPayPalButton = findViewById(R.id.paypal);
@@ -83,7 +72,6 @@ public class MainActivity extends BaseActivity {
         mLocalPaymentsButton = findViewById(R.id.local_payments);
         mPreferredPaymentMethods = findViewById(R.id.preferred_payment_methods);
         mCreateTransactionButton = findViewById(R.id.create_transaction);
-        mPayPalTwoFactorAuthButton = findViewById(R.id.paypal_two_factor);
 
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(KEY_NONCE)) {
@@ -98,10 +86,6 @@ public class MainActivity extends BaseActivity {
         if (mNonce != null) {
             outState.putParcelable(KEY_NONCE, mNonce);
         }
-    }
-
-    public void launchDropIn(View v) {
-        startActivityForResult(getDropInRequest().getIntent(this), DROP_IN_REQUEST);
     }
 
     public void launchGooglePayment(View v) {
@@ -136,40 +120,9 @@ public class MainActivity extends BaseActivity {
         startActivityForResult(intent, LOCAL_PAYMENTS_REQUEST);
     }
 
-    public void launchPayPalTwoFactorAuth(View v) {
-        Intent intent = new Intent(this, PayPalTwoFactorAuthActivity.class);
-        startActivityForResult(intent, PAYPAL_TWO_FACTOR_REQUEST);
-    }
-
     public void launchPreferredPaymentMethods(View v) {
         Intent intent = new Intent(this, PreferredPaymentMethodsActivity.class);
         startActivityForResult(intent, PREFERRED_PAYMENT_METHODS_REQUEST);
-    }
-
-    private DropInRequest getDropInRequest() {
-        GooglePaymentRequest googlePaymentRequest = new GooglePaymentRequest()
-                .transactionInfo(TransactionInfo.newBuilder()
-                        .setCurrencyCode(Settings.getGooglePaymentCurrency(this))
-                        .setTotalPrice("1.00")
-                        .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
-                        .build())
-                .allowPrepaidCards(Settings.areGooglePaymentPrepaidCardsAllowed(this))
-                .billingAddressFormat(WalletConstants.BILLING_ADDRESS_FORMAT_FULL)
-                .billingAddressRequired(Settings.isGooglePaymentBillingAddressRequired(this))
-                .emailRequired(Settings.isGooglePaymentEmailRequired(this))
-                .phoneNumberRequired(Settings.isGooglePaymentPhoneNumberRequired(this))
-                .shippingAddressRequired(Settings.isGooglePaymentShippingAddressRequired(this))
-                .shippingAddressRequirements(ShippingAddressRequirements.newBuilder()
-                        .addAllowedCountryCodes(Settings.getGooglePaymentAllowedCountriesForShipping(this))
-                        .build())
-                .googleMerchantId(Settings.getGooglePaymentMerchantId(this));
-
-        return new DropInRequest()
-                .amount("1.00")
-                .clientToken(mAuthorization)
-                .collectDeviceData(Settings.shouldCollectDeviceData(this))
-                .requestThreeDSecureVerification(Settings.isThreeDSecureEnabled(this))
-                .googlePaymentRequest(googlePaymentRequest);
     }
 
     public void createTransaction(View v) {
@@ -186,20 +139,13 @@ public class MainActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
-            if (requestCode == DROP_IN_REQUEST) {
-                DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
-                displayNonce(result.getPaymentMethodNonce(), result.getDeviceData());
-            } else {
-                Parcelable returnedData = data.getParcelableExtra(EXTRA_PAYMENT_RESULT);
-                String deviceData = data.getStringExtra(EXTRA_DEVICE_DATA);
-                if (returnedData instanceof PaymentMethodNonce) {
-                    displayNonce((PaymentMethodNonce) returnedData, deviceData);
-                }
-
-                mCreateTransactionButton.setEnabled(true);
+            Parcelable returnedData = data.getParcelableExtra(EXTRA_PAYMENT_RESULT);
+            String deviceData = data.getStringExtra(EXTRA_DEVICE_DATA);
+            if (returnedData instanceof PaymentMethodNonce) {
+                displayNonce((PaymentMethodNonce) returnedData, deviceData);
             }
-        } else if (resultCode != RESULT_CANCELED) {
-            showDialog(((Exception) data.getSerializableExtra(DropInActivity.EXTRA_ERROR)).getMessage());
+
+            mCreateTransactionButton.setEnabled(true);
         }
     }
 
@@ -212,7 +158,7 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void onAuthorizationFetched() {
+    protected void onBraintreeInitialized() {
         enableButtons(true);
     }
 
@@ -220,7 +166,6 @@ public class MainActivity extends BaseActivity {
         mNonce = paymentMethodNonce;
         Log.d("KANYE", mNonce.getNonce());
 
-        mNonceIcon.setImageResource(PaymentMethodType.forType(mNonce).getDrawable());
         mNonceIcon.setVisibility(VISIBLE);
 
         mNonceString.setText(getString(R.string.nonce_placeholder, mNonce.getNonce()));
@@ -259,14 +204,12 @@ public class MainActivity extends BaseActivity {
     }
 
     private void enableButtons(boolean enable) {
-        mDropInButton.setEnabled(enable);
         mGooglePaymentButton.setEnabled(enable);
         mCardsButton.setEnabled(enable);
         mPayPalButton.setEnabled(enable);
         mVenmoButton.setEnabled(enable);
         mVisaCheckoutButton.setEnabled(enable);
         mLocalPaymentsButton.setEnabled(enable);
-        mPayPalTwoFactorAuthButton.setEnabled(enable);
         mPreferredPaymentMethods.setEnabled(enable);
     }
 }

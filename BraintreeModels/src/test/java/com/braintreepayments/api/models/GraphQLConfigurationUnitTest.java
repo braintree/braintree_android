@@ -21,6 +21,6 @@ public class GraphQLConfigurationUnitTest {
 
         assertTrue(graphQLConfiguration.isEnabled());
         assertTrue(graphQLConfiguration.isFeatureEnabled(Features.TOKENIZE_CREDIT_CARDS));
-        assertEquals("/graphql", graphQLConfiguration.getUrl());
+        assertEquals("https://example-graphql.com/graphql", graphQLConfiguration.getUrl());
     }
 }

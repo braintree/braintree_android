@@ -44,8 +44,6 @@
         <activity
             android:name=".LocalPaymentsActivity"
             android:label="@string/ideal_button" />
-        <activity android:name=".PayPalTwoFactorAuthActivity"
-            android:label="@string/paypal_two_factor" />
         <activity
             android:name=".PreferredPaymentMethodsActivity"
             android:label="Pref Payment Methods" />

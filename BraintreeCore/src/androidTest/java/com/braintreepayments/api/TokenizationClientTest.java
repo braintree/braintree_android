@@ -3,7 +3,9 @@ package com.braintreepayments.api;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
+import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
@@ -19,7 +21,6 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
 
-import static com.braintreepayments.api.BraintreeFragmentTestUtils.getFragmentWithAuthorization;
 import static com.braintreepayments.testutils.Assertions.assertIsANonce;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
@@ -39,28 +40,31 @@ public class TokenizationClientTest {
     }
 
     @Test(timeout = 10000)
-    public void tokenize_tokenizesAPayPalAccountWithATokenizationKey() throws InterruptedException, JSONException {
+    public void tokenize_tokenizesAPayPalAccountWithATokenizationKey() throws InterruptedException, JSONException, InvalidArgumentException {
         final CountDownLatch latch = new CountDownLatch(1);
-        BraintreeFragment fragment = getFragmentWithAuthorization(mActivity, Fixtures.TOKENIZATION_KEY);
+
+        Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
+        BraintreeClient braintreeClient = new BraintreeClient(authorization, null);
+
+        TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
 
         JSONObject otcJson = new JSONObject(Fixtures.PAYPAL_OTC_RESPONSE);
         PayPalAccountBuilder paypalAccountBuilder =
                 new PayPalAccountBuilder().oneTouchCoreData(otcJson);
 
-        TokenizationClient.tokenize(fragment, paypalAccountBuilder,
-                new PaymentMethodNonceCallback() {
-                    @Override
-                    public void success(PaymentMethodNonce paymentMethodNonce) {
-                        assertIsANonce(paymentMethodNonce.getNonce());
-                        assertEquals("PayPal", paymentMethodNonce.getTypeLabel());
-                        latch.countDown();
-                    }
+        tokenizationClient.tokenize(mActivity, paypalAccountBuilder, new PaymentMethodNonceCallback() {
+            @Override
+            public void success(PaymentMethodNonce paymentMethodNonce) {
+                assertIsANonce(paymentMethodNonce.getNonce());
+                assertEquals("PayPal", paymentMethodNonce.getTypeLabel());
+                latch.countDown();
+            }
 
-                    @Override
-                    public void failure(Exception exception) {
-                        fail(exception.getMessage());
-                    }
-                });
+            @Override
+            public void failure(Exception exception) {
+                fail(exception.getMessage());
+            }
+        });
 
         latch.await();
     }

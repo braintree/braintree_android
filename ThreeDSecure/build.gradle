@@ -28,30 +28,19 @@ android {
     }
 }
 
-def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProject.playServicesWalletVersion}"
-
 dependencies {
     api 'org.jfrog.cardinalcommerce.gradle:cardinalmobilesdk:2.2.5-1'
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
 
-    // TODO: replace with `implementation project(:Braintree)` once ThreeDSecureClient is created
-    compileOnly("com.braintreepayments.api:braintree:${rootProject.braintreeSdkVersion}") {
-        exclude module: 'three-d-secure'
-        because "Use this development version"
-    }
-
-    testImplementation("com.braintreepayments.api:braintree:${rootProject.braintreeSdkVersion}") {
-        exclude module: 'three-d-secure'
-        because "Use this development version"
-    }
+    implementation project(':BraintreeCore')
 
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
     androidTestImplementation 'androidx.test:rules:1.1.1'
     androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation project(':TestUtils')
 
-    testImplementation playServicesWallet
     testImplementation 'org.robolectric:robolectric:4.1'
     testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
     testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'

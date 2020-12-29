@@ -31,6 +31,7 @@ public class ThreeDSecureCardinalTest extends TestHelper {
         PreferenceManager.getDefaultSharedPreferences(ApplicationProvider.getApplicationContext())
                 .edit()
                 .putBoolean("enable_three_d_secure", true)
+                .putBoolean("amex_rewards_balance", false)
                 .commit();
     }
 

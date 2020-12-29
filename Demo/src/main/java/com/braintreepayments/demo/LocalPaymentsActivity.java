@@ -5,15 +5,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.braintreepayments.api.BraintreeFragment;
-import com.braintreepayments.api.LocalPayment;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.BraintreeResponseListener;
+import androidx.annotation.Nullable;
+
+import com.braintreepayments.api.BrowserSwitchException;
+import com.braintreepayments.api.LocalPaymentStartCallback;
+import com.braintreepayments.api.LocalPaymentTransaction;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.LocalPaymentRequest;
 import com.braintreepayments.api.models.LocalPaymentResult;
-import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
+
+import org.json.JSONException;
 
 public class LocalPaymentsActivity extends BaseActivity implements PaymentMethodNonceCreatedListener {
 
@@ -33,18 +35,12 @@ public class LocalPaymentsActivity extends BaseActivity implements PaymentMethod
     }
 
     @Override
-    protected void onAuthorizationFetched() {
+    protected void onBraintreeInitialized() {
         if (!Settings.SANDBOX_ENV_NAME.equals(Settings.getEnvironment(this))) {
-            onError(new Exception("To use this feature, enable the \"Sandbox\" environment."));
+            handleError(new Exception("To use this feature, enable the \"Sandbox\" environment."));
             return;
         }
-
-        try {
-            mBraintreeFragment = BraintreeFragment.newInstance(this, Settings.getLocalPaymentsTokenizationKey(this));
-            mIdealButton.setEnabled(true);
-        } catch (InvalidArgumentException e) {
-            onError(e);
-        }
+        mIdealButton.setEnabled(true);
     }
 
     public void launchIdeal(View v) {
@@ -64,19 +60,24 @@ public class LocalPaymentsActivity extends BaseActivity implements PaymentMethod
                 .shippingAddressRequired(true)
                 .merchantAccountId("altpay_eur")
                 .currencyCode("EUR");
-        LocalPayment.startPayment(mBraintreeFragment, request, new BraintreeResponseListener<LocalPaymentRequest>() {
+
+        startLocalPayment(request, new LocalPaymentStartCallback() {
             @Override
-            public void onResponse(LocalPaymentRequest localPaymentRequest) {
-                LocalPayment.approvePayment(mBraintreeFragment, localPaymentRequest);
+            public void onResult(@Nullable LocalPaymentTransaction transaction, @Nullable Exception error) {
+                try {
+                    approveLocalPayment(transaction);
+                } catch (JSONException | BrowserSwitchException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
 
     @Override
-    public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
-        super.onPaymentMethodNonceCreated(paymentMethodNonce);
+    protected void onLocalPaymentResult(LocalPaymentResult localPaymentResult, Exception error) {
+        super.onPaymentMethodNonceCreated(localPaymentResult);
 
-        Intent intent = new Intent().putExtra(MainActivity.EXTRA_PAYMENT_RESULT, paymentMethodNonce);
+        Intent intent = new Intent().putExtra(MainActivity.EXTRA_PAYMENT_RESULT, localPaymentResult);
         setResult(RESULT_OK, intent);
         finish();
     }

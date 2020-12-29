@@ -1,11 +1,13 @@
 package com.braintreepayments.api;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.interfaces.PreferredPaymentMethodsListener;
-import com.braintreepayments.api.internal.BraintreeGraphQLHttpClient;
+import com.braintreepayments.api.interfaces.PreferredPaymentMethodsCallback;
+import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PreferredPaymentMethodsResult;
 
 /**
@@ -14,57 +16,81 @@ import com.braintreepayments.api.models.PreferredPaymentMethodsResult;
  * not whether they are presented entirely.
  * This class is currently in beta and may change in future releases.
  */
+// TODO: rename to PreferredPaymentMethodsClient
 public class PreferredPaymentMethods {
+
+    private BraintreeClient braintreeClient;
+    private DeviceInspector deviceInspector;
+
+    public PreferredPaymentMethods(BraintreeClient braintreeClient) {
+        this(braintreeClient, new DeviceInspector());
+    }
+
+    @VisibleForTesting
+    PreferredPaymentMethods(BraintreeClient braintreeClient, DeviceInspector deviceInspector) {
+        this.braintreeClient = braintreeClient;
+        this.deviceInspector = deviceInspector;
+    }
 
     /**
      * Fetches information about which payment methods should be given preference in your UI.
      *
-     * @param fragment The BraintreeFragment
-     * @param listener A listener that is invoked when preferred payment methods have been fetched.
+     * @param context Android context
+     * @param callback A callback that is invoked when preferred payment methods have been fetched.
      */
-    public static void fetchPreferredPaymentMethods(final BraintreeFragment fragment, final PreferredPaymentMethodsListener listener) {
+    public void fetchPreferredPaymentMethods(final Context context, final PreferredPaymentMethodsCallback callback) {
 
-        Context applicationContext = fragment.getApplicationContext();
-        boolean isVenmoAppInstalled = DeviceCapabilities.isVenmoInstalled(applicationContext);
-        boolean isPayPalAppInstalled = DeviceCapabilities.isPayPalInstalled(applicationContext);
+        final Context applicationContext = context.getApplicationContext();
+        final boolean isVenmoAppInstalled = deviceInspector.isVenmoInstalled(applicationContext);
+        final boolean isPayPalAppInstalled = deviceInspector.isPayPalInstalled(applicationContext);
 
-        fragment.sendAnalyticsEvent(String.format("preferred-payment-methods.venmo.app-installed.%b", isVenmoAppInstalled));
+        final String venmoAppInstalledEvent =
+            String.format("preferred-payment-methods.venmo.app-installed.%b", isVenmoAppInstalled);
+        braintreeClient.sendAnalyticsEvent(applicationContext, venmoAppInstalledEvent);
 
         if (isPayPalAppInstalled) {
-            fragment.sendAnalyticsEvent("preferred-payment-methods.paypal.app-installed.true");
-            listener.onPreferredPaymentMethodsFetched(new PreferredPaymentMethodsResult()
+            braintreeClient.sendAnalyticsEvent(applicationContext, "preferred-payment-methods.paypal.app-installed.true");
+            callback.onResult(new PreferredPaymentMethodsResult()
                     .isPayPalPreferred(true)
                     .isVenmoPreferred(isVenmoAppInstalled));
             return;
         }
 
-        BraintreeGraphQLHttpClient graphQLClient = fragment.getGraphQLHttpClient();
-        if (graphQLClient == null) {
-            fragment.sendAnalyticsEvent("preferred-payment-methods.api-disabled");
-            listener.onPreferredPaymentMethodsFetched(new PreferredPaymentMethodsResult()
-                    .isPayPalPreferred(isPayPalAppInstalled)
-                    .isVenmoPreferred(isVenmoAppInstalled));
-            return;
-        }
-
-        String query = "{ \"query\": \"query PreferredPaymentMethods { preferredPaymentMethods { paypalPreferred } }\" }";
-        final boolean finalIsVenmoAppInstalled = isVenmoAppInstalled;
-
-        graphQLClient.post(query, new HttpResponseCallback() {
+        braintreeClient.getConfiguration(applicationContext, new ConfigurationCallback() {
             @Override
-            public void success(String responseBody) {
-                PreferredPaymentMethodsResult result = PreferredPaymentMethodsResult.fromJSON(responseBody, finalIsVenmoAppInstalled);
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                boolean isGraphQLDisabled = (configuration == null || configuration.getGraphQL() == null || !configuration.getGraphQL().isEnabled());
+                if (isGraphQLDisabled) {
+                    braintreeClient.sendAnalyticsEvent(applicationContext, "preferred-payment-methods.api-disabled");
+                    callback.onResult(new PreferredPaymentMethodsResult()
+                            .isPayPalPreferred(isPayPalAppInstalled)
+                            .isVenmoPreferred(isVenmoAppInstalled));
+                    return;
+                }
 
-                fragment.sendAnalyticsEvent(String.format("preferred-payment-methods.paypal.api-detected.%b", result.isPayPalPreferred()));
-                listener.onPreferredPaymentMethodsFetched(result);
-            }
+                final String query = "{ \"query\": \"query PreferredPaymentMethods { preferredPaymentMethods { paypalPreferred } }\" }";
 
-            @Override
-            public void failure(Exception exception) {
-                fragment.sendAnalyticsEvent("preferred-payment-methods.api-error");
-                listener.onPreferredPaymentMethodsFetched(new PreferredPaymentMethodsResult()
-                        .isPayPalPreferred(false)
-                        .isVenmoPreferred(finalIsVenmoAppInstalled));
+                braintreeClient.sendGraphQLPOST(query, applicationContext, new HttpResponseCallback() {
+                    @Override
+                    public void success(String responseBody) {
+                        PreferredPaymentMethodsResult result =
+                                PreferredPaymentMethodsResult.fromJSON(responseBody, isVenmoAppInstalled);
+
+                        String payPalPreferredEvent =
+                                String.format("preferred-payment-methods.paypal.api-detected.%b", result.isPayPalPreferred());
+                        braintreeClient.sendAnalyticsEvent(applicationContext, payPalPreferredEvent);
+
+                        callback.onResult(result);
+                    }
+
+                    @Override
+                    public void failure(Exception exception) {
+                        braintreeClient.sendAnalyticsEvent(applicationContext, "preferred-payment-methods.api-error");
+                        callback.onResult(new PreferredPaymentMethodsResult()
+                                .isPayPalPreferred(false)
+                                .isVenmoPreferred(isVenmoAppInstalled));
+                    }
+                });
             }
         });
     }

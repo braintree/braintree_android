@@ -16,14 +16,16 @@ public class PayPalDataCollectorTest {
 
     @Test
     public void getClientMetadataId_returnsClientMetadataId() {
-        String clientMetadataId = PayPalDataCollector.getClientMetadataId(ApplicationProvider.getApplicationContext());
+        PayPalDataCollector sut = new PayPalDataCollector();
+        String clientMetadataId = sut.getClientMetadataId(ApplicationProvider.getApplicationContext());
 
         assertFalse(TextUtils.isEmpty(clientMetadataId));
     }
 
     @Test
     public void getClientMetadataId_returnsPairingId() {
-        String clientMetadataId = PayPalDataCollector.getClientMetadataId(ApplicationProvider.getApplicationContext(), "pairing-id");
+        PayPalDataCollector sut = new PayPalDataCollector();
+        String clientMetadataId = sut.getClientMetadataId(ApplicationProvider.getApplicationContext(), "pairing-id");
 
         assertEquals("pairing-id", clientMetadataId);
     }

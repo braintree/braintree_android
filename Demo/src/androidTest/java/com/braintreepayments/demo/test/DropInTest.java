@@ -21,6 +21,7 @@ import static com.braintreepayments.testutils.CardNumber.VISA;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
+// TODO: Move Drop-in tests to Drop-in repo
 @RunWith(AndroidJUnit4ClassRunner.class)
 @Ignore("Move Drop-In tests to Drop-In repo after circular dependencies are removed")
 public class DropInTest extends TestHelper {

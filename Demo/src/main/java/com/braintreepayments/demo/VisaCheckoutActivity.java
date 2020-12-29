@@ -3,10 +3,9 @@ package com.braintreepayments.demo;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.braintreepayments.api.BraintreeFragment;
-import com.braintreepayments.api.VisaCheckout;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.BraintreeResponseListener;
+import com.braintreepayments.api.VisaCheckoutButton;
+import com.braintreepayments.api.VisaCheckoutCreateProfileBuilderCallback;
+import com.braintreepayments.api.VisaCheckoutTokenizeCallback;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VisaCheckoutAddress;
 import com.braintreepayments.api.models.VisaCheckoutNonce;
@@ -19,9 +18,9 @@ import com.visa.checkout.VisaPaymentSummary;
 
 import java.math.BigDecimal;
 
-public class VisaCheckoutActivity extends BaseActivity implements BraintreeResponseListener<ProfileBuilder> {
+public class VisaCheckoutActivity extends BaseActivity {
 
-    private CheckoutButton mVisaPaymentButton;
+    private VisaCheckoutButton mVisaPaymentButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,20 +33,37 @@ public class VisaCheckoutActivity extends BaseActivity implements BraintreeRespo
     }
 
     @Override
-    protected void onAuthorizationFetched() {
-        try {
-            mBraintreeFragment = BraintreeFragment.newInstance(this, mAuthorization);
-        } catch (InvalidArgumentException e) {
-            onError(e);
-        }
+    protected void onBraintreeInitialized() {
 
-        VisaCheckout.createProfileBuilder(mBraintreeFragment, this);
+        createVisaCheckoutProfile(new VisaCheckoutCreateProfileBuilderCallback() {
+            @Override
+            public void onResult(ProfileBuilder profileBuilder, Exception e) {
+                PurchaseInfoBuilder purchaseInfo = new PurchaseInfoBuilder(new BigDecimal("1.00"), PurchaseInfo.Currency.USD)
+                        .setDescription("Description");
+
+                mVisaPaymentButton.init(VisaCheckoutActivity.this, profileBuilder,
+                        purchaseInfo, new VisaCheckoutSdk.VisaCheckoutResultListener() {
+                            @Override
+                            public void onButtonClick(LaunchReadyHandler launchReadyHandler) {
+                                launchReadyHandler.launch();
+                            }
+
+                            @Override
+                            public void onResult(VisaPaymentSummary visaPaymentSummary) {
+                                tokenizeVisaCheckout(visaPaymentSummary, new VisaCheckoutTokenizeCallback() {
+                                    @Override
+                                    public void onResult(PaymentMethodNonce paymentMethodNonce, Exception e) {
+                                        handlePaymentMethodNonceCreated(paymentMethodNonce);
+                                    }
+                                });
+                            }
+                        });
+            }
+        });
     }
 
-    @Override
-    public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+    private void handlePaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
-
         Intent intent = new Intent()
                 .putExtra(MainActivity.EXTRA_PAYMENT_RESULT, paymentMethodNonce);
         setResult(RESULT_OK, intent);
@@ -55,25 +71,7 @@ public class VisaCheckoutActivity extends BaseActivity implements BraintreeRespo
     }
 
     @Override
-    protected void reset() { }
-
-    @Override
-    public void onResponse(ProfileBuilder profileBuilder) {
-        PurchaseInfoBuilder purchaseInfo = new PurchaseInfoBuilder(new BigDecimal("1.00"), PurchaseInfo.Currency.USD)
-                .setDescription("Description");
-
-        mVisaPaymentButton.init(VisaCheckoutActivity.this, profileBuilder.build(),
-                purchaseInfo.build(), new VisaCheckoutSdk.VisaCheckoutResultListener() {
-                    @Override
-                    public void onButtonClick(LaunchReadyHandler launchReadyHandler) {
-                        launchReadyHandler.launch();
-                    }
-
-                    @Override
-                    public void onResult(VisaPaymentSummary visaPaymentSummary) {
-                        VisaCheckout.tokenize(mBraintreeFragment, visaPaymentSummary);
-                    }
-                });
+    protected void reset() {
     }
 
     public static String getDisplayString(VisaCheckoutNonce nonce) {

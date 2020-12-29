@@ -1,197 +1,253 @@
 package com.braintreepayments.api;
 
-import android.text.TextUtils;
+import android.content.Context;
 
-import com.braintreepayments.api.interfaces.BraintreeResponseListener;
+import com.braintreepayments.MockBraintreeClientBuilder;
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
+import com.braintreepayments.api.models.Authorization;
+import com.braintreepayments.api.models.Configuration;
+import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.testutils.Fixtures;
 import com.braintreepayments.testutils.TestConfigurationBuilder;
 import com.braintreepayments.testutils.TestConfigurationBuilder.TestKountConfigurationBuilder;
-import com.kount.api.DataCollector.CompletionHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
+import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 
-import java.util.concurrent.CountDownLatch;
+import java.util.Map;
 
+import static com.braintreepayments.testutils.FixturesHelper.base64Encode;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.doAnswer;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*" })
-@PrepareForTest({ com.kount.api.DataCollector.class })
 public class DataCollectorUnitTest {
 
-    @Rule
-    public PowerMockRule mPowerMockRule = new PowerMockRule();
-    private BraintreeFragment mBraintreeFragment;
+    private Context context;
+
+    private PayPalDataCollector payPalDataCollector;
+    private KountDataCollector kountDataCollector;
+
+    private Configuration kountEnabledConfiguration;
+    private Configuration kountDisabledConfiguration;
 
     @Before
-    public void setup() {
-        mBraintreeFragment = new MockFragmentBuilder()
-                .configuration(new TestConfigurationBuilder()
-                        .kount(new TestKountConfigurationBuilder()
-                                .kountMerchantId("600000"))
-                        .build())
+    public void beforeEach() throws JSONException {
+        kountEnabledConfiguration = new TestConfigurationBuilder()
+                .kount(new TestKountConfigurationBuilder()
+                        .kountMerchantId("600000"))
+                .buildConfiguration();
+        kountDisabledConfiguration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
+
+        context = mock(Context.class);
+        payPalDataCollector = mock(PayPalDataCollector.class);
+        kountDataCollector = mock(KountDataCollector.class);
+    }
+
+    @Test
+    public void collectDeviceData_forwardsConfigurationFetchErrors() {
+        Exception configError = new Exception("configuration error");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configurationError(configError)
                 .build();
 
-        mockKount(true);
+        DataCollector sut = new DataCollector(
+                braintreeClient, payPalDataCollector, kountDataCollector);
+
+        BraintreeDataCollectorCallback callback = mock(BraintreeDataCollectorCallback.class);
+        sut.collectDeviceData(context, callback);
+
+        verify(callback).onResult(null, configError);
     }
 
     @Test
-    public void getDeviceCollectorEnvironment_returnsCorrectEnvironment() {
-        assertEquals(com.kount.api.DataCollector.ENVIRONMENT_PRODUCTION,
-                DataCollector.getDeviceCollectorEnvironment("production"));
-        assertEquals(com.kount.api.DataCollector.ENVIRONMENT_TEST,
-                DataCollector.getDeviceCollectorEnvironment("sandbox"));
+    public void collectDeviceData_withKountEnabled_getsDeviceDataJSONWithDeviceSessionId() throws Exception {
+        when(payPalDataCollector.getClientMetadataId(context)).thenReturn("sample_correlation_id");
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(kountEnabledConfiguration)
+                .build();
+
+        DataCollector sut = new DataCollector(
+                braintreeClient, payPalDataCollector, kountDataCollector);
+
+        BraintreeDataCollectorCallback callback = mock(BraintreeDataCollectorCallback.class);
+        sut.collectDeviceData(context, callback);
+
+        ArgumentCaptor<String> deviceSessionIdCaptor = ArgumentCaptor.forClass(String.class);
+
+        ArgumentCaptor<KountDataCollectorCallback> kountCaptor =
+            ArgumentCaptor.forClass(KountDataCollectorCallback.class);
+        verify(kountDataCollector).startDataCollection(any(Context.class), eq("600000"), deviceSessionIdCaptor.capture(), kountCaptor.capture());
+
+        String deviceSessionId = deviceSessionIdCaptor.getValue();
+        KountDataCollectorCallback kountCallback = kountCaptor.getValue();
+        kountCallback.onResult("kount_session_id", null);
+
+        ArgumentCaptor<String> deviceDataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(callback).onResult(deviceDataCaptor.capture(), (Exception) isNull());
+
+        String deviceData = deviceDataCaptor.getValue();
+        JSONObject json = new JSONObject(deviceData);
+        assertEquals(deviceSessionId, json.getString("device_session_id"));
+        assertEquals("600000", json.getString("fraud_merchant_id"));
+        assertEquals("sample_correlation_id", json.getString("correlation_id"));
     }
 
     @Test
-    public void collectDeviceData() throws Exception {
-        final CountDownLatch latch = new CountDownLatch(1);
+    public void collectDeviceData_withKountDisabled_getsDeviceDataJSONWithCorrelationIdFromPayPal() throws Exception {
+        when(payPalDataCollector.getClientMetadataId(context)).thenReturn("sample_correlation_id");
 
-        DataCollector.collectDeviceData(mBraintreeFragment, new BraintreeResponseListener<String>() {
-            @Override
-            public void onResponse(String deviceData) {
-                try {
-                    JSONObject json = new JSONObject(deviceData);
-                    assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));
-                    assertEquals("600000", json.getString("fraud_merchant_id"));
-                    assertNotNull(json.getString("correlation_id"));
-                    latch.countDown();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(kountDisabledConfiguration)
+                .build();
 
-        latch.await();
+        DataCollector sut = new DataCollector(
+                braintreeClient, payPalDataCollector, kountDataCollector);
 
+        BraintreeDataCollectorCallback callback = mock(BraintreeDataCollectorCallback.class);
+        sut.collectDeviceData(context, callback);
+
+        ArgumentCaptor<String> deviceDataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(callback).onResult(deviceDataCaptor.capture(), (Exception) isNull());
+
+        String deviceData = deviceDataCaptor.getValue();
+        JSONObject json = new JSONObject(deviceData);
+        assertEquals("sample_correlation_id", json.getString("correlation_id"));
     }
 
     @Test
-    public void collectDeviceData_usesDirectMerchantId() throws Exception {
-        final CountDownLatch latch = new CountDownLatch(1);
-        DataCollector.collectDeviceData(mBraintreeFragment, "100", new BraintreeResponseListener<String>() {
-            @Override
-            public void onResponse(String deviceData) {
-                try {
-                    JSONObject json = new JSONObject(deviceData);
-                    assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));
-                    assertEquals("100", json.getString("fraud_merchant_id"));
-                    latch.countDown();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
+    public void collectPayPalDeviceData_getsDeviceDataJSONWithCorrelationIdFromPayPal() throws JSONException {
+        when(payPalDataCollector.getClientMetadataId(context)).thenReturn("sample_correlation_id");
 
-        latch.await();
+        // test with kount enabled to ensure that no Kount data is collected
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(kountEnabledConfiguration)
+                .build();
+
+        DataCollector sut = new DataCollector(
+                braintreeClient, payPalDataCollector, kountDataCollector);
+
+        BraintreeDataCollectorCallback callback = mock(BraintreeDataCollectorCallback.class);
+        sut.collectPayPalDeviceData(context, callback);
+
+        ArgumentCaptor<String> deviceDataCaptor = ArgumentCaptor.forClass(String.class);
+        verify(callback).onResult(deviceDataCaptor.capture(), (Exception) isNull());
+
+        String deviceData = deviceDataCaptor.getValue();
+        JSONObject json = new JSONObject(deviceData);
+        assertEquals("sample_correlation_id", json.getString("correlation_id"));
     }
 
     @Test
-    public void collectDeviceData_sendsAnalyticsEventsWhenSuccessful() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
+    public void collectRiskData_withTokenizationKey_requestsClientMetadataIdFromPayPal() throws JSONException, InvalidArgumentException {
+        when(payPalDataCollector.getPayPalInstallationGUID(context)).thenReturn("sample_installation_guid");
+        when(payPalDataCollector.getClientMetadataId(context)).thenReturn("sample_correlation_id");
 
-        DataCollector.collectDeviceData(mBraintreeFragment, new BraintreeResponseListener<String>() {
-            @Override
-            public void onResponse(String s) {
-                verify(mBraintreeFragment).sendAnalyticsEvent("data-collector.kount.started");
-                verify(mBraintreeFragment).sendAnalyticsEvent("data-collector.kount.succeeded");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorization(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
+                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_CARD_COLLECT_DEVICE_DATA))
+                .build();
 
-                latch.countDown();
-            }
-        });
+        DataCollector sut = new DataCollector(
+                braintreeClient, payPalDataCollector, kountDataCollector);
 
-        latch.await();
+        PaymentMethodNonce paymentMethodNonce = mock(PaymentMethodNonce.class);
+        when(paymentMethodNonce.getNonce()).thenReturn("sample_nonce");
+
+        sut.collectRiskData(context, paymentMethodNonce);
+
+        ArgumentCaptor<PayPalDataCollectorRequest> captor =
+            ArgumentCaptor.forClass(PayPalDataCollectorRequest.class);
+        verify(payPalDataCollector).getClientMetadataId(same(context), captor.capture());
+
+        PayPalDataCollectorRequest payPalDataCollectorRequest = captor.getValue();
+        assertEquals("sample_installation_guid", payPalDataCollectorRequest.getApplicationGuid());
+        assertEquals("sample_nonce", payPalDataCollectorRequest.getClientMetadataId());
+        assertTrue(payPalDataCollectorRequest.isDisableBeacon());
+
+        Map<String, String> additionalData = payPalDataCollectorRequest.getAdditionalData();
+        assertEquals(2, additionalData.size());
+        assertEquals("bt_card", additionalData.get("rda_tenant"));
+        assertEquals("integration_merchant_id", additionalData.get("mid"));
     }
 
     @Test
-    public void collectDeviceData_sendsAnalyticsEventsWhenFailed() throws InterruptedException {
-        mockKount(false);
-        final CountDownLatch latch = new CountDownLatch(1);
+    public void collectRiskData_withClientToken_requestsClientMetadataIdFromPayPalUsingCustomerId() throws JSONException, InvalidArgumentException {
+        when(payPalDataCollector.getPayPalInstallationGUID(context)).thenReturn("sample_installation_guid");
+        when(payPalDataCollector.getClientMetadataId(context)).thenReturn("sample_correlation_id");
 
-        DataCollector.collectDeviceData(mBraintreeFragment, new BraintreeResponseListener<String>() {
-            @Override
-            public void onResponse(String s) {
-                verify(mBraintreeFragment).sendAnalyticsEvent("data-collector.kount.started");
-                verify(mBraintreeFragment).sendAnalyticsEvent("data-collector.kount.failed");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorization(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN_WITH_CUSTOMER_ID_IN_AUTHORIZATION_FINGERPRINT)))
+                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_CARD_COLLECT_DEVICE_DATA))
+                .build();
 
-                latch.countDown();
-            }
-        });
+        DataCollector sut = new DataCollector(
+                braintreeClient, payPalDataCollector, kountDataCollector);
 
-        latch.await();
+        PaymentMethodNonce paymentMethodNonce = mock(PaymentMethodNonce.class);
+        when(paymentMethodNonce.getNonce()).thenReturn("sample_nonce");
+
+        sut.collectRiskData(context, paymentMethodNonce);
+
+        ArgumentCaptor<PayPalDataCollectorRequest> captor =
+                ArgumentCaptor.forClass(PayPalDataCollectorRequest.class);
+        verify(payPalDataCollector).getClientMetadataId(same(context), captor.capture());
+
+        PayPalDataCollectorRequest payPalDataCollectorRequest = captor.getValue();
+        assertEquals("sample_installation_guid", payPalDataCollectorRequest.getApplicationGuid());
+        assertEquals("sample_nonce", payPalDataCollectorRequest.getClientMetadataId());
+        assertTrue(payPalDataCollectorRequest.isDisableBeacon());
+
+        Map<String, String> additionalData = payPalDataCollectorRequest.getAdditionalData();
+        assertEquals(3, additionalData.size());
+        assertEquals("bt_card", additionalData.get("rda_tenant"));
+        assertEquals("integration_merchant_id", additionalData.get("mid"));
+        assertEquals("fake-customer-123", additionalData.get("cid"));
     }
 
     @Test
-    public void getPayPalClientMetadataId_returnsClientMetadataId() {
-        String clientMetadataId = DataCollector.getPayPalClientMetadataId(RuntimeEnvironment.application);
-        assertFalse(TextUtils.isEmpty(clientMetadataId));
+    public void collectRiskData_whenFraudDetectionDisabled_doesNothing() throws JSONException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN))
+                .build();
+
+        DataCollector sut = new DataCollector(
+                braintreeClient, payPalDataCollector, kountDataCollector);
+
+        PaymentMethodNonce paymentMethodNonce = mock(PaymentMethodNonce.class);
+        when(paymentMethodNonce.getNonce()).thenReturn("sample_nonce");
+
+        sut.collectRiskData(context, paymentMethodNonce);
+        verifyNoInteractions(payPalDataCollector);
     }
 
     @Test
-    public void collectPayPalDeviceData() throws InterruptedException {
-        final BraintreeFragment fragment = new MockFragmentBuilder().build();
-        final CountDownLatch latch = new CountDownLatch(1);
+    public void collectRiskData_whenConfigurationFetchFails_doesNothing() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configurationError(new Exception("config error"))
+                .build();
 
-        DataCollector.collectPayPalDeviceData(fragment, new BraintreeResponseListener<String>() {
-            @Override
-            public void onResponse(String s) {
-                try {
-                    JSONObject json = new JSONObject(s);
-                    assertNotNull(json.getString("correlation_id"));
-                } catch (JSONException e) {
-                    fail();
-                }
-                latch.countDown();
-            }
-        });
-        latch.await();
-    }
+        DataCollector sut = new DataCollector(
+                braintreeClient, payPalDataCollector, kountDataCollector);
 
-    private void mockKount(final boolean kountIsSuccessful) {
-        final com.kount.api.DataCollector mockDataCollector = mock(com.kount.api.DataCollector.class);
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                CompletionHandler handler = ((CompletionHandler) invocation.getArguments()[1]);
-                String id = (String) invocation.getArguments()[0];
+        PaymentMethodNonce paymentMethodNonce = mock(PaymentMethodNonce.class);
+        when(paymentMethodNonce.getNonce()).thenReturn("sample_nonce");
 
-                if (kountIsSuccessful) {
-                    handler.completed(id);
-                } else {
-                    handler.failed(id, null);
-
-                }
-                return null;
-            }
-        }).when(mockDataCollector).collectForSession(anyString(), any(CompletionHandler.class));
-
-        mockStatic(com.kount.api.DataCollector.class);
-        doAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                return mockDataCollector;
-            }
-        }).when(com.kount.api.DataCollector.class);
-        com.kount.api.DataCollector.getInstance();
+        sut.collectRiskData(context, paymentMethodNonce);
+        verifyNoInteractions(payPalDataCollector);
     }
 }

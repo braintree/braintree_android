@@ -1,39 +1,88 @@
 package com.braintreepayments.api;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.lang.annotation.Retention;
+import java.lang.ref.WeakReference;
 
-class CrashReporter implements UncaughtExceptionHandler {
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
-    private BraintreeFragment mBraintreeFragment;
-    private Thread.UncaughtExceptionHandler mDefaultExceptionHandler;
+class CrashReporter implements Thread.UncaughtExceptionHandler {
 
-    static CrashReporter setup(BraintreeFragment fragment) {
-        return new CrashReporter(fragment);
+    @Retention(SOURCE)
+    @IntDef({CAUSE_UNKNOWN, CAUSE_RELATED_TO_PAYPAL, CAUSE_RELATED_TO_BRAINTREE})
+    public @interface Cause {}
+    public static final int CAUSE_UNKNOWN = 0;
+    public static final int CAUSE_RELATED_TO_PAYPAL = 1;
+    public static final int CAUSE_RELATED_TO_BRAINTREE = 2;
+
+    private Thread.UncaughtExceptionHandler defaultExceptionHandler;
+
+    private final WeakReference<BraintreeClient> braintreeClientRef;
+
+    CrashReporter(BraintreeClient braintreeClient) {
+        this(new WeakReference<>(braintreeClient));
     }
 
-    private CrashReporter(BraintreeFragment fragment) {
-        mBraintreeFragment = fragment;
-        mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(this);
+    @VisibleForTesting
+    CrashReporter(WeakReference<BraintreeClient> braintreeClientRef) {
+        this.braintreeClientRef = braintreeClientRef;
     }
 
-    void tearDown() {
-        Thread.setDefaultUncaughtExceptionHandler(mDefaultExceptionHandler);
+    private void registerExceptionHandler(UncaughtExceptionHandler handler) {
+        defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(handler);
+    }
+
+    private void restoreDefaultExceptionHandler() {
+        Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler);
+        defaultExceptionHandler = null;
+    }
+
+    @Cause
+    private int determineExceptionCause(Throwable ex) {
+        StringWriter stringWriter = new StringWriter();
+        ex.printStackTrace(new PrintWriter(stringWriter));
+
+        @Cause int result;
+        if (stringWriter.toString().contains("com.braintreepayments")) {
+            result = CAUSE_RELATED_TO_BRAINTREE;
+        } else if (stringWriter.toString().contains("com.paypal")) {
+            result = CAUSE_RELATED_TO_PAYPAL;
+        } else {
+            result = CAUSE_UNKNOWN;
+        }
+        return result;
+    }
+
+    private void handleExceptionWithDefaultBehavior(Thread thread, Throwable ex) {
+        if (defaultExceptionHandler != null) {
+            defaultExceptionHandler.uncaughtException(thread, ex);
+        }
+    }
+
+    public void start() {
+        registerExceptionHandler(this);
     }
 
     @Override
-    public void uncaughtException(Thread thread, Throwable ex) {
-        StringWriter stringWriter = new StringWriter();
-        ex.printStackTrace(new PrintWriter(stringWriter));
-        if (stringWriter.toString().contains("com.braintreepayments") ||
-                stringWriter.toString().contains("com.paypal")) {
-            mBraintreeFragment.sendAnalyticsEvent("crash");
+    public void uncaughtException(@NonNull Thread thread, @NonNull Throwable exception) {
+        BraintreeClient braintreeClient = braintreeClientRef.get();
+        if (braintreeClient == null) {
+            handleExceptionWithDefaultBehavior(thread, exception);
+            restoreDefaultExceptionHandler();
+            return;
         }
 
-        if (mDefaultExceptionHandler != null) {
-            mDefaultExceptionHandler.uncaughtException(thread, ex);
+        @CrashReporter.Cause int result = determineExceptionCause(exception);
+        if (result == CAUSE_RELATED_TO_BRAINTREE || result == CAUSE_RELATED_TO_PAYPAL) {
+            braintreeClient.reportCrash();
         }
+        handleExceptionWithDefaultBehavior(thread, exception);
     }
 }

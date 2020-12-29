@@ -5,90 +5,101 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import java.lang.ref.WeakReference;
+
+import static junit.framework.Assert.assertSame;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(RobolectricTestRunner.class)
 public class CrashReporterUnitTest {
 
-    private BraintreeFragment mBraintreeFragment;
-    private Thread.UncaughtExceptionHandler mDefaultUncaughtExceptionHandler;
-    private CrashReporter mCrashReporter;
+    private Thread.UncaughtExceptionHandler defaultExceptionHandler;
+    private BraintreeClient braintreeClient;
 
     @Before
     public void setup() {
-        mDefaultUncaughtExceptionHandler = mock(Thread.UncaughtExceptionHandler.class);
-        Thread.setDefaultUncaughtExceptionHandler(mDefaultUncaughtExceptionHandler);
-        mBraintreeFragment = mock(BraintreeFragment.class);
-        mCrashReporter = CrashReporter.setup(mBraintreeFragment);
+        braintreeClient = mock(BraintreeClient.class);
+        defaultExceptionHandler = mock(Thread.UncaughtExceptionHandler.class);
     }
 
     @Test
-    public void setup_setsCrashReporterAsTheDefaultUncaughtExceptionHandler() {
-        assertTrue(Thread.getDefaultUncaughtExceptionHandler() instanceof CrashReporter);
+    public void start_setsSelfAsThreadDefaultExceptionHandler() {
+        CrashReporter sut = new CrashReporter(braintreeClient);
+
+        sut.start();
+        assertSame(sut, Thread.getDefaultUncaughtExceptionHandler());
     }
 
     @Test
-    public void tearDown_setsDefaultUncaughtExceptionHandlerBack() {
-        mCrashReporter.tearDown();
+    public void uncaughtExceptionHandler_whenClientReferenceNull_forwardsInvocationToDefaultExceptionHandler() {
+        Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler);
 
-        assertFalse(Thread.getDefaultUncaughtExceptionHandler() instanceof CrashReporter);
+        Thread thread = mock(Thread.class);
+        Exception exception = new Exception("error");
+
+        CrashReporter sut = new CrashReporter(new WeakReference<BraintreeClient>(null));
+        sut.start();
+        sut.uncaughtException(thread, exception);
+
+        verify(defaultExceptionHandler).uncaughtException(thread, exception);
     }
 
     @Test
-    public void uncaughtException_doesNotSendCrashEventIfStackTraceDidNotContainBraintreeCode() {
+    public void uncaughtExceptionHandler_whenClientReferenceNull_restoresOriginalDefaultExceptionHandler() {
+        Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler);
+
+        CrashReporter sut = new CrashReporter(new WeakReference<BraintreeClient>(null));
+        sut.start();
+        sut.uncaughtException(mock(Thread.class), new Exception("error"));
+
+        assertSame(defaultExceptionHandler, Thread.getDefaultUncaughtExceptionHandler());
+    }
+
+    @Test
+    public void uncaughtExceptionHandler_whenCauseUnknown_forwardsInvocationToDefaultExceptionHandler() {
+        Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler);
+
+        Thread thread = mock(Thread.class);
         Exception exception = new Exception();
         exception.setStackTrace(new StackTraceElement[] { new StackTraceElement("test", "test", "test", 1) });
 
-        mCrashReporter.uncaughtException(null, exception);
+        CrashReporter sut = new CrashReporter(braintreeClient);
+        sut.start();
+        sut.uncaughtException(thread, exception);
 
-        verifyZeroInteractions(mBraintreeFragment);
+        verify(defaultExceptionHandler).uncaughtException(thread, exception);
     }
 
     @Test
-    public void uncaughtException_forwardsExceptionToDefaultUncaughtExceptionHandlerForNonBraintreeCrashes() {
-        Exception exception = new Exception();
-        exception.setStackTrace(new StackTraceElement[] { new StackTraceElement("test", "test", "test", 1) });
+    public void uncaughtExceptionHandler_whenBraintreeInStackTrace_reportsCrashAndForwardsInvocationToDefaultExceptionHandler() {
+        Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler);
 
-        mCrashReporter.uncaughtException(null, exception);
-
-        verify(mDefaultUncaughtExceptionHandler).uncaughtException(null, exception);
-    }
-
-    @Test
-    public void uncaughtException_sendsCrashEventIfStackTraceContainsBraintreeCode() {
+        Thread thread = mock(Thread.class);
         Exception exception = new Exception();
         exception.setStackTrace(new StackTraceElement[] { new StackTraceElement("com.braintreepayments.api.CrashReporting", "test", "test", 1) });
-        mCrashReporter.uncaughtException(null, exception);
 
-        exception = new Exception();
+        CrashReporter sut = new CrashReporter(braintreeClient);
+        sut.start();
+        sut.uncaughtException(thread, exception);
+
+        verify(braintreeClient).reportCrash();
+        verify(defaultExceptionHandler).uncaughtException(thread, exception);
+    }
+
+    @Test
+    public void uncaughtExceptionHandler_whenPayPalInStackTrace_reportsCrashAndForwardsInvocationToDefaultExceptionHandler() {
+        Thread.setDefaultUncaughtExceptionHandler(defaultExceptionHandler);
+
+        Thread thread = mock(Thread.class);
+        Exception exception = new Exception();
         exception.setStackTrace(new StackTraceElement[] { new StackTraceElement("com.paypal.CrashReporting", "test", "test", 1) });
-        mCrashReporter.uncaughtException(null, exception);
 
-        verify(mBraintreeFragment, times(2)).sendAnalyticsEvent("crash");
-    }
+        CrashReporter sut = new CrashReporter(braintreeClient);
+        sut.start();
+        sut.uncaughtException(thread, exception);
 
-    @Test
-    public void uncaughtException_forwardsExceptionToDefaultUncaughtExceptionHandlerForBraintreeCrashes() {
-        Exception exception = new Exception();
-        exception.setStackTrace(new StackTraceElement[] { new StackTraceElement("com.braintreepayments.api.CrashReporting", "test", "test", 1) });
-
-        mCrashReporter.uncaughtException(null, exception);
-
-        verify(mDefaultUncaughtExceptionHandler).uncaughtException(null, exception);
-    }
-
-    @Test
-    public void uncaughtException_doesNotCrashIfDefaultUncaughtExceptionHandlerWasNull() {
-        Thread.setDefaultUncaughtExceptionHandler(null);
-        mCrashReporter = CrashReporter.setup(mBraintreeFragment);
-        Exception exception = new Exception();
-        exception.setStackTrace(new StackTraceElement[] { new StackTraceElement("com.braintreepayments.api.CrashReporting", "test", "test", 1) });
-
-        mCrashReporter.uncaughtException(null, exception);
+        verify(braintreeClient).reportCrash();
+        verify(defaultExceptionHandler).uncaughtException(thread, exception);
     }
 }

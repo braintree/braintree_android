@@ -200,16 +200,6 @@ public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable
     }
 
     /**
-     *
-     * @return If authentication is required to transact with the nonce.
-     * Use {@link PayPalTwoFactorAuth#continueTwoFactorAuthentication(com.braintreepayments.api.BraintreeFragment, PaymentMethodNonce)}
-     * to complete the authentication flow if required.
-     */
-    public boolean isTwoFactorAuthRequired() {
-        return mAuthenticateUrl != null;
-    }
-
-    /**
      * @return The credit financing details. This property will only be present when the customer pays with PayPal Credit.
      */
     @Nullable

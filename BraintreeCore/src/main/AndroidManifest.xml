@@ -7,6 +7,5 @@
 
     <application>
         <service android:name="com.braintreepayments.api.internal.AnalyticsIntentService"/>
-        <activity android:name=".ThreeDSecureActivity"/>
     </application>
 </manifest>

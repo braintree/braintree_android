@@ -7,13 +7,9 @@ import android.widget.Button;
 
 import androidx.annotation.Nullable;
 
-import com.braintreepayments.api.BraintreeFragment;
-import com.braintreepayments.api.DataCollector;
-import com.braintreepayments.api.PayPal;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.BraintreeErrorListener;
-import com.braintreepayments.api.interfaces.BraintreeResponseListener;
-import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.BraintreeDataCollectorCallback;
+import com.braintreepayments.api.ConfigurationCallback;
+import com.braintreepayments.api.PayPalRequestCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
@@ -24,8 +20,7 @@ import com.braintreepayments.api.models.PostalAddress;
 import java.util.Arrays;
 import java.util.List;
 
-public class PayPalActivity extends BaseActivity implements ConfigurationListener,
-        PaymentMethodNonceCreatedListener, BraintreeErrorListener {
+public class PayPalActivity extends BaseActivity implements PaymentMethodNonceCreatedListener {
 
     private String mDeviceData;
 
@@ -54,13 +49,20 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
     }
 
     @Override
-    protected void onAuthorizationFetched() {
-        try {
-            mBraintreeFragment = BraintreeFragment.newInstance(this, mAuthorization);
-        } catch (InvalidArgumentException e) {
-            onError(e);
-        }
-
+    protected void onBraintreeInitialized() {
+        getConfiguration(new ConfigurationCallback() {
+            @Override
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {
+                    collectDeviceData(new BraintreeDataCollectorCallback() {
+                        @Override
+                        public void onResult(@Nullable String deviceData, @Nullable Exception error) {
+                            mDeviceData = deviceData;
+                        }
+                    });
+                }
+            }
+        });
         enableButtons(true);
     }
 
@@ -71,36 +73,38 @@ public class PayPalActivity extends BaseActivity implements ConfigurationListene
 
     public void launchSinglePayment(View v) {
         setProgressBarIndeterminateVisibility(true);
-
-        PayPal.requestOneTimePayment(mBraintreeFragment, getPayPalRequest("1.00"));
+        requestPayPalOneTimePayment(getPayPalRequest("1.00"), new PayPalRequestCallback() {
+            @Override
+            public void onResult(boolean requestInitiated, Exception error) {
+                if (error != null) {
+                    onBraintreeError(error);
+                }
+            }
+        });
     }
 
     public void launchBillingAgreement(View v) {
         setProgressBarIndeterminateVisibility(true);
-
-        PayPal.requestBillingAgreement(mBraintreeFragment, getPayPalRequest(null));
-    }
-
-    @Override
-    public void onConfigurationFetched(Configuration configuration) {
-        if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {
-            DataCollector.collectDeviceData(mBraintreeFragment, new BraintreeResponseListener<String>() {
-                @Override
-                public void onResponse(String deviceData) {
-                    mDeviceData = deviceData;
+        requestPayPalBillingAgreement(getPayPalRequest(null), new PayPalRequestCallback() {
+            @Override
+            public void onResult(boolean requestInitiated, Exception error) {
+                if (error != null) {
+                    onBraintreeError(error);
                 }
-            });
-        }
+            }
+        });
     }
 
     @Override
-    public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
-        super.onPaymentMethodNonceCreated(paymentMethodNonce);
+    protected void onPayPalResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
+        if (paymentMethodNonce != null) {
+            super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
-        Intent intent = new Intent()
-                .putExtra(MainActivity.EXTRA_PAYMENT_RESULT, paymentMethodNonce)
-                .putExtra(MainActivity.EXTRA_DEVICE_DATA, mDeviceData);
-        setResult(RESULT_OK, intent);
+            Intent intent = new Intent()
+                    .putExtra(MainActivity.EXTRA_PAYMENT_RESULT, paymentMethodNonce)
+                    .putExtra(MainActivity.EXTRA_DEVICE_DATA, mDeviceData);
+            setResult(RESULT_OK, intent);
+        }
         finish();
     }
 

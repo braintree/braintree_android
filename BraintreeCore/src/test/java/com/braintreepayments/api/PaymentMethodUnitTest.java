@@ -1,5 +1,10 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
+
+import com.braintreepayments.MockBraintreeClientBuilder;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.exceptions.PaymentMethodDeleteException;
@@ -19,27 +24,30 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 
 import java.util.List;
 
 import static com.braintreepayments.testutils.FixturesHelper.base64Encode;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 public class PaymentMethodUnitTest {
 
+    private Context context;
     private CardNonce mCardNonce;
 
     @Before
     public void setup() {
+        context = ApplicationProvider.getApplicationContext();
         mCardNonce = mock(CardNonce.class);
 
         when(mCardNonce.getNonce()).thenReturn("im-a-card-nonce");
@@ -47,62 +55,74 @@ public class PaymentMethodUnitTest {
 
     @Test
     public void getPaymentMethodNonces_returnsAnEmptyListIfEmpty() {
-        BraintreeFragment fragment = new MockFragmentBuilder()
-                .successResponse(Fixtures.PAYMENT_METHODS_GET_PAYMENT_METHODS_EMPTY_RESPONSE)
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sendGETSuccessfulResponse(Fixtures.PAYMENT_METHODS_GET_PAYMENT_METHODS_EMPTY_RESPONSE)
                 .build();
+        PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        PaymentMethod.getPaymentMethodNonces(fragment);
+        GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
+        sut.getPaymentMethodNonces(context, callback);
 
         ArgumentCaptor<List<PaymentMethodNonce>> captor = ArgumentCaptor.forClass((Class) List.class);
-        verify(fragment).postCallback(captor.capture());
+        verify(callback).onResult(captor.capture(), (Exception) isNull());
+
         assertEquals(0, captor.getValue().size());
     }
 
     @Test
     public void getPaymentMethodNonces_throwsAnError() {
-        BraintreeFragment fragment = new MockFragmentBuilder()
-                .errorResponse(new UnexpectedException("Error"))
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sendGETErrorResponse(new UnexpectedException("Error"))
                 .build();
+        PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        PaymentMethod.getPaymentMethodNonces(fragment);
+        GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
+        sut.getPaymentMethodNonces(context, callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(fragment).postCallback(captor.capture());
+        verify(callback).onResult((List<PaymentMethodNonce>) isNull(), captor.capture());
         assertTrue(captor.getValue() instanceof UnexpectedException);
     }
 
     @Test
     public void getPaymentMethodNonces_sendsAnAnalyticsEventForParsingErrors() {
-        BraintreeFragment fragment = new MockFragmentBuilder()
-                .successResponse("{}")
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sendGETSuccessfulResponse("{}")
                 .build();
+        PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        PaymentMethod.getPaymentMethodNonces(fragment);
+        GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
+        sut.getPaymentMethodNonces(context, callback);
 
-        verify(fragment).sendAnalyticsEvent("get-payment-methods.failed");
+        verify(braintreeClient).sendAnalyticsEvent(context, "get-payment-methods.failed");
     }
 
     @Test
     public void getPaymentMethodNonces_sendsAnAnalyticsEventForErrors() {
-        BraintreeFragment fragment = new MockFragmentBuilder()
-                .errorResponse(new UnexpectedException("Error"))
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sendGETErrorResponse(new UnexpectedException("Error"))
                 .build();
+        PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        PaymentMethod.getPaymentMethodNonces(fragment);
+        GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
+        sut.getPaymentMethodNonces(context, callback);
 
-        verify(fragment).sendAnalyticsEvent("get-payment-methods.failed");
+        verify(braintreeClient).sendAnalyticsEvent(context, "get-payment-methods.failed");
     }
 
     @Test
     public void getPaymentMethodNonces_fetchesPaymentMethods() {
-        BraintreeFragment fragment = new MockFragmentBuilder()
-                .successResponse(Fixtures.PAYMENT_METHODS_GET_PAYMENT_METHODS_RESPONSE)
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sendGETSuccessfulResponse(Fixtures.PAYMENT_METHODS_GET_PAYMENT_METHODS_RESPONSE)
                 .build();
+        PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        PaymentMethod.getPaymentMethodNonces(fragment);
+        GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
+        sut.getPaymentMethodNonces(context, callback);
 
         ArgumentCaptor<List<PaymentMethodNonce>> captor = ArgumentCaptor.forClass((Class) List.class);
-        verify(fragment).postCallback(captor.capture());
+        verify(callback).onResult(captor.capture(), (Exception) isNull());
+
         List<PaymentMethodNonce> paymentMethodNonces = captor.getValue();
         assertEquals(3, paymentMethodNonces.size());
         assertEquals("11", ((CardNonce) paymentMethodNonces.get(0)).getLastTwo());
@@ -112,72 +132,87 @@ public class PaymentMethodUnitTest {
 
     @Test
     public void getPaymentMethodNonces_doesNotParseGooglePaymentMethods() {
-        BraintreeFragment fragment = new MockFragmentBuilder()
-                .successResponse(Fixtures.PAYMENT_METHODS_GET_PAYMENT_METHODS_ANDROID_PAY_RESPONSE)
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sendGETSuccessfulResponse(Fixtures.PAYMENT_METHODS_GET_PAYMENT_METHODS_ANDROID_PAY_RESPONSE)
                 .build();
+        PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        PaymentMethod.getPaymentMethodNonces(fragment);
+        GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
+        sut.getPaymentMethodNonces(context, callback);
 
         ArgumentCaptor<List<PaymentMethodNonce>> captor = ArgumentCaptor.forClass((Class) List.class);
-        verify(fragment).postCallback(captor.capture());
+        verify(callback).onResult(captor.capture(), (Exception) isNull());
+
         List<PaymentMethodNonce> paymentMethodNonces = captor.getValue();
         assertEquals(0, paymentMethodNonces.size());
     }
 
     @Test
     public void getPaymentMethodNonces_sendsAnAnalyticsEventForSuccess() {
-        BraintreeFragment fragment = new MockFragmentBuilder()
-                .successResponse(Fixtures.PAYMENT_METHODS_GET_PAYMENT_METHODS_RESPONSE)
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sendGETSuccessfulResponse(Fixtures.PAYMENT_METHODS_GET_PAYMENT_METHODS_RESPONSE)
                 .build();
+        PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        PaymentMethod.getPaymentMethodNonces(fragment);
+        GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
+        sut.getPaymentMethodNonces(context, callback);
 
-        verify(fragment).sendAnalyticsEvent("get-payment-methods.succeeded");
+        verify(braintreeClient).sendAnalyticsEvent(context, "get-payment-methods.succeeded");
     }
 
     @Test
     public void getPaymentMethodNonces_includesDefaultFirstParamAndSessionIdInRequestPath() {
-        BraintreeFragment fragment = new MockFragmentBuilder().build();
-        when(fragment.getSessionId()).thenReturn("session-id");
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .sessionId("session-id")
+                .build();
+        PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        PaymentMethod.getPaymentMethodNonces(fragment, true);
+        GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
+        sut.getPaymentMethodNonces(context, true, callback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).get(captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendGET(captor.capture(), same(context), any(HttpResponseCallback.class));
 
         String requestUri = captor.getValue();
         assertTrue(requestUri.contains("default_first=true"));
-        assertTrue(requestUri.contains("session_id=" + fragment.getSessionId()));
+        assertTrue(requestUri.contains("session_id=session-id"));
     }
 
     @Test
-    public void deletePaymentMethodNonce_withTokenizationKey_throwsAnError() {
-        BraintreeFragment fragment = new MockFragmentBuilder().build();
+    public void deletePaymentMethodNonce_withTokenizationKey_throwsAnError() throws InvalidArgumentException {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorization(Authorization.fromString(Fixtures.TOKENIZATION_KEY))
+                .build();
+        PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        PaymentMethod.deletePaymentMethod(fragment, mCardNonce);
+        DeletePaymentMethodNonceCallback callback = mock(DeletePaymentMethodNonceCallback.class);
+        sut.deletePaymentMethod(context, mCardNonce, callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(fragment).postCallback(captor.capture());
+        verify(callback).onResult((PaymentMethodNonce) isNull(), captor.capture());
+
         assertTrue(captor.getValue() instanceof BraintreeException);
         assertEquals("A client token with a customer id must be used to delete a payment method nonce.",
                 captor.getValue().getMessage());
-        verifyZeroInteractions(fragment.getGraphQLHttpClient());
+
+        verify(braintreeClient, never()).sendGraphQLPOST(anyString(), any(Context.class), any(HttpResponseCallback.class));
     }
 
     @Test
     public void deletePaymentMethodNonce_throwsAnError()
             throws InvalidArgumentException {
-        Authorization authorization = Authorization
-                .fromString(base64Encode(Fixtures.CLIENT_TOKEN));
-        BraintreeFragment fragment = new MockFragmentBuilder()
-                .authorization(authorization)
-                .graphQLErrorResponse(new UnexpectedException("Error"))
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorization(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN)))
+                .sendGraphQLPOSTErrorResponse(new UnexpectedException("Error"))
                 .build();
+        PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        PaymentMethod.deletePaymentMethod(fragment, mCardNonce);
+        DeletePaymentMethodNonceCallback callback = mock(DeletePaymentMethodNonceCallback.class);
+        sut.deletePaymentMethod(context, mCardNonce, callback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(fragment).postCallback(captor.capture());
+        verify(callback).onResult((PaymentMethodNonce) isNull(), captor.capture());
+
         PaymentMethodDeleteException paymentMethodDeleteException = (PaymentMethodDeleteException)captor.getValue();
         PaymentMethodNonce paymentMethodNonce = paymentMethodDeleteException.getPaymentMethodNonce();
         assertEquals(mCardNonce, paymentMethodNonce);
@@ -186,46 +221,46 @@ public class PaymentMethodUnitTest {
     @Test
     public void deletePaymentMethodNonce_sendAnAnalyticsEventForFailure()
             throws InvalidArgumentException {
-        Authorization authorization = Authorization
-                .fromString(base64Encode(Fixtures.CLIENT_TOKEN));
-        BraintreeFragment fragment = new MockFragmentBuilder()
-                .authorization(authorization)
-                .graphQLErrorResponse(new UnexpectedException("Error"))
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorization(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN)))
+                .sendGraphQLPOSTErrorResponse(new UnexpectedException("Error"))
                 .build();
+        PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        PaymentMethod.deletePaymentMethod(fragment, mCardNonce);
+        DeletePaymentMethodNonceCallback callback = mock(DeletePaymentMethodNonceCallback.class);
+        sut.deletePaymentMethod(context, mCardNonce, callback);
 
-        verify(fragment).sendAnalyticsEvent("delete-payment-methods.failed");
+        verify(braintreeClient).sendAnalyticsEvent(context, "delete-payment-methods.failed");
     }
 
     @Test
     public void deletePaymentMethodNonce_sendAnAnalyticsEventForSuccess()
             throws InvalidArgumentException {
-        Authorization authorization = Authorization
-                .fromString(base64Encode(Fixtures.CLIENT_TOKEN));
-        BraintreeFragment fragment = new MockFragmentBuilder()
-                .authorization(authorization)
-                .graphQLSuccessResponse("Success")
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorization(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN)))
+                .sendGraphQLPOSTSuccessfulResponse("Success")
                 .build();
+        PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        PaymentMethod.deletePaymentMethod(fragment, mCardNonce);
+        DeletePaymentMethodNonceCallback callback = mock(DeletePaymentMethodNonceCallback.class);
+        sut.deletePaymentMethod(context, mCardNonce, callback);
 
-        verify(fragment).sendAnalyticsEvent("delete-payment-methods.succeeded");
+        verify(braintreeClient).sendAnalyticsEvent(context, "delete-payment-methods.succeeded");
     }
 
     @Test
     public void deletePaymentMethodNonce_sendNoncePostCallbackForSuccess()
             throws InvalidArgumentException {
-        Authorization authorization = Authorization
-                .fromString(base64Encode(Fixtures.CLIENT_TOKEN));
-        BraintreeFragment fragment = new MockFragmentBuilder()
-                .authorization(authorization)
-                .graphQLSuccessResponse("Success")
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .authorization(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN)))
+                .sendGraphQLPOSTSuccessfulResponse("Success")
                 .build();
+        PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        PaymentMethod.deletePaymentMethod(fragment, mCardNonce);
+        DeletePaymentMethodNonceCallback callback = mock(DeletePaymentMethodNonceCallback.class);
+        sut.deletePaymentMethod(context, mCardNonce, callback);
 
-        verify(fragment).postPaymentMethodDeletedCallback(eq(mCardNonce));
+        verify(callback).onResult(mCardNonce, null);
     }
 
     @Test
@@ -233,21 +268,28 @@ public class PaymentMethodUnitTest {
             throws Exception {
         Authorization authorization = Authorization
                 .fromString(base64Encode(Fixtures.CLIENT_TOKEN));
-        BraintreeFragment fragment = new MockFragmentBuilder()
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .authorization(authorization)
-                .graphQLSuccessResponse("Success")
+                .sendGraphQLPOSTSuccessfulResponse("Success")
                 .sessionId("test-session-id")
                 .integration("test-integration")
                 .build();
+        PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
-        PaymentMethod.deletePaymentMethod(fragment, mCardNonce);
+        DeletePaymentMethodNonceCallback callback = mock(DeletePaymentMethodNonceCallback.class);
+        sut.deletePaymentMethod(context, mCardNonce, callback);
+
+        verify(braintreeClient).getIntegrationType(same(context));
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getGraphQLHttpClient()).post(captor.capture(), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendGraphQLPOST(captor.capture(), same(context), any(HttpResponseCallback.class));
+
         JSONObject graphQlRequest = new JSONObject(captor.getValue());
 
-        assertEquals(GraphQLQueryHelper.getQuery(RuntimeEnvironment.application, R.raw.delete_payment_method_mutation),
-                graphQlRequest.getString(GraphQLConstants.Keys.QUERY));
+        String expectedGraphQLQuery = GraphQLQueryHelper.getQuery(
+                ApplicationProvider.getApplicationContext(), R.raw.delete_payment_method_mutation);
+        assertEquals(expectedGraphQLQuery, graphQlRequest.getString(GraphQLConstants.Keys.QUERY));
 
         JSONObject metadata = graphQlRequest.getJSONObject("clientSdkMetadata");
 

@@ -6,12 +6,13 @@ import android.database.sqlite.SQLiteCantOpenDatabaseException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,23 +26,24 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(RobolectricTestRunner.class)
 public class AnalyticsDatabaseUnitTest {
 
+    private Context context;
     private AnalyticsDatabase mAnalyticsDatabase;
 
     @Before
     public void setup() {
-        mAnalyticsDatabase = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
-        clearAllEvents(RuntimeEnvironment.application);
+        context = ApplicationProvider.getApplicationContext();
+        mAnalyticsDatabase = AnalyticsDatabase.getInstance(context);
+        clearAllEvents(context);
     }
 
     @After
     public void teardown() {
-        clearAllEvents(RuntimeEnvironment.application);
+        clearAllEvents(context);
     }
 
     @Test
     public void addEvent_persistsEvent() throws Exception {
-        AnalyticsEvent request = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
-                "custom", "started.client-token");
+        AnalyticsEvent request = new AnalyticsEvent(context, "sessionId", "custom", "started.client-token");
 
         mAnalyticsDatabase.addEvent(request);
 
@@ -58,16 +60,14 @@ public class AnalyticsDatabaseUnitTest {
 
     @Test
     public void removeEvents_removesEventsFromDb() throws InterruptedException {
-        AnalyticsEvent event1 = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
-                "custom", "started.client-token");
-        AnalyticsEvent event2 = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
-                "custom", "finished.client-token");
+        AnalyticsEvent event1 = new AnalyticsEvent(context, "sessionId", "custom", "started.client-token");
+        AnalyticsEvent event2 = new AnalyticsEvent(context, "sessionId", "custom", "finished.client-token");
 
         mAnalyticsDatabase.addEvent(event1);
         mAnalyticsDatabase.addEvent(event2);
 
         awaitTasksFinished(mAnalyticsDatabase);
-        mAnalyticsDatabase = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
+        mAnalyticsDatabase = AnalyticsDatabase.getInstance(context);
 
         Cursor idCursor = mAnalyticsDatabase.getReadableDatabase().query(false, "analytics", new String[]{"_id"},
                 null, null, null, null, "_id asc", null);
@@ -93,27 +93,23 @@ public class AnalyticsDatabaseUnitTest {
 
     @Test
     public void getPendingRequests_returnsCorrectGroupingsOfMetadata() throws Exception {
-        AnalyticsEvent request1 = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
-                "custom", "started.client-token");
-        AnalyticsEvent request2 = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
-                "custom", "finished.client-token");
+        AnalyticsEvent request1 = new AnalyticsEvent(context, "sessionId", "custom", "started.client-token");
+        AnalyticsEvent request2 = new AnalyticsEvent(context, "sessionId", "custom", "finished.client-token");
 
-        AnalyticsEvent request3 = new AnalyticsEvent(RuntimeEnvironment.application, "anotherSessionId",
-                "custom", "started.client-token");
-        AnalyticsEvent request4 = new AnalyticsEvent(RuntimeEnvironment.application, "anotherSessionId",
-                "custom", "finished.client-token");
+        AnalyticsEvent request3 = new AnalyticsEvent(context, "anotherSessionId", "custom", "started.client-token");
+        AnalyticsEvent request4 = new AnalyticsEvent(context, "anotherSessionId", "custom", "finished.client-token");
 
         mAnalyticsDatabase.addEvent(request1);
         mAnalyticsDatabase.addEvent(request2);
 
         awaitTasksFinished(mAnalyticsDatabase);
-        mAnalyticsDatabase = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
+        mAnalyticsDatabase = AnalyticsDatabase.getInstance(context);
 
         mAnalyticsDatabase.addEvent(request3);
         mAnalyticsDatabase.addEvent(request4);
 
         awaitTasksFinished(mAnalyticsDatabase);
-        mAnalyticsDatabase = AnalyticsDatabase.getInstance(RuntimeEnvironment.application);
+        mAnalyticsDatabase = AnalyticsDatabase.getInstance(context);
 
         List<List<AnalyticsEvent>> analyticsRequests = mAnalyticsDatabase.getPendingRequests();
 
@@ -142,9 +138,8 @@ public class AnalyticsDatabaseUnitTest {
 
     @Test
     public void addEvent_catchesSQLiteCantOpenDatabaseException() throws Exception {
-        AnalyticsDatabase db = AnalyticsWithOpenExceptionsDatabase.getInstance(RuntimeEnvironment.application);
-        AnalyticsEvent request = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
-                "custom", "started.client-token");
+        AnalyticsDatabase db = AnalyticsWithOpenExceptionsDatabase.getInstance(context);
+        AnalyticsEvent request = new AnalyticsEvent(context, "sessionId", "custom", "started.client-token");
 
         db.addEvent(request);
 
@@ -153,9 +148,8 @@ public class AnalyticsDatabaseUnitTest {
 
     @Test
     public void removeEvent_catchesSQLiteCantOpenDatabaseException() throws Exception {
-        AnalyticsDatabase db = AnalyticsWithOpenExceptionsDatabase.getInstance(RuntimeEnvironment.application);
-        AnalyticsEvent request = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
-                "custom", "started.client-token");
+        AnalyticsDatabase db = AnalyticsWithOpenExceptionsDatabase.getInstance(context);
+        AnalyticsEvent request = new AnalyticsEvent(context, "sessionId", "custom", "started.client-token");
 
         db.removeEvents(Collections.singletonList(request));
 
@@ -164,9 +158,8 @@ public class AnalyticsDatabaseUnitTest {
 
     @Test
     public void getPendingRequests_catchesSQLiteCantOpenDatabaseException() throws Exception {
-        AnalyticsDatabase db = AnalyticsWithOpenExceptionsDatabase.getInstance(RuntimeEnvironment.application);
-        AnalyticsEvent request = new AnalyticsEvent(RuntimeEnvironment.application, "sessionId",
-                "custom", "started.client-token");
+        AnalyticsDatabase db = AnalyticsWithOpenExceptionsDatabase.getInstance(context);
+        AnalyticsEvent request = new AnalyticsEvent(context, "sessionId", "custom", "started.client-token");
 
         assertEquals(Collections.emptyList(), db.getPendingRequests());
 

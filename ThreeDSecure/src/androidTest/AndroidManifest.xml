@@ -1,0 +1,19 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.braintreepayments.api">
+
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+
+    <application android:usesCleartextTraffic="true">
+        <!--suppress AndroidDomInspection -->
+        <activity android:name=".test.TestActivity" />
+        <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <data android:scheme="com.braintreepayments.api.test.braintree" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

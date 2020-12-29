@@ -7,12 +7,9 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import com.braintreepayments.api.BraintreeFragment;
-import com.braintreepayments.api.PayPal;
-import com.braintreepayments.api.PreferredPaymentMethods;
-import com.braintreepayments.api.Venmo;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.PreferredPaymentMethodsListener;
+import com.braintreepayments.api.PayPalRequestCallback;
+import com.braintreepayments.api.VenmoAuthorizeAccountCallback;
+import com.braintreepayments.api.interfaces.PreferredPaymentMethodsCallback;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.models.PreferredPaymentMethodsResult;
@@ -24,8 +21,6 @@ public class PreferredPaymentMethodsActivity extends BaseActivity {
     private Button mBillingAgreementButton;
     private Button mSinglePaymentButton;
     private Button mVenmoButton;
-
-    private BraintreeFragment mBraintreeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,22 +44,15 @@ public class PreferredPaymentMethodsActivity extends BaseActivity {
     }
 
     @Override
-    protected void onAuthorizationFetched() {
-        try {
-            mBraintreeFragment = BraintreeFragment.newInstance(this, mAuthorization);
-        } catch (InvalidArgumentException e) {
-            onError(e);
-        }
-
+    protected void onBraintreeInitialized() {
         mPreferredPaymentMethodsButton.setEnabled(true);
     }
 
     public void launchPreferredPaymentMethods(View v) {
         mPreferredPaymentMethodsTextView.setText(getString(R.string.preferred_payment_methods_progress));
-
-        PreferredPaymentMethods.fetchPreferredPaymentMethods(mBraintreeFragment, new PreferredPaymentMethodsListener() {
+        fetchPreferredPaymentMethods(new PreferredPaymentMethodsCallback() {
             @Override
-            public void onPreferredPaymentMethodsFetched(PreferredPaymentMethodsResult result) {
+            public void onResult(PreferredPaymentMethodsResult result) {
                 mPreferredPaymentMethodsTextView.setText(String.format("PayPal Preferred: %b\nVenmo Preferred: %b",
                         result.isPayPalPreferred(),
                         result.isVenmoPreferred()));
@@ -79,19 +67,39 @@ public class PreferredPaymentMethodsActivity extends BaseActivity {
     public void launchSinglePayment(View v) {
         setProgressBarIndeterminateVisibility(true);
 
-        PayPal.requestOneTimePayment(mBraintreeFragment, getPayPalRequest("1.00"));
+        requestPayPalOneTimePayment(getPayPalRequest("1.00"), new PayPalRequestCallback() {
+            @Override
+            public void onResult(boolean requestInitiated, Exception error) {
+                if (error != null) {
+                    onBraintreeError(error);
+                }
+            }
+        });
     }
 
     public void launchBillingAgreement(View v) {
         setProgressBarIndeterminateVisibility(true);
 
-        PayPal.requestBillingAgreement(mBraintreeFragment, getPayPalRequest(null));
+        requestPayPalBillingAgreement(getPayPalRequest(null), new PayPalRequestCallback() {
+            @Override
+            public void onResult(boolean requestInitiated, Exception error) {
+                if (error != null) {
+                    onBraintreeError(error);
+                }
+            }
+        });
     }
 
     public void launchVenmo(View v) {
         setProgressBarIndeterminateVisibility(true);
-
-        Venmo.authorizeAccount(mBraintreeFragment);
+        authorizeVenmoAccount(false, null, new VenmoAuthorizeAccountCallback() {
+            @Override
+            public void onResult(boolean isAuthorized, Exception error) {
+                if (error != null) {
+                    onBraintreeError(error);
+                }
+            }
+        });
     }
 
     // Launching a payment method from the home screen creates a new BraintreeFragment. To maintain sessionID within a

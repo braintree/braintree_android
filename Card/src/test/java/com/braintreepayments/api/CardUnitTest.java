@@ -1,103 +1,99 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.exceptions.ErrorWithResponse;
+import android.content.Context;
+
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.CardBuilder;
-import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.PaymentMethodBuilder;
+import com.braintreepayments.api.models.PaymentMethodNonce;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.robolectric.RobolectricTestRunner;
+import org.mockito.ArgumentCaptor;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.doAnswer;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
-@RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*" })
-@PrepareForTest(TokenizationClient.class)
 public class CardUnitTest {
 
-    @Rule
-    public PowerMockRule mPowerMockRule = new PowerMockRule();
+    private Context context;
+    private CardBuilder cardBuilder;
+    private CardTokenizeCallback cardTokenizeCallback;
 
-    private BraintreeFragment mBraintreeFragment;
+    private BraintreeClient braintreeClient;
+    private DataCollector dataCollector;
+    private TokenizationClient tokenizationClient;
 
     @Before
-    public void setup() {
-        mBraintreeFragment = mock(BraintreeFragment.class);
+    public void beforeEach() {
+        context = mock(Context.class);
+        cardBuilder = mock(CardBuilder.class);
+        cardTokenizeCallback = mock(CardTokenizeCallback.class);
+
+        braintreeClient = mock(BraintreeClient.class);
+        dataCollector = mock(DataCollector.class);
+        tokenizationClient = mock(TokenizationClient.class);
     }
 
     @Test
     public void tokenize_callsListenerWithNonceOnSuccess() {
-        mockSuccessCallback();
+        Card sut = new Card(braintreeClient, tokenizationClient, dataCollector);
+        sut.tokenize(context, cardBuilder, cardTokenizeCallback);
 
-        Card.tokenize(mBraintreeFragment, null);
+        ArgumentCaptor<PaymentMethodNonceCallback> callbackCaptor =
+            ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        verify(tokenizationClient).tokenize(same(context), same(cardBuilder), callbackCaptor.capture());
 
-        verify(mBraintreeFragment).postCallback(any(CardNonce.class));
+        PaymentMethodNonceCallback callback = callbackCaptor.getValue();
+        PaymentMethodNonce paymentMethodNonce = mock(PaymentMethodNonce.class);
+        callback.success(paymentMethodNonce);
+
+        verify(cardTokenizeCallback).onResult(paymentMethodNonce, null);
     }
 
     @Test
     public void tokenize_sendsAnalyticsEventOnSuccess() {
-        mockSuccessCallback();
+        Card sut = new Card(braintreeClient, tokenizationClient, dataCollector);
+        sut.tokenize(context, cardBuilder, cardTokenizeCallback);
 
-        Card.tokenize(mBraintreeFragment, new CardBuilder());
+        ArgumentCaptor<PaymentMethodNonceCallback> callbackCaptor =
+                ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        verify(tokenizationClient).tokenize(same(context), same(cardBuilder), callbackCaptor.capture());
 
-        verify(mBraintreeFragment).sendAnalyticsEvent("card.nonce-received");
+        PaymentMethodNonceCallback callback = callbackCaptor.getValue();
+        callback.success(mock(PaymentMethodNonce.class));
+
+        verify(braintreeClient).sendAnalyticsEvent(context, "card.nonce-received");
     }
 
     @Test
     public void tokenize_callsListenerWithErrorOnFailure() {
-        mockFailureCallback();
+        Card sut = new Card(braintreeClient, tokenizationClient, dataCollector);
+        sut.tokenize(context, cardBuilder, cardTokenizeCallback);
 
-        Card.tokenize(mBraintreeFragment, null);
+        ArgumentCaptor<PaymentMethodNonceCallback> callbackCaptor =
+                ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        verify(tokenizationClient).tokenize(same(context), same(cardBuilder), callbackCaptor.capture());
 
-        verify(mBraintreeFragment).postCallback(any(ErrorWithResponse.class));
+        PaymentMethodNonceCallback callback = callbackCaptor.getValue();
+        Exception error = new Exception("error");
+        callback.failure(error);
+
+        verify(cardTokenizeCallback).onResult(null, error);
     }
 
     @Test
     public void tokenize_sendsAnalyticsEventOnFailure() {
-        mockFailureCallback();
+        Card sut = new Card(braintreeClient, tokenizationClient, dataCollector);
+        sut.tokenize(context, cardBuilder, cardTokenizeCallback);
 
-        Card.tokenize(mBraintreeFragment, null);
+        ArgumentCaptor<PaymentMethodNonceCallback> callbackCaptor =
+                ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
+        verify(tokenizationClient).tokenize(same(context), same(cardBuilder), callbackCaptor.capture());
 
-        verify(mBraintreeFragment).sendAnalyticsEvent("card.nonce-failed");
-    }
+        PaymentMethodNonceCallback callback = callbackCaptor.getValue();
+        callback.failure(new Exception("error"));
 
-    /* helpers */
-    private void mockSuccessCallback() {
-        mockStatic(TokenizationClient.class);
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                ((PaymentMethodNonceCallback) invocation.getArguments()[2]).success(new CardNonce());
-                return null;
-            }
-        }).when(TokenizationClient.class);
-        TokenizationClient.tokenize(any(BraintreeFragment.class), any(PaymentMethodBuilder.class),
-                any(PaymentMethodNonceCallback.class));
-    }
-
-    private void mockFailureCallback() {
-        mockStatic(TokenizationClient.class);
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                ((PaymentMethodNonceCallback) invocation.getArguments()[2]).failure(new ErrorWithResponse(422, ""));
-                return null;
-            }
-        }).when(TokenizationClient.class);
-        TokenizationClient.tokenize(any(BraintreeFragment.class), any(PaymentMethodBuilder.class),
-                any(PaymentMethodNonceCallback.class));
+        verify(braintreeClient).sendAnalyticsEvent(context, "card.nonce-failed");
     }
 }

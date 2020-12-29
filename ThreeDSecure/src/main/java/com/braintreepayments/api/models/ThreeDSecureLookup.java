@@ -3,7 +3,6 @@ package com.braintreepayments.api.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.Json;
 
 import org.json.JSONException;

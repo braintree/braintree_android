@@ -33,39 +33,28 @@ android {
     }
 }
 
-def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProject.playServicesWalletVersion}"
-
 dependencies {
-    implementation 'androidx.annotation:annotation:1.1.0'
-    implementation 'androidx.appcompat:appcompat:1.0.1'
-
     api files('libs/kount-data-collector-3.2.jar')
     api files('libs/paypal-data-collector-4.1.2.jar')
 
-    // TODO: replace with `implementation project(:Braintree)` once DataCollectorClient is created
-    compileOnly("com.braintreepayments.api:braintree:${rootProject.braintreeSdkVersion}") {
-        exclude module: 'data-collector'
-        because "Use this development version"
-    }
+    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation project(':BraintreeCore')
 
-    testImplementation(project(':BraintreeCore')) {
-        exclude module: 'data-collector'
-        because "Use this development version"
-    }
-
-    testImplementation playServicesWallet
     testImplementation 'org.robolectric:robolectric:4.1'
-    testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
-    testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'
-    testImplementation 'org.powermock:powermock-api-mockito:1.6.6'
-    testImplementation 'org.powermock:powermock-classloading-xstream:1.6.6'
+    testImplementation 'org.mockito:mockito-core:3.6.0'
     testImplementation 'org.skyscreamer:jsonassert:1.4.0'
+    testImplementation 'org.powermock:powermock-module-junit4:2.0.7'
+    testImplementation 'org.powermock:powermock-module-junit4-rule:2.0.7'
+    testImplementation 'org.powermock:powermock-api-mockito2:2.0.7'
+    testImplementation 'org.powermock:powermock-classloading-xstream:2.0.7'
 
     testImplementation project(':TestUtils')
 
     androidTestImplementation 'androidx.test:rules:1.1.1'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.appcompat:appcompat:1.2.0'
+    androidTestImplementation project(':TestUtils')
 }
 
 // region signing and publishing

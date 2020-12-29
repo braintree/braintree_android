@@ -19,48 +19,11 @@ import retrofit.RestAdapter;
 public class DemoApplication extends Application implements UncaughtExceptionHandler {
 
     private static ApiClient sApiClient;
-    private static ExecutorService sExecutor;
 
     private Thread.UncaughtExceptionHandler mDefaultExceptionHandler;
 
     @Override
     public void onCreate() {
-        // TODO: This is causing the Cardinal SDK to crash, we need to get them to fix it.
-        if (BuildConfig.DEBUG) {
-            StrictMode.ThreadPolicy.Builder threadPolicy = new StrictMode.ThreadPolicy.Builder()
-                    .detectCustomSlowCalls()
-                    .detectNetwork()
-                    .penaltyLog();
-            StrictMode.VmPolicy.Builder vmPolicy = new StrictMode.VmPolicy.Builder()
-                    .detectLeakedSqlLiteObjects()
-                    .detectLeakedRegistrationObjects()
-                    .detectLeakedClosableObjects()
-                    .detectActivityLeaks()
-                    .detectFileUriExposure()
-                    .penaltyLog();
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                sExecutor = Executors.newSingleThreadExecutor();
-
-                threadPolicy.penaltyListener(sExecutor, new StrictMode.OnThreadViolationListener() {
-                    @Override
-                    public void onThreadViolation(Violation v) {
-                        handleViolation(v);
-
-                    }
-                });
-                vmPolicy.penaltyListener(sExecutor, new StrictMode.OnVmViolationListener() {
-                    @Override
-                    public void onVmViolation(Violation v) {
-                        handleViolation(v);
-                    }
-                });
-            }
-
-            StrictMode.setThreadPolicy(threadPolicy.build());
-            StrictMode.setVmPolicy(vmPolicy.build());
-        }
-
         super.onCreate();
 
         DeveloperTools.setup(this);
@@ -73,46 +36,6 @@ public class DemoApplication extends Application implements UncaughtExceptionHan
     public void uncaughtException(Thread thread, Throwable ex) {
         Log.e("Exception", "Uncaught Exception", ex);
         mDefaultExceptionHandler.uncaughtException(thread, ex);
-    }
-
-
-    private void handleViolation(Violation v) {
-        Throwable cause = v.getCause();
-        if (cause != null) {
-            if (classExistsInThrowable("com.cardinalcommerce.cardinalmobilesdk.Tasks.NewtworkTask.CentinelChallengeTask", "doInBackground", cause)) {
-                Log.d("handleViolation", "Cardinal has been notified of this strict mode violation");
-            } else if (classExistsInThrowable("com.cardinalcommerce.cardinalmobilesdk.Tasks.NewtworkTask.CentinelApiInitTask", "doInBackground", cause)) {
-                Log.d("handleViolation", "Cardinal has been notified of this strict mode violation");
-            } else if (shouldRethrowViolation(cause)){
-                throw new RuntimeException(cause);
-            }
-        }
-    }
-
-    private boolean shouldRethrowViolation(Throwable cause) {
-        boolean shouldThrow = true;
-
-        String message = cause.getMessage();
-        if (message != null) {
-            String disposeNotCalledMessage = "Explicit termination method 'dispose' not called";
-            if (message.equalsIgnoreCase(disposeNotCalledMessage)) {
-                // this "violation" is causing integration tests to crash in Android 11
-                shouldThrow = false;
-            }
-        }
-        return shouldThrow;
-    }
-
-    private boolean classExistsInThrowable(String clazz, String method, Throwable t) {
-        for (StackTraceElement stackTrace : t.getStackTrace()) {
-            String causeClass = stackTrace.getClassName();
-            String causeMethod = stackTrace.getMethodName();
-
-            if (clazz.equals(causeClass) && method.equals(causeMethod)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     static ApiClient getApiClient(Context context) {

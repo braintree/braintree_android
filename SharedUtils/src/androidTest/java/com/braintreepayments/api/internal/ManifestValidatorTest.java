@@ -22,24 +22,28 @@ public class ManifestValidatorTest {
 
     @Test(timeout = 1000)
     public void isActivityDeclaredInAndroidManifest_returnsFalseForUndeclaredActivity() {
-        assertFalse(ManifestValidator.isActivityDeclaredInAndroidManifest(ApplicationProvider.getApplicationContext(),
+        ManifestValidator sut = new ManifestValidator();
+        assertFalse(sut.isActivityDeclaredInAndroidManifest(ApplicationProvider.getApplicationContext(),
                 MissingManifestTestActivity.class));
     }
 
     @Test(timeout = 1000)
     public void isActivityDeclaredInAndroidManifest_returnsTrueForDeclaredActivity() {
-        assertTrue(ManifestValidator.isActivityDeclaredInAndroidManifest(ApplicationProvider.getApplicationContext(),
+        ManifestValidator sut = new ManifestValidator();
+        assertTrue(sut.isActivityDeclaredInAndroidManifest(ApplicationProvider.getApplicationContext(),
                 ManifestTestActivity.class));
     }
 
     @Test(timeout = 1000)
     public void getActivityInfo_returnsNullForNonExistantActivity() {
-        assertNull(ManifestValidator.getActivityInfo(ApplicationProvider.getApplicationContext(), MissingManifestTestActivity.class));
+        ManifestValidator sut = new ManifestValidator();
+        assertNull(sut.getActivityInfo(ApplicationProvider.getApplicationContext(), MissingManifestTestActivity.class));
     }
 
     @Test(timeout = 1000)
     public void getActivityInfo_returnsActivityInfoForExistingActivity() {
-        ActivityInfo activityInfo = ManifestValidator.getActivityInfo(ApplicationProvider.getApplicationContext(), ManifestTestActivity.class);
+        ManifestValidator sut = new ManifestValidator();
+        ActivityInfo activityInfo = sut.getActivityInfo(ApplicationProvider.getApplicationContext(), ManifestTestActivity.class);
 
         assertNotNull(activityInfo);
         assertEquals(ManifestTestActivity.class.getName(), activityInfo.name);

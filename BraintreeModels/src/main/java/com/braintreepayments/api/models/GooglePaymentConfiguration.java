@@ -68,8 +68,7 @@ public class GooglePaymentConfiguration {
      *         the user has Google Payment setup use
      *         {@link com.braintreepayments.api.GooglePayment#isReadyToPay(BraintreeFragment, BraintreeResponseListener)}
      */
-    public boolean isEnabled(Context context) {
-        // TODO: remove context parameter after circular dependencies are removed
+    public boolean isEnabled() {
         return mEnabled;
     }
 

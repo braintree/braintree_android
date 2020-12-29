@@ -193,4 +193,86 @@ public class UnionPayCardBuilderUnitTest {
         assertFalse(optionsValidateTrue.has("validate"));
         assertFalse(optionsValidateFalse.has("validate"));
     }
+
+    @Test
+    public void build_standardPayload() throws JSONException {
+        UnionPayCardBuilder sut = new UnionPayCardBuilder()
+                .cardNumber("someCardNumber")
+                .expirationMonth("expirationMonth")
+                .expirationYear("expirationYear")
+                .cvv("cvv")
+                .enrollmentId("enrollmentId")
+                .smsCode("smsCode")
+                .validate(true);
+
+        String result = sut.build();
+        JSONObject tokenizePayload = new JSONObject(result);
+        JSONObject creditCardPayload = tokenizePayload.getJSONObject("creditCard");
+        JSONObject optionsPayload = creditCardPayload.getJSONObject("options");
+        JSONObject unionPayEnrollmentPayload = optionsPayload.getJSONObject("unionPayEnrollment");
+
+        assertEquals("someCardNumber", creditCardPayload.getString("number"));
+        assertEquals("expirationMonth", creditCardPayload.getString("expirationMonth"));
+        assertEquals("expirationYear", creditCardPayload.getString("expirationYear"));
+        assertEquals("cvv", creditCardPayload.getString("cvv"));
+
+        assertFalse(optionsPayload.has("validate"));
+        assertEquals("enrollmentId", unionPayEnrollmentPayload.getString("id"));
+        assertEquals("smsCode", unionPayEnrollmentPayload.getString("smsCode"));
+    }
+
+    @Test
+    public void build_optionalSmsCode() throws JSONException {
+        UnionPayCardBuilder sut = new UnionPayCardBuilder()
+                .cardNumber("someCardNumber")
+                .expirationMonth("expirationMonth")
+                .expirationYear("expirationYear")
+                .cvv("cvv")
+                .enrollmentId("enrollmentId")
+                .validate(true);
+
+        String result = sut.build();
+        JSONObject tokenizePayload = new JSONObject(result);
+        JSONObject creditCardPayload = tokenizePayload.getJSONObject("creditCard");
+        JSONObject optionsPayload = creditCardPayload.getJSONObject("options");
+        JSONObject unionPayEnrollmentPayload = optionsPayload.getJSONObject("unionPayEnrollment");
+
+        assertEquals("someCardNumber", creditCardPayload.getString("number"));
+        assertEquals("expirationMonth", creditCardPayload.getString("expirationMonth"));
+        assertEquals("expirationYear", creditCardPayload.getString("expirationYear"));
+        assertEquals("cvv", creditCardPayload.getString("cvv"));
+
+        assertFalse(optionsPayload.has("validate"));
+        assertEquals("enrollmentId", unionPayEnrollmentPayload.getString("id"));
+        assertFalse(unionPayEnrollmentPayload.has("smsCode"));
+    }
+
+    @Test
+    public void build_doesNotIncludeCvv() throws JSONException {
+        UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
+                .cardNumber("some-card-number")
+                .cvv("123");
+
+        JSONObject unionPayEnrollmentPayload = new JSONObject(unionPayCardBuilder.build());
+        assertFalse(unionPayEnrollmentPayload.has("cvv"));
+    }
+
+    @Test
+    public void buildEnrollment_basicPayload() throws JSONException {
+        UnionPayCardBuilder unionPayCardBuilder = new UnionPayCardBuilder()
+                .cardNumber("someCardNumber")
+                .expirationMonth("expirationMonth")
+                .expirationYear("expirationYear")
+                .mobileCountryCode("mobileCountryCode")
+                .mobilePhoneNumber("mobilePhoneNumber");
+
+        JSONObject result = new JSONObject(unionPayCardBuilder.buildEnrollment().toString());
+        JSONObject unionPayEnrollment = result.getJSONObject("unionPayEnrollment");
+
+        assertEquals("someCardNumber", unionPayEnrollment.getString("number"));
+        assertEquals("expirationMonth", unionPayEnrollment.getString("expirationMonth"));
+        assertEquals("expirationYear", unionPayEnrollment.getString("expirationYear"));
+        assertEquals("mobileCountryCode", unionPayEnrollment.getString("mobileCountryCode"));
+        assertEquals("mobilePhoneNumber", unionPayEnrollment.getString("mobileNumber"));
+    }
 }

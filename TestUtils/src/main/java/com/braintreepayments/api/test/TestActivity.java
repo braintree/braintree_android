@@ -2,10 +2,10 @@ package com.braintreepayments.api.test;
 
 import android.os.Bundle;
 
-import com.braintreepayments.api.testutils.R;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.braintreepayments.api.testutils.R;
 
 public class TestActivity extends AppCompatActivity {
     @Override

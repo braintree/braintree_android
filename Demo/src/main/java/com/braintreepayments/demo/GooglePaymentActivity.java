@@ -5,15 +5,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 
-import com.braintreepayments.api.BraintreeFragment;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+
+import com.braintreepayments.api.ConfigurationCallback;
 import com.braintreepayments.api.GooglePayCapabilities;
-import com.braintreepayments.api.GooglePayment;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.BraintreeResponseListener;
-import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.GooglePaymentIsReadyToPayCallback;
+import com.braintreepayments.api.GooglePaymentRequestPaymentCallback;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.GooglePaymentCardNonce;
-import com.braintreepayments.api.models.GooglePaymentConfiguration;
 import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
@@ -24,7 +24,7 @@ import com.google.android.gms.wallet.WalletConstants;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class GooglePaymentActivity extends BaseActivity implements ConfigurationListener {
+public class GooglePaymentActivity extends BaseActivity {
 
     private ImageButton mGooglePaymentButton;
 
@@ -44,34 +44,34 @@ public class GooglePaymentActivity extends BaseActivity implements Configuration
     }
 
     @Override
-    protected void onAuthorizationFetched() {
-        try {
-            mBraintreeFragment = BraintreeFragment.newInstance(this, mAuthorization);
-        } catch (InvalidArgumentException e) {
-            onError(e);
-        }
-    }
+    protected void onBraintreeInitialized() {
 
-    @Override
-    public void onConfigurationFetched(Configuration configuration) {
-        if (GooglePayCapabilities.isGooglePayEnabled(this, configuration.getGooglePayment())) {
-            GooglePayment.isReadyToPay(mBraintreeFragment, new BraintreeResponseListener<Boolean>() {
-                @Override
-                public void onResponse(Boolean isReadyToPay) {
-                    if (isReadyToPay) {
-                        mGooglePaymentButton.setVisibility(VISIBLE);
-                    } else {
-                        showDialog("Google Payments are not available. The following issues could be the cause:\n\n" +
-                                "No user is logged in to the device.\n\n" +
-                                "Google Play Services is missing or out of date.");
-                    }
+        final FragmentActivity activity = this;
+        getConfiguration(new ConfigurationCallback() {
+            @Override
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+
+                if (GooglePayCapabilities.isGooglePayEnabled(activity, configuration.getGooglePayment())) {
+
+                    googlePayIsReadyToPay(null, new GooglePaymentIsReadyToPayCallback() {
+                        @Override
+                        public void onResult(Boolean isReadyToPay, Exception e) {
+                            if (isReadyToPay) {
+                                mGooglePaymentButton.setVisibility(VISIBLE);
+                            } else {
+                                showDialog("Google Payments are not available. The following issues could be the cause:\n\n" +
+                                        "No user is logged in to the device.\n\n" +
+                                        "Google Play Services is missing or out of date.");
+                            }
+                        }
+                    });
+                } else {
+                    showDialog("Google Payments are not available. The following issues could be the cause:\n\n" +
+                            "Google Payments are not enabled for the current merchant.\n\n" +
+                            "Google Play Services is missing or out of date.");
                 }
-            });
-        } else {
-            showDialog("Google Payments are not available. The following issues could be the cause:\n\n" +
-                    "Google Payments are not enabled for the current merchant.\n\n" +
-                    "Google Play Services is missing or out of date.");
-        }
+            }
+        });
     }
 
     @Override
@@ -103,7 +103,14 @@ public class GooglePaymentActivity extends BaseActivity implements Configuration
                         .build())
                 .googleMerchantId(Settings.getGooglePaymentMerchantId(this));
 
-        GooglePayment.requestPayment(mBraintreeFragment, googlePaymentRequest);
+        googleRequestPayment(googlePaymentRequest, new GooglePaymentRequestPaymentCallback() {
+            @Override
+            public void onResult(boolean b, Exception e) {
+                if (e != null) {
+                    handleError(e);
+                }
+            }
+        });
     }
 
     public static String getDisplayString(GooglePaymentCardNonce nonce) {

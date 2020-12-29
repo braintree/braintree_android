@@ -26,24 +26,11 @@ android {
     }
 }
 
-def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProject.playServicesWalletVersion}"
-
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation project(':BraintreeCore')
     implementation project(':BraintreeDataCollector')
 
-    // TODO: replace with `implementation project(:Braintree)` once PayPalClient is created
-    compileOnly("com.braintreepayments.api:braintree:${rootProject.braintreeSdkVersion}") {
-        exclude module: 'paypal'
-        because "Use this development version"
-    }
-
-    testImplementation(project(':BraintreeCore')) {
-        exclude module: 'paypal'
-        because "Use this development version"
-    }
-
-    testImplementation playServicesWallet
     testImplementation 'org.robolectric:robolectric:4.1'
     testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
     testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'
@@ -51,7 +38,6 @@ dependencies {
     testImplementation 'org.powermock:powermock-classloading-xstream:1.6.6'
     testImplementation 'org.skyscreamer:jsonassert:1.4.0'
     testImplementation project(':TestUtils')
-    testImplementation project(':ThreeDSecure')
 }
 
 // region signing and publishing

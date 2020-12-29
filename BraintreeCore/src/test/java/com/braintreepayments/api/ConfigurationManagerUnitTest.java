@@ -1,322 +1,162 @@
 package com.braintreepayments.api;
 
-import android.net.Uri;
-import android.os.SystemClock;
+import android.content.Context;
 import android.util.Base64;
 
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.exceptions.UnexpectedException;
-import com.braintreepayments.api.interfaces.BraintreeResponseListener;
-import com.braintreepayments.api.interfaces.ConfigurationListener;
+import com.braintreepayments.api.exceptions.ConfigurationException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
+import com.braintreepayments.api.internal.HttpClient;
 import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.testutils.Fixtures;
 
+import org.json.JSONException;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 
-import java.util.concurrent.CountDownLatch;
-
-import static com.braintreepayments.testutils.FixturesHelper.base64Encode;
-import static com.braintreepayments.testutils.SharedPreferencesHelper.clearSharedPreferences;
-import static com.braintreepayments.testutils.SharedPreferencesHelper.getSharedPreferences;
-import static com.braintreepayments.testutils.SharedPreferencesHelper.writeMockConfiguration;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 
 @RunWith(RobolectricTestRunner.class)
+@PowerMockIgnore({"org.powermock.*", "org.mockito.*", "org.robolectric.*", "android.*", "androidx.*"})
+@PrepareForTest({Configuration.class, ConfigurationCache.class})
 public class ConfigurationManagerUnitTest {
 
-    private Authorization mTokenizationKey;
-    private CountDownLatch mCountDownLatch;
-    private BraintreeFragment mBraintreeFragment;
+    @Rule
+    public PowerMockRule mPowerMockRule = new PowerMockRule();
+
+    private Configuration configuration;
+    private BraintreeHttpClient braintreeHttpClient;
+    private ConfigurationCallback callback;
+
+    private Context context;
+    private Authorization authorization;
 
     @Before
-    public void setup() throws InvalidArgumentException {
-        clearSharedPreferences(RuntimeEnvironment.application);
-        ConfigurationManager.sFetchingConfiguration = false;
-        mTokenizationKey = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
+    public void beforeEach() {
+        mockStatic(Configuration.class, ConfigurationCache.class);
 
-        mCountDownLatch = new CountDownLatch(1);
+        authorization = mock(Authorization.class);
+        configuration = mock(Configuration.class);
+        context = mock(Context.class);
 
-        mBraintreeFragment = mock(BraintreeFragment.class);
-        when(mBraintreeFragment.getAuthorization()).thenReturn(mTokenizationKey);
-        when(mBraintreeFragment.getApplicationContext()).thenReturn(RuntimeEnvironment.application);
-        when(mBraintreeFragment.getHttpClient()).thenReturn(new BraintreeHttpClient(mTokenizationKey));
+        braintreeHttpClient = mock(BraintreeHttpClient.class);
+        callback = mock(ConfigurationCallback.class);
     }
 
     @Test
-    public void isFetchingConfiguration_isFalseWhenNotFetchingConfiguration() {
-        assertFalse(ConfigurationManager.isFetchingConfiguration());
+    public void loadConfiguration_loadsConfigurationForTheCurrentEnvironment() throws JSONException {
+        when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
+        when(Configuration.fromJson("{}")).thenReturn(configuration);
+
+        ConfigurationManager sut = new ConfigurationManager(braintreeHttpClient);
+        sut.loadConfiguration(context, authorization, callback);
+
+        String expectedConfigUrl = "https://example.com/config?configVersion=3";
+        ArgumentCaptor<HttpResponseCallback> captor = ArgumentCaptor.forClass(HttpResponseCallback.class);
+
+        verify(braintreeHttpClient).get(eq(expectedConfigUrl), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), captor.capture());
+
+        HttpResponseCallback httpResponseCallback = captor.getValue();
+        httpResponseCallback.success("{}");
+
+        verify(callback).onResult(configuration, null);
     }
 
     @Test
-    public void isFetchingConfiguration_isTrueWhenFetchingConfiguration() {
-        when(mBraintreeFragment.getHttpClient()).thenReturn(new BraintreeHttpClient(mTokenizationKey) {
-            @Override
-            public void get(String path, HttpResponseCallback callback) {
-                mThreadPool.submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        SystemClock.sleep(1000);
-                    }
-                });
-            }
-        });
+    public void loadConfiguration_savesFetchedConfigurationToCache() throws JSONException {
+        when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
+        when(authorization.getBearer()).thenReturn("bearer");
+        when(Configuration.fromJson("{}")).thenReturn(configuration);
 
-        ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {}
-        }, new BraintreeResponseListener<Exception>() {
-            @Override
-            public void onResponse(Exception e) {}
-        });
+        ConfigurationManager sut = new ConfigurationManager(braintreeHttpClient);
+        sut.loadConfiguration(context, authorization, callback);
 
-        assertTrue(ConfigurationManager.isFetchingConfiguration());
+        String expectedConfigUrl = "https://example.com/config?configVersion=3";
+        ArgumentCaptor<HttpResponseCallback> captor = ArgumentCaptor.forClass(HttpResponseCallback.class);
+
+        verify(braintreeHttpClient).get(eq(expectedConfigUrl), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), captor.capture());
+
+        HttpResponseCallback httpResponseCallback = captor.getValue();
+        httpResponseCallback.success("{}");
+
+        verifyStatic(ConfigurationCache.class);
+        String cacheKey = Base64.encodeToString(String.format("%s%s", "https://example.com/config?configVersion=3", "bearer").getBytes(), 0);
+        ConfigurationCache.saveConfiguration(context, configuration, cacheKey);
     }
 
-    @Test(timeout = 1000)
-    public void isFetchingConfiguration_isFalseInSuccessCallback() throws InterruptedException {
-        stubConfigurationFromGateway(Fixtures.CONFIGURATION_WITH_ANALYTICS);
+    @Test
+    public void loadConfiguration_onJSONParsingError_forwardsExceptionToErrorResponseListener() throws JSONException {
+        when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
 
-        ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                assertFalse(ConfigurationManager.isFetchingConfiguration());
-                mCountDownLatch.countDown();
-            }
-        }, new BraintreeResponseListener<Exception>() {
-            @Override
-            public void onResponse(Exception e) {
-                fail(e.getMessage());
-            }
-        });
+        JSONException jsonException = new JSONException("json message");
+        when(Configuration.fromJson("not json")).thenThrow(jsonException);
 
-        mCountDownLatch.await();
+        ConfigurationManager sut = new ConfigurationManager(braintreeHttpClient);
+        sut.loadConfiguration(context, authorization, callback);
+
+        ArgumentCaptor<HttpResponseCallback> captor = ArgumentCaptor.forClass(HttpResponseCallback.class);
+        verify(braintreeHttpClient).get(anyString(), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), captor.capture());
+
+        HttpResponseCallback httpResponseCallback = captor.getValue();
+        httpResponseCallback.success("not json");
+
+        verify(callback).onResult(null, jsonException);
     }
 
-    @Test(timeout = 1000)
-    public void isFetchingConfiguration_isFalseInErrorCallback() throws InterruptedException {
-        when(mBraintreeFragment.getHttpClient()).thenReturn(new BraintreeHttpClient(mTokenizationKey) {
-            @Override
-            public void get(String path, HttpResponseCallback callback) {
-                if (path.contains(mTokenizationKey.getConfigUrl())) {
-                    callback.failure(new UnexpectedException("Something bad happened"));
-                }
-            }
-        });
+    @Test
+    public void loadConfiguration_onHttpError_forwardsExceptionToErrorResponseListener() {
+        when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
 
-        ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                fail("Success listener should not have been called for bad request");
-            }
-        }, new BraintreeResponseListener<Exception>() {
-            @Override
-            public void onResponse(Exception e) {
-                assertFalse(ConfigurationManager.isFetchingConfiguration());
-                mCountDownLatch.countDown();
-            }
-        });
+        ConfigurationManager sut = new ConfigurationManager(braintreeHttpClient);
+        sut.loadConfiguration(context, authorization, callback);
 
-        mCountDownLatch.await();
+        ArgumentCaptor<HttpResponseCallback> httpResponseCaptor = ArgumentCaptor.forClass(HttpResponseCallback.class);
+        verify(braintreeHttpClient).get(anyString(), (Configuration) isNull(), eq(HttpClient.RETRY_MAX_3_TIMES), httpResponseCaptor.capture());
+
+        HttpResponseCallback httpResponseCallback = httpResponseCaptor.getValue();
+        Exception httpError = new Exception("http error");
+        httpResponseCallback.failure(httpError);
+
+        ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
+        verify(callback).onResult((Configuration) isNull(), errorCaptor.capture());
+
+        ConfigurationException error = (ConfigurationException) errorCaptor.getValue();
+        assertEquals("Request for configuration has failed: http error",
+                error.getMessage());
     }
 
-    @Test(timeout = 1000)
-    public void getConfiguration_getsConfigFromCacheWhenTimeoutHasNotExpired() throws InterruptedException {
-        writeMockConfiguration(RuntimeEnvironment.application, mTokenizationKey.getConfigUrl(),
-                mTokenizationKey.getBearer(), Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN,
-                System.currentTimeMillis());
+    @Test
+    public void loadConfiguration_whenCachedConfigurationAvailable_loadsConfigurationFromCache() throws JSONException {
+        String cacheKey = Base64.encodeToString(String.format("%s%s", "https://example.com/config?configVersion=3", "bearer").getBytes(), 0);
+        Context context = mock(Context.class);
 
-        ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                assertEquals(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN, configuration.toJson());
-                mCountDownLatch.countDown();
-            }
-        }, new BraintreeResponseListener<Exception>() {
-            @Override
-            public void onResponse(Exception e) {
-                fail(e.getMessage());
-            }
-        });
+        when(authorization.getConfigUrl()).thenReturn("https://example.com/config");
+        when(authorization.getBearer()).thenReturn("bearer");
+        when(ConfigurationCache.getConfiguration(context, cacheKey)).thenReturn("{}");
+        when(Configuration.fromJson("{}")).thenReturn(configuration);
 
-        mCountDownLatch.await();
-    }
+        ConfigurationManager sut = new ConfigurationManager(braintreeHttpClient);
+        sut.loadConfiguration(context, authorization, callback);
 
-    @Test(timeout = 1000)
-    public void getConfiguration_getsConfigFromGatewayWhenTimeoutExpired() throws InterruptedException {
-        writeMockConfiguration(RuntimeEnvironment.application, mTokenizationKey.getConfigUrl(),
-                mTokenizationKey.getBearer(), Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN,
-                System.currentTimeMillis() - (ConfigurationManager.TTL + 1));
-        stubConfigurationFromGateway(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-
-        ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                assertEquals(Fixtures.CONFIGURATION_WITH_ANALYTICS, configuration.toJson());
-                mCountDownLatch.countDown();
-            }
-        }, new BraintreeResponseListener<Exception>() {
-            @Override
-            public void onResponse(Exception e) {
-                fail(e.getMessage());
-            }
-        });
-
-        mCountDownLatch.await();
-    }
-
-    @Test(timeout = 5000)
-    public void getConfiguration_fetchesConfigFromGatewayWhenCacheIsEmpty() throws InterruptedException {
-        stubConfigurationFromGateway(Fixtures.CONFIGURATION_WITH_ANALYTICS);
-
-        ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                assertEquals(Fixtures.CONFIGURATION_WITH_ANALYTICS, configuration.toJson());
-                mCountDownLatch.countDown();
-            }
-        }, new BraintreeResponseListener<Exception>() {
-            @Override
-            public void onResponse(Exception e) {
-                fail(e.getMessage());
-            }
-        });
-
-        mCountDownLatch.await();
-    }
-
-    @Test(timeout = 1000)
-    public void getConfiguration_fetchesConfigurationFromGatewayWhenCachedConfigIsInvalid()
-            throws InterruptedException {
-        writeMockConfiguration(RuntimeEnvironment.application, mTokenizationKey.getConfigUrl(),
-                mTokenizationKey.getBearer(), "not a config");
-        stubConfigurationFromGateway(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
-
-        ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                assertEquals(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN, configuration.toJson());
-                mCountDownLatch.countDown();
-            }
-        }, new BraintreeResponseListener<Exception>() {
-            @Override
-            public void onResponse(Exception e) {
-                fail(e.getMessage());
-            }
-        });
-
-        mCountDownLatch.await();
-    }
-
-    @Test(timeout = 1000)
-    public void getConfiguration_takesClientTokenIntoAccountForCache()
-            throws InvalidArgumentException, InterruptedException {
-        ClientToken clientToken = (ClientToken) Authorization.fromString(
-                base64Encode(Fixtures.CLIENT_TOKEN_WITH_AUTHORIZATION_FINGERPRINT_OPTIONS));
-        when(mBraintreeFragment.getAuthorization()).thenReturn(clientToken);
-        writeMockConfiguration(RuntimeEnvironment.application, clientToken.getConfigUrl(),
-                clientToken.getAuthorizationFingerprint(), Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN,
-                System.currentTimeMillis());
-
-        ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                assertEquals(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN, configuration.toJson());
-                mCountDownLatch.countDown();
-            }
-        }, new BraintreeResponseListener<Exception>() {
-            @Override
-            public void onResponse(Exception e) {
-                fail(e.getMessage());
-            }
-        });
-
-        mCountDownLatch.await();
-    }
-
-    @Test(timeout = 1000)
-    public void getConfiguration_writesConfigToDiskWithValidTimestampAfterFetch() throws InterruptedException {
-        stubConfigurationFromGateway(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN);
-
-        ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                String key = Base64.encodeToString(
-                        Uri.parse(mTokenizationKey.getConfigUrl())
-                                .buildUpon()
-                                .appendQueryParameter("configVersion", "3")
-                                .build()
-                                .toString()
-                                .concat(mTokenizationKey.getBearer())
-                                .getBytes(),
-                        0);
-
-                assertEquals(Fixtures.CONFIGURATION_WITHOUT_ACCESS_TOKEN,
-                        getSharedPreferences(RuntimeEnvironment.application).getString(key, ""));
-                assertTrue(System.currentTimeMillis() -
-                        getSharedPreferences(RuntimeEnvironment.application).getLong(key + "_timestamp", 0) < 1000);
-                mCountDownLatch.countDown();
-            }
-        }, new BraintreeResponseListener<Exception>() {
-            @Override
-            public void onResponse(Exception e) {
-                fail(e.getMessage());
-            }
-        });
-
-        mCountDownLatch.await();
-    }
-
-    @Test(timeout = 1000)
-    public void getConfiguration_callsErrorListenerWhenHttpFails() throws InterruptedException {
-        BraintreeHttpClient fakeClient = new BraintreeHttpClient(mTokenizationKey) {
-            @Override
-            public void get(String path, HttpResponseCallback callback) {
-                if (path.contains(mTokenizationKey.getConfigUrl())) {
-                    callback.failure(new UnexpectedException("Something bad happened"));
-                }
-            }
-        };
-        when(mBraintreeFragment.getHttpClient()).thenReturn(fakeClient);
-
-        ConfigurationManager.getConfiguration(mBraintreeFragment, new ConfigurationListener() {
-            @Override
-            public void onConfigurationFetched(Configuration configuration) {
-                fail("Success listener should not have been called for bad request");
-            }
-        }, new BraintreeResponseListener<Exception>() {
-            @Override
-            public void onResponse(Exception e) {
-                assertTrue(e instanceof UnexpectedException);
-                assertEquals("Something bad happened", e.getMessage());
-                mCountDownLatch.countDown();
-            }
-        });
-
-        mCountDownLatch.await();
-    }
-
-    private void stubConfigurationFromGateway(final String responseString) {
-        BraintreeHttpClient fakeClient = new BraintreeHttpClient(mBraintreeFragment.getAuthorization()) {
-            @Override
-            public void get(String path, HttpResponseCallback callback) {
-                if (path.contains(mBraintreeFragment.getAuthorization().getConfigUrl())) {
-                    callback.success(responseString);
-                }
-            }
-        };
-        when(mBraintreeFragment.getHttpClient()).thenReturn(fakeClient);
+        verify(braintreeHttpClient, times(0)).get(anyString(), (Configuration) isNull(), anyInt(), any(HttpResponseCallback.class));
+        verify(callback).onResult(configuration, null);
     }
 }

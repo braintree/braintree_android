@@ -6,11 +6,13 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Build.VERSION;
+import android.util.Log;
 
 import com.braintreepayments.api.BuildConfig;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.ClientToken;
+import com.braintreepayments.api.models.Configuration;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,8 +42,8 @@ public class AnalyticsSender {
     private static final String DEVICE_APP_GENERATED_PERSISTENT_UUID_KEY = "deviceAppGeneratedPersistentUuid";
     private static final String IS_SIMULATOR_KEY = "isSimulator";
 
-    public static void send(Context context, Authorization authorization, BraintreeHttpClient httpClient,
-            String analyticsUrl, boolean synchronous) {
+    public static void send(Context context, Authorization authorization, Configuration configuration, BraintreeHttpClient httpClient,
+                            String analyticsUrl, boolean synchronous) {
         final AnalyticsDatabase db = AnalyticsDatabase.getInstance(context);
 
         List<List<AnalyticsEvent>> events = db.getPendingRequests();
@@ -52,10 +54,10 @@ public class AnalyticsSender {
                 analyticsRequest = serializeEvents(context, authorization, innerEvents);
                 try {
                     if (synchronous) {
-                        httpClient.post(analyticsUrl, analyticsRequest.toString());
+                        httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration);
                         db.removeEvents(innerEvents);
                     } else {
-                        httpClient.post(analyticsUrl, analyticsRequest.toString(), new HttpResponseCallback() {
+                        httpClient.post(analyticsUrl, analyticsRequest.toString(), configuration, new HttpResponseCallback() {
                             @Override
                             public void success(String responseBody) {
                                 db.removeEvents(innerEvents);

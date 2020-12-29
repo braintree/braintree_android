@@ -107,7 +107,6 @@ public class PayPalAccountNonceUnitTest {
         assertEquals("paypalaccount@example.com", parceled.getEmail());
         assertEquals("PayPal", parceled.getTypeLabel());
         assertEquals("fake-authenticate-url", parceled.getAuthenticateUrl());
-        assertTrue(parceled.isTwoFactorAuthRequired());
 
         assertEquals("123 Fake St.", parceled.getBillingAddress().getStreetAddress());
         assertEquals("Apt. 3", parceled.getBillingAddress().getExtendedAddress());

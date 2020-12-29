@@ -11,23 +11,24 @@ import androidx.annotation.Nullable;
 
 public class ManifestValidator {
 
-    public static boolean isActivityDeclaredInAndroidManifest(Context context, Class klass) {
+    public boolean isActivityDeclaredInAndroidManifest(Context context, Class klass) {
         return getActivityInfo(context, klass) != null;
     }
 
-    public static boolean isUrlSchemeDeclaredInAndroidManifest(Context context, String urlScheme, Class klass) {
+    public boolean isUrlSchemeDeclaredInAndroidManifest(Context context, String urlScheme, Class klass) {
         Intent intent = new Intent(Intent.ACTION_VIEW)
                 .setData(Uri.parse(urlScheme + "://"))
                 .addCategory(Intent.CATEGORY_DEFAULT)
                 .addCategory(Intent.CATEGORY_BROWSABLE);
 
         ActivityInfo activityInfo = getActivityInfo(context, klass);
+        AppHelper appHelper = new AppHelper();
         return (activityInfo != null && activityInfo.launchMode == ActivityInfo.LAUNCH_SINGLE_TASK &&
-                AppHelper.isIntentAvailable(context, intent));
+                appHelper.isIntentAvailable(context, intent));
     }
 
     @Nullable
-    public static ActivityInfo getActivityInfo(Context context, Class klass) {
+    public ActivityInfo getActivityInfo(Context context, Class klass) {
         try {
             PackageInfo packageInfo =
                     context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES);

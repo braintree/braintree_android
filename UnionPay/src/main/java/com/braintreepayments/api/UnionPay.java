@@ -1,9 +1,11 @@
 package com.braintreepayments.api;
 
+import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
+
 import com.braintreepayments.api.exceptions.ConfigurationException;
-import com.braintreepayments.api.interfaces.ConfigurationListener;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.Configuration;
@@ -19,17 +21,29 @@ import org.json.JSONObject;
  * Used to check, enroll, and tokenize UnionPay cards. For more information see the
  * <a href="https://developers.braintreepayments.com/guides/unionpay/overview">documentation</a>
  */
+// TODO: Rename class when API is finalized
 public class UnionPay {
 
-    private static final String UNIONPAY_ENROLLMENT_ID_KEY = "unionPayEnrollmentId";
     private static final String UNIONPAY_SMS_REQUIRED_KEY = "smsCodeRequired";
+    private static final String UNIONPAY_ENROLLMENT_ID_KEY = "unionPayEnrollmentId";
+
+    private static final String UNIONPAY_ENROLLMENT_PATH =
+        TokenizationClient.versionedPath("union_pay_enrollments");
+
     private static final String UNIONPAY_CAPABILITIES_PATH = TokenizationClient.versionedPath(
             "payment_methods/credit_cards/capabilities");
-    private static final String UNIONPAY_ENROLLMENT_PATH = TokenizationClient.versionedPath("union_pay_enrollments");
+
+    private final BraintreeClient braintreeClient;
+    private final TokenizationClient tokenizationClient;
+
+    UnionPay(BraintreeClient braintreeClient, TokenizationClient tokenizationClient) {
+        this.braintreeClient = braintreeClient;
+        this.tokenizationClient = tokenizationClient;
+    }
 
     /**
      * Fetches the capabilities of a card. If the card needs to be enrolled use {@link
-     * UnionPay#enroll(BraintreeFragment, UnionPayCardBuilder)}.
+     * UnionPay#enroll(Context, UnionPayCardBuilder, UnionPayEnrollCallback)}.
      * <p>
      * On completion, returns the {@link UnionPayCapabilities} to
      * {@link com.braintreepayments.api.interfaces.UnionPayListener#onCapabilitiesFetched(UnionPayCapabilities)}
@@ -37,15 +51,16 @@ public class UnionPay {
      * On error, an exception will be passed back to
      * {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}
      *
-     * @param fragment {@link BraintreeFragment}
+     * @param context Android context
      * @param cardNumber The card number to check for Union Pay capabilities.
+     * @param callback {@link UnionPayFetchCapabilitiesCallback}
      */
-    public static void fetchCapabilities(final BraintreeFragment fragment, final String cardNumber) {
-        fragment.waitForConfiguration(new ConfigurationListener() {
+    public void fetchCapabilities(final Context context, final String cardNumber, final UnionPayFetchCapabilitiesCallback callback) {
+        braintreeClient.getConfiguration(context, new ConfigurationCallback() {
             @Override
-            public void onConfigurationFetched(Configuration configuration) {
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (!configuration.getUnionPay().isEnabled()) {
-                    fragment.postCallback(new ConfigurationException("UnionPay is not enabled"));
+                    callback.onResult(null, new ConfigurationException("UnionPay is not enabled"));
                     return;
                 }
 
@@ -54,18 +69,17 @@ public class UnionPay {
                         .appendQueryParameter("creditCard[number]", cardNumber)
                         .build()
                         .toString();
-
-                fragment.getHttpClient().get(fetchCapabilitiesUrl, new HttpResponseCallback() {
+                braintreeClient.sendGET(fetchCapabilitiesUrl, context, new HttpResponseCallback() {
                     @Override
                     public void success(String responseBody) {
-                        fragment.postCallback(UnionPayCapabilities.fromJson(responseBody));
-                        fragment.sendAnalyticsEvent("union-pay.capabilities-received");
+                        callback.onResult(UnionPayCapabilities.fromJson(responseBody), null);
+                        braintreeClient.sendAnalyticsEvent(context, "union-pay.capabilities-received");
                     }
 
                     @Override
                     public void failure(Exception exception) {
-                        fragment.postCallback(exception);
-                        fragment.sendAnalyticsEvent("union-pay.capabilities-failed");
+                        callback.onResult(null, exception);
+                        braintreeClient.sendAnalyticsEvent(context, "union-pay.capabilities-failed");
                     }
                 });
             }
@@ -74,60 +88,57 @@ public class UnionPay {
 
     /**
      * Enrolls a Union Pay card. Only call this method if the card needs to be enrolled. Check {@link
-     * UnionPay#fetchCapabilities(BraintreeFragment, String)} if your card needs to be enrolled.
+     * UnionPay#fetchCapabilities(Context, String, UnionPayFetchCapabilitiesCallback)} if your card needs to be enrolled.
      * <p>
      * On completion, returns a enrollmentId to
      * {@link com.braintreepayments.api.interfaces.UnionPayListener#onSmsCodeSent(String, boolean)}
      * This enrollmentId needs to be applied to {@link UnionPayCardBuilder} along with the SMS code
-     * collected from the merchant before invoking {@link UnionPay#tokenize(BraintreeFragment, UnionPayCardBuilder)}
+     * collected from the merchant before invoking {@link UnionPay#tokenize(Context, UnionPayCardBuilder, UnionPayTokenizeCallback)}
      * <p>
      * On error, an exception will be passed back to
      * {@link com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)}
      *
-     * @param fragment {@link BraintreeFragment}
+     * @param context Android context
      * @param unionPayCardBuilder {@link UnionPayCardBuilder}
+     * @param callback {@link UnionPayEnrollCallback}
      */
-    public static void enroll(final BraintreeFragment fragment, final UnionPayCardBuilder unionPayCardBuilder) {
-        fragment.waitForConfiguration(new ConfigurationListener() {
-                @Override
-                public void onConfigurationFetched(Configuration configuration) {
-                    UnionPayConfiguration unionPayConfiguration = configuration.getUnionPay();
-                    if (!unionPayConfiguration.isEnabled()) {
-                        fragment.postCallback(new ConfigurationException("UnionPay is not enabled"));
-                        return;
-                    }
+    public void enroll(final Context context, final UnionPayCardBuilder unionPayCardBuilder, final UnionPayEnrollCallback callback) {
+        braintreeClient.getConfiguration(context, new ConfigurationCallback() {
+            @Override
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                UnionPayConfiguration unionPayConfiguration = configuration.getUnionPay();
+                if (!unionPayConfiguration.isEnabled()) {
+                    callback.onResult(null, new ConfigurationException("UnionPay is not enabled"));
+                    return;
+                }
 
-                    try {
-                        JSONObject enrollmentPayloadJson =
-                                unionPayCardBuilder.buildEnrollment();
-                        fragment.getHttpClient().post(UNIONPAY_ENROLLMENT_PATH, enrollmentPayloadJson.toString(),
-                                new HttpResponseCallback() {
-                                    @Override
-                                    public void success(String responseBody) {
-                                        try {
-                                            JSONObject response = new JSONObject(responseBody);
-                                            String enrollmentId = response.getString(UNIONPAY_ENROLLMENT_ID_KEY);
-                                            boolean smsCodeRequired = response.getBoolean(UNIONPAY_SMS_REQUIRED_KEY);
-                                            fragment.postUnionPayCallback(enrollmentId, smsCodeRequired);
-                                            fragment.sendAnalyticsEvent("union-pay.enrollment-succeeded");
-                                        } catch (JSONException e) {
-                                            failure(e);
-                                        }
-                                    }
+                try {
+                    String enrollmentPayload = unionPayCardBuilder.buildEnrollment().toString();
+                    braintreeClient.sendPOST(UNIONPAY_ENROLLMENT_PATH, enrollmentPayload, context, new HttpResponseCallback() {
+                        @Override
+                        public void success(String responseBody) {
+                            try {
+                                JSONObject response = new JSONObject(responseBody);
+                                String enrollmentId = response.getString(UNIONPAY_ENROLLMENT_ID_KEY);
+                                boolean smsCodeRequired = response.getBoolean(UNIONPAY_SMS_REQUIRED_KEY);
+                                callback.onResult(new UnionPayEnrollment(enrollmentId, smsCodeRequired), null);
+                                braintreeClient.sendAnalyticsEvent(context, "union-pay.enrollment-succeeded");
+                            } catch (JSONException e) {
+                                failure(e);
+                            }
+                        }
 
-                                    @Override
-                                    public void failure(Exception exception) {
-                                        fragment.postCallback(exception);
-                                        fragment.sendAnalyticsEvent("union-pay.enrollment-failed");
-                                    }
-                                }
-                        );
-                    } catch (JSONException exception) {
-                        fragment.postCallback(exception);
-                    }
+                        @Override
+                        public void failure(Exception exception) {
+                            callback.onResult(null, exception);
+                            braintreeClient.sendAnalyticsEvent(context, "union-pay.enrollment-failed");
+                        }
+                    });
+                } catch (JSONException exception) {
+                    callback.onResult(null, exception);
                 }
             }
-        );
+        });
     }
 
     /**
@@ -145,21 +156,22 @@ public class UnionPay {
      * com.braintreepayments.api.interfaces.BraintreeErrorListener#onError(Exception)} will be called with the {@link
      * Exception} that occurred.
      *
-     * @param fragment {@link BraintreeFragment}
+     * @param context Android context
      * @param unionPayCardBuilder {@link UnionPayCardBuilder}
+     * @param callback {@link UnionPayTokenizeCallback}
      */
-    public static void tokenize(final BraintreeFragment fragment, final UnionPayCardBuilder unionPayCardBuilder) {
-        TokenizationClient.tokenize(fragment, unionPayCardBuilder, new PaymentMethodNonceCallback() {
+    public void tokenize(final Context context, UnionPayCardBuilder unionPayCardBuilder, final UnionPayTokenizeCallback callback) {
+        tokenizationClient.tokenize(context, unionPayCardBuilder, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
-                fragment.postCallback(paymentMethodNonce);
-                fragment.sendAnalyticsEvent("union-pay.nonce-received");
+                callback.onResult(paymentMethodNonce, null);
+                braintreeClient.sendAnalyticsEvent(context, "union-pay.nonce-received");
             }
 
             @Override
             public void failure(Exception exception) {
-                fragment.postCallback(exception);
-                fragment.sendAnalyticsEvent("union-pay.nonce-failed");
+                callback.onResult(null, exception);
+                braintreeClient.sendAnalyticsEvent(context, "union-pay.nonce-failed");
             }
         });
     }

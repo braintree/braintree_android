@@ -12,12 +12,12 @@ public class AppHelper {
 
     private static final int NO_FLAGS = 0;
 
-    public static boolean isIntentAvailable(Context context, Intent intent) {
+    public boolean isIntentAvailable(Context context, Intent intent) {
         List<ResolveInfo> activities = context.getPackageManager().queryIntentActivities(intent, 0);
         return activities != null && activities.size() == 1;
     }
 
-    public static boolean isAppInstalled(Context context, String packageName) {
+    public boolean isAppInstalled(Context context, String packageName) {
         PackageManager packageManager = context.getPackageManager();
         try {
             return packageManager.getApplicationInfo(packageName, NO_FLAGS) != null;

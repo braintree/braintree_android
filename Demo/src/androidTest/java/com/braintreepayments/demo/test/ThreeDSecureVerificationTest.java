@@ -30,6 +30,7 @@ import static com.braintreepayments.testutils.CardNumber.THREE_D_SECURE_VERIFICA
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class ThreeDSecureVerificationTest extends TestHelper {
@@ -179,7 +180,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
         onDevice(withText("Authentication")).waitForExists();
         onDevice().pressBack();
 
-        onDevice(withText("3DS canceled")).waitForExists();
+        onDevice(withTextStartingWith("An error occurred")).check(text(containsString("user canceled")));
     }
 
     @Test(timeout = 40000)

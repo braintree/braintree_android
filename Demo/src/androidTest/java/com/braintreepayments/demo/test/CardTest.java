@@ -40,6 +40,12 @@ public class CardTest extends TestHelper {
 
     @Test(timeout = 60000)
     public void tokenizesACard() {
+        Context context = ApplicationProvider.getApplicationContext();
+        PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .putBoolean("amex_rewards_balance", false)
+                .commit();
+
         onDevice(withText("Card Number")).perform(setText("4111111111111111"));
         fillInExpiration();
         onDevice(withText("CVV")).perform(setText("123"));

@@ -31,7 +31,7 @@ public class AnalyticsIntentService extends IntentService {
             Authorization authorization = Authorization.fromString(intent.getStringExtra(EXTRA_AUTHORIZATION));
             Configuration configuration = Configuration.fromJson(intent.getStringExtra(EXTRA_CONFIGURATION));
 
-            AnalyticsSender.send(this, authorization, new BraintreeHttpClient(authorization),
+            AnalyticsSender.send(this, authorization, configuration, new BraintreeHttpClient(authorization),
                     configuration.getAnalytics().getUrl(), true);
         } catch (InvalidArgumentException | JSONException ignored) {}
     }

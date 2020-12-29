@@ -25,6 +25,10 @@ public class TLSSocketFactory extends SSLSocketFactory {
 
     private SSLSocketFactory mInternalSSLSocketFactory;
 
+    static TLSSocketFactory newInstance() throws SSLException {
+        return new TLSSocketFactory();
+    }
+
     public TLSSocketFactory() throws SSLException {
         try {
             SSLContext sslContext = SSLContext.getInstance("TLS");

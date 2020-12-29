@@ -13,6 +13,7 @@ import java.util.List;
 import static com.braintreepayments.api.models.PaymentMethodNonce.parsePaymentMethodNonces;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
@@ -100,5 +101,9 @@ public class PaymentMethodNonceUnitTest {
 
         assertTrue(paymentMethodNonce instanceof PayPalAccountNonce);
         assertEquals("with email paypalaccount@example.com", paymentMethodNonce.getDescription());
+
+        PayPalAccountNonce payPalAccountNonce = (PayPalAccountNonce) paymentMethodNonce;
+        assertNotNull(payPalAccountNonce.getCreditFinancing());
+        assertEquals(18, payPalAccountNonce.getCreditFinancing().getTerm());
     }
 }

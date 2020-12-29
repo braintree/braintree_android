@@ -29,22 +29,26 @@ public class PayPalInstallationIdentifierTest {
 
     @Test
     public void getInstallationGUID_returnsNewGUIDWhenOneDoesNotExistAndPersistsIt() {
+        PayPalInstallationIdentifier sut = new PayPalInstallationIdentifier();
+
         assertNull(mPrefs.getString("InstallationGUID", null));
 
-        assertNotNull(PayPalInstallationIdentifier.getInstallationGUID(ApplicationProvider.getApplicationContext()));
+        assertNotNull(sut.getInstallationGUID(ApplicationProvider.getApplicationContext()));
 
         assertNotNull(mPrefs.getString("InstallationGUID", null));
     }
 
     @Test
     public void getInstallationGUID_returnsExistingGUIDWhenOneExist() {
+        PayPalInstallationIdentifier sut = new PayPalInstallationIdentifier();
+
         mPrefs.edit()
                 .putString("InstallationGUID", UUID.randomUUID().toString())
                 .apply();
         String existingGUID = mPrefs.getString("InstallationGUID", null);
         assertNotNull(existingGUID);
 
-        assertEquals(existingGUID, PayPalInstallationIdentifier.getInstallationGUID(ApplicationProvider.getApplicationContext()));
+        assertEquals(existingGUID, sut.getInstallationGUID(ApplicationProvider.getApplicationContext()));
 
         assertEquals(existingGUID, mPrefs.getString("InstallationGUID", null));
     }

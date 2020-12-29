@@ -28,7 +28,7 @@ public class GooglePaymentConfigurationTest {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_ANDROID_PAY);
         GooglePaymentConfiguration googlePaymentConfiguration = configuration.getGooglePayment();
 
-        assertTrue(googlePaymentConfiguration.isEnabled(ApplicationProvider.getApplicationContext()));
+        assertTrue(googlePaymentConfiguration.isEnabled());
         assertEquals("google-auth-fingerprint", googlePaymentConfiguration.getGoogleAuthorizationFingerprint());
         assertEquals("Android Pay Merchant", googlePaymentConfiguration.getDisplayName());
         assertEquals("sandbox", googlePaymentConfiguration.getEnvironment());
@@ -47,7 +47,7 @@ public class GooglePaymentConfigurationTest {
 
         GooglePaymentConfiguration googlePaymentConfiguration = GooglePaymentConfiguration.fromJson(json);
 
-        assertTrue(googlePaymentConfiguration.isEnabled(ApplicationProvider.getApplicationContext()));
+        assertTrue(googlePaymentConfiguration.isEnabled());
         assertEquals("google-auth-fingerprint", googlePaymentConfiguration.getGoogleAuthorizationFingerprint());
         assertEquals("Android Pay Merchant", googlePaymentConfiguration.getDisplayName());
         assertEquals("sandbox", googlePaymentConfiguration.getEnvironment());
@@ -61,7 +61,7 @@ public class GooglePaymentConfigurationTest {
     public void fromJson_returnsNewGooglePaymentConfigurationWithDefaultValuesWhenJSONObjectIsNull() {
         GooglePaymentConfiguration googlePaymentConfiguration = GooglePaymentConfiguration.fromJson(null);
 
-        assertFalse(googlePaymentConfiguration.isEnabled(ApplicationProvider.getApplicationContext()));
+        assertFalse(googlePaymentConfiguration.isEnabled());
         assertNull(googlePaymentConfiguration.getGoogleAuthorizationFingerprint());
         assertEquals("", googlePaymentConfiguration.getDisplayName());
         assertNull(googlePaymentConfiguration.getEnvironment());
@@ -72,7 +72,7 @@ public class GooglePaymentConfigurationTest {
     public void fromJson_returnsNewGooglePaymentConfigurationWithDefaultValuesWhenNoDataIsPresent() {
         GooglePaymentConfiguration googlePaymentConfiguration = GooglePaymentConfiguration.fromJson(new JSONObject());
 
-        assertFalse(googlePaymentConfiguration.isEnabled(ApplicationProvider.getApplicationContext()));
+        assertFalse(googlePaymentConfiguration.isEnabled());
         assertNull(googlePaymentConfiguration.getGoogleAuthorizationFingerprint());
         assertEquals("", googlePaymentConfiguration.getDisplayName());
         assertNull(googlePaymentConfiguration.getEnvironment());

@@ -29,7 +29,8 @@ public class AppHelperTest {
         when(context.getPackageManager()).thenReturn(packageManager);
         when(packageManager.getApplicationInfo("package.name", 0)).thenReturn(mock(ApplicationInfo.class));
 
-        assertTrue(AppHelper.isAppInstalled(context, "package.name"));
+        AppHelper sut = new AppHelper();
+        assertTrue(sut.isAppInstalled(context, "package.name"));
     }
 
     @Test
@@ -37,7 +38,8 @@ public class AppHelperTest {
         when(context.getPackageManager()).thenReturn(packageManager);
         when(packageManager.getApplicationInfo("package.name", 0)).thenReturn(null);
 
-        assertFalse(AppHelper.isAppInstalled(context, "package.name"));
+        AppHelper sut = new AppHelper();
+        assertFalse(sut.isAppInstalled(context, "package.name"));
     }
 
     @Test
@@ -45,6 +47,7 @@ public class AppHelperTest {
         when(context.getPackageManager()).thenReturn(packageManager);
         when(packageManager.getApplicationInfo("package.name", 0)).thenThrow(new NameNotFoundException());
 
-        assertFalse(AppHelper.isAppInstalled(context, "package.name"));
+        AppHelper sut = new AppHelper();
+        assertFalse(sut.isAppInstalled(context, "package.name"));
     }
 }

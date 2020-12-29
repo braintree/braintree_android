@@ -1,6 +1,5 @@
 package com.braintreepayments.api.interfaces;
 
-import com.braintreepayments.api.BraintreeFragment;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 
 import java.util.List;

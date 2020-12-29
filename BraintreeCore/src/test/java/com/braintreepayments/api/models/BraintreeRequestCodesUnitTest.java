@@ -11,7 +11,7 @@ public class BraintreeRequestCodesUnitTest {
 
     @Test
     public void expectedNumberOfRequestCodes() {
-        assertEquals(8, BraintreeRequestCodes.class.getDeclaredFields().length);
+        assertEquals(7, BraintreeRequestCodes.class.getDeclaredFields().length);
     }
 
     @Test
@@ -48,7 +48,4 @@ public class BraintreeRequestCodesUnitTest {
     public void localPayment() {
         assertEquals(13596, BraintreeRequestCodes.LOCAL_PAYMENT);
     }
-
-    @Test
-    public void paypalTwoFactorAuth() { assertEquals(13597, BraintreeRequestCodes.PAYPAL_TWO_FACTOR_AUTH); }
 }

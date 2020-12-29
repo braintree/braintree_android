@@ -1,7 +1,5 @@
 package com.braintreepayments.api.models;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import androidx.annotation.StringDef;
 
 import java.lang.annotation.Retention;
@@ -18,7 +16,7 @@ import java.util.Collection;
  *
  * @see <a href="https://developer.paypal.com/docs/api/#inputfields-object">PayPal REST API Reference</a>
  */
-public class PayPalRequest implements Parcelable {
+public class PayPalRequest {
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalRequest.INTENT_ORDER, PayPalRequest.INTENT_SALE, PayPalRequest.INTENT_AUTHORIZE})
@@ -72,8 +70,7 @@ public class PayPalRequest implements Parcelable {
     private boolean mOfferCredit;
     private boolean mOfferPayLater;
     private String mMerchantAccountId;
-    private PayPalProductAttributes mProductAttributes;
-    private ArrayList<PayPalApiLineItem> mLineItems = new ArrayList<>();
+    private ArrayList<PayPalLineItem> mLineItems = new ArrayList<>();
 
     /**
      * Constructs a description of a PayPal checkout for Single Payment and Billing Agreements.
@@ -299,16 +296,11 @@ public class PayPalRequest implements Parcelable {
     /**
      * The line items for this transaction. It can include up to 249 line items.
      *
-     * @param lineItems a collection of {@link PayPalApiLineItem}
+     * @param lineItems a collection of {@link PayPalLineItem}
      */
-    public PayPalRequest lineItems(Collection<PayPalApiLineItem> lineItems) {
+    public PayPalRequest lineItems(Collection<PayPalLineItem> lineItems) {
         mLineItems.clear();
         mLineItems.addAll(lineItems);
-        return this;
-    }
-
-    public PayPalRequest productAttributes(PayPalProductAttributes productAttributes) {
-        mProductAttributes = productAttributes;
         return this;
     }
 
@@ -356,12 +348,8 @@ public class PayPalRequest implements Parcelable {
         return mMerchantAccountId;
     }
 
-    public ArrayList<PayPalApiLineItem> getLineItems() {
+    public ArrayList<PayPalLineItem> getLineItems() {
         return mLineItems;
-    }
-
-    public PayPalProductAttributes getProductAttributes() {
-        return mProductAttributes;
     }
 
     @PayPalPaymentIntent
@@ -378,60 +366,4 @@ public class PayPalRequest implements Parcelable {
     public String getUserAction() {
         return mUserAction;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(mAmount);
-        parcel.writeString(mCurrencyCode);
-        parcel.writeString(mLocaleCode);
-        parcel.writeString(mBillingAgreementDescription);
-        parcel.writeByte(mShippingAddressRequired ? (byte) 1:0);
-        parcel.writeByte(mShippingAddressEditable ? (byte) 1:0);
-        parcel.writeParcelable(mShippingAddressOverride, i);
-        parcel.writeString(mIntent);
-        parcel.writeString(mLandingPageType);
-        parcel.writeString(mUserAction);
-        parcel.writeString(mDisplayName);
-        parcel.writeByte(mOfferCredit ? (byte) 1:0);
-        parcel.writeByte(mOfferPayLater ? (byte) 1:0);
-        parcel.writeString(mMerchantAccountId);
-        parcel.writeList(mLineItems);
-        parcel.writeParcelable(mProductAttributes, i);
-    }
-
-    public PayPalRequest(Parcel in) {
-        mAmount = in.readString();
-        mCurrencyCode = in.readString();
-        mLocaleCode = in.readString();
-        mBillingAgreementDescription = in.readString();
-        mShippingAddressRequired = in.readByte() > 0;
-        mShippingAddressEditable = in.readByte() > 0;
-        mShippingAddressOverride = in.readParcelable(PostalAddress.class.getClassLoader());
-        mIntent = in.readString();
-        mLandingPageType = in.readString();
-        mUserAction = in.readString();
-        mDisplayName = in.readString();
-        mOfferCredit = in.readByte() > 0;
-        mOfferPayLater = in.readByte() > 0;
-        mMerchantAccountId = in.readString();
-        mLineItems = in.readArrayList(PayPalApiLineItem.class.getClassLoader());
-        mProductAttributes = in.readParcelable(PayPalProductAttributes.class.getClassLoader());
-    }
-
-    public static final Creator<PayPalRequest> CREATOR = new Creator<PayPalRequest>() {
-        @Override
-        public PayPalRequest createFromParcel(Parcel in) {
-            return new PayPalRequest(in);
-        }
-
-        @Override
-        public PayPalRequest[] newArray(int size) {
-            return new PayPalRequest[size];
-        }
-    };
 }

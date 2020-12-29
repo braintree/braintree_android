@@ -146,7 +146,7 @@ public class ConfigurationUnitTest {
         Configuration configuration = Configuration.fromJson(Fixtures.CONFIGURATION_WITHOUT_ANDROID_PAY);
 
         assertNotNull(configuration.getGooglePayment());
-        assertFalse(configuration.getGooglePayment().isEnabled(null));
+        assertFalse(configuration.getGooglePayment().isEnabled());
         assertEquals("", configuration.getGooglePayment().getDisplayName());
         assertNull(configuration.getGooglePayment().getEnvironment());
     }

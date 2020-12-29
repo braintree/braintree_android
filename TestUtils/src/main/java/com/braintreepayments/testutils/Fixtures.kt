@@ -53,7 +53,8 @@ object Fixtures {
             "acsUrl": "https://acs-url/",
             "md": "merchant-descriptor",
             "termUrl": "https://term-url/",
-            "pareq": "pareq"
+            "pareq": "sample-pareq",
+            "transactionId": "sample-transaction-id"
           },
           "paymentMethod": {
             "type": "CreditCard",
@@ -340,7 +341,9 @@ object Fixtures {
     // region Auth Tokens
     const val BASE64_CLIENT_TOKEN = "eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOiJlbmNvZGVkX2F1dGhfZmluZ2VycHJpbnQiLCJjaGFsbGVuZ2VzIjpbImN2diIsInBvc3RhbF9jb2RlIl0sImNvbmZpZ1VybCI6ImVuY29kZWRfY2FwaV9jb25maWd1cmF0aW9uX3VybCIsImFzc2V0c1VybCI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTAwMCIsInRocmVlRFNlY3VyZUVuYWJsZWQiOmZhbHNlLCJwYXlwYWxFbmFibGVkIjpmYWxzZX0="
     const val BASE64_PAYPAL_UAT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FwaS5zYW5kYm94LnBheXBhbC5jb20iLCJzdWIiOiJQYXlQYWw6TUpGUDM5VjRNUVJBRSIsImFjciI6WyJjbGllbnQiXSwib3B0aW9ucyI6e30sImF6Ijoic2Iuc2xjIiwic2NvcGVzIjpbIkJyYWludHJlZTpWYXVsdCJdLCJleHAiOjE1ODY4MjU1NTMsImV4dGVybmFsX2lkIjpbIlBheVBhbDpNSkZQMzlWNE1RUkFFIiwiQnJhaW50cmVlOmNmeHMzZ2h6d2ZrMnJocW0iXSwianRpIjoiVTJBQUV5RTdnZXVYSmIweHZQNWV0UjBDTy1ld2tmcFVxZFJCX0thZnNhbkVEWjZJZDZUMVJUOUhhbUNNdGdSQWZ5bzBZbHdJT0xWYnZMbGRzNFg5cEwwTkNZaTlmUWlnY3Y5cUxnZjg1WHd3ZUJ0QW5OOHNxcUdaMEpEMlFlLXcifQ.iV5DXCg2E2ThH9Q8aYDBGaW19OOD8cAb3D6SnJAnM30"
+
     const val TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
+    const val PROD_TOKENIZATION_KEY = "production_t2wns2y2_dfy45jdj3dxkmz5m"
 
     // language=JSON
     const val CLIENT_TOKEN = """
@@ -570,7 +573,7 @@ object Fixtures {
           "merchantId": "integration_merchant_id",
           "merchantAccountId": "integration_merchant_account_id",
           "graphQL": {
-            "url": "/graphql",
+            "url": "https://example-graphql.com/graphql",
             "features": ["tokenize_credit_cards"]
           }
         }
@@ -603,6 +606,26 @@ object Fixtures {
             "baseUrl": "http://localhost:9000",
             "directBaseUrl": "https://www.paypal.com",
             "environment": "live"
+          },
+          "merchantId": "merchant-id"
+        }
+    """
+
+    // language=JSON
+    const val CONFIGURATION_WITH_LIVE_PAYPAL_INR = """
+        {
+          "clientApiUrl": "client-api-url",
+          "environment": "test",
+          "paypalEnabled": true,
+          "paypal": {
+            "displayName": "paypal_merchant",
+            "clientId": "paypal_client_id",
+            "privacyUrl": "http://www.example.com/privacy",
+            "userAgreementUrl": "http://www.example.com/user_agreement",
+            "baseUrl": "http://localhost:9000",
+            "directBaseUrl": "https://www.paypal.com",
+            "environment": "live",
+            "currencyIsoCode": "INR"
           },
           "merchantId": "merchant-id"
         }
@@ -730,6 +753,19 @@ object Fixtures {
     """
 
     // language=JSON
+    const val CONFIGURATION_WITH_PROD_ANALYTICS = """
+        {
+            "clientApiUrl": "client_api_url",
+            "environment": "production",
+            "merchantId": "some-merchant-id",
+            "merchantAccountId": "some-merchant-account-id",
+            "analytics": {
+                "url": "https://client-analytics.braintreegateway.com/some-merchant-id"
+            }
+        }
+    """
+
+    // language=JSON
     const val CONFIGURATION_WITH_SAMSUNGPAY = """
         {
           "clientApiUrl": "client_api_url",
@@ -751,6 +787,19 @@ object Fixtures {
             "samsungAuthorization": "example-samsung-authorization",
             "environment": "SANDBOX"
           }
+        }
+    """
+
+    // language=JSON
+    const val CONFIGURATION_WITH_SANDBOX_ANALYTICS = """
+        {
+            "clientApiUrl": "client_api_url",
+            "environment": "test",
+            "merchantId": "some-merchant-id",
+            "merchantAccountId": "some-merchant-account-id",
+            "analytics": {
+                "url": "https://origin-analytics-sand.sandbox.braintree-api.com/some-merchant-id"
+            }
         }
     """
 
@@ -1677,6 +1726,17 @@ object Fixtures {
     """
 
     // language=JSON
+    const val PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE_SIMPLE = """
+        {
+          "paymentResource":{
+            "paymentToken":"token",
+            "intent":"authorize",
+            "redirectUrl":"https://example.com/path"
+          }
+        }
+    """
+
+    // language=JSON
     const val PAYPAL_HERMES_RESPONSE = """
         {
           "paymentResource":{
@@ -1717,6 +1777,31 @@ object Fixtures {
             "supportsTwoStepAuthAndCapture": true,
             "isSupported": true
           }
+        }
+    """
+    // endregion
+
+    // region PayPal
+    // language=JSON
+    const val SANDBOX_CONFIGURATION_WITH_GRAPHQL = """
+        {
+          "clientApiUrl": "https://api.sandbox.braintreegateway.com:443/merchants/dcpspy2brwdjr3qn/client_api",
+          "environment": "sandbox",
+          "merchantId": "dcpspy2brwdjr3qn",
+          "graphQL": {
+            "url": "https://payments.sandbox.braintree-api.com/graphql",
+            "date": "2018-05-08",
+            "features": ["tokenize_credit_cards"]
+          }
+        }
+    """
+
+    // language=JSON
+    const val SANDBOX_CONFIGURATION_WITHOUT_GRAPHQL = """
+        {
+          "clientApiUrl": "https://api.sandbox.braintreegateway.com:443/merchants/dcpspy2brwdjr3qn/client_api",
+          "environment": "sandbox",
+          "merchantId": "dcpspy2brwdjr3qn"
         }
     """
     // endregion

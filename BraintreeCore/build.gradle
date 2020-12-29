@@ -42,48 +42,31 @@ android {
     }
 }
 
-def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProject.playServicesWalletVersion}"
-def googlePayment = "com.braintreepayments.api:google-payment:${rootProject.googlePaymentVersion}"
-
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    compileOnly(playServicesWallet) {
-        exclude module: 'support-v4'
-    }
-    compileOnly project(':BraintreeDataCollector')
-    compileOnly project(':ThreeDSecure')
 
     api project(':BraintreeModels')
-
-    // TODO: remove each api reference when it's corresponding feature client is created
-    api googlePayment
     api project(':SharedUtils')
-    api project(':PayPal')
-    api project(':LocalPayment')
-    api project(':Venmo')
 
-    androidTestImplementation playServicesWallet
-    androidTestImplementation project(':BraintreeDataCollector')
-    androidTestImplementation project(':ThreeDSecure')
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
     androidTestImplementation 'androidx.test:rules:1.1.1'
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation project(':PayPal')
     androidTestImplementation project(':TestUtils')
-    androidTestImplementation project(':Card')
-    androidTestImplementation project(':UnionPay')
 
-    testImplementation playServicesWallet
-    testImplementation project(':BraintreeDataCollector')
     testImplementation 'org.robolectric:robolectric:4.1'
+    testImplementation 'androidx.test:core:1.3.0'
     testImplementation 'androidx.test.ext:junit:1.1.2'
-    testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
-    testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.6'
-    testImplementation 'org.powermock:powermock-api-mockito:1.6.6'
-    testImplementation 'org.powermock:powermock-classloading-xstream:1.6.6'
-    testImplementation 'org.skyscreamer:jsonassert:1.4.0'
+    testImplementation 'org.powermock:powermock-module-junit4:2.0.7'
+    testImplementation 'org.powermock:powermock-module-junit4-rule:2.0.7'
+    testImplementation 'org.powermock:powermock-api-mockito2:2.0.7'
+    testImplementation 'org.powermock:powermock-classloading-xstream:2.0.7'
+    testImplementation 'org.skyscreamer:jsonassert:1.5.0'
+    testImplementation project(':PayPal')
     testImplementation project(':TestUtils')
-    testImplementation project(':ThreeDSecure')
+    testImplementation project(':UnionPay')
+    testImplementation project(':Venmo')
 }
 
 android.buildTypes.each { type ->
@@ -111,11 +94,6 @@ task javadocs(type: Javadoc) {
     failOnError false
 
     // Used to exclude docstrings from public site
-    exclude "com/braintreepayments/api/PayPalTwoFactorAuth.java"
-    exclude "com/braintreepayments/api/PayPalTwoFactorAuthSharedPreferences.java"
-    exclude "com/braintreepayments/api/model/PayPalTwoFactorAuthRequest.java"
-    exclude "com/braintreepayments/api/model/PayPalTwoFactorAuthResponse.java"
-    exclude "com/braintreepayments/api/interfaces/PayPalTwoFactorAuthCallback.java"
     exclude "com/braintreepayments/api/PreferredPaymentMethods.java"
     exclude "com/braintreepayments/api/models/PreferredPaymentMethodsResult.java"
     exclude "com/braintreepayments/api/interfaces/PreferredPaymentMethodsListener.java"

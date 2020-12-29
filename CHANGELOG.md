@@ -2,7 +2,35 @@
 
 ## unreleased
 
+* Add a `client` for each feature
+* Update Visa Checkout aar dependency to version `6.6.1`
+* Add `LocalPaymentTransaction` to represent Local Payment transactions
+* Create callback interfaces to enforce callback pattern:
+  * `ConfigurationCallback`
+  * `DeletePaymentMethodNonceCallback`
+  * `GetPaymentMethodNoncesCallback`
+  * `PreferredPaymentMethodsCallback`
+  * `CardTokenizeCallback`
+  * `BraintreeDataCollectorCallback`
+  * `KountDataCollectorCallback`
+  * `VenmoOnActivityResultCallback`
+  * `VenmoAuthorizeAccountCallback`
+  * `LocalPaymentBrowserSwitchResultCallback`
+  * `LocalPaymentStartCallback`
+  * `PayPalBrowserSwitchResultCallback`
+  * `PayPalRequestCallback`
+  * `ThreeDSecureInitializeChallengeCallback`
+  * `ThreeDSecureResultCallback`
+  * `CardinalInitializeCallback`
+  * `ThreeDSecureVerificationCallback`
+  * `ThreeDSecureLookupCallback`
+  * `ThreeDSecurePrepareLookupCallback`
+  * `AmericanExpressGetRewardsBalanceCallback`
+  * `UnionPayFetchCapabilitiesCallback`
+  * `UnionPayTokenizeCallback`
+  * `UnionPayEnrollCallback`
 * Breaking Changes
+  * Remove `BraintreeFragment`
   * Rename `core` module to `shared-utils`
   * Rename `braintree` module to `braintree-core`
   * Create `american-express` module

@@ -6,10 +6,10 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
 
-import com.braintreepayments.api.BraintreeFragment;
-import com.braintreepayments.api.Venmo;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
-import com.braintreepayments.api.interfaces.ConfigurationListener;
+import androidx.annotation.Nullable;
+
+import com.braintreepayments.api.ConfigurationCallback;
+import com.braintreepayments.api.VenmoAuthorizeAccountCallback;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VenmoAccountNonce;
@@ -17,7 +17,7 @@ import com.braintreepayments.api.models.VenmoAccountNonce;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class VenmoActivity extends BaseActivity implements ConfigurationListener {
+public class VenmoActivity extends BaseActivity {
 
     private ImageButton mVenmoButton;
 
@@ -29,6 +29,19 @@ public class VenmoActivity extends BaseActivity implements ConfigurationListener
         setUpAsBack();
 
         mVenmoButton = findViewById(R.id.venmo_button);
+
+        getConfiguration(new ConfigurationCallback() {
+            @Override
+            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                if (isVenmoAppSwitchEnabled()) {
+                    mVenmoButton.setVisibility(VISIBLE);
+                } else if (configuration.getPayWithVenmo().isAccessTokenValid()) {
+                    showDialog("Please install the Venmo app first.");
+                } else {
+                    showDialog("Venmo is not enabled for the current merchant.");
+                }
+            }
+        });
     }
 
     @Override
@@ -37,27 +50,7 @@ public class VenmoActivity extends BaseActivity implements ConfigurationListener
     }
 
     @Override
-    protected void onAuthorizationFetched() {
-        try {
-            mBraintreeFragment = BraintreeFragment.newInstance(this, mAuthorization);
-        } catch (InvalidArgumentException e) {
-            onError(e);
-        }
-    }
-
-    @Override
-    public void onConfigurationFetched(Configuration configuration) {
-        if (Venmo.isEnabled(this, configuration.getPayWithVenmo())) {
-            mVenmoButton.setVisibility(VISIBLE);
-        } else if (configuration.getPayWithVenmo().isAccessTokenValid()) {
-            showDialog("Please install the Venmo app first.");
-        } else {
-            showDialog("Venmo is not enabled for the current merchant.");
-        }
-    }
-
-    @Override
-    public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
+    protected void onVenmoResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
         super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
         Intent intent = new Intent().putExtra(MainActivity.EXTRA_PAYMENT_RESULT, paymentMethodNonce);
@@ -68,7 +61,17 @@ public class VenmoActivity extends BaseActivity implements ConfigurationListener
     public void launchVenmo(View v) {
         setProgressBarIndeterminateVisibility(true);
 
-        Venmo.authorizeAccount(mBraintreeFragment, Settings.vaultVenmo(this) && !TextUtils.isEmpty(Settings.getCustomerId(this)));
+        boolean shouldVault =
+            Settings.vaultVenmo(this) && !TextUtils.isEmpty(Settings.getCustomerId(this));
+
+        authorizeVenmoAccount(shouldVault, null, new VenmoAuthorizeAccountCallback() {
+            @Override
+            public void onResult(boolean isAuthorized, Exception error) {
+                if (error != null) {
+                    onBraintreeError(error);
+                }
+            }
+        });
     }
 
     public static String getDisplayString(VenmoAccountNonce nonce) {

@@ -14,53 +14,47 @@ import android.view.Window;
 import android.widget.ArrayAdapter;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import androidx.core.content.ContextCompat;
 
-import com.braintreepayments.api.BraintreeFragment;
+import com.braintreepayments.api.BraintreeActivity;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
-import com.braintreepayments.api.interfaces.BraintreeErrorListener;
 import com.braintreepayments.api.interfaces.BraintreePaymentResultListener;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
 import com.braintreepayments.api.internal.SignatureVerificationOverrides;
 import com.braintreepayments.api.models.BinData;
 import com.braintreepayments.api.models.BraintreePaymentResult;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.demo.internal.ApiClient;
-import com.braintreepayments.demo.internal.ApiClientRequestInterceptor;
-import com.braintreepayments.demo.models.ClientToken;
-import com.braintreepayments.demo.models.PayPalUAT;
 
 import java.util.Arrays;
 import java.util.List;
 
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 @SuppressWarnings("deprecation")
-public abstract class BaseActivity extends AppCompatActivity implements OnRequestPermissionsResultCallback,
-        PaymentMethodNonceCreatedListener, BraintreeCancelListener, BraintreeErrorListener,
-        BraintreePaymentResultListener, ActionBar.OnNavigationListener {
+public abstract class BaseActivity extends BraintreeActivity implements OnRequestPermissionsResultCallback,
+        PaymentMethodNonceCreatedListener, BraintreeCancelListener, BraintreePaymentResultListener,
+        ActionBar.OnNavigationListener {
+
+    public static final String RETURN_URL_SCHEME = "com.braintreepayments.demo.braintree";
 
     private static final String EXTRA_AUTHORIZATION = "com.braintreepayments.demo.EXTRA_AUTHORIZATION";
     private static final String EXTRA_CUSTOMER_ID = "com.braintreepayments.demo.EXTRA_CUSTOMER_ID";
 
     protected String mAuthorization;
     protected String mCustomerId;
-    protected BraintreeFragment mBraintreeFragment;
 
     private boolean mActionBarSetup;
+
+    private Merchant merchant;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        merchant = new Merchant();
 
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setProgressBarIndeterminateVisibility(true);
@@ -141,8 +135,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
     }
 
     @CallSuper
-    @Override
-    public void onError(Exception error) {
+    protected void handleError(Exception error) {
         setProgressBarIndeterminateVisibility(false);
 
         Log.d(getClass().getSimpleName(), "Error received (" + error.getClass() + "): "  + error.getMessage());
@@ -157,18 +150,13 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
         mAuthorization = null;
         mCustomerId = Settings.getCustomerId(this);
 
-        if (mBraintreeFragment != null) {
-            getSupportFragmentManager().beginTransaction().remove(mBraintreeFragment).commit();
-            mBraintreeFragment = null;
-        }
-
         reset();
         fetchAuthorization();
     }
 
     protected abstract void reset();
 
-    protected abstract void onAuthorizationFetched();
+    protected void onAuthorizationFetched() {}
 
     protected void fetchAuthorization() {
         if (mAuthorization != null) {
@@ -185,67 +173,32 @@ public abstract class BaseActivity extends AppCompatActivity implements OnReques
         } else if (authType.equals(getString(R.string.paypal_uat))) {
             // NOTE: - The PP UAT is fetched from the PPCP sample server
             //       - The only feature that currently works with a PP UAT is Card Tokenization.
-            ApiClient apiClient = new RestAdapter.Builder()
-                    .setEndpoint("https://ppcp-sample-merchant-sand.herokuapp.com")
-                    .setRequestInterceptor(new ApiClientRequestInterceptor())
-                    .build()
-                    .create(ApiClient.class);
-
-            apiClient.getPayPalUAT("US", new Callback<PayPalUAT>() {
+            merchant.fetchPayPalUAT(new FetchPayPalUATCallback() {
                 @Override
-                public void success(PayPalUAT uat, Response response) {
+                public void onResult(@Nullable String payPalUAT, @Nullable Exception error) {
                     setProgressBarIndeterminateVisibility(false);
-
-                    if (TextUtils.isEmpty(uat.getUAT())) {
-                        showDialog("PayPal UAT was empty");
-                    } else {
-                        mAuthorization = uat.getUAT();
-                        onAuthorizationFetched();
-                    }
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    setProgressBarIndeterminateVisibility(false);
-
-                    if (error.getResponse() == null) {
-                        showDialog(error.getCause().getMessage());
-                    } else {
-                        showDialog("Unable to get a PayPal UAT. Response Code: " +
-                                error.getResponse().getStatus() + " Response body: " +
-                                error.getResponse().getBody());
+                    if (payPalUAT != null) {
+                        mAuthorization = payPalUAT;
+                        initializeBraintree(payPalUAT, RETURN_URL_SCHEME);
+                    } else if (error != null) {
+                        showDialog(error.getMessage());
                     }
                 }
             });
 
         } else if (authType.equals(getString(R.string.client_token))) {
-            DemoApplication.getApiClient(this).getClientToken(Settings.getCustomerId(this),
-                    Settings.getMerchantAccountId(this), new Callback<ClientToken>() {
-                        @Override
-                        public void success(ClientToken clientToken, Response response) {
-                            setProgressBarIndeterminateVisibility(false);
-
-                            if (TextUtils.isEmpty(clientToken.getClientToken())) {
-                                showDialog("Client token was empty");
-                            } else {
-                                mAuthorization = clientToken.getClientToken();
-                                onAuthorizationFetched();
-                            }
-                        }
-
-                        @Override
-                        public void failure(RetrofitError error) {
-                            setProgressBarIndeterminateVisibility(false);
-
-                            if (error.getResponse() == null) {
-                                showDialog(error.getCause().getMessage());
-                            } else {
-                                showDialog("Unable to get a client token. Response Code: " +
-                                        error.getResponse().getStatus() + " Response body: " +
-                                        error.getResponse().getBody());
-                            }
-                        }
-                    });
+            merchant.fetchClientToken(this, new FetchClientTokenCallback() {
+                @Override
+                public void onResult(@Nullable String clientToken, @Nullable Exception error) {
+                    setProgressBarIndeterminateVisibility(false);
+                    if (clientToken != null) {
+                        mAuthorization = clientToken;
+                        initializeBraintree(clientToken, RETURN_URL_SCHEME);
+                    } else if (error != null) {
+                        showDialog(error.getMessage());
+                    }
+                }
+            });
         }
     }
 

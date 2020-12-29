@@ -36,11 +36,11 @@ public class ThreeDSecureLookupUnitTest {
         assertEquals("https://acs-url/", mLookupWithoutVersion.getAcsUrl());
         assertEquals("merchant-descriptor", mLookupWithoutVersion.getMd());
         assertEquals("https://term-url/", mLookupWithoutVersion.getTermUrl());
-        assertEquals("pareq", mLookupWithoutVersion.getPareq());
+        assertEquals("sample-pareq", mLookupWithoutVersion.getPareq());
         assertEquals("11", mLookupWithoutVersion.getCardNonce().getLastTwo());
         assertEquals("123456-12345-12345-a-adfa", mLookupWithoutVersion.getCardNonce().getNonce());
         assertEquals("", mLookupWithoutVersion.getThreeDSecureVersion());
-        assertEquals("", mLookupWithoutVersion.getTransactionId());
+        assertEquals("sample-transaction-id", mLookupWithoutVersion.getTransactionId());
         assertTrue(mLookupWithoutVersion.getCardNonce().getThreeDSecureInfo().isLiabilityShifted());
         assertTrue(mLookupWithoutVersion.getCardNonce().getThreeDSecureInfo().isLiabilityShiftPossible());
         assertTrue(mLookupWithoutVersion.getCardNonce().getThreeDSecureInfo().wasVerified());

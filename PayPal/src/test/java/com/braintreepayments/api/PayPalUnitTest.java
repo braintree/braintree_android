@@ -1,1319 +1,621 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 
+import androidx.fragment.app.FragmentActivity;
+
+import com.braintreepayments.MockBraintreeClientBuilder;
+import com.braintreepayments.MockTokenizationClientBuilder;
 import com.braintreepayments.api.exceptions.BraintreeException;
-import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.interfaces.PayPalApprovalCallback;
-import com.braintreepayments.api.interfaces.PayPalApprovalHandler;
+import com.braintreepayments.api.exceptions.PayPalBrowserSwitchException;
+import com.braintreepayments.api.helpers.MockPayPalInternalClientBuilder;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
-import com.braintreepayments.api.internal.BraintreeSharedPreferences;
-import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PayPalAccountNonce;
-import com.braintreepayments.api.models.PayPalApiBillingAgreementRequest;
-import com.braintreepayments.api.models.PayPalApiCheckoutRequest;
-import com.braintreepayments.api.models.PayPalApiLineItem;
-import com.braintreepayments.api.models.PayPalApiRequest;
-import com.braintreepayments.api.models.PayPalProductAttributes;
+import com.braintreepayments.api.models.PayPalCreditFinancing;
 import com.braintreepayments.api.models.PayPalRequest;
-import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.testutils.Fixtures;
-import com.braintreepayments.testutils.TestConfigurationBuilder;
-import com.braintreepayments.testutils.TestConfigurationBuilder.TestPayPalConfigurationBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.concurrent.CountDownLatch;
-
-import static androidx.appcompat.app.AppCompatActivity.RESULT_CANCELED;
-import static androidx.appcompat.app.AppCompatActivity.RESULT_OK;
-import static com.braintreepayments.api.BraintreePowerMockHelper.MockStaticTokenizationClient;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.doAnswer;
-import static org.powermock.api.mockito.PowerMockito.doReturn;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.spy;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*", "org.json.*", "javax.crypto.*" })
-@PrepareForTest({ PayPal.class, TokenizationClient.class })
 public class PayPalUnitTest {
 
-    @Rule
-    public PowerMockRule mPowerMockRule = new PowerMockRule();
+    private FragmentActivity context;
 
-    private MockFragmentBuilder mMockFragmentBuilder;
+    private Configuration payPalEnabledConfig;
+    private Configuration payPalDisabledConfig;
+
+    private PayPalBrowserSwitchResultCallback payPalBrowserSwitchResultCallback;
+    private PayPalRequestCallback payPalRequestCallback;
 
     @Before
-    public void setup() throws Exception {
-        spy(PayPal.class);
-        doReturn(true).when(PayPal.class, "isManifestValid", any(Context.class));
+    public void beforeEach() throws JSONException {
+        context = mock(FragmentActivity.class);
 
-        Authorization authorization = mock(Authorization.class);
-        when(authorization.getBearer()).thenReturn("authorization");
-        when(authorization.toString()).thenReturn("authorization");
+        payPalEnabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL);
+        payPalDisabledConfig = Configuration.fromJson(Fixtures.CONFIGURATION_WITH_DISABLED_PAYPAL);
 
-        Configuration configuration = new TestConfigurationBuilder()
-                .withAnalytics()
-                .paypal(new TestPayPalConfigurationBuilder(true)
-                        .environment("offline")
-                        .billingAgreementsEnabled(false))
-                .buildConfiguration();
-
-        mMockFragmentBuilder = new MockFragmentBuilder()
-                .authorization(authorization)
-                .configuration(configuration);
+        payPalBrowserSwitchResultCallback = mock(PayPalBrowserSwitchResultCallback.class);
+        payPalRequestCallback = mock(PayPalRequestCallback.class);
     }
 
     @Test
-    public void requestBillingAgreement_postsExceptionWhenAmountIsIncluded() {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
+    public void requestBillingAgreement_throwsExceptionWhenAmountIsIncluded() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
-        PayPal.requestBillingAgreement(fragment, new PayPalRequest("1"));
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
+        sut.requestBillingAgreement(context, new PayPalRequest("1"), payPalRequestCallback);
 
-        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(fragment).postCallback(captor.capture());
-        assertTrue(captor.getValue() instanceof BraintreeException);
-        assertEquals("There must be no amount specified for the Billing Agreement flow", captor.getValue().getMessage());
+        ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
+        verify(payPalRequestCallback).onResult(eq(false), errorCaptor.capture());
+        assertTrue(errorCaptor.getValue() instanceof BraintreeException);
+        assertEquals("There must be no amount specified for the Billing Agreement flow", errorCaptor.getValue().getMessage());
     }
 
     @Test
-    public void requestBillingAgreement_startsBrowser() {
-        BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
+    public void requestBillingAgreement_whenPayPalNotEnabled_throwsError() {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalDisabledConfig)
                 .build();
 
-        PayPal.requestBillingAgreement(fragment, new PayPalRequest());
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
+        sut.requestBillingAgreement(context, new PayPalRequest(), payPalRequestCallback);
 
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), captor.capture());
-
-        Uri uri = Uri.parse(captor.getValue());
-
-        assertEquals("checkout.paypal.com", uri.getHost());
-        assertEquals("/one-touch-login-sandbox/index.html", uri.getPath());
-        assertEquals("create_payment_resource", uri.getQueryParameter("action"));
-        assertEquals("63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06|created_at=2015-10-13T18:49:48.371382792+0000&merchant_id=dcpspy2brwdjr3qn&public_key=9wwrzqk3vr3t4nc8",
-                uri.getQueryParameter("authorization_fingerprint"));
-        assertFalse(uri.getQueryParameterNames().contains("amount"));
-        assertFalse(uri.getQueryParameterNames().contains("currency_iso_code"));
-        assertEquals("false", uri.getQueryParameter("experience_profile[address_override]"));
-        assertEquals("false", uri.getQueryParameter("experience_profile[no_shipping]"));
-        assertEquals("dcpspy2brwdjr3qn", uri.getQueryParameter("merchant_id"));
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success", uri.getQueryParameter("return_url"));
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/cancel", uri.getQueryParameter("cancel_url"));
+        ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
+        verify(payPalRequestCallback).onResult(eq(false), errorCaptor.capture());
+        assertTrue(errorCaptor.getValue() instanceof BraintreeException);
+        assertEquals("PayPal is not enabled. " +
+                "See https://developers.braintreepayments.com/guides/paypal/overview/android/ " +
+                "for more information.", errorCaptor.getValue().getMessage());
     }
 
     @Test
-    public void requestBillingAgreement_startsBrowserWithPayPalCredit() {
-        BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
+    public void requestBillingAgreement_whenManifestInvalid_throwsError() {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .urlSchemeDeclaredInManifest(false)
                 .build();
 
-        PayPal.requestBillingAgreement(fragment, new PayPalRequest().offerCredit(true));
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
+        sut.requestBillingAgreement(context, new PayPalRequest(), payPalRequestCallback);
 
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), captor.capture());
-
-        Uri uri = Uri.parse(captor.getValue());
-
-        assertEquals("checkout.paypal.com", uri.getHost());
-        assertEquals("/one-touch-login-sandbox/index.html", uri.getPath());
-        assertEquals("create_payment_resource", uri.getQueryParameter("action"));
-        assertEquals("63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06|created_at=2015-10-13T18:49:48.371382792+0000&merchant_id=dcpspy2brwdjr3qn&public_key=9wwrzqk3vr3t4nc8",
-                uri.getQueryParameter("authorization_fingerprint"));
-        assertFalse(uri.getQueryParameterNames().contains("amount"));
-        assertEquals("true", uri.getQueryParameter("offer_paypal_credit"));
-        assertFalse(uri.getQueryParameterNames().contains("currency_iso_code"));
-        assertEquals("false", uri.getQueryParameter("experience_profile[address_override]"));
-        assertEquals("false", uri.getQueryParameter("experience_profile[no_shipping]"));
-        assertEquals("dcpspy2brwdjr3qn", uri.getQueryParameter("merchant_id"));
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success", uri.getQueryParameter("return_url"));
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/cancel", uri.getQueryParameter("cancel_url"));
+        ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
+        verify(payPalRequestCallback).onResult(eq(false), errorCaptor.capture());
+        assertTrue(errorCaptor.getValue() instanceof BraintreeException);
+        assertEquals("BraintreeBrowserSwitchActivity missing, " +
+                "incorrectly configured in AndroidManifest.xml or another app defines the same browser " +
+                "switch url as this app. See " +
+                "https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch " +
+                "for the correct configuration", errorCaptor.getValue().getMessage());
     }
 
     @Test
-    public void requestBillingAgreement_fragmentNotActive_notStartsBrowser() {
-        BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
-                .isActive(false)
+    public void requestBillingAgreement_startsBrowser() throws JSONException, BrowserSwitchException {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+
+        PayPalResponse payPalResponse = new PayPalResponse()
+                .approvalUrl("https://example.com/approval/url")
+                .successUrl("https://example.com/success/url")
+                .isBillingAgreement(true)
+                .clientMetadataId("sample-client-metadata-id")
+                .merchantAccountId("sample-merchant-account-id")
+                .intent("authorize");
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
+                .success(payPalResponse)
                 .build();
 
-        PayPal.requestBillingAgreement(fragment, new PayPalRequest());
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .build();
 
-        verify(fragment, never()).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), any(Intent.class));
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
+
+        PayPalRequest payPalRequest = new PayPalRequest();
+        sut.requestBillingAgreement(context, payPalRequest, payPalRequestCallback);
+
+        verify(payPalRequestCallback).onResult(true, null);
+
+        ArgumentCaptor<BrowserSwitchOptions> captor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
+        verify(braintreeClient).startBrowserSwitch(same(context), captor.capture());
+
+        BrowserSwitchOptions browserSwitchOptions = captor.getValue();
+        assertEquals(BraintreeRequestCodes.PAYPAL, browserSwitchOptions.getRequestCode());
+
+        assertEquals(Uri.parse("https://example.com/approval/url"), browserSwitchOptions.getUrl());
+
+        JSONObject metadata = browserSwitchOptions.getMetadata();
+        assertEquals("https://example.com/approval/url", metadata.get("approval-url"));
+        assertEquals("https://example.com/success/url", metadata.get("success-url"));
+        assertEquals("billing-agreement", metadata.get("payment-type"));
+        assertEquals("sample-client-metadata-id", metadata.get("client-metadata-id"));
+        assertEquals("sample-merchant-account-id", metadata.get("merchant-account-id"));
+        assertEquals("paypal-browser", metadata.get("source"));
+        assertEquals("authorize", metadata.get("intent"));
     }
 
     @Test
-    public void requestBillingAgreement_defaultPostParamsIncludeCorrectValues() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
+    public void requestBillingAgreement_sendsAnalyticsEvents() {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
 
-        PayPal.requestBillingAgreement(fragment, new PayPalRequest());
+        PayPalResponse payPalResponse = new PayPalResponse()
+                .approvalUrl("https://example.com/approval/url")
+                .successUrl("https://example.com/success/url")
+                .isBillingAgreement(true)
+                .clientMetadataId("sample-client-metadata-id")
+                .merchantAccountId("sample-merchant-account-id")
+                .intent("authorize");
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
+                .success(payPalResponse)
+                .build();
 
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/setup_billing_agreement"), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .build();
 
-        JSONObject expected = new JSONObject()
-                .put("client_key", "authorization")
-                .put("return_url", "com.braintreepayments.api.braintree://onetouch/v1/success")
-                .put("cancel_url", "com.braintreepayments.api.braintree://onetouch/v1/cancel")
-                .put("experience_profile", new JSONObject()
-                        .put("address_override", false)
-                        .put("brand_name", "displayName")
-                        .put("no_shipping", true))
-                .put("offer_paypal_credit", false)
-                .put("offer_pay_later", false);
-        JSONObject actual = new JSONObject(dataCaptor.getValue());
-        JSONAssert.assertEquals(expected, actual, true);
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
+
+        PayPalRequest payPalRequest = new PayPalRequest();
+        sut.requestBillingAgreement(context, payPalRequest, payPalRequestCallback);
+
+        verify(braintreeClient).sendAnalyticsEvent(context, "paypal.billing-agreement.selected");
+        verify(braintreeClient).sendAnalyticsEvent(context,"paypal.billing-agreement.browser-switch.started");
+    }
+
+    @Test
+    public void requestOneTimePayment_startsBrowser() throws JSONException, BrowserSwitchException {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+
+        PayPalResponse payPalResponse = new PayPalResponse()
+                .approvalUrl("https://example.com/approval/url")
+                .successUrl("https://example.com/success/url")
+                .isBillingAgreement(false)
+                .clientMetadataId("sample-client-metadata-id")
+                .merchantAccountId("sample-merchant-account-id")
+                .intent("authorize");
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
+                .success(payPalResponse)
+                .build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .build();
+
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
+
+        PayPalRequest payPalRequest = new PayPalRequest("1.00");
+        sut.requestOneTimePayment(context, payPalRequest, payPalRequestCallback);
+
+        verify(payPalRequestCallback).onResult(true, null);
+
+        ArgumentCaptor<BrowserSwitchOptions> captor = ArgumentCaptor.forClass(BrowserSwitchOptions.class);
+        verify(braintreeClient).startBrowserSwitch(same(context), captor.capture());
+
+        BrowserSwitchOptions browserSwitchOptions = captor.getValue();
+        assertEquals(BraintreeRequestCodes.PAYPAL, browserSwitchOptions.getRequestCode());
+
+        assertEquals(Uri.parse("https://example.com/approval/url"), browserSwitchOptions.getUrl());
+
+        JSONObject metadata = browserSwitchOptions.getMetadata();
+        assertEquals("https://example.com/approval/url", metadata.get("approval-url"));
+        assertEquals("https://example.com/success/url", metadata.get("success-url"));
+        assertEquals("single-payment", metadata.get("payment-type"));
+        assertEquals("sample-client-metadata-id", metadata.get("client-metadata-id"));
+        assertEquals("sample-merchant-account-id", metadata.get("merchant-account-id"));
+        assertEquals("paypal-browser", metadata.get("source"));
+        assertEquals("authorize", metadata.get("intent"));
+    }
+
+    @Test
+    public void requestOneTimePayment_whenPayPalNotEnabled_throwsError() {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalDisabledConfig)
+                .build();
+
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
+        sut.requestOneTimePayment(context, new PayPalRequest("1.00"), payPalRequestCallback);
+
+        ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
+        verify(payPalRequestCallback).onResult(eq(false), errorCaptor.capture());
+        assertTrue(errorCaptor.getValue() instanceof BraintreeException);
+        assertEquals("PayPal is not enabled. " +
+                "See https://developers.braintreepayments.com/guides/paypal/overview/android/ " +
+                "for more information.", errorCaptor.getValue().getMessage());
+    }
+
+    @Test
+    public void requestOneTimePayment_whenManifestInvalid_throwsError() {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .urlSchemeDeclaredInManifest(false)
+                .build();
+
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
+        sut.requestOneTimePayment(context, new PayPalRequest("1.00"), payPalRequestCallback);
+
+        ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
+        verify(payPalRequestCallback).onResult(eq(false), errorCaptor.capture());
+        assertTrue(errorCaptor.getValue() instanceof BraintreeException);
+        assertEquals("BraintreeBrowserSwitchActivity missing, " +
+                "incorrectly configured in AndroidManifest.xml or another app defines the same browser " +
+                "switch url as this app. See " +
+                "https://developers.braintreepayments.com/guides/client-sdk/android/#browser-switch " +
+                "for the correct configuration", errorCaptor.getValue().getMessage());
+    }
+
+
+    @Test
+    public void requestOneTimePayment_sendsBrowserSwitchStartAnalyticsEvent() {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+
+        PayPalResponse payPalResponse = new PayPalResponse()
+                .approvalUrl("https://example.com/approval/url")
+                .successUrl("https://example.com/success/url")
+                .isBillingAgreement(false)
+                .clientMetadataId("sample-client-metadata-id")
+                .merchantAccountId("sample-merchant-account-id")
+                .intent("authorize");
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder()
+                .success(payPalResponse)
+                .build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .build();
+
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
+
+        PayPalRequest payPalRequest = new PayPalRequest("1.00");
+        sut.requestOneTimePayment(context, payPalRequest, payPalRequestCallback);
+
+        verify(braintreeClient).sendAnalyticsEvent(context,"paypal.single-payment.selected");
+        verify(braintreeClient).sendAnalyticsEvent(context,"paypal.single-payment.browser-switch.started");
+    }
+
+    @Test
+    public void requestBillingAgreement_sendsPayPalRequestViaInternalClient() {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .build();
+
+        PayPalRequest payPalRequest = new PayPalRequest();
+
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
+        sut.requestBillingAgreement(context, payPalRequest, payPalRequestCallback);
+
+        verify(payPalInternalClient).sendRequest(same(context), same(payPalRequest), eq(true), any(PayPalInternalClientCallback.class));
+    }
+
+    @Test
+    public void requestOneTimePayment_sendsPayPalRequestViaInternalClient() {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
+                .configuration(payPalEnabledConfig)
+                .build();
+
+        PayPalRequest payPalRequest = new PayPalRequest("1.00");
+
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
+        sut.requestOneTimePayment(context, payPalRequest, payPalRequestCallback);
+
+        verify(payPalInternalClient).sendRequest(same(context), same(payPalRequest), eq(false), any(PayPalInternalClientCallback.class));
     }
 
     @Test
     public void requestBillingAgreement_sendsPayPalCreditOfferedAnalyticsEvent() {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
-        PayPal.requestBillingAgreement(fragment, new PayPalRequest().offerCredit(true));
+        PayPalRequest payPalRequest = new PayPalRequest().offerCredit(true);
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
 
-        verify(fragment).sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
+        sut.requestBillingAgreement(context, payPalRequest, payPalRequestCallback);
+
+        verify(braintreeClient).sendAnalyticsEvent(context, "paypal.billing-agreement.credit.offered");
     }
 
     @Test
-    public void requestBillingAgreement_containsOfferPayPalCreditParam() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
+    public void onBrowserSwitchResult_withBillingAgreement_tokenizesResponseOnSuccess() throws JSONException {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
-        PayPal.requestBillingAgreement(fragment, new PayPalRequest().offerCredit(true));
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
 
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/setup_billing_agreement"), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
+        String approvalUrl = "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&ba_token=EC-HERMES-SANDBOX-EC-TOKEN";
 
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        assertTrue(json.getBoolean("offer_paypal_credit"));
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchResult.STATUS_OK);
+
+        when(browserSwitchResult.getRequestMetadata()).thenReturn(new JSONObject()
+                .put("client-metadata-id", "sample-client-metadata-id")
+                .put("merchant-account-id", "sample-merchant-account-id")
+                .put("intent", "authorize")
+                .put("approval-url", approvalUrl)
+                .put("success-url", "https://example.com/success")
+                .put("payment-type", "billing-agreement")
+        );
+
+        Uri uri = Uri.parse(approvalUrl);
+        sut.onBrowserSwitchResult(context, browserSwitchResult, uri, payPalBrowserSwitchResultCallback);
+
+        ArgumentCaptor<PayPalAccountBuilder> captor = ArgumentCaptor.forClass(PayPalAccountBuilder.class);
+        verify(tokenizationClient).tokenize(same(context), captor.capture(), any(PaymentMethodNonceCallback.class));
+
+        PayPalAccountBuilder payPalAccountBuilder = captor.getValue();
+        JSONObject tokenizePayload = new JSONObject(payPalAccountBuilder.build());
+        assertEquals("sample-merchant-account-id", tokenizePayload.get("merchant_account_id"));
+
+        JSONObject payPalTokenizePayload = tokenizePayload.getJSONObject("paypalAccount");
+        JSONObject expectedPayPalTokenizePayload = new JSONObject()
+                .put("correlationId", "sample-client-metadata-id")
+                .put("client", new JSONObject())
+                .put("response", new JSONObject()
+                        .put("webURL", approvalUrl))
+                .put("intent", "authorize")
+                .put("response_type", "web");
+
+        JSONAssert.assertEquals(expectedPayPalTokenizePayload, payPalTokenizePayload, true);
     }
 
     @Test
-    public void requestBillingAgreement_containsPayPalTwoFactorAuthParams() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
+    public void onBrowserSwitchResult_withOneTimePayment_tokenizesResponseOnSuccess() throws JSONException {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
 
-        PayPalProductAttributes productAttributes = new PayPalProductAttributes()
-                .name("name")
-                .chargePattern("chargePattern")
-                .productCode("productCode");
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
 
-        PayPal.requestBillingAgreement(fragment, new PayPalRequest().productAttributes(productAttributes));
+        String approvalUrl = "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN";
 
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/setup_billing_agreement"), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchResult.STATUS_OK);
 
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        JSONObject productAttributesJSON = json.getJSONObject("product_attributes");
-        assertEquals(productAttributesJSON.getString("name"), "name");
-        assertEquals(productAttributesJSON.getString("product_code"), "productCode");
-        assertEquals(productAttributesJSON.getString("charge_pattern"), "chargePattern");
+        when(browserSwitchResult.getRequestMetadata()).thenReturn(new JSONObject()
+                .put("client-metadata-id", "sample-client-metadata-id")
+                .put("merchant-account-id", "sample-merchant-account-id")
+                .put("intent", "authorize")
+                .put("approval-url", approvalUrl)
+                .put("success-url", "https://example.com/success")
+                .put("payment-type", "single-payment")
+        );
+
+        Uri uri = Uri.parse(approvalUrl);
+        sut.onBrowserSwitchResult(context, browserSwitchResult, uri, payPalBrowserSwitchResultCallback);
+
+        ArgumentCaptor<PayPalAccountBuilder> captor = ArgumentCaptor.forClass(PayPalAccountBuilder.class);
+        verify(tokenizationClient).tokenize(same(context), captor.capture(), any(PaymentMethodNonceCallback.class));
+
+        PayPalAccountBuilder payPalAccountBuilder = captor.getValue();
+        JSONObject tokenizePayload = new JSONObject(payPalAccountBuilder.build());
+        assertEquals("sample-merchant-account-id", tokenizePayload.get("merchant_account_id"));
+
+        JSONObject payPalTokenizePayload = tokenizePayload.getJSONObject("paypalAccount");
+        JSONObject expectedPayPalTokenizePayload = new JSONObject()
+                .put("correlationId", "sample-client-metadata-id")
+                .put("client", new JSONObject())
+                .put("response", new JSONObject()
+                        .put("webURL", approvalUrl))
+                .put("intent", "authorize")
+                .put("response_type", "web");
+
+        JSONAssert.assertEquals(expectedPayPalTokenizePayload, payPalTokenizePayload, true);
     }
 
     @Test
-    public void authorizeAccount_whenSuccessfulBrowserSwitch_sendsAnalyticsEvents() throws Exception {
-        final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
+    public void onBrowserSwitchResult_withBillingAgreement_sendsAnalyticsEvents() throws JSONException {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
+
+        String approvalUrl = "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&ba_token=EC-HERMES-SANDBOX-EC-TOKEN";
+
+        BrowserSwitchResult browserSwitchOptions = mock(BrowserSwitchResult.class);
+        when(browserSwitchOptions.getStatus()).thenReturn(BrowserSwitchResult.STATUS_OK);
+
+        when(browserSwitchOptions.getRequestMetadata()).thenReturn(new JSONObject()
+                .put("client-metadata-id", "sample-client-metadata-id")
+                .put("merchant-account-id", "sample-merchant-account-id")
+                .put("intent", "authorize")
+                .put("approval-url", approvalUrl)
+                .put("success-url", "https://example.com/success")
+                .put("payment-type", "billing-agreement")
+        );
+
+        Uri uri = Uri.parse(approvalUrl);
+        sut.onBrowserSwitchResult(context, browserSwitchOptions, uri, payPalBrowserSwitchResultCallback);
+
+        verify(braintreeClient).sendAnalyticsEvent(context,"paypal.billing-agreement.browser-switch.succeeded");
+    }
+
+    @Test
+    public void onBrowserSwitchResult_oneTimePayment_sendsAnalyticsEvents() throws JSONException {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
+
+        String approvalUrl = "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN";
+
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchResult.STATUS_OK);
+
+        when(browserSwitchResult.getRequestMetadata()).thenReturn(new JSONObject()
+                .put("client-metadata-id", "sample-client-metadata-id")
+                .put("merchant-account-id", "sample-merchant-account-id")
+                .put("intent", "authorize")
+                .put("approval-url", approvalUrl)
+                .put("success-url", "https://example.com/success")
+                .put("payment-type", "single-payment")
+        );
+
+        Uri uri = Uri.parse(approvalUrl);
+        sut.onBrowserSwitchResult(context, browserSwitchResult, uri, payPalBrowserSwitchResultCallback);
+
+        verify(braintreeClient).sendAnalyticsEvent(context,"paypal.single-payment.browser-switch.succeeded");
+    }
+
+    @Test
+    public void onBrowserSwitchResult_whenPayPalCreditPresent_sendsAnalyticsEvents() throws JSONException {
+        PayPalAccountNonce payPalAccountNonce = mock(PayPalAccountNonce.class);
+        when(payPalAccountNonce.getCreditFinancing()).thenReturn(mock(PayPalCreditFinancing.class));
+
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder()
+                .successNonce(payPalAccountNonce)
                 .build();
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                Intent intent = new Intent()
-                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&ba_token=EC-HERMES-SANDBOX-EC-TOKEN"));
-                PayPal.onActivityResult(fragment, RESULT_OK, intent);
-                return null;
-            }
-        }).when(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), any(String.class));
 
-        MockStaticTokenizationClient.mockTokenizeSuccess(new PayPalAccountNonce());
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
 
-        PayPal.requestBillingAgreement(fragment, new PayPalRequest());
+        String approvalUrl = "sample-scheme://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN";
 
-        verify(fragment).sendAnalyticsEvent("paypal.billing-agreement.selected");
-        verify(fragment).sendAnalyticsEvent("paypal.billing-agreement.browser-switch.started");
-        verify(fragment).sendAnalyticsEvent("paypal.billing-agreement.browser-switch.succeeded");
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchResult.STATUS_OK);
+
+        when(browserSwitchResult.getRequestMetadata()).thenReturn(new JSONObject()
+                .put("client-metadata-id", "sample-client-metadata-id")
+                .put("merchant-account-id", "sample-merchant-account-id")
+                .put("intent", "authorize")
+                .put("approval-url", approvalUrl)
+                .put("success-url", "https://example.com/success")
+                .put("payment-type", "single-payment")
+        );
+
+        Uri uri = Uri.parse(approvalUrl);
+        sut.onBrowserSwitchResult(context, browserSwitchResult, uri, payPalBrowserSwitchResultCallback);
+
+        verify(braintreeClient).sendAnalyticsEvent(context, "paypal.credit.accepted");
     }
 
     @Test
-    public void requestBillingAgreement_whenSuccessfulBrowserSwitch_sendsAnalyticsEvents() {
-        final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
-                .build();
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                Intent intent = new Intent()
-                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&ba_token=EC-HERMES-SANDBOX-EC-TOKEN"));
-                PayPal.onActivityResult(fragment, RESULT_OK, intent);
-                return null;
-            }
-        }).when(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), any(String.class));
+    public void onBrowserSwitchResult_whenCancelUriReceived_notifiesCancellation() throws JSONException {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
 
-        MockStaticTokenizationClient.mockTokenizeSuccess(new PayPalAccountNonce());
+        String approvalUrl = "sample-scheme://onetouch/v1/cancel";
 
-        PayPal.requestBillingAgreement(fragment, new PayPalRequest());
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchResult.STATUS_OK);
 
-        verify(fragment).sendAnalyticsEvent("paypal.billing-agreement.selected");
-        verify(fragment).sendAnalyticsEvent("paypal.billing-agreement.browser-switch.started");
-        verify(fragment).sendAnalyticsEvent("paypal.billing-agreement.browser-switch.succeeded");
-    }
+        when(browserSwitchResult.getRequestMetadata()).thenReturn(new JSONObject()
+                .put("client-metadata-id", "sample-client-metadata-id")
+                .put("merchant-account-id", "sample-merchant-account-id")
+                .put("intent", "authorize")
+                .put("approval-url", approvalUrl)
+                .put("success-url", "https://example.com/success")
+                .put("payment-type", "single-payment")
+        );
 
-    @Test
-    public void requestBillingAgreement_paypalCreditReturnedInResponse() throws Exception {
-        BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_BILLING_AGREEMENT_RESPONSE)
-                .build();
-
-        MockStaticTokenizationClient.mockTokenizeSuccess(PayPalAccountNonce.fromJson(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE));
-
-        PayPal.requestBillingAgreement(fragment, new PayPalRequest().offerCredit(true), new PayPalApprovalHandler() {
-            @Override
-            public void handleApproval(PayPalApiRequest request, PayPalApprovalCallback paypalApprovalCallback) {
-                paypalApprovalCallback.onComplete(new Intent()
-                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&ba_token=EC-HERMES-SANDBOX-EC-TOKEN"))
-                );
-            }
-        });
-
-        ArgumentCaptor<PaymentMethodNonce> nonceCaptor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
-        verify(fragment).postCallback(nonceCaptor.capture());
-        verify(fragment).sendAnalyticsEvent("paypal.credit.accepted");
-
-        assertTrue(nonceCaptor.getValue() instanceof PayPalAccountNonce);
-        PayPalAccountNonce payPalAccountNonce = (PayPalAccountNonce) nonceCaptor.getValue();
-        assertNotNull(payPalAccountNonce.getCreditFinancing());
-        assertEquals(18, payPalAccountNonce.getCreditFinancing().getTerm());
-    }
-
-    @Test
-    public void requestBillingAgreement_doesNotCallCancelListenerWhenSuccessful() {
-        final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-                .build();
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                Intent intent = new Intent()
-                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&ba_token=EC-HERMES-SANDBOX-EC-TOKEN"));
-                PayPal.onActivityResult(fragment, RESULT_OK, intent);
-                return null;
-            }
-        }).when(fragment).startActivity(any(Intent.class));
-
-        MockStaticTokenizationClient.mockTokenizeSuccess(new PayPalAccountNonce());
-
-        PayPal.requestBillingAgreement(fragment, new PayPalRequest());
-
-        verify(fragment, never()).postCancelCallback(anyInt());
-    }
-
-    @Test
-    public void requestBillingAgreement_cancelUrlTriggersCancelListener() {
-        final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-                .build();
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                Intent intent = new Intent()
-                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/cancel"));
-                PayPal.onActivityResult(fragment, RESULT_OK, intent);
-                return null;
-            }
-        }).when(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), any(String.class));
-
-        PayPal.requestBillingAgreement(fragment, new PayPalRequest());
-
-        verify(fragment).postCancelCallback(BraintreeRequestCodes.PAYPAL);
-    }
-
-    @Test
-    public void requestBillingAgreement_persistsPayPalRequest() {
-        BraintreeFragment braintreeFragment = mMockFragmentBuilder.build();
-        SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(RuntimeEnvironment.application);
-
-        PayPal.requestOneTimePayment(braintreeFragment, new PayPalRequest("1").intent(PayPalRequest.INTENT_SALE));
-
-        assertNotNull(prefs.getString("com.braintreepayments.api.PayPal.PAYPAL_REQUEST_KEY", null));
-    }
-
-    @Test
-    public void requestBillingAgreement_postParamsIncludeAddress() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PostalAddress address = new PostalAddress()
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. v.0")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("12345")
-                .countryCodeAlpha2("US");
-        PayPalRequest request = new PayPalRequest()
-                .shippingAddressRequired(true)
-                .shippingAddressOverride(address);
-
-        PayPal.requestBillingAgreement(fragment, request);
-
-        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/setup_billing_agreement"));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        JSONObject shippingAddress = json.getJSONObject("shipping_address");
-
-        assertEquals("123 Fake St.", shippingAddress.get("line1"));
-        assertEquals("Apt. v.0", shippingAddress.get("line2"));
-        assertEquals("Oakland", shippingAddress.get("city"));
-        assertEquals("CA", shippingAddress.get("state"));
-        assertEquals("12345", shippingAddress.get("postal_code"));
-        assertEquals("US", shippingAddress.get("country_code"));
-    }
-
-    @Test
-    public void requestBillingAgreement_whenEditable_postsAddressOverrideFalse() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PostalAddress address = new PostalAddress()
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. v.0")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("12345")
-                .countryCodeAlpha2("US");
-        PayPalRequest request = new PayPalRequest()
-                .shippingAddressEditable(true)
-                .shippingAddressOverride(address);
-
-        PayPal.requestBillingAgreement(fragment, request);
-
-        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/setup_billing_agreement"));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        JSONObject shippingAddress = json.getJSONObject("shipping_address");
-        JSONObject experienceProfile = json.getJSONObject("experience_profile");
-
-        assertTrue(shippingAddress.length() > 0);
-        assertEquals(false, experienceProfile.get("address_override"));
-    }
-
-    @Test
-    public void requestBillingAgreement_whenShippingRequired_postsNoShippingTrue() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-        PayPalRequest request = new PayPalRequest()
-                .shippingAddressRequired(true);
-
-        PayPal.requestBillingAgreement(fragment, request);
-
-        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/setup_billing_agreement"));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        JSONObject experienceProfile = json.getJSONObject("experience_profile");
-
-        assertEquals(false, experienceProfile.get("no_shipping"));
-    }
-
-    @Test
-    public void requestBillingAgreement_whenShippingRequiredFalse_postsNoShippingFalse() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-        PayPalRequest request = new PayPalRequest();
-
-        PayPal.requestBillingAgreement(fragment, request);
-
-        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/setup_billing_agreement"));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        JSONObject experienceProfile = json.getJSONObject("experience_profile");
-
-        assertEquals(true, experienceProfile.get("no_shipping"));
-    }
-
-    @Test
-    public void requestBillingAgreement_whenEditableFalse_postsAddressOverrideTrue() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PostalAddress address = new PostalAddress()
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. v.0")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("12345")
-                .countryCodeAlpha2("US");
-        PayPalRequest request = new PayPalRequest()
-                .shippingAddressOverride(address);
-
-        PayPal.requestBillingAgreement(fragment, request);
-
-        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/setup_billing_agreement"));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        JSONObject shippingAddress = json.getJSONObject("shipping_address");
-        JSONObject experienceProfile = json.getJSONObject("experience_profile");
-
-        assertTrue(shippingAddress.length() > 0);
-        assertEquals(true, experienceProfile.get("address_override"));
-    }
-
-    @Test
-    public void requestBillingAgreement_whenMerchantAccountIdPresent_postsParamsIncludeMerchantAccountId() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPalRequest request = new PayPalRequest()
-                .merchantAccountId("merchant_account_id");
-
-        PayPal.requestBillingAgreement(fragment, request);
-
-        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/setup_billing_agreement"));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        String merchantAccountId = json.getString("merchant_account_id");
-
-        assertEquals("merchant_account_id", merchantAccountId);
-    }
-
-    @Test
-    public void requestBillingAgreement_whenMerchantAccountIdNotPresent_postsDoNotIncludeMerchantAccountId() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPalRequest request = new PayPalRequest();
-
-        PayPal.requestBillingAgreement(fragment, request);
-
-        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/setup_billing_agreement"));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-
-        assertFalse(json.has("merchant_account_id"));
-    }
-
-    @Test
-    public void requestOneTimePayment_postsExceptionWhenNoAmountIsSet() {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest());
+        Uri uri = Uri.parse(approvalUrl);
+        sut.onBrowserSwitchResult(context, browserSwitchResult, uri, payPalBrowserSwitchResultCallback);
 
         ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
-        verify(fragment).postCallback(captor.capture());
-        assertTrue(captor.getValue() instanceof BraintreeException);
-        assertEquals("An amount must be specified for the Single Payment flow.", captor.getValue().getMessage());
-    }
+        verify(payPalBrowserSwitchResultCallback).onResult((PaymentMethodNonce) isNull(), captor.capture());
 
-    @Test(timeout = 1000)
-    public void requestOneTimePayment_customHandlerIsCalledCorrectly() throws InterruptedException {
-        BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-                .build();
-
-        final CountDownLatch latch = new CountDownLatch(1);
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"), new PayPalApprovalHandler() {
-            @Override
-            public void handleApproval(PayPalApiRequest request, PayPalApprovalCallback paypalApprovalCallback) {
-                latch.countDown();
-            }
-        });
-
-        latch.await();
+        Exception exception = captor.getValue();
+        assertTrue(exception instanceof PayPalBrowserSwitchException);
+        assertEquals("User cancelled.", exception.getMessage());
     }
 
     @Test
-    public void requestOneTimePayment_customHandlerCancelCallbackIsInvoked() {
-        BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-                .build();
+    public void onBrowserSwitchResult_whenBrowserSwitchCanceled_forwardsExceptionAndSendsAnalyticsEvent() {
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
 
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"), new PayPalApprovalHandler() {
-            @Override
-            public void handleApproval(PayPalApiRequest request, PayPalApprovalCallback paypalApprovalCallback) {
-                paypalApprovalCallback.onCancel();
-            }
-        });
+        String approvalUrl = "sample-scheme://onetouch/v1/cancel";
 
-        verify(fragment).postCancelCallback(BraintreeRequestCodes.PAYPAL);
+        BrowserSwitchResult browserSwitchResult = mock(BrowserSwitchResult.class);
+        when(browserSwitchResult.getStatus()).thenReturn(BrowserSwitchResult.STATUS_CANCELED);
+
+        when(browserSwitchResult.getRequestMetadata()).thenReturn(new JSONObject());
+
+        Uri uri = Uri.parse(approvalUrl);
+        sut.onBrowserSwitchResult(context, browserSwitchResult, uri, payPalBrowserSwitchResultCallback);
+
+        ArgumentCaptor<Exception> captor = ArgumentCaptor.forClass(Exception.class);
+        verify(payPalBrowserSwitchResultCallback).onResult((PaymentMethodNonce) isNull(), captor.capture());
+
+        Exception exception = captor.getValue();
+        assertTrue(exception instanceof BraintreeException);
+        assertEquals("User Canceled PayPal", exception.getMessage());
+
+        verify(braintreeClient).sendAnalyticsEvent(same(context), eq("paypal.single-payment.browser-switch.canceled"));
     }
 
     @Test
-    public void requestOneTimePayment_paypalCreditReturnedInResponse() throws Exception {
-        BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-                .build();
+    public void requestOneTimePayment_throwsExceptionWhenNoAmountSet() {
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
-        MockStaticTokenizationClient.mockTokenizeSuccess(PayPalAccountNonce.fromJson(Fixtures.PAYMENT_METHODS_PAYPAL_ACCOUNT_RESPONSE));
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
+        sut.requestOneTimePayment(context, new PayPalRequest(), payPalRequestCallback);
 
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").offerCredit(true), new PayPalApprovalHandler() {
-            @Override
-            public void handleApproval(PayPalApiRequest request, PayPalApprovalCallback paypalApprovalCallback) {
-                paypalApprovalCallback.onComplete(new Intent()
-                        .setData(Uri.parse("com.braintreepayments.demo.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN"))
-                );
-            }
-        });
-
-        ArgumentCaptor<PaymentMethodNonce> nonceCaptor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
-        verify(fragment).postCallback(nonceCaptor.capture());
-        verify(fragment).sendAnalyticsEvent("paypal.credit.accepted");
-
-        assertTrue(nonceCaptor.getValue() instanceof PayPalAccountNonce);
-        PayPalAccountNonce payPalAccountNonce = (PayPalAccountNonce) nonceCaptor.getValue();
-        assertNotNull(payPalAccountNonce.getCreditFinancing());
-        assertEquals(18, payPalAccountNonce.getCreditFinancing().getTerm());
-    }
-
-    @Test
-    public void requestOneTimePayment_customHandlerSuccessCallbackIsInvoked() {
-        BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-                .build();
-
-        MockStaticTokenizationClient.mockTokenizeSuccess(new PayPalAccountNonce());
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"), new PayPalApprovalHandler() {
-            @Override
-            public void handleApproval(PayPalApiRequest request, PayPalApprovalCallback paypalApprovalCallback) {
-                paypalApprovalCallback.onComplete(new Intent()
-                        .setData(Uri.parse("com.braintreepayments.demo.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN"))
-                );
-            }
-        });
-
-        ArgumentCaptor<PaymentMethodNonce> nonceCaptor = ArgumentCaptor.forClass(PaymentMethodNonce.class);
-        verify(fragment).postCallback(nonceCaptor.capture());
-
-        assertTrue(nonceCaptor.getValue() instanceof PayPalAccountNonce);
+        ArgumentCaptor<Exception> errorCaptor = ArgumentCaptor.forClass(Exception.class);
+        verify(payPalRequestCallback).onResult(eq(false), errorCaptor.capture());
+        assertTrue(errorCaptor.getValue() instanceof BraintreeException);
+        assertEquals("An amount must be specified for the Single Payment flow.", errorCaptor.getValue().getMessage());
     }
 
     @Test
     public void requestOneTimePayment_sendsPayPalCreditOfferedAnalyticsEvent() {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
+        BraintreeClient braintreeClient = new MockBraintreeClientBuilder().build();
+        TokenizationClient tokenizationClient = new MockTokenizationClientBuilder().build();
+        PayPalInternalClient payPalInternalClient = new MockPayPalInternalClientBuilder().build();
 
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").offerCredit(true));
+        PayPal sut = new PayPal(braintreeClient, "sample-scheme", tokenizationClient, payPalInternalClient);
 
-        verify(fragment).sendAnalyticsEvent("paypal.single-payment.credit.offered");
-    }
+        PayPalRequest payPalRequest = new PayPalRequest("1.00").offerCredit(true);
+        sut.requestOneTimePayment(context, payPalRequest, payPalRequestCallback);
 
-    @Test
-    public void requestOneTimePayment_sendsPayPalPayLaterOfferedAnalyticsEvent() {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").offerPayLater(true));
-
-        verify(fragment).sendAnalyticsEvent("paypal.single-payment.paylater.offered");
-    }
-
-    @Test
-    public void requestOneTimePayment_defaultPostParamsIncludeCorrectValues() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
-
-        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
-
-        JSONObject actual = new JSONObject(dataCaptor.getValue());
-        JSONObject expected = new JSONObject()
-                .put("client_key", "authorization")
-                .put("return_url", "com.braintreepayments.api.braintree://onetouch/v1/success")
-                .put("cancel_url", "com.braintreepayments.api.braintree://onetouch/v1/cancel")
-                .put("amount", "1")
-                .put("experience_profile", new JSONObject()
-                        .put("address_override", false)
-                        .put("brand_name", "displayName")
-                        .put("no_shipping", true))
-                .put("intent", "authorize")
-                .put("offer_paypal_credit", false)
-                .put("offer_pay_later", false);
-
-        JSONAssert.assertEquals(expected, actual, true);
-    }
-
-    @Test
-    public void requestOneTimePayment_containsOfferPayPalCreditParam() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").offerCredit(true));
-
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/create_payment_resource"),
-                dataCaptor.capture(), any(HttpResponseCallback.class));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        assertTrue(json.getBoolean("offer_paypal_credit"));
-    }
-
-    @Test
-    public void requestOneTimePayment_containsLineItemParams() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPalRequest request = new PayPalRequest("2");
-        ArrayList<PayPalApiLineItem> lineItems = new ArrayList<PayPalApiLineItem>();
-        lineItems.add(new PayPalApiLineItem(PayPalApiLineItem.KIND_DEBIT, "An Item", "1", "2"));
-        request.lineItems(lineItems);
-        PayPal.requestOneTimePayment(fragment, request);
-
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/create_payment_resource"),
-                dataCaptor.capture(), any(HttpResponseCallback.class));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        assertNotNull(json.getJSONArray("line_items"));
-
-        JSONObject itemJson = json.getJSONArray("line_items").getJSONObject(0);
-        assertEquals("debit", itemJson.getString("kind"));
-        assertEquals("An Item", itemJson.getString("name"));
-        assertEquals("1", itemJson.getString("quantity"));
-        assertEquals("2", itemJson.getString("unit_amount"));
-    }
-
-    @Test
-    public void requestOneTimePayment_displayName_canBeSet() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").displayName("Test Name"));
-
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/create_payment_resource"), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        assertEquals("Test Name", json.getJSONObject("experience_profile").get("brand_name"));
-    }
-
-    @Test
-    public void requestOneTimePayment_intent_canBeSetToSale() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").intent(PayPalRequest.INTENT_SALE));
-
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/create_payment_resource"), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        assertEquals("1", json.get("amount"));
-        assertEquals(true, json.getJSONObject("experience_profile").get("no_shipping"));
-        assertEquals(false, json.getJSONObject("experience_profile").get("address_override"));
-        assertEquals(PayPalRequest.INTENT_SALE, json.get("intent"));
-    }
-
-    @Test
-    public void requestOneTimePayment_intent_canBeSetToOrder() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").intent(PayPalRequest.INTENT_ORDER));
-
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/create_payment_resource"), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        assertEquals("1", json.get("amount"));
-        assertEquals(true, json.getJSONObject("experience_profile").get("no_shipping"));
-        assertEquals(false, json.getJSONObject("experience_profile").get("address_override"));
-        assertEquals(PayPalRequest.INTENT_ORDER, json.get("intent"));
-    }
-
-    @Test
-    public void requestOneTimePayment_landingPageType_canBeSetToBilling() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").landingPageType(PayPalRequest.LANDING_PAGE_TYPE_BILLING));
-
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/create_payment_resource"), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        assertEquals("1", json.get("amount"));
-        assertEquals(true, json.getJSONObject("experience_profile").get("no_shipping"));
-        assertEquals(false, json.getJSONObject("experience_profile").get("address_override"));
-        assertEquals(PayPalRequest.LANDING_PAGE_TYPE_BILLING, json.getJSONObject("experience_profile").get("landing_page_type"));
-    }
-
-    @Test
-    public void requestOneTimePayment_landingPageType_canBeSetToLogin() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").landingPageType(PayPalRequest.LANDING_PAGE_TYPE_LOGIN));
-
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(contains("/paypal_hermes/create_payment_resource"), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        assertEquals("1", json.get("amount"));
-        assertEquals(true, json.getJSONObject("experience_profile").get("no_shipping"));
-        assertEquals(false, json.getJSONObject("experience_profile").get("address_override"));
-        assertEquals(PayPalRequest.LANDING_PAGE_TYPE_LOGIN, json.getJSONObject("experience_profile").get("landing_page_type"));
-    }
-
-    @Test
-    public void requestOneTimePayment_userAction_setsUserActionToBlankStringonDefault() {
-        BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-                .build();
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").userAction(PayPalRequest.USER_ACTION_DEFAULT));
-
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), dataCaptor.capture());
-
-        Uri uri = Uri.parse(dataCaptor.getValue());
-        assertEquals("", uri.getQueryParameter("useraction"));
-    }
-
-    @Test
-    public void requestOneTimePayment_userAction_canBeSetToCommit() {
-        BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-                .build();
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").userAction(PayPalRequest.USER_ACTION_COMMIT));
-
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), dataCaptor.capture());
-
-        Uri uri = Uri.parse(dataCaptor.getValue());
-        assertEquals("commit", uri.getQueryParameter("useraction"));
-    }
-
-    @Test
-    public void requestOneTimePayment_postParamsIncludeNoShipping() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").shippingAddressRequired(false));
-
-        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        assertEquals("1", json.get("amount"));
-        assertEquals(true, json.getJSONObject("experience_profile").get("no_shipping"));
-        assertEquals(false, json.getJSONObject("experience_profile").get("address_override"));
-    }
-
-    @Test
-    public void requestOneTimePayment_postParamsIncludeAddress() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PostalAddress address = new PostalAddress()
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. v.0")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("12345")
-                .countryCodeAlpha2("US");
-        PayPalRequest request = new PayPalRequest("3.43")
-                .shippingAddressOverride(address);
-
-        PayPal.requestOneTimePayment(fragment, request);
-
-        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        assertEquals("3.43", json.get("amount"));
-        assertEquals("123 Fake St.", json.get("line1"));
-        assertEquals("Apt. v.0", json.get("line2"));
-        assertEquals("Oakland", json.get("city"));
-        assertEquals("CA", json.get("state"));
-        assertEquals("12345", json.get("postal_code"));
-        assertEquals("US", json.get("country_code"));
-    }
-
-    @Test
-    public void requestOnetimePayment_whenShippingRequired_postsNoShippingFalse() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPalRequest request = new PayPalRequest("3.43")
-                .shippingAddressRequired(true);
-
-        PayPal.requestOneTimePayment(fragment, request);
-
-        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        JSONObject experienceProfile = json.getJSONObject("experience_profile");
-
-        assertFalse(experienceProfile.getBoolean("no_shipping"));
-    }
-
-    @Test
-    public void requestOnetimePayment_whenShippingRequiredFalse_postsNoShippingTrue() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPalRequest request = new PayPalRequest("3.43")
-                .shippingAddressRequired(false);
-
-        PayPal.requestOneTimePayment(fragment, request);
-
-        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        JSONObject experienceProfile = json.getJSONObject("experience_profile");
-
-        assertTrue(experienceProfile.getBoolean("no_shipping"));
-    }
-
-    @Test
-    public void requestOneTimePayment_whenEditable_postAddressOverrideFalse() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PostalAddress address = new PostalAddress()
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. v.0")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("12345")
-                .countryCodeAlpha2("US");
-        PayPalRequest request = new PayPalRequest("3.43")
-                .shippingAddressEditable(true)
-                .shippingAddressOverride(address);
-
-        PayPal.requestOneTimePayment(fragment, request);
-
-        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        assertEquals("US", json.get("country_code"));
-        assertEquals(false, json.getJSONObject("experience_profile").get("address_override"));
-    }
-
-    @Test
-    public void requestOneTimePayment_whenMerchantAccountIdPresent_postIncludeMerchantAccountId() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPalRequest request = new PayPalRequest("3.43")
-                .merchantAccountId("merchant_account_id");
-
-        PayPal.requestOneTimePayment(fragment, request);
-
-        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        String merchantAccountId = json.getString("merchant_account_id");
-
-        assertEquals("merchant_account_id", merchantAccountId);
-    }
-
-    @Test
-    public void requestOneTimePayment_whenMerchantAccountIdNotPresent_postDoesNotIncludeMerchantAccountId() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPalRequest request = new PayPalRequest("3.43");
-
-        PayPal.requestOneTimePayment(fragment, request);
-
-        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-
-        assertFalse(json.has("merchant_account_id"));
-    }
-
-    @Test
-    public void requestOneTimePayment_whenEditableFalse_postAddressOverrideTrue() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PostalAddress address = new PostalAddress()
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. v.0")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("12345")
-                .countryCodeAlpha2("US");
-        PayPalRequest request = new PayPalRequest("3.43")
-                .shippingAddressOverride(address);
-
-        PayPal.requestOneTimePayment(fragment, request);
-
-        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        assertEquals("US", json.get("country_code"));
-        assertEquals(true, json.getJSONObject("experience_profile").get("address_override"));
-    }
-
-    @Test
-    public void requestOneTimePayment_postParamsIncludeNoShippingAndAddressAndAddressOverride() throws JSONException {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PostalAddress address = new PostalAddress()
-                .streetAddress("123 Fake St.")
-                .extendedAddress("Apt. v.0")
-                .locality("Oakland")
-                .region("CA")
-                .postalCode("12345")
-                .countryCodeAlpha2("US");
-        PayPalRequest request = new PayPalRequest("3.43")
-                .shippingAddressRequired(false)
-                .shippingAddressOverride(address);
-
-        PayPal.requestOneTimePayment(fragment, request);
-
-        ArgumentCaptor<String> pathCaptor = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> dataCaptor = ArgumentCaptor.forClass(String.class);
-        verify(fragment.getHttpClient()).post(pathCaptor.capture(), dataCaptor.capture(),
-                any(HttpResponseCallback.class));
-        assertTrue(pathCaptor.getValue().contains("/paypal_hermes/create_payment_resource"));
-
-        JSONObject json = new JSONObject(dataCaptor.getValue());
-        assertEquals("3.43", json.get("amount"));
-        assertEquals("123 Fake St.", json.get("line1"));
-        assertEquals("Apt. v.0", json.get("line2"));
-        assertEquals("Oakland", json.get("city"));
-        assertEquals("CA", json.get("state"));
-        assertEquals("12345", json.get("postal_code"));
-        assertEquals("US", json.get("country_code"));
-        assertEquals(true, json.getJSONObject("experience_profile").get("no_shipping"));
-        assertEquals(true, json.getJSONObject("experience_profile").get("address_override"));
-    }
-
-    @Test
-    public void requestOneTimePayment_startsBrowser() {
-        BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-                .build();
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1.00"));
-
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), captor.capture());
-
-        Uri uri = Uri.parse(captor.getValue());
-
-        assertEquals("checkout.paypal.com", uri.getHost());
-        assertEquals("/one-touch-login-sandbox/index.html", uri.getPath());
-        assertEquals("create_payment_resource", uri.getQueryParameter("action"));
-        assertEquals("63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06|created_at=2015-10-13T18:49:48.371382792+0000&merchant_id=dcpspy2brwdjr3qn&public_key=9wwrzqk3vr3t4nc8",
-                uri.getQueryParameter("authorization_fingerprint"));
-        assertEquals("USD", uri.getQueryParameter("currency_iso_code"));
-        assertEquals("false", uri.getQueryParameter("experience_profile[address_override]"));
-        assertEquals("false", uri.getQueryParameter("experience_profile[no_shipping]"));
-        assertEquals("dcpspy2brwdjr3qn", uri.getQueryParameter("merchant_id"));
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success", uri.getQueryParameter("return_url"));
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/cancel", uri.getQueryParameter("cancel_url"));
-    }
-
-    @Test
-    public void requestOneTimePayment_startsBrowserWithPayPalCredit() {
-        BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-                .build();
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1.00").offerCredit(true));
-
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), captor.capture());
-
-        Uri uri = Uri.parse(captor.getValue());
-
-        assertEquals("checkout.paypal.com", uri.getHost());
-        assertEquals("/one-touch-login-sandbox/index.html", uri.getPath());
-        assertEquals("create_payment_resource", uri.getQueryParameter("action"));
-        assertEquals("63cc461306c35080ce674a3372bffe1580b4130c7fd33d33968aa76bb93cdd06|created_at=2015-10-13T18:49:48.371382792+0000&merchant_id=dcpspy2brwdjr3qn&public_key=9wwrzqk3vr3t4nc8",
-                uri.getQueryParameter("authorization_fingerprint"));
-        assertEquals("USD", uri.getQueryParameter("currency_iso_code"));
-        assertEquals("true", uri.getQueryParameter("offer_paypal_credit"));
-        assertEquals("false", uri.getQueryParameter("experience_profile[address_override]"));
-        assertEquals("false", uri.getQueryParameter("experience_profile[no_shipping]"));
-        assertEquals("dcpspy2brwdjr3qn", uri.getQueryParameter("merchant_id"));
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/success", uri.getQueryParameter("return_url"));
-        assertEquals("com.braintreepayments.api.test.braintree://onetouch/v1/cancel", uri.getQueryParameter("cancel_url"));
-    }
-
-    @Test
-    public void requestOneTimePayment_isSuccessful() {
-        final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-                .build();
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                Intent intent = new Intent()
-                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN"));
-                PayPal.onActivityResult(fragment, RESULT_OK, intent);
-                return null;
-            }
-        }).when(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), any(String.class));
-
-        MockStaticTokenizationClient.mockTokenizeSuccess(new PayPalAccountNonce());
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
-
-        verify(fragment).postCallback(any(PayPalAccountNonce.class));
-
-        SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(RuntimeEnvironment.application);
-        assertNull(prefs.getString("com.braintreepayments.api.PayPal.REQUEST_KEY", null));
-        assertNull(prefs.getString("com.braintreepayments.api.PayPal.REQUEST_TYPE_KEY", null));
-    }
-
-    @Test
-    public void requestOneTimePayment_whenBrowserSwitchSuccessful_sendsAnalyticsEvents() {
-        MockStaticTokenizationClient.mockTokenizeSuccess(new PayPalAccountNonce());
-
-        final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-                .build();
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                Intent intent = new Intent()
-                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN"));
-                PayPal.onActivityResult(fragment, RESULT_OK, intent);
-                return null;
-            }
-        }).when(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), any(String.class));
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
-
-        verify(fragment).sendAnalyticsEvent("paypal.single-payment.selected");
-        verify(fragment).sendAnalyticsEvent("paypal.single-payment.browser-switch.started");
-        verify(fragment).sendAnalyticsEvent("paypal.single-payment.browser-switch.succeeded");
-    }
-
-    @Test
-    public void requestOneTimePayment_containsPaymentIntent() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
-        final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-                .build();
-
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                Intent intent = new Intent()
-                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN"));
-                PayPal.onActivityResult(fragment, RESULT_OK, intent);
-                return null;
-            }
-        }).when(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), any(String.class));
-
-        mockStatic(TokenizationClient.class);
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                PayPalAccountBuilder payPalAccountBuilder = (PayPalAccountBuilder) invocation.getArguments()[1];
-                JSONObject payload = new JSONObject(payPalAccountBuilder.build());
-                assertEquals(PayPalRequest.INTENT_SALE, payload.getJSONObject("paypalAccount").getString("intent"));
-                ((PaymentMethodNonceCallback) invocation.getArguments()[2]).success(new PayPalAccountNonce());
-                latch.countDown();
-                return null;
-            }
-        }).when(TokenizationClient.class);
-        TokenizationClient.tokenize(any(BraintreeFragment.class), any(PaymentMethodBuilder.class),
-                any(PaymentMethodNonceCallback.class));
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1").intent(PayPalRequest.INTENT_SALE));
-
-        SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(RuntimeEnvironment.application);
-        assertNull(prefs.getString("com.braintreepayments.api.PayPal.PAYPAL_REQUEST_KEY", null));
-        latch.await();
-    }
-
-    @Test
-    public void requestOneTimePayment_doesNotCallCancelListenerWhenSuccessful() {
-        final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-                .build();
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                Intent intent = new Intent()
-                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/success?PayerID=HERMES-SANDBOX-PAYER-ID&paymentId=HERMES-SANDBOX-PAYMENT-ID&token=EC-HERMES-SANDBOX-EC-TOKEN"));
-                PayPal.onActivityResult(fragment, RESULT_OK, intent);
-                return null;
-            }
-        }).when(fragment).startActivity(any(Intent.class));
-
-        MockStaticTokenizationClient.mockTokenizeSuccess(new PayPalAccountNonce());
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
-
-        verify(fragment, never()).postCancelCallback(anyInt());
-    }
-
-    @Test
-    public void requestOneTimePayment_persistsPayPalRequest() {
-        BraintreeFragment braintreeFragment = mMockFragmentBuilder.build();
-        SharedPreferences prefs = BraintreeSharedPreferences.getSharedPreferences(RuntimeEnvironment.application);
-
-        PayPal.requestOneTimePayment(braintreeFragment, new PayPalRequest("1").intent(PayPalRequest.INTENT_SALE));
-
-        assertNotNull(prefs.getString("com.braintreepayments.api.PayPal.PAYPAL_REQUEST_KEY", null));
-    }
-
-    @Test
-    public void checkout_cancelUrlTriggersCancelListener() {
-        final BraintreeFragment fragment = mMockFragmentBuilder
-                .successResponse(Fixtures.PAYPAL_HERMES_RESPONSE)
-                .build();
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) {
-                Intent intent = new Intent()
-                        .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/cancel"));
-                PayPal.onActivityResult(fragment, RESULT_OK, intent);
-                return null;
-            }
-        }).when(fragment).browserSwitch(eq(BraintreeRequestCodes.PAYPAL), any(String.class));
-
-        PayPal.requestOneTimePayment(fragment, new PayPalRequest("1"));
-
-        verify(fragment).postCancelCallback(BraintreeRequestCodes.PAYPAL);
-    }
-
-    @Test
-    public void onActivityResult_postsCancelWhenResultIsCanceled() {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-        Intent intent = new Intent()
-                .setData(Uri.parse("com.braintreepayments.api.test.braintree://onetouch/v1/cancel"));
-
-        PayPal.onActivityResult(fragment, RESULT_OK, intent);
-
-        verify(fragment).postCancelCallback(BraintreeRequestCodes.PAYPAL);
-    }
-
-    @Test
-    public void onActivityResult_postsCancelWhenIntentIsNull() {
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPal.onActivityResult(fragment, RESULT_OK, null);
-
-        verify(fragment).postCancelCallback(BraintreeRequestCodes.PAYPAL);
-    }
-
-    @Test
-    public void onActivityResult_NotOkAndBillingAgreementAndBrowserSwitch_sendsAnalyticsEvent() {
-        persistRequest(new PayPalApiBillingAgreementRequest());
-        Intent data = dataForSwitch("browser-switch");
-
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPal.onActivityResult(fragment, RESULT_CANCELED, data);
-
-        verify(fragment).sendAnalyticsEvent("paypal.billing-agreement.browser-switch.canceled");
-    }
-
-    @Test
-    public void onActivityResult_NotOkAndCheckoutAndBrowserSwitch_sendsAnalyticsEvent() {
-        persistRequest(new PayPalApiCheckoutRequest());
-        Intent data = dataForSwitch("browser-switch");
-
-        BraintreeFragment fragment = mMockFragmentBuilder.build();
-
-        PayPal.onActivityResult(fragment, RESULT_CANCELED, data);
-
-        verify(fragment).sendAnalyticsEvent("paypal.single-payment.browser-switch.canceled");
-    }
-
-    private void persistRequest(PayPalApiRequest request) {
-        try {
-            Method method = PayPal.class.getDeclaredMethod("persistRequest",
-                    Context.class, PayPalApiRequest.class);
-            method.setAccessible(true);
-            method.invoke(null, RuntimeEnvironment.application, request);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private Intent dataForSwitch(String switchType) {
-        return new Intent().putExtra(BraintreeFragment.EXTRA_WAS_BROWSER_SWITCH_RESULT,
-                        switchType.equals("browser-switch"));
+        verify(braintreeClient).sendAnalyticsEvent(context,"paypal.single-payment.credit.offered");
     }
 }
