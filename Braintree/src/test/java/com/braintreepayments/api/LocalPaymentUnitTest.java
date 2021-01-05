@@ -108,6 +108,7 @@ public class LocalPaymentUnitTest {
                 assertEquals("Apt 2", json.getString("line2"));
                 assertEquals("CA", json.getString("state"));
                 assertEquals("local-merchant-account-id", json.getString("merchantAccountId"));
+                assertEquals("NL", json.getString("paymentTypeCountryCode"));
                 assertTrue(json.getJSONObject("experienceProfile").getBoolean("noShipping"));
                 String expectedCancelUrl = Uri.parse(mBraintreeFragment.getReturnUrlScheme() + "://local-payment-cancel").toString();
                 String expectedReturnUrl = Uri.parse(mBraintreeFragment.getReturnUrlScheme() + "://local-payment-success").toString();
@@ -499,7 +500,8 @@ public class LocalPaymentUnitTest {
                 .surname("Doe")
                 .shippingAddressRequired(false)
                 .merchantAccountId("local-merchant-account-id")
-                .currencyCode("EUR");
+                .currencyCode("EUR")
+                .paymentTypeCountryCode("NL");
         return request;
     }
 

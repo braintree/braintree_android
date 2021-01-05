@@ -33,7 +33,8 @@ public class LocalPaymentRequestUnitTest {
                 .surname("Doe")
                 .shippingAddressRequired(false)
                 .merchantAccountId("local-merchant-account-id")
-                .currencyCode("EUR");
+                .currencyCode("EUR")
+                .paymentTypeCountryCode("NL");
 
         JSONObject json = new JSONObject(request.build("http://success-url.com", "http://cancel-url.com"));
 
@@ -54,6 +55,7 @@ public class LocalPaymentRequestUnitTest {
         assertEquals("2585 GJ", json.getString("postalCode"));
         assertEquals("NL", json.getString("countryCode"));
         assertEquals("local-merchant-account-id", json.getString("merchantAccountId"));
+        assertEquals("NL", json.getString("paymentTypeCountryCode"));
         assertTrue(json.getJSONObject("experienceProfile").getBoolean("noShipping"));
         String expectedCancelUrl = Uri.parse("http://cancel-url.com").toString();
         String expectedReturnUrl = Uri.parse("http://success-url.com").toString();

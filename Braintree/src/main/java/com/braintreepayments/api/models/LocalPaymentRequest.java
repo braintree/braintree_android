@@ -26,6 +26,7 @@ public class LocalPaymentRequest {
     private static final String POSTAL_CODE_KEY = "postalCode";
     private static final String COUNTRY_CODE_KEY = "countryCode";
     private static final String MERCHANT_ACCOUNT_ID_KEY = "merchantAccountId";
+    private static final String PAYMENT_TYPE_COUNTRY_CODE = "paymentTypeCountryCode";
 
     private PostalAddress mAddress;
     private String mAmount;
@@ -36,6 +37,7 @@ public class LocalPaymentRequest {
     private String mMerchantAccountId;
     private String mPaymentId;
     private String mPaymentType;
+    private String mPaymentTypeCountryCode;
     private String mPhone;
     private boolean mShippingAddressRequired;
     private String mSurname;
@@ -127,6 +129,19 @@ public class LocalPaymentRequest {
     }
 
     /**
+     * @param paymentTypeCountryCode The country code of the local payment. This value must be one of
+     *                               the supported country codes for a given local payment type listed.
+     *                               For local payments supported in multiple countries, this value
+     *                               may determine which banks are presented to the customer.
+     *                               @see <a href=https://developers.braintreepayments.com/guides/local-payment-methods/client-side-custom/android/v3#invoke-payment-flow>Supported Country Codes</a>
+     * @return {@link LocalPaymentRequest}
+     */
+    public LocalPaymentRequest paymentTypeCountryCode(String paymentTypeCountryCode) {
+        mPaymentTypeCountryCode = paymentTypeCountryCode;
+        return this;
+    }
+
+    /**
      * @param phone Optional - Phone number of the customer.
      * @return {@link LocalPaymentRequest}
      */
@@ -190,6 +205,10 @@ public class LocalPaymentRequest {
         return mPaymentType;
     }
 
+    public String getPaymentTypeCountryCode() {
+        return mPaymentTypeCountryCode;
+    }
+
     public String getPhone() {
         return mPhone;
     }
@@ -215,7 +234,8 @@ public class LocalPaymentRequest {
                     .put(SURNAME_KEY, mSurname)
                     .put(EMAIL_KEY, mEmail)
                     .put(PHONE_KEY, mPhone)
-                    .put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId);
+                    .put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId)
+                    .put(PAYMENT_TYPE_COUNTRY_CODE, mPaymentTypeCountryCode);
 
             if (mAddress != null) {
                 payload.put(STREET_ADDRESS_KEY, mAddress.getStreetAddress())
