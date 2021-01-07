@@ -1,4 +1,4 @@
-package com.braintreepayments.api.internal;
+package com.braintreepayments.api;
 
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -8,8 +8,7 @@ import android.net.NetworkInfo;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.braintreepayments.api.AnalyticsClient;
-import com.braintreepayments.api.DeviceInspector;
+import com.braintreepayments.api.internal.ClassHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;

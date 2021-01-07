@@ -9,7 +9,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.internal.AnalyticsEvent;
 import com.braintreepayments.api.internal.BraintreeGraphQLHttpClient;
 import com.braintreepayments.api.internal.BraintreeHttpClient;
 import com.braintreepayments.api.internal.HttpNoResponse;
@@ -38,23 +37,23 @@ public class BraintreeClient {
 
     private CrashReporter crashReporter;
 
-    public BraintreeClient(Authorization authorization, Context context, String returnUrlScheme) {
+    BraintreeClient(Authorization authorization, Context context, String returnUrlScheme) {
         this(authorization, context, returnUrlScheme, new BraintreeHttpClient(authorization), new BraintreeGraphQLHttpClient(authorization));
     }
 
     private BraintreeClient(Authorization authorization, Context context, String returnUrlScheme, BraintreeHttpClient httpClient, BraintreeGraphQLHttpClient graphQLHttpClient) {
-        this(authorization, context, returnUrlScheme, httpClient, graphQLHttpClient, new ConfigurationManager(httpClient));
+        this(authorization, context, returnUrlScheme, httpClient, graphQLHttpClient, new ConfigurationManager(httpClient), new AnalyticsClient(authorization), UUIDHelper.getFormattedUUID());
     }
 
     @VisibleForTesting
-    BraintreeClient(Authorization authorization, Context context, String returnUrlScheme, BraintreeHttpClient httpClient, BraintreeGraphQLHttpClient graphQLHttpClient, ConfigurationManager configurationManager) {
+    BraintreeClient(Authorization authorization, Context context, String returnUrlScheme, BraintreeHttpClient httpClient, BraintreeGraphQLHttpClient graphQLHttpClient, ConfigurationManager configurationManager, AnalyticsClient analyticsClient, String sessionId) {
         this.httpClient = httpClient;
         this.authorization = authorization;
         this.applicationContext = context.getApplicationContext();
         this.configurationManager = configurationManager;
 
-        this.analyticsClient = AnalyticsClient.newInstance();
-        this.sessionId = UUIDHelper.getFormattedUUID();
+        this.analyticsClient = analyticsClient;
+        this.sessionId = sessionId;
         this.graphQLHttpClient = graphQLHttpClient;
         this.browserSwitchClient = BrowserSwitchClient.newInstance(returnUrlScheme);
         this.manifestValidator = new ManifestValidator();
@@ -71,21 +70,9 @@ public class BraintreeClient {
         getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                if (configuration != null) {
+                if (isAnalyticsEnabled(configuration)) {
                     final AnalyticsEvent event = new AnalyticsEvent(applicationContext, sessionId, getIntegrationType(), eventFragment);
                     analyticsClient.sendEvent(event, configuration, applicationContext);
-                }
-            }
-        });
-    }
-
-    // TODO: use Jetpack WorkManager to schedule Analytics events for upload periodically in the background
-    public void flushAnalyticsEvents(final Context context) {
-        getConfiguration(new ConfigurationCallback() {
-            @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                if (configuration != null) {
-                    analyticsClient.flushAnalyticsEvents(context, configuration, authorization, httpClient);
                 }
             }
         });
@@ -174,6 +161,10 @@ public class BraintreeClient {
             final AnalyticsEvent event = new AnalyticsEvent(null, sessionId, "crash", "crash");
             httpClient.post(analyticsUrl, event.toString(), null, new HttpNoResponse());
         }
+    }
+
+    private static boolean isAnalyticsEnabled(Configuration configuration) {
+        return configuration != null && configuration.getAnalytics() != null && configuration.getAnalytics().isEnabled();
     }
 
     public Authorization getAuthorization() {

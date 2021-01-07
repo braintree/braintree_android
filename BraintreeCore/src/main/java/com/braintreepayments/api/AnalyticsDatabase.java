@@ -1,14 +1,14 @@
-package com.braintreepayments.api.internal;
+package com.braintreepayments.api;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
+
+import androidx.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.interfaces.BraintreeResponseListener;
 
@@ -31,19 +31,25 @@ public class AnalyticsDatabase extends SQLiteOpenHelper {
     static final String TIMESTAMP = "timestamp";
     static final String META_JSON = "meta_json";
 
-    protected final Set<AsyncTask> mTaskSet = new HashSet<>();
+    private static volatile AnalyticsDatabase INSTANCE;
 
     public static AnalyticsDatabase getInstance(Context context) {
-        return new AnalyticsDatabase(context, DATABASE_NAME, null, DATABASE_VERSION);
+        if (INSTANCE == null) {
+            synchronized (AnalyticsDatabase.class) {
+                // double check that instance was not created in another thread
+                if (INSTANCE == null) {
+                    INSTANCE = new AnalyticsDatabase(context);
+                }
+            }
+        }
+        return INSTANCE;
     }
 
-    public AnalyticsDatabase(Context context, String name, CursorFactory factory, int version) {
-        super(context, DATABASE_NAME, factory, DATABASE_VERSION);
-    }
+    protected final Set<AsyncTask> mTaskSet = new HashSet<>();
 
-    public AnalyticsDatabase(Context context, String name, CursorFactory factory, int version,
-            DatabaseErrorHandler errorHandler) {
-        super(context, DATABASE_NAME, factory, DATABASE_VERSION, errorHandler);
+    @VisibleForTesting
+    AnalyticsDatabase(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override

@@ -31,6 +31,8 @@
   * `UnionPayEnrollCallback`
 * Breaking Changes
   * Remove `BraintreeFragment`
+  * Remove `AnalyticsIntentService`
+  * Remove `AnalyticsSender`
   * Rename `core` module to `shared-utils`
   * Rename `braintree` module to `braintree-core`
   * Create `american-express` module

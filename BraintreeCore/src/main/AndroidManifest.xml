@@ -4,8 +4,4 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <uses-sdk tools:overrideLibrary="com.cardinalcommerce.cardinalmobilesdk"/>
-
-    <application>
-        <service android:name="com.braintreepayments.api.internal.AnalyticsIntentService"/>
-    </application>
 </manifest>

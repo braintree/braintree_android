@@ -1,4 +1,4 @@
-package com.braintreepayments.api.internal;
+package com.braintreepayments.api;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.awaitTasksFinished;
-import static com.braintreepayments.api.internal.AnalyticsDatabaseTestUtils.clearAllEvents;
+import static com.braintreepayments.api.AnalyticsDatabaseTestUtils.awaitTasksFinished;
+import static com.braintreepayments.api.AnalyticsDatabaseTestUtils.clearAllEvents;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
@@ -27,12 +27,10 @@ import static junit.framework.Assert.assertTrue;
 public class AnalyticsDatabaseUnitTest {
 
     private Context context;
-    private AnalyticsDatabase mAnalyticsDatabase;
 
     @Before
     public void setup() {
         context = ApplicationProvider.getApplicationContext();
-        mAnalyticsDatabase = AnalyticsDatabase.getInstance(context);
         clearAllEvents(context);
     }
 
@@ -45,11 +43,12 @@ public class AnalyticsDatabaseUnitTest {
     public void addEvent_persistsEvent() throws Exception {
         AnalyticsEvent request = new AnalyticsEvent(context, "sessionId", "custom", "started.client-token");
 
-        mAnalyticsDatabase.addEvent(request);
+        AnalyticsDatabase sut = new AnalyticsDatabase(context);
+        sut.addEvent(request);
 
-        awaitTasksFinished(mAnalyticsDatabase);
+        awaitTasksFinished(sut);
 
-        Cursor cursor = mAnalyticsDatabase.getReadableDatabase().query(false, "analytics", null, null, null,
+        Cursor cursor = sut.getReadableDatabase().query(false, "analytics", null, null, null,
                 null, null, "_id desc", "1");
 
         assertTrue(cursor.moveToFirst());
@@ -63,13 +62,13 @@ public class AnalyticsDatabaseUnitTest {
         AnalyticsEvent event1 = new AnalyticsEvent(context, "sessionId", "custom", "started.client-token");
         AnalyticsEvent event2 = new AnalyticsEvent(context, "sessionId", "custom", "finished.client-token");
 
-        mAnalyticsDatabase.addEvent(event1);
-        mAnalyticsDatabase.addEvent(event2);
+        AnalyticsDatabase sut = new AnalyticsDatabase(context);
+        sut.addEvent(event1);
+        sut.addEvent(event2);
 
-        awaitTasksFinished(mAnalyticsDatabase);
-        mAnalyticsDatabase = AnalyticsDatabase.getInstance(context);
+        awaitTasksFinished(sut);
 
-        Cursor idCursor = mAnalyticsDatabase.getReadableDatabase().query(false, "analytics", new String[]{"_id"},
+        Cursor idCursor = sut.getReadableDatabase().query(false, "analytics", new String[]{"_id"},
                 null, null, null, null, "_id asc", null);
 
         List<AnalyticsEvent> fetchedEvents = new ArrayList<>();
@@ -81,11 +80,11 @@ public class AnalyticsDatabaseUnitTest {
 
         assertEquals(2, fetchedEvents.size());
 
-        mAnalyticsDatabase.removeEvents(fetchedEvents);
+        sut.removeEvents(fetchedEvents);
 
-        awaitTasksFinished(mAnalyticsDatabase);
+        awaitTasksFinished(sut);
 
-        idCursor = mAnalyticsDatabase.getReadableDatabase().query(false, "analytics", new String[]{"_id"},
+        idCursor = sut.getReadableDatabase().query(false, "analytics", new String[]{"_id"},
                 null, null, null, null, "_id asc", null);
 
         assertEquals(idCursor.getCount(), 0);
@@ -99,19 +98,18 @@ public class AnalyticsDatabaseUnitTest {
         AnalyticsEvent request3 = new AnalyticsEvent(context, "anotherSessionId", "custom", "started.client-token");
         AnalyticsEvent request4 = new AnalyticsEvent(context, "anotherSessionId", "custom", "finished.client-token");
 
-        mAnalyticsDatabase.addEvent(request1);
-        mAnalyticsDatabase.addEvent(request2);
+        AnalyticsDatabase sut = new AnalyticsDatabase(context);
+        sut.addEvent(request1);
+        sut.addEvent(request2);
 
-        awaitTasksFinished(mAnalyticsDatabase);
-        mAnalyticsDatabase = AnalyticsDatabase.getInstance(context);
+        awaitTasksFinished(sut);
 
-        mAnalyticsDatabase.addEvent(request3);
-        mAnalyticsDatabase.addEvent(request4);
+        sut.addEvent(request3);
+        sut.addEvent(request4);
 
-        awaitTasksFinished(mAnalyticsDatabase);
-        mAnalyticsDatabase = AnalyticsDatabase.getInstance(context);
+        awaitTasksFinished(sut);
 
-        List<List<AnalyticsEvent>> analyticsRequests = mAnalyticsDatabase.getPendingRequests();
+        List<List<AnalyticsEvent>> analyticsRequests = sut.getPendingRequests();
 
         assertEquals(2, analyticsRequests.size());
 
@@ -167,13 +165,12 @@ public class AnalyticsDatabaseUnitTest {
     }
 
     private static class AnalyticsWithOpenExceptionsDatabase extends AnalyticsDatabase {
-        public AnalyticsWithOpenExceptionsDatabase(Context context, String name,
-                CursorFactory factory, int version) {
-            super(context, name, factory, version);
+        public AnalyticsWithOpenExceptionsDatabase(Context context) {
+            super(context);
         }
 
         public static AnalyticsWithOpenExceptionsDatabase getInstance(Context context) {
-            return new AnalyticsWithOpenExceptionsDatabase(context, "braintree-analytics.db", null, 1);
+            return new AnalyticsWithOpenExceptionsDatabase(context);
         }
 
         @Override

@@ -1,7 +1,6 @@
-package com.braintreepayments.api.internal;
+package com.braintreepayments.api;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.os.SystemClock;
 
 import java.util.concurrent.TimeUnit;
@@ -12,13 +11,6 @@ public class AnalyticsDatabaseTestUtils {
         AnalyticsDatabase database = AnalyticsDatabase.getInstance(context.getApplicationContext());
         database.getWritableDatabase().delete("analytics", null, null);
         database.close();
-    }
-
-    public static boolean verifyAnalyticsEvent(Context context, String eventFragment) {
-        AnalyticsDatabase database = AnalyticsDatabase.getInstance(context.getApplicationContext());
-        Cursor c = database.getReadableDatabase().query("analytics", new String[]{"event"}, "event like ?",
-                new String[]{eventFragment}, null, null, null);
-        return c.getCount() == 1;
     }
 
     /**

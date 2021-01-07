@@ -50,6 +50,10 @@ public class BraintreeHttpClient {
         }
     }
 
+    public Authorization getAuthorization() {
+        return authorization;
+    }
+
     /**
      * Make a HTTP GET request to Braintree using the base url, path and authorization provided.
      * If the path is a full url, it will be used instead of the previously provided url.

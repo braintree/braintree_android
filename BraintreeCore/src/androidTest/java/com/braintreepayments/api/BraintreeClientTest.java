@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import android.app.Activity;
-
 import androidx.annotation.Nullable;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
@@ -31,7 +29,7 @@ public class BraintreeClientTest {
     public final BraintreeActivityTestRule<TestActivity> mActivityTestRule =
             new BraintreeActivityTestRule<>(TestActivity.class);
 
-    private Activity activity;
+    private TestActivity activity;
     private CountDownLatch countDownLatch;
 
     @Before

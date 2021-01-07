@@ -1,11 +1,11 @@
-package com.braintreepayments.api.internal;
+package com.braintreepayments.api;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
-import com.braintreepayments.api.DeviceInspector;
+import com.braintreepayments.api.internal.ClassHelper;
 
 import org.json.JSONException;
 import org.junit.Before;
