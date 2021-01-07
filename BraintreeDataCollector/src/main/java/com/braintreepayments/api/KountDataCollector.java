@@ -26,19 +26,19 @@ public class KountDataCollector {
     }
 
     void startDataCollection(@NonNull Context context, @NonNull final String merchantId, @NonNull final String deviceSessionId, @NonNull final KountDataCollectorCallback callback) {
-        braintreeClient.sendAnalyticsEvent(context, "data-collector.kount.started");
+        braintreeClient.sendAnalyticsEvent("data-collector.kount.started");
 
         try {
             Class.forName(com.kount.api.DataCollector.class.getName());
         } catch (ClassNotFoundException | NoClassDefFoundError | NumberFormatException e) {
-            braintreeClient.sendAnalyticsEvent(context, "data-collector.kount.failed");
+            braintreeClient.sendAnalyticsEvent("data-collector.kount.failed");
 
             Exception startError = new BraintreeException("Kount session failed to start.");
             callback.onResult(null, startError);
         }
 
         final Context applicationContext = context.getApplicationContext();
-        braintreeClient.getConfiguration(applicationContext, new ConfigurationCallback() {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
@@ -52,13 +52,13 @@ public class KountDataCollector {
                     kountDataCollector.collectForSession(deviceSessionId, new DataCollector.CompletionHandler() {
                         @Override
                         public void completed(String kountSessionId) {
-                            braintreeClient.sendAnalyticsEvent(applicationContext, "data-collector.kount.succeeded");
+                            braintreeClient.sendAnalyticsEvent("data-collector.kount.succeeded");
                             callback.onResult(kountSessionId, null);
                         }
 
                         @Override
                         public void failed(String kountSessionId, DataCollector.Error error) {
-                            braintreeClient.sendAnalyticsEvent(applicationContext, "data-collector.kount.failed");
+                            braintreeClient.sendAnalyticsEvent("data-collector.kount.failed");
                             callback.onResult(kountSessionId, null);
                         }
                     });

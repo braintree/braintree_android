@@ -186,8 +186,8 @@ public class PayPalUnitTest {
         PayPalRequest payPalRequest = new PayPalRequest();
         sut.requestBillingAgreement(context, payPalRequest, payPalRequestCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "paypal.billing-agreement.selected");
-        verify(braintreeClient).sendAnalyticsEvent(context,"paypal.billing-agreement.browser-switch.started");
+        verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.selected");
+        verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.browser-switch.started");
     }
 
     @Test
@@ -302,8 +302,8 @@ public class PayPalUnitTest {
         PayPalRequest payPalRequest = new PayPalRequest("1.00");
         sut.requestOneTimePayment(context, payPalRequest, payPalRequestCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context,"paypal.single-payment.selected");
-        verify(braintreeClient).sendAnalyticsEvent(context,"paypal.single-payment.browser-switch.started");
+        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.selected");
+        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.browser-switch.started");
     }
 
     @Test
@@ -351,7 +351,7 @@ public class PayPalUnitTest {
 
         sut.requestBillingAgreement(context, payPalRequest, payPalRequestCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "paypal.billing-agreement.credit.offered");
+        verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
     }
 
     @Test
@@ -467,7 +467,7 @@ public class PayPalUnitTest {
         Uri uri = Uri.parse(approvalUrl);
         sut.onBrowserSwitchResult(context, browserSwitchOptions, uri, payPalBrowserSwitchResultCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context,"paypal.billing-agreement.browser-switch.succeeded");
+        verify(braintreeClient).sendAnalyticsEvent("paypal.billing-agreement.browser-switch.succeeded");
     }
 
     @Test
@@ -495,7 +495,7 @@ public class PayPalUnitTest {
         Uri uri = Uri.parse(approvalUrl);
         sut.onBrowserSwitchResult(context, browserSwitchResult, uri, payPalBrowserSwitchResultCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context,"paypal.single-payment.browser-switch.succeeded");
+        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.browser-switch.succeeded");
     }
 
     @Test
@@ -528,7 +528,7 @@ public class PayPalUnitTest {
         Uri uri = Uri.parse(approvalUrl);
         sut.onBrowserSwitchResult(context, browserSwitchResult, uri, payPalBrowserSwitchResultCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "paypal.credit.accepted");
+        verify(braintreeClient).sendAnalyticsEvent("paypal.credit.accepted");
     }
 
     @Test
@@ -587,7 +587,7 @@ public class PayPalUnitTest {
         assertTrue(exception instanceof BraintreeException);
         assertEquals("User Canceled PayPal", exception.getMessage());
 
-        verify(braintreeClient).sendAnalyticsEvent(same(context), eq("paypal.single-payment.browser-switch.canceled"));
+        verify(braintreeClient).sendAnalyticsEvent(eq("paypal.single-payment.browser-switch.canceled"));
     }
 
     @Test
@@ -616,6 +616,6 @@ public class PayPalUnitTest {
         PayPalRequest payPalRequest = new PayPalRequest("1.00").offerCredit(true);
         sut.requestOneTimePayment(context, payPalRequest, payPalRequestCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context,"paypal.single-payment.credit.offered");
+        verify(braintreeClient).sendAnalyticsEvent("paypal.single-payment.credit.offered");
     }
 }

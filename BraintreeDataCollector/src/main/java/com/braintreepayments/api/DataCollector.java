@@ -60,7 +60,7 @@ public class DataCollector {
      * @param callback   callback called with the deviceData string that should be passed into server-side calls, such as `Transaction.sale`.
      */
     public void collectDeviceData(final Context context, final String merchantId, final BraintreeDataCollectorCallback callback) {
-        braintreeClient.getConfiguration(context, new ConfigurationCallback() {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
@@ -138,7 +138,7 @@ public class DataCollector {
     }
 
     void collectRiskData(final Context context, @NonNull final PaymentMethodNonce paymentMethodNonce) {
-        braintreeClient.getConfiguration(context, new ConfigurationCallback() {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {

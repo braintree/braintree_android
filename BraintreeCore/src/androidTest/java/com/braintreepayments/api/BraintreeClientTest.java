@@ -43,9 +43,9 @@ public class BraintreeClientTest {
     @Test(timeout = 10000)
     public void getConfiguration_succeedsWithATokenizationKey() throws InvalidArgumentException, InterruptedException {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        BraintreeClient sut = BraintreeClient.newInstance(authorization, "sample-scheme");
+        BraintreeClient sut = new BraintreeClient(authorization, activity, "sample-scheme");
 
-        sut.getConfiguration(activity, new ConfigurationCallback() {
+        sut.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 assertNotNull(configuration);
@@ -60,9 +60,9 @@ public class BraintreeClientTest {
     public void getConfiguration_succeedsWithAClientToken() throws InterruptedException, InvalidArgumentException {
         String clientToken = new TestClientTokenBuilder().build();
         Authorization authorization = Authorization.fromString(clientToken);
-        BraintreeClient sut = BraintreeClient.newInstance(authorization, "sample-scheme");
+        BraintreeClient sut = new BraintreeClient(authorization, activity, "sample-scheme");
 
-        sut.getConfiguration(activity, new ConfigurationCallback() {
+        sut.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 assertNotNull(configuration);
@@ -78,9 +78,9 @@ public class BraintreeClientTest {
     public void fetchConfiguration_succeedsWithAPayPalUAT() throws InterruptedException, InvalidArgumentException {
         String payPalUAT = new TestPayPalUATBuilder().build();
         Authorization authorization = Authorization.fromString(payPalUAT);
-        BraintreeClient sut = BraintreeClient.newInstance(authorization, "sample-scheme");
+        BraintreeClient sut = new BraintreeClient(authorization, activity, "sample-scheme");
 
-        sut.getConfiguration(activity, new ConfigurationCallback() {
+        sut.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 assertNotNull(configuration);

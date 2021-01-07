@@ -62,7 +62,7 @@ public class DataCollectorTest {
 
         SharedPreferencesHelper.overrideConfigurationCache(mActivity, authorization, configuration);
 
-        BraintreeClient braintreeClient = BraintreeClient.newInstance(authorization, "sample-scheme");
+        BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity, "sample-scheme");
         DataCollector sut = new DataCollector(braintreeClient);
 
         sut.collectDeviceData(mActivity, new BraintreeDataCollectorCallback() {
@@ -93,7 +93,7 @@ public class DataCollectorTest {
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
         SharedPreferencesHelper.overrideConfigurationCache(mActivity, authorization, configuration);
 
-        BraintreeClient braintreeClient = BraintreeClient.newInstance(authorization, "sample-scheme");
+        BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity, "sample-scheme");
         DataCollector sut = new DataCollector(braintreeClient);
 
         sut.collectDeviceData(mActivity, "600001", new BraintreeDataCollectorCallback() {
@@ -121,7 +121,7 @@ public class DataCollectorTest {
 
         SharedPreferencesHelper.overrideConfigurationCache(mActivity, authorization, configuration);
 
-        BraintreeClient braintreeClient = BraintreeClient.newInstance(authorization, "sample-scheme");
+        BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity, "sample-scheme");
         DataCollector sut = new DataCollector(braintreeClient);
 
         sut.collectDeviceData(mActivity, new BraintreeDataCollectorCallback() {

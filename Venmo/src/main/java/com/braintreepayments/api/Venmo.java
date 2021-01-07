@@ -62,7 +62,7 @@ public class Venmo {
      * @param activity used to open the Venmo's Google Play Store
      */
     public void showVenmoInGooglePlayStore(FragmentActivity activity) {
-        braintreeClient.sendAnalyticsEvent(activity,"android.pay-with-venmo.app-store.invoked");
+        braintreeClient.sendAnalyticsEvent("android.pay-with-venmo.app-store.invoked");
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(
                 "https://play.google.com/store/apps/details?id=" + VENMO_PACKAGE_NAME));
@@ -84,10 +84,10 @@ public class Venmo {
      * @param callback {@link VenmoAuthorizeAccountCallback}
      */
     public void authorizeAccount(final FragmentActivity activity, final boolean vault, final String profileId, final VenmoAuthorizeAccountCallback callback) {
-        braintreeClient.getConfiguration(activity, new ConfigurationCallback() {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                braintreeClient.sendAnalyticsEvent(activity,"pay-with-venmo.selected");
+                braintreeClient.sendAnalyticsEvent("pay-with-venmo.selected");
 
                 String venmoProfileId = profileId;
                 if (TextUtils.isEmpty(venmoProfileId)) {
@@ -103,13 +103,13 @@ public class Venmo {
 
                 if (!TextUtils.isEmpty(exceptionMessage)) {
                     callback.onResult(false, new AppSwitchNotAvailableException(exceptionMessage));
-                    braintreeClient.sendAnalyticsEvent(activity,"pay-with-venmo.app-switch.failed");
+                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
                 } else {
                     sharedPrefsWriter.persistVenmoVaultOption(activity, vault && braintreeClient.getAuthorization() instanceof ClientToken);
 
                     activity.startActivityForResult(getLaunchIntent(activity, configuration.getPayWithVenmo(), venmoProfileId),
                             BraintreeRequestCodes.VENMO);
-                    braintreeClient.sendAnalyticsEvent(activity, "pay-with-venmo.app-switch.started");
+                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
                 }
             }
         });
@@ -117,7 +117,7 @@ public class Venmo {
 
     public void onActivityResult(final Context context, int resultCode, Intent data, final VenmoOnActivityResultCallback callback) {
         if (resultCode == AppCompatActivity.RESULT_OK) {
-            braintreeClient.sendAnalyticsEvent(context, "pay-with-venmo.app-switch.success");
+            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.success");
             String nonce = data.getStringExtra(EXTRA_PAYMENT_METHOD_NONCE);
 
             boolean shouldVault = sharedPrefsWriter.getVenmoVaultOption(context);
@@ -130,13 +130,13 @@ public class Venmo {
                     @Override
                     public void success(PaymentMethodNonce paymentMethodNonce) {
                         callback.onResult((VenmoAccountNonce) paymentMethodNonce, null);
-                        braintreeClient.sendAnalyticsEvent(context, "pay-with-venmo.vault.success");
+                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.success");
                     }
 
                     @Override
                     public void failure(Exception exception) {
                         callback.onResult(null, exception);
-                        braintreeClient.sendAnalyticsEvent(context, "pay-with-venmo.vault.failed");
+                        braintreeClient.sendAnalyticsEvent("pay-with-venmo.vault.failed");
                     }
                 });
             } else {
@@ -145,7 +145,7 @@ public class Venmo {
                 callback.onResult(venmoAccountNonce, null);
             }
         } else if (resultCode == AppCompatActivity.RESULT_CANCELED) {
-            braintreeClient.sendAnalyticsEvent(context, "pay-with-venmo.app-switch.canceled");
+            braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.canceled");
         }
     }
 
@@ -164,7 +164,7 @@ public class Venmo {
 
             JSONObject meta = new MetadataBuilder()
                     .sessionId(braintreeClient.getSessionId())
-                    .integration(braintreeClient.getIntegrationType(context))
+                    .integration(braintreeClient.getIntegrationType())
                     .version()
                     .build();
 

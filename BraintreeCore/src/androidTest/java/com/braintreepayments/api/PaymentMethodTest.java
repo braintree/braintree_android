@@ -56,7 +56,7 @@ public class PaymentMethodTest {
         final String clientToken = new TestClientTokenBuilder().withCustomerId().build();
 
         Authorization authorization = Authorization.fromString(clientToken);
-        final BraintreeClient braintreeClient = BraintreeClient.newInstance(authorization, null);
+        final BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity, null);
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 
@@ -108,7 +108,7 @@ public class PaymentMethodTest {
         final CountDownLatch latch = new CountDownLatch(1);
 
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
-        final BraintreeClient braintreeClient = BraintreeClient.newInstance(authorization, null);
+        final BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity, null);
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         final PaymentMethodClient sut = new PaymentMethodClient(braintreeClient);
 

@@ -21,7 +21,6 @@ import java.util.concurrent.CountDownLatch;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -66,7 +65,7 @@ public class PreferredPaymentMethodsTest {
             @Override
             public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertTrue(preferredPaymentMethodsResult.isPayPalPreferred());
-                verify(braintreeClient).sendAnalyticsEvent(applicationContext, "preferred-payment-methods.paypal.app-installed.true");
+                verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.paypal.app-installed.true");
                 mCountDownLatch.countDown();
             }
         });
@@ -87,7 +86,7 @@ public class PreferredPaymentMethodsTest {
             @Override
             public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertTrue(preferredPaymentMethodsResult.isVenmoPreferred());
-                verify(braintreeClient).sendAnalyticsEvent(applicationContext, "preferred-payment-methods.venmo.app-installed.true");
+                verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.venmo.app-installed.true");
                 mCountDownLatch.countDown();
             }
         });
@@ -106,7 +105,7 @@ public class PreferredPaymentMethodsTest {
             @Override
             public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertFalse(preferredPaymentMethodsResult.isVenmoPreferred());
-                verify(braintreeClient).sendAnalyticsEvent(applicationContext, "preferred-payment-methods.venmo.app-installed.false");
+                verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.venmo.app-installed.false");
                 mCountDownLatch.countDown();
             }
         });
@@ -128,7 +127,7 @@ public class PreferredPaymentMethodsTest {
             public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 
-                verify(braintreeClient).sendGraphQLPOST(captor.capture(), same(applicationContext), any(HttpResponseCallback.class));
+                verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
                 String expectedQuery = "{ \"query\": \"query PreferredPaymentMethods { preferredPaymentMethods { paypalPreferred } }\" }";
                 assertEquals(expectedQuery, captor.getValue());
                 mCountDownLatch.countDown();
@@ -150,7 +149,7 @@ public class PreferredPaymentMethodsTest {
             public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertFalse(preferredPaymentMethodsResult.isPayPalPreferred());
                 assertFalse(preferredPaymentMethodsResult.isVenmoPreferred());
-                verify(braintreeClient).sendAnalyticsEvent(applicationContext,"preferred-payment-methods.api-disabled");
+                verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.api-disabled");
                 mCountDownLatch.countDown();
             }
         });
@@ -171,7 +170,7 @@ public class PreferredPaymentMethodsTest {
             @Override
             public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertTrue(preferredPaymentMethodsResult.isPayPalPreferred());
-                verify(braintreeClient).sendAnalyticsEvent(applicationContext,"preferred-payment-methods.paypal.api-detected.true");
+                verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.paypal.api-detected.true");
                 mCountDownLatch.countDown();
             }
         });
@@ -192,7 +191,7 @@ public class PreferredPaymentMethodsTest {
             @Override
             public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertFalse(preferredPaymentMethodsResult.isPayPalPreferred());
-                verify(braintreeClient).sendAnalyticsEvent(applicationContext,"preferred-payment-methods.paypal.api-detected.false");
+                verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.paypal.api-detected.false");
                 mCountDownLatch.countDown();
             }
         });
@@ -212,7 +211,7 @@ public class PreferredPaymentMethodsTest {
             @Override
             public void onResult(PreferredPaymentMethodsResult preferredPaymentMethodsResult) {
                 assertFalse(preferredPaymentMethodsResult.isPayPalPreferred());
-                verify(braintreeClient).sendAnalyticsEvent(applicationContext,"preferred-payment-methods.api-error");
+                verify(braintreeClient).sendAnalyticsEvent("preferred-payment-methods.api-error");
                 mCountDownLatch.countDown();
             }
         });

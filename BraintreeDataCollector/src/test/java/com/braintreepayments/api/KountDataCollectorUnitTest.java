@@ -18,7 +18,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -57,7 +56,7 @@ public class KountDataCollectorUnitTest {
         KountDataCollectorCallback callback = mock(KountDataCollectorCallback.class);
         sut.startDataCollection(context, "123", "device-session-id", callback);
 
-        verify(braintreeClient).getConfiguration(same(applicationContext), any(ConfigurationCallback.class));
+        verify(braintreeClient).getConfiguration(any(ConfigurationCallback.class));
     }
 
     @Test
@@ -140,7 +139,7 @@ public class KountDataCollectorUnitTest {
         DataCollector.CompletionHandler completionHandler = captor.getValue();
         completionHandler.completed("kount-session-id");
 
-        verify(braintreeClient).sendAnalyticsEvent(applicationContext, "data-collector.kount.succeeded");
+        verify(braintreeClient).sendAnalyticsEvent("data-collector.kount.succeeded");
     }
 
     @Test
@@ -180,6 +179,6 @@ public class KountDataCollectorUnitTest {
         DataCollector.CompletionHandler completionHandler = captor.getValue();
         completionHandler.failed("kount-session-id", null);
 
-        braintreeClient.sendAnalyticsEvent(applicationContext, "data-collector.kount.failed");
+        braintreeClient.sendAnalyticsEvent("data-collector.kount.failed");
     }
 }

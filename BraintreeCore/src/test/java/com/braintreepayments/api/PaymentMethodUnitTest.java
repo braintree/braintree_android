@@ -32,7 +32,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -94,7 +93,7 @@ public class PaymentMethodUnitTest {
         GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
         sut.getPaymentMethodNonces(context, callback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "get-payment-methods.failed");
+        verify(braintreeClient).sendAnalyticsEvent("get-payment-methods.failed");
     }
 
     @Test
@@ -107,7 +106,7 @@ public class PaymentMethodUnitTest {
         GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
         sut.getPaymentMethodNonces(context, callback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "get-payment-methods.failed");
+        verify(braintreeClient).sendAnalyticsEvent("get-payment-methods.failed");
     }
 
     @Test
@@ -157,7 +156,7 @@ public class PaymentMethodUnitTest {
         GetPaymentMethodNoncesCallback callback = mock(GetPaymentMethodNoncesCallback.class);
         sut.getPaymentMethodNonces(context, callback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "get-payment-methods.succeeded");
+        verify(braintreeClient).sendAnalyticsEvent("get-payment-methods.succeeded");
     }
 
     @Test
@@ -171,7 +170,7 @@ public class PaymentMethodUnitTest {
         sut.getPaymentMethodNonces(context, true, callback);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendGET(captor.capture(), same(context), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendGET(captor.capture(), any(HttpResponseCallback.class));
 
         String requestUri = captor.getValue();
         assertTrue(requestUri.contains("default_first=true"));
@@ -195,7 +194,7 @@ public class PaymentMethodUnitTest {
         assertEquals("A client token with a customer id must be used to delete a payment method nonce.",
                 captor.getValue().getMessage());
 
-        verify(braintreeClient, never()).sendGraphQLPOST(anyString(), any(Context.class), any(HttpResponseCallback.class));
+        verify(braintreeClient, never()).sendGraphQLPOST(anyString(), any(HttpResponseCallback.class));
     }
 
     @Test
@@ -230,7 +229,7 @@ public class PaymentMethodUnitTest {
         DeletePaymentMethodNonceCallback callback = mock(DeletePaymentMethodNonceCallback.class);
         sut.deletePaymentMethod(context, mCardNonce, callback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "delete-payment-methods.failed");
+        verify(braintreeClient).sendAnalyticsEvent("delete-payment-methods.failed");
     }
 
     @Test
@@ -245,7 +244,7 @@ public class PaymentMethodUnitTest {
         DeletePaymentMethodNonceCallback callback = mock(DeletePaymentMethodNonceCallback.class);
         sut.deletePaymentMethod(context, mCardNonce, callback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "delete-payment-methods.succeeded");
+        verify(braintreeClient).sendAnalyticsEvent("delete-payment-methods.succeeded");
     }
 
     @Test
@@ -280,10 +279,10 @@ public class PaymentMethodUnitTest {
         DeletePaymentMethodNonceCallback callback = mock(DeletePaymentMethodNonceCallback.class);
         sut.deletePaymentMethod(context, mCardNonce, callback);
 
-        verify(braintreeClient).getIntegrationType(same(context));
+        verify(braintreeClient).getIntegrationType();
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendGraphQLPOST(captor.capture(), same(context), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
 
         JSONObject graphQlRequest = new JSONObject(captor.getValue());
 

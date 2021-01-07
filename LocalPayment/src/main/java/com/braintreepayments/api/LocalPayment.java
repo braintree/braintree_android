@@ -64,7 +64,7 @@ public class LocalPayment {
         if (exception != null) {
             callback.onResult(null, exception);
         } else {
-            braintreeClient.getConfiguration(context, new ConfigurationCallback() {
+            braintreeClient.getConfiguration(new ConfigurationCallback() {
                 @Override
                 public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                     if (configuration != null) {
@@ -79,7 +79,7 @@ public class LocalPayment {
                         sendAnalyticsEvent(context, request.getPaymentType(), "local-payment.start-payment.selected");
 
                         String url = "/v1/local_payments/create";
-                        braintreeClient.sendPOST(url, request.build(returnUrl, cancel), context, new HttpResponseCallback() {
+                        braintreeClient.sendPOST(url, request.build(returnUrl, cancel), new HttpResponseCallback() {
                             @Override
                             public void success(String responseBody) {
                                 JSONObject responseJson = null;
@@ -174,12 +174,12 @@ public class LocalPayment {
 
                     JSONObject metaData = new JSONObject()
                             .put("source", "client")
-                            .put("integration", braintreeClient.getIntegrationType(context))
+                            .put("integration", braintreeClient.getIntegrationType())
                             .put("sessionId", braintreeClient.getSessionId());
                     payload.put("_meta", metaData);
 
                     String url = "/v1/payment_methods/paypal_accounts";
-                    braintreeClient.sendPOST(url, payload.toString(), context, new HttpResponseCallback() {
+                    braintreeClient.sendPOST(url, payload.toString(), new HttpResponseCallback() {
                         @Override
                         public void success(String responseBody) {
                             try {
@@ -203,6 +203,6 @@ public class LocalPayment {
 
     private void sendAnalyticsEvent(Context context, String paymentType, String eventSuffix) {
         String eventPrefix = (paymentType == null) ? "unknown" : paymentType;
-        braintreeClient.sendAnalyticsEvent(context, String.format("%s.%s", eventPrefix, eventSuffix));
+        braintreeClient.sendAnalyticsEvent(String.format("%s.%s", eventPrefix, eventSuffix));
     }
 }

@@ -46,7 +46,7 @@ public class PayPal {
     }
 
     boolean manifestInvalid(Context context) {
-        return !braintreeClient.isUrlSchemeDeclaredInAndroidManifest(context,
+        return !braintreeClient.isUrlSchemeDeclaredInAndroidManifest(
                 returnUrlScheme, BraintreeBrowserSwitchActivity.class);
     }
 
@@ -66,16 +66,16 @@ public class PayPal {
 
     public void requestOneTimePayment(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalRequestCallback callback) {
         if (payPalRequest.getAmount() != null) {
-            braintreeClient.sendAnalyticsEvent(activity, "paypal.single-payment.selected");
+            braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
             if (payPalRequest.shouldOfferCredit()) {
-                braintreeClient.sendAnalyticsEvent(activity, "paypal.single-payment.credit.offered");
+                braintreeClient.sendAnalyticsEvent("paypal.single-payment.credit.offered");
             }
             
             if (payPalRequest.shouldOfferPayLater()) {
                 braintreeClient.sendAnalyticsEvent("paypal.single-payment.paylater.offered");
             }
 
-            braintreeClient.getConfiguration(activity, new ConfigurationCallback() {
+            braintreeClient.getConfiguration(new ConfigurationCallback() {
                 @Override
                 public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
                     if (payPalConfigInvalid(configuration)) {
@@ -85,7 +85,7 @@ public class PayPal {
                     }
 
                     if (manifestInvalid(activity)) {
-                        braintreeClient.sendAnalyticsEvent(activity, "paypal.invalid-manifest");
+                        braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
                         Exception manifestInvalidError = createManifestInvalidError();
                         callback.onResult(false, manifestInvalidError);
                         return;
@@ -101,12 +101,12 @@ public class PayPal {
 
     public void requestBillingAgreement(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalRequestCallback callback) {
         if (payPalRequest.getAmount() == null) {
-            braintreeClient.sendAnalyticsEvent(activity, "paypal.billing-agreement.selected");
+            braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
             if (payPalRequest.shouldOfferCredit()) {
-                braintreeClient.sendAnalyticsEvent(activity, "paypal.billing-agreement.credit.offered");
+                braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.credit.offered");
             }
 
-            braintreeClient.getConfiguration(activity, new ConfigurationCallback() {
+            braintreeClient.getConfiguration(new ConfigurationCallback() {
                 @Override
                 public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
                     if (payPalConfigInvalid(configuration)) {
@@ -116,7 +116,7 @@ public class PayPal {
                     }
 
                     if (manifestInvalid(activity)) {
-                        braintreeClient.sendAnalyticsEvent(activity, "paypal.invalid-manifest");
+                        braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
                         Exception manifestInvalidError = createManifestInvalidError();
                         callback.onResult(false, manifestInvalidError);
                         return;
@@ -136,7 +136,7 @@ public class PayPal {
             public void onResult(PayPalResponse payPalResponse, Exception error) {
                 if (payPalResponse != null) {
                     String analyticsPrefix = getAnalyticsEventPrefix(isBillingAgreement);
-                    braintreeClient.sendAnalyticsEvent(activity, String.format("%s.browser-switch.started", analyticsPrefix));
+                    braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.started", analyticsPrefix));
 
                     try {
                         startBrowserSwitch(activity, payPalResponse);
@@ -194,7 +194,7 @@ public class PayPal {
         switch (result) {
             case BrowserSwitchResult.STATUS_CANCELED:
                 callback.onResult(null, new BraintreeException("User Canceled PayPal"));
-                braintreeClient.sendAnalyticsEvent(context, String.format("%s.browser-switch.canceled", analyticsPrefix));
+                braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.canceled", analyticsPrefix));
                 break;
             case BrowserSwitchResult.STATUS_OK:
                 try {
@@ -218,7 +218,7 @@ public class PayPal {
                         public void success(PaymentMethodNonce paymentMethodNonce) {
                             if (paymentMethodNonce instanceof PayPalAccountNonce &&
                                     ((PayPalAccountNonce) paymentMethodNonce).getCreditFinancing() != null) {
-                                braintreeClient.sendAnalyticsEvent(context, "paypal.credit.accepted");
+                                braintreeClient.sendAnalyticsEvent("paypal.credit.accepted");
                             }
 
                             callback.onResult(paymentMethodNonce, null);
@@ -230,11 +230,11 @@ public class PayPal {
                         }
                     });
 
-                    braintreeClient.sendAnalyticsEvent(context, String.format("%s.browser-switch.succeeded", analyticsPrefix));
+                    braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.succeeded", analyticsPrefix));
 
                 } catch (JSONException | PayPalBrowserSwitchException e) {
                     callback.onResult(null, e);
-                    braintreeClient.sendAnalyticsEvent(context, String.format("%s.browser-switch.failed", analyticsPrefix));
+                    braintreeClient.sendAnalyticsEvent(String.format("%s.browser-switch.failed", analyticsPrefix));
                 }
                 break;
         }

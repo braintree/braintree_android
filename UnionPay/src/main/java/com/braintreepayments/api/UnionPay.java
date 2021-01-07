@@ -56,7 +56,7 @@ public class UnionPay {
      * @param callback {@link UnionPayFetchCapabilitiesCallback}
      */
     public void fetchCapabilities(final Context context, final String cardNumber, final UnionPayFetchCapabilitiesCallback callback) {
-        braintreeClient.getConfiguration(context, new ConfigurationCallback() {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (!configuration.getUnionPay().isEnabled()) {
@@ -69,17 +69,17 @@ public class UnionPay {
                         .appendQueryParameter("creditCard[number]", cardNumber)
                         .build()
                         .toString();
-                braintreeClient.sendGET(fetchCapabilitiesUrl, context, new HttpResponseCallback() {
+                braintreeClient.sendGET(fetchCapabilitiesUrl, new HttpResponseCallback() {
                     @Override
                     public void success(String responseBody) {
                         callback.onResult(UnionPayCapabilities.fromJson(responseBody), null);
-                        braintreeClient.sendAnalyticsEvent(context, "union-pay.capabilities-received");
+                        braintreeClient.sendAnalyticsEvent("union-pay.capabilities-received");
                     }
 
                     @Override
                     public void failure(Exception exception) {
                         callback.onResult(null, exception);
-                        braintreeClient.sendAnalyticsEvent(context, "union-pay.capabilities-failed");
+                        braintreeClient.sendAnalyticsEvent("union-pay.capabilities-failed");
                     }
                 });
             }
@@ -103,7 +103,7 @@ public class UnionPay {
      * @param callback {@link UnionPayEnrollCallback}
      */
     public void enroll(final Context context, final UnionPayCardBuilder unionPayCardBuilder, final UnionPayEnrollCallback callback) {
-        braintreeClient.getConfiguration(context, new ConfigurationCallback() {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 UnionPayConfiguration unionPayConfiguration = configuration.getUnionPay();
@@ -114,7 +114,7 @@ public class UnionPay {
 
                 try {
                     String enrollmentPayload = unionPayCardBuilder.buildEnrollment().toString();
-                    braintreeClient.sendPOST(UNIONPAY_ENROLLMENT_PATH, enrollmentPayload, context, new HttpResponseCallback() {
+                    braintreeClient.sendPOST(UNIONPAY_ENROLLMENT_PATH, enrollmentPayload, new HttpResponseCallback() {
                         @Override
                         public void success(String responseBody) {
                             try {
@@ -122,7 +122,7 @@ public class UnionPay {
                                 String enrollmentId = response.getString(UNIONPAY_ENROLLMENT_ID_KEY);
                                 boolean smsCodeRequired = response.getBoolean(UNIONPAY_SMS_REQUIRED_KEY);
                                 callback.onResult(new UnionPayEnrollment(enrollmentId, smsCodeRequired), null);
-                                braintreeClient.sendAnalyticsEvent(context, "union-pay.enrollment-succeeded");
+                                braintreeClient.sendAnalyticsEvent("union-pay.enrollment-succeeded");
                             } catch (JSONException e) {
                                 failure(e);
                             }
@@ -131,7 +131,7 @@ public class UnionPay {
                         @Override
                         public void failure(Exception exception) {
                             callback.onResult(null, exception);
-                            braintreeClient.sendAnalyticsEvent(context, "union-pay.enrollment-failed");
+                            braintreeClient.sendAnalyticsEvent("union-pay.enrollment-failed");
                         }
                     });
                 } catch (JSONException exception) {
@@ -165,13 +165,13 @@ public class UnionPay {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 callback.onResult(paymentMethodNonce, null);
-                braintreeClient.sendAnalyticsEvent(context, "union-pay.nonce-received");
+                braintreeClient.sendAnalyticsEvent("union-pay.nonce-received");
             }
 
             @Override
             public void failure(Exception exception) {
                 callback.onResult(null, exception);
-                braintreeClient.sendAnalyticsEvent(context, "union-pay.nonce-failed");
+                braintreeClient.sendAnalyticsEvent("union-pay.nonce-failed");
             }
         });
     }

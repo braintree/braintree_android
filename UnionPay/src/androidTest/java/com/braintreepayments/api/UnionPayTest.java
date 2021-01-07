@@ -3,6 +3,7 @@ package com.braintreepayments.api;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
@@ -53,7 +54,7 @@ public class UnionPayTest {
     public void setUp() throws InvalidArgumentException {
         mCountDownLatch = new CountDownLatch(1);
         BraintreeClient braintreeClient =
-                new BraintreeClient(Authorization.fromString(new TestClientTokenBuilder().build()), null);
+                new BraintreeClient(Authorization.fromString(new TestClientTokenBuilder().build()), ApplicationProvider.getApplicationContext(), null);
         unionPay = new UnionPay(braintreeClient, null);
     }
 

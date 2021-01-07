@@ -46,7 +46,7 @@ public class TokenizationClient {
     public void tokenize(final Context context, final PaymentMethodBuilder paymentMethodBuilder, final PaymentMethodNonceCallback callback) {
         paymentMethodBuilder.setSessionId(braintreeClient.getSessionId());
 
-        braintreeClient.getConfiguration(context, new ConfigurationCallback() {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
@@ -64,7 +64,7 @@ public class TokenizationClient {
     }
 
     private void tokenizeGraphQL(final Context context, final CardBuilder cardBuilder, final PaymentMethodNonceCallback callback) {
-        braintreeClient.sendAnalyticsEvent(context, "card.graphql.tokenization.started");
+        braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.started");
         final String payload;
         try {
             payload = cardBuilder.buildGraphQL(context, braintreeClient.getAuthorization());
@@ -73,12 +73,12 @@ public class TokenizationClient {
             return;
         }
 
-        braintreeClient.sendGraphQLPOST(payload, context, new HttpResponseCallback() {
+        braintreeClient.sendGraphQLPOST(payload, new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
                 try {
                     callback.success(parsePaymentMethodNonces(responseBody, cardBuilder.getResponsePaymentMethodType()));
-                    braintreeClient.sendAnalyticsEvent(context, "card.graphql.tokenization.success");
+                    braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.success");
                 } catch (JSONException e) {
                     callback.failure(e);
                 }
@@ -86,7 +86,7 @@ public class TokenizationClient {
 
             @Override
             public void failure(Exception exception) {
-                braintreeClient.sendAnalyticsEvent(context, "card.graphql.tokenization.failure");
+                braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.failure");
                 callback.failure(exception);
             }
         });
@@ -96,7 +96,7 @@ public class TokenizationClient {
         String url = TokenizationClient.versionedPath(
                 TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + paymentMethodBuilder.getApiPath());
 
-        braintreeClient.sendPOST(url, paymentMethodBuilder.build(), context, new HttpResponseCallback() {
+        braintreeClient.sendPOST(url, paymentMethodBuilder.build(), new HttpResponseCallback() {
 
             @Override
             public void success(String responseBody) {

@@ -94,7 +94,7 @@ public class ThreeDSecureUnitTest {
         ThreeDSecure sut = new ThreeDSecure(braintreeClient, "sample-scheme", cardinalClient, tokenizationClient, browserSwitchHelper);
         sut.performVerification(activity, basicRequest, threeDSecureVerificationCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.initialized");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.initialized");
     }
 
     @Test
@@ -122,7 +122,7 @@ public class ThreeDSecureUnitTest {
 
         String expectedUrl = "/v1/payment_methods/a-nonce/three_d_secure/lookup";
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(eq(expectedUrl), bodyCaptor.capture(), same(activity), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(eq(expectedUrl), bodyCaptor.capture(), any(HttpResponseCallback.class));
 
         JSONObject body = new JSONObject(bodyCaptor.getValue());
         assertEquals("amount", body.getString("amount"));
@@ -154,7 +154,7 @@ public class ThreeDSecureUnitTest {
         sut.performVerification(activity, request, threeDSecureVerificationCallback);
 
         // TODO: consider refining this assertion to be more precise than the original
-        verify(braintreeClient).sendPOST(anyString(), anyString(), same(activity), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(anyString(), anyString(), any(HttpResponseCallback.class));
     }
 
     @Test
@@ -234,7 +234,7 @@ public class ThreeDSecureUnitTest {
 
         String expectedUrl = "/v1/payment_methods/card-nonce/three_d_secure/lookup";
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(eq(expectedUrl), bodyCaptor.capture(), same(activity), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(eq(expectedUrl), bodyCaptor.capture(), any(HttpResponseCallback.class));
 
         JSONObject body = new JSONObject(bodyCaptor.getValue());
         assertEquals("10", body.getString("amount"));
@@ -326,7 +326,7 @@ public class ThreeDSecureUnitTest {
         ThreeDSecure sut = new ThreeDSecure(braintreeClient, "sample-scheme", cardinalClient, tokenizationClient, browserSwitchHelper);
         sut.performVerification(activity, basicRequest, threeDSecureVerificationCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.invalid-manifest");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.invalid-manifest");
     }
 
     @Test
@@ -385,8 +385,8 @@ public class ThreeDSecureUnitTest {
         ThreeDSecure sut = new ThreeDSecure(braintreeClient, "sample-scheme", cardinalClient, tokenizationClient, browserSwitchHelper);
         sut.onBrowserSwitchResult(activity, browserSwitchResult, uri, threeDSecureResultCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.liability-shifted.true");
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.liability-shift-possible.true");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.liability-shifted.true");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.liability-shift-possible.true");
     }
 
     @Test

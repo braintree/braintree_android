@@ -56,7 +56,7 @@ public class ThreeDSecureTest {
         String clientToken = new TestClientTokenBuilder().build();
 
         Authorization authorization = Authorization.fromString(clientToken);
-        BraintreeClient braintreeClient = new BraintreeClient(authorization, returnUrlScheme);
+        BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity, returnUrlScheme);
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         threeDSecure = new ThreeDSecure(braintreeClient, returnUrlScheme);
 
@@ -94,7 +94,7 @@ public class ThreeDSecureTest {
         String clientToken = new TestClientTokenBuilder().build();
 
         Authorization authorization = Authorization.fromString(clientToken);
-        BraintreeClient braintreeClient = new BraintreeClient(authorization, returnUrlScheme);
+        BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity, returnUrlScheme);
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
         threeDSecure = new ThreeDSecure(braintreeClient, returnUrlScheme);
 
@@ -139,7 +139,7 @@ public class ThreeDSecureTest {
         String clientToken = new TestClientTokenBuilder().build();
 
         Authorization authorization = Authorization.fromString(clientToken);
-        BraintreeClient braintreeClient = new BraintreeClient(authorization, returnUrlScheme);
+        BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity, returnUrlScheme);
         threeDSecure = new ThreeDSecure(braintreeClient, returnUrlScheme);
 
         CardBuilder cardBuilder = new CardBuilder()

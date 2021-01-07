@@ -28,7 +28,6 @@ import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -63,7 +62,7 @@ public class TokenizationClientUnitTest {
         sut.tokenize(context, new CardBuilder(), null);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(), same(context), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
         JSONObject data = new JSONObject(captor.getValue()).getJSONObject("_meta");
         assertEquals("session-id", data.getString("sessionId"));
     }
@@ -81,10 +80,10 @@ public class TokenizationClientUnitTest {
 
         sut.tokenize(context, cardBuilder, null);
 
-        verify(braintreeClient, never()).sendPOST(anyString(), anyString(), any(Context.class), any(HttpResponseCallback.class));
+        verify(braintreeClient, never()).sendPOST(anyString(), anyString(), any(HttpResponseCallback.class));
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendGraphQLPOST(captor.capture(), same(context), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendGraphQLPOST(captor.capture(), any(HttpResponseCallback.class));
         assertEquals(cardBuilder.buildGraphQL(ApplicationProvider.getApplicationContext(), authorization),
                 captor.getValue());
     }
@@ -100,7 +99,7 @@ public class TokenizationClientUnitTest {
         TokenizationClient sut = new TokenizationClient(braintreeClient);
         sut.tokenize(context, cardBuilder, null);
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "card.graphql.tokenization.started");
+        verify(braintreeClient).sendAnalyticsEvent("card.graphql.tokenization.started");
     }
 
     @Test
@@ -114,10 +113,10 @@ public class TokenizationClientUnitTest {
         TokenizationClient sut = new TokenizationClient(braintreeClient);
         sut.tokenize(context, cardBuilder, null);
 
-        verify(braintreeClient, never()).sendGraphQLPOST(anyString(), any(Context.class), any(HttpResponseCallback.class));
+        verify(braintreeClient, never()).sendGraphQLPOST(anyString(), any(HttpResponseCallback.class));
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(anyString(), captor.capture(), same(context), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(anyString(), captor.capture(), any(HttpResponseCallback.class));
 
         assertEquals(cardBuilder.build(), captor.getValue());
     }
@@ -134,7 +133,7 @@ public class TokenizationClientUnitTest {
         sut.tokenize(context, new UnionPayCardBuilder(), null);
         sut.tokenize(context, new VenmoAccountBuilder(), null);
 
-        verify(braintreeClient, never()).sendGraphQLPOST(anyString(), any(Context.class), any(HttpResponseCallback.class));
+        verify(braintreeClient, never()).sendGraphQLPOST(anyString(), any(HttpResponseCallback.class));
     }
 
     @Test
@@ -155,7 +154,7 @@ public class TokenizationClientUnitTest {
             public void failure(Exception exception) {}
         });
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "card.graphql.tokenization.success");
+        verify(braintreeClient).sendAnalyticsEvent("card.graphql.tokenization.success");
     }
 
     @Test
@@ -176,7 +175,7 @@ public class TokenizationClientUnitTest {
             public void failure(Exception exception) {}
         });
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "card.graphql.tokenization.failure");
+        verify(braintreeClient).sendAnalyticsEvent("card.graphql.tokenization.failure");
     }
 
     @Test

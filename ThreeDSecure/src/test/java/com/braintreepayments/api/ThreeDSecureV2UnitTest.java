@@ -269,7 +269,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecure sut = new ThreeDSecure(braintreeClient, "sample-scheme", cardinalClient, tokenizationClient, browserSwitchHelper);
         sut.performVerification(activity, mBasicRequest, mock(ThreeDSecureVerificationCallback.class));
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.cardinal-sdk.init.setup-completed");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-completed");
     }
 
     @Test
@@ -288,7 +288,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecure sut = new ThreeDSecure(braintreeClient, "sample-scheme", cardinalClient, tokenizationClient, browserSwitchHelper);
         sut.performVerification(activity, mBasicRequest, mock(ThreeDSecureVerificationCallback.class));
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.cardinal-sdk.init.setup-failed");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.cardinal-sdk.init.setup-failed");
     }
 
     @Test
@@ -308,7 +308,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecure sut = new ThreeDSecure(braintreeClient, "sample-scheme", cardinalClient, tokenizationClient, browserSwitchHelper);
         sut.performVerification(activity, mBasicRequest, mock(ThreeDSecureVerificationCallback.class));
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.started");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.started");
     }
 
     @Test
@@ -329,7 +329,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecure sut = new ThreeDSecure(braintreeClient, "sample-scheme", cardinalClient, tokenizationClient, browserSwitchHelper);
         sut.performVerification(activity, mBasicRequest, mock(ThreeDSecureVerificationCallback.class));
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.challenge-presented.true");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.challenge-presented.true");
     }
 
     @Test
@@ -349,7 +349,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecure sut = new ThreeDSecure(braintreeClient, "sample-scheme", cardinalClient, tokenizationClient, browserSwitchHelper);
         sut.performVerification(activity, mBasicRequest, mock(ThreeDSecureVerificationCallback.class));
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.challenge-presented.false");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.challenge-presented.false");
     }
 
     @Test
@@ -369,7 +369,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecure sut = new ThreeDSecure(braintreeClient, "sample-scheme", cardinalClient, tokenizationClient, browserSwitchHelper);
         sut.performVerification(activity, mBasicRequest, mock(ThreeDSecureVerificationCallback.class));
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.3ds-version.2.1.0");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.3ds-version.2.1.0");
     }
 
     @Test
@@ -431,8 +431,8 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecure sut = new ThreeDSecure(braintreeClient, "sample-scheme", cardinalClient, tokenizationClient, browserSwitchHelper);
         sut.authenticateCardinalJWT(activity, threeDSecureLookup, "jwt", mock(ThreeDSecureResultCallback.class));
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.upgrade-payment-method.started");
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.upgrade-payment-method.succeeded");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.succeeded");
     }
 
     @Test
@@ -482,8 +482,8 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
         sut.authenticateCardinalJWT(activity, threeDSecureLookup, "jwt", callback);
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.upgrade-payment-method.started");
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.failure.returned-lookup-nonce");
     }
 
     @Test
@@ -538,8 +538,8 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureResultCallback callback = mock(ThreeDSecureResultCallback.class);
         sut.authenticateCardinalJWT(activity, threeDSecureLookup, "jwt", callback);
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.upgrade-payment-method.started");
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.upgrade-payment-method.errored");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.started");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.upgrade-payment-method.errored");
     }
 
     @Test
@@ -586,8 +586,8 @@ public class ThreeDSecureV2UnitTest {
 
         sut.onActivityResult(activity, RESULT_OK, data, mock(ThreeDSecureResultCallback.class));
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.completed");
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.cardinal-sdk.action-code.success");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.completed");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.cardinal-sdk.action-code.success");
     }
 
     @Test
@@ -609,8 +609,8 @@ public class ThreeDSecureV2UnitTest {
 
         sut.onActivityResult(activity, RESULT_OK, data, mock(ThreeDSecureResultCallback.class));
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.completed");
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.cardinal-sdk.action-code.noaction");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.completed");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.cardinal-sdk.action-code.noaction");
     }
 
     @Test
@@ -632,8 +632,8 @@ public class ThreeDSecureV2UnitTest {
 
         sut.onActivityResult(activity, RESULT_OK, data, mock(ThreeDSecureResultCallback.class));
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.completed");
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.cardinal-sdk.action-code.failure");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.completed");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.cardinal-sdk.action-code.failure");
     }
 
     @Test
@@ -652,7 +652,7 @@ public class ThreeDSecureV2UnitTest {
 
         sut.onActivityResult(activity, RESULT_OK, data, mock(ThreeDSecureResultCallback.class));
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.canceled");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.canceled");
     }
 
     @Test
@@ -671,7 +671,7 @@ public class ThreeDSecureV2UnitTest {
 
         sut.onActivityResult(activity, RESULT_OK, data, mock(ThreeDSecureResultCallback.class));
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.failed");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.failed");
     }
 
     @Test
@@ -690,6 +690,6 @@ public class ThreeDSecureV2UnitTest {
 
         sut.onActivityResult(activity, RESULT_OK, data, mock(ThreeDSecureResultCallback.class));
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.failed");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.failed");
     }
 }

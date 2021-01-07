@@ -53,22 +53,22 @@ public class PaymentMethodClient {
                 .appendQueryParameter("session_id", braintreeClient.getSessionId())
                 .build();
 
-        braintreeClient.sendGET(uri.toString(), context, new HttpResponseCallback() {
+        braintreeClient.sendGET(uri.toString(), new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
                 try {
                     callback.onResult(PaymentMethodNonce.parsePaymentMethodNonces(responseBody), null);
-                    braintreeClient.sendAnalyticsEvent(context, "get-payment-methods.succeeded");
+                    braintreeClient.sendAnalyticsEvent("get-payment-methods.succeeded");
                 } catch (JSONException e) {
                     callback.onResult(null, e);
-                    braintreeClient.sendAnalyticsEvent(context, "get-payment-methods.failed");
+                    braintreeClient.sendAnalyticsEvent("get-payment-methods.failed");
                 }
             }
 
             @Override
             public void failure(Exception exception) {
                 callback.onResult(null, exception);
-                braintreeClient.sendAnalyticsEvent(context, "get-payment-methods.failed");
+                braintreeClient.sendAnalyticsEvent("get-payment-methods.failed");
             }
         });
     }
@@ -119,7 +119,7 @@ public class PaymentMethodClient {
             base.put(CLIENT_SDK_META_DATA, new MetadataBuilder()
                     .sessionId(braintreeClient.getSessionId())
                     .source("client")
-                    .integration(braintreeClient.getIntegrationType(context))
+                    .integration(braintreeClient.getIntegrationType())
                     .build());
 
             base.put(GraphQLConstants.Keys.QUERY, GraphQLQueryHelper.getQuery(
@@ -134,18 +134,18 @@ public class PaymentMethodClient {
             callback.onResult(null, error);
         }
 
-        braintreeClient.sendGraphQLPOST(base.toString(), context, new HttpResponseCallback() {
+        braintreeClient.sendGraphQLPOST(base.toString(), new HttpResponseCallback() {
             @Override
             public void success(String responseBody) {
                 callback.onResult(paymentMethodNonce, null);
-                braintreeClient.sendAnalyticsEvent(context, "delete-payment-methods.succeeded");
+                braintreeClient.sendAnalyticsEvent("delete-payment-methods.succeeded");
             }
 
             @Override
             public void failure(Exception exception) {
                 Exception error = new PaymentMethodDeleteException(paymentMethodNonce, exception);
                 callback.onResult(null, error);
-                braintreeClient.sendAnalyticsEvent(context, "delete-payment-methods.failed");
+                braintreeClient.sendAnalyticsEvent("delete-payment-methods.failed");
             }
         });
     }

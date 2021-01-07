@@ -63,7 +63,7 @@ public class CardUnitTest {
         PaymentMethodNonceCallback callback = callbackCaptor.getValue();
         callback.success(mock(PaymentMethodNonce.class));
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "card.nonce-received");
+        verify(braintreeClient).sendAnalyticsEvent("card.nonce-received");
     }
 
     @Test
@@ -94,6 +94,6 @@ public class CardUnitTest {
         PaymentMethodNonceCallback callback = callbackCaptor.getValue();
         callback.failure(new Exception("error"));
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "card.nonce-failed");
+        verify(braintreeClient).sendAnalyticsEvent("card.nonce-failed");
     }
 }

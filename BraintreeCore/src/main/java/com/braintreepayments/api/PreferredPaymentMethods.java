@@ -46,22 +46,22 @@ public class PreferredPaymentMethods {
 
         final String venmoAppInstalledEvent =
             String.format("preferred-payment-methods.venmo.app-installed.%b", isVenmoAppInstalled);
-        braintreeClient.sendAnalyticsEvent(applicationContext, venmoAppInstalledEvent);
+        braintreeClient.sendAnalyticsEvent(venmoAppInstalledEvent);
 
         if (isPayPalAppInstalled) {
-            braintreeClient.sendAnalyticsEvent(applicationContext, "preferred-payment-methods.paypal.app-installed.true");
+            braintreeClient.sendAnalyticsEvent("preferred-payment-methods.paypal.app-installed.true");
             callback.onResult(new PreferredPaymentMethodsResult()
                     .isPayPalPreferred(true)
                     .isVenmoPreferred(isVenmoAppInstalled));
             return;
         }
 
-        braintreeClient.getConfiguration(applicationContext, new ConfigurationCallback() {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 boolean isGraphQLDisabled = (configuration == null || configuration.getGraphQL() == null || !configuration.getGraphQL().isEnabled());
                 if (isGraphQLDisabled) {
-                    braintreeClient.sendAnalyticsEvent(applicationContext, "preferred-payment-methods.api-disabled");
+                    braintreeClient.sendAnalyticsEvent("preferred-payment-methods.api-disabled");
                     callback.onResult(new PreferredPaymentMethodsResult()
                             .isPayPalPreferred(isPayPalAppInstalled)
                             .isVenmoPreferred(isVenmoAppInstalled));
@@ -70,7 +70,7 @@ public class PreferredPaymentMethods {
 
                 final String query = "{ \"query\": \"query PreferredPaymentMethods { preferredPaymentMethods { paypalPreferred } }\" }";
 
-                braintreeClient.sendGraphQLPOST(query, applicationContext, new HttpResponseCallback() {
+                braintreeClient.sendGraphQLPOST(query, new HttpResponseCallback() {
                     @Override
                     public void success(String responseBody) {
                         PreferredPaymentMethodsResult result =
@@ -78,14 +78,14 @@ public class PreferredPaymentMethods {
 
                         String payPalPreferredEvent =
                                 String.format("preferred-payment-methods.paypal.api-detected.%b", result.isPayPalPreferred());
-                        braintreeClient.sendAnalyticsEvent(applicationContext, payPalPreferredEvent);
+                        braintreeClient.sendAnalyticsEvent(payPalPreferredEvent);
 
                         callback.onResult(result);
                     }
 
                     @Override
                     public void failure(Exception exception) {
-                        braintreeClient.sendAnalyticsEvent(applicationContext, "preferred-payment-methods.api-error");
+                        braintreeClient.sendAnalyticsEvent("preferred-payment-methods.api-error");
                         callback.onResult(new PreferredPaymentMethodsResult()
                                 .isPayPalPreferred(false)
                                 .isVenmoPreferred(isVenmoAppInstalled));

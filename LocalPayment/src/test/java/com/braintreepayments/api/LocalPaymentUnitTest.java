@@ -73,7 +73,7 @@ public class LocalPaymentUnitTest {
 
         String expectedPath = "/v1/local_payments/create";
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendPOST(eq(expectedPath), bodyCaptor.capture(), same(activity), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(eq(expectedPath), bodyCaptor.capture(), any(HttpResponseCallback.class));
 
         String requestBody = bodyCaptor.getValue();
         JSONObject json = new JSONObject(requestBody);
@@ -130,8 +130,8 @@ public class LocalPaymentUnitTest {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.startPayment(activity, request, localPaymentStartCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "ideal.local-payment.start-payment.selected");
-        verify(braintreeClient).sendAnalyticsEvent(activity, "ideal.local-payment.create.succeeded");
+        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.start-payment.selected");
+        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.create.succeeded");
     }
 
     @Test
@@ -159,8 +159,8 @@ public class LocalPaymentUnitTest {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.startPayment(activity, request, localPaymentStartCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "ideal.local-payment.start-payment.selected");
-        verify(braintreeClient).sendAnalyticsEvent(activity, "ideal.local-payment.webswitch.initiate.failed");
+        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.start-payment.selected");
+        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.initiate.failed");
     }
 
     @Test
@@ -190,8 +190,8 @@ public class LocalPaymentUnitTest {
         LocalPaymentRequest request = getIdealLocalPaymentRequest();
         sut.startPayment(activity, request, localPaymentStartCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "ideal.local-payment.start-payment.selected");
-        verify(braintreeClient).sendAnalyticsEvent(activity, "ideal.local-payment.webswitch.initiate.failed");
+        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.start-payment.selected");
+        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.initiate.failed");
     }
 
     @Test
@@ -354,7 +354,7 @@ public class LocalPaymentUnitTest {
         LocalPaymentTransaction transaction = new LocalPaymentTransaction(request, approvalUrl, "payment-id");
 
         sut.approveTransaction(activity, transaction);
-        verify(braintreeClient).sendAnalyticsEvent(activity, "ideal.local-payment.webswitch.initiate.succeeded");
+        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.initiate.succeeded");
     }
 
     @Test
@@ -379,7 +379,7 @@ public class LocalPaymentUnitTest {
         String expectedMessage = "LocalPayment encountered an error, return URL is invalid.";
         assertEquals(expectedMessage, exception.getMessage());
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "ideal.local-payment.webswitch-response.invalid");
+        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch-response.invalid");
     }
 
     @Test
@@ -406,7 +406,7 @@ public class LocalPaymentUnitTest {
         sut.onBrowserSwitchResult(activity, browserSwitchResult, Uri.parse(webUrl), localPaymentBrowserSwitchResultCallback);
 
         verify(localPaymentBrowserSwitchResultCallback).onResult((LocalPaymentResult) isNull(), same(postError));
-        verify(braintreeClient).sendAnalyticsEvent(same(activity), eq("ideal.local-payment.tokenize.failed"));
+        verify(braintreeClient).sendAnalyticsEvent(eq("ideal.local-payment.tokenize.failed"));
     }
 
     @Test
@@ -432,7 +432,7 @@ public class LocalPaymentUnitTest {
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
         String expectedUrl = "/v1/payment_methods/paypal_accounts";
 
-        verify(braintreeClient).sendPOST(eq(expectedUrl), bodyCaptor.capture(), same(activity), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(eq(expectedUrl), bodyCaptor.capture(), any(HttpResponseCallback.class));
         String requestBody = bodyCaptor.getValue();
 
         JSONObject expectedJSON = new JSONObject();
@@ -509,7 +509,7 @@ public class LocalPaymentUnitTest {
         String webUrl = "sample-scheme://local-payment-success?paymentToken=successTokenId";
         sut.onBrowserSwitchResult(activity, browserSwitchResult, Uri.parse(webUrl), localPaymentBrowserSwitchResultCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "ideal.local-payment.tokenize.succeeded");
+        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.tokenize.succeeded");
     }
 
     @Test
@@ -532,7 +532,7 @@ public class LocalPaymentUnitTest {
         Exception cancelException = exceptionCaptor.getValue();
         assertTrue(cancelException instanceof BraintreeException);
         assertEquals("user canceled", cancelException.getMessage());
-        verify(braintreeClient).sendAnalyticsEvent(activity, "ideal.local-payment.webswitch.canceled");
+        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.canceled");
     }
 
     @Test
@@ -554,7 +554,7 @@ public class LocalPaymentUnitTest {
         Exception cancelException = exceptionCaptor.getValue();
         assertTrue(cancelException instanceof BraintreeException);
         assertEquals("system canceled", cancelException.getMessage());
-        verify(braintreeClient).sendAnalyticsEvent(activity, "ideal.local-payment.webswitch.canceled");
+        verify(braintreeClient).sendAnalyticsEvent("ideal.local-payment.webswitch.canceled");
     }
 
     private LocalPaymentRequest getIdealLocalPaymentRequest() {

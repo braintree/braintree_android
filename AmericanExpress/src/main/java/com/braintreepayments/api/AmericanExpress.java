@@ -39,17 +39,17 @@ public class AmericanExpress {
                 .build()
                 .toString();
 
-        braintreeClient.sendAnalyticsEvent(context, "amex.rewards-balance.start");
-        braintreeClient.sendGET(getRewardsBalanceUrl, context, new HttpResponseCallback() {
+        braintreeClient.sendAnalyticsEvent("amex.rewards-balance.start");
+        braintreeClient.sendGET(getRewardsBalanceUrl, new HttpResponseCallback() {
 
             @Override
             public void success(String responseBody) {
-                braintreeClient.sendAnalyticsEvent(context, "amex.rewards-balance.success");
+                braintreeClient.sendAnalyticsEvent("amex.rewards-balance.success");
                 try {
                     AmericanExpressRewardsBalance rewardsBalance = AmericanExpressRewardsBalance.fromJson(responseBody);
                     callback.onResult(rewardsBalance, null);
                 } catch (JSONException e) {
-                    braintreeClient.sendAnalyticsEvent(context, "amex.rewards-balance.parse.failed");
+                    braintreeClient.sendAnalyticsEvent("amex.rewards-balance.parse.failed");
                     callback.onResult(null, e);
                 }
             }
@@ -57,7 +57,7 @@ public class AmericanExpress {
             @Override
             public void failure(Exception exception) {
                 callback.onResult(null, exception);
-                braintreeClient.sendAnalyticsEvent(context, "amex.rewards-balance.error");
+                braintreeClient.sendAnalyticsEvent("amex.rewards-balance.error");
             }
         });
     }

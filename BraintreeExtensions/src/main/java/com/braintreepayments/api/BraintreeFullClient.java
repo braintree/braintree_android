@@ -41,8 +41,8 @@ class BraintreeFullClient {
     Venmo venmo;
     VisaCheckoutClient visaCheckoutClient;
 
-    public BraintreeFullClient(String authorization, String returnUrlScheme) throws InvalidArgumentException {
-        this.braintreeClient = new BraintreeClient(Authorization.fromString(authorization), returnUrlScheme);
+    public BraintreeFullClient(String authorization, Context context, String returnUrlScheme) throws InvalidArgumentException {
+        this.braintreeClient = new BraintreeClient(Authorization.fromString(authorization), context, returnUrlScheme);
         this.dataCollector = new DataCollector(braintreeClient);
         this.tokenizationClient = new TokenizationClient(braintreeClient);
 
@@ -60,7 +60,7 @@ class BraintreeFullClient {
     }
 
     public void getConfiguration(Context context, ConfigurationCallback callback) {
-        braintreeClient.getConfiguration(context, callback);
+        braintreeClient.getConfiguration(callback);
     }
 
     public void collectDeviceData(Context context, BraintreeDataCollectorCallback callback) {

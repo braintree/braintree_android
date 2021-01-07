@@ -26,6 +26,7 @@ public class BraintreeClient {
     private final Authorization authorization;
     private final AnalyticsClient analyticsClient;
     private final BraintreeHttpClient httpClient;
+    private final Context applicationContext;
 
     private final String sessionId;
     private final BraintreeGraphQLHttpClient graphQLHttpClient;
@@ -37,28 +38,24 @@ public class BraintreeClient {
 
     private CrashReporter crashReporter;
 
-    // TODO: re-factor BraintreeClient to capture an ApplicationContext reference to help streamline the API
-    public static BraintreeClient newInstance(Authorization authorization, String returnUrlScheme) {
-        return new BraintreeClient(authorization, returnUrlScheme);
+    public BraintreeClient(Authorization authorization, Context context, String returnUrlScheme) {
+        this(authorization, context, returnUrlScheme, new BraintreeHttpClient(authorization), new BraintreeGraphQLHttpClient(authorization));
     }
 
-    BraintreeClient(Authorization authorization, String returnUrlScheme) {
-        this(authorization, returnUrlScheme, new BraintreeHttpClient(authorization));
-    }
-
-    private BraintreeClient(Authorization authorization, String returnUrlScheme, BraintreeHttpClient httpClient) {
-        this(authorization, returnUrlScheme, httpClient, new ConfigurationManager(httpClient));
+    private BraintreeClient(Authorization authorization, Context context, String returnUrlScheme, BraintreeHttpClient httpClient, BraintreeGraphQLHttpClient graphQLHttpClient) {
+        this(authorization, context, returnUrlScheme, httpClient, graphQLHttpClient, new ConfigurationManager(httpClient));
     }
 
     @VisibleForTesting
-    BraintreeClient(Authorization authorization, String returnUrlScheme, BraintreeHttpClient httpClient, ConfigurationManager configurationManager) {
+    BraintreeClient(Authorization authorization, Context context, String returnUrlScheme, BraintreeHttpClient httpClient, BraintreeGraphQLHttpClient graphQLHttpClient, ConfigurationManager configurationManager) {
         this.httpClient = httpClient;
         this.authorization = authorization;
+        this.applicationContext = context.getApplicationContext();
         this.configurationManager = configurationManager;
 
         this.analyticsClient = AnalyticsClient.newInstance();
         this.sessionId = UUIDHelper.getFormattedUUID();
-        this.graphQLHttpClient = new BraintreeGraphQLHttpClient(authorization);
+        this.graphQLHttpClient = graphQLHttpClient;
         this.browserSwitchClient = BrowserSwitchClient.newInstance(returnUrlScheme);
         this.manifestValidator = new ManifestValidator();
 
@@ -66,17 +63,17 @@ public class BraintreeClient {
         this.crashReporter.start();
     }
 
-    public void getConfiguration(Context context, ConfigurationCallback callback) {
-        configurationManager.loadConfiguration(context, authorization, callback);
+    public void getConfiguration(ConfigurationCallback callback) {
+        configurationManager.loadConfiguration(applicationContext, authorization, callback);
     }
 
-    public void sendAnalyticsEvent(final Context context, final String eventFragment) {
-        getConfiguration(context, new ConfigurationCallback() {
+    public void sendAnalyticsEvent(final String eventFragment) {
+        getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
-                    final AnalyticsEvent event = new AnalyticsEvent(context, sessionId, getIntegrationType(context), eventFragment);
-                    analyticsClient.sendEvent(event, configuration, context);
+                    final AnalyticsEvent event = new AnalyticsEvent(applicationContext, sessionId, getIntegrationType(), eventFragment);
+                    analyticsClient.sendEvent(event, configuration, applicationContext);
                 }
             }
         });
@@ -84,7 +81,7 @@ public class BraintreeClient {
 
     // TODO: use Jetpack WorkManager to schedule Analytics events for upload periodically in the background
     public void flushAnalyticsEvents(final Context context) {
-        getConfiguration(context, new ConfigurationCallback() {
+        getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
@@ -94,8 +91,8 @@ public class BraintreeClient {
         });
     }
 
-    public void sendGET(final String url, final Context context, final HttpResponseCallback responseCallback) {
-        getConfiguration(context, new ConfigurationCallback() {
+    public void sendGET(final String url, final HttpResponseCallback responseCallback) {
+        getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
@@ -107,8 +104,8 @@ public class BraintreeClient {
         });
     }
 
-    public void sendPOST(final String url, final String data, final Context context, final HttpResponseCallback responseCallback) {
-        getConfiguration(context, new ConfigurationCallback() {
+    public void sendPOST(final String url, final String data, final HttpResponseCallback responseCallback) {
+        getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
@@ -124,12 +121,12 @@ public class BraintreeClient {
         return sessionId;
     }
 
-    public String getIntegrationType(Context context) {
-        return IntegrationType.get(context);
+    public String getIntegrationType() {
+        return IntegrationType.get(applicationContext);
     }
 
-    public void sendGraphQLPOST(final String payload, Context context, final HttpResponseCallback responseCallback) {
-        getConfiguration(context, new ConfigurationCallback() {
+    public void sendGraphQLPOST(final String payload, final HttpResponseCallback responseCallback) {
+        getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
@@ -167,12 +164,8 @@ public class BraintreeClient {
         return result;
     }
 
-    public boolean isUrlSchemeDeclaredInAndroidManifest(Context context, String urlScheme, Class klass) {
-        return manifestValidator.isUrlSchemeDeclaredInAndroidManifest(context, urlScheme, klass);
-    }
-
-    public ActivityInfo getManifestActivityInfo(Context context, Class klass) {
-        return manifestValidator.getActivityInfo(context, klass);
+    public boolean isUrlSchemeDeclaredInAndroidManifest(String urlScheme, Class klass) {
+        return manifestValidator.isUrlSchemeDeclaredInAndroidManifest(applicationContext, urlScheme, klass);
     }
 
     void reportCrash() {

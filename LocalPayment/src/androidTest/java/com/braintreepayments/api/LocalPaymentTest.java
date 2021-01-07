@@ -1,6 +1,7 @@
 package com.braintreepayments.api;
 
 import androidx.annotation.Nullable;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
@@ -35,7 +36,7 @@ public class LocalPaymentTest {
         mCountDownLatch = new CountDownLatch(1);
 
         Authorization authorization = Authorization.fromString("sandbox_f252zhq7_hh4cpc39zq4rgjcg");
-        BraintreeClient braintreeClient = new BraintreeClient(authorization, null);
+        BraintreeClient braintreeClient = new BraintreeClient(authorization, ApplicationProvider.getApplicationContext(), null);
         localPayment = new LocalPayment(null, braintreeClient);
     }
 

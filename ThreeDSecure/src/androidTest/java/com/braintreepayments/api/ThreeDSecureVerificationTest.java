@@ -202,6 +202,6 @@ public class ThreeDSecureVerificationTest {
     }
 
     private BraintreeClient getBraintreeClient(String authorization) throws InvalidArgumentException {
-        return new BraintreeClient(Authorization.fromString(authorization), returnUrlScheme);
+        return new BraintreeClient(Authorization.fromString(authorization), mActivity, returnUrlScheme);
     }
 }

@@ -19,7 +19,6 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isNull;
-import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -43,7 +42,7 @@ public class AmericanExpressUnitTest {
         sut.getRewardsBalance(context, "fake-nonce", "USD", amexRewardsCallback);
 
         ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
-        verify(braintreeClient).sendGET(urlCaptor.capture(), same(context), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendGET(urlCaptor.capture(), any(HttpResponseCallback.class));
 
         String url = urlCaptor.getValue();
         assertEquals("/v1/payment_methods/amex_rewards_balance?paymentMethodNonce=fake-nonce&currencyIsoCode=USD", url);
@@ -133,8 +132,8 @@ public class AmericanExpressUnitTest {
         AmericanExpress sut = new AmericanExpress(braintreeClient);
         sut.getRewardsBalance(context, "fake-nonce", "USD", amexRewardsCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context,"amex.rewards-balance.start");
-        verify(braintreeClient).sendAnalyticsEvent(context,"amex.rewards-balance.success");
+        verify(braintreeClient).sendAnalyticsEvent("amex.rewards-balance.start");
+        verify(braintreeClient).sendAnalyticsEvent("amex.rewards-balance.success");
     }
 
     @Test
@@ -146,8 +145,8 @@ public class AmericanExpressUnitTest {
         AmericanExpress sut = new AmericanExpress(braintreeClient);
         sut.getRewardsBalance(context, "fake-nonce", "USD", amexRewardsCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "amex.rewards-balance.start");
-        verify(braintreeClient).sendAnalyticsEvent(context, "amex.rewards-balance.error");
+        verify(braintreeClient).sendAnalyticsEvent("amex.rewards-balance.start");
+        verify(braintreeClient).sendAnalyticsEvent("amex.rewards-balance.error");
     }
 
     @Test
@@ -158,7 +157,7 @@ public class AmericanExpressUnitTest {
         AmericanExpress sut = new AmericanExpress(braintreeClient);
         sut.getRewardsBalance(context, "fake-nonce", "USD", amexRewardsCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "amex.rewards-balance.start");
-        verify(braintreeClient).sendAnalyticsEvent(context, "amex.rewards-balance.parse.failed");
+        verify(braintreeClient).sendAnalyticsEvent("amex.rewards-balance.start");
+        verify(braintreeClient).sendAnalyticsEvent("amex.rewards-balance.parse.failed");
     }
 }

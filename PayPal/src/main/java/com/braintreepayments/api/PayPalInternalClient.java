@@ -65,7 +65,7 @@ public class PayPalInternalClient {
     }
 
     public void sendRequest(final Context context, final PayPalRequest payPalRequest, final boolean isBillingAgreement, final PayPalInternalClientCallback callback) {
-        braintreeClient.getConfiguration(context, new ConfigurationCallback() {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration == null) {
@@ -79,7 +79,7 @@ public class PayPalInternalClient {
 
                     String requestBody = createRequestBody(payPalRequest, isBillingAgreement, configuration);
 
-                    braintreeClient.sendPOST(url, requestBody, context, new HttpResponseCallback() {
+                    braintreeClient.sendPOST(url, requestBody, new HttpResponseCallback() {
                         @Override
                         public void success(String responseBody) {
                             try {

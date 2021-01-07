@@ -89,7 +89,7 @@ public class ThreeDSecureV1UnitTest {
         ThreeDSecure sut = new ThreeDSecure(braintreeClient, "sample-scheme", cardinalClient, tokenizationClient, browserSwitchHelper);
         sut.performVerification(activity, mThreeDSecureRequest, mock(ThreeDSecureVerificationCallback.class));
 
-        verify(braintreeClient).sendAnalyticsEvent(activity, "three-d-secure.verification-flow.3ds-version.1.0.2");
+        verify(braintreeClient).sendAnalyticsEvent("three-d-secure.verification-flow.3ds-version.1.0.2");
     }
 
     @Test

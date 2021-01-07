@@ -80,7 +80,7 @@ public class UnionPayUnitTest {
         PaymentMethodNonceCallback callback = captor.getValue();
         callback.success(mock(PaymentMethodNonce.class));
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "union-pay.nonce-received");
+        verify(braintreeClient).sendAnalyticsEvent("union-pay.nonce-received");
     }
 
     @Test
@@ -112,7 +112,7 @@ public class UnionPayUnitTest {
         Exception error = new ErrorWithResponse(422, "");
         callback.failure(error);
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "union-pay.nonce-failed");
+        verify(braintreeClient).sendAnalyticsEvent("union-pay.nonce-failed");
     }
 
     @Test
@@ -128,7 +128,7 @@ public class UnionPayUnitTest {
         sut.enroll(context, unionPayCardBuilder, unionPayEnrollCallback);
 
         String expectedPath = "/v1/union_pay_enrollments";
-        verify(braintreeClient).sendPOST(eq(expectedPath), eq(unionPayCardJson), same(context), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendPOST(eq(expectedPath), eq(unionPayCardJson), any(HttpResponseCallback.class));
     }
 
     @Test
@@ -185,7 +185,7 @@ public class UnionPayUnitTest {
         UnionPay sut = new UnionPay(braintreeClient, tokenizationClient);
         sut.enroll(context, unionPayCardBuilder, unionPayEnrollCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "union-pay.enrollment-failed");
+        verify(braintreeClient).sendAnalyticsEvent("union-pay.enrollment-failed");
     }
 
     @Test
@@ -205,7 +205,7 @@ public class UnionPayUnitTest {
         UnionPay sut = new UnionPay(braintreeClient, tokenizationClient);
         sut.enroll(context, unionPayCardBuilder, unionPayEnrollCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "union-pay.enrollment-succeeded");
+        verify(braintreeClient).sendAnalyticsEvent("union-pay.enrollment-succeeded");
     }
 
     @Test
@@ -223,7 +223,7 @@ public class UnionPayUnitTest {
                 .build()
                 .toString();
 
-        verify(braintreeClient).sendGET(eq(expectedUrl), same(context), any(HttpResponseCallback.class));
+        verify(braintreeClient).sendGET(eq(expectedUrl), any(HttpResponseCallback.class));
     }
 
     @Test
@@ -251,7 +251,7 @@ public class UnionPayUnitTest {
         UnionPay sut = new UnionPay(braintreeClient, tokenizationClient);
         sut.fetchCapabilities(context, CardNumber.UNIONPAY_CREDIT, unionPayFetchCapabilitiesCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "union-pay.capabilities-failed");
+        verify(braintreeClient).sendAnalyticsEvent("union-pay.capabilities-failed");
     }
 
     @Test
@@ -285,7 +285,7 @@ public class UnionPayUnitTest {
         UnionPay sut = new UnionPay(braintreeClient, tokenizationClient);
         sut.fetchCapabilities(context, CardNumber.UNIONPAY_CREDIT, unionPayFetchCapabilitiesCallback);
 
-        verify(braintreeClient).sendAnalyticsEvent(context, "union-pay.capabilities-received");
+        verify(braintreeClient).sendAnalyticsEvent("union-pay.capabilities-received");
     }
 
     @Test

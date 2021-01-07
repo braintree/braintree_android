@@ -44,7 +44,7 @@ public abstract class BraintreeActivity extends AppCompatActivity implements Bro
     @CallSuper
     protected void initializeBraintree(String authorization, String returnUrlScheme) {
         try {
-            braintreeFullClient = new BraintreeFullClient(authorization, returnUrlScheme);
+            braintreeFullClient = new BraintreeFullClient(authorization, this, returnUrlScheme);
             onBraintreeInitialized();
         } catch (InvalidArgumentException e) {
             onBraintreeError(e);

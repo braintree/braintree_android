@@ -56,13 +56,13 @@ public class Card {
                 dataCollector.collectRiskData(context, paymentMethodNonce);
 
                 callback.onResult(paymentMethodNonce, null);
-                braintreeClient.sendAnalyticsEvent(context, "card.nonce-received");
+                braintreeClient.sendAnalyticsEvent("card.nonce-received");
             }
 
             @Override
             public void failure(Exception exception) {
                 callback.onResult(null, exception);
-                braintreeClient.sendAnalyticsEvent(context, "card.nonce-failed");
+                braintreeClient.sendAnalyticsEvent("card.nonce-failed");
             }
         });
     }
