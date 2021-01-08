@@ -91,10 +91,6 @@ public abstract class BraintreeActivity extends AppCompatActivity implements Bro
         braintreeFullClient.continuePerformVerification(this, request, lookup, callback);
     }
 
-    protected void getAmericanExpressRewards(String nonce, String currencyIsoCode, AmericanExpressGetRewardsBalanceCallback callback) {
-        braintreeFullClient.getAmericanExpressRewards(this, nonce, currencyIsoCode, callback);
-    }
-
     protected void fetchPreferredPaymentMethods(PreferredPaymentMethodsCallback callback) {
         braintreeFullClient.fetchPreferredPaymentMethods(this, callback);
     }

@@ -26,7 +26,6 @@ import org.json.JSONException;
 // TODO: unit test when API is finalized
 class BraintreeFullClient {
 
-    AmericanExpress americanExpress;
     BraintreeClient braintreeClient;
     DataCollector dataCollector;
     Card card;
@@ -46,7 +45,6 @@ class BraintreeFullClient {
         this.dataCollector = new DataCollector(braintreeClient);
         this.tokenizationClient = new TokenizationClient(braintreeClient);
 
-        this.americanExpress = new AmericanExpress(braintreeClient);
         this.card = new Card(braintreeClient, tokenizationClient, dataCollector);
         this.deviceInspector = new DeviceInspector();
         this.googlePaymentClient = new GooglePaymentClient(braintreeClient);
@@ -89,10 +87,6 @@ class BraintreeFullClient {
 
     public void continuePerformVerification(FragmentActivity activity, ThreeDSecureRequest request, ThreeDSecureLookup threeDSecureLookup, ThreeDSecureVerificationCallback callback) {
         threeDSecure.continuePerformVerification(activity, request, threeDSecureLookup, callback);
-    }
-
-    public void getAmericanExpressRewards(Context context, String nonce, String currencyIsoCode, AmericanExpressGetRewardsBalanceCallback callback) {
-        americanExpress.getRewardsBalance(context, nonce, currencyIsoCode, callback);
     }
 
     public void requestPayPalOneTimePayment(FragmentActivity activity, PayPalRequest request, PayPalRequestCallback callback) {

@@ -1,37 +1,32 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
 import android.net.Uri;
 
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
-import com.braintreepayments.api.models.AmericanExpressRewardsBalance;
 
 import org.json.JSONException;
 
 /**
  * Used to integrate with Braintree's American Express API
  */
-// TODO: Rename class when API is finalized
-public class AmericanExpress {
+public class AmericanExpressClient {
 
-    private static final String AMEX_REWARDS_BALANCE_PATH = TokenizationClient.versionedPath(
-            "payment_methods/amex_rewards_balance");
+    private static final String AMEX_REWARDS_BALANCE_PATH =
+        TokenizationClient.versionedPath("payment_methods/amex_rewards_balance");
 
     private final BraintreeClient braintreeClient;
 
-    public AmericanExpress(BraintreeClient braintreeClient) {
+    public AmericanExpressClient(BraintreeClient braintreeClient) {
         this.braintreeClient = braintreeClient;
     }
 
     /**
      * Gets the rewards balance associated with a Braintree nonce. Only for American Express cards.
-     *
-     * @param context Android context
      * @param nonce A nonce representing a card that will be used to look up the rewards balance
      * @param currencyIsoCode The currencyIsoCode to use. Example: 'USD'
      * @param callback {@link AmericanExpressGetRewardsBalanceCallback} used to notify result
      */
-    public void getRewardsBalance(final Context context, String nonce, String currencyIsoCode, final AmericanExpressGetRewardsBalanceCallback callback) {
+    public void getRewardsBalance(String nonce, String currencyIsoCode, final AmericanExpressGetRewardsBalanceCallback callback) {
         String getRewardsBalanceUrl = Uri.parse(AMEX_REWARDS_BALANCE_PATH)
                 .buildUpon()
                 .appendQueryParameter("paymentMethodNonce", nonce)

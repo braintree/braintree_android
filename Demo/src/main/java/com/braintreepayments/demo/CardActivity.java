@@ -12,7 +12,9 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressGetRewardsBalanceCallback;
+import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.BraintreeDataCollectorCallback;
 import com.braintreepayments.api.CardTokenizeCallback;
 import com.braintreepayments.api.ConfigurationCallback;
@@ -21,8 +23,10 @@ import com.braintreepayments.api.UnionPayFetchCapabilitiesCallback;
 import com.braintreepayments.api.UnionPayEnrollment;
 import com.braintreepayments.api.UnionPayEnrollCallback;
 import com.braintreepayments.api.UnionPayTokenizeCallback;
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.ThreeDSecureLookupCallback;
-import com.braintreepayments.api.models.AmericanExpressRewardsBalance;
+import com.braintreepayments.api.AmericanExpressRewardsBalance;
+import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
@@ -65,6 +69,9 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
     private Button mPurchaseButton;
 
     private CardType mCardType;
+
+    private BraintreeClient braintreeClient;
+    private AmericanExpressClient americanExpressClient;
 
     @Override
     protected void onCreate(Bundle onSaveInstanceState) {
@@ -112,6 +119,18 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
     protected void reset() {
         mThreeDSecureRequested = false;
         mPurchaseButton.setEnabled(false);
+    }
+
+    @Override
+    protected void onAuthorizationFetched() {
+        try {
+            Authorization authorization = Authorization.fromString(mAuthorization);
+            braintreeClient = new BraintreeClient(authorization, this, RETURN_URL_SCHEME);
+            americanExpressClient = new AmericanExpressClient(braintreeClient);
+
+        } catch (InvalidArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -344,7 +363,8 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
         } else if (paymentMethodNonce instanceof CardNonce && Settings.isAmexRewardsBalanceEnabled(this)) {
             mLoading = ProgressDialog.show(this, getString(R.string.loading), getString(R.string.loading), true, false);
             String nonce = paymentMethodNonce.getNonce();
-            getAmericanExpressRewards(nonce, "USD", new AmericanExpressGetRewardsBalanceCallback() {
+
+            americanExpressClient.getRewardsBalance(nonce, "USD", new AmericanExpressGetRewardsBalanceCallback() {
                 @Override
                 public void onResult(@Nullable AmericanExpressRewardsBalance rewardsBalance, @Nullable Exception error) {
                     if (rewardsBalance != null) {

@@ -2,33 +2,34 @@
 
 ## unreleased
 
-* Add a `client` for each feature
+* Add a `client` for each feature:
+  * `AmericanExpressClient`
 * Update Visa Checkout aar dependency to version `6.6.1`
 * Add `LocalPaymentTransaction` to represent Local Payment transactions
 * Create callback interfaces to enforce callback pattern:
+  * `AmericanExpressGetRewardsBalanceCallback`
+  * `BraintreeDataCollectorCallback`
+  * `CardTokenizeCallback`
+  * `CardinalInitializeCallback`
   * `ConfigurationCallback`
   * `DeletePaymentMethodNonceCallback`
   * `GetPaymentMethodNoncesCallback`
-  * `PreferredPaymentMethodsCallback`
-  * `CardTokenizeCallback`
-  * `BraintreeDataCollectorCallback`
   * `KountDataCollectorCallback`
-  * `VenmoOnActivityResultCallback`
-  * `VenmoAuthorizeAccountCallback`
   * `LocalPaymentBrowserSwitchResultCallback`
   * `LocalPaymentStartCallback`
   * `PayPalBrowserSwitchResultCallback`
   * `PayPalRequestCallback`
+  * `PreferredPaymentMethodsCallback`
   * `ThreeDSecureInitializeChallengeCallback`
-  * `ThreeDSecureResultCallback`
-  * `CardinalInitializeCallback`
-  * `ThreeDSecureVerificationCallback`
   * `ThreeDSecureLookupCallback`
   * `ThreeDSecurePrepareLookupCallback`
-  * `AmericanExpressGetRewardsBalanceCallback`
+  * `ThreeDSecureResultCallback`
+  * `ThreeDSecureVerificationCallback`
+  * `UnionPayEnrollCallback`
   * `UnionPayFetchCapabilitiesCallback`
   * `UnionPayTokenizeCallback`
-  * `UnionPayEnrollCallback`
+  * `VenmoAuthorizeAccountCallback`
+  * `VenmoOnActivityResultCallback`
 * Breaking Changes
   * Remove `BraintreeFragment`
   * Remove `AnalyticsIntentService`
@@ -43,6 +44,7 @@
   * Create `venmo` module
   * Delete PayPal `data-collector` module
   * Delete PayPal `paypal-one-touch` module
+  * Remove `AmericanExpressRewardsBalance` default constructor
 
 ## 3.17.0
 

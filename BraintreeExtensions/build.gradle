@@ -25,7 +25,6 @@ android {
 def playServicesWallet = "com.google.android.gms:play-services-wallet:${rootProject.playServicesWalletVersion}"
 
 dependencies {
-    api project(':AmericanExpress')
     api project(':BraintreeCore')
     api project(':BraintreeDataCollector')
     api project(':BraintreeModels')

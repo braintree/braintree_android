@@ -74,6 +74,7 @@ dependencies {
         exclude module: 'com.google.gson'
     }
 
+    implementation project(':AmericanExpress')
     implementation project(':BraintreeExtensions')
 
     implementation 'com.visa.checkout:visacheckout-android-sdk:6.6.1@aar'

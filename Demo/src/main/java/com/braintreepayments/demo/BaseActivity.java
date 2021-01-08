@@ -179,6 +179,7 @@ public abstract class BaseActivity extends BraintreeActivity implements OnReques
                     setProgressBarIndeterminateVisibility(false);
                     if (payPalUAT != null) {
                         mAuthorization = payPalUAT;
+                        onAuthorizationFetched();
                         initializeBraintree(payPalUAT, RETURN_URL_SCHEME);
                     } else if (error != null) {
                         showDialog(error.getMessage());
@@ -193,6 +194,7 @@ public abstract class BaseActivity extends BraintreeActivity implements OnReques
                     setProgressBarIndeterminateVisibility(false);
                     if (clientToken != null) {
                         mAuthorization = clientToken;
+                        onAuthorizationFetched();
                         initializeBraintree(clientToken, RETURN_URL_SCHEME);
                     } else if (error != null) {
                         showDialog(error.getMessage());

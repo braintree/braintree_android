@@ -1,10 +1,8 @@
-package com.braintreepayments.api.models;
+package com.braintreepayments.api;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.annotation.Nullable;
-
-import com.braintreepayments.api.Json;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,7 +35,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
      * Used to parse a response from the Braintree Gateway to be used for American Express rewards balance.
      *
      * @param jsonString The json response from the Braintree Gateway American Express rewards balance route.
-     * @return The {@link com.braintreepayments.api.models.AmericanExpressRewardsBalance} with rewards balance data.
+     * @return The {@link AmericanExpressRewardsBalance} with rewards balance data.
      * @throws JSONException when parsing fails.
      */
     public static AmericanExpressRewardsBalance fromJson(String jsonString) throws JSONException {
@@ -125,7 +123,7 @@ public class AmericanExpressRewardsBalance implements Parcelable {
         return mRewardsUnit;
     }
 
-    public AmericanExpressRewardsBalance() {}
+    private AmericanExpressRewardsBalance() {}
 
     @Override
     public int describeContents() {
@@ -155,13 +153,14 @@ public class AmericanExpressRewardsBalance implements Parcelable {
         mRewardsUnit = in.readString();
     }
 
-    public static final Creator<AmericanExpressRewardsBalance> CREATOR = new Creator<AmericanExpressRewardsBalance>() {
-        public AmericanExpressRewardsBalance createFromParcel(Parcel source) {
-            return new AmericanExpressRewardsBalance(source);
-        }
+    public static final Creator<AmericanExpressRewardsBalance> CREATOR =
+        new Creator<AmericanExpressRewardsBalance>() {
+            public AmericanExpressRewardsBalance createFromParcel(Parcel source) {
+                return new AmericanExpressRewardsBalance(source);
+            }
 
-        public AmericanExpressRewardsBalance[] newArray(int size) {
-            return new AmericanExpressRewardsBalance[size];
-        }
-    };
+            public AmericanExpressRewardsBalance[] newArray(int size) {
+                return new AmericanExpressRewardsBalance[size];
+            }
+        };
 }

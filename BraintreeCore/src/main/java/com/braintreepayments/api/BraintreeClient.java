@@ -37,7 +37,7 @@ public class BraintreeClient {
 
     private CrashReporter crashReporter;
 
-    BraintreeClient(Authorization authorization, Context context, String returnUrlScheme) {
+    public BraintreeClient(Authorization authorization, Context context, String returnUrlScheme) {
         this(authorization, context, returnUrlScheme, new BraintreeHttpClient(authorization), new BraintreeGraphQLHttpClient(authorization));
     }
 
