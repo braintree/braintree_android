@@ -203,7 +203,7 @@ public class ThreeDSecureVerificationTest extends TestHelper {
         onDevice(withText("Postal Code")).perform(setText("12345"));
         onDevice(withText("Purchase")).perform(click());
 
-        onDevice(withText("Credit or Debit Cards")).waitForExists(10000);
+        onDevice(withText("Credit or Debit Cards")).waitForExists(20000);
 
         getNonceDetails().check(text(containsString("Card Last Two: 44")));
         getNonceDetails().check(text(containsString("isLiabilityShifted: false")));
