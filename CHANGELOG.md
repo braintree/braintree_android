@@ -1,6 +1,6 @@
 # Braintree Android SDK Release Notes
 
-## unreleased
+## 3.15.0
 
 * Add `paymentTypeCountryCode` to `LocalPaymentRequest`
 * Upgrade PayPal Data Collector to 5.1.1 (fixes #325)
