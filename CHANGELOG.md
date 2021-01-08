@@ -3,6 +3,7 @@
 ## unreleased
 
 * Add `paymentTypeCountryCode` to `LocalPaymentRequest`
+* Upgrade PayPal Data Collector to 5.1.1 (fixes #325)
 
 ## 3.14.2
 
