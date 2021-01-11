@@ -35,7 +35,7 @@ android {
 
 dependencies {
     api files('libs/kount-data-collector-3.2.jar')
-    api files('libs/paypal-data-collector-4.1.2.jar')
+    api files('libs/paypal-data-collector-5.1.1.jar')
 
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation project(':BraintreeCore')
