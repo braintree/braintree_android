@@ -299,7 +299,7 @@ public class CardBuilderUnitTest {
                 .authenticationInsightRequested(true);
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
-        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
+        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject jsonCard = json.getJSONObject(Keys.VARIABLES)
                 .getJSONObject(Keys.INPUT)
                 .getJSONObject(BaseCardBuilder.CREDIT_CARD_KEY);
@@ -340,7 +340,7 @@ public class CardBuilderUnitTest {
                 .postalCode("60606");
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
-        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
+        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject jsonCard = json.getJSONObject(Keys.VARIABLES)
                 .getJSONObject(Keys.INPUT)
                 .getJSONObject(BaseCardBuilder.CREDIT_CARD_KEY);
@@ -366,7 +366,7 @@ public class CardBuilderUnitTest {
         CardBuilder cardBuilder = new CardBuilder();
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
-        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
+        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject metadata = json.getJSONObject("clientSdkMetadata");
 
         assertEquals("custom", metadata.getString("integration"));
@@ -378,7 +378,7 @@ public class CardBuilderUnitTest {
         CardBuilder cardBuilder = new CardBuilder();
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
-        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
+        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
 
         assertEquals("form", json.getJSONObject("clientSdkMetadata").getString("source"));
     }
@@ -388,7 +388,7 @@ public class CardBuilderUnitTest {
         CardBuilder cardBuilder = new CardBuilder().source("test-source");
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
-        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
+        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
 
         assertEquals("test-source", json.getJSONObject("clientSdkMetadata").getString("source"));
     }
@@ -398,7 +398,7 @@ public class CardBuilderUnitTest {
         CardBuilder cardBuilder = new CardBuilder().integration("test-integration");
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
-        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
+        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
 
         assertEquals("test-integration", json.getJSONObject("clientSdkMetadata").getString("integration"));
     }
@@ -408,7 +408,7 @@ public class CardBuilderUnitTest {
         CardBuilder cardBuilder = new CardBuilder().validate(true);
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
-        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
+        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject jsonOptions = json.getJSONObject(Keys.VARIABLES)
                 .getJSONObject(Keys.INPUT)
                 .getJSONObject(PaymentMethodBuilder.OPTIONS_KEY);
@@ -421,7 +421,7 @@ public class CardBuilderUnitTest {
         CardBuilder cardBuilder = new CardBuilder().validate(false);
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
-        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
+        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject jsonOptions = json.getJSONObject(Keys.VARIABLES)
                 .getJSONObject(Keys.INPUT)
                 .getJSONObject(PaymentMethodBuilder.OPTIONS_KEY);
@@ -435,7 +435,7 @@ public class CardBuilderUnitTest {
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
         JSONObject json = new JSONObject(
-                cardBuilder.buildGraphQL(context, Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN))));
+                cardBuilder.buildGraphQL(Authorization.fromString(base64Encode(Fixtures.CLIENT_TOKEN))));
         JSONObject jsonOptions = json.getJSONObject(Keys.VARIABLES)
                 .getJSONObject(Keys.INPUT)
                 .getJSONObject(PaymentMethodBuilder.OPTIONS_KEY);
@@ -448,7 +448,7 @@ public class CardBuilderUnitTest {
         CardBuilder cardBuilder = new CardBuilder();
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
-        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
+        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject jsonOptions = json.getJSONObject(Keys.VARIABLES)
                 .getJSONObject(Keys.INPUT)
                 .getJSONObject(PaymentMethodBuilder.OPTIONS_KEY);
@@ -485,7 +485,7 @@ public class CardBuilderUnitTest {
                 .countryCode("");
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
-        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
+        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject jsonCard = json.getJSONObject(Keys.VARIABLES)
                 .getJSONObject(Keys.INPUT)
                 .getJSONObject(BaseCardBuilder.CREDIT_CARD_KEY);
@@ -500,7 +500,7 @@ public class CardBuilderUnitTest {
                 .authenticationInsightRequested(true);
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
-        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
+        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject variablesJson = json.optJSONObject(Keys.VARIABLES);
 
         assertEquals(variablesJson.getJSONObject("authenticationInsightInput")
@@ -516,7 +516,7 @@ public class CardBuilderUnitTest {
                 .authenticationInsightRequested(false);
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
-        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
+        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject variablesJson = json.optJSONObject(Keys.VARIABLES);
 
         assertNull(variablesJson.optJSONObject("authenticationInsightInput"));
@@ -534,7 +534,7 @@ public class CardBuilderUnitTest {
 
         exceptionRule.expect(BraintreeException.class);
         exceptionRule.expectMessage("A merchant account ID is required when authenticationInsightRequested is true.");
-        cardBuilder.buildGraphQL(context, Authorization.fromString(Fixtures.TOKENIZATION_KEY));
+        cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY));
     }
 
     @Test
@@ -544,7 +544,7 @@ public class CardBuilderUnitTest {
                 .authenticationInsightRequested(false);
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
-        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
+        JSONObject json = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
         JSONObject variablesJson = json.optJSONObject(Keys.VARIABLES);
 
         assertNull(variablesJson.optJSONObject("authenticationInsightInput"));
@@ -603,8 +603,8 @@ public class CardBuilderUnitTest {
         CardBuilder actual = CardBuilder.CREATOR.createFromParcel(parcel);
 
         Context context = RuntimeEnvironment.application.getApplicationContext();
-        JSONObject toParcelJson = new JSONObject(cardBuilder.buildGraphQL(context, Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
-        JSONObject fromParcelJson = new JSONObject(actual.buildGraphQL(context, Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
+        JSONObject toParcelJson = new JSONObject(cardBuilder.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
+        JSONObject fromParcelJson = new JSONObject(actual.buildGraphQL(Authorization.fromString(Fixtures.TOKENIZATION_KEY)));
 
         assertEquals(toParcelJson.toString(), fromParcelJson.toString());
     }

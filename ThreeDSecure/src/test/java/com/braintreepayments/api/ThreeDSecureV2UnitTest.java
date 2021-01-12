@@ -5,7 +5,6 @@ import android.content.Intent;
 import androidx.fragment.app.FragmentActivity;
 
 import com.braintreepayments.MockBraintreeClientBuilder;
-import com.braintreepayments.MockTokenizationClientBuilder;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.helpers.MockCardinalClientBuilder;
@@ -230,7 +229,7 @@ public class ThreeDSecureV2UnitTest {
         ThreeDSecureVerificationCallback callback = mock(ThreeDSecureVerificationCallback.class);
         sut.performVerification(activity, cardBuilder, request, callback);
 
-        verify(tokenizationClient).tokenize(same(activity), same(cardBuilder), any(PaymentMethodNonceCallback.class));
+        verify(tokenizationClient).tokenize(same(cardBuilder), any(PaymentMethodNonceCallback.class));
     }
 
     @Test

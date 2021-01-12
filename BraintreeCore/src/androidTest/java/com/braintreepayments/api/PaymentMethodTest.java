@@ -65,7 +65,7 @@ public class PaymentMethodTest {
                 .expirationMonth("12")
                 .expirationYear(validExpirationYear());
 
-        tokenizationClient.tokenize(mActivity, cardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 sut.getPaymentMethodNonces(mActivity, new GetPaymentMethodNoncesCallback() {
@@ -117,7 +117,7 @@ public class PaymentMethodTest {
                 .expirationMonth("04")
                 .expirationYear(validExpirationYear());
 
-        tokenizationClient.tokenize(mActivity, cardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
             public void success(final PaymentMethodNonce paymentMethodNonce) {
                 sut.getPaymentMethodNonces(mActivity, new GetPaymentMethodNoncesCallback() {

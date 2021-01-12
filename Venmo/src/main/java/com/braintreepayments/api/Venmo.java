@@ -126,7 +126,7 @@ public class Venmo {
             if (shouldVault && isClientToken) {
                 VenmoAccountBuilder vaultBuilder = new VenmoAccountBuilder()
                     .nonce(nonce);
-                tokenizationClient.tokenize(context, vaultBuilder, new PaymentMethodNonceCallback() {
+                tokenizationClient.tokenize(vaultBuilder, new PaymentMethodNonceCallback() {
                     @Override
                     public void success(PaymentMethodNonce paymentMethodNonce) {
                         callback.onResult((VenmoAccountNonce) paymentMethodNonce, null);

@@ -74,7 +74,7 @@ public class ThreeDSecure {
      * The amount can be provided via {@link ThreeDSecureRequest#amount(String)}.
      */
     public void performVerification(final FragmentActivity activity, CardBuilder cardBuilder, final String amount, final ThreeDSecureVerificationCallback callback) {
-        tokenizationClient.tokenize(activity, cardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 performVerification(activity, paymentMethodNonce.getNonce(), amount, callback);
@@ -127,7 +127,7 @@ public class ThreeDSecure {
             return;
         }
 
-        tokenizationClient.tokenize(activity, cardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 request.nonce(paymentMethodNonce.getNonce());

@@ -1,6 +1,5 @@
 package com.braintreepayments.api.models;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -23,7 +22,7 @@ public class CardBuilder extends BaseCardBuilder<CardBuilder> implements Parcela
     private String mMerchantAccountId;
     private boolean mAuthenticationInsightRequested;
 
-    protected void buildGraphQL(Context context, JSONObject base, JSONObject variables) throws BraintreeException, JSONException {
+    protected void buildGraphQL(JSONObject base, JSONObject variables) throws BraintreeException, JSONException {
         JSONObject input = variables.getJSONObject(Keys.INPUT);
 
         if (TextUtils.isEmpty(mMerchantAccountId) && mAuthenticationInsightRequested) {

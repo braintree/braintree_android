@@ -1,6 +1,5 @@
 package com.braintreepayments.api.models;
 
-import android.content.Context;
 import android.os.Parcel;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
@@ -107,12 +106,11 @@ public abstract class PaymentMethodBuilder<T> {
     }
 
     /**
-     * @param context
      * @param authorization The current authorization being used.
      * @return String representation of a GraphQL request for {@link PaymentMethodNonce}.
      * @throws BraintreeException Thrown if resources cannot be accessed.
      */
-    public String buildGraphQL(Context context, Authorization authorization) throws BraintreeException {
+    public String buildGraphQL(Authorization authorization) throws BraintreeException {
         JSONObject base = new JSONObject();
         JSONObject input = new JSONObject();
         JSONObject variables = new JSONObject();
@@ -137,7 +135,7 @@ public abstract class PaymentMethodBuilder<T> {
             input.put(OPTIONS_KEY, optionsJson);
             variables.put(Keys.INPUT, input);
 
-            buildGraphQL(context, base, variables);
+            buildGraphQL(base, variables);
 
             base.put(Keys.VARIABLES, variables);
         } catch (JSONException ignored) {}
@@ -171,7 +169,7 @@ public abstract class PaymentMethodBuilder<T> {
 
     protected abstract void build(JSONObject base, JSONObject paymentMethodNonceJson) throws JSONException;
 
-    protected abstract void buildGraphQL(Context context, JSONObject base, JSONObject input) throws BraintreeException,
+    protected abstract void buildGraphQL(JSONObject base, JSONObject input) throws BraintreeException,
             JSONException;
 
     public abstract String getApiPath();

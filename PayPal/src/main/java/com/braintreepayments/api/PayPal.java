@@ -213,7 +213,7 @@ public class PayPal {
                         payPalAccountBuilder.intent(payPalIntent);
                     }
 
-                    tokenizationClient.tokenize(context, payPalAccountBuilder, new PaymentMethodNonceCallback() {
+                    tokenizationClient.tokenize(payPalAccountBuilder, new PaymentMethodNonceCallback() {
                         @Override
                         public void success(PaymentMethodNonce paymentMethodNonce) {
                             if (paymentMethodNonce instanceof PayPalAccountNonce &&

@@ -50,7 +50,7 @@ public class Card {
      * @param callback {@link CardTokenizeCallback}
      */
     public void tokenize(final Context context, final CardBuilder cardBuilder, final CardTokenizeCallback callback) {
-        tokenizationClient.tokenize(context, cardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 dataCollector.collectRiskData(context, paymentMethodNonce);

@@ -5,7 +5,6 @@ import android.net.Uri;
 import androidx.fragment.app.FragmentActivity;
 
 import com.braintreepayments.MockBraintreeClientBuilder;
-import com.braintreepayments.MockTokenizationClientBuilder;
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.PayPalBrowserSwitchException;
 import com.braintreepayments.api.helpers.MockPayPalInternalClientBuilder;
@@ -380,7 +379,7 @@ public class PayPalUnitTest {
         sut.onBrowserSwitchResult(context, browserSwitchResult, uri, payPalBrowserSwitchResultCallback);
 
         ArgumentCaptor<PayPalAccountBuilder> captor = ArgumentCaptor.forClass(PayPalAccountBuilder.class);
-        verify(tokenizationClient).tokenize(same(context), captor.capture(), any(PaymentMethodNonceCallback.class));
+        verify(tokenizationClient).tokenize(captor.capture(), any(PaymentMethodNonceCallback.class));
 
         PayPalAccountBuilder payPalAccountBuilder = captor.getValue();
         JSONObject tokenizePayload = new JSONObject(payPalAccountBuilder.build());
@@ -424,7 +423,7 @@ public class PayPalUnitTest {
         sut.onBrowserSwitchResult(context, browserSwitchResult, uri, payPalBrowserSwitchResultCallback);
 
         ArgumentCaptor<PayPalAccountBuilder> captor = ArgumentCaptor.forClass(PayPalAccountBuilder.class);
-        verify(tokenizationClient).tokenize(same(context), captor.capture(), any(PaymentMethodNonceCallback.class));
+        verify(tokenizationClient).tokenize(captor.capture(), any(PaymentMethodNonceCallback.class));
 
         PayPalAccountBuilder payPalAccountBuilder = captor.getValue();
         JSONObject tokenizePayload = new JSONObject(payPalAccountBuilder.build());

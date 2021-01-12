@@ -75,7 +75,7 @@ public class UnionPayUnitTest {
         sut.tokenize(context, unionPayCardBuilder, unionPayTokenizeCallback);
 
         ArgumentCaptor<PaymentMethodNonceCallback> captor = ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
-        verify(tokenizationClient).tokenize(same(context), same(unionPayCardBuilder), captor.capture());
+        verify(tokenizationClient).tokenize(same(unionPayCardBuilder), captor.capture());
 
         PaymentMethodNonceCallback callback = captor.getValue();
         callback.success(mock(PaymentMethodNonce.class));
@@ -90,7 +90,7 @@ public class UnionPayUnitTest {
         sut.tokenize(context, unionPayCardBuilder, unionPayTokenizeCallback);
 
         ArgumentCaptor<PaymentMethodNonceCallback> captor = ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
-        verify(tokenizationClient).tokenize(same(context), same(unionPayCardBuilder), captor.capture());
+        verify(tokenizationClient).tokenize(same(unionPayCardBuilder), captor.capture());
 
         PaymentMethodNonceCallback callback = captor.getValue();
         Exception error = new ErrorWithResponse(422, "");
@@ -106,7 +106,7 @@ public class UnionPayUnitTest {
         sut.tokenize(context, unionPayCardBuilder, unionPayTokenizeCallback);
 
         ArgumentCaptor<PaymentMethodNonceCallback> captor = ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
-        verify(tokenizationClient).tokenize(same(context), same(unionPayCardBuilder), captor.capture());
+        verify(tokenizationClient).tokenize(same(unionPayCardBuilder), captor.capture());
 
         PaymentMethodNonceCallback callback = captor.getValue();
         Exception error = new ErrorWithResponse(422, "");

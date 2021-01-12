@@ -1,8 +1,5 @@
-package com.braintreepayments;
+package com.braintreepayments.api;
 
-import android.content.Context;
-
-import com.braintreepayments.api.TokenizationClient;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
@@ -35,7 +32,7 @@ public class MockTokenizationClientBuilder {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                PaymentMethodNonceCallback listener = (PaymentMethodNonceCallback) invocation.getArguments()[2];
+                PaymentMethodNonceCallback listener = (PaymentMethodNonceCallback) invocation.getArguments()[1];
                 if (successNonce != null) {
                     listener.success(successNonce);
                 } else if (error != null) {
@@ -43,7 +40,7 @@ public class MockTokenizationClientBuilder {
                 }
                 return null;
             }
-        }).when(tokenizationClient).tokenize(any(Context.class), any(PaymentMethodBuilder.class), any(PaymentMethodNonceCallback.class));
+        }).when(tokenizationClient).tokenize(any(PaymentMethodBuilder.class), any(PaymentMethodNonceCallback.class));
 
         return tokenizationClient;
     }

@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
 import com.braintreepayments.MockBraintreeClientBuilder;
-import com.braintreepayments.MockTokenizationClientBuilder;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.helpers.MockCardinalClientBuilder;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;

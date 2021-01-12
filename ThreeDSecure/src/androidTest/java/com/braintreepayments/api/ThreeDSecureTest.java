@@ -64,7 +64,7 @@ public class ThreeDSecureTest {
                 .cardNumber("4000000000000051")
                 .expirationDate("12/20");
 
-        tokenizationClient.tokenize(mActivity, cardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 String nonce = paymentMethodNonce.getNonce();
@@ -102,7 +102,7 @@ public class ThreeDSecureTest {
                 .cardNumber("4000000000000051")
                 .expirationDate("12/20");
 
-        tokenizationClient.tokenize(mActivity, cardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(cardBuilder, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 String nonce = paymentMethodNonce.getNonce();

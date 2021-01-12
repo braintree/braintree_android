@@ -19,44 +19,51 @@ import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 
-// TODO: unit test when API is finalized
 public class BraintreeClient {
 
     private final Authorization authorization;
     private final AnalyticsClient analyticsClient;
     private final BraintreeHttpClient httpClient;
-    private final Context applicationContext;
-
-    private final String sessionId;
     private final BraintreeGraphQLHttpClient graphQLHttpClient;
-
-    private final ConfigurationManager configurationManager;
     private final BrowserSwitchClient browserSwitchClient;
+    private final ConfigurationManager configurationManager;
+    private final Context applicationContext;
+    private final CrashReporter crashReporter;
+    private final ManifestValidator manifestValidator;
+    private final String sessionId;
+    private final String integrationType;
 
-    private ManifestValidator manifestValidator;
-
-    private CrashReporter crashReporter;
-
-    public BraintreeClient(Authorization authorization, Context context, String returnUrlScheme) {
-        this(authorization, context, returnUrlScheme, new BraintreeHttpClient(authorization), new BraintreeGraphQLHttpClient(authorization));
+    private static BraintreeClientParams createDefaultParams(Authorization authorization, Context context, String returnUrlScheme) {
+        BraintreeHttpClient httpClient = new BraintreeHttpClient(authorization);
+        return new BraintreeClientParams()
+                .authorization(authorization)
+                .context(context)
+                .setIntegrationType(IntegrationType.get(context))
+                .sessionId(UUIDHelper.getFormattedUUID())
+                .httpClient(httpClient)
+                .graphQLHttpClient(new BraintreeGraphQLHttpClient(authorization))
+                .analyticsClient(new AnalyticsClient(authorization))
+                .browserSwitchClient(BrowserSwitchClient.newInstance(returnUrlScheme))
+                .manifestValidator(new ManifestValidator())
+                .configurationManager(new ConfigurationManager(httpClient));
     }
 
-    private BraintreeClient(Authorization authorization, Context context, String returnUrlScheme, BraintreeHttpClient httpClient, BraintreeGraphQLHttpClient graphQLHttpClient) {
-        this(authorization, context, returnUrlScheme, httpClient, graphQLHttpClient, new ConfigurationManager(httpClient), new AnalyticsClient(authorization), UUIDHelper.getFormattedUUID());
+    public BraintreeClient(Authorization authorization, Context context, String returnUrlScheme) {
+        this(createDefaultParams(authorization, context, returnUrlScheme));
     }
 
     @VisibleForTesting
-    BraintreeClient(Authorization authorization, Context context, String returnUrlScheme, BraintreeHttpClient httpClient, BraintreeGraphQLHttpClient graphQLHttpClient, ConfigurationManager configurationManager, AnalyticsClient analyticsClient, String sessionId) {
-        this.httpClient = httpClient;
-        this.authorization = authorization;
-        this.applicationContext = context.getApplicationContext();
-        this.configurationManager = configurationManager;
-
-        this.analyticsClient = analyticsClient;
-        this.sessionId = sessionId;
-        this.graphQLHttpClient = graphQLHttpClient;
-        this.browserSwitchClient = BrowserSwitchClient.newInstance(returnUrlScheme);
-        this.manifestValidator = new ManifestValidator();
+    BraintreeClient(BraintreeClientParams params) {
+        this.analyticsClient = params.getAnalyticsClient();
+        this.applicationContext = params.getContext().getApplicationContext();
+        this.authorization = params.getAuthorization();
+        this.browserSwitchClient = params.getBrowserSwitchClient();
+        this.configurationManager = params.getConfigurationManager();
+        this.graphQLHttpClient = params.getGraphQLHttpClient();
+        this.httpClient = params.getHttpClient();
+        this.manifestValidator = params.getManifestValidator();
+        this.sessionId = params.getSessionId();
+        this.integrationType = params.getIntegrationType();
 
         this.crashReporter = new CrashReporter(this);
         this.crashReporter.start();
@@ -109,7 +116,7 @@ public class BraintreeClient {
     }
 
     public String getIntegrationType() {
-        return IntegrationType.get(applicationContext);
+        return integrationType;
     }
 
     public void sendGraphQLPOST(final String payload, final HttpResponseCallback responseCallback) {
@@ -151,14 +158,19 @@ public class BraintreeClient {
         return result;
     }
 
-    public boolean isUrlSchemeDeclaredInAndroidManifest(String urlScheme, Class klass) {
+    public <T> boolean isUrlSchemeDeclaredInAndroidManifest(String urlScheme, Class<T> klass) {
         return manifestValidator.isUrlSchemeDeclaredInAndroidManifest(applicationContext, urlScheme, klass);
     }
 
+    public ActivityInfo getManifestActivityInfo(Class klass) {
+        return manifestValidator.getActivityInfo(applicationContext, klass);
+    }
+
+    // TODO: Remove application context dependency from AnalyticsEvent and unit test
     void reportCrash() {
         String analyticsUrl = analyticsClient.getLastKnownAnalyticsUrl();
         if (analyticsUrl != null) {
-            final AnalyticsEvent event = new AnalyticsEvent(null, sessionId, "crash", "crash");
+            final AnalyticsEvent event = new AnalyticsEvent(applicationContext, sessionId, "crash", "crash");
             httpClient.post(analyticsUrl, event.toString(), null, new HttpNoResponse());
         }
     }

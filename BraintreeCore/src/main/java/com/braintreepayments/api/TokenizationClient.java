@@ -1,8 +1,7 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
-
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.exceptions.ErrorWithResponse;
@@ -16,16 +15,23 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 
 import org.json.JSONException;
 
+import java.lang.ref.WeakReference;
+
 import static com.braintreepayments.api.models.PaymentMethodNonce.parsePaymentMethodNonces;
 
-public class TokenizationClient {
+class TokenizationClient {
 
     static final String PAYMENT_METHOD_ENDPOINT = "payment_methods";
 
-    private final BraintreeClient braintreeClient;
+    private final WeakReference<BraintreeClient> braintreeClientRef;
 
     TokenizationClient(BraintreeClient braintreeClient) {
-        this.braintreeClient = braintreeClient;
+        this(new WeakReference<>(braintreeClient));
+    }
+
+    @VisibleForTesting
+    TokenizationClient(WeakReference<BraintreeClient> braintreeClientRef) {
+        this.braintreeClientRef = braintreeClientRef;
     }
 
     /**
@@ -43,18 +49,22 @@ public class TokenizationClient {
      * @param paymentMethodBuilder {@link PaymentMethodBuilder} for the {@link PaymentMethodNonce}
      *        to be created.
      */
-    public void tokenize(final Context context, final PaymentMethodBuilder paymentMethodBuilder, final PaymentMethodNonceCallback callback) {
-        paymentMethodBuilder.setSessionId(braintreeClient.getSessionId());
+    public <T> void tokenize(final PaymentMethodBuilder<T> paymentMethodBuilder, final PaymentMethodNonceCallback callback) {
+        final BraintreeClient braintreeClient = braintreeClientRef.get();
+        if (braintreeClient == null) {
+            return;
+        }
 
+        paymentMethodBuilder.setSessionId(braintreeClient.getSessionId());
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (configuration != null) {
                     if (paymentMethodBuilder instanceof CardBuilder &&
                             configuration.getGraphQL().isFeatureEnabled(Features.TOKENIZE_CREDIT_CARDS)) {
-                        tokenizeGraphQL(context, (CardBuilder) paymentMethodBuilder, callback);
+                        tokenizeGraphQL(braintreeClient, (CardBuilder) paymentMethodBuilder, callback);
                     } else {
-                        tokenizeRest(context, paymentMethodBuilder, callback);
+                        tokenizeRest(braintreeClient, paymentMethodBuilder, callback);
                     }
                 } else {
                     callback.failure(error);
@@ -63,11 +73,11 @@ public class TokenizationClient {
         });
     }
 
-    private void tokenizeGraphQL(final Context context, final CardBuilder cardBuilder, final PaymentMethodNonceCallback callback) {
+    private static void tokenizeGraphQL(final BraintreeClient braintreeClient, final CardBuilder cardBuilder, final PaymentMethodNonceCallback callback) {
         braintreeClient.sendAnalyticsEvent("card.graphql.tokenization.started");
         final String payload;
         try {
-            payload = cardBuilder.buildGraphQL(context, braintreeClient.getAuthorization());
+            payload = cardBuilder.buildGraphQL(braintreeClient.getAuthorization());
         } catch (BraintreeException e) {
             callback.failure(e);
             return;
@@ -92,7 +102,7 @@ public class TokenizationClient {
         });
     }
 
-    private void tokenizeRest(Context context, final PaymentMethodBuilder paymentMethodBuilder, final PaymentMethodNonceCallback callback) {
+    private static <T> void tokenizeRest(final BraintreeClient braintreeClient, final PaymentMethodBuilder<T> paymentMethodBuilder, final PaymentMethodNonceCallback callback) {
         String url = TokenizationClient.versionedPath(
                 TokenizationClient.PAYMENT_METHOD_ENDPOINT + "/" + paymentMethodBuilder.getApiPath());
 

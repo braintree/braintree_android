@@ -1,6 +1,5 @@
 package com.braintreepayments.api.models;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -123,7 +122,7 @@ public class UnionPayCardBuilder extends BaseCardBuilder<UnionPayCardBuilder> im
     }
 
     @Override
-    protected void buildGraphQL(Context context, JSONObject base, JSONObject variables) {}
+    protected void buildGraphQL(JSONObject base, JSONObject variables) {}
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {

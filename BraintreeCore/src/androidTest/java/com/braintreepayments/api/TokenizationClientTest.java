@@ -52,7 +52,7 @@ public class TokenizationClientTest {
         PayPalAccountBuilder paypalAccountBuilder =
                 new PayPalAccountBuilder().oneTouchCoreData(otcJson);
 
-        tokenizationClient.tokenize(mActivity, paypalAccountBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(paypalAccountBuilder, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 assertIsANonce(paymentMethodNonce.getNonce());

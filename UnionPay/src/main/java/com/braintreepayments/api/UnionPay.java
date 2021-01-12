@@ -161,7 +161,7 @@ public class UnionPay {
      * @param callback {@link UnionPayTokenizeCallback}
      */
     public void tokenize(final Context context, UnionPayCardBuilder unionPayCardBuilder, final UnionPayTokenizeCallback callback) {
-        tokenizationClient.tokenize(context, unionPayCardBuilder, new PaymentMethodNonceCallback() {
+        tokenizationClient.tokenize(unionPayCardBuilder, new PaymentMethodNonceCallback() {
             @Override
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 callback.onResult(paymentMethodNonce, null);

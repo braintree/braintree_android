@@ -42,7 +42,7 @@ public class CardUnitTest {
 
         ArgumentCaptor<PaymentMethodNonceCallback> callbackCaptor =
             ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
-        verify(tokenizationClient).tokenize(same(context), same(cardBuilder), callbackCaptor.capture());
+        verify(tokenizationClient).tokenize(same(cardBuilder), callbackCaptor.capture());
 
         PaymentMethodNonceCallback callback = callbackCaptor.getValue();
         PaymentMethodNonce paymentMethodNonce = mock(PaymentMethodNonce.class);
@@ -58,7 +58,7 @@ public class CardUnitTest {
 
         ArgumentCaptor<PaymentMethodNonceCallback> callbackCaptor =
                 ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
-        verify(tokenizationClient).tokenize(same(context), same(cardBuilder), callbackCaptor.capture());
+        verify(tokenizationClient).tokenize(same(cardBuilder), callbackCaptor.capture());
 
         PaymentMethodNonceCallback callback = callbackCaptor.getValue();
         callback.success(mock(PaymentMethodNonce.class));
@@ -73,7 +73,7 @@ public class CardUnitTest {
 
         ArgumentCaptor<PaymentMethodNonceCallback> callbackCaptor =
                 ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
-        verify(tokenizationClient).tokenize(same(context), same(cardBuilder), callbackCaptor.capture());
+        verify(tokenizationClient).tokenize(same(cardBuilder), callbackCaptor.capture());
 
         PaymentMethodNonceCallback callback = callbackCaptor.getValue();
         Exception error = new Exception("error");
@@ -89,7 +89,7 @@ public class CardUnitTest {
 
         ArgumentCaptor<PaymentMethodNonceCallback> callbackCaptor =
                 ArgumentCaptor.forClass(PaymentMethodNonceCallback.class);
-        verify(tokenizationClient).tokenize(same(context), same(cardBuilder), callbackCaptor.capture());
+        verify(tokenizationClient).tokenize(same(cardBuilder), callbackCaptor.capture());
 
         PaymentMethodNonceCallback callback = callbackCaptor.getValue();
         callback.failure(new Exception("error"));
