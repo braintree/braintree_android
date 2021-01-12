@@ -117,7 +117,7 @@ public class ThreeDSecurePostalAddress implements Parcelable {
     /**
      * Optional. Set the region
      *
-     * @param region 2 letter code for US states, and the equivalent for other countries.
+     * @param region Either a two-letter state code (for the US), or an ISO-3166-2 country subdivision code of up to three letters.
      * */
     public ThreeDSecurePostalAddress region(String region) {
         mRegion = region;
