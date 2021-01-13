@@ -12,7 +12,6 @@ import com.braintreepayments.api.models.BinData;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
@@ -38,7 +37,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
-public class CardTest {
+public class CardClientTest {
 
     private static final String REST = "REST";
     private static final String GRAPHQL = "GRAPHQL";
@@ -50,7 +49,7 @@ public class CardTest {
 
     private final String requestProtocol;
 
-    public CardTest(String requestProtocol) {
+    public CardClientTest(String requestProtocol) {
         this.requestProtocol = requestProtocol;
     }
 
@@ -141,10 +140,10 @@ public class CardTest {
                 .validate(true);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        Card sut = setupCardClient(TOKENIZATION_KEY);
+        CardClient sut = setupCardClient(TOKENIZATION_KEY);
         sut.tokenize(mActivityTestRule.getActivity(), cardBuilder, new CardTokenizeCallback() {
             @Override
-            public void onResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
+            public void onResult(CardNonce cardNonce, Exception error) {
                 assertTrue(error instanceof AuthorizationException);
 
                 if (requestProtocol.equals(GRAPHQL)) {
@@ -182,11 +181,11 @@ public class CardTest {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
 
         CardBuilder cardBuilder = new CardBuilder().cvv("123");
-        Card sut = setupCardClient(TOKENIZATION_KEY);
+        CardClient sut = setupCardClient(TOKENIZATION_KEY);
         sut.tokenize(mActivityTestRule.getActivity(), cardBuilder, new CardTokenizeCallback() {
             @Override
-            public void onResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
-                CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+            public void onResult(CardNonce cardNonce, Exception error) {
+                CardNonce cardNonce = (CardNonce) cardNonce;
 
                 assertNotNull(cardNonce.getBinData());
                 assertEquals("Unknown", cardNonce.getCardType());
@@ -216,10 +215,10 @@ public class CardTest {
                 .cvv("200");
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        Card sut = setupCardClient(authorization);
+        CardClient sut = setupCardClient(authorization);
         sut.tokenize(mActivityTestRule.getActivity(), cardBuilder, new CardTokenizeCallback() {
             @Override
-            public void onResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
+            public void onResult(CardNonce cardNonce, Exception error) {
                 assertEquals("CVV verification failed",
                         ((ErrorWithResponse) error).errorFor("creditCard").getFieldErrors().get(0).getMessage());
                 countDownLatch.countDown();
@@ -254,10 +253,10 @@ public class CardTest {
                 .postalCode("20000");
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        Card sut = setupCardClient(authorization);
+        CardClient sut = setupCardClient(authorization);
         sut.tokenize(mActivityTestRule.getActivity(), cardBuilder, new CardTokenizeCallback() {
             @Override
-            public void onResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
+            public void onResult(CardNonce cardNonce, Exception error) {
                 assertEquals("Postal code verification failed",
                         ((ErrorWithResponse) error).errorFor("creditCard").errorFor("billingAddress")
                                 .getFieldErrors().get(0).getMessage());
@@ -279,10 +278,10 @@ public class CardTest {
                 .countryCode("ABC");
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        Card sut = setupCardClient(authorization);
+        CardClient sut = setupCardClient(authorization);
         sut.tokenize(mActivityTestRule.getActivity(), cardBuilder, new CardTokenizeCallback() {
             @Override
-            public void onResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
+            public void onResult(CardNonce cardNonce, Exception error) {
                 assertEquals("Country code (alpha3) is not an accepted country",
                         ((ErrorWithResponse) error).errorFor("creditCard").errorFor("billingAddress")
                                 .getFieldErrors().get(0).getMessage());
@@ -318,13 +317,13 @@ public class CardTest {
 
     private void assertTokenizationSuccessful(String authorization, CardBuilder cardBuilder) throws Exception {
         BraintreeClient braintreeClient = new BraintreeClient(Authorization.fromString(authorization), ApplicationProvider.getApplicationContext(), null);
-        Card sut = new Card(braintreeClient);
+        CardClient sut = new CardClient(braintreeClient);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         sut.tokenize(mActivityTestRule.getActivity(), cardBuilder, new CardTokenizeCallback() {
             @Override
-            public void onResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
-                CardNonce cardNonce = (CardNonce) paymentMethodNonce;
+            public void onResult(CardNonce cardNonce, Exception error) {
+                CardNonce cardNonce = (CardNonce) cardNonce;
 
                 assertNotNull(cardNonce.getNonce());
                 assertEquals("Visa", cardNonce.getCardType());
@@ -350,9 +349,9 @@ public class CardTest {
         countDownLatch.await();
     }
 
-    private Card setupCardClient(String authorization) throws Exception {
+    private CardClient setupCardClient(String authorization) throws Exception {
         BraintreeClient braintreeClient = new BraintreeClient(Authorization.fromString(authorization), ApplicationProvider.getApplicationContext(), null);
-        return new Card(braintreeClient);
+        return new CardClient(braintreeClient);
     }
 
     private static void overrideConfigurationCache(String authString, String requestProtocol) throws JSONException, InvalidArgumentException {

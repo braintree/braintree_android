@@ -28,7 +28,6 @@ class BraintreeFullClient {
 
     BraintreeClient braintreeClient;
     DataCollector dataCollector;
-    Card card;
     DeviceInspector deviceInspector;
     GooglePaymentClient googlePaymentClient;
     LocalPayment localPayment;
@@ -45,7 +44,6 @@ class BraintreeFullClient {
         this.dataCollector = new DataCollector(braintreeClient);
         this.tokenizationClient = new TokenizationClient(braintreeClient);
 
-        this.card = new Card(braintreeClient, tokenizationClient, dataCollector);
         this.deviceInspector = new DeviceInspector();
         this.googlePaymentClient = new GooglePaymentClient(braintreeClient);
         this.localPayment = new LocalPayment(returnUrlScheme, braintreeClient);
@@ -75,10 +73,6 @@ class BraintreeFullClient {
 
     public void tokenizeUnionPay(Context context, UnionPayCardBuilder unionPayCardBuilder, UnionPayTokenizeCallback callback) {
         unionPay.tokenize(context, unionPayCardBuilder, callback);
-    }
-
-    public void tokenizeCard(Context context, CardBuilder cardBuilder, CardTokenizeCallback callback) {
-        card.tokenize(context, cardBuilder, callback);
     }
 
     public void performThreeDSecureVerification(FragmentActivity activity, ThreeDSecureRequest request, ThreeDSecureLookupCallback callback) {

@@ -28,7 +28,6 @@ dependencies {
     api project(':BraintreeCore')
     api project(':BraintreeDataCollector')
     api project(':BraintreeModels')
-    api project(':Card')
     api project(':PayPal')
     api project(':LocalPayment')
     api project(':ThreeDSecure')

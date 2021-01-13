@@ -2,26 +2,29 @@ package com.braintreepayments.api;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.CardBuilder;
+import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 
 /**
  * Used to tokenize credit or debit cards using a {@link CardBuilder}. For more information see the
  * <a href="https://developers.braintreepayments.com/guides/credit-cards/overview">documentation</a>
  */
-// TODO: Rename class when API is finalized
-public class Card {
+public class CardClient {
 
     private final BraintreeClient braintreeClient;
     private final DataCollector dataCollector;
     private final TokenizationClient tokenizationClient;
 
-    Card(BraintreeClient braintreeClient) {
+    public CardClient(BraintreeClient braintreeClient) {
         this(braintreeClient, new TokenizationClient(braintreeClient), new DataCollector(braintreeClient));
     }
 
-    Card(BraintreeClient braintreeClient, TokenizationClient tokenizationClient, DataCollector dataCollector) {
+    @VisibleForTesting
+    CardClient(BraintreeClient braintreeClient, TokenizationClient tokenizationClient, DataCollector dataCollector) {
         this.braintreeClient = braintreeClient;
         this.tokenizationClient = tokenizationClient;
         this.dataCollector = dataCollector;
@@ -55,7 +58,7 @@ public class Card {
             public void success(PaymentMethodNonce paymentMethodNonce) {
                 dataCollector.collectRiskData(context, paymentMethodNonce);
 
-                callback.onResult(paymentMethodNonce, null);
+                callback.onResult((CardNonce) paymentMethodNonce, null);
                 braintreeClient.sendAnalyticsEvent("card.nonce-received");
             }
 

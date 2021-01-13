@@ -16,6 +16,7 @@ import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressGetRewardsBalanceCallback;
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.BraintreeDataCollectorCallback;
+import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardTokenizeCallback;
 import com.braintreepayments.api.ConfigurationCallback;
 import com.braintreepayments.api.ThreeDSecureVerificationCallback;
@@ -72,6 +73,7 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
 
     private BraintreeClient braintreeClient;
     private AmericanExpressClient americanExpressClient;
+    private CardClient cardClient;
 
     @Override
     protected void onCreate(Bundle onSaveInstanceState) {
@@ -127,6 +129,7 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
             Authorization authorization = Authorization.fromString(mAuthorization);
             braintreeClient = new BraintreeClient(authorization, this, RETURN_URL_SCHEME);
             americanExpressClient = new AmericanExpressClient(braintreeClient);
+            cardClient = new CardClient(braintreeClient);
 
         } catch (InvalidArgumentException e) {
             e.printStackTrace();
@@ -312,11 +315,11 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
                     .validate(false) // TODO GQL currently only returns the bin if validate = false
                     .postalCode(mCardForm.getPostalCode());
 
-            tokenizeCard(cardBuilder, new CardTokenizeCallback() {
+            cardClient.tokenize(this, cardBuilder, new CardTokenizeCallback() {
                 @Override
-                public void onResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
-                    if (paymentMethodNonce != null) {
-                        handlePaymentMethodNonceCreated(paymentMethodNonce);
+                public void onResult(CardNonce cardNonce, Exception error) {
+                    if (cardNonce != null) {
+                        handlePaymentMethodNonceCreated(cardNonce);
                     } else {
                         onBraintreeError(error);
                     }

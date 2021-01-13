@@ -79,10 +79,6 @@ public abstract class BraintreeActivity extends AppCompatActivity implements Bro
         braintreeFullClient.tokenizeUnionPay(this, cardBuilder, callback);
     }
 
-    protected void tokenizeCard(CardBuilder cardBuilder, CardTokenizeCallback callback) {
-        braintreeFullClient.tokenizeCard(this, cardBuilder, callback);
-    }
-
     protected void performThreeDSecureVerification(ThreeDSecureRequest request, ThreeDSecureLookupCallback callback) {
         braintreeFullClient.performThreeDSecureVerification(this, request, callback);
     }

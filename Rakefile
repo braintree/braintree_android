@@ -13,8 +13,8 @@ end
 
 # Usage:
 #   rake unit_tests
-#   rake unit_tests"[com.braintreepayments.api.CardUnitTest,Card]"
-#   rake unit_tests"[com.braintreepayments.api.CardUnitTest,Card,tokenize_sendsAnalyticsEventOnSuccess]"
+#   rake unit_tests"[com.braintreepayments.api.CardClientUnitTest,Card]"
+#   rake unit_tests"[com.braintreepayments.api.CardClientUnitTest,Card,tokenize_sendsAnalyticsEventOnSuccess]"
 desc "Run Android unit tests"
 task :unit_tests, [:qualified_class, :module_name, :test_name] => :lint do |task, args|
   if args.module_name.nil?
