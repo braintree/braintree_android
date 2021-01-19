@@ -23,6 +23,12 @@ public class ThreeDSecureRequest implements Parcelable {
     public static final String VERSION_1 = "1";
     public static final String VERSION_2 = "2";
 
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({CREDIT, DEBIT})
+    @interface ThreeDSecureAccountType {}
+    public static final String CREDIT = "credit";
+    public static final String DEBIT = "debit";
+
     private String mNonce;
     private String mAmount;
     private String mMobilePhoneNumber;
@@ -30,6 +36,7 @@ public class ThreeDSecureRequest implements Parcelable {
     private String mShippingMethod;
     private ThreeDSecurePostalAddress mBillingAddress;
     private @ThreeDSecureVersion String mVersionRequested = VERSION_1;
+    private @ThreeDSecureAccountType String mAccountType;
     private ThreeDSecureAdditionalInformation mAdditionalInformation;
     private boolean mChallengeRequested = false;
     private boolean mExemptionRequested = false;
@@ -117,6 +124,18 @@ public class ThreeDSecureRequest implements Parcelable {
      */
     public ThreeDSecureRequest versionRequested(@ThreeDSecureVersion String versionRequested) {
         mVersionRequested = versionRequested;
+        return this;
+    }
+
+    /**
+     * Optional. The account type selected by the cardholder. Some cards can be processed using
+     * either a credit or debit account and cardholders have the option to choose which account to use.
+     * Possible values defined at {@link ThreeDSecureAccountType}.
+     *
+     * @param accountType {@link ThreeDSecureAccountType} The account type selected by the cardholder.
+     */
+    public ThreeDSecureRequest accountType(@ThreeDSecureAccountType String accountType) {
+        mAccountType = accountType;
         return this;
     }
 
@@ -221,6 +240,13 @@ public class ThreeDSecureRequest implements Parcelable {
     }
 
     /**
+     * @return The account type
+     */
+    public @ThreeDSecureAccountType String getAccountType() {
+        return mAccountType;
+    }
+
+    /**
      * @return The additional information used for verification
      * {@link ThreeDSecureAdditionalInformation} is only used for
      * {@link ThreeDSecureRequest#VERSION_2} requests.
@@ -281,6 +307,7 @@ public class ThreeDSecureRequest implements Parcelable {
         dest.writeByte(mExemptionRequested ? (byte) 1 : 0);
         dest.writeSerializable(mUiCustomization);
         dest.writeParcelable(mV1UiCustomization, flags);
+        dest.writeString(mAccountType);
     }
 
     public ThreeDSecureRequest(Parcel in) {
@@ -296,6 +323,7 @@ public class ThreeDSecureRequest implements Parcelable {
         mExemptionRequested = in.readByte() > 0;
         mUiCustomization = (UiCustomization) in.readSerializable();
         mV1UiCustomization = in.readParcelable(ThreeDSecureV1UiCustomization.class.getClassLoader());
+        mAccountType = in.readString();
     }
 
     public static final Creator<ThreeDSecureRequest> CREATOR = new Creator<ThreeDSecureRequest>() {
@@ -325,6 +353,7 @@ public class ThreeDSecureRequest implements Parcelable {
         try {
             base.put("amount", mAmount);
             base.put("additional_info", additionalInfo);
+            base.putOpt("account_type", mAccountType);
 
             additionalInfo.putOpt("mobile_phone_number", getMobilePhoneNumber());
             additionalInfo.putOpt("shipping_method", getShippingMethod());

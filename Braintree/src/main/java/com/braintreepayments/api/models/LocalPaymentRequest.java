@@ -235,7 +235,7 @@ public class LocalPaymentRequest {
                     .put(EMAIL_KEY, mEmail)
                     .put(PHONE_KEY, mPhone)
                     .put(MERCHANT_ACCOUNT_ID_KEY, mMerchantAccountId)
-                    .put(PAYMENT_TYPE_COUNTRY_CODE, mPaymentTypeCountryCode);
+                    .putOpt(PAYMENT_TYPE_COUNTRY_CODE, mPaymentTypeCountryCode);
 
             if (mAddress != null) {
                 payload.put(STREET_ADDRESS_KEY, mAddress.getStreetAddress())

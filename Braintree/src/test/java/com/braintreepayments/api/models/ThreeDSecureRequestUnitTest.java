@@ -73,7 +73,8 @@ public class ThreeDSecureRequestUnitTest {
                 .challengeRequested(true)
                 .exemptionRequested(true)
                 .uiCustomization(uiCustomization)
-                .v1UiCustomization(v1UiCustomization);
+                .v1UiCustomization(v1UiCustomization)
+                .accountType(ThreeDSecureRequest.CREDIT);
 
         Parcel parcel = Parcel.obtain();
         expected.writeToParcel(parcel, 0);
@@ -82,6 +83,7 @@ public class ThreeDSecureRequestUnitTest {
         ThreeDSecureRequest actual = new ThreeDSecureRequest(parcel);
 
         assertEquals(expected.getAmount(), actual.getAmount());
+        assertEquals(expected.getAccountType(), actual.getAccountType());
         assertEquals(expected.getNonce(), actual.getNonce());
         assertEquals(expected.getMobilePhoneNumber(), actual.getMobilePhoneNumber());
         assertEquals(expected.getEmail(), actual.getEmail());
@@ -137,13 +139,15 @@ public class ThreeDSecureRequestUnitTest {
                 .billingAddress(billingAddress)
                 .additionalInformation(additionalInformation)
                 .challengeRequested(true)
-                .exemptionRequested(true);
+                .exemptionRequested(true)
+                .accountType(ThreeDSecureRequest.CREDIT);
 
         JSONObject json = new JSONObject(request.build("df-reference-id"));
         JSONObject additionalInfoJson = json.getJSONObject("additional_info");
 
         assertEquals("df-reference-id", json.get("df_reference_id"));
         assertEquals("amount", json.get("amount"));
+        assertEquals("credit", json.get("account_type"));
         assertTrue(json.getBoolean("challenge_requested"));
         assertTrue(json.getBoolean("exemption_requested"));
 
@@ -163,6 +167,14 @@ public class ThreeDSecureRequestUnitTest {
         assertEquals("shipping-method", additionalInfoJson.get("shipping_method"));
 
         assertEquals("account-id", additionalInfoJson.get("account_id"));
+    }
+
+    @Test
+    public void toJson_whenAccountTypeNotSet_doesNotIncludeAccountType() throws JSONException {
+        JSONObject json = new JSONObject(new ThreeDSecureRequest()
+                .build("df-reference-id"));
+
+        assertFalse(json.has("account_type"));
     }
 
     @Test

@@ -1,5 +1,9 @@
 # Braintree Android SDK Release Notes
 
+## unreleased
+
+* Add `accountType` to `ThreeDSecureRequest`
+
 ## 3.15.0
 
 * Add `paymentTypeCountryCode` to `LocalPaymentRequest`
