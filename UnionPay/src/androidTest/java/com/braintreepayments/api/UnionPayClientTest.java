@@ -10,18 +10,14 @@ import com.braintreepayments.api.exceptions.ErrorWithResponse;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.CardNonce;
-import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.UnionPayCapabilities;
 import com.braintreepayments.api.models.UnionPayCardBuilder;
-import com.braintreepayments.api.test.BraintreeActivityTestRule;
-import com.braintreepayments.api.test.TestActivity;
 import com.braintreepayments.api.test.TestClientTokenBuilder;
 import com.braintreepayments.testutils.CardNumber;
 import com.braintreepayments.testutils.ExpirationDateHelper;
 
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -42,12 +38,9 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class UnionPayTest {
+public class UnionPayClientTest {
 
-    @Rule
-    public final BraintreeActivityTestRule<TestActivity> mActivityTestRule = new BraintreeActivityTestRule<>(TestActivity.class);
-
-    private UnionPay unionPay;
+    private UnionPayClient unionPayClient;
     private CountDownLatch mCountDownLatch;
 
     @Before
@@ -55,12 +48,12 @@ public class UnionPayTest {
         mCountDownLatch = new CountDownLatch(1);
         BraintreeClient braintreeClient =
                 new BraintreeClient(Authorization.fromString(new TestClientTokenBuilder().build()), ApplicationProvider.getApplicationContext(), null);
-        unionPay = new UnionPay(braintreeClient, null);
+        unionPayClient = new UnionPayClient(braintreeClient, null);
     }
 
     @Test(timeout = 10000)
     public void fetchCapabilities_whenDebit_isDebitIsTrue() throws InterruptedException {
-        unionPay.fetchCapabilities(mActivityTestRule.getActivity(), UNIONPAY_DEBIT, new UnionPayFetchCapabilitiesCallback() {
+        unionPayClient.fetchCapabilities(UNIONPAY_DEBIT, new UnionPayFetchCapabilitiesCallback() {
             @Override
             public void onResult(UnionPayCapabilities capabilities, Exception error) {
                 assertTrue(capabilities.supportsTwoStepAuthAndCapture());
@@ -75,7 +68,7 @@ public class UnionPayTest {
 
     @Test(timeout = 10000)
     public void fetchCapabilities_whenCredit_isDebitIsFalse() throws InterruptedException {
-        unionPay.fetchCapabilities(mActivityTestRule.getActivity(), UNIONPAY_CREDIT, new UnionPayFetchCapabilitiesCallback() {
+        unionPayClient.fetchCapabilities(UNIONPAY_CREDIT, new UnionPayFetchCapabilitiesCallback() {
             @Override
             public void onResult(UnionPayCapabilities capabilities, Exception error) {
                 assertTrue(capabilities.supportsTwoStepAuthAndCapture());
@@ -120,7 +113,7 @@ public class UnionPayTest {
 
     @Test(timeout = 10000)
     public void fetchCapabilities_whenSingleStepSale_twoStepAuthAndCaptureIsFalse() throws InterruptedException {
-        unionPay.fetchCapabilities(mActivityTestRule.getActivity(), UNIONPAY_SINGLE_STEP_SALE, new UnionPayFetchCapabilitiesCallback() {
+        unionPayClient.fetchCapabilities(UNIONPAY_SINGLE_STEP_SALE, new UnionPayFetchCapabilitiesCallback() {
             @Override
             public void onResult(UnionPayCapabilities capabilities, Exception error) {
                 assertTrue(capabilities.isSupported());
@@ -144,11 +137,11 @@ public class UnionPayTest {
                 .mobileCountryCode("62")
                 .mobilePhoneNumber("11111111111");
 
-        unionPay.fetchCapabilities(mActivityTestRule.getActivity(), cardNumber, new UnionPayFetchCapabilitiesCallback() {
+        unionPayClient.fetchCapabilities(cardNumber, new UnionPayFetchCapabilitiesCallback() {
             @Override
             public void onResult(UnionPayCapabilities capabilities, Exception error) {
                 assertTrue(capabilities.isUnionPay());
-                unionPay.enroll(mActivityTestRule.getActivity(), unionPayCardBuilder, new UnionPayEnrollCallback() {
+                unionPayClient.enroll(unionPayCardBuilder, new UnionPayEnrollCallback() {
                     @Override
                     public void onResult(@Nullable UnionPayEnrollment enrollment, @Nullable Exception error) {
                         assertFalse(TextUtils.isEmpty(enrollment.getId()));
@@ -172,11 +165,11 @@ public class UnionPayTest {
                 .mobileCountryCode("62")
                 .mobilePhoneNumber("11111111111");
 
-        unionPay.fetchCapabilities(mActivityTestRule.getActivity(), cardNumber, new UnionPayFetchCapabilitiesCallback() {
+        unionPayClient.fetchCapabilities(cardNumber, new UnionPayFetchCapabilitiesCallback() {
             @Override
             public void onResult(UnionPayCapabilities capabilities, Exception error) {
                 assertFalse(capabilities.isUnionPay());
-                unionPay.enroll(mActivityTestRule.getActivity(), unionPayCardBuilder, new UnionPayEnrollCallback() {
+                unionPayClient.enroll(unionPayCardBuilder, new UnionPayEnrollCallback() {
                     @Override
                     public void onResult(@Nullable UnionPayEnrollment enrollment, @Nullable Exception error) {
                         assertTrue(error instanceof ErrorWithResponse);
@@ -200,12 +193,12 @@ public class UnionPayTest {
                 .mobileCountryCode("62")
                 .mobilePhoneNumber("11111111111");
 
-        unionPay.fetchCapabilities(mActivityTestRule.getActivity(), cardNumber, new UnionPayFetchCapabilitiesCallback() {
+        unionPayClient.fetchCapabilities(cardNumber, new UnionPayFetchCapabilitiesCallback() {
             @Override
             public void onResult(UnionPayCapabilities capabilities, Exception error) {
                 assertTrue(capabilities.isUnionPay());
                 assertTrue(capabilities.isSupported());
-                unionPay.enroll(mActivityTestRule.getActivity(), unionPayCardBuilder, new UnionPayEnrollCallback() {
+                unionPayClient.enroll(unionPayCardBuilder, new UnionPayEnrollCallback() {
                     @Override
                     public void onResult(@Nullable UnionPayEnrollment enrollment, @Nullable Exception error) {
                         assertNull(error);
@@ -230,18 +223,18 @@ public class UnionPayTest {
                 .mobileCountryCode("62")
                 .mobilePhoneNumber("1111111111");
 
-        unionPay.enroll(mActivityTestRule.getActivity(), cardBuilder, new UnionPayEnrollCallback() {
+        unionPayClient.enroll(cardBuilder, new UnionPayEnrollCallback() {
             @Override
             public void onResult(@Nullable UnionPayEnrollment enrollment, @Nullable Exception error) {
                 assertTrue(enrollment.isSmsCodeRequired());
                 cardBuilder.enrollmentId(enrollment.getId());
                 cardBuilder.smsCode("12345");
 
-                unionPay.tokenize(mActivityTestRule.getActivity(), cardBuilder, new UnionPayTokenizeCallback() {
+                unionPayClient.tokenize(cardBuilder, new UnionPayTokenizeCallback() {
                     @Override
-                    public void onResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
-                        assertIsANonce(paymentMethodNonce.getNonce());
-                        assertEquals("32", ((CardNonce) paymentMethodNonce).getLastTwo());
+                    public void onResult(CardNonce cardNonce, Exception error) {
+                        assertIsANonce(cardNonce.getNonce());
+                        assertEquals("32", ((CardNonce) cardNonce).getLastTwo());
                         mCountDownLatch.countDown();
                     }
                 });
@@ -262,18 +255,18 @@ public class UnionPayTest {
                 .mobileCountryCode("62")
                 .mobilePhoneNumber("1111111111");
 
-        unionPay.enroll(mActivityTestRule.getActivity(), cardBuilder, new UnionPayEnrollCallback() {
+        unionPayClient.enroll(cardBuilder, new UnionPayEnrollCallback() {
             @Override
             public void onResult(@Nullable UnionPayEnrollment enrollment, @Nullable Exception error) {
                 assertTrue(enrollment.isSmsCodeRequired());
                 cardBuilder.enrollmentId(enrollment.getId());
                 cardBuilder.smsCode("12345");
 
-                unionPay.tokenize(mActivityTestRule.getActivity(), cardBuilder, new UnionPayTokenizeCallback() {
+                unionPayClient.tokenize(cardBuilder, new UnionPayTokenizeCallback() {
                     @Override
-                    public void onResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
-                        assertIsANonce(paymentMethodNonce.getNonce());
-                        assertEquals("32", ((CardNonce) paymentMethodNonce).getLastTwo());
+                    public void onResult(CardNonce cardNonce, Exception error) {
+                        assertIsANonce(cardNonce.getNonce());
+                        assertEquals("32", ((CardNonce) cardNonce).getLastTwo());
                         mCountDownLatch.countDown();
                     }
                 });
@@ -285,7 +278,7 @@ public class UnionPayTest {
 
     private void assertSupported(final String cardNumber, final boolean expected) throws InterruptedException {
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        unionPay.fetchCapabilities(mActivityTestRule.getActivity(), cardNumber, new UnionPayFetchCapabilitiesCallback() {
+        unionPayClient.fetchCapabilities(cardNumber, new UnionPayFetchCapabilitiesCallback() {
 
             @Override
             public void onResult(UnionPayCapabilities capabilities, Exception error) {

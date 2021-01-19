@@ -1,7 +1,9 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.models.PaymentMethodNonce;
+import androidx.annotation.Nullable;
+
+import com.braintreepayments.api.models.CardNonce;
 
 public interface UnionPayTokenizeCallback {
-    void onResult(PaymentMethodNonce paymentMethodNonce, Exception error);
+    void onResult(@Nullable CardNonce cardNonce, @Nullable Exception error);
 }

@@ -5,6 +5,7 @@
 * Add a `client` for each feature:
   * `AmericanExpressClient`
   * `CardClient`
+  * `UnionPayClient`
 * Update Visa Checkout aar dependency to version `6.6.1`
 * Add `LocalPaymentTransaction` to represent Local Payment transactions
 * Create callback interfaces to enforce callback pattern:

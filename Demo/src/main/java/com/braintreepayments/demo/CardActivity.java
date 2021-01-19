@@ -14,19 +14,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressGetRewardsBalanceCallback;
+import com.braintreepayments.api.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.BraintreeDataCollectorCallback;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardTokenizeCallback;
 import com.braintreepayments.api.ConfigurationCallback;
 import com.braintreepayments.api.ThreeDSecureVerificationCallback;
-import com.braintreepayments.api.UnionPayFetchCapabilitiesCallback;
-import com.braintreepayments.api.UnionPayEnrollment;
+import com.braintreepayments.api.UnionPayClient;
 import com.braintreepayments.api.UnionPayEnrollCallback;
+import com.braintreepayments.api.UnionPayEnrollment;
+import com.braintreepayments.api.UnionPayFetchCapabilitiesCallback;
 import com.braintreepayments.api.UnionPayTokenizeCallback;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.ThreeDSecureLookupCallback;
-import com.braintreepayments.api.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.CardNonce;
@@ -74,6 +75,7 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
     private BraintreeClient braintreeClient;
     private AmericanExpressClient americanExpressClient;
     private CardClient cardClient;
+    private UnionPayClient unionPayClient;
 
     @Override
     protected void onCreate(Bundle onSaveInstanceState) {
@@ -130,6 +132,7 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
             braintreeClient = new BraintreeClient(authorization, this, RETURN_URL_SCHEME);
             americanExpressClient = new AmericanExpressClient(braintreeClient);
             cardClient = new CardClient(braintreeClient);
+            unionPayClient = new UnionPayClient(braintreeClient);
 
         } catch (InvalidArgumentException e) {
             e.printStackTrace();
@@ -140,7 +143,7 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
     protected void onBraintreeInitialized() {
         mPurchaseButton.setEnabled(true);
 
-        getConfiguration(new ConfigurationCallback() {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 mCardForm.cardRequired(true)
@@ -193,7 +196,7 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
 
                 if (!Settings.useTokenizationKey(getApplicationContext())) {
                     String cardNumber = mCardForm.getCardNumber();
-                    fetchUnionPayCapabilities(cardNumber, new UnionPayFetchCapabilitiesCallback() {
+                    unionPayClient.fetchCapabilities(cardNumber, new UnionPayFetchCapabilitiesCallback() {
                         @Override
                         public void onResult(UnionPayCapabilities capabilities, Exception error) {
                             if (capabilities != null) {
@@ -213,7 +216,7 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
         mSmsCode.setText("");
 
         final AppCompatActivity activity = this;
-        getConfiguration(new ConfigurationCallback() {
+        braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                 if (capabilities.isUnionPay()) {
@@ -262,7 +265,7 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
                 .mobileCountryCode(mCardForm.getCountryCode())
                 .mobilePhoneNumber(mCardForm.getMobileNumber());
 
-        enrollUnionPay(unionPayCardBuilder, new UnionPayEnrollCallback() {
+        unionPayClient.enroll(unionPayCardBuilder, new UnionPayEnrollCallback() {
             @Override
             public void onResult(@Nullable UnionPayEnrollment enrollment, @Nullable Exception error) {
                 mEnrollmentId = enrollment.getId();
@@ -295,11 +298,11 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
                     .smsCode(mSmsCode.getText().toString())
                     .enrollmentId(mEnrollmentId);
 
-            tokenizeUnionPay(unionPayCardBuilder, new UnionPayTokenizeCallback() {
+            unionPayClient.tokenize(unionPayCardBuilder, new UnionPayTokenizeCallback() {
                 @Override
-                public void onResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
-                    if (paymentMethodNonce != null) {
-                        handlePaymentMethodNonceCreated(paymentMethodNonce);
+                public void onResult(CardNonce cardNonce, Exception error) {
+                    if (cardNonce != null) {
+                        handlePaymentMethodNonceCreated(cardNonce);
                     } else {
                         onBraintreeError(error);
                     }

@@ -11,14 +11,12 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.PreferredPaymentMethodsCallback;
 import com.braintreepayments.api.interfaces.ThreeDSecureLookupCallback;
 import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.models.LocalPaymentRequest;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.ReadyForGooglePaymentRequest;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
-import com.braintreepayments.api.models.UnionPayCardBuilder;
 import com.visa.checkout.VisaPaymentSummary;
 
 import org.json.JSONException;
@@ -35,7 +33,6 @@ class BraintreeFullClient {
     PreferredPaymentMethods preferredPaymentMethods;
     ThreeDSecure threeDSecure;
     TokenizationClient tokenizationClient;
-    UnionPay unionPay;
     Venmo venmo;
     VisaCheckoutClient visaCheckoutClient;
 
@@ -50,7 +47,6 @@ class BraintreeFullClient {
         this.payPal = new PayPal(braintreeClient, returnUrlScheme);
         this.preferredPaymentMethods = new PreferredPaymentMethods(braintreeClient);
         this.threeDSecure = new ThreeDSecure(braintreeClient, returnUrlScheme, tokenizationClient);
-        this.unionPay = new UnionPay(braintreeClient, tokenizationClient);
         this.venmo = new Venmo(braintreeClient, tokenizationClient);
         this.visaCheckoutClient = new VisaCheckoutClient(braintreeClient, tokenizationClient);
     }
@@ -61,18 +57,6 @@ class BraintreeFullClient {
 
     public void collectDeviceData(Context context, BraintreeDataCollectorCallback callback) {
         dataCollector.collectDeviceData(context, callback);
-    }
-
-    public void fetchUnionPayCapabilities(Context context, String cardNumber, UnionPayFetchCapabilitiesCallback callback) {
-        unionPay.fetchCapabilities(context, cardNumber, callback);
-    }
-
-    public void enrollUnionPay(Context context, UnionPayCardBuilder unionPayCardBuilder, UnionPayEnrollCallback callback) {
-        unionPay.enroll(context, unionPayCardBuilder, callback);
-    }
-
-    public void tokenizeUnionPay(Context context, UnionPayCardBuilder unionPayCardBuilder, UnionPayTokenizeCallback callback) {
-        unionPay.tokenize(context, unionPayCardBuilder, callback);
     }
 
     public void performThreeDSecureVerification(FragmentActivity activity, ThreeDSecureRequest request, ThreeDSecureLookupCallback callback) {

@@ -11,7 +11,6 @@ import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.PreferredPaymentMethodsCallback;
 import com.braintreepayments.api.interfaces.ThreeDSecureLookupCallback;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
-import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.GooglePaymentRequest;
 import com.braintreepayments.api.models.LocalPaymentRequest;
 import com.braintreepayments.api.models.LocalPaymentResult;
@@ -20,7 +19,6 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ReadyForGooglePaymentRequest;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
-import com.braintreepayments.api.models.UnionPayCardBuilder;
 import com.braintreepayments.api.models.VenmoAccountNonce;
 import com.visa.checkout.VisaPaymentSummary;
 
@@ -65,18 +63,6 @@ public abstract class BraintreeActivity extends AppCompatActivity implements Bro
 
     protected void collectDeviceData(BraintreeDataCollectorCallback callback) {
         braintreeFullClient.collectDeviceData(this, callback);
-    }
-
-    protected void fetchUnionPayCapabilities(String cardNumber, UnionPayFetchCapabilitiesCallback callback) {
-        braintreeFullClient.fetchUnionPayCapabilities(this, cardNumber, callback);
-    }
-
-    protected void enrollUnionPay(UnionPayCardBuilder cardBuilder, UnionPayEnrollCallback callback) {
-        braintreeFullClient.enrollUnionPay(this, cardBuilder, callback);
-    }
-
-    protected void tokenizeUnionPay(UnionPayCardBuilder cardBuilder, UnionPayTokenizeCallback callback) {
-        braintreeFullClient.tokenizeUnionPay(this, cardBuilder, callback);
     }
 
     protected void performThreeDSecureVerification(ThreeDSecureRequest request, ThreeDSecureLookupCallback callback) {

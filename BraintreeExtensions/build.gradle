@@ -31,7 +31,6 @@ dependencies {
     api project(':PayPal')
     api project(':LocalPayment')
     api project(':ThreeDSecure')
-    api project(':UnionPay')
     api project(':Venmo')
 
     api 'com.braintreepayments.api:visa-checkout:4.0.0-SNAPSHOT'
