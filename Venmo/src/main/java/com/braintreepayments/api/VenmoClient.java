@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
@@ -17,7 +18,6 @@ import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.MetadataBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
-import com.braintreepayments.api.models.VenmoAccountBuilder;
 import com.braintreepayments.api.models.VenmoAccountNonce;
 import com.braintreepayments.api.models.VenmoConfiguration;
 
@@ -27,8 +27,7 @@ import org.json.JSONObject;
 /**
  * Used to create and tokenize Venmo accounts. For more information see the <a href="https://developers.braintreepayments.com/guides/venmo/overview">documentation</a>
  */
-// TODO: Rename class when API is finalized
-public class Venmo {
+public class VenmoClient {
 
     static final String VENMO_PACKAGE_NAME = "com.venmo";
     static final String APP_SWITCH_ACTIVITY = "controller.SetupMerchantActivity";
@@ -40,16 +39,17 @@ public class Venmo {
     static final String EXTRA_PAYMENT_METHOD_NONCE = "com.braintreepayments.api.EXTRA_PAYMENT_METHOD_NONCE";
     static final String EXTRA_USERNAME = "com.braintreepayments.api.EXTRA_USER_NAME";
 
-    private BraintreeClient braintreeClient;
-    private TokenizationClient tokenizationClient;
-    private VenmoSharedPrefsWriter sharedPrefsWriter;
-    private DeviceInspector deviceInspector;
+    private final BraintreeClient braintreeClient;
+    private final TokenizationClient tokenizationClient;
+    private final VenmoSharedPrefsWriter sharedPrefsWriter;
+    private final DeviceInspector deviceInspector;
 
-    public Venmo(BraintreeClient braintreeClient, TokenizationClient tokenizationClient) {
-        this(braintreeClient, tokenizationClient, new VenmoSharedPrefsWriter(), new DeviceInspector());
+    public VenmoClient(BraintreeClient braintreeClient) {
+        this(braintreeClient, new TokenizationClient(braintreeClient), new VenmoSharedPrefsWriter(), new DeviceInspector());
     }
 
-    public Venmo(BraintreeClient braintreeClient, TokenizationClient tokenizationClient, VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector) {
+    @VisibleForTesting
+    VenmoClient(BraintreeClient braintreeClient, TokenizationClient tokenizationClient, VenmoSharedPrefsWriter sharedPrefsWriter, DeviceInspector deviceInspector) {
        this.braintreeClient = braintreeClient;
        this.tokenizationClient = tokenizationClient;
        this.sharedPrefsWriter = sharedPrefsWriter;
@@ -72,7 +72,7 @@ public class Venmo {
     /**
      * Start the Pay With Venmo flow. This will app switch to the Venmo app.
      * <p>
-     * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to {@link VenmoAuthorizeAccountCallback#onResult(boolean, Exception)}
+     * If the Venmo app is not available, {@link AppSwitchNotAvailableException} will be sent to {@link VenmoAuthorizeAccountCallback#onResult(Exception)}
      *
      * @param activity {@link FragmentActivity}
      * @param vault If true, and you are using Client Token authorization with a customer ID, this payment method will
@@ -84,33 +84,38 @@ public class Venmo {
      * @param callback {@link VenmoAuthorizeAccountCallback}
      */
     public void authorizeAccount(final FragmentActivity activity, final boolean vault, final String profileId, final VenmoAuthorizeAccountCallback callback) {
+        braintreeClient.sendAnalyticsEvent("pay-with-venmo.selected");
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                braintreeClient.sendAnalyticsEvent("pay-with-venmo.selected");
-
-                String venmoProfileId = profileId;
-                if (TextUtils.isEmpty(venmoProfileId)) {
-                    venmoProfileId = configuration.getPayWithVenmo().getMerchantId();
+                if (configuration == null) {
+                    callback.onResult(error);
+                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
+                    return;
                 }
 
-                String exceptionMessage = "";
-                if (!configuration.getPayWithVenmo().isAccessTokenValid()) {
+                String exceptionMessage = null;
+                if (configuration.getPayWithVenmo() == null || !configuration.getPayWithVenmo().isAccessTokenValid()) {
                     exceptionMessage = "Venmo is not enabled";
                 } else if (!deviceInspector.isVenmoAppSwitchAvailable(activity)) {
                     exceptionMessage = "Venmo is not installed";
                 }
 
-                if (!TextUtils.isEmpty(exceptionMessage)) {
-                    callback.onResult(false, new AppSwitchNotAvailableException(exceptionMessage));
+                if (exceptionMessage != null) {
+                    callback.onResult(new AppSwitchNotAvailableException(exceptionMessage));
                     braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.failed");
-                } else {
-                    sharedPrefsWriter.persistVenmoVaultOption(activity, vault && braintreeClient.getAuthorization() instanceof ClientToken);
-
-                    activity.startActivityForResult(getLaunchIntent(activity, configuration.getPayWithVenmo(), venmoProfileId),
-                            BraintreeRequestCodes.VENMO);
-                    braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
+                    return;
                 }
+
+                sharedPrefsWriter.persistVenmoVaultOption(activity, vault && braintreeClient.getAuthorization() instanceof ClientToken);
+
+                String venmoProfileId = profileId;
+                if (TextUtils.isEmpty(venmoProfileId)) {
+                    venmoProfileId = configuration.getPayWithVenmo().getMerchantId();
+                }
+                activity.startActivityForResult(getLaunchIntent(configuration.getPayWithVenmo(), venmoProfileId),
+                        BraintreeRequestCodes.VENMO);
+                braintreeClient.sendAnalyticsEvent("pay-with-venmo.app-switch.started");
             }
         });
     }
@@ -153,7 +158,7 @@ public class Venmo {
         return new Intent().setComponent(new ComponentName(VENMO_PACKAGE_NAME, VENMO_PACKAGE_NAME + "." + APP_SWITCH_ACTIVITY));
     }
 
-    private Intent getLaunchIntent(Context context, VenmoConfiguration venmoConfiguration, String profileId) {
+    private Intent getLaunchIntent(VenmoConfiguration venmoConfiguration, String profileId) {
         Intent venmoIntent = getVenmoIntent()
                 .putExtra(EXTRA_MERCHANT_ID, profileId)
                 .putExtra(EXTRA_ACCESS_TOKEN, venmoConfiguration.getAccessToken())
@@ -173,5 +178,14 @@ public class Venmo {
         } catch (JSONException ignored) {}
 
         return venmoIntent;
+    }
+
+    /**
+     * Check if Venmo app switch is available.
+     * @param context Application context
+     * @return true if the Venmo app is installed, false otherwise
+     */
+    public boolean isVenmoAppSwitchAvailable(Context context) {
+        return deviceInspector.isVenmoAppSwitchAvailable(context);
     }
 }

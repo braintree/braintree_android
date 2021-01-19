@@ -14,10 +14,8 @@ import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.CardBuilder;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountBuilder;
-import com.braintreepayments.api.models.PaymentMethodBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.UnionPayCardBuilder;
-import com.braintreepayments.api.models.VenmoAccountBuilder;
 import com.braintreepayments.testutils.Fixtures;
 
 import org.json.JSONException;

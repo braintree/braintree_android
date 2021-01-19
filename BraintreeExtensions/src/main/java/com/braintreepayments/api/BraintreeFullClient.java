@@ -33,7 +33,7 @@ class BraintreeFullClient {
     PreferredPaymentMethods preferredPaymentMethods;
     ThreeDSecure threeDSecure;
     TokenizationClient tokenizationClient;
-    Venmo venmo;
+    VenmoClient venmoClient;
     VisaCheckoutClient visaCheckoutClient;
 
     public BraintreeFullClient(String authorization, Context context, String returnUrlScheme) throws InvalidArgumentException {
@@ -47,7 +47,7 @@ class BraintreeFullClient {
         this.payPal = new PayPal(braintreeClient, returnUrlScheme);
         this.preferredPaymentMethods = new PreferredPaymentMethods(braintreeClient);
         this.threeDSecure = new ThreeDSecure(braintreeClient, returnUrlScheme, tokenizationClient);
-        this.venmo = new Venmo(braintreeClient, tokenizationClient);
+        this.venmoClient = new VenmoClient(braintreeClient);
         this.visaCheckoutClient = new VisaCheckoutClient(braintreeClient, tokenizationClient);
     }
 
@@ -79,14 +79,6 @@ class BraintreeFullClient {
         preferredPaymentMethods.fetchPreferredPaymentMethods(context, callback);
     }
 
-    public void authorizeVenmoAccount(FragmentActivity activity, boolean vault, String profileId, VenmoAuthorizeAccountCallback callback) {
-        venmo.authorizeAccount(activity, vault, profileId, callback);
-    }
-
-    public boolean isVenmoAppSwitchEnabled(Context context) {
-        return deviceInspector.isVenmoAppSwitchAvailable(context);
-    }
-
     public void startLocalPayment(Context context, LocalPaymentRequest localPaymentRequest, LocalPaymentStartCallback callback) {
         localPayment.startPayment(context, localPaymentRequest, callback);
     }
@@ -105,10 +97,6 @@ class BraintreeFullClient {
 
     public void onThreeDSecureActivityResult(Context context, int resultCode, Intent data, ThreeDSecureResultCallback callback) {
         threeDSecure.onActivityResult(context, resultCode, data, callback);
-    }
-
-    public void onVenmoActivityResult(Context context, int resultCode, Intent data, VenmoOnActivityResultCallback callback) {
-        venmo.onActivityResult(context, resultCode, data, callback);
     }
 
     public void onVisaCheckoutActivityResult(Context context, int resultCode, Intent data, VisaCheckoutOnActivityResultCallback callback) {

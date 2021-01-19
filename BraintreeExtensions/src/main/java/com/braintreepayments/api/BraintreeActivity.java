@@ -85,14 +85,6 @@ public abstract class BraintreeActivity extends AppCompatActivity implements Bro
         braintreeFullClient.requestPayPalBillingAgreement(this, request, callback);
     }
 
-    protected void authorizeVenmoAccount(boolean vault, String profileId, VenmoAuthorizeAccountCallback callback) {
-        braintreeFullClient.authorizeVenmoAccount(this, vault, profileId, callback);
-    }
-
-    protected boolean isVenmoAppSwitchEnabled() {
-        return braintreeFullClient.isVenmoAppSwitchEnabled(this);
-    }
-
     protected void createVisaCheckoutProfile(VisaCheckoutCreateProfileBuilderCallback callback) {
         braintreeFullClient.createVisaCheckoutProfile(this, callback);
     }
@@ -152,14 +144,6 @@ public abstract class BraintreeActivity extends AppCompatActivity implements Bro
                     }
                 });
                 break;
-            case BraintreeRequestCodes.VENMO:
-                braintreeFullClient.onVenmoActivityResult(this, resultCode, data, new VenmoOnActivityResultCallback() {
-                    @Override
-                    public void onResult(VenmoAccountNonce nonce, Exception error) {
-                        onVenmoResult(nonce, error);
-                    }
-                });
-                break;
             case BraintreeRequestCodes.VISA_CHECKOUT:
                 braintreeFullClient.onVisaCheckoutActivityResult(this, resultCode, data, new VisaCheckoutOnActivityResultCallback() {
                     @Override
@@ -190,9 +174,6 @@ public abstract class BraintreeActivity extends AppCompatActivity implements Bro
     }
 
     protected void onPayPalResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
-    }
-
-    protected void onVenmoResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
     }
 
     protected void onLocalPaymentResult(LocalPaymentResult localPaymentResult, Exception error) {

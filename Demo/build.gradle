@@ -77,6 +77,7 @@ dependencies {
     implementation project(':AmericanExpress')
     implementation project(':Card')
     implementation project(':UnionPay')
+    implementation project(':Venmo')
     implementation project(':BraintreeExtensions')
 
     implementation 'com.visa.checkout:visacheckout-android-sdk:6.6.1@aar'

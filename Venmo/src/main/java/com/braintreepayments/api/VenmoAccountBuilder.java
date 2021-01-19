@@ -1,12 +1,15 @@
-package com.braintreepayments.api.models;
+package com.braintreepayments.api;
+
+import com.braintreepayments.api.models.PaymentMethodBuilder;
+import com.braintreepayments.api.models.VenmoAccountNonce;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class VenmoAccountBuilder extends PaymentMethodBuilder<VenmoAccountBuilder> {
 
-    private final String VENMO_ACCOUNT_KEY = "venmoAccount";
-    private final String NONCE_KEY = "nonce";
+    private static final String VENMO_ACCOUNT_KEY = "venmoAccount";
+    private static final String NONCE_KEY = "nonce";
 
     private String mNonce;
 

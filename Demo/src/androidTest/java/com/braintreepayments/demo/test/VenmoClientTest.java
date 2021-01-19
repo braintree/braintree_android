@@ -21,7 +21,7 @@ import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.junit.Assume.assumeTrue;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class VenmoTest extends TestHelper {
+public class VenmoClientTest extends TestHelper {
 
     private static final String VENMO_PACKAGE_NAME = "com.venmo";
 

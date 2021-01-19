@@ -12,7 +12,8 @@ import org.json.JSONObject;
  */
 public class VenmoAccountNonce extends PaymentMethodNonce implements Parcelable {
 
-    protected static final String TYPE = "VenmoAccount";
+    // TODO: Make package-private after PaymentMethodNonce is moved to com.braintreepayments.api
+    public static final String TYPE = "VenmoAccount";
     protected static final String API_RESOURCE_KEY = "venmoAccounts";
     private static final String VENMO_DETAILS_KEY = "details";
     private static final String VENMO_USERNAME_KEY = "username";

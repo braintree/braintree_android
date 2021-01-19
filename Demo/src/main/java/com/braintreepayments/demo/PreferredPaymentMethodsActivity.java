@@ -7,9 +7,13 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.PayPalRequestCallback;
 import com.braintreepayments.api.VenmoAuthorizeAccountCallback;
+import com.braintreepayments.api.VenmoClient;
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.PreferredPaymentMethodsCallback;
+import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.models.PreferredPaymentMethodsResult;
@@ -21,6 +25,8 @@ public class PreferredPaymentMethodsActivity extends BaseActivity {
     private Button mBillingAgreementButton;
     private Button mSinglePaymentButton;
     private Button mVenmoButton;
+
+    private VenmoClient venmoClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +50,16 @@ public class PreferredPaymentMethodsActivity extends BaseActivity {
     }
 
     @Override
-    protected void onBraintreeInitialized() {
-        mPreferredPaymentMethodsButton.setEnabled(true);
+    protected void onAuthorizationFetched() {
+        try {
+            Authorization authorization = Authorization.fromString(mAuthorization);
+            BraintreeClient braintreeClient = new BraintreeClient(authorization, this, RETURN_URL_SCHEME);
+            venmoClient = new VenmoClient(braintreeClient);
+            mPreferredPaymentMethodsButton.setEnabled(true);
+
+        } catch (InvalidArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     public void launchPreferredPaymentMethods(View v) {
@@ -92,9 +106,9 @@ public class PreferredPaymentMethodsActivity extends BaseActivity {
 
     public void launchVenmo(View v) {
         setProgressBarIndeterminateVisibility(true);
-        authorizeVenmoAccount(false, null, new VenmoAuthorizeAccountCallback() {
+        venmoClient.authorizeAccount(this,false, null, new VenmoAuthorizeAccountCallback() {
             @Override
-            public void onResult(boolean isAuthorized, Exception error) {
+            public void onResult(Exception error) {
                 if (error != null) {
                     onBraintreeError(error);
                 }
