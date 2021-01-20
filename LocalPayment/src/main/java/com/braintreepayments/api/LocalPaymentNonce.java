@@ -1,9 +1,11 @@
-package com.braintreepayments.api.models;
+package com.braintreepayments.api;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.braintreepayments.api.Json;
+import com.braintreepayments.api.models.PaymentMethodNonce;
+import com.braintreepayments.api.models.PostalAddress;
+import com.braintreepayments.api.models.PostalAddressParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,11 +13,10 @@ import org.json.JSONObject;
 /**
  * {@link PaymentMethodNonce} representing a local payment.
  *
- * @see {@link PaymentMethodNonce}
+ * @see PaymentMethodNonce
  */
-public class LocalPaymentResult extends PaymentMethodNonce implements Parcelable {
+public class LocalPaymentNonce extends PaymentMethodNonce implements Parcelable {
 
-    protected static final String TYPE = "PayPalAccount";
     protected static final String API_RESOURCE_KEY = "paypalAccounts";
 
     private static final String DETAILS_KEY = "details";
@@ -42,23 +43,23 @@ public class LocalPaymentResult extends PaymentMethodNonce implements Parcelable
     private String mType;
 
     /**
-     * Convert an API response to a {@link LocalPaymentResult}.
+     * Convert an API response to a {@link LocalPaymentNonce}.
      *
-     * @param json Raw JSON representation of a {@link LocalPaymentResult}.
-     * @return {@link LocalPaymentResult} for use in payment method selection UIs.
+     * @param json Raw JSON representation of a {@link LocalPaymentNonce}.
+     * @return {@link LocalPaymentNonce} for use in payment method selection UIs.
      */
-    public static LocalPaymentResult fromJson(String json) throws JSONException {
-        LocalPaymentResult localPaymentResult = new LocalPaymentResult();
-        localPaymentResult.fromJson(LocalPaymentResult.getJsonObjectForType(API_RESOURCE_KEY, new JSONObject(json)));
+    public static LocalPaymentNonce fromJson(String json) throws JSONException {
+        LocalPaymentNonce localPaymentNonce = new LocalPaymentNonce();
+        localPaymentNonce.fromJson(LocalPaymentNonce.getJsonObjectForType(API_RESOURCE_KEY, new JSONObject(json)));
 
-        return localPaymentResult;
+        return localPaymentNonce;
     }
 
     /**
-     * Generates a {@link LocalPaymentResult} from the {@link JSONObject}.
+     * Generates a {@link LocalPaymentNonce} from the {@link JSONObject}.
      *
-     * @param json {@link JSONObject} that holds properties for {@link LocalPaymentResult}.
-     * @throws JSONException
+     * @param json {@link JSONObject} that holds properties for {@link LocalPaymentNonce}.
+     * @throws JSONException if object could not be constructed from JSON.
      */
     protected void fromJson(JSONObject json) throws JSONException {
         super.fromJson(json);
@@ -169,7 +170,7 @@ public class LocalPaymentResult extends PaymentMethodNonce implements Parcelable
         return mPayerId;
     }
 
-    public LocalPaymentResult() {}
+    public LocalPaymentNonce() {}
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
@@ -185,7 +186,7 @@ public class LocalPaymentResult extends PaymentMethodNonce implements Parcelable
         dest.writeString(mType);
     }
 
-    private LocalPaymentResult(Parcel in) {
+    private LocalPaymentNonce(Parcel in) {
         super(in);
         mClientMetadataId = in.readString();
         mBillingAddress = in.readParcelable(PostalAddress.class.getClassLoader());
@@ -198,13 +199,13 @@ public class LocalPaymentResult extends PaymentMethodNonce implements Parcelable
         mType = in.readString();
     }
 
-    public static final Creator<LocalPaymentResult> CREATOR = new Creator<LocalPaymentResult>() {
-        public LocalPaymentResult createFromParcel(Parcel source) {
-            return new LocalPaymentResult(source);
+    public static final Creator<LocalPaymentNonce> CREATOR = new Creator<LocalPaymentNonce>() {
+        public LocalPaymentNonce createFromParcel(Parcel source) {
+            return new LocalPaymentNonce(source);
         }
 
-        public LocalPaymentResult[] newArray(int size) {
-            return new LocalPaymentResult[size];
+        public LocalPaymentNonce[] newArray(int size) {
+            return new LocalPaymentNonce[size];
         }
     };
 }

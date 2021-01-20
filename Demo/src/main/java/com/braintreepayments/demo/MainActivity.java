@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.braintreepayments.api.models.CardNonce;
 import com.braintreepayments.api.models.GooglePaymentCardNonce;
-import com.braintreepayments.api.models.LocalPaymentResult;
+import com.braintreepayments.api.LocalPaymentNonce;
 import com.braintreepayments.api.models.PayPalAccountNonce;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VenmoAccountNonce;
@@ -116,7 +116,7 @@ public class MainActivity extends BaseActivity {
     }
 
     public void launchLocalPayments(View v) {
-        Intent intent = new Intent(this, LocalPaymentsActivity.class);
+        Intent intent = new Intent(this, LocalPaymentActivity.class);
         startActivityForResult(intent, LOCAL_PAYMENTS_REQUEST);
     }
 
@@ -182,8 +182,8 @@ public class MainActivity extends BaseActivity {
             details = VisaCheckoutActivity.getDisplayString((VisaCheckoutNonce) mNonce);
         } else if (mNonce instanceof VenmoAccountNonce) {
             details = VenmoActivity.getDisplayString((VenmoAccountNonce) mNonce);
-        } else if (mNonce instanceof LocalPaymentResult) {
-            details = LocalPaymentsActivity.getDisplayString((LocalPaymentResult) mNonce);
+        } else if (mNonce instanceof LocalPaymentNonce) {
+            details = LocalPaymentActivity.getDisplayString((LocalPaymentNonce) mNonce);
         }
 
         mNonceDetails.setText(details);

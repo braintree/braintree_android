@@ -1,4 +1,6 @@
-package com.braintreepayments.api.models;
+package com.braintreepayments.api;
+
+import com.braintreepayments.api.models.PostalAddress;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,12 +33,10 @@ public class LocalPaymentRequest {
 
     private PostalAddress mAddress;
     private String mAmount;
-    private String mApprovalUrl;
     private String mCurrencyCode;
     private String mEmail;
     private String mGivenName;
     private String mMerchantAccountId;
-    private String mPaymentId;
     private String mPaymentType;
     private String mPaymentTypeCountryCode;
     private String mPhone;
@@ -59,17 +59,6 @@ public class LocalPaymentRequest {
      */
     public LocalPaymentRequest amount(String amount) {
         mAmount = amount;
-        return this;
-    }
-
-    /**
-     * @param approvalUrl The URL used for payment approval. Do not set this property.
-     * @return {@link LocalPaymentRequest}
-     */
-    public LocalPaymentRequest approvalUrl(String approvalUrl) {
-        if (mApprovalUrl == null) {
-            mApprovalUrl = approvalUrl;
-        }
         return this;
     }
 
@@ -117,17 +106,6 @@ public class LocalPaymentRequest {
      */
     public LocalPaymentRequest merchantAccountId(String merchantAccountId) {
         mMerchantAccountId = merchantAccountId;
-        return this;
-    }
-
-    /**
-     * @param paymentId The ID of the local payment after creation. Do not set this property.
-     * @return {@link LocalPaymentRequest}
-     */
-    public LocalPaymentRequest paymentId(String paymentId) {
-        if (mPaymentId == null) {
-            mPaymentId = paymentId;
-        }
         return this;
     }
 
@@ -189,10 +167,6 @@ public class LocalPaymentRequest {
         return mAmount;
     }
 
-    public String getApprovalUrl() {
-        return mApprovalUrl;
-    }
-
     public String getBic() {
         return mBankIdentificationCode;
     }
@@ -211,10 +185,6 @@ public class LocalPaymentRequest {
 
     public String getMerchantAccountId() {
         return mMerchantAccountId;
-    }
-
-    public String getPaymentId() {
-        return mPaymentId;
     }
 
     public String getPaymentType() {

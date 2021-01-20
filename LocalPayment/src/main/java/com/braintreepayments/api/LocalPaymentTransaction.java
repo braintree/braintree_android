@@ -1,7 +1,5 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.models.LocalPaymentRequest;
-
 public class LocalPaymentTransaction {
 
     private final LocalPaymentRequest request;
@@ -14,15 +12,24 @@ public class LocalPaymentTransaction {
         this.paymentId = paymentId;
     }
 
-    LocalPaymentRequest getRequest() {
+    /**
+     * @return The original request used to create the local payment transaction.
+     */
+    public LocalPaymentRequest getRequest() {
         return request;
     }
 
-    String getApprovalUrl() {
+    /**
+     * @return The URL used for payment approval.
+     */
+    public String getApprovalUrl() {
         return approvalUrl;
     }
 
-    String getPaymentId() {
+    /**
+     * @return The ID of the local payment after creation.
+     */
+    public String getPaymentId() {
         return paymentId;
     }
 }

@@ -1,6 +1,9 @@
-package com.braintreepayments.api.models;
+package com.braintreepayments.api;
 
 import android.net.Uri;
+
+import com.braintreepayments.api.LocalPaymentRequest;
+import com.braintreepayments.api.models.PostalAddress;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,23 +66,6 @@ public class LocalPaymentRequestUnitTest {
         String expectedReturnUrl = Uri.parse("http://success-url.com").toString();
         assertEquals(expectedCancelUrl, json.getString("cancelUrl"));
         assertEquals(expectedReturnUrl, json.getString("returnUrl"));
-    }
-
-    @Test
-    public void setsApprovalUrl_andPaymentId_once() {
-
-        LocalPaymentRequest request = new LocalPaymentRequest()
-                .paymentId("pid")
-                .approvalUrl("aUrl");
-
-        assertEquals("aUrl", request.getApprovalUrl());
-        assertEquals("pid", request.getPaymentId());
-
-        request.paymentId("differentPaymentId");
-        request.approvalUrl("differentUrl");
-
-        assertEquals("aUrl", request.getApprovalUrl());
-        assertEquals("pid", request.getPaymentId());
     }
 }
 

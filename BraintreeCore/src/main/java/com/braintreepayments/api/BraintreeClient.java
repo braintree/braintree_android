@@ -175,6 +175,10 @@ public class BraintreeClient {
         }
     }
 
+    String getReturnUrlScheme() {
+        return browserSwitchClient.getReturnUrlScheme();
+    }
+
     private static boolean isAnalyticsEnabled(Configuration configuration) {
         return configuration != null && configuration.getAnalytics() != null && configuration.getAnalytics().isEnabled();
     }

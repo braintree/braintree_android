@@ -12,8 +12,6 @@ import com.braintreepayments.api.interfaces.PreferredPaymentMethodsCallback;
 import com.braintreepayments.api.interfaces.ThreeDSecureLookupCallback;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.GooglePaymentRequest;
-import com.braintreepayments.api.models.LocalPaymentRequest;
-import com.braintreepayments.api.models.LocalPaymentResult;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ReadyForGooglePaymentRequest;
@@ -51,14 +49,6 @@ public abstract class BraintreeActivity extends AppCompatActivity implements Bro
 
     protected void getConfiguration(ConfigurationCallback callback) {
         braintreeFullClient.getConfiguration(this, callback);
-    }
-
-    protected void startLocalPayment(LocalPaymentRequest request, LocalPaymentStartCallback callback) {
-        braintreeFullClient.startLocalPayment(this, request, callback);
-    }
-
-    protected void approveLocalPayment(LocalPaymentTransaction transaction) throws JSONException, BrowserSwitchException {
-        braintreeFullClient.approveLocalPayment(this, transaction);
     }
 
     protected void collectDeviceData(BraintreeDataCollectorCallback callback) {
@@ -120,14 +110,6 @@ public abstract class BraintreeActivity extends AppCompatActivity implements Bro
                     }
                 });
                 break;
-            case BraintreeRequestCodes.LOCAL_PAYMENT:
-                braintreeFullClient.onLocalPaymentBrowserSwitchResult(this, browserSwitchResult, uri, new LocalPaymentBrowserSwitchResultCallback() {
-                    @Override
-                    public void onResult(@Nullable LocalPaymentResult result, @Nullable Exception error) {
-                        onLocalPaymentResult(result, error);
-                    }
-                });
-                break;
         }
     }
 
@@ -174,9 +156,6 @@ public abstract class BraintreeActivity extends AppCompatActivity implements Bro
     }
 
     protected void onPayPalResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
-    }
-
-    protected void onLocalPaymentResult(LocalPaymentResult localPaymentResult, Exception error) {
     }
 
     protected void onGooglePayResult(PaymentMethodNonce paymentMethodNonce, Exception error) {

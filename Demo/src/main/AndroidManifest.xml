@@ -42,7 +42,7 @@
             android:name=".VisaCheckoutActivity"
             android:label="@string/visa_checkout_button" />
         <activity
-            android:name=".LocalPaymentsActivity"
+            android:name=".LocalPaymentActivity"
             android:label="@string/ideal_button" />
         <activity
             android:name=".PreferredPaymentMethodsActivity"

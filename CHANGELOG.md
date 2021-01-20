@@ -5,6 +5,7 @@
 * Add a `client` for each feature:
   * `AmericanExpressClient`
   * `CardClient`
+  * `LocalPaymentClient`
   * `UnionPayClient`
   * `VenmoClient`
 * Update Visa Checkout aar dependency to version `6.6.1`
@@ -38,6 +39,7 @@
   * Remove `AnalyticsIntentService`
   * Remove `AnalyticsSender`
   * Rename `core` module to `shared-utils`
+  * Rename `LocalPaymentResult` to `LocalPaymentNonce`
   * Rename `braintree` module to `braintree-core`
   * Create `american-express` module
   * Create `card` module
@@ -48,6 +50,7 @@
   * Delete PayPal `data-collector` module
   * Delete PayPal `paypal-one-touch` module
   * Remove `AmericanExpressRewardsBalance` default constructor
+  * Remove `approvalUrl` and `paymentId` properties from `LocalPaymentRequest`
 
 ## 3.17.0
 

@@ -12,7 +12,6 @@ import com.braintreepayments.api.interfaces.PreferredPaymentMethodsCallback;
 import com.braintreepayments.api.interfaces.ThreeDSecureLookupCallback;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.GooglePaymentRequest;
-import com.braintreepayments.api.models.LocalPaymentRequest;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.ReadyForGooglePaymentRequest;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
@@ -28,12 +27,10 @@ class BraintreeFullClient {
     DataCollector dataCollector;
     DeviceInspector deviceInspector;
     GooglePaymentClient googlePaymentClient;
-    LocalPayment localPayment;
     PayPal payPal;
     PreferredPaymentMethods preferredPaymentMethods;
     ThreeDSecure threeDSecure;
     TokenizationClient tokenizationClient;
-    VenmoClient venmoClient;
     VisaCheckoutClient visaCheckoutClient;
 
     public BraintreeFullClient(String authorization, Context context, String returnUrlScheme) throws InvalidArgumentException {
@@ -43,11 +40,9 @@ class BraintreeFullClient {
 
         this.deviceInspector = new DeviceInspector();
         this.googlePaymentClient = new GooglePaymentClient(braintreeClient);
-        this.localPayment = new LocalPayment(returnUrlScheme, braintreeClient);
         this.payPal = new PayPal(braintreeClient, returnUrlScheme);
         this.preferredPaymentMethods = new PreferredPaymentMethods(braintreeClient);
         this.threeDSecure = new ThreeDSecure(braintreeClient, returnUrlScheme, tokenizationClient);
-        this.venmoClient = new VenmoClient(braintreeClient);
         this.visaCheckoutClient = new VisaCheckoutClient(braintreeClient, tokenizationClient);
     }
 
@@ -79,14 +74,6 @@ class BraintreeFullClient {
         preferredPaymentMethods.fetchPreferredPaymentMethods(context, callback);
     }
 
-    public void startLocalPayment(Context context, LocalPaymentRequest localPaymentRequest, LocalPaymentStartCallback callback) {
-        localPayment.startPayment(context, localPaymentRequest, callback);
-    }
-
-    public void approveLocalPayment(FragmentActivity activity, LocalPaymentTransaction transaction) throws JSONException, BrowserSwitchException {
-        localPayment.approveTransaction(activity, transaction);
-    }
-
     public void onPayPalBrowserSwitchResult(Context context, BrowserSwitchResult browserSwitchResult, @Nullable Uri uri, PayPalBrowserSwitchResultCallback callback) {
         payPal.onBrowserSwitchResult(context, browserSwitchResult, uri, callback);
     }
@@ -101,10 +88,6 @@ class BraintreeFullClient {
 
     public void onVisaCheckoutActivityResult(Context context, int resultCode, Intent data, VisaCheckoutOnActivityResultCallback callback) {
         visaCheckoutClient.onActivityResult(context, resultCode, data, callback);
-    }
-
-    public void onLocalPaymentBrowserSwitchResult(Context context, BrowserSwitchResult browserSwitchResult, @Nullable Uri uri, LocalPaymentBrowserSwitchResultCallback callback) {
-        localPayment.onBrowserSwitchResult(context, browserSwitchResult, uri, callback);
     }
 
     public void onGooglePayActivityResult(FragmentActivity activity, int resultCode, Intent data, GooglePaymentOnActivityResultCallback callback) {
