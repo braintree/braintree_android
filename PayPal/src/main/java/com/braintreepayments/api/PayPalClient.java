@@ -1,27 +1,23 @@
 package com.braintreepayments.api;
 
-import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
 import com.braintreepayments.api.exceptions.BraintreeException;
-import com.braintreepayments.api.exceptions.PayPalBrowserSwitchException;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PayPalAccountNonce;
-import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-// TODO: Rename class when API is finalized
-public class PayPal {
+public class PayPalClient {
 
     private final BraintreeClient braintreeClient;
     private final TokenizationClient tokenizationClient;
@@ -29,12 +25,12 @@ public class PayPal {
 
     private final PayPalInternalClient internalPayPalClient;
 
-    public PayPal(BraintreeClient braintreeClient, String returnUrlScheme) {
+    public PayPalClient(BraintreeClient braintreeClient, String returnUrlScheme) {
         this(braintreeClient, returnUrlScheme, new TokenizationClient(braintreeClient), new PayPalInternalClient(braintreeClient, returnUrlScheme));
     }
 
-    // TODO: Make package-private
-    public PayPal(BraintreeClient braintreeClient, String returnUrlScheme, TokenizationClient tokenizationClient, PayPalInternalClient internalPayPalClient) {
+    @VisibleForTesting
+    PayPalClient(BraintreeClient braintreeClient, String returnUrlScheme, TokenizationClient tokenizationClient, PayPalInternalClient internalPayPalClient) {
         this.braintreeClient = braintreeClient;
         this.returnUrlScheme = returnUrlScheme;
         this.tokenizationClient = tokenizationClient;
@@ -45,7 +41,7 @@ public class PayPal {
         return (configuration == null || !configuration.isPayPalEnabled());
     }
 
-    boolean manifestInvalid(Context context) {
+    private boolean manifestInvalid() {
         return !braintreeClient.isUrlSchemeDeclaredInAndroidManifest(
                 returnUrlScheme, BraintreeBrowserSwitchActivity.class);
     }
@@ -64,7 +60,7 @@ public class PayPal {
                 "for the correct configuration");
     }
 
-    public void requestOneTimePayment(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalRequestCallback callback) {
+    public void requestOneTimePayment(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
         if (payPalRequest.getAmount() != null) {
             braintreeClient.sendAnalyticsEvent("paypal.single-payment.selected");
             if (payPalRequest.shouldOfferCredit()) {
@@ -80,14 +76,14 @@ public class PayPal {
                 public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
                     if (payPalConfigInvalid(configuration)) {
                         Exception configInvalidError = createPayPalConfigInvalidException();
-                        callback.onResult(false, configInvalidError);
+                        callback.onResult(configInvalidError);
                         return;
                     }
 
-                    if (manifestInvalid(activity)) {
+                    if (manifestInvalid()) {
                         braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
                         Exception manifestInvalidError = createManifestInvalidError();
-                        callback.onResult(false, manifestInvalidError);
+                        callback.onResult(manifestInvalidError);
                         return;
                     }
                     sendCheckoutRequest(activity, payPalRequest, false, callback);
@@ -95,11 +91,11 @@ public class PayPal {
             });
 
         } else {
-            callback.onResult(false, new BraintreeException("An amount must be specified for the Single Payment flow."));
+            callback.onResult(new BraintreeException("An amount must be specified for the Single Payment flow."));
         }
     }
 
-    public void requestBillingAgreement(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalRequestCallback callback) {
+    public void requestBillingAgreement(final FragmentActivity activity, final PayPalRequest payPalRequest, final PayPalFlowStartedCallback callback) {
         if (payPalRequest.getAmount() == null) {
             braintreeClient.sendAnalyticsEvent("paypal.billing-agreement.selected");
             if (payPalRequest.shouldOfferCredit()) {
@@ -111,14 +107,14 @@ public class PayPal {
                 public void onResult(@Nullable final Configuration configuration, @Nullable Exception error) {
                     if (payPalConfigInvalid(configuration)) {
                         Exception configInvalidError = createPayPalConfigInvalidException();
-                        callback.onResult(false, configInvalidError);
+                        callback.onResult(configInvalidError);
                         return;
                     }
 
-                    if (manifestInvalid(activity)) {
+                    if (manifestInvalid()) {
                         braintreeClient.sendAnalyticsEvent("paypal.invalid-manifest");
                         Exception manifestInvalidError = createManifestInvalidError();
-                        callback.onResult(false, manifestInvalidError);
+                        callback.onResult(manifestInvalidError);
                         return;
                     }
 
@@ -126,11 +122,11 @@ public class PayPal {
                 }
             });
         } else {
-            callback.onResult(false, new BraintreeException("There must be no amount specified for the Billing Agreement flow"));
+            callback.onResult(new BraintreeException("There must be no amount specified for the Billing Agreement flow"));
         }
     }
 
-    private void sendCheckoutRequest(final FragmentActivity activity, final PayPalRequest payPalRequest, final boolean isBillingAgreement, final PayPalRequestCallback callback) {
+    private void sendCheckoutRequest(final FragmentActivity activity, final PayPalRequest payPalRequest, final boolean isBillingAgreement, final PayPalFlowStartedCallback callback) {
         internalPayPalClient.sendRequest(activity, payPalRequest, isBillingAgreement, new PayPalInternalClientCallback() {
             @Override
             public void onResult(PayPalResponse payPalResponse, Exception error) {
@@ -140,12 +136,12 @@ public class PayPal {
 
                     try {
                         startBrowserSwitch(activity, payPalResponse);
-                        callback.onResult(true, null);
+                        callback.onResult(null);
                     } catch (JSONException | BrowserSwitchException exception) {
-                        callback.onResult(false, exception);
+                        callback.onResult(exception);
                     }
                 } else {
-                    callback.onResult(false, error);
+                    callback.onResult(error);
                 }
             }
         });
@@ -176,8 +172,7 @@ public class PayPal {
         return isBillingAgreement ? "paypal.billing-agreement" : "paypal.single-payment";
     }
 
-    public void onBrowserSwitchResult(final Context context, BrowserSwitchResult browserSwitchResult, @Nullable Uri uri, final PayPalBrowserSwitchResultCallback callback) {
-
+    public void onBrowserSwitchResult(BrowserSwitchResult browserSwitchResult, @Nullable Uri uri, final PayPalBrowserSwitchResultCallback callback) {
         JSONObject metadata = browserSwitchResult.getRequestMetadata();
         String clientMetadataId = Json.optString(metadata, "client-metadata-id", null);
         String merchantAccountId = Json.optString(metadata, "merchant-account-id", null);
@@ -198,12 +193,12 @@ public class PayPal {
                 break;
             case BrowserSwitchResult.STATUS_OK:
                 try {
-                    JSONObject oneTouchCoreData = createOneTouchPayload(uri, successUrl, approvalUrl, tokenKey);
+                    JSONObject urlResponseData = parseUrlResponseData(uri, successUrl, approvalUrl, tokenKey);
                     PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder()
                             .clientMetadataId(clientMetadataId)
                             .intent(payPalIntent)
                             .source("paypal-browser")
-                            .oneTouchCoreData(oneTouchCoreData);
+                            .urlResponseData(urlResponseData);
 
                     if (merchantAccountId != null) {
                         payPalAccountBuilder.merchantAccountId(merchantAccountId);
@@ -216,12 +211,14 @@ public class PayPal {
                     tokenizationClient.tokenize(payPalAccountBuilder, new PaymentMethodNonceCallback() {
                         @Override
                         public void success(PaymentMethodNonce paymentMethodNonce) {
-                            if (paymentMethodNonce instanceof PayPalAccountNonce &&
-                                    ((PayPalAccountNonce) paymentMethodNonce).getCreditFinancing() != null) {
-                                braintreeClient.sendAnalyticsEvent("paypal.credit.accepted");
-                            }
+                            if (paymentMethodNonce instanceof PayPalAccountNonce) {
+                                PayPalAccountNonce payPalAccountNonce = (PayPalAccountNonce) paymentMethodNonce;
 
-                            callback.onResult(paymentMethodNonce, null);
+                                if (payPalAccountNonce.getCreditFinancing() != null) {
+                                    braintreeClient.sendAnalyticsEvent("paypal.credit.accepted");
+                                }
+                                callback.onResult(payPalAccountNonce, null);
+                            }
                         }
 
                         @Override
@@ -240,7 +237,7 @@ public class PayPal {
         }
     }
 
-    public JSONObject createOneTouchPayload(Uri uri, String successUrl, String approvalUrl, String tokenKey) throws JSONException, PayPalBrowserSwitchException {
+    private JSONObject parseUrlResponseData(Uri uri, String successUrl, String approvalUrl, String tokenKey) throws JSONException, PayPalBrowserSwitchException {
         String status = uri.getLastPathSegment();
 
         if (!Uri.parse(successUrl).getLastPathSegment().equals(status)) {
@@ -253,16 +250,16 @@ public class PayPal {
             JSONObject client = new JSONObject();
             client.put("environment", null);
 
-            JSONObject oneTouchData = new JSONObject();
-            oneTouchData.put("client", client);
+            JSONObject urlResponseData = new JSONObject();
+            urlResponseData.put("client", client);
 
             JSONObject response = new JSONObject();
             response.put("webURL", uri.toString());
-            oneTouchData.put("response", response);
+            urlResponseData.put("response", response);
 
-            oneTouchData.put("response_type", "web");
+            urlResponseData.put("response_type", "web");
 
-            return oneTouchData;
+            return urlResponseData;
         } else {
             throw new PayPalBrowserSwitchException("The response contained inconsistent data.");
         }

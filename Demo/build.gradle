@@ -77,6 +77,7 @@ dependencies {
     implementation project(':AmericanExpress')
     implementation project(':Card')
     implementation project(':LocalPayment')
+    implementation project(':PayPal')
     implementation project(':UnionPay')
     implementation project(':Venmo')
     implementation project(':BraintreeExtensions')

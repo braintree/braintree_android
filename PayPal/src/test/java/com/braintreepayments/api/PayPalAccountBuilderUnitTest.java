@@ -1,4 +1,6 @@
-package com.braintreepayments.api.models;
+package com.braintreepayments.api;
+
+import com.braintreepayments.api.models.MetadataBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,6 +13,7 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class PayPalAccountBuilderUnitTest {
@@ -69,7 +72,7 @@ public class PayPalAccountBuilderUnitTest {
         String json = paypalAccountBuilder.build();
         JSONObject builtAccount = new JSONObject(json).getJSONObject(PAYPAL_KEY);
 
-        assertEquals(true, builtAccount.getJSONObject("options").getBoolean("validate"));
+        assertTrue(builtAccount.getJSONObject("options").getBoolean("validate"));
     }
 
     @Test
@@ -83,8 +86,8 @@ public class PayPalAccountBuilderUnitTest {
     }
 
     @Test
-    public void build_addsAllOneTouchCoreData() throws JSONException {
-        JSONObject oneTouchCoreData = new JSONObject()
+    public void build_addsAllUrlResponseData() throws JSONException {
+        JSONObject urlResponseData = new JSONObject()
                 .put("data1", "data1")
                 .put("data2", "data2")
                 .put("data3", "data3");
@@ -93,11 +96,11 @@ public class PayPalAccountBuilderUnitTest {
         JSONObject paymentMethodNonceJson = new JSONObject();
 
         PayPalAccountBuilder payPalAccountBuilder = new PayPalAccountBuilder()
-                .oneTouchCoreData(oneTouchCoreData);
+                .urlResponseData(urlResponseData);
 
         payPalAccountBuilder.build(base, paymentMethodNonceJson);
 
-        JSONAssert.assertEquals(oneTouchCoreData, paymentMethodNonceJson, JSONCompareMode.NON_EXTENSIBLE);
+        JSONAssert.assertEquals(urlResponseData, paymentMethodNonceJson, JSONCompareMode.NON_EXTENSIBLE);
         JSONAssert.assertEquals(paymentMethodNonceJson, base.getJSONObject("paypalAccount"),
                 JSONCompareMode.NON_EXTENSIBLE);
     }

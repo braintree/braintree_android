@@ -1,6 +1,9 @@
-package com.braintreepayments.api.models;
+package com.braintreepayments.api;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
+
+import com.braintreepayments.api.models.PostalAddress;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -70,35 +73,32 @@ public class PayPalRequest {
     private boolean mOfferCredit;
     private boolean mOfferPayLater;
     private String mMerchantAccountId;
-    private ArrayList<PayPalLineItem> mLineItems = new ArrayList<>();
+    private final ArrayList<PayPalLineItem> mLineItems = new ArrayList<>();
 
     /**
-     * Constructs a description of a PayPal checkout for Single Payment and Billing Agreements.
-     *
-     * @note This amount may differ slight from the transaction amount. The exact decline rules
-     *        for mismatches between this client-side amount and the final amount in the Transaction
-     *        are determined by the gateway.
-     *
-     * @param amount The transaction amount in currency units (as
-     * determined by setCurrencyCode). For example, "1.20" corresponds to one dollar and twenty cents.
-     * Amount must be a non-negative number, may optionally contain exactly 2 decimal places separated
-     * by '.', optional thousands separator ',', limited to 7 digits before the decimal point.
+     * Constructs a request for PayPal Single Payment and Billing Agreement flows.
      */
-    public PayPalRequest(String amount) {
-        mAmount = amount;
+    public PayPalRequest() {
         mShippingAddressRequired = false;
         mOfferCredit = false;
         mOfferPayLater = false;
     }
 
     /**
-     * Constructs a {@link PayPalRequest} with a null amount.
+     * This amount may differ slightly from the transaction amount. The exact decline rules
+     * for mismatches between this client-side amount and the final amount in the Transaction
+     * are determined by the gateway.
+     *
+     * @param amount The transaction amount in currency units (as * determined by setCurrencyCode).
+     * For example, "1.20" corresponds to one dollar and twenty cents. Amount must be a non-negative
+     * number, may optionally contain exactly 2 decimal places separated by '.', optional
+     * thousands separator ',', limited to 7 digits before the decimal point.
+     *
+     * This value must be null for Billing Agreements.
      */
-    public PayPalRequest() {
-        mAmount = null;
-        mShippingAddressRequired = false;
-        mOfferCredit = false;
-        mOfferPayLater = false;
+    public PayPalRequest amount(@Nullable String amount) {
+        mAmount = amount;
+        return this;
     }
 
     /**

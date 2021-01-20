@@ -6,7 +6,6 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCallback;
 import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.PayPalAccountBuilder;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.test.BraintreeActivityTestRule;
 import com.braintreepayments.api.test.TestActivity;
@@ -48,9 +47,9 @@ public class TokenizationClientTest {
 
         TokenizationClient tokenizationClient = new TokenizationClient(braintreeClient);
 
-        JSONObject otcJson = new JSONObject(Fixtures.PAYPAL_OTC_RESPONSE);
+        JSONObject urlResponseData = new JSONObject(Fixtures.PAYPAL_OTC_RESPONSE);
         PayPalAccountBuilder paypalAccountBuilder =
-                new PayPalAccountBuilder().oneTouchCoreData(otcJson);
+                new PayPalAccountBuilder().urlResponseData(urlResponseData);
 
         tokenizationClient.tokenize(paypalAccountBuilder, new PaymentMethodNonceCallback() {
             @Override

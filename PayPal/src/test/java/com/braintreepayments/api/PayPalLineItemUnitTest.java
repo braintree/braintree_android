@@ -1,4 +1,4 @@
-package com.braintreepayments.api.models;
+package com.braintreepayments.api;
 
 import org.json.JSONException;
 import org.json.JSONObject;

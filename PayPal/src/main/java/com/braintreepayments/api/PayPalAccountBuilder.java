@@ -1,8 +1,10 @@
-package com.braintreepayments.api.models;
+package com.braintreepayments.api;
 
 import android.content.Context;
 
-import com.braintreepayments.api.models.PayPalRequest.PayPalPaymentIntent;
+import com.braintreepayments.api.PayPalRequest.PayPalPaymentIntent;
+import com.braintreepayments.api.models.PayPalAccountNonce;
+import com.braintreepayments.api.models.PaymentMethodBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,7 +22,7 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
     private static final String MERCHANT_ACCOUNT_ID_KEY = "merchant_account_id";
 
     private String mClientMetadataId;
-    private JSONObject mOneTouchCoreData = new JSONObject();
+    private JSONObject mUrlResponseData = new JSONObject();
     private String mIntent;
     private String mMerchantAccountId;
 
@@ -41,15 +43,17 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
     }
 
     /**
-     * Used by PayPal wrappers to construct a request to create a PayPal account.
+     * Response data from callback url. Used by PayPal wrappers to construct
+     * a request to create a PayPal account.
      *
-     * @note Merge the OTC data into the payment method json.
-     * @param otcData The data provided by OneTouchCore.
+     * Response data will be merged into the payment method json on {@link #build()}
+     *
+     * @param urlResponseData The data parsed from the PayPal callback url.
      * @return {@link PayPalAccountBuilder}
      */
-    public PayPalAccountBuilder oneTouchCoreData(JSONObject otcData) {
-        if (otcData != null) {
-            mOneTouchCoreData = otcData;
+    public PayPalAccountBuilder urlResponseData(JSONObject urlResponseData) {
+        if (urlResponseData != null) {
+            mUrlResponseData = urlResponseData;
         }
         return this;
     }
@@ -81,10 +85,10 @@ public class PayPalAccountBuilder extends PaymentMethodBuilder<PayPalAccountBuil
         paymentMethodNonceJson.put(CORRELATION_ID_KEY, mClientMetadataId);
         paymentMethodNonceJson.put(INTENT_KEY, mIntent);
 
-        Iterator<String> otcKeyIterator = mOneTouchCoreData.keys();
-        while (otcKeyIterator.hasNext()) {
-            String otcKey = otcKeyIterator.next();
-            paymentMethodNonceJson.put(otcKey, mOneTouchCoreData.get(otcKey));
+        Iterator<String> urlResponseDataKeyIterator = mUrlResponseData.keys();
+        while (urlResponseDataKeyIterator.hasNext()) {
+            String key = urlResponseDataKeyIterator.next();
+            paymentMethodNonceJson.put(key, mUrlResponseData.get(key));
         }
 
         if(mMerchantAccountId != null) {

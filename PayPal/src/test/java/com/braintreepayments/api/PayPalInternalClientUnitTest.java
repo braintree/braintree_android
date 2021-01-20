@@ -3,12 +3,9 @@ package com.braintreepayments.api;
 import android.content.Context;
 
 import com.braintreepayments.MockBraintreeClientBuilder;
-import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PayPalLineItem;
-import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.models.TokenizationKey;
 import com.braintreepayments.testutils.Fixtures;
@@ -38,7 +35,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-public class PayPalInternalClientTest {
+public class PayPalInternalClientUnitTest {
 
     private Context context;
 
@@ -60,7 +57,7 @@ public class PayPalInternalClientTest {
     }
 
     @Test
-    public void sendRequest_withBillingAgreement_sendsAllParameters() throws InvalidArgumentException, JSONException {
+    public void sendRequest_withBillingAgreement_sendsAllParameters() throws JSONException {
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .configuration(Configuration.fromJson(Fixtures.CONFIGURATION_WITH_LIVE_PAYPAL))
                 .authorization(clientToken)
@@ -147,7 +144,8 @@ public class PayPalInternalClientTest {
         item.setUnitTaxAmount("1.50");
         item.setUrl("http://example.com");
 
-        PayPalRequest payPalRequest = new PayPalRequest("1.00")
+        PayPalRequest payPalRequest = new PayPalRequest()
+                .amount("1.00")
                 .currencyCode("USD")
                 .intent("authorize")
                 .merchantAccountId("sample-merchant-account-id")
@@ -529,7 +527,7 @@ public class PayPalInternalClientTest {
     }
 
     @Test
-    public void sendRequest_propagatesGetConfigurationErrors() throws JSONException {
+    public void sendRequest_propagatesGetConfigurationErrors() {
         Exception configurationError = new Exception("configuration error");
         BraintreeClient braintreeClient = new MockBraintreeClientBuilder()
                 .authorization(clientToken)

@@ -12,7 +12,6 @@ import com.braintreepayments.api.interfaces.PreferredPaymentMethodsCallback;
 import com.braintreepayments.api.interfaces.ThreeDSecureLookupCallback;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.GooglePaymentRequest;
-import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.ReadyForGooglePaymentRequest;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
@@ -27,7 +26,6 @@ class BraintreeFullClient {
     DataCollector dataCollector;
     DeviceInspector deviceInspector;
     GooglePaymentClient googlePaymentClient;
-    PayPal payPal;
     PreferredPaymentMethods preferredPaymentMethods;
     ThreeDSecure threeDSecure;
     TokenizationClient tokenizationClient;
@@ -40,7 +38,6 @@ class BraintreeFullClient {
 
         this.deviceInspector = new DeviceInspector();
         this.googlePaymentClient = new GooglePaymentClient(braintreeClient);
-        this.payPal = new PayPal(braintreeClient, returnUrlScheme);
         this.preferredPaymentMethods = new PreferredPaymentMethods(braintreeClient);
         this.threeDSecure = new ThreeDSecure(braintreeClient, returnUrlScheme, tokenizationClient);
         this.visaCheckoutClient = new VisaCheckoutClient(braintreeClient, tokenizationClient);
@@ -62,20 +59,8 @@ class BraintreeFullClient {
         threeDSecure.continuePerformVerification(activity, request, threeDSecureLookup, callback);
     }
 
-    public void requestPayPalOneTimePayment(FragmentActivity activity, PayPalRequest request, PayPalRequestCallback callback) {
-        payPal.requestOneTimePayment(activity, request, callback);
-    }
-
-    public void requestPayPalBillingAgreement(FragmentActivity activity, PayPalRequest request, PayPalRequestCallback callback) {
-        payPal.requestBillingAgreement(activity, request, callback);
-    }
-
     public void fetchPreferredPaymentMethods(Context context, PreferredPaymentMethodsCallback callback) {
         preferredPaymentMethods.fetchPreferredPaymentMethods(context, callback);
-    }
-
-    public void onPayPalBrowserSwitchResult(Context context, BrowserSwitchResult browserSwitchResult, @Nullable Uri uri, PayPalBrowserSwitchResultCallback callback) {
-        payPal.onBrowserSwitchResult(context, browserSwitchResult, uri, callback);
     }
 
     public void onThreeDSecureBrowserSwitchResult(Context context, BrowserSwitchResult browserSwitchResult, @Nullable Uri uri, ThreeDSecureResultCallback callback) {

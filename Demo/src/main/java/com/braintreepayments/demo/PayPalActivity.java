@@ -1,28 +1,40 @@
 package com.braintreepayments.demo;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
 
+import com.braintreepayments.api.BraintreeClient;
 import com.braintreepayments.api.BraintreeDataCollectorCallback;
+import com.braintreepayments.api.BrowserSwitchCallback;
+import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.ConfigurationCallback;
-import com.braintreepayments.api.PayPalRequestCallback;
+import com.braintreepayments.api.PayPalBrowserSwitchResultCallback;
+import com.braintreepayments.api.PayPalClient;
+import com.braintreepayments.api.PayPalRequest;
+import com.braintreepayments.api.PayPalFlowStartedCallback;
+import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.PaymentMethodNonceCreatedListener;
+import com.braintreepayments.api.models.Authorization;
+import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.Configuration;
 import com.braintreepayments.api.models.PayPalAccountNonce;
-import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.PostalAddress;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class PayPalActivity extends BaseActivity implements PaymentMethodNonceCreatedListener {
+public class PayPalActivity extends BaseActivity implements
+    BrowserSwitchCallback,
+    PaymentMethodNonceCreatedListener {
 
     private String mDeviceData;
+    private PayPalClient payPalClient;
 
     private Button mBillingAgreementButton;
     private Button mSinglePaymentButton;
@@ -49,21 +61,30 @@ public class PayPalActivity extends BaseActivity implements PaymentMethodNonceCr
     }
 
     @Override
-    protected void onBraintreeInitialized() {
-        getConfiguration(new ConfigurationCallback() {
-            @Override
-            public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
-                if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {
-                    collectDeviceData(new BraintreeDataCollectorCallback() {
-                        @Override
-                        public void onResult(@Nullable String deviceData, @Nullable Exception error) {
-                            mDeviceData = deviceData;
-                        }
-                    });
+    protected void onAuthorizationFetched() {
+        try {
+            Authorization authorization = Authorization.fromString(mAuthorization);
+            BraintreeClient braintreeClient = new BraintreeClient(authorization, this, RETURN_URL_SCHEME);
+            payPalClient = new PayPalClient(braintreeClient, RETURN_URL_SCHEME);
+
+            braintreeClient.getConfiguration(new ConfigurationCallback() {
+                @Override
+                public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
+                    if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {
+                        collectDeviceData(new BraintreeDataCollectorCallback() {
+                            @Override
+                            public void onResult(@Nullable String deviceData, @Nullable Exception error) {
+                                mDeviceData = deviceData;
+                            }
+                        });
+                    }
                 }
-            }
-        });
-        enableButtons(true);
+            });
+            enableButtons(true);
+
+        } catch (InvalidArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     private void enableButtons(boolean enabled) {
@@ -73,9 +94,9 @@ public class PayPalActivity extends BaseActivity implements PaymentMethodNonceCr
 
     public void launchSinglePayment(View v) {
         setProgressBarIndeterminateVisibility(true);
-        requestPayPalOneTimePayment(getPayPalRequest("1.00"), new PayPalRequestCallback() {
+        payPalClient.requestOneTimePayment(this, getPayPalRequest("1.00"), new PayPalFlowStartedCallback() {
             @Override
-            public void onResult(boolean requestInitiated, Exception error) {
+            public void onResult(Exception error) {
                 if (error != null) {
                     onBraintreeError(error);
                 }
@@ -85,9 +106,9 @@ public class PayPalActivity extends BaseActivity implements PaymentMethodNonceCr
 
     public void launchBillingAgreement(View v) {
         setProgressBarIndeterminateVisibility(true);
-        requestPayPalBillingAgreement(getPayPalRequest(null), new PayPalRequestCallback() {
+        payPalClient.requestBillingAgreement(this, getPayPalRequest(null), new PayPalFlowStartedCallback() {
             @Override
-            public void onResult(boolean requestInitiated, Exception error) {
+            public void onResult(Exception error) {
                 if (error != null) {
                     onBraintreeError(error);
                 }
@@ -95,8 +116,7 @@ public class PayPalActivity extends BaseActivity implements PaymentMethodNonceCr
         });
     }
 
-    @Override
-    protected void onPayPalResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
+    private void handlePayPalResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
         if (paymentMethodNonce != null) {
             super.onPaymentMethodNonceCreated(paymentMethodNonce);
 
@@ -109,7 +129,8 @@ public class PayPalActivity extends BaseActivity implements PaymentMethodNonceCr
     }
 
     private PayPalRequest getPayPalRequest(@Nullable String amount) {
-        PayPalRequest request = new PayPalRequest(amount);
+        PayPalRequest request = new PayPalRequest()
+               .amount(amount);
 
         request.displayName(Settings.getPayPalDisplayName(this));
 
@@ -184,5 +205,18 @@ public class PayPalActivity extends BaseActivity implements PaymentMethodNonceCr
         }
 
         return addressString;
+    }
+
+    @Override
+    public void onResult(int requestCode, BrowserSwitchResult browserSwitchResult, @Nullable Uri uri) {
+        if (requestCode != BraintreeRequestCodes.PAYPAL) {
+            return;
+        }
+        payPalClient.onBrowserSwitchResult(browserSwitchResult, uri, new PayPalBrowserSwitchResultCallback() {
+            @Override
+            public void onResult(PayPalAccountNonce payPalAccountNonce, Exception error) {
+                handlePayPalResult(payPalAccountNonce, error);
+            }
+        });
     }
 }

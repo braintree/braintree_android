@@ -1,6 +1,4 @@
-package com.braintreepayments.api.models;
-
-import com.braintreepayments.api.Json;
+package com.braintreepayments.api;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,7 +6,7 @@ import org.json.JSONObject;
 /**
  * A PayPal payment resource
  */
-public class PayPalPaymentResource {
+class PayPalPaymentResource {
 
     private static final String PAYMENT_RESOURCE_KEY = "paymentResource";
     private static final String REDIRECT_URL_KEY = "redirectUrl";
@@ -17,9 +15,8 @@ public class PayPalPaymentResource {
 
     private String mRedirectUrl;
 
-    public PayPalPaymentResource redirectUrl(String redirectUrl) {
+    private void redirectUrl(String redirectUrl) {
         mRedirectUrl = redirectUrl;
-        return this;
     }
 
     /**
@@ -27,7 +24,7 @@ public class PayPalPaymentResource {
      *
      * @return a redirect URL string containing an EC token
      */
-    public String getRedirectUrl() {
+    String getRedirectUrl() {
         return mRedirectUrl;
     }
 
@@ -37,9 +34,9 @@ public class PayPalPaymentResource {
      *
      * @param jsonString a valid JSON string representing the payment resource
      * @return a PayPal payment resource
-     * @throws JSONException
+     * @throws JSONException when json input is invalid
      */
-    public static PayPalPaymentResource fromJson(String jsonString) throws JSONException {
+    static PayPalPaymentResource fromJson(String jsonString) throws JSONException {
         JSONObject json = new JSONObject(jsonString);
 
         PayPalPaymentResource payPalPaymentResource = new PayPalPaymentResource();

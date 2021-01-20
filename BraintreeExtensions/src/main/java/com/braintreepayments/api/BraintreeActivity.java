@@ -12,7 +12,6 @@ import com.braintreepayments.api.interfaces.PreferredPaymentMethodsCallback;
 import com.braintreepayments.api.interfaces.ThreeDSecureLookupCallback;
 import com.braintreepayments.api.models.BraintreeRequestCodes;
 import com.braintreepayments.api.models.GooglePaymentRequest;
-import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ReadyForGooglePaymentRequest;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
@@ -67,14 +66,6 @@ public abstract class BraintreeActivity extends AppCompatActivity implements Bro
         braintreeFullClient.fetchPreferredPaymentMethods(this, callback);
     }
 
-    protected void requestPayPalOneTimePayment(PayPalRequest request, PayPalRequestCallback callback) {
-        braintreeFullClient.requestPayPalOneTimePayment(this, request, callback);
-    }
-
-    protected void requestPayPalBillingAgreement(PayPalRequest request, PayPalRequestCallback callback) {
-        braintreeFullClient.requestPayPalBillingAgreement(this, request, callback);
-    }
-
     protected void createVisaCheckoutProfile(VisaCheckoutCreateProfileBuilderCallback callback) {
         braintreeFullClient.createVisaCheckoutProfile(this, callback);
     }
@@ -94,14 +85,6 @@ public abstract class BraintreeActivity extends AppCompatActivity implements Bro
     @Override
     public void onResult(int requestCode, BrowserSwitchResult browserSwitchResult, @Nullable Uri uri) {
         switch (requestCode) {
-            case BraintreeRequestCodes.PAYPAL:
-                braintreeFullClient.onPayPalBrowserSwitchResult(this, browserSwitchResult, uri, new PayPalBrowserSwitchResultCallback() {
-                    @Override
-                    public void onResult(PaymentMethodNonce nonce, Exception error) {
-                        onPayPalResult(nonce, error);
-                    }
-                });
-                break;
             case BraintreeRequestCodes.THREE_D_SECURE:
                 braintreeFullClient.onThreeDSecureBrowserSwitchResult(this, browserSwitchResult, uri, new ThreeDSecureResultCallback() {
                     @Override
@@ -153,9 +136,6 @@ public abstract class BraintreeActivity extends AppCompatActivity implements Bro
     }
 
     protected void onThreeDSecureResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
-    }
-
-    protected void onPayPalResult(PaymentMethodNonce paymentMethodNonce, Exception error) {
     }
 
     protected void onGooglePayResult(PaymentMethodNonce paymentMethodNonce, Exception error) {

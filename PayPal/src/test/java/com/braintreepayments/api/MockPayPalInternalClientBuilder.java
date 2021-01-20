@@ -1,11 +1,6 @@
-package com.braintreepayments.api.helpers;
+package com.braintreepayments.api;
 
 import android.content.Context;
-
-import com.braintreepayments.api.PayPalInternalClient;
-import com.braintreepayments.api.PayPalInternalClientCallback;
-import com.braintreepayments.api.PayPalResponse;
-import com.braintreepayments.api.models.PayPalRequest;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;

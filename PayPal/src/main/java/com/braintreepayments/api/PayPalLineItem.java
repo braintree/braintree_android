@@ -1,4 +1,4 @@
-package com.braintreepayments.api.models;
+package com.braintreepayments.api;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
@@ -11,16 +11,16 @@ import java.lang.annotation.RetentionPolicy;
 
 public class PayPalLineItem {
 
+    /**
+     * The type of PayPal line item.
+     *
+     * {@link #KIND_CREDIT} A line item that is a credit.
+     * {@link #KIND_DEBIT} A line item that debits.
+     */
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({PayPalLineItem.KIND_CREDIT, PayPalLineItem.KIND_DEBIT})
-
-    /**
-    * The type of PayPal line item.
-    *
-    * {@link #KIND_CREDIT} A line item that is a credit.
-    * {@link #KIND_DEBIT} A line item that debits.
-    */
     @interface PayPalLineItemKind {}
+
     public static final String KIND_CREDIT = "credit";
     public static final String KIND_DEBIT = "debit";
 

@@ -8,13 +8,14 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.PayPalRequestCallback;
+import com.braintreepayments.api.PayPalClient;
+import com.braintreepayments.api.PayPalRequest;
+import com.braintreepayments.api.PayPalFlowStartedCallback;
 import com.braintreepayments.api.VenmoAuthorizeAccountCallback;
 import com.braintreepayments.api.VenmoClient;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;
 import com.braintreepayments.api.interfaces.PreferredPaymentMethodsCallback;
 import com.braintreepayments.api.models.Authorization;
-import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.models.PreferredPaymentMethodsResult;
 
@@ -25,6 +26,8 @@ public class PreferredPaymentMethodsActivity extends BaseActivity {
     private Button mBillingAgreementButton;
     private Button mSinglePaymentButton;
     private Button mVenmoButton;
+
+    private PayPalClient payPalClient;
 
     private VenmoClient venmoClient;
 
@@ -54,6 +57,7 @@ public class PreferredPaymentMethodsActivity extends BaseActivity {
         try {
             Authorization authorization = Authorization.fromString(mAuthorization);
             BraintreeClient braintreeClient = new BraintreeClient(authorization, this, RETURN_URL_SCHEME);
+            payPalClient = new PayPalClient(braintreeClient, RETURN_URL_SCHEME);
             venmoClient = new VenmoClient(braintreeClient);
             mPreferredPaymentMethodsButton.setEnabled(true);
 
@@ -81,9 +85,9 @@ public class PreferredPaymentMethodsActivity extends BaseActivity {
     public void launchSinglePayment(View v) {
         setProgressBarIndeterminateVisibility(true);
 
-        requestPayPalOneTimePayment(getPayPalRequest("1.00"), new PayPalRequestCallback() {
+        payPalClient.requestOneTimePayment(this, getPayPalRequest("1.00"), new PayPalFlowStartedCallback() {
             @Override
-            public void onResult(boolean requestInitiated, Exception error) {
+            public void onResult(Exception error) {
                 if (error != null) {
                     onBraintreeError(error);
                 }
@@ -94,9 +98,9 @@ public class PreferredPaymentMethodsActivity extends BaseActivity {
     public void launchBillingAgreement(View v) {
         setProgressBarIndeterminateVisibility(true);
 
-        requestPayPalBillingAgreement(getPayPalRequest(null), new PayPalRequestCallback() {
+        payPalClient.requestBillingAgreement(this, getPayPalRequest(null), new PayPalFlowStartedCallback() {
             @Override
-            public void onResult(boolean requestInitiated, Exception error) {
+            public void onResult(Exception error) {
                 if (error != null) {
                     onBraintreeError(error);
                 }
@@ -119,7 +123,8 @@ public class PreferredPaymentMethodsActivity extends BaseActivity {
     // Launching a payment method from the home screen creates a new BraintreeFragment. To maintain sessionID within a
     // fragment, we opted to add PayPal within the PreferredPaymentMethodsActivity.
     private PayPalRequest getPayPalRequest(@Nullable String amount) {
-        PayPalRequest request = new PayPalRequest(amount);
+        PayPalRequest request = new PayPalRequest()
+                .amount(amount);
 
         request.displayName(Settings.getPayPalDisplayName(this));
 

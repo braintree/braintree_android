@@ -18,7 +18,8 @@ import org.json.JSONObject;
  */
 public class PayPalAccountNonce extends PaymentMethodNonce implements Parcelable {
 
-    protected static final String TYPE = "PayPalAccount";
+    // TODO: make this package-private once PaymentMethodNonce is moved to flattened com.braintreepayments.api package
+    public static final String TYPE = "PayPalAccount";
     protected static final String API_RESOURCE_KEY = "paypalAccounts";
     protected static final String PAYMENT_METHOD_DATA_KEY = "paymentMethodData";
     protected static final String TOKENIZATION_DATA_KEY = "tokenizationData";

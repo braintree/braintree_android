@@ -10,9 +10,6 @@ import com.braintreepayments.api.interfaces.HttpResponseCallback;
 import com.braintreepayments.api.models.Authorization;
 import com.braintreepayments.api.models.ClientToken;
 import com.braintreepayments.api.models.Configuration;
-import com.braintreepayments.api.models.PayPalLineItem;
-import com.braintreepayments.api.models.PayPalPaymentResource;
-import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PostalAddress;
 import com.braintreepayments.api.models.PostalAddressParser;
 
@@ -20,7 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class PayPalInternalClient {
+class PayPalInternalClient {
 
     private static final String NO_SHIPPING_KEY = "no_shipping";
     private static final String ADDRESS_OVERRIDE_KEY = "address_override";
@@ -64,7 +61,7 @@ public class PayPalInternalClient {
         this.successUrl = String.format("%s://onetouch/v1/success", returnUrlScheme);
     }
 
-    public void sendRequest(final Context context, final PayPalRequest payPalRequest, final boolean isBillingAgreement, final PayPalInternalClientCallback callback) {
+    void sendRequest(final Context context, final PayPalRequest payPalRequest, final boolean isBillingAgreement, final PayPalInternalClientCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -98,8 +95,9 @@ public class PayPalInternalClient {
                                     String pairingId = parsedRedirectUri.getQueryParameter(pairingIdKey);
 
                                     if (pairingId != null) {
-                                        payPalResponse.pairingId(pairingId);
-                                        payPalResponse.clientMetadataId(payPalDataCollector.getClientMetadataId(context));
+                                        payPalResponse
+                                                .pairingId(pairingId)
+                                                .clientMetadataId(payPalDataCollector.getClientMetadataId(context));
                                     }
 
                                     String approvalUrl = parsedRedirectUri

@@ -1,8 +1,9 @@
 package com.braintreepayments.api;
 
-import com.braintreepayments.api.models.PaymentMethodNonce;
+import androidx.annotation.Nullable;
+
+import com.braintreepayments.api.models.PayPalAccountNonce;
 
 public interface PayPalBrowserSwitchResultCallback {
-    // TODO: Change parameter to PayPalAccountNonce when API is finalized
-    void onResult(PaymentMethodNonce nonce, Exception error);
+    void onResult(@Nullable PayPalAccountNonce payPalAccountNonce, @Nullable Exception error);
 }

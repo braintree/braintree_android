@@ -6,10 +6,12 @@
   * `AmericanExpressClient`
   * `CardClient`
   * `LocalPaymentClient`
+  * `PayPalClient`
   * `UnionPayClient`
   * `VenmoClient`
 * Update Visa Checkout aar dependency to version `6.6.1`
 * Add `LocalPaymentTransaction` to represent Local Payment transactions
+* Add `amount` setter to `PayPalRequest`
 * Create callback interfaces to enforce callback pattern:
   * `AmericanExpressGetRewardsBalanceCallback`
   * `BraintreeDataCollectorCallback`
@@ -51,6 +53,7 @@
   * Delete PayPal `paypal-one-touch` module
   * Remove `AmericanExpressRewardsBalance` default constructor
   * Remove `approvalUrl` and `paymentId` properties from `LocalPaymentRequest`
+  * Remove `amount` parameter from `PayPalRequest` constructor
 
 ## 3.17.0
 
