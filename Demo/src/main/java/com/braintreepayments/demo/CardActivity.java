@@ -16,7 +16,8 @@ import com.braintreepayments.api.AmericanExpressClient;
 import com.braintreepayments.api.AmericanExpressGetRewardsBalanceCallback;
 import com.braintreepayments.api.AmericanExpressRewardsBalance;
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.BraintreeDataCollectorCallback;
+import com.braintreepayments.api.DataCollector;
+import com.braintreepayments.api.DataCollectorCallback;
 import com.braintreepayments.api.CardClient;
 import com.braintreepayments.api.CardTokenizeCallback;
 import com.braintreepayments.api.ConfigurationCallback;
@@ -72,10 +73,12 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
 
     private CardType mCardType;
 
+
     private BraintreeClient braintreeClient;
     private AmericanExpressClient americanExpressClient;
     private CardClient cardClient;
     private UnionPayClient unionPayClient;
+    private DataCollector dataCollector;
 
     @Override
     protected void onCreate(Bundle onSaveInstanceState) {
@@ -133,6 +136,7 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
             americanExpressClient = new AmericanExpressClient(braintreeClient);
             cardClient = new CardClient(braintreeClient);
             unionPayClient = new UnionPayClient(braintreeClient);
+            dataCollector = new DataCollector(braintreeClient);
 
         } catch (InvalidArgumentException e) {
             e.printStackTrace();
@@ -155,7 +159,7 @@ public class CardActivity extends BaseActivity implements OnCardFormSubmitListen
                         .setup(CardActivity.this);
 
                 if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {
-                    collectDeviceData(new BraintreeDataCollectorCallback() {
+                    dataCollector.collectDeviceData(CardActivity.this, new DataCollectorCallback() {
                         @Override
                         public void onResult(@Nullable String deviceData, @Nullable Exception error) {
                             mDeviceData = deviceData;

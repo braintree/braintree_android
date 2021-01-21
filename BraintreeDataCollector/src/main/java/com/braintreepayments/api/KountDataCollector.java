@@ -10,7 +10,7 @@ import com.braintreepayments.api.exceptions.BraintreeException;
 import com.braintreepayments.api.models.Configuration;
 import com.kount.api.DataCollector;
 
-public class KountDataCollector {
+class KountDataCollector {
 
     private final BraintreeClient braintreeClient;
     private final DataCollector kountDataCollector;

@@ -5,6 +5,7 @@
 * Add a `client` for each feature:
   * `AmericanExpressClient`
   * `CardClient`
+  * `DataCollector`
   * `LocalPaymentClient`
   * `PayPalClient`
   * `UnionPayClient`
@@ -14,13 +15,12 @@
 * Add `amount` setter to `PayPalRequest`
 * Create callback interfaces to enforce callback pattern:
   * `AmericanExpressGetRewardsBalanceCallback`
-  * `BraintreeDataCollectorCallback`
   * `CardTokenizeCallback`
   * `CardinalInitializeCallback`
   * `ConfigurationCallback`
+  * `DataCollectorCallback`
   * `DeletePaymentMethodNonceCallback`
   * `GetPaymentMethodNoncesCallback`
-  * `KountDataCollectorCallback`
   * `LocalPaymentBrowserSwitchResultCallback`
   * `LocalPaymentStartCallback`
   * `PayPalBrowserSwitchResultCallback`
@@ -54,6 +54,9 @@
   * Remove `AmericanExpressRewardsBalance` default constructor
   * Remove `approvalUrl` and `paymentId` properties from `LocalPaymentRequest`
   * Remove `amount` parameter from `PayPalRequest` constructor
+  * Remove `PayPalDataCollector`
+  * Remove `PayPalDataCollectorRequest`
+  * Remove `InstallationIdentifier`
 
 ## 3.17.0
 

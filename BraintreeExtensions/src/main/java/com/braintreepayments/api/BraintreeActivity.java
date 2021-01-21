@@ -16,10 +16,7 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ReadyForGooglePaymentRequest;
 import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
-import com.braintreepayments.api.models.VenmoAccountNonce;
 import com.visa.checkout.VisaPaymentSummary;
-
-import org.json.JSONException;
 
 // TODO: unit test when API is finalized
 public abstract class BraintreeActivity extends AppCompatActivity implements BrowserSwitchCallback {
@@ -48,10 +45,6 @@ public abstract class BraintreeActivity extends AppCompatActivity implements Bro
 
     protected void getConfiguration(ConfigurationCallback callback) {
         braintreeFullClient.getConfiguration(this, callback);
-    }
-
-    protected void collectDeviceData(BraintreeDataCollectorCallback callback) {
-        braintreeFullClient.collectDeviceData(this, callback);
     }
 
     protected void performThreeDSecureVerification(ThreeDSecureRequest request, ThreeDSecureLookupCallback callback) {

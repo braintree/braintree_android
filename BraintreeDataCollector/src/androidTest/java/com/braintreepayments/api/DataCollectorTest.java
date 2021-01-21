@@ -54,7 +54,7 @@ public class DataCollectorTest {
     }
 
     @Test(timeout = 10000)
-    public void collectDeviceData_withListener() throws InterruptedException, InvalidArgumentException, JSONException {
+    public void collectDeviceData_withListener() throws InterruptedException, InvalidArgumentException {
         Configuration configuration = new TestConfigurationBuilder()
                 .kount(new TestKountConfigurationBuilder().kountMerchantId("500000"))
                 .buildConfiguration();
@@ -65,10 +65,11 @@ public class DataCollectorTest {
         BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity, "sample-scheme");
         DataCollector sut = new DataCollector(braintreeClient);
 
-        sut.collectDeviceData(mActivity, new BraintreeDataCollectorCallback() {
+        sut.collectDeviceData(mActivity, new DataCollectorCallback() {
             @Override
             public void onResult(@Nullable String deviceData, @Nullable Exception error) {
                 try {
+                    assertNotNull(deviceData);
                     JSONObject json = new JSONObject(deviceData);
                     assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));
                     assertEquals("500000", json.getString("fraud_merchant_id"));
@@ -84,7 +85,7 @@ public class DataCollectorTest {
     }
 
     @Test(timeout = 10000)
-    public void collectDeviceData_withListener_usesDirectMerchantId() throws InterruptedException, JSONException, InvalidArgumentException {
+    public void collectDeviceData_withListener_usesDirectMerchantId() throws InterruptedException, InvalidArgumentException {
         Configuration configuration = new TestConfigurationBuilder()
                 .kount(new TestKountConfigurationBuilder()
                         .kountMerchantId("600000"))
@@ -96,10 +97,11 @@ public class DataCollectorTest {
         BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity, "sample-scheme");
         DataCollector sut = new DataCollector(braintreeClient);
 
-        sut.collectDeviceData(mActivity, "600001", new BraintreeDataCollectorCallback() {
+        sut.collectDeviceData(mActivity, "600001", new DataCollectorCallback() {
             @Override
             public void onResult(@Nullable String deviceData, @Nullable Exception error) {
                 try {
+                    assertNotNull(deviceData);
                     JSONObject json = new JSONObject(deviceData);
                     assertFalse(TextUtils.isEmpty(json.getString("device_session_id")));
                     assertEquals("600001", json.getString("fraud_merchant_id"));
@@ -115,7 +117,7 @@ public class DataCollectorTest {
     }
 
     @Test(timeout = 10000)
-    public void collectDeviceData_doesNotCollectKountDataIfKountDisabledInConfiguration() throws InterruptedException, JSONException, InvalidArgumentException {
+    public void collectDeviceData_doesNotCollectKountDataIfKountDisabledInConfiguration() throws InterruptedException, InvalidArgumentException {
         Configuration configuration = new TestConfigurationBuilder().buildConfiguration();
         Authorization authorization = Authorization.fromString(Fixtures.TOKENIZATION_KEY);
 
@@ -124,10 +126,11 @@ public class DataCollectorTest {
         BraintreeClient braintreeClient = new BraintreeClient(authorization, mActivity, "sample-scheme");
         DataCollector sut = new DataCollector(braintreeClient);
 
-        sut.collectDeviceData(mActivity, new BraintreeDataCollectorCallback() {
+        sut.collectDeviceData(mActivity, new DataCollectorCallback() {
             @Override
             public void onResult(@Nullable String deviceData, @Nullable Exception error) {
                 try {
+                    assertNotNull(deviceData);
                     JSONObject json = new JSONObject(deviceData);
                     assertNull(Json.optString(json, "device_session_id", null));
                     assertNull(Json.optString(json, "fraud_merchant_id", null));

@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.braintreepayments.api.internal.UUIDHelper;
 import com.braintreepayments.api.models.ClientToken;
@@ -16,7 +17,6 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
-// TODO: Break out into separate PayPalDataCollector and BraintreeDataCollector (Kount) modules to align with iOS
 public class DataCollector {
 
     private static final String DEVICE_SESSION_ID_KEY = "device_session_id";
@@ -31,7 +31,8 @@ public class DataCollector {
         this(braintreeClient, new PayPalDataCollector(), new KountDataCollector(braintreeClient));
     }
 
-    public DataCollector(BraintreeClient braintreeClient, PayPalDataCollector payPalDataCollector, KountDataCollector kountDataCollector) {
+    @VisibleForTesting
+    DataCollector(BraintreeClient braintreeClient, PayPalDataCollector payPalDataCollector, KountDataCollector kountDataCollector) {
         this.braintreeClient = braintreeClient;
         this.payPalDataCollector = payPalDataCollector;
         this.kountDataCollector = kountDataCollector;
@@ -43,7 +44,7 @@ public class DataCollector {
      * @param context  Android context
      * @param callback to be called with the device data String to send to Braintree.
      */
-    public void collectDeviceData(Context context, BraintreeDataCollectorCallback callback) {
+    public void collectDeviceData(Context context, DataCollectorCallback callback) {
         collectDeviceData(context, null, callback);
     }
 
@@ -59,7 +60,7 @@ public class DataCollector {
      * @param merchantId Optional - Custom Kount merchant id. Leave blank to use the default.
      * @param callback   callback called with the deviceData string that should be passed into server-side calls, such as `Transaction.sale`.
      */
-    public void collectDeviceData(final Context context, final String merchantId, final BraintreeDataCollectorCallback callback) {
+    public void collectDeviceData(final Context context, final String merchantId, final DataCollectorCallback callback) {
         braintreeClient.getConfiguration(new ConfigurationCallback() {
             @Override
             public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
@@ -110,7 +111,7 @@ public class DataCollector {
      * @param context  Android context
      * @param callback callback to be called with the device data String to send to Braintree.
      */
-    public void collectPayPalDeviceData(Context context, final BraintreeDataCollectorCallback callback) {
+    public void collectPayPalDeviceData(Context context, final DataCollectorCallback callback) {
         final JSONObject deviceData = new JSONObject();
 
         try {

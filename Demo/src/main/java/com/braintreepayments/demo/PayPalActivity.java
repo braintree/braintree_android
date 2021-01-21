@@ -9,7 +9,8 @@ import android.widget.Button;
 import androidx.annotation.Nullable;
 
 import com.braintreepayments.api.BraintreeClient;
-import com.braintreepayments.api.BraintreeDataCollectorCallback;
+import com.braintreepayments.api.DataCollector;
+import com.braintreepayments.api.DataCollectorCallback;
 import com.braintreepayments.api.BrowserSwitchCallback;
 import com.braintreepayments.api.BrowserSwitchResult;
 import com.braintreepayments.api.ConfigurationCallback;
@@ -35,6 +36,7 @@ public class PayPalActivity extends BaseActivity implements
 
     private String mDeviceData;
     private PayPalClient payPalClient;
+    private DataCollector dataCollector;
 
     private Button mBillingAgreementButton;
     private Button mSinglePaymentButton;
@@ -66,12 +68,13 @@ public class PayPalActivity extends BaseActivity implements
             Authorization authorization = Authorization.fromString(mAuthorization);
             BraintreeClient braintreeClient = new BraintreeClient(authorization, this, RETURN_URL_SCHEME);
             payPalClient = new PayPalClient(braintreeClient, RETURN_URL_SCHEME);
+            dataCollector = new DataCollector(braintreeClient);
 
             braintreeClient.getConfiguration(new ConfigurationCallback() {
                 @Override
                 public void onResult(@Nullable Configuration configuration, @Nullable Exception error) {
                     if (getIntent().getBooleanExtra(MainActivity.EXTRA_COLLECT_DEVICE_DATA, false)) {
-                        collectDeviceData(new BraintreeDataCollectorCallback() {
+                        dataCollector.collectDeviceData(PayPalActivity.this, new DataCollectorCallback() {
                             @Override
                             public void onResult(@Nullable String deviceData, @Nullable Exception error) {
                                 mDeviceData = deviceData;

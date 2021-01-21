@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 /**
  * Used to configuration the PayPalDataCollector request
  */
-public class PayPalDataCollectorRequest {
+class PayPalDataCollectorRequest {
 
     private String mApplicationGuid;
     private String mClientMetadataId;
@@ -17,7 +17,7 @@ public class PayPalDataCollectorRequest {
     /**
      * @param additionalData Additional data that should be associated with the data collection.
      */
-    public PayPalDataCollectorRequest setAdditionalData(HashMap<String, String> additionalData) {
+    PayPalDataCollectorRequest setAdditionalData(HashMap<String, String> additionalData) {
         mAdditionalData = additionalData;
 
         return this;
@@ -27,7 +27,7 @@ public class PayPalDataCollectorRequest {
      * @param applicationGuid The application global unique identifier.
      *                        There is a 36 character length limit on this value.
      */
-    public PayPalDataCollectorRequest setApplicationGuid(String applicationGuid) {
+    PayPalDataCollectorRequest setApplicationGuid(String applicationGuid) {
         this.mApplicationGuid = applicationGuid;
 
         return this;
@@ -36,7 +36,7 @@ public class PayPalDataCollectorRequest {
     /**
      * @param clientMetadataId The desired pairing ID, trimmed to 32 characters.
      */
-    public PayPalDataCollectorRequest setClientMetadataId(@NonNull String clientMetadataId) {
+    PayPalDataCollectorRequest setClientMetadataId(@NonNull String clientMetadataId) {
         this.mClientMetadataId = clientMetadataId.substring(0, Math.min(clientMetadataId.length(), 32));
 
         return this;
@@ -45,25 +45,25 @@ public class PayPalDataCollectorRequest {
     /**
      * @param disableBeacon Indicates if the beacon feature should be disabled.
      */
-    public PayPalDataCollectorRequest setDisableBeacon(boolean disableBeacon) {
+    PayPalDataCollectorRequest setDisableBeacon(boolean disableBeacon) {
         mDisableBeacon = disableBeacon;
 
         return this;
     }
 
-    public HashMap<String, String> getAdditionalData() {
+    HashMap<String, String> getAdditionalData() {
         return mAdditionalData;
     }
 
-    public String getApplicationGuid() {
+    String getApplicationGuid() {
         return mApplicationGuid;
     }
 
-    public String getClientMetadataId() {
+    String getClientMetadataId() {
         return mClientMetadataId;
     }
 
-    public boolean isDisableBeacon() {
+    boolean isDisableBeacon() {
         return mDisableBeacon;
     }
 }

@@ -17,13 +17,10 @@ import com.braintreepayments.api.models.ThreeDSecureLookup;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
 import com.visa.checkout.VisaPaymentSummary;
 
-import org.json.JSONException;
-
 // TODO: unit test when API is finalized
 class BraintreeFullClient {
 
     BraintreeClient braintreeClient;
-    DataCollector dataCollector;
     DeviceInspector deviceInspector;
     GooglePaymentClient googlePaymentClient;
     PreferredPaymentMethods preferredPaymentMethods;
@@ -33,7 +30,6 @@ class BraintreeFullClient {
 
     public BraintreeFullClient(String authorization, Context context, String returnUrlScheme) throws InvalidArgumentException {
         this.braintreeClient = new BraintreeClient(Authorization.fromString(authorization), context, returnUrlScheme);
-        this.dataCollector = new DataCollector(braintreeClient);
         this.tokenizationClient = new TokenizationClient(braintreeClient);
 
         this.deviceInspector = new DeviceInspector();
@@ -45,10 +41,6 @@ class BraintreeFullClient {
 
     public void getConfiguration(Context context, ConfigurationCallback callback) {
         braintreeClient.getConfiguration(callback);
-    }
-
-    public void collectDeviceData(Context context, BraintreeDataCollectorCallback callback) {
-        dataCollector.collectDeviceData(context, callback);
     }
 
     public void performThreeDSecureVerification(FragmentActivity activity, ThreeDSecureRequest request, ThreeDSecureLookupCallback callback) {

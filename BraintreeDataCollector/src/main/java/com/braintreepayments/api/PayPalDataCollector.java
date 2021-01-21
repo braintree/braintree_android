@@ -13,7 +13,7 @@ import lib.android.paypal.com.magnessdk.MagnesSDK;
 import lib.android.paypal.com.magnessdk.MagnesSettings;
 import lib.android.paypal.com.magnessdk.MagnesSource;
 
-public class PayPalDataCollector {
+class PayPalDataCollector {
 
     private final MagnesSDK magnesSDK;
     private final PayPalInstallationIdentifier payPalInstallationIdentifier;
@@ -28,7 +28,7 @@ public class PayPalDataCollector {
         this.payPalInstallationIdentifier = payPalInstallationIdentifier;
     }
 
-    public String getPayPalInstallationGUID(Context context) {
+    String getPayPalInstallationGUID(Context context) {
         return payPalInstallationIdentifier.getInstallationGUID(context);
     }
 
@@ -44,30 +44,9 @@ public class PayPalDataCollector {
      * @return clientMetadataId Your server will send this to PayPal
      */
     @MainThread
-    public String getClientMetadataId(Context context) {
+    String getClientMetadataId(Context context) {
         PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
                 .setApplicationGuid(getPayPalInstallationGUID(context));
-
-        return getClientMetadataId(context, request);
-    }
-
-    /**
-     * Gets a Client Metadata ID at the time of payment activity. Once a user initiates a PayPal payment
-     * from their device, PayPal uses the Client Metadata ID to verify that the payment is
-     * originating from a valid, user-consented device and application. This helps reduce fraud and
-     * decrease declines. This method MUST be called prior to initiating a pre-consented payment (a
-     * "future payment") from a mobile device. Pass the result to your server, to include in the
-     * payment request sent to PayPal. Do not otherwise cache or store this value.
-     *
-     * @param context {@link Context}
-     * @param clientMetadataId The desired client metadata ID
-     * @return clientMetadataId Your server will send this to PayPal
-     */
-    @MainThread
-    public String getClientMetadataId(Context context, String clientMetadataId) {
-        PayPalDataCollectorRequest request = new PayPalDataCollectorRequest()
-                .setApplicationGuid(getPayPalInstallationGUID(context))
-                .setClientMetadataId(clientMetadataId);
 
         return getClientMetadataId(context, request);
     }
@@ -85,7 +64,7 @@ public class PayPalDataCollector {
      * @return clientMetadataId Your server will send this to PayPal
      */
     @MainThread
-    public String getClientMetadataId(Context context, PayPalDataCollectorRequest request) {
+    String getClientMetadataId(Context context, PayPalDataCollectorRequest request) {
         // NEXT_MAJOR_VERSION In error scenarios, this function return null instead of "".
         if (context == null) {
             return "";

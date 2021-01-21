@@ -75,6 +75,7 @@ dependencies {
     }
 
     implementation project(':AmericanExpress')
+    implementation project(':BraintreeDataCollector')
     implementation project(':Card')
     implementation project(':LocalPayment')
     implementation project(':PayPal')

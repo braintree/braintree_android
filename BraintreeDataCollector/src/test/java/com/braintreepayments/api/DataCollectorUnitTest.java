@@ -67,7 +67,7 @@ public class DataCollectorUnitTest {
         DataCollector sut = new DataCollector(
                 braintreeClient, payPalDataCollector, kountDataCollector);
 
-        BraintreeDataCollectorCallback callback = mock(BraintreeDataCollectorCallback.class);
+        DataCollectorCallback callback = mock(DataCollectorCallback.class);
         sut.collectDeviceData(context, callback);
 
         verify(callback).onResult(null, configError);
@@ -84,7 +84,7 @@ public class DataCollectorUnitTest {
         DataCollector sut = new DataCollector(
                 braintreeClient, payPalDataCollector, kountDataCollector);
 
-        BraintreeDataCollectorCallback callback = mock(BraintreeDataCollectorCallback.class);
+        DataCollectorCallback callback = mock(DataCollectorCallback.class);
         sut.collectDeviceData(context, callback);
 
         ArgumentCaptor<String> deviceSessionIdCaptor = ArgumentCaptor.forClass(String.class);
@@ -118,7 +118,7 @@ public class DataCollectorUnitTest {
         DataCollector sut = new DataCollector(
                 braintreeClient, payPalDataCollector, kountDataCollector);
 
-        BraintreeDataCollectorCallback callback = mock(BraintreeDataCollectorCallback.class);
+        DataCollectorCallback callback = mock(DataCollectorCallback.class);
         sut.collectDeviceData(context, callback);
 
         ArgumentCaptor<String> deviceDataCaptor = ArgumentCaptor.forClass(String.class);
@@ -141,7 +141,7 @@ public class DataCollectorUnitTest {
         DataCollector sut = new DataCollector(
                 braintreeClient, payPalDataCollector, kountDataCollector);
 
-        BraintreeDataCollectorCallback callback = mock(BraintreeDataCollectorCallback.class);
+        DataCollectorCallback callback = mock(DataCollectorCallback.class);
         sut.collectPayPalDeviceData(context, callback);
 
         ArgumentCaptor<String> deviceDataCaptor = ArgumentCaptor.forClass(String.class);
